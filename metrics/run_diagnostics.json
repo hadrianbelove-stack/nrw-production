@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-24T12:28:43.085107",
-  "duration_seconds": 7181.337816,
+  "timestamp": "2026-05-25T14:09:57.202748",
+  "duration_seconds": 6125.147959,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,65 +8,65 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 7.935784,
+      "duration_seconds": 8.583561,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-22 to 2026-05-24 (incremental mode, 14 intaked)\n\u2705 Movie intake complete: 14 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-24 to 2026-05-24\n   \ud83d\udccb Dear England (4 eps)\n   \ud83d\udccb Two Weeks in "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-23 to 2026-05-25 (incremental mode, 15 intaked)\n\u2705 Movie intake complete: 15 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-25 to 2026-05-25\n   \ud83d\udccb Ad\u00f3nis (6 eps)\n   \ud83d\udccb Se tiene que morir "
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 385.452231,
+      "duration_seconds": 374.412511,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 169 festival slugs\nScanning 169 festivals for catalogs...\n  Progress: 75/169 slugs | 27 scanned | 540 films indexed\n  Progress: 100/169 slugs | 52 scanned | 1095 films indexed\n  Progress: 125/169 slugs | 77 scanned | 1342 films indexed\n  Progress: 150/169 slugs | 102 scanned | 1822 films indexed\n  Done: 121 festivals, 116 with films, 48 failed, 2190 total films\n  Active: 2190 | Expired: 0 | Unique: 165"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 170 festival slugs\nScanning 170 festivals for catalogs...\n  Progress: 75/170 slugs | 27 scanned | 635 films indexed\n  Progress: 100/170 slugs | 52 scanned | 1104 films indexed\n  Progress: 125/170 slugs | 77 scanned | 1360 films indexed\n  Progress: 150/170 slugs | 102 scanned | 1832 films indexed\n  Done: 122 festivals, 117 with films, 48 failed, 2215 total films\n  Active: 2215 | Expired: 0 | Unique: 166"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 4731.81347,
+      "duration_seconds": 4628.428526,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17166 total movies\n\ud83d\udd0d Raw tracking filter: 13538 movies\n\ud83d\udd0d Assigned tracking_movies list: 13538\n\ud83d\udd0d Found 13538 movies in tracking status\n  Priority queue (last 180 days): 603 movies\n  Older movies: 12935 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13538 movies for digital availability...\n\n   \u2705 Added Roses on the Vine to site immediately (discovery-driven)\n  \u2713 Roses on the Vine now "
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17183 total movies\n\ud83d\udd0d Raw tracking filter: 13540 movies\n\ud83d\udd0d Assigned tracking_movies list: 13540\n\ud83d\udd0d Found 13540 movies in tracking status\n  Priority queue (last 180 days): 606 movies\n  Older movies: 12934 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13540 movies for digital availability...\n\n   \u2705 Added Colibr\u00ed to site immediately (discovery-driven)\n  \u2713 Colibr\u00ed now on Amazon Video!\n  \ud83d\udeab"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 1861.184055,
+      "duration_seconds": 953.472228,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 29 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Spain is not different: Amazon not found\n      \u00b7 Spain is not different: Fanda"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 30 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 We Are Two Abysses: Amazon not found\n      \u00b7 We Are Two Abysses: Fandango not "
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.079554,
+      "duration_seconds": 0.920315,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 744 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  628\n  Stale cleaned:    0\n  Not in B2:        199\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 758 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  634\n  Stale cleaned:    0\n  Not in B2:        189\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 155.943555,
+      "duration_seconds": 140.433069,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 300 of 827 wall movies (last 30 days)\n  \ud83c\udf93 Voidance \u2014 pre-order graduated (now available)\n\ud83d\udd17 Applied cached watch links for 2 movies\n  \ud83d\udcbe Tracking synced (1 graduation(s))\n\n  \ud83d\udcca Gap fill results (156s, 300 movies):\n     Watch links updated: 0\n     Wikipedia filled: 0\n     Pre-orders graduated: 1\n\u2705 Gap fill complete: 0 watch links updated, 0 Wikipedia filled, 1 pre-orders graduated\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 291 of 823 wall movies (last 30 days)\n  + Strange Creatures \u2014 new services added\n  + Wasteman \u2014 new services added\n  + The Legend of Hei 2 \u2014 new services added\n  + The Fast and the Furious \u2014 new services added\n  + Death Does Not Exist \u2014 new services added\n  + ROLLING \u2014 new services added\n  + From the Beyond: High Strangeness in the Bennington Triangle \u2014 new services added\n  + Fortis Femina \u2014 new services added\n  + They Will Kill You"
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 25.773592,
+      "duration_seconds": 9.889759,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 3 movies missing trailers:\n  \u2022 Spain is not different\n  \u2022 The Obsessed\n  \u2022 OHO Film\n  \u2713 Cache hit: Spain is not different (2026)\n  \u25cb Spain is not different \u2014 no trailer found (attempt 1/5)\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManag"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 1 movies missing trailers:\n  \u2022 Little Man-Eater\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u2192 Searching YouTube: Little Man-Eater 2025 official "
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 11.538613,
+      "duration_seconds": 8.402895,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 61 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 27 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 62 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 28 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.431394,
+      "duration_seconds": 0.426011,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 10 movies (>90 days old) \u2192 data_archive.json\n   data.json: 817 movies | archive: 486 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 7 movies (>90 days old) \u2192 data_archive.json\n   data.json: 816 movies | archive: 493 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -77,41 +77,32 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 17166,
-    "tracking": 13523,
-    "available": 3292,
-    "data_movies": 817,
-    "movies_with_links": 787,
-    "movies_with_rt": 563,
-    "movies_with_wikipedia": 439,
+    "total": 17183,
+    "tracking": 13534,
+    "available": 3298,
+    "data_movies": 816,
+    "movies_with_links": 786,
+    "movies_with_rt": 559,
+    "movies_with_wikipedia": 438,
     "movies_with_trailers": 769
   },
   "enrichment_metrics": {
-    "timestamp": "2026-05-24T12:25:27.366410",
-    "movies_requested": 20,
-    "movies_enriched": 18,
-    "movies_deferred": 2,
+    "timestamp": "2026-05-25T14:07:16.306482",
+    "movies_requested": 7,
+    "movies_enriched": 6,
+    "movies_deferred": 1,
     "deferred_details": [
       {
         "title": "Palestine 36",
         "reason": "jw_revert:justwatch_no_valid_offers",
         "digital_date": "2026-05-19",
-        "discovered_at": "2026-05-24T10:35:48.090015",
+        "discovered_at": "2026-05-25T12:34:27.889911",
         "discovery_source": "tmdb_type4",
-        "revert_count": 8,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Bouchra",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-08-21",
-        "discovered_at": "2026-05-24T10:41:17.620741",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 1,
+        "revert_count": 9,
         "tmdb_platforms": []
       }
     ],
-    "enrichment_duration_seconds": 1860.03,
+    "enrichment_duration_seconds": 952.41,
     "error_details": [],
     "total_errors": 0
   }

@@ -1,29 +1,20 @@
 {
-  "timestamp": "2026-05-24T12:25:27.366410",
-  "movies_requested": 20,
-  "movies_enriched": 18,
-  "movies_deferred": 2,
+  "timestamp": "2026-05-25T14:07:16.306482",
+  "movies_requested": 7,
+  "movies_enriched": 6,
+  "movies_deferred": 1,
   "deferred_details": [
     {
       "title": "Palestine 36",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-05-19",
-      "discovered_at": "2026-05-24T10:35:48.090015",
+      "discovered_at": "2026-05-25T12:34:27.889911",
       "discovery_source": "tmdb_type4",
-      "revert_count": 8,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Bouchra",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-08-21",
-      "discovered_at": "2026-05-24T10:41:17.620741",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
+      "revert_count": 9,
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 1860.03,
+  "enrichment_duration_seconds": 952.41,
   "error_details": [],
   "total_errors": 0
 }
