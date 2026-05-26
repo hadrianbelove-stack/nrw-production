@@ -14,59 +14,69 @@ import {
 import {Colors, Typography, Spacing, Dimensions} from '../constants/colors';
 
 const COUNTRY_SHORT_NAMES = {
+  // Canonical 3-letter map (matches assets/shared-config.js). UK/USA kept; maps
+  // both full names and 2-letter ISO codes. Keep in sync with the web map.
   'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA', 'us': 'USA',
-  'united kingdom': 'UK', 'great britain': 'UK', 'gb': 'UK',
+  'united kingdom': 'UK', 'great britain': 'UK', 'gb': 'UK', 'uk': 'UK',
   'india': 'IND', 'in': 'IND',
-  'canada': 'CAN',
+  'canada': 'CAN', 'ca': 'CAN',
   'france': 'FRA', 'fr': 'FRA',
   'mexico': 'MEX', 'mx': 'MEX',
-  'australia': 'AUS',
-  'germany': 'GER',
+  'australia': 'AUS', 'au': 'AUS',
+  'germany': 'GER', 'de': 'GER',
   'italy': 'ITA', 'it': 'ITA',
   'japan': 'JPN', 'jp': 'JPN',
   'south korea': 'KOR', 'kr': 'KOR',
-  'belgium': 'BEL',
+  'belgium': 'BEL', 'be': 'BEL',
   'spain': 'ESP', 'es': 'ESP',
-  'indonesia': 'INA', 'id': 'INA',
-  'brazil': 'BRA',
-  'argentina': 'ARG',
+  'indonesia': 'IDN', 'id': 'IDN',
+  'brazil': 'BRA', 'br': 'BRA',
+  'argentina': 'ARG', 'ar': 'ARG',
   'thailand': 'THA', 'th': 'THA',
-  'new zealand': 'NZL',
-  'austria': 'AUT',
+  'new zealand': 'NZL', 'nz': 'NZL',
+  'austria': 'AUT', 'at': 'AUT',
   'poland': 'POL', 'pl': 'POL',
-  'china': 'CHN',
-  'taiwan': 'TPE', 'tw': 'TPE',
+  'china': 'CHN', 'cn': 'CHN',
+  'taiwan': 'TWN', 'tw': 'TWN',
   'denmark': 'DEN', 'dk': 'DEN',
-  'netherlands': 'NED',
-  'ireland': 'IRL',
+  'netherlands': 'NED', 'nl': 'NED',
+  'ireland': 'IRL', 'ie': 'IRL',
   'turkey': 'TUR', 'tr': 'TUR',
-  'nigeria': 'NGR',
-  'philippines': 'PHI',
-  'finland': 'FIN',
-  'colombia': 'COL',
-  'sweden': 'SWE',
-  'russia': 'RUS',
-  'hong kong': 'HKG',
-  'ukraine': 'UKR',
-  'singapore': 'SGP',
-  'armenia': 'ARM',
-  'greece': 'GRE',
-  'palestinian territory': 'PLE',
-  'israel': 'ISR',
-  'georgia': 'GEO',
-  'united arab emirates': 'UAE',
-  'saudi arabia': 'KSA',
-  'czech republic': 'CZE',
-  'cuba': 'CUB',
-  'switzerland': 'SUI',
-  'south africa': 'RSA',
-  'venezuela': 'VEN',
-  'croatia': 'CRO',
-  'guatemala': 'GUA',
-  'kenya': 'KEN',
-  'iceland': 'ISL',
-  'bulgaria': 'BUL',
-  'bosnia and herzegovina': 'BIH',
+  'nigeria': 'NGA', 'ng': 'NGA',
+  'philippines': 'PHI', 'ph': 'PHI',
+  'finland': 'FIN', 'fi': 'FIN',
+  'colombia': 'COL', 'co': 'COL',
+  'sweden': 'SWE', 'se': 'SWE',
+  'russia': 'RUS', 'ru': 'RUS',
+  'hong kong': 'HKG', 'hk': 'HKG',
+  'ukraine': 'UKR', 'ua': 'UKR',
+  'greece': 'GRE', 'gr': 'GRE',
+  'israel': 'ISR', 'il': 'ISR',
+  'georgia': 'GEO', 'ge': 'GEO',
+  'saudi arabia': 'KSA', 'sa': 'KSA',
+  'czech republic': 'CZE', 'cz': 'CZE',
+  'cuba': 'CUB', 'cu': 'CUB',
+  'switzerland': 'SUI', 'ch': 'SUI',
+  'south africa': 'RSA', 'za': 'RSA',
+  'venezuela': 'VEN', 've': 'VEN',
+  'croatia': 'CRO', 'hr': 'CRO',
+  'guatemala': 'GUA', 'gt': 'GUA',
+  'kenya': 'KEN', 'ke': 'KEN',
+  'iceland': 'ISL', 'is': 'ISL',
+  'bulgaria': 'BUL', 'bg': 'BUL',
+  'norway': 'NOR', 'no': 'NOR',
+  'iraq': 'IRQ', 'iq': 'IRQ',
+  'hungary': 'HUN', 'hu': 'HUN',
+  'nepal': 'NEP', 'np': 'NEP',
+  'slovenia': 'SLO', 'si': 'SLO',
+  'cambodia': 'CAM', 'kh': 'CAM',
+  'morocco': 'MAR', 'ma': 'MAR',
+  'chile': 'CHL', 'cl': 'CHL',
+  'singapore': 'SGP', 'sg': 'SGP',
+  'armenia': 'ARM', 'am': 'ARM',
+  'united arab emirates': 'UAE', 'ae': 'UAE',
+  'palestinian territory': 'PLE', 'palestine': 'PLE', 'ps': 'PLE',
+  'bosnia and herzegovina': 'BIH', 'ba': 'BIH',
   'unknown': '—',
 };
 
@@ -74,8 +84,8 @@ const formatCountry = (country) => {
   if (!country) return null;
   const shortened = COUNTRY_SHORT_NAMES[country.toLowerCase()];
   if (shortened) return shortened;
-  if (country.length <= 3) return country.toUpperCase();
-  return country;
+  // Unmapped: fall back to first 3 letters, uppercased (stay 3-letter).
+  return country.replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase() || country;
 };
 
 // Get streaming service bar badge info
@@ -113,6 +123,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
 
   const posterUrl = movie.poster_url || movie.poster;
   const director = movie.director || movie.crew?.director;
+  const metaText = [director, movie.genres?.[0], movie.country && formatCountry(movie.country)].filter(Boolean).join(' · ');
   const streamingBadge = getStreamingBadge(movie);
 
   return (
@@ -219,14 +230,9 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         <Text style={styles.title} numberOfLines={2}>
           {movie.display_title || movie.title}
         </Text>
-        {director && (
+        {metaText !== '' && (
           <Text style={styles.director} numberOfLines={1}>
-            {director}
-          </Text>
-        )}
-        {movie.country && (
-          <Text style={styles.country} numberOfLines={1}>
-            {formatCountry(movie.country)}
+            {metaText}
           </Text>
         )}
       </View>

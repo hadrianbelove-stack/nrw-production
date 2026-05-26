@@ -244,6 +244,8 @@ const MovieCard = forwardRef(({
   };
 
   const countryText = getCountryText();
+  const genre = movie.genres?.[0];
+  const metaText = [director, genre, countryText].filter(Boolean).join(' • ');
 
   return (
     <TouchableOpacity
@@ -353,9 +355,9 @@ const MovieCard = forwardRef(({
 
         {/* Info below poster - always visible */}
         <View style={styles.infoContainer}>
-          {(director || countryText) && (
+          {metaText !== '' && (
             <Text style={styles.infoText} numberOfLines={1}>
-              {director}{director && countryText ? ' • ' : ''}{countryText}
+              {metaText}
             </Text>
           )}
         </View>

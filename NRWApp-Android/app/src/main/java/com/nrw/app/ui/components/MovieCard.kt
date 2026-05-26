@@ -386,10 +386,11 @@ fun MovieCard(
         // Movie info below card (matching website)
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Director + country below card (like tvOS)
+        // Director · Genre · Country below card (matches desktop caption)
         val director = movie.getDirector()
+        val genre = movie.genres?.firstOrNull()
         val countryText = formatCountry(movie.country)
-        val infoText = listOfNotNull(director, countryText).joinToString(" · ")
+        val infoText = listOfNotNull(director, genre, countryText).joinToString(" · ")
         if (infoText.isNotEmpty()) {
             Text(
                 text = infoText,

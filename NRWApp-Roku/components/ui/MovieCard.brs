@@ -78,20 +78,26 @@ Sub onMovieChanged()
         m.poster.uri = movie.poster_url
     end if
 
-    ' Set director + country
+    ' Set director · genre · country (matches desktop caption)
     director = GetDirector(movie)
+    genre = ""
+    if movie.genres <> invalid AND movie.genres.Count() > 0
+        genre = movie.genres[0]
+    end if
     countryText = ""
     if movie.country <> invalid AND movie.country <> ""
         countryText = FormatCountry(movie.country)
     end if
-    if director <> "" AND countryText <> ""
-        m.directorLabel.text = director + " · " + countryText
-        m.directorLabel.visible = true
-    else if director <> ""
-        m.directorLabel.text = director
-        m.directorLabel.visible = true
-    else if countryText <> ""
-        m.directorLabel.text = countryText
+    parts = []
+    if director <> "" then parts.Push(director)
+    if genre <> "" then parts.Push(genre)
+    if countryText <> "" then parts.Push(countryText)
+    if parts.Count() > 0
+        meta = parts[0]
+        for i = 1 to parts.Count() - 1
+            meta = meta + " · " + parts[i]
+        end for
+        m.directorLabel.text = meta
         m.directorLabel.visible = true
     else
         m.directorLabel.visible = false

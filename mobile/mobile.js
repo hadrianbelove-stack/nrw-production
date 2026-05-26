@@ -482,8 +482,9 @@ const NRWMobile = {
         info.appendChild(title);
 
         const director = movie.crew?.director || movie.director || '';
+        const genre = movie.genres?.[0] || '';
         const country = NRWConfig.abbreviateCountry(movie.country) || '';
-        const metaParts = [director, country].filter(Boolean);
+        const metaParts = [director, genre, country].filter(Boolean);
         if (metaParts.length) {
             const meta = document.createElement('div');
             meta.className = 'grid-item-meta';
