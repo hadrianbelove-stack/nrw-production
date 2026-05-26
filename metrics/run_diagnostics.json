@@ -1,72 +1,72 @@
 {
-  "timestamp": "2026-05-25T14:09:57.202748",
-  "duration_seconds": 6125.147959,
-  "overall_success": true,
-  "failure_count": 0,
+  "timestamp": "2026-05-26T20:49:31.894351",
+  "duration_seconds": 6746.140337,
+  "overall_success": false,
+  "failure_count": 1,
   "warning_count": 0,
   "phases": [
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 8.583561,
+      "duration_seconds": 9.379668,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-23 to 2026-05-25 (incremental mode, 15 intaked)\n\u2705 Movie intake complete: 15 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-25 to 2026-05-25\n   \ud83d\udccb Ad\u00f3nis (6 eps)\n   \ud83d\udccb Se tiene que morir "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-24 to 2026-05-26 (incremental mode, 16 intaked)\n\u2705 Movie intake complete: 16 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-26 to 2026-05-26\n   \ud83d\udccb The Boy and I Who Will Break Up in 100 "
     },
     {
       "name": "Scan Eventive for virtual screenings",
-      "success": true,
-      "duration_seconds": 374.412511,
-      "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 170 festival slugs\nScanning 170 festivals for catalogs...\n  Progress: 75/170 slugs | 27 scanned | 635 films indexed\n  Progress: 100/170 slugs | 52 scanned | 1104 films indexed\n  Progress: 125/170 slugs | 77 scanned | 1360 films indexed\n  Progress: 150/170 slugs | 102 scanned | 1832 films indexed\n  Done: 122 festivals, 117 with films, 48 failed, 2215 total films\n  Active: 2215 | Expired: 0 | Unique: 166"
+      "success": false,
+      "duration_seconds": 374.494061,
+      "error": "2026-05-26 18:57:15 [INFO] EnrichmentService initialized with enrichment_enabled=False\n2026-05-26 18:57:15 [INFO] Starting Eventive virtual screening scan...\n2026-05-26 18:57:15 [INFO] Fetching Eventive festival directory...\n2026-05-26 18:57:15 [INFO]   Found 170 festival slugs\n2026-05-26 18:57:15 [INFO] Scanning 170 festivals for catalogs...\n2026-05-26 18:59:26 [INFO]   Progress: 75/170 slugs | 27 scanned | 672 films indexed\n2026-05-26 19:00:29 [INFO]   Progress: 100/170 slugs | 52 scanned | 1055 films indexed\n2026-05-26 19:01:33 [INFO]   Progress: 125/170 slugs | 77 scanned | 1449 films indexed\n2026-05-26 19:02:38 [INFO]   Progress: 150/170 slugs | 102 scanned | 1929 films indexed\n2026-05-26 19:03:29 [INFO]   Done: 122 festivals, 117 with films, 48 failed, 2216 total films\n2026-05-26 19:03:29 [INFO]   Active: 2216 | Expired: 0 | Unique: 1670\nTraceback (most recent call last):\n  File \"/home/runner/work/nrw-production/nrw-production/generate_data.py\", line 235, in <module>\n    main()\n ",
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 170 festival slugs\nScanning 170 festivals for catalogs...\n  Progress: 75/170 slugs | 27 scanned | 672 films indexed\n  Progress: 100/170 slugs | 52 scanned | 1055 films indexed\n  Progress: 125/170 slugs | 77 scanned | 1449 films indexed\n  Progress: 150/170 slugs | 102 scanned | 1929 films indexed\n  Done: 122 festivals, 117 with films, 48 failed, 2216 total films\n  Active: 2216 | Expired: 0 | Unique: 167"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 4628.428526,
+      "duration_seconds": 4709.809521,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17183 total movies\n\ud83d\udd0d Raw tracking filter: 13540 movies\n\ud83d\udd0d Assigned tracking_movies list: 13540\n\ud83d\udd0d Found 13540 movies in tracking status\n  Priority queue (last 180 days): 606 movies\n  Older movies: 12934 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13540 movies for digital availability...\n\n   \u2705 Added Colibr\u00ed to site immediately (discovery-driven)\n  \u2713 Colibr\u00ed now on Amazon Video!\n  \ud83d\udeab"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17204 total movies\n\ud83d\udd0d Raw tracking filter: 13555 movies\n\ud83d\udd0d Assigned tracking_movies list: 13555\n\ud83d\udd0d Found 13555 movies in tracking status\n  Priority queue (last 180 days): 611 movies\n  Older movies: 12944 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13555 movies for digital availability...\n\n   \ud83d\udcdd Movie Two Prosecutors already in data.json - skipping immediate add\n  \ud83d\udcc5 Two Prosecutors \u2014"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 953.472228,
+      "duration_seconds": 1454.293767,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 30 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 We Are Two Abysses: Amazon not found\n      \u00b7 We Are Two Abysses: Fandango not "
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 30 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Palestine 36: Amazon not found\n      \u2713 Palestine 36: Fandango found\n      \u00b7 We"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 0.920315,
+      "duration_seconds": 0.779745,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 758 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  634\n  Stale cleaned:    0\n  Not in B2:        189\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 763 trailers in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  634\n  Stale cleaned:    0\n  Not in B2:        192\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 140.433069,
+      "duration_seconds": 187.62564,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 291 of 823 wall movies (last 30 days)\n  + Strange Creatures \u2014 new services added\n  + Wasteman \u2014 new services added\n  + The Legend of Hei 2 \u2014 new services added\n  + The Fast and the Furious \u2014 new services added\n  + Death Does Not Exist \u2014 new services added\n  + ROLLING \u2014 new services added\n  + From the Beyond: High Strangeness in the Bennington Triangle \u2014 new services added\n  + Fortis Femina \u2014 new services added\n  + They Will Kill You"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 297 of 826 wall movies (last 30 days)\n  \ud83c\udfac Wingman \u2014 Director Wikipedia added (Harland Williams)\n  \ud83c\udfac Shocktopus \u2014 Director Wikipedia added (Mark Polonia)\n  \ud83c\udfac Scared to Death \u2014 Director Wikipedia added (Paul Boyd)\n  + Mermaid \u2014 new services added\n  + When I Said I Do \u2014 new services added\n  + The Fire Raven \u2014 new services added\n  + Voidance \u2014 new services added\n  + Two Prosecutors \u2014 new services added\n  + Whisperings of the Moon \u2014 new "
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 9.889759,
+      "duration_seconds": 0.638563,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 1 movies missing trailers:\n  \u2022 Little Man-Eater\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u2192 Searching YouTube: Little Man-Eater 2025 official "
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 1 movies missing trailers:\n  \u2022 Behind Bars - Shot in the Spotlight\n  \u2717 Behind Bars - Shot in the Spotlight \u2014 TMDB fetch failed\n\u2705 Trailer gap fill: 0/1 movies got trailers\n\u2705 Trailer re-enrichment complete: 0 movies updated\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 8.402895,
+      "duration_seconds": 8.507257,
       "error": null,
       "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 62 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 28 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.426011,
+      "duration_seconds": 0.431022,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 7 movies (>90 days old) \u2192 data_archive.json\n   data.json: 816 movies | archive: 493 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 9 movies (>90 days old) \u2192 data_archive.json\n   data.json: 817 movies | archive: 502 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -74,35 +74,43 @@
     "stalled": false,
     "days_without_transitions": 0
   },
-  "failures": [],
+  "failures": [
+    {
+      "phase": "Scan Eventive for virtual screenings",
+      "severity": "error",
+      "message": "Phase failed with exit code 1",
+      "context": "2026-05-26 18:57:15 [INFO] EnrichmentService initialized with enrichment_enabled=False\n2026-05-26 18:57:15 [INFO] Starting Eventive virtual screening scan...\n2026-05-26 18:57:15 [INFO] Fetching Eventive festival directory...\n2026-05-26 18:57:15 [INFO]   Found 170 festival slugs\n2026-05-26 18:57:15 [INFO] Scanning 170 festivals for catalogs...\n2026-05-26 18:59:26 [INFO]   Progress: 75/170 slugs | 27 scanned | 672 films indexed\n2026-05-26 19:00:29 [INFO]   Progress: 100/170 slugs | 52 scanned | 10",
+      "stdout_preview": "\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 170 festival slugs\nScanning 170 festivals for catalogs...\n  Progress: 75/170 slugs | 27 scanned | 672 films indexed\n  Progress: 100/170 slugs | 52 scanned | 1055 films indexed\n  Progress: 125/170 slugs | 77 scanned | 1449 films indexed\n  Progress: 150/170 slugs | 102 scanned | 1929 films indexed\n  Done: 122 festivals, 117 with films, 48 failed, 2216 total films\n  Active: 2216 | Expired: 0 | Unique: 1670"
+    }
+  ],
   "warnings": [],
   "data_quality": {
-    "total": 17183,
-    "tracking": 13534,
-    "available": 3298,
-    "data_movies": 816,
-    "movies_with_links": 786,
-    "movies_with_rt": 559,
-    "movies_with_wikipedia": 438,
-    "movies_with_trailers": 769
+    "total": 17204,
+    "tracking": 13544,
+    "available": 3309,
+    "data_movies": 817,
+    "movies_with_links": 788,
+    "movies_with_rt": 551,
+    "movies_with_wikipedia": 434,
+    "movies_with_trailers": 772
   },
   "enrichment_metrics": {
-    "timestamp": "2026-05-25T14:07:16.306482",
-    "movies_requested": 7,
-    "movies_enriched": 6,
+    "timestamp": "2026-05-26T20:46:13.058856",
+    "movies_requested": 14,
+    "movies_enriched": 13,
     "movies_deferred": 1,
     "deferred_details": [
       {
         "title": "Palestine 36",
         "reason": "jw_revert:justwatch_no_valid_offers",
         "digital_date": "2026-05-19",
-        "discovered_at": "2026-05-25T12:34:27.889911",
+        "discovered_at": "2026-05-26T19:03:43.364747",
         "discovery_source": "tmdb_type4",
-        "revert_count": 9,
+        "revert_count": 10,
         "tmdb_platforms": []
       }
     ],
-    "enrichment_duration_seconds": 952.41,
+    "enrichment_duration_seconds": 1453.25,
     "error_details": [],
     "total_errors": 0
   }
