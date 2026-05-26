@@ -562,13 +562,14 @@ class MovieEnricher:
         }
 
         wiki_icon = status_icons.get(enrichment_results['wikipedia'], '?')
+        dir_wiki_icon = status_icons.get(enrichment_results.get('director_wiki', 'not_attempted'), '?')
         trailer_icon = status_icons.get(enrichment_results['trailer'], '?')
         rt_icon = status_icons.get(enrichment_results['rt_score'], '?')
         pq_icon = status_icons.get(enrichment_results.get('pull_quotes', 'not_attempted'), '?')
         links_icon = status_icons.get(enrichment_results['watch_links'], '?')
         date_icon = status_icons.get(enrichment_results['digital_date'], '?')
 
-        print(f"  \u26a1 {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} PQ:{pq_icon} Links:{links_icon} Date:{date_icon} | {success_count} success, {error_count} errors")
+        print(f"  \u26a1 {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Dir:{dir_wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} PQ:{pq_icon} Links:{links_icon} Date:{date_icon} | {success_count} success, {error_count} errors")
 
         # Detailed logging for metrics
         self.ctx.logger.info(f"Enrichment completed for {title} ({year}) in {movie_duration:.1f}s: {enrichment_results}")

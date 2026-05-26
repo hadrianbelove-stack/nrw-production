@@ -555,7 +555,7 @@ const NRW = {
                 </div>
                 <div class="movie-info">
                     <div class="movie-title">${movie.display_title || movie.title}</div>
-                    <div class="movie-meta"><span class="m-dir">${NRW._directorLink(movie.crew?.director, movie.links?.director_wiki)}</span><span class="m-rest"> · ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
+                    <div class="movie-meta"><span class="m-dir">D: ${NRW._directorLink(movie.crew?.director, movie.links?.director_wiki)}</span><span class="m-rest"> · ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
                 </div>
                 ${badgeBar}
             </div>`;
@@ -1067,7 +1067,7 @@ const NRW = {
         if (movie.crew?.director) {
             const dirLabel = document.createElement('span');
             dirLabel.className = 'lightbox-crew-label';
-            dirLabel.textContent = 'Director: ';
+            dirLabel.textContent = 'D: ';
             const dirWikiUrl = movie.links?.director_wiki;
             let dirName;
             if (dirWikiUrl) {

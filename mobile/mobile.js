@@ -482,13 +482,21 @@ const NRWMobile = {
         info.appendChild(title);
 
         const director = movie.crew?.director || movie.director || '';
+        const dirWikiUrl = movie.links?.director_wiki;
         const genre = movie.genres?.[0] || '';
         const country = NRWConfig.abbreviateCountry(movie.country) || '';
-        const metaParts = [director, genre, country].filter(Boolean);
+        const metaParts = [];
+        if (director) {
+            metaParts.push(dirWikiUrl
+                ? `<a href="${dirWikiUrl}" target="_blank" rel="noopener" class="mobile-dir-link">D: ${this.esc(director)}</a>`
+                : `D: ${this.esc(director)}`);
+        }
+        if (genre) metaParts.push(this.esc(genre));
+        if (country) metaParts.push(this.esc(country));
         if (metaParts.length) {
             const meta = document.createElement('div');
             meta.className = 'grid-item-meta';
-            meta.textContent = metaParts.join(' \u00b7 ');
+            meta.innerHTML = metaParts.join(' \u00b7 ');
             info.appendChild(meta);
         }
 
@@ -640,8 +648,11 @@ const NRWMobile = {
 
         // Line 1: Director (label teal, name white)
         const dirName = movie.crew?.director || movie.director || '';
+        const dirWikiUrl = movie.links?.director_wiki;
         const dirLine = dirName
-            ? '<span class="crew-label">Director:</span> <span class="crew-name">' + this.esc(dirName) + '</span>'
+            ? '<span class="crew-label">D:</span> ' + (dirWikiUrl
+                ? '<a href="' + dirWikiUrl + '" target="_blank" rel="noopener" class="crew-link">' + this.esc(dirName) + '</a>'
+                : '<span class="crew-name">' + this.esc(dirName) + '</span>')
             : '';
 
         // Line 2: Cast (label teal, name white)
