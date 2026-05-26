@@ -165,7 +165,21 @@ const NRW = {
             if (allBtn) allBtn.classList.toggle('active', this.activeFilters.size === 0);
         };
 
+        const btnArray = Array.from(filterButtons);
+
         filterButtons.forEach(btn => {
+            btn.addEventListener('keydown', (e) => {
+                if (e.key !== 'Tab') return;
+                e.preventDefault();
+                const idx = btnArray.indexOf(btn);
+                if (!e.shiftKey) {
+                    if (idx < btnArray.length - 1) btnArray[idx + 1].focus();
+                    else document.getElementById('search-input').focus();
+                } else {
+                    if (idx > 0) btnArray[idx - 1].focus();
+                }
+            });
+
             btn.addEventListener('click', () => {
                 const filter = btn.dataset.filter;
                 if (!filter) return;
@@ -249,7 +263,7 @@ const NRW = {
             });
         }
 
-        // Allow Escape to clear search
+        // Allow Escape to clear search; Tab to enter grid
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 searchInput.value = '';
@@ -259,6 +273,16 @@ const NRW = {
                 this.renderWallWithMore();
                 if (clearBtn) clearBtn.style.display = 'none';
                 searchInput.blur();
+            } else if (e.key === 'Tab' && !e.shiftKey) {
+                e.preventDefault();
+                searchInput.blur();
+                this.gridNavActive = true;
+                const { allCards } = this.buildGridMap();
+                if (allCards.length > 0) this.gridSelect(allCards[0]);
+            } else if (e.key === 'Tab' && e.shiftKey) {
+                e.preventDefault();
+                const filterBtns = document.querySelectorAll('.filter-btn');
+                if (filterBtns.length > 0) filterBtns[filterBtns.length - 1].focus();
             }
         });
     },
@@ -1623,14 +1647,44 @@ const NRW = {
 
     setupGridKeyboardHandler() {
         document.addEventListener('keydown', (e) => {
-            // Don't handle if typing in search
-            if (document.activeElement === document.getElementById('search-input')) return;
-
             // Don't handle if lightbox or trailer modal is open
             const lightbox = document.getElementById('poster-lightbox');
             if (lightbox && lightbox.classList.contains('active')) return;
             const trailerModal = document.getElementById('trailer-modal');
             if (trailerModal && trailerModal.classList.contains('active')) return;
+
+            const searchInput = document.getElementById('search-input');
+            // Use e.target (not activeElement) — activeElement may have already moved by bubbling time
+            const onSearch = e.target === searchInput;
+
+            // Tab: nowhere → search → grid (filter buttons handle their own Tab)
+            if (e.key === 'Tab' && !onSearch) {
+                if (this.gridNavActive && this.gridSelectedId) {
+                    if (e.shiftKey) {
+                        // Shift+Tab: go to prev card, or back to search if at first card
+                        const { allCards } = this.buildGridMap();
+                        const currentEl = document.querySelector(`#wall .expand-btn[data-movie-id="${CSS.escape(this.gridSelectedId)}"]`)?.closest('.movie-container');
+                        e.preventDefault();
+                        if (currentEl && allCards.indexOf(currentEl) === 0) {
+                            this.gridClearSelection();
+                            searchInput.focus();
+                        } else {
+                            this.gridNavigate('left');
+                        }
+                    } else {
+                        e.preventDefault();
+                        this.gridNavigate('right');
+                    }
+                } else if (!e.target.closest('.filter-btn')) {
+                    // Not in grid, not on a filter: focus search bar
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+                return;
+            }
+
+            // Don't handle arrow/enter/escape if typing in search
+            if (onSearch) return;
 
             const arrowKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
 
