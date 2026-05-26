@@ -2,9 +2,12 @@
 *.pyc
 __pycache__/
 .DS_Store
-config.yaml  # Keep API keys local only
-.env  # Alternative secrets storage
-config.ini  # Local configuration with secrets
+# Keep API keys local only (file is tracked; secret fields kept blank)
+config.yaml
+# Alternative secrets storage
+.env
+# Local configuration with secrets
+config.ini
 cache/*
 !cache/.gitkeep
 !cache/screenshots/

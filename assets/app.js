@@ -555,7 +555,7 @@ const NRW = {
                 </div>
                 <div class="movie-info">
                     <div class="movie-title">${movie.display_title || movie.title}</div>
-                    <div class="movie-meta"><span class="m-dir">${movie.crew?.director || 'Unknown Director'}</span><span class="m-rest"> · ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
+                    <div class="movie-meta"><span class="m-dir">${NRW._directorLink(movie.crew?.director)}</span><span class="m-rest"> · ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
                 </div>
                 ${badgeBar}
             </div>`;
@@ -1040,6 +1040,24 @@ const NRW = {
         }
     },
 
+    _directorLink(name) {
+        if (!name) return 'Unknown Director';
+        const url = 'https://en.wikipedia.org/wiki/' + encodeURIComponent(name.replace(/ /g, '_'));
+        return `<a href="${url}" target="_blank" rel="noopener">${name}</a>`;
+    },
+
+    _linkBoldTitles(html) {
+        const wikiMap = {};
+        (this.movies || []).forEach(m => {
+            if (m.links?.wikipedia) wikiMap[m.title.toLowerCase()] = m.links.wikipedia;
+        });
+        return html.replace(/<strong>([^<]+)<\/strong>/g, (match, title) => {
+            const known = wikiMap[title.toLowerCase()];
+            const url = known || 'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(title + ' film');
+            return `<strong><a href="${url}" target="_blank" rel="noopener">${title}</a></strong>`;
+        });
+    },
+
     _updateLightboxSynopsis(movie) {
         // Meta block — 3 lines
         const metaEl = document.getElementById('lightbox-meta');
@@ -1050,8 +1068,12 @@ const NRW = {
             const dirLabel = document.createElement('span');
             dirLabel.className = 'lightbox-crew-label';
             dirLabel.textContent = 'Director: ';
-            const dirName = document.createElement('span');
-            dirName.className = 'lightbox-crew-name';
+            const dirUrl = 'https://en.wikipedia.org/wiki/' + encodeURIComponent(movie.crew.director.replace(/ /g, '_'));
+            const dirName = document.createElement('a');
+            dirName.className = 'lightbox-crew-name lightbox-crew-link';
+            dirName.href = dirUrl;
+            dirName.target = '_blank';
+            dirName.rel = 'noopener';
             dirName.textContent = movie.crew.director;
             metaEl.appendChild(dirLabel);
             metaEl.appendChild(dirName);
@@ -1083,7 +1105,7 @@ const NRW = {
 
         // Synopsis text (renders **bold**/*italic* markdown)
         const synopsisEl = document.getElementById('lightbox-synopsis');
-        synopsisEl.innerHTML = NRWConfig.renderMarkdown(movie.synopsis || 'Synopsis coming soon.');
+        synopsisEl.innerHTML = NRW._linkBoldTitles(NRWConfig.renderMarkdown(movie.synopsis || 'Synopsis coming soon.'));
 
         // Screening callout appended to synopsis
         if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {

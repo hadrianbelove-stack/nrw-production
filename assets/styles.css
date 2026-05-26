@@ -603,6 +603,12 @@ header h1 {
     text-overflow: ellipsis;
     min-width: 0;
 }
+.movie-info .m-dir a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+}
+.movie-info .m-dir a:hover { opacity: 0.75; }
 
 .movie-info .m-rest {
     flex-shrink: 0;
@@ -1163,6 +1169,11 @@ header h1 {
     color: #fff;
     font-weight: 700;
 }
+.lightbox-crew-link {
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+}
+.lightbox-crew-link:hover { border-bottom-color: #fff; }
 
 /* Scores row below meta */
 .lightbox-scores {
@@ -1207,6 +1218,13 @@ header h1 {
     margin-bottom: 1.25rem;
     overflow-y: auto;
 }
+.lightbox-synopsis a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(255,255,255,0.35);
+}
+.lightbox-synopsis a:hover { text-decoration-color: rgba(255,255,255,0.85); }
 
 /* Pull quotes in lightbox */
 .lightbox-pull-quotes {
