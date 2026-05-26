@@ -53,21 +53,21 @@ When using grays for secondary UI elements:
 - Apple TV / generic service buttons: `#aaaaaa` (not dark gray)
 
 ### Country Display Names
-Use shortened forms only for long country names. Keep short names as-is:
+Countries display as **3-letter codes** (IOC/Olympic-style, chosen for recognizability), with **USA** and **UK** kept as the two natural exceptions. The mapping lives in `assets/shared-config.js` (`countryAbbrev` map + `abbreviateCountry()`), keyed by BOTH the full name and the 2-letter ISO code.
 
-| Data Value                  | Displays As |
-|-----------------------------|-------------|
-| United States of America    | USA         |
-| United Kingdom              | UK          |
-| South Korea                 | S. Korea    |
-| South Africa                | S. Africa   |
-| New Zealand                 | N. Zealand  |
-| Bosnia and Herzegovina      | Bosnia      |
-| Saudi Arabia                | S. Arabia   |
+| Data Value (either form)        | Displays As |
+|---------------------------------|-------------|
+| United States of America / US   | USA         |
+| United Kingdom / GB             | UK          |
+| Germany / DE                    | GER         |
+| France / FR                     | FRA         |
+| South Korea / KR                | KOR         |
+| Netherlands                     | NED         |
+| Switzerland                     | SUI         |
+| South Africa / ZA               | RSA         |
+| Chile / CL                      | CHL         |
 
-All other countries display as their full name (France, Japan, Canada, etc.)
-Case mismatches (e.g. "usa", "SWEDEN") are handled automatically.
-For multiple countries, use slashes: `USA / France / Japan`
+Unmapped/new countries fall back to their first 3 letters, uppercased — add them to `countryAbbrev` when they appear. Case is handled automatically; `Unknown` shows `—`. For multiple countries, use slashes: `USA / FRA / JPN`.
 
 ---
 
@@ -149,6 +149,13 @@ box-shadow: 0 0 20px rgba(220,20,60,0.3);
 - Card gap: `1-2rem`
 - Section padding: `1.5rem` to `2rem`
 - Element margins: `0.5rem` to `1rem`
+
+### Wall Grid & Poster Captions (desktop web)
+- **Grid**: fluid gallery — `grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))`. Fits as many ~320px posters as the window allows; they stretch to fill and reflow on resize. Drops to `minmax(160px, 1fr)` under 900px.
+- **Caption** under each poster is locked to **2 lines** so the grid stays square:
+  1. **Title** — white, bold, **one line** with ellipsis (`white-space: nowrap; text-overflow: ellipsis`).
+  2. **Meta** — one teal line: `Director · Genre · Nation` (primary genre only; nation as 3-letter code). The director name ellipsizes if long, but ` · Genre · Nation` is pinned (flexbox, `flex-shrink: 0`) so it's never lost.
+- The grid item (`.movie-container`) sets `min-width: 0` so a long one-line caption can't widen its column.
 
 ---
 
@@ -284,6 +291,11 @@ Use **light theme** for better email compatibility:
 ---
 
 ## Changelog
+
+### 2026-05-25 - 3-Letter Countries + Fluid Poster Grid
+- Country Display Names: switched to **3-letter codes** (UK/USA kept as exceptions); rewrote the section + `countryAbbrev` in `shared-config.js` (covers all data countries + ISO-2 variants)
+- Added "Wall Grid & Poster Captions": fluid `auto-fill minmax(320px,1fr)` gallery; caption locked to 2 lines (1-line title + teal `Director · Genre · Nation`)
+- Added **genre** to poster captions (primary genre); director ellipsizes while genre+nation stay pinned
 
 ### 2026-05-22 - Synopsis Markdown Formatting
 - Added "Synopsis / Capsule Text Formatting" section: `**bold**` names, `*italic*` titles

@@ -555,7 +555,7 @@ const NRW = {
                 </div>
                 <div class="movie-info">
                     <div class="movie-title">${movie.display_title || movie.title}</div>
-                    <span class="director">${movie.crew?.director || 'Unknown Director'}</span> • <span class="country">${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span>
+                    <div class="movie-meta"><span class="m-dir">${movie.crew?.director || 'Unknown Director'}</span><span class="m-rest"> · ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
                 </div>
                 ${badgeBar}
             </div>`;
