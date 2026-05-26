@@ -40,6 +40,8 @@ data class Movie(
     @SerializedName("original_language")
     val originalLanguage: String? = null,
 
+    val studio: String? = null,
+
     @SerializedName("production_countries")
     val productionCountries: List<Country>? = null,
 

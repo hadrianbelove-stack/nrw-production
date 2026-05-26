@@ -69,6 +69,7 @@ import com.nrw.app.data.getPosterUrl
 import com.nrw.app.data.getRtInfo
 import com.nrw.app.data.isStaffPick
 import com.nrw.app.ui.components.WatchButton
+import com.nrw.app.ui.components.getServiceColor
 import com.nrw.app.ui.theme.Background
 import com.nrw.app.ui.theme.Green
 import com.nrw.app.ui.theme.Primary
@@ -388,7 +389,7 @@ private fun MovieDetail(
                                     )
                                 }
                             }
-                            if (movie.isVirtualScreening) {
+                            if (movie.categories?.isVirtualScreening == true) {
                                 Text(
                                     text = movie.screeningInfo?.screeningName ?: "VIRTUAL SCREENING",
                                     color = Color.Black,
@@ -474,7 +475,7 @@ private fun MovieDetail(
                 }
 
                 // Language (only if not English)
-                movie.original_language?.takeIf { it != "en" }?.let { lang ->
+                movie.originalLanguage?.takeIf { it != "en" }?.let { lang ->
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Language: ${lang.uppercase()}",
@@ -524,7 +525,7 @@ private fun MovieDetail(
 
                 // Synopsis - compact
                 movie.synopsis?.let { synopsis ->
-                    val screeningCallout = if (movie.isVirtualScreening && movie.screeningInfo?.screeningName != null) {
+                    val screeningCallout = if (movie.categories?.isVirtualScreening == true && movie.screeningInfo?.screeningName != null) {
                         val festName = movie.screeningInfo!!.screeningName!!
                         val endStr = movie.screeningInfo?.availableEnd?.let { " Ends ${formatShortDate(it)}." } ?: ""
                         " Virtual screening available as part of the $festName.$endStr"

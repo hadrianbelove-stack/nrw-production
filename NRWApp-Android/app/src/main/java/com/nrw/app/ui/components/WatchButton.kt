@@ -26,6 +26,7 @@ import com.nrw.app.data.WatchOption
 import com.nrw.app.ui.theme.AmazonOrange
 import com.nrw.app.ui.theme.AmcGreen
 import com.nrw.app.ui.theme.BackgroundSecondary
+import com.nrw.app.ui.theme.CriterionBlack
 import com.nrw.app.ui.theme.DisneyBlue
 import com.nrw.app.ui.theme.FandangoOrange
 import com.nrw.app.ui.theme.HuluGreen
@@ -262,7 +263,7 @@ private fun getSimplifiedLabel(service: String): String {
 /**
  * Get service-specific color
  */
-private fun getServiceColor(service: String): Color {
+internal fun getServiceColor(service: String): Color {
     return when (service.lowercase()) {
         "amazon", "amazon_video", "prime_video" -> AmazonOrange
         "apple_tv" -> Color(0xFF000000)
