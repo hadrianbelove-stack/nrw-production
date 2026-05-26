@@ -1210,16 +1210,14 @@ class ProviderDiscoverer:
             except Exception:
                 watch_cache = {}
 
-        # Load movie_tracking.json for syncing pre-order graduations
+        # Load tracking DB for syncing pre-order graduations
         tracking_path = 'movie_tracking.json'
         tracking_data = None
         tracking_changed = False
-        if os.path.exists(tracking_path):
-            try:
-                with open(tracking_path, 'r') as f:
-                    tracking_data = json.load(f)
-            except Exception:
-                tracking_data = None
+        try:
+            tracking_data = self.storage.tracking_db.load_all()
+        except Exception:
+            tracking_data = None
 
         jw_updated = 0
         wiki_filled = 0
@@ -1452,8 +1450,7 @@ class ProviderDiscoverer:
         # Save tracking if any pre-orders were graduated
         if tracking_changed and tracking_data:
             try:
-                with open(tracking_path, 'w') as f:
-                    json.dump(tracking_data, f, indent=2)
+                self.storage.atomic_write_json(tracking_data, tracking_path)
                 _sync_parts = []
                 if preorders_graduated:
                     _sync_parts.append(f"{preorders_graduated} graduation(s)")

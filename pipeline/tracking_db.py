@@ -143,19 +143,26 @@ class TrackingDB:
     def set(self, movie_id: str, data: Dict, export_json: bool = True) -> None:
         """Upsert a single movie record."""
         conn = self._connect()
-        conn.execute(
-            "INSERT OR REPLACE INTO movies (id, status, digital_date, enriched, data) "
-            "VALUES (?, ?, ?, ?, ?)",
-            (
-                str(movie_id),
-                data.get('status'),
-                data.get('digital_date'),
-                1 if data.get('enriched') else 0,
-                json.dumps(data, ensure_ascii=False),
-            ),
-        )
-        conn.commit()
-        conn.close()
+        try:
+            conn.execute("BEGIN EXCLUSIVE")
+            conn.execute(
+                "INSERT OR REPLACE INTO movies (id, status, digital_date, enriched, data) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (
+                    str(movie_id),
+                    data.get('status'),
+                    data.get('digital_date'),
+                    1 if data.get('enriched') else 0,
+                    json.dumps(data, ensure_ascii=False),
+                ),
+            )
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            self.logger.error(f"TrackingDB.set failed for {movie_id}: {e}")
+            raise
+        finally:
+            conn.close()
         if export_json:
             try:
                 self.export_json(self.json_path)
@@ -215,6 +222,8 @@ class TrackingDB:
 
         Pass `data` to skip re-reading from SQLite (save_all uses this).
         """
+        if not path:
+            raise ValueError("TrackingDB.export_json: path is required")
         db_dict = data if data is not None else self.load_all()
         temp_path = path + '.tmp'
         with open(temp_path, 'w', encoding='utf-8') as f:
