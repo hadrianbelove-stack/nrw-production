@@ -30,11 +30,8 @@ from pipeline.eventive import (
 
 def load_nrw_data():
     """Load tracking and wall data for matching."""
-    tracking_movies = {}
-    if os.path.exists('movie_tracking.json'):
-        with open('movie_tracking.json') as f:
-            db = json.load(f)
-        tracking_movies = db.get('movies', db)
+    from pipeline.tracking_db import get_tracking_db
+    tracking_movies = get_tracking_db().load_all().get('movies', {})
 
     wall_movies = []
     if os.path.exists('data.json'):

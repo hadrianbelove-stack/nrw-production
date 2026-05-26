@@ -155,7 +155,8 @@ git push origin main
 
 | File | Purpose | Records | Format |
 |------|---------|---------|---------|
-| `movie_tracking.json` | Master movie database | ~6,700 (785 available, ~5,900 tracking) | JSON object |
+| `movie_tracking.db` | Master movie database (SQLite, gitignored) | 17,000+ | SQLite |
+| `movie_tracking.json` | Daily Git export of `movie_tracking.db` — NOT the source of truth | 17,000+ | JSON object |
 | `data.json` | Display data (append-only, 90-day window) | ~230 | JSON object |
 | `metrics/newly_available.json` | Today's enrichment queue | Variable (0-20/day) | JSON object |
 | `config.yaml` | System configuration | N/A | YAML |
@@ -363,7 +364,10 @@ The `watch_links` field in `data.json` uses a **two-category structure** represe
 
 ## 📊 Data Contracts
 
-### movie_tracking.json Schema
+### movie_tracking.db / movie_tracking.json Schema
+
+> The source of truth is `movie_tracking.db` (SQLite, via `pipeline/tracking_db.py`).
+> `movie_tracking.json` is a daily export — never read it directly in code.
 
 ```json
 {

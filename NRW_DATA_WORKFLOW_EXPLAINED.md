@@ -63,10 +63,16 @@ No API provides "when" a movie became available — only "what" is currently ava
 - **JustWatch:** NOT used in discovery. JustWatch provides actual rent/buy deep links (Amazon/Apple TV URLs) during enrichment, not during discovery.
 - **State file:** Writes list of newly available movie IDs to `metrics/newly_available.json`
 
-**`movie_tracking.json`** - *The Master Database*
-- **What it is:** Complete database of all movies we're monitoring (~15,000+ movies)
+**`movie_tracking.db`** - *The Master Database (SQLite)*
+- **What it is:** SQLite database — the actual source of truth for all movies we're monitoring (17,000+ movies and growing)
 - **Contains:** Movie details, tracking status ("tracking" vs "available"), provider info
-- **Example:** `{"1404864": {"title": "Inspector Zende", "status": "tracking", "digital_date": null}}`
+- **Lives:** Local machine only (gitignored). Never committed to GitHub.
+- **Example record:** `{"1404864": {"title": "Inspector Zende", "status": "tracking", "digital_date": null}}`
+
+**`movie_tracking.json`** - *Daily Git Export (not the master)*
+- **What it is:** A snapshot of `movie_tracking.db` exported after every pipeline save. Used by GitHub Actions to reconstruct the database on each fresh server run.
+- **NOT the source of truth** — never read or write this file directly. All access goes through `TrackingDB` (`pipeline/tracking_db.py`).
+- **On fresh checkout:** The pipeline auto-imports this file into a new `movie_tracking.db` on first run.
 
 ### **Phase 2: Database Enrichment & Link Resolution**
 **What happens:** We take movies that JUST BECAME digitally available (from today's discovery) and add rich metadata - trailers, Wikipedia pages, RT scores, watch links.

@@ -155,12 +155,8 @@ class ArchiveManager:
             Filtered list when movies_list provided, None otherwise.
         """
         # Get manually removed IDs from tracking
-        removed_ids = set()
-        if os.path.exists('movie_tracking.json'):
-            with open('movie_tracking.json', 'r') as f:
-                tracking = json.load(f)
-            removed_ids = {str(mid) for mid, entry in tracking.get('movies', {}).items()
-                           if isinstance(entry, dict) and entry.get('status') == 'removed'}
+        from pipeline.tracking_db import get_tracking_db
+        removed_ids = {str(mid) for mid, _ in get_tracking_db().find_by_status('removed')}
 
         if movies_list is not None:
             movies = movies_list
