@@ -1189,7 +1189,7 @@ const NRW = {
             container.appendChild(makeBadge(movie.links.letterboxd, 'lb', lbText, 'assets/logos/services/letterboxd-dots.svg'));
         }
         if (movie.links?.wikipedia) {
-            container.appendChild(makeBadge(movie.links.wikipedia, 'wiki', 'Wiki', 'assets/logos/wikipedia.svg'));
+            container.appendChild(makeBadge(movie.links.wikipedia, 'wiki', '', 'assets/logos/wikipedia_PNG40.png'));
         }
     },
 
@@ -1465,6 +1465,16 @@ const NRW = {
                         const next = rates[(rates.indexOf(vid.playbackRate) + 1) % rates.length];
                         vid.playbackRate = next;
                         this._trailerSpeedToast(next);
+                    }
+                } else if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const vid = document.getElementById('trailer-video');
+                    if (vid) {
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen();
+                        } else {
+                            vid.requestFullscreen();
+                        }
                     }
                 }
                 return;
