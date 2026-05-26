@@ -1628,11 +1628,7 @@ class DataGenerator:
                 'cache/watch_links_cache.json',
                 backup=True
             )
-            self.storage.atomic_write_json(
-                tracking_data,
-                tracking_path,
-                backup=True
-            )
+            self.storage.tracking_db.save_all(tracking_data)
             print(f"  💾 Saved {new_cached} Eventive links to cache + tracking")
 
         # Save scan metrics
