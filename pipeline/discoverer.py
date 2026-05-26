@@ -177,12 +177,10 @@ class ProviderDiscoverer:
                 max_to_check = None
 
         # Load tracking database
-        if not os.path.exists('movie_tracking.json'):
-            print("⚠️  No movie_tracking.json found")
+        db = self.storage.tracking_db.load_all()
+        if not db.get('movies'):
+            print("⚠️  No movies in tracking database")
             return 0
-
-        with open('movie_tracking.json', 'r') as f:
-            db = json.load(f)
 
         print(f'DB loaded: {len(db.get("movies", {}))} total movies')
 
@@ -1225,6 +1223,7 @@ class ProviderDiscoverer:
 
         jw_updated = 0
         wiki_filled = 0
+        dir_wiki_filled = 0
         preorders_graduated = 0
         preorders_flagged = 0
         unsaved_count = 0
@@ -1407,6 +1406,17 @@ class ProviderDiscoverer:
                         unsaved_count += 1
                         print(f"  📚 {title} — Wikipedia link added")
 
+                # --- Director Wikipedia fill (only if missing) ---
+                if director and not links.get('director_wiki'):
+                    director_wiki_url = self.host.find_director_wikipedia_url(director)
+                    if director_wiki_url:
+                        if 'links' not in movie:
+                            movie['links'] = {}
+                        movie['links']['director_wiki'] = director_wiki_url
+                        dir_wiki_filled += 1
+                        unsaved_count += 1
+                        print(f"  🎬 {title} — Director Wikipedia added ({director})")
+
                 # Incremental save
                 if unsaved_count >= save_interval:
                     self.host._safe_save_data_json(display_data, existing_movies, label="gap_fill_incremental")
@@ -1456,6 +1466,7 @@ class ProviderDiscoverer:
         results = {
             'jw_updated': jw_updated,
             'wiki_filled': wiki_filled,
+            'dir_wiki_filled': dir_wiki_filled,
             'preorders_graduated': preorders_graduated,
             'preorders_flagged': preorders_flagged,
             'errors': errors,
@@ -1479,6 +1490,8 @@ class ProviderDiscoverer:
         print(f"\n  📊 Gap fill results ({duration:.0f}s, {len(recent_movies)} movies):")
         print(f"     Watch links updated: {jw_updated}")
         print(f"     Wikipedia filled: {wiki_filled}")
+        if dir_wiki_filled:
+            print(f"     Director Wikipedia filled: {dir_wiki_filled}")
         print(f"     Pre-orders graduated: {preorders_graduated}")
         if preorders_flagged:
             print(f"     Pre-orders flagged: {preorders_flagged}")

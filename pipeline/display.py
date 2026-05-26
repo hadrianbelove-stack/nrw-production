@@ -304,14 +304,12 @@ class DisplayGenerator:
                 if isinstance(ordering_data, list):
                     ordering = ordering_data
 
-        # Load movie_tracking.json to apply manual field edits
-        tracking_data = {}
-        if os.path.exists('movie_tracking.json'):
-            try:
-                with open('movie_tracking.json', 'r') as f:
-                    tracking_data = json.load(f).get('movies', {})
-            except Exception as e:
-                self.ctx.logger.warning(f"Could not load movie_tracking.json: {e}")
+        # Load tracking DB to apply manual field edits
+        try:
+            tracking_data = self.ctx.storage.tracking_db.load_all().get('movies', {})
+        except Exception as e:
+            self.ctx.logger.warning(f"Could not load tracking DB: {e}")
+            tracking_data = {}
 
         # Apply manual field edits from movie_tracking.json
         fields_updated = 0

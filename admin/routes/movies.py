@@ -11,6 +11,7 @@ from admin.config import FEATURED_FILE
 from admin.logging_setup import logger
 from admin.tmdb import get_tmdb_api_key
 from admin.utils import load_json, mark_changes_pending
+from pipeline.tracking_db import get_tracking_db
 
 bp = Blueprint('movies', __name__)
 
@@ -111,11 +112,7 @@ def add_movie() -> dict:
                 })
 
         # Load movie tracking database
-        try:
-            with open('movie_tracking.json', 'r') as f:
-                tracking_data = json.load(f)
-        except FileNotFoundError:
-            return jsonify({'success': False, 'error': 'movie_tracking.json not found'})
+        tracking_data = get_tracking_db().load_all()
 
         # Check if movie already exists in tracking
         existing_in_tracking = tmdb_id in tracking_data.get('movies', {})
@@ -262,8 +259,8 @@ def add_movie() -> dict:
         else:
             tracking_data['movies'][tmdb_id] = movie_entry
 
-        # Save atomically to movie_tracking.json
-        safe_write_json('movie_tracking.json', tracking_data)
+        # Save to tracking DB (SQLite + JSON export)
+        get_tracking_db().save_all(tracking_data)
 
         if existing_in_tracking:
             logger.info(f"Activated tracked movie {tmdb_id}: {title}")
@@ -357,12 +354,8 @@ def remove_movie() -> dict:
 
         logger.info(f"Removing movie {movie_id} from New Arrivals Wall")
 
-        # 1. Update movie_tracking.json - set digital_date to null
-        try:
-            with open('movie_tracking.json', 'r') as f:
-                tracking_data = json.load(f)
-        except FileNotFoundError:
-            return jsonify({'success': False, 'error': 'movie_tracking.json not found'})
+        # 1. Update tracking DB - set digital_date to null
+        tracking_data = get_tracking_db().load_all()
 
         if movie_id not in tracking_data.get('movies', {}):
             return jsonify({'success': False, 'error': f'Movie {movie_id} not found in tracking database'})
@@ -375,7 +368,7 @@ def remove_movie() -> dict:
         movie['removed_from_wall'] = True
         movie['removed_at'] = datetime.now().isoformat()
 
-        safe_write_json('movie_tracking.json', tracking_data)
+        get_tracking_db().save_all(tracking_data)
         logger.info(f"Cleared digital_date for movie {movie_id} ({title}) in tracking")
 
         # 2. Remove from data.json

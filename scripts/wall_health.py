@@ -50,7 +50,8 @@ total = len(movies)
 tracking_raw = {}
 tracking = {}
 try:
-    t = json.load(open(os.path.join(BASE, 'movie_tracking.json')))
+    from pipeline.tracking_db import get_tracking_db
+    t = get_tracking_db().load_all()
     tracking_raw = t.get('movies', {})
     for mid, m in tracking_raw.items():
         title = m.get('title', '')

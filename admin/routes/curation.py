@@ -13,6 +13,7 @@ from admin.config import (
     FEATURED_FILE, RESTORATIONS_FILE, CATEGORY_OVERRIDES_FILE,
 )
 from admin.logging_setup import logger
+from pipeline.tracking_db import get_tracking_db
 from admin.utils import (
     load_json, mark_changes_pending, validate_movie_update_request,
 )
@@ -150,13 +151,9 @@ def update_movie_fields() -> dict:
 
         logger.info(f"Updating fields for movie {movie_id}")
 
-        # Load movie_tracking.json
+        # Load tracking database
         tracking_file = 'movie_tracking.json'
-        try:
-            with open(tracking_file, 'r') as f:
-                tracking_data = json.load(f)
-        except FileNotFoundError:
-            return jsonify({'success': False, 'error': 'movie_tracking.json not found'})
+        tracking_data = get_tracking_db().load_all()
 
         # Check if movie exists
         if movie_id not in tracking_data.get('movies', {}):
@@ -484,8 +481,8 @@ def update_movie_fields() -> dict:
         movie['manually_corrected'] = True
         movie['last_manual_edit'] = datetime.now().isoformat()
 
-        # Save back to movie_tracking.json (with atomic write and backup)
-        safe_write_json(tracking_file, tracking_data)
+        # Save to tracking DB (SQLite + JSON export)
+        get_tracking_db().save_all(tracking_data)
 
         logger.info(f"Saved {len(changes_made)} field changes for movie {movie_id}: {', '.join(changes_made)}")
 

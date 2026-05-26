@@ -14,6 +14,8 @@ from datetime import datetime
 from typing import Dict, List, Optional, Union, Any
 import logging
 
+from pipeline.tracking_db import get_tracking_db
+
 
 class StorageService:
     """
@@ -40,6 +42,10 @@ class StorageService:
         """
         self.logger = logger or logging.getLogger(__name__)
         self._last_cleanup_check = 0.0  # Track last cleanup time for rate limiting
+
+        # SQLite-backed tracking database — shared singleton so admin routes
+        # and the pipeline always use the same instance
+        self.tracking_db = get_tracking_db(logger=self.logger)
 
         # Run opportunistic cleanup at initialization
         self._cleanup_old_backups_opportunistic()
@@ -311,11 +317,15 @@ class StorageService:
             bool: True if successful, False otherwise
 
         File paths maintained:
-            - movie_tracking.json (root)
+            - movie_tracking.json (root) — routed through TrackingDB (SQLite)
             - data.json (root)
             - available_tracking.json (root)
             - Backups: backups/<filename>.backup-YYYYMMDD_HHMMSS.json
         """
+        # Route tracking DB writes through SQLite
+        if os.path.basename(filepath) == 'movie_tracking.json' and isinstance(data, dict):
+            return self.tracking_db.save_all(data, export_json=True)
+
         try:
             # Step 1: Create timestamped backup if file exists and backup requested
             if backup and os.path.exists(filepath):
@@ -435,47 +445,17 @@ class StorageService:
                 self.logger.error(f"Failed to write archive database {archive_file}")
                 return 0
 
-            # Step 4: Remove from main tracking database
-            if os.path.exists(main_file):
-                try:
-                    with open(main_file, 'r') as f:
-                        data = json.load(f)
+            # Step 4: Remove from main tracking database (via SQLite)
+            main_db = self.tracking_db.load_all()
+            for movie_id in movie_entries.keys():
+                if movie_id in main_db.get('movies', {}):
+                    del main_db['movies'][movie_id]
+                    moved_count += 1
 
-                    # Type guard: Ensure main database is a dict
-                    if not isinstance(data, dict):
-                        actual_type = type(data).__name__
-                        self.logger.error(
-                            f"Type mismatch in {main_file}: expected dict, got {actual_type}. "
-                            f"Aborting archive operation."
-                        )
-                        self._quarantine_file(main_file, actual_type)
-                        return 0
-
-                    main_db = data
-
-                except json.JSONDecodeError as e:
-                    self.logger.error(
-                        f"Malformed JSON in {main_file} at line {e.lineno}, col {e.colno}: {e.msg}. "
-                        f"Aborting archive operation."
-                    )
-                    self._quarantine_file(main_file, 'parse')
-                    return 0
-
-                except (OSError, IOError) as e:
-                    self.logger.error(f"I/O error reading {main_file}: {e}. Aborting archive operation.")
-                    if os.path.exists(main_file):
-                        self._quarantine_file(main_file, 'ioerror')
-                    return 0
-
-                for movie_id in movie_entries.keys():
-                    if movie_id in main_db.get('movies', {}):
-                        del main_db['movies'][movie_id]
-                        moved_count += 1
-
-                # Step 5: Atomic write to main database
-                if not self.atomic_write_json(main_db, main_file):
-                    self.logger.error(f"Failed to update main database {main_file}")
-                    return 0
+            # Step 5: Write main database back through TrackingDB
+            if not self.atomic_write_json(main_db, main_file):
+                self.logger.error(f"Failed to update main database {main_file}")
+                return 0
 
         except Exception as e:
             self.logger.error(f"Error during atomic move to archive: {e}")
@@ -490,64 +470,21 @@ class StorageService:
         archive_enabled: bool = False
     ) -> Dict[str, Any]:
         """
-        Load and merge movies from main tracking and archive databases.
+        Load movies from the tracking database (SQLite via TrackingDB).
 
-        Args:
-            main_file: Path to main tracking database
-            archive_file: Path to archive database
-            archive_enabled: Whether archival system is enabled
-
-        Returns:
-            Dict with 'movies' key containing merged movie data
-
-        Note:
-            Archived movies take precedence over main database in case of ID conflicts.
-            Only archived movies with status='available' are included.
+        The archive_file / archive_enabled parameters are retained for API
+        compatibility but archival is handled separately; the main DB is
+        loaded from SQLite (which auto-imported from JSON on first run).
         """
-        combined_movies = {}
+        result = self.tracking_db.load_all()
+        combined_movies = result.get('movies', {})
 
-        # Load main tracking database
-        if os.path.exists(main_file):
-            try:
-                with open(main_file, 'r') as f:
-                    data = json.load(f)
-
-                # Type guard: Ensure main database is a dict
-                if not isinstance(data, dict):
-                    actual_type = type(data).__name__
-                    self.logger.error(
-                        f"Type mismatch in {main_file}: expected dict, got {actual_type}. "
-                        f"Skipping main database load."
-                    )
-                    self._quarantine_file(main_file, actual_type)
-                else:
-                    main_db = data
-                    combined_movies.update(main_db.get('movies', {}))
-
-            except json.JSONDecodeError as e:
-                self.logger.error(
-                    f"Malformed JSON in {main_file} at line {e.lineno}, col {e.colno}: {e.msg}. "
-                    f"Skipping main database load."
-                )
-                self._quarantine_file(main_file, 'parse')
-
-            except (OSError, IOError) as e:
-                self.logger.error(f"I/O error reading {main_file}: {e}. Skipping main database load.")
-                if os.path.exists(main_file):
-                    self._quarantine_file(main_file, 'ioerror')
-
-            except Exception as e:
-                self.logger.error(f"Unexpected error loading {main_file}: {type(e).__name__}: {e}")
-                if os.path.exists(main_file):
-                    self._quarantine_file(main_file, 'unknown')
-
-        # Load archived available movies if archival is enabled
+        # Load archived available movies if archival is enabled (legacy path)
         if archive_enabled and os.path.exists(archive_file):
             try:
                 with open(archive_file, 'r') as f:
                     data = json.load(f)
 
-                # Type guard: Ensure archive database is a dict
                 if not isinstance(data, dict):
                     actual_type = type(data).__name__
                     self.logger.error(
@@ -556,9 +493,7 @@ class StorageService:
                     )
                     self._quarantine_file(archive_file, actual_type)
                 else:
-                    archived_db = data
-                    # Archived movies take precedence in case of ID conflicts
-                    for movie_id, movie_data in archived_db.get('movies', {}).items():
+                    for movie_id, movie_data in data.get('movies', {}).items():
                         if movie_data.get('status') == 'available':
                             combined_movies[movie_id] = movie_data
 

@@ -146,3 +146,8 @@ hidden_gems_output/
 /letterboxd_vod_*.json
 /backlog_transitions.json
 /movie_tracking.json.backup.*
+
+# SQLite tracking database (local-only — movie_tracking.json is the Git artifact)
+/movie_tracking.db
+/movie_tracking.db-wal
+/movie_tracking.db-shm

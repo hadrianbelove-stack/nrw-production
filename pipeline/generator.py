@@ -980,7 +980,27 @@ class DataGenerator:
         except Exception as e:
             self.logger.error(f"Wikipedia scraper error for {title} ({year}): {e}")
             return None
-    
+
+    def find_director_wikipedia_url(self, name):
+        """Find a film director's Wikipedia URL using the existing scraper infrastructure."""
+        if not name or not self.enrichment_enabled:
+            return None
+        if self.wikipedia_scraper is None:
+            try:
+                from wikipedia_scraper_playwright import WikipediaScraperPlaywright
+                self.wikipedia_scraper = WikipediaScraperPlaywright(
+                    cache_file='cache/wikipedia_cache.json',
+                    config=self.config,
+                    logger=self.logger
+                )
+            except Exception as e:
+                self.logger.error(f"Failed to initialize Wikipedia scraper for director lookup: {e}")
+                return None
+        try:
+            return self.wikipedia_scraper.find_director_wikipedia_url(name)
+        except Exception as e:
+            self.logger.error(f"Director Wikipedia lookup error for {name}: {e}")
+            return None
 
     def _validate_youtube_url_live(self, url):
         """Check if a YouTube URL actually resolves to a playable video.
@@ -1515,13 +1535,8 @@ class DataGenerator:
         stats = scan_result['stats']
 
         # Load tracking and wall data
-        tracking_path = 'movie_tracking.json'
-        tracking_data = {}
-        tracking_movies = {}
-        if os.path.exists(tracking_path):
-            with open(tracking_path, 'r') as f:
-                tracking_data = json.load(f)
-            tracking_movies = tracking_data.get('movies', {})
+        tracking_data = self.storage.tracking_db.load_all()
+        tracking_movies = tracking_data.get('movies', {})
 
         wall_movies = []
         if os.path.exists('data.json'):
@@ -1677,10 +1692,7 @@ class DataGenerator:
 
         # Load tracking database for status reset
         tracking_path = 'movie_tracking.json'
-        tracking_data = {}
-        if os.path.exists(tracking_path):
-            with open(tracking_path, 'r') as f:
-                tracking_data = json.load(f)
+        tracking_data = self.storage.tracking_db.load_all()
 
         for movie in screening_movies:
             title = movie.get('title', 'Unknown')

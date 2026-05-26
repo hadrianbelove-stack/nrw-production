@@ -431,17 +431,15 @@ class NRWOrchestrator:
 
         try:
             # Get tracking database stats
-            with open('movie_tracking.json', 'r') as f:
-                db = json.load(f)
-
-            movies = db.get('movies', {})
-            stats['tracking'] = len([m for m in movies.values() if m.get('status') == 'tracking'])
-            stats['available'] = len([m for m in movies.values() if m.get('status') == 'available'])
-            stats['total'] = len(movies)
+            from pipeline.tracking_db import get_tracking_db
+            tdb = get_tracking_db()
+            stats['tracking'] = tdb.count('tracking')
+            stats['available'] = tdb.count('available')
+            stats['total'] = tdb.count()
 
         except Exception as e:
             stats['tracking_error'] = str(e)
-            self._track_error('Statistics', f'Error reading movie_tracking.json: {e}', severity='warning')
+            self._track_error('Statistics', f'Error reading tracking DB: {e}', severity='warning')
 
         try:
             # Get data.json stats

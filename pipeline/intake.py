@@ -159,11 +159,9 @@ class MovieIntake:
             self.logger.info(f"Intake passes: A={enable_pass_a}, B={enable_pass_b}")
 
         # Load existing tracking database
-        if os.path.exists('movie_tracking.json'):
-            with open('movie_tracking.json', 'r') as f:
-                db = json.load(f)
-        else:
-            db = {'movies': {}, 'last_update': None}
+        db = self.storage.tracking_db.load_all()
+        if 'last_update' not in db:
+            db['last_update'] = None
 
         existing_ids = set(db['movies'].keys())
         if debug:
@@ -308,12 +306,7 @@ class MovieIntake:
         print("="*60)
 
         # Load existing tracking database
-        if not os.path.exists('movie_tracking.json'):
-            print("⚠️  No movie_tracking.json found - creating new one")
-            db = {'movies': {}}
-        else:
-            with open('movie_tracking.json', 'r') as f:
-                db = json.load(f)
+        db = self.storage.tracking_db.load_all()
 
         existing_ids = set(db.get('movies', {}).keys())
 
@@ -458,11 +451,7 @@ class MovieIntake:
         self.logger.info("Apple Music Live intake - searching TMDB")
 
         # Load existing tracking database
-        if not os.path.exists('movie_tracking.json'):
-            db = {'movies': {}}
-        else:
-            with open('movie_tracking.json', 'r') as f:
-                db = json.load(f)
+        db = self.storage.tracking_db.load_all()
 
         existing_ids = set(db.get('movies', {}).keys())
         new_added = 0
@@ -860,11 +849,9 @@ class MovieIntake:
         min_runtime = intake_config.get('min_runtime', 60)
 
         # Load existing tracking database
-        if os.path.exists('movie_tracking.json'):
-            with open('movie_tracking.json', 'r') as f:
-                db = json.load(f)
-        else:
-            db = {'movies': {}, 'last_update': None}
+        db = self.storage.tracking_db.load_all()
+        if 'last_update' not in db:
+            db['last_update'] = None
 
         existing_ids = set(db['movies'].keys())
         all_intaked_movies = {}
