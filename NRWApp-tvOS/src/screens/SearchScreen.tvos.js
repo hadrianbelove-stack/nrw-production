@@ -14,7 +14,7 @@ import {
   Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Colors, Typography, Spacing, Dimensions } from '../constants/colors';
+import { Colors, Dimensions } from '../constants/colors';
 import MovieCard from '../components/MovieCard.tvos';
 
 const CARD_WIDTH = Dimensions.tvos.cardWidth;

@@ -42,7 +42,7 @@ const FILTERS = [
   { id: 'documentary', label: 'Docs' },
   { id: 'series', label: 'Miniseries' },
   { id: 'restorations', label: 'Reissues' },
-  { id: 'virtual-screenings', label: 'V. Screenings' },
+  { id: 'virtual-screenings', label: 'Virtual Screenings' },
   { id: 'pre-orders', label: 'Pre-Orders' },
 ];
 
@@ -103,12 +103,11 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) =>
   );
 });
 
-// Date Card Component - non-focusable visual divider (mobile design: teal bar + chevrons)
+// Date Card Component - non-focusable visual divider
 const DateCard = ({ dateParts }) => {
   const isPreOrder = dateParts.dayName === 'PRE-' || dateParts.dayName === 'PRE-ORDER';
   const barColor = isPreOrder ? '#7c3aed' : Colors.primary;
   const accentColor = isPreOrder ? '#7c3aed' : Colors.primary;
-  const chevronOpacities = [0.9, 0.7, 0.5, 0.3, 0.15];
 
   return (
     <View
@@ -132,14 +131,6 @@ const DateCard = ({ dateParts }) => {
           {!isPreOrder && dateParts.month ? (
             <Text style={styles.dateMonth}>{dateParts.month}</Text>
           ) : null}
-          {/* Cascading chevrons */}
-          <View style={styles.dateChevrons}>
-            {chevronOpacities.map((opacity, i) => (
-              <Text key={i} style={[styles.dateChevron, { color: accentColor, opacity }]}>
-                {'\u203A'}
-              </Text>
-            ))}
-          </View>
         </View>
       </View>
     </View>
@@ -741,9 +732,9 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   headerTitle: {
-    color: Colors.primary,
+    color: Colors.textPrimary,
     fontSize: 44,
-    fontWeight: '600',
+    fontWeight: '100',
     letterSpacing: 8,
   },
   filterRow: {
@@ -905,15 +896,6 @@ const styles = StyleSheet.create({
     color: '#888',
     letterSpacing: 2,
     marginTop: 4,
-  },
-  dateChevrons: {
-    flexDirection: 'row',
-    marginTop: 6,
-  },
-  dateChevron: {
-    fontSize: 40,
-    fontWeight: '800',
-    lineHeight: 40,
   },
   cardWrapper: {
     marginRight: CARD_GAP,

@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall</title>
-    <link rel="stylesheet" href="assets/styles.css?v=65">
+    <link rel="stylesheet" href="assets/styles.css?v=66">
 </head>
 <body>
     <header>
         <h1>THE NEW RELEASE WALL</h1>
         <div class="filters">
+            <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="staff-picks">NRW Picks</button>
             <button class="filter-btn" data-filter="studio">Studio</button>
             <button class="filter-btn" data-filter="indie">Indie</button>
@@ -18,7 +19,7 @@
             <button class="filter-btn" data-filter="documentary">Docs</button>
             <button class="filter-btn" data-filter="series">Miniseries</button>
             <button class="filter-btn" data-filter="restorations">Reissues</button>
-            <button class="filter-btn" data-filter="virtual-screenings">V. Screenings</button>
+            <button class="filter-btn" data-filter="virtual-screenings">Virtual Screenings</button>
             <button class="filter-btn" data-filter="pre-orders">Pre-Orders</button>
             <div class="search-container">
                 <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
@@ -37,32 +38,35 @@
 
     <!-- Fullscreen Poster Lightbox -->
     <div class="poster-lightbox" id="poster-lightbox">
-        <button class="lightbox-close" onclick="NRW.closeLightbox()" aria-label="Close">&times;</button>
         <div class="lightbox-content">
             <div class="lightbox-poster-wrap">
                 <div class="lightbox-poster-fallback" id="lightbox-poster-fallback"><span class="lightbox-poster-fallback-title" id="lightbox-poster-fallback-title"></span></div>
                 <img class="lightbox-poster" id="lightbox-poster" src="" alt="Movie poster">
                 <div class="lightbox-score-overlay" id="lightbox-score-overlay"></div>
             </div>
-            <div class="lightbox-info">
-                <div class="lightbox-screening-name" id="lightbox-screening-name" style="display:none;"></div>
-                <div class="lightbox-title-row">
-                    <div class="lightbox-title-side">
-                        <h2 class="lightbox-title" id="lightbox-title"></h2>
-                        <span class="staff-pick-badge" id="lightbox-staff-pick" style="display:none;">STAFF PICK</span>
+            <div class="lightbox-info-wrap">
+                <button class="lightbox-close" onclick="NRW.closeLightbox()" aria-label="Close">&times;</button>
+                <div class="lightbox-info">
+                    <div class="lightbox-screening-name" id="lightbox-screening-name" style="display:none;"></div>
+                    <div class="lightbox-title-row">
+                        <div class="lightbox-title-side">
+                            <h2 class="lightbox-title" id="lightbox-title"></h2>
+                            <span class="staff-pick-badge" id="lightbox-staff-pick" style="display:none;">STAFF PICK</span>
+                        </div>
+                        <span class="lightbox-date" id="lightbox-date"></span>
                     </div>
-                    <span class="lightbox-date" id="lightbox-date"></span>
+                    <div class="lightbox-meta" id="lightbox-meta"></div>
+                    <div class="lightbox-scores" id="lightbox-scores"></div>
+                    <div class="lightbox-pull-quotes" id="lightbox-pull-quotes" style="display:none;"></div>
+                    <p class="lightbox-synopsis" id="lightbox-synopsis"></p>
                 </div>
-                <div class="lightbox-meta" id="lightbox-meta"></div>
-                <div class="lightbox-scores" id="lightbox-scores"></div>
+                <div class="lightbox-scroll-fade"></div>
                 <div class="lightbox-buttons" id="lightbox-buttons"></div>
-                <div class="lightbox-pull-quotes" id="lightbox-pull-quotes" style="display:none;"></div>
-                <p class="lightbox-synopsis" id="lightbox-synopsis"></p>
             </div>
         </div>
     </div>
 
     <script src="assets/shared-config.js?v=3"></script>
-    <script src="assets/app.js?v=65"></script>
+    <script src="assets/app.js?v=66"></script>
 </body>
 </html>

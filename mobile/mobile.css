@@ -855,3 +855,8 @@ body {
 }
 .slide-left-enter { animation: slideLeftEnter 0.2s ease; }
 .slide-right-enter { animation: slideRightEnter 0.2s ease; }
+@keyframes seekFadeOut {
+  0% { opacity: 1; transform: translateY(-50%) scale(1); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-50%) scale(0.9); }
+}

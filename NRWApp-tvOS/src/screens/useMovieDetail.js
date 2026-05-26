@@ -3,7 +3,7 @@
  * Contains business logic shared between iOS and tvOS
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { getWatchLinks, getInfoLinks } from '../services/api';
 
 /**

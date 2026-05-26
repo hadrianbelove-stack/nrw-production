@@ -160,26 +160,39 @@ const NRW = {
 
     setupFilterEventListeners() {
         const filterButtons = document.querySelectorAll('.filter-btn');
-        filterButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const filter = e.target.dataset.filter;
+        const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+        const syncAllBtn = () => {
+            if (allBtn) allBtn.classList.toggle('active', this.activeFilters.size === 0);
+        };
 
-                // Toggle this filter on/off (multi-select)
-                if (this.activeFilters.has(filter)) {
-                    this.activeFilters.delete(filter);
-                    e.target.classList.remove('active');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.dataset.filter;
+                if (!filter) return;
+
+                if (filter === 'all') {
+                    this.activeFilters.clear();
+                    filterButtons.forEach(b => { if (b.dataset.filter !== 'all') b.classList.remove('active'); });
                 } else {
-                    this.activeFilters.add(filter);
-                    e.target.classList.add('active');
+                    if (this.activeFilters.has(filter)) {
+                        this.activeFilters.delete(filter);
+                        btn.classList.remove('active');
+                    } else {
+                        this.activeFilters.add(filter);
+                        btn.classList.add('active');
+                    }
                 }
 
+                syncAllBtn();
                 this.gridClearSelection();
-                this.displayedCount = this.loadIncrement; // Reset when changing filters
+                this.displayedCount = this.loadIncrement;
                 this.applyFilter();
                 this.updateFilterDescription();
                 this.renderWallWithMore();
             });
         });
+
+        syncAllBtn();
     },
 
     // Show/hide filter description based on active filters
@@ -307,18 +320,20 @@ const NRW = {
 
             // Then apply search filter if query exists
             if (query) {
-                const title = (movie.title || '').toLowerCase();
-                const director = (movie.crew?.director || '').toLowerCase();
-                const synopsis = (movie.synopsis || '').toLowerCase();
-                const genres = (movie.genres || []).join(' ').toLowerCase();
-                const country = (movie.country || '').toLowerCase();
+                const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+                const nq = norm(query);
+                const title = norm(movie.title || '');
+                const director = norm(movie.crew?.director || '');
+                const synopsis = norm(movie.synopsis || '');
+                const genres = norm((movie.genres || []).join(' '));
+                const country = norm(movie.country || '');
                 const year = String(movie.year || '');
 
-                return title.includes(query) ||
-                       director.includes(query) ||
-                       synopsis.includes(query) ||
-                       genres.includes(query) ||
-                       country.includes(query) ||
+                return title.includes(nq) ||
+                       director.includes(nq) ||
+                       synopsis.includes(nq) ||
+                       genres.includes(nq) ||
+                       country.includes(nq) ||
                        year.includes(query);
             }
 
@@ -505,8 +520,6 @@ const NRW = {
                 ? '<div class="restoration-badge">RESTORED</div>' : '';
             const isScreening = movie.categories?.is_virtual_screening;
             const screeningClass = isScreening ? ' screening-movie' : '';
-            const screeningTopBanner = isScreening
-                ? '<div class="screening-top-banner">VIRTUAL SCREENING</div>' : '';
             const festivalName = movie.virtual_screening_info?.screening_name;
             const badgeBar = isScreening
                 ? `<div class="badge-bar gold">${festivalName || '\u2605 VIRTUAL SCREENING \u2605'}</div>`
@@ -541,7 +554,6 @@ const NRW = {
                 <div class="movie-card">
                     <div class="card-inner">
                         <div class="card-front">
-                            ${screeningTopBanner}
                             ${streamingBadge}
                             ${restorationBadge}
                             <div class="poster-fallback"><span class="poster-fallback-title">${title}</span></div>
@@ -790,6 +802,20 @@ const NRW = {
                 document.body.style.overflow = '';
             }
         }
+    },
+
+    _trailerSpeedToast(rate) {
+        const existing = document.getElementById('trailer-speed-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'trailer-speed-toast';
+        toast.textContent = rate === 1 ? '1× Speed' : rate + '× Speed';
+        toast.style.cssText = 'position:absolute;top:16px;left:50%;transform:translateX(-50%);' +
+            'background:rgba(0,0,0,0.7);color:#fff;padding:6px 14px;border-radius:20px;' +
+            'font-size:0.9rem;pointer-events:none;z-index:10;transition:opacity 0.3s';
+        const modal = document.getElementById('trailer-modal');
+        if (modal) modal.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 1200);
     },
 
     // Open trailer reel — plays through hosted trailers from the last 7 days
@@ -1067,7 +1093,7 @@ const NRW = {
         if (movie.crew?.director) {
             const dirLabel = document.createElement('span');
             dirLabel.className = 'lightbox-crew-label';
-            dirLabel.textContent = 'D: ';
+            dirLabel.textContent = 'Dir: ';
             const dirWikiUrl = movie.links?.director_wiki;
             let dirName;
             if (dirWikiUrl) {
@@ -1100,7 +1126,7 @@ const NRW = {
 
         // Line 3: Country • Year • Runtime • Studio
         const detailParts = [];
-        if (movie.country) detailParts.push(movie.country);
+        if (movie.country) detailParts.push(NRW.abbreviateCountry(movie.country) || movie.country);
         if (movie.year) detailParts.push(movie.year);
         if (movie.runtime) detailParts.push(`${movie.runtime} min`);
         if (movie.studio) detailParts.push(movie.studio);
@@ -1163,7 +1189,7 @@ const NRW = {
             container.appendChild(makeBadge(movie.links.letterboxd, 'lb', lbText, 'assets/logos/services/letterboxd-dots.svg'));
         }
         if (movie.links?.wikipedia) {
-            container.appendChild(makeBadge(movie.links.wikipedia, 'wiki', 'Wiki'));
+            container.appendChild(makeBadge(movie.links.wikipedia, 'wiki', 'Wiki', 'assets/logos/wikipedia.svg'));
         }
     },
 
@@ -1423,6 +1449,23 @@ const NRW = {
                     this.trailerNav(-1);
                 } else if (e.key === 'ArrowRight') {
                     this.trailerNav(1);
+                } else if (e.key === ' ') {
+                    e.preventDefault();
+                    const vid = document.getElementById('trailer-video');
+                    if (vid) vid.paused ? vid.play() : vid.pause();
+                } else if (e.key === 'j' || e.key === 'J') {
+                    e.preventDefault();
+                    const vid = document.getElementById('trailer-video');
+                    if (vid) vid.currentTime = Math.max(0, vid.currentTime - 10);
+                } else if (e.key === 'l' || e.key === 'L') {
+                    e.preventDefault();
+                    const vid = document.getElementById('trailer-video');
+                    if (vid) {
+                        const rates = [1, 2, 4];
+                        const next = rates[(rates.indexOf(vid.playbackRate) + 1) % rates.length];
+                        vid.playbackRate = next;
+                        this._trailerSpeedToast(next);
+                    }
                 }
                 return;
             }

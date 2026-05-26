@@ -5,7 +5,7 @@
 
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {Colors, Spacing} from '../constants/colors';
+import {Colors} from '../constants/colors';
 
 export default function DateDividerCard({dateString, style}) {
   const isPreOrder = dateString === 'pre-order';

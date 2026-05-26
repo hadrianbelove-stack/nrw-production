@@ -37,5 +37,16 @@
     "items_found": 18,
     "items_fixed": 18,
     "notes": "Removed 18 dead methods (9 private + 9 unused public 'tools'). Tidied 2 stale docstrings. Excluded all @bp.route Flask handlers (live). config/constants/JS audits all clean. Rationale: user works via Claude, so unused 'manual tools' are noise, not insurance (git history preserves them)."
+  },
+  {
+    "timestamp": "2026-05-26T00:59:10",
+    "target": "native apps (tvOS + iOS RN JS) \u2014 dead files/imports/exports",
+    "files_scanned": [
+      "NRWApp-tvOS/src/**/*.js (33 files)",
+      "NRWApp-iOS/src/**/*.js"
+    ],
+    "items_found": 9,
+    "items_fixed": 9,
+    "notes": "Deleted MovieShelf.tvos.js (304-line orphaned component). Removed 7 unused imports + dead InfoButton export (~94 lines) and its 3 orphaned styles. All 6 touched JS files pass node --check. 38 other 'dead export' candidates left intact \u2014 they are live functions used internally in service/utility modules (sentry/analytics/focus/cache/links), i.e. over-exported API surface, not dead code. Android/Roku not scanned."
   }
 ]

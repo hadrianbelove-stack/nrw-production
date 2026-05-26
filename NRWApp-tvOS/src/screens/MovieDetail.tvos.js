@@ -15,6 +15,8 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   findNodeHandle,
+  AccessibilityInfo,
+  InteractionManager,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {
@@ -114,7 +116,7 @@ const streamBtnStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.8)',
+    borderColor: 'transparent',
   },
   focused: {
     borderColor: Colors.focusBorderHighlight,
@@ -133,7 +135,7 @@ const streamBtnStyles = StyleSheet.create({
     letterSpacing: 1,
   },
   darkServiceBorder: {
-    borderColor: '#444',
+    borderColor: 'rgba(255,255,255,0.2)',
   },
 });
 
@@ -181,7 +183,7 @@ const VodButton = ({
     >
       <Animated.View style={[
         vodBtnStyles.button,
-        NEEDS_BORDER.includes(svcKey) && { borderColor: '#444' },
+        NEEDS_BORDER.includes(svcKey) && { borderColor: 'rgba(255,255,255,0.2)' },
         isFocused && vodBtnStyles.focused,
         { transform: [{ scale: scaleAnim }] },
       ]}>
@@ -211,7 +213,7 @@ const vodBtnStyles = StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.8)',
+    borderColor: 'transparent',
   },
   focused: {
     borderColor: Colors.focusBorderHighlight,
@@ -690,7 +692,7 @@ const MovieDetailTvOS = () => {
           <ScrollView
             ref={scrollViewRef}
             style={styles.detailsScroll}
-            showsVerticalScrollIndicator={true}
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.detailsScrollContent}
           >
             {/* 1. Title row with date */}
@@ -812,7 +814,7 @@ const MovieDetailTvOS = () => {
             {/* 7. Synopsis */}
             {movie.synopsis && (
               <View style={styles.synopsisContainer}>
-                <Text style={styles.synopsis} numberOfLines={6}>
+                <Text style={styles.synopsis} numberOfLines={6} ellipsizeMode="tail">
                   {renderMarkdownSpans(movie.synopsis)}
                   {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
                     <Text style={styles.screeningCallout}>
@@ -835,8 +837,6 @@ const MovieDetailTvOS = () => {
                   ref={trailerRefCallback}
                   onPress={() => setTrailerVisible(true)}
                   hasTVPreferredFocus={true}
-                  nextFocusLeft={trailerHandle}
-                  nextFocusRight={trailerHandle}
                 />
               ) : (
                 <View style={{ flex: 1 }} />
@@ -937,6 +937,13 @@ const MovieDetailTvOS = () => {
               setCurrentIndex(lastIndex);
               setMovie(movieList[lastIndex]);
             }
+            // After AVPlayer native view is gone, explicitly restore focus to the
+            // trailer button so tvOS doesn't leave focus in a dead/invisible element.
+            if (trailerHandle) {
+              InteractionManager.runAfterInteractions(() => {
+                AccessibilityInfo.setAccessibilityFocus(trailerHandle);
+              });
+            }
           }}
         />
       )}
@@ -956,7 +963,7 @@ const styles = StyleSheet.create({
   },
   backdropOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(10, 10, 10, 0.85)',
+    backgroundColor: 'rgba(10, 10, 10, 0.65)',
   },
   content: {
     flex: 1,
@@ -1151,8 +1158,8 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingRight: 12,
     paddingVertical: 10,
-    borderLeftWidth: 2,
-    borderLeftColor: 'rgba(255,255,255,0.15)',
+    borderLeftWidth: 3,
+    borderLeftColor: 'rgba(0, 212, 170, 0.6)',
     backgroundColor: 'rgba(255,255,255,0.04)',
     borderRadius: 6,
   },

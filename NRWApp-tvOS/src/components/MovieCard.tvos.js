@@ -14,7 +14,7 @@ import {
   AccessibilityInfo,
 } from 'react-native';
 import { Colors, Typography, Spacing, Dimensions } from '../constants/colors';
-import { PARALLAX_PROPERTIES, FOCUS_STYLES } from '../utils/focusManager.tvos';
+import { FOCUS_STYLES } from '../utils/focusManager.tvos';
 
 // Decode HTML entities (e.g. &#x27; → ')
 const decodeHtml = (str) => str.replace(/&#x27;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"');
@@ -328,20 +328,10 @@ const MovieCard = forwardRef(({
             </View>
           )}
 
-          {/* Staff Pick border - red box around poster */}
-          {movie.featured && <View style={styles.featuredBorder} />}
-
           {/* Staff Pick strip - bottom red banner */}
           {movie.featured && (
             <View style={styles.featuredStrip}>
               <Text style={styles.featuredStripText}>STAFF PICK</Text>
-            </View>
-          )}
-
-          {/* Virtual screening top banner */}
-          {movie.categories?.is_virtual_screening && !movie.featured && (
-            <View style={styles.screeningTopBanner}>
-              <Text style={styles.screeningTopBannerText}>VIRTUAL SCREENING</Text>
             </View>
           )}
 
@@ -440,12 +430,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.caption - 2,
     fontWeight: '600',
   },
-  featuredBorder: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 12,
-    borderWidth: 3,
-    borderColor: '#E50914',
-  },
   featuredStrip: {
     position: 'absolute',
     bottom: 0,
@@ -462,25 +446,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.caption - 2,
     fontWeight: '800',
     letterSpacing: 1.5,
-  },
-  screeningTopBanner: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(255, 215, 0, 0.92)',
-    paddingVertical: 3,
-    paddingHorizontal: 6,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    alignItems: 'center',
-  },
-  screeningTopBannerText: {
-    color: '#000',
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
   },
   screeningRibbon: {
     position: 'absolute',

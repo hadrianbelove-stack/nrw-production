@@ -301,14 +301,15 @@ const NRWMobile = {
 
             // Search filter
             if (this.searchQuery) {
-                const q = this.searchQuery;
-                const title = (movie.title || '').toLowerCase();
-                const director = (movie.crew?.director || movie.director || '').toLowerCase();
-                const synopsis = (movie.synopsis || '').toLowerCase();
-                const genres = (movie.genres || []).join(' ').toLowerCase();
-                const country = (movie.country || '').toLowerCase();
+                const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+                const q = norm(this.searchQuery);
+                const title = norm(movie.title || '');
+                const director = norm(movie.crew?.director || movie.director || '');
+                const synopsis = norm(movie.synopsis || '');
+                const genres = norm((movie.genres || []).join(' '));
+                const country = norm(movie.country || '');
                 const year = String(movie.year || '');
-                const cast = (movie.crew?.cast || []).join(' ').toLowerCase();
+                const cast = norm((movie.crew?.cast || []).join(' '));
 
                 return title.includes(q) || director.includes(q) ||
                        synopsis.includes(q) || genres.includes(q) ||
@@ -1183,6 +1184,43 @@ const NRWMobile = {
         document.addEventListener('keydown', function onKey(e) {
             if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onKey); }
         });
+
+        // Double-tap left/right on video to seek ±10 seconds
+        const video = overlay.querySelector('video');
+        if (video) {
+            let lastTap = 0, lastSide = null;
+            video.addEventListener('touchend', (e) => {
+                e.stopPropagation();
+                const now = Date.now();
+                const x = e.changedTouches[0].clientX;
+                const rect = video.getBoundingClientRect();
+                const side = x < rect.left + rect.width / 2 ? 'left' : 'right';
+                if (now - lastTap < 300 && side === lastSide) {
+                    const delta = side === 'left' ? -10 : 10;
+                    video.currentTime = Math.max(0, Math.min(video.duration || 0, video.currentTime + delta));
+                    this._mobileSeekFlash(overlay, side, delta);
+                    lastTap = 0;
+                } else {
+                    lastTap = now;
+                    lastSide = side;
+                }
+            });
+        }
+    },
+
+    _mobileSeekFlash(overlay, side, delta) {
+        const existing = overlay.querySelector('.seek-flash');
+        if (existing) existing.remove();
+        const flash = document.createElement('div');
+        flash.className = 'seek-flash';
+        flash.textContent = delta < 0 ? '« 10s' : '10s »';
+        flash.style.cssText = 'position:absolute;top:50%;transform:translateY(-50%);' +
+            (side === 'left' ? 'left:12%' : 'right:12%') + ';' +
+            'color:#fff;font-size:1.1rem;font-weight:600;pointer-events:none;' +
+            'background:rgba(0,0,0,0.5);padding:8px 14px;border-radius:20px;' +
+            'animation:seekFadeOut 0.6s forwards';
+        overlay.appendChild(flash);
+        setTimeout(() => flash.remove(), 600);
     },
 
     // ===== HELPERS =====

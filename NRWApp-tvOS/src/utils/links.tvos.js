@@ -3,7 +3,7 @@
  * Handles Universal Links, app launching, and affiliate integration
  */
 
-import { Linking, Platform, Alert } from 'react-native';
+import { Linking, Alert } from 'react-native';
 
 // Service app identifiers for deep linking
 // Note: Some schemes may need verification on actual devices

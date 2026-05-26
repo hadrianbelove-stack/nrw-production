@@ -214,101 +214,6 @@ function getDefaultLabel(service, type) {
   return `${action} ${serviceName}`;
 }
 
-// Info button variant for trailer, RT, Wikipedia
-export const InfoButton = ({
-  type,
-  label,
-  onPress,
-  hasTVPreferredFocus = false,
-  testID,
-}) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handleFocus = useCallback(() => {
-    setIsFocused(true);
-    Animated.spring(scaleAnim, {
-      toValue: 1.1,
-      friction: 8,
-      tension: 100,
-      useNativeDriver: true,
-    }).start();
-  }, [scaleAnim]);
-
-  const handleBlur = useCallback(() => {
-    setIsFocused(false);
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 8,
-      tension: 100,
-      useNativeDriver: true,
-    }).start();
-  }, [scaleAnim]);
-
-  const getIcon = () => {
-    switch (type) {
-      case 'trailer':
-        return '▶';
-      case 'rotten_tomatoes':
-        return '🍅';
-      case 'wikipedia':
-        return 'W';
-      default:
-        return '?';
-    }
-  };
-
-  const defaultLabels = {
-    trailer: 'Watch Trailer',
-    rotten_tomatoes: 'Rotten Tomatoes',
-    wikipedia: 'Wikipedia',
-  };
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      hasTVPreferredFocus={hasTVPreferredFocus}
-      activeOpacity={0.9}
-      accessible={true}
-      accessibilityLabel={label || defaultLabels[type]}
-      accessibilityRole="button"
-      testID={testID}
-    >
-      <Animated.View
-        style={[
-          styles.infoButton,
-          {
-            backgroundColor: isFocused
-              ? Colors.backgroundTertiary
-              : 'transparent',
-            borderColor: isFocused ? Colors.primary : Colors.textMuted,
-            transform: [{ scale: scaleAnim }],
-          },
-        ]}
-      >
-        <Text
-          style={[
-            styles.infoIcon,
-            { color: isFocused ? Colors.primary : Colors.textSecondary },
-          ]}
-        >
-          {getIcon()}
-        </Text>
-        <Text
-          style={[
-            styles.infoLabel,
-            { color: isFocused ? Colors.primary : Colors.textSecondary },
-          ]}
-        >
-          {label || defaultLabels[type]}
-        </Text>
-      </Animated.View>
-    </TouchableOpacity>
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -336,23 +241,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.button,
     fontWeight: '700',
     letterSpacing: 1,
-  },
-  infoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.tvos.md,
-    paddingVertical: Spacing.tvos.sm,
-    borderRadius: 8,
-    borderWidth: 2,
-    marginRight: Spacing.tvos.md,
-  },
-  infoIcon: {
-    fontSize: Typography.tvos.body,
-    marginRight: Spacing.tvos.sm,
-  },
-  infoLabel: {
-    fontSize: Typography.tvos.caption,
-    fontWeight: '500',
   },
 });
 
