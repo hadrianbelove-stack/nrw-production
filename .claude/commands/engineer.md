@@ -27,7 +27,11 @@ Give an overall grade with 1-sentence justification.
 - Bullet list of concerns, risks, or weaknesses
 
 ### 6. Recommendations
-Your specific advice on whether to proceed, modify, or reconsider.
+**Goal: tell the user exactly what to fix to reach an A before shipping.**
+- For every Con listed above, provide a specific, concrete fix (file name, what to change, one sentence why).
+- If the work is already an A, say so explicitly and list nothing.
+- Never say "ship it" without first confirming there are zero Cons.
+- Format as a numbered list matching the Con numbers above so the user can tick them off.
 
 ### 7. Alternative Approaches (if applicable)
 If there are meaningfully different ways to achieve the same goal, briefly outline 2-3 options with trade-offs. Skip this section if the current approach is clearly the right one.

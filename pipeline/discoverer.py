@@ -1407,7 +1407,9 @@ class ProviderDiscoverer:
                         print(f"  📚 {title} — Wikipedia link added")
 
                 # --- Director Wikipedia fill (only if missing) ---
+                # Small sleep to avoid back-to-back Wikidata calls within the same movie
                 if director and not links.get('director_wiki'):
+                    time.sleep(0.15)
                     director_wiki_url = self.host.find_director_wikipedia_url(director)
                     if director_wiki_url:
                         if 'links' not in movie:

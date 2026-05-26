@@ -247,6 +247,7 @@ class MovieEnricher:
         # Track enrichment success/failure for detailed logging
         enrichment_results = {
             'wikipedia': 'not_attempted',
+            'director_wiki': 'not_attempted',
             'trailer': 'not_attempted',
             'rt_score': 'not_attempted',
             'letterboxd_score': 'not_attempted',
@@ -269,6 +270,15 @@ class MovieEnricher:
         wikidata_distributors = getattr(self.host, 'last_wikidata_distributors', [])
         if wikidata_distributors:
             result['wikidata_distributors'] = wikidata_distributors
+
+        # Director Wikipedia link
+        if wiki_director:
+            director_wiki_url = self._run_enrichment_source(
+                'director_wiki',
+                lambda: self.host.find_director_wikipedia_url(wiki_director),
+                enrichment_results, title, year)
+            if director_wiki_url:
+                result['links']['director_wiki'] = director_wiki_url
 
         # Trailer link
         trailer_result = self._run_enrichment_source(
