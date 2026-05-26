@@ -80,17 +80,15 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     }
   }, [currentIndex, findNextTrailerIndex, flashArrow, leftArrowOpacity]);
 
-  // Close handler — RELEASE the native player before unmount, not just pause it.
+  // Close handler — pause imperatively then unmount the Video component entirely.
   // react-native-video leaks the AVPlayer on tvOS unmount (issue #2281): a paused-
-  // but-not-released instance keeps both the audio AND a focused native view alive,
-  // which is why audio persists and SELECT keeps hitting the trailer. Setting `closing`
-  // flips the Video `source` to undefined, which tears down the native instance;
-  // pause() is an imperative belt-and-suspenders. Unmount one beat later.
+  // but-not-released instance keeps both the audio AND a focused native view alive.
+  // pause() signals the player to stop; setting `closing` removes <Video> from the
+  // render tree, which tears down the native UIView and releases tvOS focus.
   const handleClose = useCallback(() => {
     if (closing) return;
-    setClosing(true);
-    setPaused(true);
     videoRef.current?.pause();
+    setClosing(true);
     setTimeout(() => onClose(currentIndex), 100);
   }, [closing, currentIndex, onClose]);
 
@@ -120,14 +118,14 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
 
   return (
     <View style={styles.container}>
-      {/* Video player */}
-      {isMP4 && (
+      {/* Video player — unmounted entirely on close so the native UIView is removed */}
+      {isMP4 && !closing && (
         <Video
           ref={videoRef}
-          source={closing ? undefined : { uri: trailerUrl }}
+          source={{ uri: trailerUrl }}
           style={styles.video}
           resizeMode="contain"
-          paused={paused || closing}
+          paused={paused}
           controls={false}
           playInBackground={false}
           playWhenInactive={false}
