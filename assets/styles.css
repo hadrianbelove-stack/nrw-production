@@ -1250,6 +1250,10 @@ header h1 {
 .lightbox-scores .score-badge.mc .score-logo {
     filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1);
 }
+.lightbox-scores .score-badge.wiki .score-logo {
+    filter: invert(1);
+    height: 22px;
+}
 
 .lightbox-synopsis {
     color: #ccc;
