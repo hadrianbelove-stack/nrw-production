@@ -7,7 +7,7 @@ Every extraction is verified as a verbatim substring of the original.
 
 import re
 import logging
-from typing import Dict, Optional
+from typing import Dict
 
 from gemini_scraper.base import GeminiFinderBase
 

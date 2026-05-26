@@ -6,7 +6,6 @@ from datetime import datetime
 from typing import Optional
 
 from admin.config import HEALTH_METRICS_FILE, DATA_FILE, FEATURED_FILE
-from admin.logging_setup import logger
 from admin.utils import load_json
 
 

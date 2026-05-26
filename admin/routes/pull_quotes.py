@@ -8,7 +8,6 @@ from file_lock import safe_write_json
 from admin.config import (
     DATA_FILE, PULL_QUOTES_CACHE, PULL_QUOTES_GEMINI_CACHE, TASTE_PROFILE_FILE,
 )
-from admin.logging_setup import logger
 from admin.utils import load_json
 
 bp = Blueprint('pull_quotes', __name__)

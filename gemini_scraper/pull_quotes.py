@@ -17,7 +17,6 @@ clickable link. Manual curation (admin UI) is the final filter.
 import re
 import time
 import logging
-import urllib.parse
 from typing import Optional, Dict
 
 from gemini_scraper.base import GeminiFinderBase
@@ -406,32 +405,6 @@ Best pull quote:"""
 
         return quotes
 
-    def _dedupe_quotes(self, quotes: list) -> list:
-        """Deduplicate quotes from RT and MC by critic name.
-
-        When the same critic appears in both sources, prefer whichever
-        has a review_url. If both have URLs, prefer MC (tends to have
-        cleaner URLs).
-        """
-        seen = {}
-        for q in quotes:
-            critic_key = q.get('critic', '').lower().strip()
-            if not critic_key:
-                # No critic name — keep it
-                seen[id(q)] = q
-                continue
-
-            if critic_key in seen:
-                existing = seen[critic_key]
-                # Prefer the one with a review URL
-                if q.get('review_url') and not existing.get('review_url'):
-                    seen[critic_key] = q
-                elif q.get('review_url') and existing.get('review_url') and q.get('source') == 'mc_critic':
-                    seen[critic_key] = q
-            else:
-                seen[critic_key] = q
-
-        return list(seen.values())
 
     def _parse_quotes(self, text: str, source_type: str = 'critic') -> list:
         """Parse quote lines from Gemini response text (used for Letterboxd quotes)."""
@@ -457,72 +430,6 @@ Best pull quote:"""
             })
         return quotes
 
-    def _validate_lb_urls(self, quotes: list) -> list:
-        """Validate Letterboxd quote URLs with Playwright.
-
-        Loads each review_url and checks that the quote text appears on the page.
-        Clears URLs that fail but keeps the quote itself.
-        """
-        to_validate = [q for q in quotes if q.get('review_url')]
-        if not to_validate:
-            return quotes
-
-        # Filter out Google grounding redirect URLs
-        for q in to_validate[:]:
-            if 'vertexaisearch.cloud.google.com' in q.get('review_url', ''):
-                q['review_url'] = ''
-                to_validate.remove(q)
-
-        if not to_validate:
-            return quotes
-
-        validated = 0
-        cleared = 0
-
-        try:
-            from playwright.sync_api import sync_playwright
-            with sync_playwright() as p:
-                browser = p.chromium.launch(headless=True)
-                page = browser.new_page()
-
-                for q in to_validate:
-                    url = q['review_url']
-
-                    # Use a multi-word fragment from the quote for matching
-                    words = q.get('text', '').split()
-                    if len(words) >= 4:
-                        mid = len(words) // 2
-                        search_fragment = ' '.join(words[max(0, mid - 2):mid + 2]).lower()
-                    else:
-                        search_fragment = q.get('text', '').lower()
-
-                    try:
-                        resp = page.goto(url, timeout=10000, wait_until='domcontentloaded')
-                        if resp and resp.status >= 400:
-                            logger.info(f"LB URL returned {resp.status}: {url}")
-                            q['review_url'] = ''
-                            cleared += 1
-                            continue
-
-                        page_text = page.inner_text('body').lower()
-                        if search_fragment and search_fragment in page_text:
-                            validated += 1
-                        else:
-                            logger.info(f"LB quote text not found on page: {url}")
-                            q['review_url'] = ''
-                            cleared += 1
-                    except Exception as e:
-                        logger.info(f"LB URL validation error for {url}: {e}")
-                        q['review_url'] = ''
-                        cleared += 1
-
-                browser.close()
-        except Exception as e:
-            logger.warning(f"Playwright LB validation failed: {e}")
-
-        if validated or cleared:
-            logger.info(f"LB URL validation: {validated} verified, {cleared} cleared")
-        return quotes
 
     def _scrape_letterboxd_reviews(self, title: str, year: int, lb_url: str = None) -> list:
         """Scrape popular reviews from Letterboxd.

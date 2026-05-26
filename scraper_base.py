@@ -309,42 +309,6 @@ class PlaywrightScraperBase:
             self._cleanup_browser()
             raise
 
-    def _init_browser_local(self):
-        """
-        Initialize local browser instance as fallback.
-
-        Used when shared manager is unavailable.
-        """
-        try:
-            from playwright.sync_api import sync_playwright
-
-            self.playwright = sync_playwright().start()
-
-            headless = self.config.get('headless', True)
-            if self.scraper_config:
-                headless = self.scraper_config.get('headless', headless)
-
-            self.browser = self.playwright.chromium.launch(headless=headless)
-
-            self.context = self.browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                locale='en-US'
-            )
-
-            timeout_seconds = self.scraper_config.get('timeout', 15)
-            self.context.set_default_timeout(timeout_seconds * 1000)
-
-            self.page = self.context.new_page()
-
-            self._log("Browser initialized locally (fallback mode)")
-            self.counters['start_count'] += 1
-
-        except Exception as e:
-            self._log(f"Local browser initialization failed: {e}", level='error')
-            self.counters['error_count'] += 1
-            self._cleanup_browser()
-            raise
 
     def _cleanup_browser(self):
         """Clean up browser resources."""
@@ -395,25 +359,6 @@ class PlaywrightScraperBase:
                 time.sleep(sleep_time)
         self.last_scrape_time = time.time()
 
-    def _take_screenshot(self, name: str):
-        """
-        Take a screenshot for debugging purposes.
-
-        Args:
-            name: Base name for the screenshot file
-        """
-        if not self.screenshots_enabled or not self.page:
-            return
-
-        try:
-            os.makedirs(self.screenshot_dir, exist_ok=True)
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            filename = f"{name}_{timestamp}.png"
-            filepath = os.path.join(self.screenshot_dir, filename)
-            self.page.screenshot(path=filepath)
-            self._log(f"Screenshot saved: {filename}", level='debug')
-        except Exception as e:
-            self._log(f"Failed to take screenshot: {e}", level='warning')
 
     def record_error(self, error_type: str):
         """Record an error by type for diagnostic breadcrumbs.

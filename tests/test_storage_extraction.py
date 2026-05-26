@@ -10,7 +10,6 @@ import json
 import sys
 import tempfile
 import shutil
-from datetime import datetime
 
 # Test colors
 GREEN = '\033[92m'

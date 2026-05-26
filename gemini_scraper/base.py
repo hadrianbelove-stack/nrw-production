@@ -8,7 +8,6 @@ _load_config(), _get_gemini_api_key().
 import load_env  # Load .env into os.environ
 import json
 import os
-import re
 import time
 import logging
 import random
@@ -230,9 +229,6 @@ class GeminiFinderBase:
             logger.error(f"Failed to initialize Gemini for {self._finder_name}: {e}")
             return False
 
-    def get_error_log(self):
-        """Return error log for diagnostic breadcrumbs."""
-        return list(self._error_log)
 
     def get_stats(self) -> Dict[str, int]:
         """Return statistics about finder usage."""

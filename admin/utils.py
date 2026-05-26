@@ -7,7 +7,6 @@ import yaml
 from datetime import datetime
 from typing import Optional, Union
 
-from file_lock import safe_write_json
 from admin.config import PENDING_CHANGES_FLAG
 from admin.logging_setup import logger
 

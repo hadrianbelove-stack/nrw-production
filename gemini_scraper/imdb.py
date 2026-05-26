@@ -9,7 +9,7 @@ from Google's Knowledge Panel, which updates faster than the daily dataset.
 import re
 import time
 import logging
-from typing import Optional, Dict
+from typing import Optional
 
 from gemini_scraper.base import GeminiFinderBase
 

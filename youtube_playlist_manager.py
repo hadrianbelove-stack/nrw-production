@@ -14,13 +14,11 @@ Setup:
 """
 
 import json
-import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 import re
 import argparse
-import logging
 
 try:
     from google.oauth2.credentials import Credentials
@@ -223,80 +221,6 @@ class YouTubePlaylistManager:
 
         return added
 
-    def clear_playlist(self, playlist_id):
-        """
-        Remove all videos from a playlist
-
-        Args:
-            playlist_id: Playlist to clear
-
-        Returns:
-            Number of videos removed
-        """
-        self._ensure_client()
-        self.logger.info(f"🗑️  Clearing playlist {playlist_id}...")
-
-        # Get all items in playlist
-        items = []
-        next_page_token = None
-
-        while True:
-            request = self.youtube.playlistItems().list(
-                part="id",
-                playlistId=playlist_id,
-                maxResults=50,
-                pageToken=next_page_token
-            )
-            response = request.execute()
-            items.extend(response['items'])
-
-            next_page_token = response.get('nextPageToken')
-            if not next_page_token:
-                break
-
-        # Delete each item
-        for item in items:
-            self.youtube.playlistItems().delete(id=item['id']).execute()
-
-        self.logger.info(f"✅ Cleared {len(items)} videos from playlist")
-        return len(items)
-
-    def update_playlist_metadata(self, playlist_id, title=None, description=None):
-        """
-        Update playlist title and/or description
-
-        Args:
-            playlist_id: Playlist to update
-            title: New title (optional)
-            description: New description (optional)
-        """
-        self._ensure_client()
-        # Get current playlist
-        request = self.youtube.playlists().list(
-            part="snippet,status",
-            id=playlist_id
-        )
-        response = request.execute()
-
-        if not response['items']:
-            raise ValueError(f"Playlist {playlist_id} not found")
-
-        playlist = response['items'][0]
-
-        # Update fields
-        if title:
-            playlist['snippet']['title'] = title[:150]
-        if description:
-            playlist['snippet']['description'] = description[:5000]
-
-        # Save changes
-        request = self.youtube.playlists().update(
-            part="snippet,status",
-            body=playlist
-        )
-        request.execute()
-
-        print(f"✅ Updated playlist metadata")
 
     @staticmethod
     def extract_youtube_id(url):

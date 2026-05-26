@@ -14,7 +14,6 @@ import os
 import sys
 import json
 import tempfile
-import shutil
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path

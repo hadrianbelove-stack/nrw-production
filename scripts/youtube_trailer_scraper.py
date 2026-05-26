@@ -108,31 +108,6 @@ class YouTubeTrailerScraper:
             self._cleanup_browser()
             raise
 
-    def _init_browser_local(self):
-        """Initialize browser using local lifecycle"""
-        try:
-            # Start Playwright locally
-            self.playwright = sync_playwright().start()
-
-            # Launch browser
-            self.browser = self.playwright.chromium.launch(headless=self.headless)
-
-            # Create context with viewport and user agent
-            self.context = self.browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            )
-
-            # Set default timeout
-            self.context.set_default_timeout(10000)  # 10 seconds
-
-            # Create page
-            self.page = self.context.new_page()
-
-        except Exception as e:
-            print(f"Browser initialization failed: {e}")
-            self._cleanup_browser()
-            raise
 
     def _cleanup_browser(self):
         """Clean up browser resources"""

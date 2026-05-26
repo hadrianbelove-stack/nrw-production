@@ -23,7 +23,6 @@ import logging
 import re
 import unicodedata
 from typing import Dict, Optional, List, Any
-from datetime import datetime
 
 
 class JustWatchClient:
@@ -604,38 +603,6 @@ class JustWatchClient:
             'watch_links': watch_links
         }
 
-    def _select_vod_offers(
-        self,
-        offers: List[Dict],
-        affiliate_tag: Optional[str] = None
-    ) -> List[Dict]:
-        """
-        Select best VOD offers — one per service, deduplicated.
-        Returns an array of offer dicts.
-        """
-        # Deduplicate: keep first (best) offer per service
-        seen_services = set()
-        unique_offers = []
-        for offer in offers:
-            svc = offer['service'].lower()
-            if svc not in seen_services:
-                seen_services.add(svc)
-                unique_offers.append(offer)
-
-        result = []
-        for offer in unique_offers:
-            link = offer['link']
-            # Add affiliate tag to Amazon links
-            if affiliate_tag and 'amazon' in link.lower():
-                separator = '&' if '?' in link else '?'
-                if 'tag=' not in link:
-                    link = f"{link}{separator}tag={affiliate_tag}"
-            entry = {'service': offer['service'], 'link': link}
-            if offer.get('price'):
-                entry['price'] = offer['price']
-            result.append(entry)
-
-        return result
 
     def _merge_vod_offers(
         self,

@@ -6,7 +6,7 @@ Inherits from PlaywrightScraperBase for shared browser management.
 Scrapes streaming platform pages to find direct watch links.
 """
 
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 import time
 import urllib.parse
 import os
@@ -14,7 +14,7 @@ import random
 import re
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from constants import PLACEHOLDER_ASINS, get_scraper_config
 
 from scraper_base import PlaywrightScraperBase
@@ -81,13 +81,6 @@ class StreamingPlatformScraper(PlaywrightScraperBase):
         log_method = getattr(logger, level, logger.info)
         log_method(f"[StreamingPlatformScraper] {message}")
 
-    def _save_asin_cache(self):
-        """Save Amazon ASIN cache to disk - alias for base _save_cache."""
-        self._save_cache()
-
-    def _load_asin_cache(self):
-        """Load Amazon ASIN cache - returns current cache (already loaded by base)."""
-        return self.cache
 
     def _retry_with_backoff(self, fn):
         """Retry function with exponential backoff."""

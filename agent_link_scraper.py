@@ -6,7 +6,7 @@ Inherits from PlaywrightScraperBase for shared functionality:
 - _log(), _log_metrics() - overridden to use print instead of logger
 - _load_cache(), _save_cache()
 - _cleanup_old_screenshots()
-- _init_browser(), _init_browser_shared(), _init_browser_local()
+- _init_browser(), _init_browser_shared()
 - _cleanup_browser()
 - _enforce_rate_limit()
 - counters initialization
@@ -18,7 +18,7 @@ Includes platform-specific scrapers:
 - HuluScraper
 """
 
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 import time
 import json
 import os

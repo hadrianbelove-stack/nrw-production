@@ -289,36 +289,6 @@ class LetterboxdScraper:
         except (ValueError, TypeError):
             return True
 
-    def clear_stale_cache(self):
-        """Remove expired 'not found' entries so they get re-checked.
-
-        Only clears entries where url=None AND older than cache_ttl_days.
-        Entries with valid URLs are kept (scores refresh on TTL).
-
-        Returns:
-            int: Number of entries cleared
-        """
-        cleared = 0
-        keys_to_remove = []
-        for key, entry in self.cache.items():
-            if not entry.get('url') and self._is_cache_expired(entry):
-                keys_to_remove.append(key)
-
-        for key in keys_to_remove:
-            del self.cache[key]
-            cleared += 1
-
-        if cleared:
-            self._save_cache()
-            self._log(f"Cleared {cleared} stale 'not found' cache entries", level='info')
-        return cleared
-
-    def clear_cache_entry(self, title, year):
-        """Remove a specific entry from cache (for re-scraping)."""
-        cache_key = f"{title}_{year}"
-        if cache_key in self.cache:
-            del self.cache[cache_key]
-            self._save_cache()
 
     def close(self):
         """No-op for HTTP-based scraper (no browser to close)."""

@@ -7,5 +7,35 @@
     ],
     "items_found": 13,
     "items_fixed": 13
+  },
+  {
+    "timestamp": "2026-05-25T20:46:06",
+    "target": "everything (full repo)",
+    "files_scanned": [
+      "all *.py (excl museum_legacy/venv; generator.py skipped \u2014 cleaned 2026-05-19)",
+      "assets/*.js,*.css",
+      "mobile/*.js,*.css",
+      "index.html",
+      "mobile/index.html",
+      "admin/templates/index.html"
+    ],
+    "items_found": 46,
+    "items_fixed": 42,
+    "notes": "Unused imports only. Clean: 0 frontend debug code, 0 orphan files, 0 dead CSS. Excluded 3 load-bearing import-as-test cases + generator.py (7-day rule)."
+  },
+  {
+    "timestamp": "2026-05-25T21:34:38",
+    "target": "everything (full repo) \u2014 deep pass: dead methods + config/constants/JS audit",
+    "files_scanned": [
+      "all *.py dead-method scan (~50 files)",
+      "config.yaml keys",
+      "constants.py",
+      "assets/app.js",
+      "mobile/mobile.js",
+      "assets/shared-config.js"
+    ],
+    "items_found": 18,
+    "items_fixed": 18,
+    "notes": "Removed 18 dead methods (9 private + 9 unused public 'tools'). Tidied 2 stale docstrings. Excluded all @bp.route Flask handlers (live). config/constants/JS audits all clean. Rationale: user works via Claude, so unused 'manual tools' are noise, not insurance (git history preserves them)."
   }
 ]

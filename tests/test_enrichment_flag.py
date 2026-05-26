@@ -10,7 +10,6 @@ import os
 import sys
 import json
 import tempfile
-import logging
 from unittest.mock import patch, MagicMock
 
 # Add project root to path

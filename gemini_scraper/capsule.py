@@ -620,60 +620,6 @@ class GeminiCapsuleWriter(GeminiFinderBase):
 
         return ''
 
-    def _fetch_mc_summary(self, mc_url: str) -> str:
-        """Fetch Metacritic critic summary by loading the page with Playwright."""
-        if not mc_url:
-            return ''
-
-        try:
-            from playwright.sync_api import sync_playwright
-            with sync_playwright() as p:
-                browser = p.chromium.launch(headless=True)
-                page = browser.new_page()
-
-                resp = page.goto(mc_url, timeout=15000, wait_until='domcontentloaded')
-                if not resp or resp.status >= 400:
-                    browser.close()
-                    return ''
-
-                time.sleep(1)
-
-                summary = ''
-
-                # Try the summary/description element
-                try:
-                    el = page.query_selector('.c-productionDetailsGame_description, .c-productionDetails_description, .c-movieDetails_description')
-                    if el:
-                        summary = el.inner_text().strip()
-                except Exception:
-                    pass
-
-                # Fallback: look for critic summary in page text
-                if not summary:
-                    try:
-                        body = page.inner_text('body')
-                        # Look for the critic summary section
-                        match = re.search(
-                            r"(?:Critic Reviews|Critics Say|Summary)\s*[:\-—]?\s*(.+?)(?:\n\n|User Score|Must-Play)",
-                            body, re.DOTALL
-                        )
-                        if match:
-                            summary = match.group(1).strip()
-                            summary = summary.split('\n')[0].strip()
-                    except Exception:
-                        pass
-
-                browser.close()
-
-                if summary and len(summary) > 10:
-                    self.stats['mc_summary_fetched'] += 1
-                    logger.info(f"Fetched MC summary: {len(summary)} chars")
-                    return summary
-
-        except Exception as e:
-            logger.warning(f"MC summary fetch failed: {e}")
-
-        return ''
 
     # -------------------------------------------------------------------------
     # Prompt building

@@ -7,7 +7,7 @@ RT-specific: stealth scripts (anti-bot), search + URL construction,
 score extraction waterfall (JSON-LD → media-scorecard → CSS → regex).
 """
 
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 import time
 import json
 import os

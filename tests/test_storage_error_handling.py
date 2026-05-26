@@ -10,8 +10,7 @@ import pytest
 import json
 import os
 import logging
-from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

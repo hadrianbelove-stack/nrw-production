@@ -13,7 +13,6 @@ This includes testing:
 """
 
 import sys
-import re
 import time
 import asyncio
 import argparse

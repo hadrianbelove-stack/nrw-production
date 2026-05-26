@@ -11,7 +11,7 @@ import time
 import json
 import logging
 from contextlib import contextmanager
-from typing import Any, Union, Dict, List
+from typing import Union, Dict, List
 
 logger = logging.getLogger(__name__)
 

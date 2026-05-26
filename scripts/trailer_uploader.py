@@ -13,10 +13,7 @@ Requires Python 3.10+ (matches trailer_downloader.py requirement).
 """
 
 import argparse
-import json
 import os
-import sys
-import time
 
 from b2sdk.v2 import B2Api, InMemoryAccountInfo
 

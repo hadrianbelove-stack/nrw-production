@@ -8,7 +8,7 @@ will actually become available for digital purchase/rental.
 import re
 import time
 import logging
-from typing import Optional, Dict, Any
+from typing import Optional, Dict
 
 from gemini_scraper.base import GeminiFinderBase
 from utils.datetime_utils import is_cache_fresh

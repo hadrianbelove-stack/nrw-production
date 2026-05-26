@@ -6,11 +6,9 @@ Tests that enrichment.py works correctly and integrates with generate_data.py.
 """
 
 import os
-import json
 import sys
 import tempfile
 import shutil
-from datetime import datetime
 
 # Test colors
 GREEN = '\033[92m'

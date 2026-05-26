@@ -369,12 +369,6 @@ class ValidationService:
         """
         return self.stats.copy()
 
-    def reset_stats(self) -> None:
-        """Reset validation statistics counters."""
-        self.stats = {
-            'schema_validation_warnings': 0,
-            'schema_validation_passes': 0
-        }
 
     def _validate_metadata_fields(self, movie: Dict, movie_context: str, file_path: str) -> bool:
         """

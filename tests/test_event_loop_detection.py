@@ -2,7 +2,6 @@
 """
 Minimal test to detect exactly where the event loop is created
 """
-import sys
 import asyncio
 
 def check_event_loop(label):

@@ -19,7 +19,7 @@ import tempfile
 import time
 from datetime import datetime
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -39,7 +39,7 @@ class WikipediaScraperMigrated(PlaywrightScraperBase):
       - _log(), _log_metrics()
       - _load_cache(), _save_cache()
       - _cleanup_old_screenshots()
-      - _init_browser(), _init_browser_shared(), _init_browser_local()
+      - _init_browser(), _init_browser_shared()
       - _cleanup_browser()
       - stats and counters initialization
       - screenshot directory setup

@@ -2,13 +2,13 @@
 
 import os
 
-from flask import Blueprint, request, jsonify, send_file, send_from_directory, Response
+from flask import Blueprint, jsonify, send_file, send_from_directory, Response
 from typing import Union
 
-from admin.config import DATA_FILE, FEATURED_FILE, SITE_ROOT
+from admin.config import FEATURED_FILE, SITE_ROOT
 from admin.logging_setup import logger
 from admin.health import compute_delta_summary
-from admin.utils import load_json, has_pending_changes
+from admin.utils import has_pending_changes
 
 bp = Blueprint('metadata', __name__)
 
