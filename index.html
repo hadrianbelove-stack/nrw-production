@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall</title>
-    <link rel="stylesheet" href="assets/styles.css?v=67">
+    <link rel="stylesheet" href="assets/styles.css?v=68">
 </head>
 <body>
     <header>
-        <h1>THE NEW RELEASE WALL</h1>
+        <div class="title-row">
+            <h1>THE NEW RELEASE WALL</h1>
+            <div class="slop-toggle-wrap" id="slop-free-toggle">
+                <span class="slop-label" id="slop-label">WITH SLOP</span>
+                <div class="slop-track" id="slop-track">
+                    <div class="slop-thumb"></div>
+                </div>
+            </div>
+        </div>
         <div class="filters">
             <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="staff-picks">NRW Picks</button>
@@ -21,13 +29,6 @@
             <button class="filter-btn" data-filter="restorations">Reissues</button>
             <button class="filter-btn" data-filter="virtual-screenings">Virtual Screenings</button>
             <button class="filter-btn" data-filter="pre-orders">Pre-Orders</button>
-            <div class="filter-divider"></div>
-            <div class="slop-toggle-wrap" id="slop-free-toggle">
-                <span class="slop-label" id="slop-label">WITH SLOP</span>
-                <div class="slop-track" id="slop-track">
-                    <div class="slop-thumb"></div>
-                </div>
-            </div>
             <div class="search-container">
                 <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
                 <button id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
