@@ -49,6 +49,8 @@ fun FilterChips(
     onFilterToggled: (FilterCategory) -> Unit,
     slopFree: Boolean = false,
     onSlopFreeToggle: () -> Unit = {},
+    hideFest: Boolean = false,
+    onHideFestToggle: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     TvLazyRow(
@@ -84,6 +86,13 @@ fun FilterChips(
                 onClick = onSlopFreeToggle
             )
         }
+
+        item {
+            FestTogglePill(
+                hideFest = hideFest,
+                onClick = onHideFestToggle
+            )
+        }
     }
 }
 
@@ -104,7 +113,7 @@ private fun SlopTogglePill(
         slopFree -> SlopTeal
         else -> SlopTealDim
     }
-    val textColor = if (slopFree) SlopTeal else Color.White.copy(alpha = 0.35f)
+    val textColor = if (slopFree) SlopTeal else SlopTeal.copy(alpha = 0.45f)
 
     Surface(
         onClick = onClick,
@@ -129,6 +138,53 @@ private fun SlopTogglePill(
     ) {
         Text(
             text = if (slopFree) "SLOP FREE" else "WITH SLOP",
+            color = textColor,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+        )
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun FestTogglePill(
+    hideFest: Boolean,
+    onClick: () -> Unit
+) {
+    var isFocused by remember { mutableStateOf(false) }
+
+    val backgroundColor = if (hideFest) SlopTeal.copy(alpha = 0.15f) else Color.Transparent
+    val borderColor = when {
+        isFocused -> SlopTeal
+        hideFest -> SlopTeal
+        else -> SlopTealDim
+    }
+    val textColor = if (hideFest) SlopTeal else SlopTeal.copy(alpha = 0.45f)
+
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.onFocusChanged { isFocused = it.isFocused },
+        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(14.dp)),
+        colors = ClickableSurfaceDefaults.colors(
+            containerColor = backgroundColor,
+            focusedContainerColor = backgroundColor,
+            pressedContainerColor = backgroundColor
+        ),
+        border = ClickableSurfaceDefaults.border(
+            border = androidx.tv.material3.Border(
+                border = BorderStroke(1.dp, borderColor),
+                shape = RoundedCornerShape(14.dp)
+            ),
+            focusedBorder = androidx.tv.material3.Border(
+                border = BorderStroke(2.dp, SlopTeal),
+                shape = RoundedCornerShape(14.dp)
+            )
+        ),
+        scale = ClickableSurfaceDefaults.scale(focusedScale = 1.1f, pressedScale = 0.95f)
+    ) {
+        Text(
+            text = if (hideFest) "NO FEST" else "WITH FEST",
             color = textColor,
             fontSize = 10.sp,
             fontWeight = FontWeight.SemiBold,

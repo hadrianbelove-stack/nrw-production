@@ -104,13 +104,23 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) =>
 });
 
 // Slop Toggle Button - TV remote focusable
-const SlopToggleButton = ({ slopFree, onPress }) => {
+// iOS-style track+thumb toggle — matches the website design
+const MetaToggle = forwardRef(({ isActive, offLabel, onLabel, accessibilityLabel, onPress, nextFocusUp }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
+  const thumbAnim = useRef(new Animated.Value(isActive ? 1 : 0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.timing(thumbAnim, {
+      toValue: isActive ? 1 : 0,
+      duration: 220,
+      useNativeDriver: true,
+    }).start();
+  }, [isActive, thumbAnim]);
 
   const handleFocus = useCallback(() => {
     setIsFocused(true);
-    Animated.timing(scaleAnim, { toValue: 1.1, duration: 150, useNativeDriver: true }).start();
+    Animated.timing(scaleAnim, { toValue: 1.08, duration: 150, useNativeDriver: true }).start();
   }, [scaleAnim]);
 
   const handleBlur = useCallback(() => {
@@ -118,31 +128,38 @@ const SlopToggleButton = ({ slopFree, onPress }) => {
     Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
   }, [scaleAnim]);
 
+  const thumbTranslate = thumbAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 36],
+  });
+
   return (
     <TouchableOpacity
+      ref={ref}
       onPress={onPress}
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
       accessible={true}
-      accessibilityLabel={slopFree ? 'Slop Free mode active' : 'Showing all films including slop'}
+      accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
+      nextFocusUp={nextFocusUp}
     >
-      <Animated.View
-        style={[
-          styles.slopButton,
-          slopFree && styles.slopButtonActive,
-          isFocused && styles.slopButtonFocused,
-          { transform: [{ scale: scaleAnim }] },
-        ]}
-      >
-        <Text style={[styles.slopButtonText, slopFree && styles.slopButtonTextActive]}>
-          {slopFree ? 'SLOP FREE' : 'WITH SLOP'}
+      <Animated.View style={[styles.metaToggleWrap, { transform: [{ scale: scaleAnim }] }]}>
+        <Text style={[styles.metaToggleLabel, isActive && styles.metaToggleLabelActive]}>
+          {isActive ? onLabel : offLabel}
         </Text>
+        <View style={[
+          styles.metaToggleTrack,
+          isActive && styles.metaToggleTrackActive,
+          isFocused && styles.metaToggleTrackFocused,
+        ]}>
+          <Animated.View style={[styles.metaToggleThumb, { transform: [{ translateX: thumbTranslate }] }]} />
+        </View>
       </Animated.View>
     </TouchableOpacity>
   );
-};
+});
 
 // Date Card Component - non-focusable visual divider
 const DateCard = ({ dateParts }) => {
@@ -295,13 +312,23 @@ const TrailersCard = ({ playlistUrl, nextFocusUp }) => {
 const HomeScreenTvOS = () => {
   const navigation = useNavigation();
   const flatListRef = useRef(null);
+  const initialFocusDone = useRef(false);  // Prevents hasTVPreferredFocus re-firing on listData changes
   const [headerNodeHandle, setHeaderNodeHandle] = useState(null);
+  const [toggleNodeHandle, setToggleNodeHandle] = useState(null);
 
-  // Callback ref for first filter button - sets node handle for focus navigation
+  // Callback ref for first filter button
   const setFirstFilterRef = useCallback((ref) => {
     if (ref) {
       const handle = findNodeHandle(ref);
       setHeaderNodeHandle(handle);
+    }
+  }, []);
+
+  // Callback ref for slop toggle — this is what movie cards navigate UP to
+  const setFirstToggleRef = useCallback((ref) => {
+    if (ref) {
+      const handle = findNodeHandle(ref);
+      setToggleNodeHandle(handle);
     }
   }, []);
 
@@ -318,7 +345,8 @@ const HomeScreenTvOS = () => {
 
   // Local state - multi-select filters (Set of active filter IDs)
   const [activeFilters, setActiveFilters] = useState(new Set());
-  const [slopFree, setSlopFree] = useState(false);
+  const [slopFree, setSlopFree] = useState(true);
+  const [hideFest, setHideFest] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
 
@@ -385,6 +413,11 @@ const HomeScreenTvOS = () => {
       movies = movies.filter(m => !m.is_slop);
     }
 
+    // Hide-fest mode: hide virtual screenings
+    if (hideFest) {
+      movies = movies.filter(m => !m.categories?.is_virtual_screening);
+    }
+
     // If no filters selected, show all (pre-orders only shown when explicitly filtered or during search)
     if (activeFilters.size === 0) {
       if (searchQuery) return movies;
@@ -432,7 +465,7 @@ const HomeScreenTvOS = () => {
       }
       return false;
     });
-  }, [filteredMovies, activeFilters]);
+  }, [filteredMovies, activeFilters, slopFree, hideFest]);
 
   // Build flat list data with date markers interspersed
   // Each date marker takes one grid cell (same size as movie card)
@@ -573,12 +606,16 @@ const HomeScreenTvOS = () => {
     }
   }, []);
 
+  // Only fire hasTVPreferredFocus on first data load — prevents re-triggering on filter changes
+  const giveInitialFocus = !initialFocusDone.current;
+  if (giveInitialFocus) initialFocusDone.current = true;
+
   // Render item (date marker, trailers button, or movie card)
   const renderItem = useCallback(
     ({ item, index }) => {
-      // Items in first row should navigate up to header buttons
+      // Items in first row should navigate up to slop toggle (then up again → filter chips)
       const isFirstRow = index < NUM_COLUMNS;
-      const focusUpTarget = isFirstRow ? headerNodeHandle : undefined;
+      const focusUpTarget = isFirstRow ? toggleNodeHandle : undefined;
 
       // NEW TRAILERS button
       if (item.type === 'trailers') {
@@ -628,7 +665,7 @@ const HomeScreenTvOS = () => {
             onSelect={() => handleMovieSelect(item.movie)}
             onLongPress={() => handleOpenFullscreen(item.movie)}
             onFocus={() => handleMovieFocus(item.movie, index)}
-            hasTVPreferredFocus={index === (SHOW_TRAILERS_CARD ? 2 : 1)} // First movie: after [trailers,date] when shown, else after [date]
+            hasTVPreferredFocus={giveInitialFocus && index === (SHOW_TRAILERS_CARD ? 2 : 1)}
             testID={`movie-card-${index}`}
             nextFocusUp={focusUpTarget}
             nextFocusLeft={nextFocusLeft}
@@ -637,7 +674,7 @@ const HomeScreenTvOS = () => {
         </View>
       );
     },
-    [formatDateParts, handleMovieSelect, handleMovieFocus, handleOpenFullscreen, headerNodeHandle, itemNodeHandles, listData, registerItemRef]
+    [formatDateParts, handleMovieSelect, handleMovieFocus, handleOpenFullscreen, headerNodeHandle, toggleNodeHandle, itemNodeHandles, listData, registerItemRef, giveInitialFocus]
   );
 
   // Key extractor
@@ -695,42 +732,62 @@ const HomeScreenTvOS = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header with title on left, filters and search on right */}
+      {/* Header: two rows — top has title/filters/search, bottom has toggles (closest to movies) */}
       <View style={styles.header}>
-        <View style={styles.titleRow}>
+        {/* Top row */}
+        <View style={styles.headerTopRow}>
           <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
-          <SlopToggleButton slopFree={slopFree} onPress={() => setSlopFree(v => !v)} />
-        </View>
-        <View style={styles.filterRow}>
+          <View style={styles.filterRow}>
             {FILTERS.map((filter, index) => (
               <FilterButton
                 key={filter.id}
-                ref={index === 0 ? setFirstFilterRef : undefined}  // First button gets callback ref
+                ref={index === 0 ? setFirstFilterRef : undefined}
                 filter={filter}
                 isActive={activeFilters.has(filter.id)}
                 onPress={() => handleFilterChange(filter.id)}
               />
             ))}
           </View>
-        <View style={[styles.searchContainer, searchFocused && styles.searchContainerFocused]}>
-          <Text style={styles.searchIcon}>⌕</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search..."
-            placeholderTextColor="rgba(255,255,255,0.4)"
-            value={searchQuery}
-            onChangeText={updateSearchQuery}
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="search"
+          <View style={[styles.searchContainer, searchFocused && styles.searchContainerFocused]}>
+            <Text style={styles.searchIcon}>⌕</Text>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search..."
+              placeholderTextColor="rgba(255,255,255,0.4)"
+              value={searchQuery}
+              onChangeText={updateSearchQuery}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="search"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
+                <Text style={styles.searchClearText}>✕</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+        {/* Toggle row — sits directly above movies, gets focus first on up-press */}
+        <View style={styles.toggleRow}>
+          <MetaToggle
+            ref={setFirstToggleRef}
+            isActive={slopFree}
+            offLabel="WITH SLOP"
+            onLabel="SLOP FREE"
+            accessibilityLabel={slopFree ? 'Slop Free active' : 'Showing all films'}
+            onPress={() => setSlopFree(v => !v)}
+            nextFocusUp={headerNodeHandle}
           />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
-              <Text style={styles.searchClearText}>✕</Text>
-            </TouchableOpacity>
-          )}
+          <MetaToggle
+            isActive={hideFest}
+            offLabel="WITH FEST"
+            onLabel="NO FEST"
+            accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
+            onPress={() => setHideFest(v => !v)}
+            nextFocusUp={headerNodeHandle}
+          />
         </View>
       </View>
 
@@ -776,17 +833,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   header: {
+    flexDirection: 'column',
+    paddingHorizontal: 68,
+    paddingTop: 20,
+    paddingBottom: 8,
+  },
+  headerTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 68,
-    paddingTop: 20,
-    paddingBottom: 12,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 24,
+    marginBottom: 10,
   },
   headerTitle: {
     color: Colors.textPrimary,
@@ -863,30 +919,52 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginHorizontal: 4,
   },
-  slopButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: 'transparent',
+  toggleRow: {
+    flexDirection: 'row',
+    gap: 32,
+    paddingBottom: 4,
+  },
+  metaToggleWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  metaToggleLabel: {
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    color: 'rgba(0,212,170,0.45)',
+  },
+  metaToggleLabelActive: {
+    color: '#00d4aa',
+  },
+  metaToggleTrack: {
+    width: 80,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#1a1a1a',
     borderWidth: 1,
     borderColor: 'rgba(0,212,170,0.3)',
+    justifyContent: 'center',
+    paddingHorizontal: 5,
   },
-  slopButtonActive: {
-    backgroundColor: 'rgba(0,212,170,0.15)',
+  metaToggleTrackActive: {
+    backgroundColor: '#00d4aa',
     borderColor: '#00d4aa',
   },
-  slopButtonFocused: {
-    borderColor: '#00d4aa',
-    borderWidth: 2,
+  metaToggleTrackFocused: {
+    borderColor: 'rgba(255,255,255,0.85)',
+    borderWidth: 2.5,
   },
-  slopButtonText: {
-    color: 'rgba(255,255,255,0.35)',
-    fontSize: 16,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-  },
-  slopButtonTextActive: {
-    color: '#00d4aa',
+  metaToggleThumb: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
   },
   listContent: {
     // Center the 5-column grid: (1920 - 5*344 - 4*16) / 2 = 68px

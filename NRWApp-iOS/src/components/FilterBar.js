@@ -20,7 +20,7 @@ const FILTERS = [
   {id: 'pre-orders', label: 'Pre-Orders'},
 ];
 
-export default function FilterBar({activeFilters, onFilterChange, slopFree, onSlopFreeChange}) {
+export default function FilterBar({activeFilters, onFilterChange, slopFree, onSlopFreeChange, hideFest, onHideFestChange}) {
   return (
     <View style={styles.container}>
       <ScrollView
@@ -42,6 +42,15 @@ export default function FilterBar({activeFilters, onFilterChange, slopFree, onSl
           activeOpacity={0.7}>
           <Text style={[styles.filterText, styles.slopText, slopFree && styles.slopTextActive]}>
             {slopFree ? 'SLOP FREE' : 'WITH SLOP'}
+          </Text>
+        </TouchableOpacity>
+        <View style={styles.divider} />
+        <TouchableOpacity
+          style={[styles.filterButton, styles.slopButton, hideFest && styles.slopButtonActive]}
+          onPress={() => onHideFestChange(!hideFest)}
+          activeOpacity={0.7}>
+          <Text style={[styles.filterText, styles.slopText, hideFest && styles.slopTextActive]}>
+            {hideFest ? 'NO FEST' : 'WITH FEST'}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -114,7 +123,7 @@ const styles = StyleSheet.create({
     borderColor: '#00d4aa',
   },
   slopText: {
-    color: 'rgba(255,255,255,0.35)',
+    color: 'rgba(0,212,170,0.45)',
     fontWeight: '600',
     fontSize: Typography.caption,
     letterSpacing: 0.5,

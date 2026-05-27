@@ -15,8 +15,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   findNodeHandle,
-  AccessibilityInfo,
-  InteractionManager,
+  BackHandler,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import {
@@ -544,21 +543,22 @@ const MovieDetailTvOS = () => {
   const [trailerVisible, setTrailerVisible] = useState(false);
 
   // Trailer button ref → node handle for nextFocusUp on watch buttons
+  // trailerButtonRef also used to restore focus after trailer closes (setNativeProps)
   const [trailerHandle, setTrailerHandle] = useState(null);
+  const trailerButtonRef = useRef(null);
   const trailerRefCallback = useCallback((ref) => {
+    trailerButtonRef.current = ref;
     if (ref) setTrailerHandle(findNodeHandle(ref));
   }, []);
 
-  // Prevent MENU/Back from popping the detail screen while trailer is playing.
-  // The TrailerPlayer handles MENU internally to close itself; without this guard
-  // React Navigation's native back handler also fires and pops the whole screen.
+  // Prevent MENU from popping MovieDetail while trailer is playing.
+  // BackHandler intercepts at the native level (more reliable than beforeRemove on tvOS).
+  // TrailerPlayer handles MENU via its own TVEventHandler to close the overlay.
   React.useEffect(() => {
     if (!trailerVisible) return;
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      e.preventDefault();
-    });
-    return unsubscribe;
-  }, [navigation, trailerVisible]);
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => sub.remove();
+  }, [trailerVisible]);
 
   // Fade in on mount
   React.useEffect(() => {
@@ -937,12 +937,10 @@ const MovieDetailTvOS = () => {
               setCurrentIndex(lastIndex);
               setMovie(movieList[lastIndex]);
             }
-            // After AVPlayer native view is gone, explicitly restore focus to the
-            // trailer button so tvOS doesn't leave focus in a dead/invisible element.
-            if (trailerHandle) {
-              InteractionManager.runAfterInteractions(() => {
-                AccessibilityInfo.setAccessibilityFocus(trailerHandle);
-              });
+            // Restore TV remote focus to the trailer button after the overlay unmounts.
+            // setNativeProps is the correct tvOS focus API; AccessibilityInfo is for VoiceOver.
+            if (trailerButtonRef.current) {
+              trailerButtonRef.current.setNativeProps({ hasTVPreferredFocus: true });
             }
           }}
         />

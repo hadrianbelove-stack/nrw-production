@@ -21,7 +21,8 @@ data class HomeUiState(
     val filteredMovies: List<Movie> = emptyList(),
     val groupedMovies: Map<String, List<Movie>> = emptyMap(),
     val activeFilters: Set<FilterCategory> = emptySet(),
-    val slopFree: Boolean = false,
+    val slopFree: Boolean = true,
+    val hideFest: Boolean = false,
     val searchQuery: String = "",
     val playlistUrl: String? = null
 )
@@ -96,6 +97,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         applyFilters()
     }
 
+    fun toggleHideFest() {
+        _uiState.value = _uiState.value.copy(hideFest = !_uiState.value.hideFest)
+        applyFilters()
+    }
+
     /**
      * Apply filters and search to movies
      */
@@ -105,6 +111,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         if (state.slopFree) {
             filtered = filtered.filter { !it.isSlop }
+        }
+
+        if (state.hideFest) {
+            filtered = filtered.filter { it.categories?.isVirtualScreening != true }
         }
 
         if (state.searchQuery.isNotBlank()) {

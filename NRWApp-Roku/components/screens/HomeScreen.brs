@@ -19,7 +19,8 @@ Sub Init()
     m.allMovies = []
     m.filteredMovies = []
     m.activeFilters = []
-    m.slopFree = false
+    m.slopFree = true
+    m.hideFest = false
     m.focusedArea = "grid"  ' "filter", "grid", or "detail"
 
     ' Set up observers
@@ -68,6 +69,10 @@ Sub onMoviesLoaded()
         return
     end if
 
+    ' Sync filter bar visual state before applying filters
+    m.filterBar.slopFree = m.slopFree
+    m.filterBar.hideFest = m.hideFest
+
     ' Apply initial filter
     ApplyFilters()
 
@@ -101,10 +106,25 @@ Sub ApplyFilters()
                 filtered.Push(movie)
             end if
         end for
-        m.filteredMovies = filtered
-    else
-        m.filteredMovies = movies
+        movies = filtered
     end if
+
+    ' Hide-fest mode: hide virtual screenings
+    if m.hideFest
+        filtered = []
+        for each movie in movies
+            isVS = false
+            if movie.categories <> invalid
+                isVS = (movie.categories.is_virtual_screening = true)
+            end if
+            if NOT isVS
+                filtered.Push(movie)
+            end if
+        end for
+        movies = filtered
+    end if
+
+    m.filteredMovies = movies
 
     ' Group by date
     grouped = GroupMoviesByDate(m.filteredMovies)
@@ -159,6 +179,14 @@ Sub onFilterSelected()
     if filterId = "slop_free"
         m.slopFree = NOT m.slopFree
         m.filterBar.slopFree = m.slopFree
+        ApplyFilters()
+        return
+    end if
+
+    ' Fest toggle is separate from category filters
+    if filterId = "hide_fest"
+        m.hideFest = NOT m.hideFest
+        m.filterBar.hideFest = m.hideFest
         ApplyFilters()
         return
     end if

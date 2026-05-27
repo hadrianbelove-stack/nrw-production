@@ -10,7 +10,8 @@ const NRW = {
     staffPicks: [],  // Renamed from featuredMovies
     latestPlaylistUrl: null,  // YouTube trailers playlist URL
     activeFilters: new Set(),  // Multi-select: Set of active filter IDs
-    slopFree: false,           // When true, hide movies marked is_slop
+    slopFree: true,            // When true, hide movies marked is_slop
+    hideFest: false,           // When true, hide virtual screening movies
     searchQuery: '',     // Current search query
     displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
     loadIncrement: CONFIG.moviesPerPage,   // How many to add when clicking "More"
@@ -212,11 +213,35 @@ const NRW = {
         // Slop-free toggle
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
+            // Initialize visual state
+            slopToggle.classList.toggle('active', this.slopFree);
+            const slopLabelInit = document.getElementById('slop-label');
+            if (slopLabelInit) slopLabelInit.textContent = this.slopFree ? 'SLOP-FREE' : 'WITH SLOP';
+
             slopToggle.addEventListener('click', () => {
                 this.slopFree = !this.slopFree;
                 slopToggle.classList.toggle('active', this.slopFree);
                 const slopLabel = document.getElementById('slop-label');
                 if (slopLabel) slopLabel.textContent = this.slopFree ? 'SLOP-FREE' : 'WITH SLOP';
+                this.displayedCount = this.loadIncrement;
+                this.applyFilter();
+                this.renderWallWithMore();
+            });
+        }
+
+        // Fest (virtual screenings) toggle
+        const festToggle = document.getElementById('fest-toggle');
+        if (festToggle) {
+            // Initialize visual state
+            festToggle.classList.toggle('active', this.hideFest);
+            const festLabelInit = document.getElementById('fest-label');
+            if (festLabelInit) festLabelInit.textContent = this.hideFest ? 'NO FEST' : 'WITH FEST';
+
+            festToggle.addEventListener('click', () => {
+                this.hideFest = !this.hideFest;
+                festToggle.classList.toggle('active', this.hideFest);
+                const festLabel = document.getElementById('fest-label');
+                if (festLabel) festLabel.textContent = this.hideFest ? 'NO FEST' : 'WITH FEST';
                 this.displayedCount = this.loadIncrement;
                 this.applyFilter();
                 this.renderWallWithMore();
@@ -309,6 +334,9 @@ const NRW = {
         this.filteredMovies = this.allMovies.filter(movie => {
             // Slop-free mode: hide flagged films
             if (this.slopFree && movie.is_slop) return false;
+
+            // Hide-fest mode: hide virtual screenings
+            if (this.hideFest && movie.categories?.is_virtual_screening) return false;
 
             // Pre-orders only appear when the pre-orders filter is active OR search is active
             if (movie._is_preorder && !filters.has('pre-orders') && !query) return false;

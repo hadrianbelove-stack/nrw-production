@@ -125,7 +125,9 @@ fun HomeScreen(
                         activeFilters = uiState.activeFilters,
                         onFilterToggled = { viewModel.toggleFilter(it) },
                         slopFree = uiState.slopFree,
-                        onSlopFreeToggle = { viewModel.toggleSlopFree() }
+                        onSlopFreeToggle = { viewModel.toggleSlopFree() },
+                        hideFest = uiState.hideFest,
+                        onHideFestToggle = { viewModel.toggleHideFest() }
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))

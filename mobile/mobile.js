@@ -13,7 +13,8 @@ const NRWMobile = {
 
     // UI state
     activeFilters: new Set(),
-    slopFree: false,
+    slopFree: true,
+    hideFest: false,
     searchQuery: '',
     currentView: 0,
     currentMovieIndex: 0,
@@ -182,11 +183,36 @@ const NRWMobile = {
         // Slop-free toggle (separate from category pills)
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
+            // Initialize visual state
+            slopToggle.classList.toggle('active', this.slopFree);
+            const slopLabelInit = document.getElementById('slop-label');
+            if (slopLabelInit) slopLabelInit.textContent = this.slopFree ? 'SLOP-FREE' : 'WITH SLOP';
+
             slopToggle.addEventListener('click', () => {
                 this.slopFree = !this.slopFree;
                 slopToggle.classList.toggle('active', this.slopFree);
                 const slopLabel = document.getElementById('slop-label');
                 if (slopLabel) slopLabel.textContent = this.slopFree ? 'SLOP-FREE' : 'WITH SLOP';
+                this.applyFilter();
+                this.buildGrid();
+                this.setView(0);
+                this.dom.gridView.scrollTop = 0;
+            });
+        }
+
+        // Fest (virtual screenings) toggle
+        const festToggle = document.getElementById('fest-toggle');
+        if (festToggle) {
+            // Initialize visual state
+            festToggle.classList.toggle('active', this.hideFest);
+            const festLabelInit = document.getElementById('fest-label');
+            if (festLabelInit) festLabelInit.textContent = this.hideFest ? 'NO FEST' : 'WITH FEST';
+
+            festToggle.addEventListener('click', () => {
+                this.hideFest = !this.hideFest;
+                festToggle.classList.toggle('active', this.hideFest);
+                const festLabel = document.getElementById('fest-label');
+                if (festLabel) festLabel.textContent = this.hideFest ? 'NO FEST' : 'WITH FEST';
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);
@@ -272,6 +298,9 @@ const NRWMobile = {
         this.filteredMovies = this.allMovies.filter(movie => {
             // Slop-free mode: hide flagged films
             if (this.slopFree && movie.is_slop) return false;
+
+            // Hide-fest mode: hide virtual screenings
+            if (this.hideFest && movie.categories?.is_virtual_screening) return false;
 
             // Pre-orders only appear when the pre-orders filter is active OR search is active
             if (movie._is_preorder && !filters.has('pre-orders') && !this.searchQuery) return false;

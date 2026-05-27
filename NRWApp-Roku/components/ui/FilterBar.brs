@@ -8,7 +8,7 @@ Sub Init()
     m.focusIndicator = m.top.FindNode("focusIndicator")
 
     ' Filter chip IDs in order
-    m.filterIds = ["staff_picks", "studio", "indie", "exploitation", "foreign", "documentary", "series", "restorations", "virtual_screenings", "pre_orders", "slop_free"]
+    m.filterIds = ["staff_picks", "studio", "indie", "exploitation", "foreign", "documentary", "series", "restorations", "virtual_screenings", "pre_orders", "slop_free", "hide_fest"]
 
     ' Chip widths for focus indicator positioning
     m.chipWidths = {
@@ -23,6 +23,7 @@ Sub Init()
         pre_orders: 110
         exploitation: 120
         slop_free: 120
+        hide_fest: 110
     }
 
     ' Store chip references
@@ -63,6 +64,7 @@ End Sub
 Sub UpdateChipStyles()
     activeFilters = m.top.activeFilters
     slopFree = m.top.slopFree
+    hideFest = m.top.hideFest
 
     for each filterId in m.filterIds
         chipBg = m.chipBgs[filterId]
@@ -76,8 +78,22 @@ Sub UpdateChipStyles()
                 chipLabel.text = "SLOP FREE"
             else
                 chipBg.color = "0x0D0D0DFF"
-                chipLabel.color = "0x59595959"
+                chipLabel.color = "0x00D4AA73"
                 chipLabel.text = "WITH SLOP"
+            end if
+            continue for
+        end if
+
+        ' Fest toggle has its own visual treatment
+        if filterId = "hide_fest"
+            if hideFest
+                chipBg.color = "0x00342AFF"
+                chipLabel.color = "0x00D4AAFF"
+                chipLabel.text = "NO FEST"
+            else
+                chipBg.color = "0x0D0D0DFF"
+                chipLabel.color = "0x00D4AA73"
+                chipLabel.text = "WITH FEST"
             end if
             continue for
         end if

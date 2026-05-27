@@ -80,16 +80,14 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     }
   }, [currentIndex, findNextTrailerIndex, flashArrow, leftArrowOpacity]);
 
-  // Close handler — pause imperatively then unmount the Video component entirely.
-  // react-native-video leaks the AVPlayer on tvOS unmount (issue #2281): a paused-
-  // but-not-released instance keeps both the audio AND a focused native view alive.
-  // pause() signals the player to stop; setting `closing` removes <Video> from the
-  // render tree, which tears down the native UIView and releases tvOS focus.
+  // Close handler — stop audio via the `paused` prop (not imperative pause(), which
+  // is absent in newer react-native-video). Keep <Video> in the tree while the
+  // AVPlayer drains, then let MovieDetail unmount the whole TrailerPlayer.
   const handleClose = useCallback(() => {
     if (closing) return;
-    videoRef.current?.pause();
     setClosing(true);
-    setTimeout(() => onClose(currentIndex), 100);
+    setPaused(true);
+    setTimeout(() => onClose(currentIndex), 400);
   }, [closing, currentIndex, onClose]);
 
   // Handle TV remote events
@@ -118,14 +116,18 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
 
   return (
     <View style={styles.container}>
-      {/* Video player — unmounted entirely on close so the native UIView is removed */}
-      {isMP4 && !closing && (
+      {/* Video player — kept in tree during close so AVPlayer can drain audio cleanly.
+          paused={closing || paused} stops audio immediately via prop (imperative pause()
+          is absent in modern react-native-video). Unmount happens when parent removes
+          the whole TrailerPlayer after the 400ms timeout. */}
+      {isMP4 && (
         <Video
+          key={trailerUrl}
           ref={videoRef}
           source={{ uri: trailerUrl }}
           style={styles.video}
           resizeMode="contain"
-          paused={paused}
+          paused={closing || paused}
           controls={false}
           playInBackground={false}
           playWhenInactive={false}

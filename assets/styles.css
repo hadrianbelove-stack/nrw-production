@@ -125,7 +125,7 @@ header h1 {
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #444;
+    color: rgba(0,212,170,0.45);
     transition: color 0.25s;
     white-space: nowrap;
 }
@@ -137,7 +137,7 @@ header h1 {
     height: 28px;
     border-radius: 25px;
     background: #2a2a2a;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(0,212,170,0.3);
     position: relative;
     flex-shrink: 0;
     transition: background 0.25s;
