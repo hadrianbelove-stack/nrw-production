@@ -583,7 +583,7 @@ class MovieEnricher:
             enrichment_results['quality_gate'] = 'passed'
 
         # Slop classifier guess (only set if not already confirmed by human)
-        if not result.get('is_slop') and result.get('is_slop') is not False:
+        if movie_data.get('is_slop') is None:
             try:
                 from scripts.slop_classifier import classify_slop
                 is_slop, reason, confidence = classify_slop(result)
@@ -1099,6 +1099,9 @@ class MovieEnricher:
                 # get_enrichment_only_fields can see it (tracking save may lose the flag)
                 if existing_movies[movie_index].get('_added_manually'):
                     movie_data['_added_manually'] = True
+                # Propagate human-confirmed slop flag so the classifier guard sees it
+                if existing_movies[movie_index].get('is_slop') is not None:
+                    movie_data['is_slop'] = existing_movies[movie_index]['is_slop']
 
                 # Runtime gate: skip enrichment for short films that bypassed intake
                 # (TMDB had null runtime at intake, but now reports below minimum).

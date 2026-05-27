@@ -81,15 +81,19 @@ fun FilterChips(
         }
 
         item {
-            SlopTogglePill(
-                slopFree = slopFree,
+            MetaTogglePill(
+                isActive = slopFree,
+                activeLabel = "SLOP FREE",
+                inactiveLabel = "WITH SLOP",
                 onClick = onSlopFreeToggle
             )
         }
 
         item {
-            FestTogglePill(
-                hideFest = hideFest,
+            MetaTogglePill(
+                isActive = hideFest,
+                activeLabel = "NO FEST",
+                inactiveLabel = "WITH FEST",
                 onClick = onHideFestToggle
             )
         }
@@ -101,19 +105,21 @@ private val SlopTealDim = Color(0x4D00D4AA)
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun SlopTogglePill(
-    slopFree: Boolean,
+private fun MetaTogglePill(
+    isActive: Boolean,
+    activeLabel: String,
+    inactiveLabel: String,
     onClick: () -> Unit
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
-    val backgroundColor = if (slopFree) SlopTeal.copy(alpha = 0.15f) else Color.Transparent
+    val backgroundColor = if (isActive) SlopTeal.copy(alpha = 0.15f) else Color.Transparent
     val borderColor = when {
         isFocused -> SlopTeal
-        slopFree -> SlopTeal
+        isActive -> SlopTeal
         else -> SlopTealDim
     }
-    val textColor = if (slopFree) SlopTeal else SlopTeal.copy(alpha = 0.45f)
+    val textColor = if (isActive) SlopTeal else SlopTeal.copy(alpha = 0.45f)
 
     Surface(
         onClick = onClick,
@@ -137,54 +143,7 @@ private fun SlopTogglePill(
         scale = ClickableSurfaceDefaults.scale(focusedScale = 1.1f, pressedScale = 0.95f)
     ) {
         Text(
-            text = if (slopFree) "SLOP FREE" else "WITH SLOP",
-            color = textColor,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
-        )
-    }
-}
-
-@OptIn(ExperimentalTvMaterial3Api::class)
-@Composable
-private fun FestTogglePill(
-    hideFest: Boolean,
-    onClick: () -> Unit
-) {
-    var isFocused by remember { mutableStateOf(false) }
-
-    val backgroundColor = if (hideFest) SlopTeal.copy(alpha = 0.15f) else Color.Transparent
-    val borderColor = when {
-        isFocused -> SlopTeal
-        hideFest -> SlopTeal
-        else -> SlopTealDim
-    }
-    val textColor = if (hideFest) SlopTeal else SlopTeal.copy(alpha = 0.45f)
-
-    Surface(
-        onClick = onClick,
-        modifier = Modifier.onFocusChanged { isFocused = it.isFocused },
-        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(14.dp)),
-        colors = ClickableSurfaceDefaults.colors(
-            containerColor = backgroundColor,
-            focusedContainerColor = backgroundColor,
-            pressedContainerColor = backgroundColor
-        ),
-        border = ClickableSurfaceDefaults.border(
-            border = androidx.tv.material3.Border(
-                border = BorderStroke(1.dp, borderColor),
-                shape = RoundedCornerShape(14.dp)
-            ),
-            focusedBorder = androidx.tv.material3.Border(
-                border = BorderStroke(2.dp, SlopTeal),
-                shape = RoundedCornerShape(14.dp)
-            )
-        ),
-        scale = ClickableSurfaceDefaults.scale(focusedScale = 1.1f, pressedScale = 0.95f)
-    ) {
-        Text(
-            text = if (hideFest) "NO FEST" else "WITH FEST",
+            text = if (isActive) activeLabel else inactiveLabel,
             color = textColor,
             fontSize = 10.sp,
             fontWeight = FontWeight.SemiBold,
