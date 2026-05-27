@@ -1096,9 +1096,12 @@ class DataGenerator:
 
             self.enrichment_stats['trailer_attempts'] += 1
 
-            director = movie_details.get('crew', {}).get('director') if movie_details else None
-            cast_list = movie_details.get('crew', {}).get('cast', []) if movie_details else []
-            cast = cast_list[:3] if cast_list else None
+            # TMDB raw data has credits.crew as a list, not crew.director as a string
+            credits = (movie_details.get('credits') or {}) if movie_details else {}
+            crew_list = credits.get('crew', [])
+            cast_members = credits.get('cast', [])
+            director = next((c['name'] for c in crew_list if c.get('job') == 'Director'), None)
+            cast = [c['name'] for c in cast_members[:3]] if cast_members else None
 
             if GEMINI_AVAILABLE:
                 scraped_url = self.trailer_finder.find_trailer(title, year, director=director, cast=cast)
