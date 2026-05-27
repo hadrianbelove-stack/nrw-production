@@ -1169,10 +1169,15 @@ const NRWMobile = {
             'display:flex;align-items:center;justify-content:center;flex-direction:column';
 
         const title = this.esc(movie.display_title || movie.title || '');
+        const subsUrl = movie.links?.trailer_hosted_subs;
+        const trackEl = subsUrl
+            ? '<track kind="subtitles" src="' + this.esc(subsUrl) + '" srclang="en" label="English" default>'
+            : '';
         overlay.innerHTML =
             '<button style="position:absolute;top:12px;right:16px;background:none;border:none;' +
             'color:white;font-size:2rem;cursor:pointer;z-index:10">&times;</button>' +
             '<video controls autoplay playsinline style="max-width:95%;max-height:70vh;border-radius:8px">' +
+            trackEl +
             '<source src="' + this.esc(url) + '" type="video/mp4"></video>' +
             '<div style="color:#888;font-size:0.8rem;margin-top:10px">' + title + '</div>';
 

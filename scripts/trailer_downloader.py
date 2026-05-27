@@ -79,9 +79,18 @@ def load_movies():
             'year': movie.get('year', ''),
             'trailer_url': trailer_url,
             'video_id': video_id,
+            'original_language': movie.get('original_language', 'en'),
         })
 
     return movies
+
+
+def clean_vtt(content):
+    """Strip YouTube's word-timing and left-align positioning from auto-caption VTT files."""
+    content = re.sub(r'<\d{2}:\d{2}:\d{2}\.\d{3}>', '', content)
+    content = re.sub(r'</?c>', '', content)
+    content = re.sub(r' align:start position:\d+%', '', content)
+    return content
 
 
 def download_trailer(movie, dry_run=False, cookies_browser=None):
@@ -94,14 +103,20 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
     tmdb_id = movie['id']
     title = movie['title']
     output_path = os.path.join(OUTPUT_DIR, f'{tmdb_id}.mp4')
+    is_foreign = movie.get('original_language', 'en') != 'en'
+    vtt_path = os.path.join(OUTPUT_DIR, f'{tmdb_id}.en.vtt')
 
     # Skip if already downloaded
     if os.path.exists(output_path):
         size_mb = os.path.getsize(output_path) / (1024 * 1024)
-        return {'status': 'skipped_exists', 'detail': f'{size_mb:.1f}MB on disk'}
+        return {
+            'status': 'skipped_exists',
+            'detail': f'{size_mb:.1f}MB on disk',
+            'subs_path': vtt_path if os.path.exists(vtt_path) else None,
+        }
 
     if dry_run:
-        return {'status': 'dry_run', 'detail': f'Would download {movie["trailer_url"]}'}
+        return {'status': 'dry_run', 'detail': f'Would download {movie["trailer_url"]}', 'subs_path': None}
 
     ydl_opts = {
         'format': 'bestvideo[height<=1080][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best[height<=1080]',
@@ -120,6 +135,17 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
         'remote_components': ['ejs:github'],
     }
 
+    # For foreign-language trailers, attempt English subtitle download
+    if is_foreign:
+        ydl_opts['writeautomaticsub'] = True
+        ydl_opts['writesubtitles'] = True
+        ydl_opts['subtitleslangs'] = ['en']
+        ydl_opts['subtitlesformat'] = 'vtt'
+        ydl_opts['outtmpl'] = {
+            'default': output_path,
+            'subtitle': os.path.join(OUTPUT_DIR, f'{tmdb_id}.%(ext)s'),
+        }
+
     # Use browser cookies for age-restricted content
     if cookies_browser:
         ydl_opts['cookiesfrombrowser'] = (cookies_browser,)
@@ -131,36 +157,43 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
                 try:
                     info = future.result(timeout=MOVIE_TIMEOUT)
                 except concurrent.futures.TimeoutError:
-                    return {'status': 'failed', 'detail': f'Timed out after {MOVIE_TIMEOUT}s'}
+                    return {'status': 'failed', 'detail': f'Timed out after {MOVIE_TIMEOUT}s', 'subs_path': None}
 
             if info is None:
-                return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap'}
+                return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap', 'subs_path': None}
 
             # Verify the file was created
             if os.path.exists(output_path):
                 size_mb = os.path.getsize(output_path) / (1024 * 1024)
                 duration = info.get('duration', 0)
+                # Clean VTT positioning/timing markup if subtitles were downloaded
+                if is_foreign and os.path.exists(vtt_path):
+                    with open(vtt_path) as f:
+                        cleaned = clean_vtt(f.read())
+                    with open(vtt_path, 'w') as f:
+                        f.write(cleaned)
                 return {
                     'status': 'downloaded',
                     'detail': f'{size_mb:.1f}MB, {duration}s',
+                    'subs_path': vtt_path if os.path.exists(vtt_path) else None,
                 }
             else:
-                return {'status': 'failed', 'detail': 'File not created after download'}
+                return {'status': 'failed', 'detail': 'File not created after download', 'subs_path': None}
 
     except yt_dlp.utils.DownloadError as e:
         error_msg = str(e).lower()
         if 'sign in' in error_msg or 'age' in error_msg:
-            return {'status': 'skipped_age_restricted', 'detail': str(e)[:100]}
+            return {'status': 'skipped_age_restricted', 'detail': str(e)[:100], 'subs_path': None}
         elif 'unavailable' in error_msg or 'removed' in error_msg or 'private' in error_msg:
-            return {'status': 'skipped_unavailable', 'detail': str(e)[:100]}
+            return {'status': 'skipped_unavailable', 'detail': str(e)[:100], 'subs_path': None}
         elif 'geo' in error_msg or 'country' in error_msg:
-            return {'status': 'skipped_region_locked', 'detail': str(e)[:100]}
+            return {'status': 'skipped_region_locked', 'detail': str(e)[:100], 'subs_path': None}
         elif 'filtered' in error_msg:
-            return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap'}
+            return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap', 'subs_path': None}
         else:
-            return {'status': 'failed', 'detail': str(e)[:150]}
+            return {'status': 'failed', 'detail': str(e)[:150], 'subs_path': None}
     except Exception as e:
-        return {'status': 'failed', 'detail': str(e)[:150]}
+        return {'status': 'failed', 'detail': str(e)[:150], 'subs_path': None}
 
 
 def main():

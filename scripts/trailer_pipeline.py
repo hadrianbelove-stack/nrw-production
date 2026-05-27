@@ -191,13 +191,16 @@ def get_b2_connection():
 
 
 def get_hosted_trailer_ids(bucket):
-    """Get set of TMDB IDs that have trailers in B2."""
+    """Get sets of TMDB IDs that have MP4s and VTTs in B2."""
     remote_files = get_remote_files(bucket)
-    ids = set()
+    mp4_ids = set()
+    vtt_ids = set()
     for filename in remote_files:
         if filename.endswith('.mp4'):
-            ids.add(filename[:-4])  # Strip .mp4 suffix
-    return ids
+            mp4_ids.add(filename[:-4])
+        elif filename.endswith('.en.vtt'):
+            vtt_ids.add(filename[:-7])
+    return mp4_ids, vtt_ids
 
 
 def stamp_trailer_hosted_urls(dry_run=False):
@@ -218,12 +221,12 @@ def stamp_trailer_hosted_urls(dry_run=False):
     print('Connecting to B2...')
     try:
         api, bucket, _ = get_b2_connection()
-        hosted_ids = get_hosted_trailer_ids(bucket)
+        mp4_ids, vtt_ids = get_hosted_trailer_ids(bucket)
     except Exception as e:
         print(f'WARNING: B2 connection failed ({type(e).__name__}: {str(e)[:100]})')
         print('Skipping stamp — YouTube trailer URLs remain as fallback.')
         return {'stamped': 0, 'already_had': 0, 'no_trailer_in_b2': 0}
-    print(f'Found {len(hosted_ids)} trailers in B2 bucket')
+    print(f'Found {len(mp4_ids)} trailers and {len(vtt_ids)} subtitle files in B2 bucket')
 
     # Load data.json
     with open(DATA_JSON, 'r') as f:
@@ -233,32 +236,40 @@ def stamp_trailer_hosted_urls(dry_run=False):
 
     for movie in data.get('movies', []):
         movie_id = str(movie.get('id', ''))
-        links = movie.get('links', {})
+        links = movie.setdefault('links', {})
 
         if links.get('trailer_hosted'):
             # Verify existing URL — clean up if the B2 file was rotated out
-            if movie_id in hosted_ids:
+            if movie_id in mp4_ids:
                 stats['already_had'] += 1
             else:
                 if dry_run:
                     print(f'  Would clean stale URL: {movie.get("title", movie_id)}')
                 else:
                     links.pop('trailer_hosted', None)
+                    links.pop('trailer_hosted_subs', None)
                 stats['stale_cleaned'] += 1
             continue
 
         # Check if this movie's trailer is in B2
-        if movie_id in hosted_ids:
+        if movie_id in mp4_ids:
             hosted_url = f'{bucket_url}/{movie_id}.mp4'
             if dry_run:
                 print(f'  Would stamp: {movie.get("title", movie_id)} -> {hosted_url}')
             else:
-                if 'links' not in movie:
-                    movie['links'] = {}
-                movie['links']['trailer_hosted'] = hosted_url
+                links['trailer_hosted'] = hosted_url
             stats['stamped'] += 1
         else:
             stats['no_trailer_in_b2'] += 1
+
+        # Stamp or clean subtitle URL
+        if movie_id in vtt_ids:
+            subs_url = f'{bucket_url}/{movie_id}.en.vtt'
+            if not dry_run:
+                links['trailer_hosted_subs'] = subs_url
+        elif 'trailer_hosted_subs' in links:
+            if not dry_run:
+                links.pop('trailer_hosted_subs')
 
     # Save data.json
     changes = stats['stamped'] + stats['stale_cleaned']
@@ -530,10 +541,14 @@ def rotate_trailers(dry_run=False):
 
     # Get all files in bucket (with file version info for deletion)
     remote_files = {}
+    vtt_versions = {}
     for file_version, _ in bucket.ls(latest_only=True):
         if file_version.file_name.endswith('.mp4'):
             tmdb_id = file_version.file_name[:-4]
             remote_files[tmdb_id] = file_version
+        elif file_version.file_name.endswith('.en.vtt'):
+            tmdb_id = file_version.file_name[:-7]
+            vtt_versions[tmdb_id] = file_version
 
     current_count = len(remote_files)
     print(f'Current trailers in B2: {current_count}')
@@ -585,12 +600,21 @@ def rotate_trailers(dry_run=False):
             print(f'  Deleted: {tmdb_id}.mp4 (date: {date_map.get(tmdb_id, "?")})')
         except Exception as e:
             print(f'  Failed to delete {tmdb_id}.mp4: {str(e)[:100]}')
+            continue
+        # Delete paired VTT if present
+        if tmdb_id in vtt_versions:
+            vtt = vtt_versions[tmdb_id]
+            try:
+                bucket.delete_file_version(vtt.id_, vtt.file_name)
+            except Exception as e:
+                print(f'  Warning: could not delete {tmdb_id}.en.vtt: {str(e)[:80]}')
 
-    # Remove trailer_hosted from data.json for deleted trailers
+    # Remove trailer_hosted and trailer_hosted_subs from data.json for deleted trailers
     deleted_set = set(to_delete[:deleted])
     for movie in data.get('movies', []):
         if str(movie.get('id', '')) in deleted_set:
             movie.get('links', {}).pop('trailer_hosted', None)
+            movie.get('links', {}).pop('trailer_hosted_subs', None)
 
     if deleted > 0:
         safe_write_json(DATA_JSON, data)

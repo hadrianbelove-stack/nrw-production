@@ -650,7 +650,7 @@ const NRW = {
     },
 
     // Load a trailer video into the existing trailer modal container
-    loadTrailerVideo(url) {
+    loadTrailerVideo(url, movie) {
         const container = document.getElementById('trailer-video-container');
         if (!container) return;
 
@@ -661,6 +661,10 @@ const NRW = {
         if (existingIframe) { existingIframe.src = ''; }
 
         if (this.isHostedTrailer(url)) {
+            const subsUrl = movie?.links?.trailer_hosted_subs;
+            const trackEl = subsUrl
+                ? `<track kind="subtitles" src="${subsUrl}" srclang="en" label="English" default>`
+                : '';
             container.innerHTML = `
                 <div class="trailer-loading" id="trailer-loading">
                     <div class="trailer-spinner"></div>
@@ -675,6 +679,7 @@ const NRW = {
                     autoplay
                     preload="auto"
                     style="background: #000;">
+                    ${trackEl}
                     Your browser does not support video playback.
                 </video>
             `;
@@ -719,7 +724,7 @@ const NRW = {
         if (titleEl) titleEl.textContent = movie.display_title || movie.title;
 
         this.updateTrailerNavVisibility();
-        this.loadTrailerVideo(trailerUrl);
+        this.loadTrailerVideo(trailerUrl, movie);
         this.updateReelCounter();
     },
 
@@ -792,7 +797,8 @@ const NRW = {
         }
 
         this.updateTrailerNavVisibility();
-        this.loadTrailerVideo(url);
+        const currentMovie = this.trailerLightboxIndex >= 0 ? movies[this.trailerLightboxIndex] : null;
+        this.loadTrailerVideo(url, currentMovie);
 
         // Show modal
         modal.classList.add('active');

@@ -62,12 +62,12 @@ def get_remote_files(bucket):
 
 
 def get_local_files():
-    """Get list of local MP4 files ready for upload."""
+    """Get list of local MP4 and VTT files ready for upload."""
     if not os.path.exists(MEDIA_DIR):
         return []
     files = []
     for f in sorted(os.listdir(MEDIA_DIR)):
-        if f.endswith('.mp4'):
+        if f.endswith('.mp4') or f.endswith('.vtt'):
             path = os.path.join(MEDIA_DIR, f)
             size = os.path.getsize(path)
             files.append({'name': f, 'path': path, 'size': size})
@@ -81,12 +81,28 @@ def get_bucket_url(api, bucket):
     return f'{download_url}/file/{bucket.name}'
 
 
+def ensure_bucket_cors(bucket):
+    """Ensure the B2 bucket allows cross-origin VTT loading for the NRW player."""
+    cors_rules = [{
+        'corsRuleName': 'NRW-trailers',
+        'allowedOrigins': ['*'],
+        'allowedHeaders': ['range'],
+        'allowedOperations': ['b2_download_file_by_name', 'b2_download_file_by_id'],
+        'maxAgeSeconds': 3600,
+    }]
+    try:
+        bucket.update(cors_rules=cors_rules)
+    except Exception as e:
+        print(f'Warning: could not set bucket CORS rules: {e}')
+
+
 def upload_file(bucket, local_path, remote_name):
     """Upload a single file to B2. Returns the file URL."""
+    content_type = 'text/vtt' if local_path.endswith('.vtt') else 'video/mp4'
     file_info = bucket.upload_local_file(
         local_file=local_path,
         file_name=remote_name,
-        content_type='video/mp4',
+        content_type=content_type,
     )
     return file_info
 
@@ -124,6 +140,11 @@ def main():
     print('Checking existing files in bucket...')
     remote_files = get_remote_files(bucket)
     print(f'Already in bucket: {len(remote_files)} files')
+
+    # Ensure CORS is configured if we have VTT files to upload
+    if any(f['name'].endswith('.vtt') for f in local_files):
+        print('Setting bucket CORS rules for cross-origin subtitle loading...')
+        ensure_bucket_cors(bucket)
 
     # Filter to files that need uploading
     to_upload = [f for f in local_files if f['name'] not in remote_files]
