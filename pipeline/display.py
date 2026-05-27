@@ -275,6 +275,12 @@ class DisplayGenerator:
             with open('admin/restorations.json', 'r') as f:
                 manual_restorations = json.load(f)
 
+        # Load reissue labels (TMDB ID → display label string)
+        reissue_labels = {}
+        if os.path.exists('admin/reissue_labels.json'):
+            with open('admin/reissue_labels.json', 'r') as f:
+                reissue_labels = json.load(f)
+
         # Load category overrides (admin toggles for all categories)
         category_overrides = {}
         if os.path.exists('admin/category_overrides.json'):
@@ -471,7 +477,12 @@ class DisplayGenerator:
             if str(movie_id) in [str(r) for r in manual_restorations]:
                 is_restoration = True
 
+            reissue_label = reissue_labels.get(str(movie_id))
+            if reissue_label:
+                is_restoration = True
+
             categories['is_restoration'] = is_restoration
+            movie['reissue_label'] = reissue_label
 
             # Mark virtual screenings (Eventive and similar platforms)
             is_virtual_screening = False

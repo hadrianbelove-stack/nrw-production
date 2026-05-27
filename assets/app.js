@@ -540,8 +540,9 @@ const NRW = {
             };
 
             const streamingBadge = getStreamingBadge(movie);
-            const restorationBadge = movie.categories?.is_restoration
-                ? '<div class="restoration-badge">RESTORED</div>' : '';
+            const restorationBadge = movie.reissue_label
+                ? `<div class="restoration-badge">${movie.reissue_label.toUpperCase()}</div>`
+                : (movie.categories?.is_restoration ? '<div class="restoration-badge">RESTORED</div>' : '');
             const isScreening = movie.categories?.is_virtual_screening;
             const screeningClass = isScreening ? ' screening-movie' : '';
             const festivalName = movie.virtual_screening_info?.screening_name;
@@ -1076,6 +1077,18 @@ const NRW = {
         const staffPickBadge = document.getElementById('lightbox-staff-pick');
         if (staffPickBadge) {
             staffPickBadge.style.display = movie.categories?.is_staff_pick ? 'inline-block' : 'none';
+        }
+
+        // Reissue label pill
+        const reissueEl = document.getElementById('lightbox-reissue-label');
+        if (reissueEl) {
+            const label = movie.reissue_label;
+            if (label) {
+                reissueEl.textContent = label.toUpperCase();
+                reissueEl.style.display = 'inline-block';
+            } else {
+                reissueEl.style.display = 'none';
+            }
         }
 
         // Screening name banner
