@@ -1,20 +1,38 @@
 {
-  "timestamp": "2026-05-26T20:46:13.058856",
-  "movies_requested": 14,
-  "movies_enriched": 13,
-  "movies_deferred": 1,
+  "timestamp": "2026-05-27T13:46:08.404415",
+  "movies_requested": 22,
+  "movies_enriched": 19,
+  "movies_deferred": 3,
   "deferred_details": [
     {
       "title": "Palestine 36",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-05-19",
-      "discovered_at": "2026-05-26T19:03:43.364747",
+      "discovered_at": "2026-05-27T12:24:43.068287",
       "discovery_source": "tmdb_type4",
       "revert_count": 10,
       "tmdb_platforms": []
+    },
+    {
+      "title": "Chum",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-05",
+      "discovered_at": "2026-05-27T13:11:42.029703",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "What's the Story, Wishbone?",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-10",
+      "discovered_at": "2026-05-27T13:11:43.670452",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 1453.25,
+  "enrichment_duration_seconds": 2058.98,
   "error_details": [],
   "total_errors": 0
 }
