@@ -183,16 +183,15 @@ const NRWMobile = {
         // Slop-free toggle (separate from category pills)
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
-            // Initialize visual state
             slopToggle.classList.toggle('active', this.slopFree);
-            const slopLabelInit = document.getElementById('slop-label');
-            if (slopLabelInit) slopLabelInit.textContent = this.slopFree ? 'SLOP-FREE' : 'WITH SLOP';
+            const slopText = document.getElementById('slop-track-text');
+            if (slopText) slopText.textContent = this.slopFree ? 'ON' : 'OFF';
 
             slopToggle.addEventListener('click', () => {
                 this.slopFree = !this.slopFree;
                 slopToggle.classList.toggle('active', this.slopFree);
-                const slopLabel = document.getElementById('slop-label');
-                if (slopLabel) slopLabel.textContent = this.slopFree ? 'SLOP-FREE' : 'WITH SLOP';
+                const t = document.getElementById('slop-track-text');
+                if (t) t.textContent = this.slopFree ? 'ON' : 'OFF';
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);
@@ -203,16 +202,15 @@ const NRWMobile = {
         // Fest (virtual screenings) toggle
         const festToggle = document.getElementById('fest-toggle');
         if (festToggle) {
-            // Initialize visual state
             festToggle.classList.toggle('active', this.hideFest);
-            const festLabelInit = document.getElementById('fest-label');
-            if (festLabelInit) festLabelInit.textContent = this.hideFest ? 'NO FEST' : 'WITH FEST';
+            const festText = document.getElementById('fest-track-text');
+            if (festText) festText.textContent = this.hideFest ? 'ON' : 'OFF';
 
             festToggle.addEventListener('click', () => {
                 this.hideFest = !this.hideFest;
                 festToggle.classList.toggle('active', this.hideFest);
-                const festLabel = document.getElementById('fest-label');
-                if (festLabel) festLabel.textContent = this.hideFest ? 'NO FEST' : 'WITH FEST';
+                const t = document.getElementById('fest-track-text');
+                if (t) t.textContent = this.hideFest ? 'ON' : 'OFF';
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);
