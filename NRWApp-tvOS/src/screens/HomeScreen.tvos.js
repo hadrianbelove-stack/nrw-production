@@ -697,7 +697,10 @@ const HomeScreenTvOS = () => {
     <View style={styles.container}>
       {/* Header with title on left, filters and search on right */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
+        <View style={styles.titleRow}>
+          <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
+          <SlopToggleButton slopFree={slopFree} onPress={() => setSlopFree(v => !v)} />
+        </View>
         <View style={styles.filterRow}>
             {FILTERS.map((filter, index) => (
               <FilterButton
@@ -708,8 +711,6 @@ const HomeScreenTvOS = () => {
                 onPress={() => handleFilterChange(filter.id)}
               />
             ))}
-            <View style={styles.filterDivider} />
-            <SlopToggleButton slopFree={slopFree} onPress={() => setSlopFree(v => !v)} />
           </View>
         <View style={[styles.searchContainer, searchFocused && styles.searchContainerFocused]}>
           <Text style={styles.searchIcon}>⌕</Text>
@@ -779,8 +780,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 68,
-    paddingTop: 28,
-    paddingBottom: 16,
+    paddingTop: 20,
+    paddingBottom: 12,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 24,
   },
   headerTitle: {
     color: Colors.textPrimary,
@@ -863,24 +869,24 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: 'rgba(255,100,100,0.4)',
+    borderColor: 'rgba(0,212,170,0.3)',
   },
   slopButtonActive: {
-    backgroundColor: 'rgba(255,68,68,0.15)',
-    borderColor: '#ff4444',
+    backgroundColor: 'rgba(0,212,170,0.15)',
+    borderColor: '#00d4aa',
   },
   slopButtonFocused: {
-    borderColor: '#ff8888',
+    borderColor: '#00d4aa',
     borderWidth: 2,
   },
   slopButtonText: {
-    color: 'rgba(255,180,180,0.8)',
+    color: 'rgba(255,255,255,0.35)',
     fontSize: 16,
     fontWeight: '600',
     letterSpacing: 0.5,
   },
   slopButtonTextActive: {
-    color: '#ff8888',
+    color: '#00d4aa',
   },
   listContent: {
     // Center the 5-column grid: (1920 - 5*344 - 4*16) / 2 = 68px

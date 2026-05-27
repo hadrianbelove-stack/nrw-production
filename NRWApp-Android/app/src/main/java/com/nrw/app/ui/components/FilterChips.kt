@@ -87,8 +87,8 @@ fun FilterChips(
     }
 }
 
-private val SlopRed = Color(0xFFFF4444)
-private val SlopRedDim = Color(0x66FF6464)
+private val SlopTeal = Color(0xFF00D4AA)
+private val SlopTealDim = Color(0x4D00D4AA)
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -98,13 +98,13 @@ private fun SlopTogglePill(
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
-    val backgroundColor = if (slopFree) SlopRed.copy(alpha = 0.15f) else Color.Transparent
+    val backgroundColor = if (slopFree) SlopTeal.copy(alpha = 0.15f) else Color.Transparent
     val borderColor = when {
-        isFocused -> Color(0xFFFF8888)
-        slopFree -> SlopRed
-        else -> SlopRedDim
+        isFocused -> SlopTeal
+        slopFree -> SlopTeal
+        else -> SlopTealDim
     }
-    val textColor = if (slopFree) Color(0xFFFF8888) else Color(0xFFFFB4B4).copy(alpha = 0.8f)
+    val textColor = if (slopFree) SlopTeal else Color.White.copy(alpha = 0.35f)
 
     Surface(
         onClick = onClick,
@@ -121,7 +121,7 @@ private fun SlopTogglePill(
                 shape = RoundedCornerShape(14.dp)
             ),
             focusedBorder = androidx.tv.material3.Border(
-                border = BorderStroke(2.dp, Color(0xFFFF8888)),
+                border = BorderStroke(2.dp, SlopTeal),
                 shape = RoundedCornerShape(14.dp)
             )
         ),

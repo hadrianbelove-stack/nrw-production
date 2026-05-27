@@ -117,10 +117,10 @@
 
       <!-- Slop Toggle -->
       <Group id="chip_slop_free">
-        <Rectangle id="chipBg_slop_free" width="120" height="36" color="0x1A0000FF" />
+        <Rectangle id="chipBg_slop_free" width="120" height="36" color="0x0D0D0DFF" />
         <Label id="chipLabel_slop_free" text="WITH SLOP" width="120" height="36"
           horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFB4B4CC" />
+          font="font:SmallBoldSystemFont" color="0x59595959" />
       </Group>
     </LayoutGroup>
 

@@ -106,20 +106,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   slopButton: {
-    borderColor: 'rgba(255,100,100,0.4)',
+    borderColor: 'rgba(0,212,170,0.3)',
     backgroundColor: 'transparent',
   },
   slopButtonActive: {
-    backgroundColor: 'rgba(255,68,68,0.15)',
-    borderColor: '#ff4444',
+    backgroundColor: 'rgba(0,212,170,0.15)',
+    borderColor: '#00d4aa',
   },
   slopText: {
-    color: 'rgba(255,180,180,0.8)',
+    color: 'rgba(255,255,255,0.35)',
     fontWeight: '600',
     fontSize: Typography.caption,
     letterSpacing: 0.5,
   },
   slopTextActive: {
-    color: '#ff8888',
+    color: '#00d4aa',
   },
 });

@@ -71,12 +71,12 @@ Sub UpdateChipStyles()
         ' Slop toggle has its own visual treatment
         if filterId = "slop_free"
             if slopFree
-                chipBg.color = "0x440000FF"
-                chipLabel.color = "0xFF8888FF"
+                chipBg.color = "0x00342AFF"
+                chipLabel.color = "0x00D4AAFF"
                 chipLabel.text = "SLOP FREE"
             else
-                chipBg.color = "0x1A0000FF"
-                chipLabel.color = "0xFFB4B4CC"
+                chipBg.color = "0x0D0D0DFF"
+                chipLabel.color = "0x59595959"
                 chipLabel.text = "WITH SLOP"
             end if
             continue for
