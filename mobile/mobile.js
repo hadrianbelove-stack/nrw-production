@@ -13,6 +13,7 @@ const NRWMobile = {
 
     // UI state
     activeFilters: new Set(),
+    slopFree: false,
     searchQuery: '',
     currentView: 0,
     currentMovieIndex: 0,
@@ -177,6 +178,20 @@ const NRWMobile = {
             this.setView(0);
             this.dom.gridView.scrollTop = 0;
         });
+
+        // Slop-free toggle (separate from category pills)
+        const slopToggle = document.getElementById('slop-free-toggle');
+        if (slopToggle) {
+            slopToggle.addEventListener('click', () => {
+                this.slopFree = !this.slopFree;
+                slopToggle.classList.toggle('active', this.slopFree);
+                slopToggle.textContent = this.slopFree ? 'SLOP FREE' : 'WITH SLOP';
+                this.applyFilter();
+                this.buildGrid();
+                this.setView(0);
+                this.dom.gridView.scrollTop = 0;
+            });
+        }
     },
 
     updateFilterDesc() {
@@ -254,6 +269,9 @@ const NRWMobile = {
         const filters = this.activeFilters;
 
         this.filteredMovies = this.allMovies.filter(movie => {
+            // Slop-free mode: hide flagged films
+            if (this.slopFree && movie.is_slop) return false;
+
             // Pre-orders only appear when the pre-orders filter is active OR search is active
             if (movie._is_preorder && !filters.has('pre-orders') && !this.searchQuery) return false;
 

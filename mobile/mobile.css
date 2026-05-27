@@ -84,6 +84,23 @@ body {
   color: #000;
   font-weight: 700;
 }
+.filter-pill-divider {
+  width: 1px;
+  background: rgba(255,255,255,0.15);
+  align-self: stretch;
+  margin: 2px 2px;
+  flex-shrink: 0;
+}
+.slop-toggle {
+  border-color: rgba(255,100,100,0.3);
+  color: rgba(255,160,160,0.7);
+}
+.slop-toggle.active {
+  background: rgba(255,68,68,0.15);
+  border-color: #ff4444;
+  color: #ff8888;
+  font-weight: 700;
+}
 .search-container {
   flex: 1;
   position: relative;

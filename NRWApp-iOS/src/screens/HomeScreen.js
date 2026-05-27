@@ -45,6 +45,7 @@ export default function HomeScreen({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [activeFilters, setActiveFilters] = useState(new Set());
+  const [slopFree, setSlopFree] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Initial load
@@ -54,13 +55,13 @@ export default function HomeScreen({navigation}) {
 
   // Apply filters and search
   useEffect(() => {
-    let result = filterMoviesMulti(movies, activeFilters, searchQuery);
+    let result = filterMoviesMulti(movies, activeFilters, searchQuery, slopFree);
     if (searchQuery.trim()) {
       result = searchMovies(result, searchQuery);
     }
     result = sortByDate(result);
     setDisplayedMovies(result);
-  }, [movies, activeFilters, searchQuery]);
+  }, [movies, activeFilters, slopFree, searchQuery]);
 
   // Build grid items with date dividers inserted
   const gridItems = useMemo(() => {
@@ -233,7 +234,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={[styles.container, {paddingBottom: insets.bottom}]}>
-      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} />
+      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopFree={slopFree} onSlopFreeChange={setSlopFree} />
 
       <FlatList
         data={gridItems}

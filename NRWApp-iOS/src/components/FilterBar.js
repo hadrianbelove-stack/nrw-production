@@ -20,7 +20,7 @@ const FILTERS = [
   {id: 'pre-orders', label: 'Pre-Orders'},
 ];
 
-export default function FilterBar({activeFilters, onFilterChange}) {
+export default function FilterBar({activeFilters, onFilterChange, slopFree, onSlopFreeChange}) {
   return (
     <View style={styles.container}>
       <ScrollView
@@ -35,6 +35,15 @@ export default function FilterBar({activeFilters, onFilterChange}) {
             onPress={() => onFilterChange(filter.id)}
           />
         ))}
+        <View style={styles.divider} />
+        <TouchableOpacity
+          style={[styles.filterButton, styles.slopButton, slopFree && styles.slopButtonActive]}
+          onPress={() => onSlopFreeChange(!slopFree)}
+          activeOpacity={0.7}>
+          <Text style={[styles.filterText, styles.slopText, slopFree && styles.slopTextActive]}>
+            {slopFree ? 'SLOP FREE' : 'WITH SLOP'}
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -67,6 +76,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: Spacing.screenPadding,
     gap: Spacing.sm,
+    alignItems: 'center',
   },
   filterButton: {
     paddingVertical: Spacing.sm,
@@ -88,5 +98,28 @@ const styles = StyleSheet.create({
   filterTextSelected: {
     color: Colors.featuredBadgeText,
     fontWeight: '600',
+  },
+  divider: {
+    width: 1,
+    height: 20,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    marginHorizontal: 4,
+  },
+  slopButton: {
+    borderColor: 'rgba(255,100,100,0.4)',
+    backgroundColor: 'transparent',
+  },
+  slopButtonActive: {
+    backgroundColor: 'rgba(255,68,68,0.15)',
+    borderColor: '#ff4444',
+  },
+  slopText: {
+    color: 'rgba(255,180,180,0.8)',
+    fontWeight: '600',
+    fontSize: Typography.caption,
+    letterSpacing: 0.5,
+  },
+  slopTextActive: {
+    color: '#ff8888',
   },
 });

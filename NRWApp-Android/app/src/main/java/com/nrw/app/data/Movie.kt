@@ -76,6 +76,9 @@ data class Movie(
     @SerializedName("watch_links")
     val watchLinks: WatchLinks? = null,
 
+    @SerializedName("is_slop")
+    val isSlop: Boolean = false,
+
     @SerializedName("_is_preorder")
     val isPreorder: Boolean = false,
 

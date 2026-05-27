@@ -102,6 +102,32 @@ header h1 {
     box-shadow: 0 5px 15px var(--accent-glow);
 }
 
+/* Slop toggle — visually separated from category filters */
+.filter-divider {
+    width: 1px;
+    background: rgba(255,255,255,0.2);
+    align-self: stretch;
+    margin: 0 0.25rem;
+}
+.slop-toggle {
+    border-color: rgba(255,100,100,0.4);
+    color: rgba(255,180,180,0.8);
+}
+.slop-toggle:hover {
+    background: rgba(255,68,68,0.15);
+    border-color: #ff4444;
+    color: #ff8888;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255,68,68,0.2);
+}
+.slop-toggle.active {
+    background: rgba(255,68,68,0.15);
+    border-color: #ff4444;
+    color: #ff8888;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255,68,68,0.2);
+}
+
 /* Search input */
 .search-container {
     position: relative;

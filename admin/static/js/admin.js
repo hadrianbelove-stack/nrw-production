@@ -93,7 +93,8 @@ function toggleCategory(movieId, statusType, value) {
                     'Restoration': 'restoration',
                     'Virtual Screening': 'virtual_screening',
                     'Documentary': 'documentary',
-                    'Exploitation': 'exploitation'
+                    'Exploitation': 'exploitation',
+                    'Slop': 'slop'
                 };
                 if (typeMap[title] === statusType) {
                     if (value) {

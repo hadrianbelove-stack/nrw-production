@@ -65,7 +65,12 @@ def toggle_status() -> dict:
             'exploitation': 'is_exploitation'
         }
 
-        ALL_TYPES = set(STATUS_FILES.keys()) | set(CATEGORY_OVERRIDE_TYPES.keys())
+        # Status types written directly to data.json
+        DIRECT_FIELD_TYPES = {
+            'slop': 'is_slop'
+        }
+
+        ALL_TYPES = set(STATUS_FILES.keys()) | set(CATEGORY_OVERRIDE_TYPES.keys()) | set(DIRECT_FIELD_TYPES.keys())
 
         if status_type not in ALL_TYPES:
             return jsonify({
@@ -108,6 +113,23 @@ def toggle_status() -> dict:
 
             os.makedirs('admin', exist_ok=True)
             safe_write_json(CATEGORY_OVERRIDES_FILE, overrides)
+
+        elif status_type in DIRECT_FIELD_TYPES:
+            # Write directly to data.json and clear any pending guess
+            field_name = DIRECT_FIELD_TYPES[status_type]
+            data_path = 'data.json'
+            with open(data_path) as f:
+                movie_data = json.load(f)
+            movies = movie_data if isinstance(movie_data, list) else movie_data.get('movies', [])
+            for m in movies:
+                if str(m.get('id')) == str(movie_id):
+                    if m.get(field_name) != value:
+                        m[field_name] = value
+                        m.pop('_is_slop_guess', None)  # human confirmed, clear guess
+                        changed = True
+                    break
+            if changed:
+                safe_write_json(data_path, movie_data)
 
         # Mark changes as pending if state actually changed
         if changed:

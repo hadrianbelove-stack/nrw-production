@@ -10,6 +10,7 @@ const NRW = {
     staffPicks: [],  // Renamed from featuredMovies
     latestPlaylistUrl: null,  // YouTube trailers playlist URL
     activeFilters: new Set(),  // Multi-select: Set of active filter IDs
+    slopFree: false,           // When true, hide movies marked is_slop
     searchQuery: '',     // Current search query
     displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
     loadIncrement: CONFIG.moviesPerPage,   // How many to add when clicking "More"
@@ -207,6 +208,19 @@ const NRW = {
         });
 
         syncAllBtn();
+
+        // Slop-free toggle
+        const slopToggle = document.getElementById('slop-free-toggle');
+        if (slopToggle) {
+            slopToggle.addEventListener('click', () => {
+                this.slopFree = !this.slopFree;
+                slopToggle.classList.toggle('active', this.slopFree);
+                slopToggle.textContent = this.slopFree ? 'SLOP FREE' : 'WITH SLOP';
+                this.displayedCount = this.loadIncrement;
+                this.applyFilter();
+                this.renderWallWithMore();
+            });
+        }
     },
 
     // Show/hide filter description based on active filters
@@ -292,6 +306,9 @@ const NRW = {
         const query = this.searchQuery;
 
         this.filteredMovies = this.allMovies.filter(movie => {
+            // Slop-free mode: hide flagged films
+            if (this.slopFree && movie.is_slop) return false;
+
             // Pre-orders only appear when the pre-orders filter is active OR search is active
             if (movie._is_preorder && !filters.has('pre-orders') && !query) return false;
 

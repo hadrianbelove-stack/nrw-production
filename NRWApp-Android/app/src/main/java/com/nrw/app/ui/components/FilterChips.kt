@@ -47,6 +47,8 @@ private val FocusCyan = Color(0xFF00FFCC)
 fun FilterChips(
     activeFilters: Set<FilterCategory>,
     onFilterToggled: (FilterCategory) -> Unit,
+    slopFree: Boolean = false,
+    onSlopFreeToggle: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     TvLazyRow(
@@ -63,6 +65,75 @@ fun FilterChips(
                 onClick = { onFilterToggled(category) }
             )
         }
+
+        item {
+            // Divider
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .background(Color.White.copy(alpha = 0.2f))
+                    .width(1.dp)
+                    .padding(vertical = 4.dp),
+                contentAlignment = Alignment.Center
+            ) {}
+        }
+
+        item {
+            SlopTogglePill(
+                slopFree = slopFree,
+                onClick = onSlopFreeToggle
+            )
+        }
+    }
+}
+
+private val SlopRed = Color(0xFFFF4444)
+private val SlopRedDim = Color(0x66FF6464)
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun SlopTogglePill(
+    slopFree: Boolean,
+    onClick: () -> Unit
+) {
+    var isFocused by remember { mutableStateOf(false) }
+
+    val backgroundColor = if (slopFree) SlopRed.copy(alpha = 0.15f) else Color.Transparent
+    val borderColor = when {
+        isFocused -> Color(0xFFFF8888)
+        slopFree -> SlopRed
+        else -> SlopRedDim
+    }
+    val textColor = if (slopFree) Color(0xFFFF8888) else Color(0xFFFFB4B4).copy(alpha = 0.8f)
+
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.onFocusChanged { isFocused = it.isFocused },
+        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(14.dp)),
+        colors = ClickableSurfaceDefaults.colors(
+            containerColor = backgroundColor,
+            focusedContainerColor = backgroundColor,
+            pressedContainerColor = backgroundColor
+        ),
+        border = ClickableSurfaceDefaults.border(
+            border = androidx.tv.material3.Border(
+                border = BorderStroke(1.dp, borderColor),
+                shape = RoundedCornerShape(14.dp)
+            ),
+            focusedBorder = androidx.tv.material3.Border(
+                border = BorderStroke(2.dp, Color(0xFFFF8888)),
+                shape = RoundedCornerShape(14.dp)
+            )
+        ),
+        scale = ClickableSurfaceDefaults.scale(focusedScale = 1.1f, pressedScale = 0.95f)
+    ) {
+        Text(
+            text = if (slopFree) "SLOP FREE" else "WITH SLOP",
+            color = textColor,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+        )
     }
 }
 

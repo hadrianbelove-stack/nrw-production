@@ -8,7 +8,7 @@ Sub Init()
     m.focusIndicator = m.top.FindNode("focusIndicator")
 
     ' Filter chip IDs in order
-    m.filterIds = ["staff_picks", "studio", "indie", "exploitation", "foreign", "documentary", "series", "restorations", "virtual_screenings", "pre_orders"]
+    m.filterIds = ["staff_picks", "studio", "indie", "exploitation", "foreign", "documentary", "series", "restorations", "virtual_screenings", "pre_orders", "slop_free"]
 
     ' Chip widths for focus indicator positioning
     m.chipWidths = {
@@ -22,6 +22,7 @@ Sub Init()
         virtual_screenings: 130
         pre_orders: 110
         exploitation: 120
+        slop_free: 120
     }
 
     ' Store chip references
@@ -61,10 +62,25 @@ End Sub
 ' ============================================================================
 Sub UpdateChipStyles()
     activeFilters = m.top.activeFilters
+    slopFree = m.top.slopFree
 
     for each filterId in m.filterIds
         chipBg = m.chipBgs[filterId]
         chipLabel = m.chipLabels[filterId]
+
+        ' Slop toggle has its own visual treatment
+        if filterId = "slop_free"
+            if slopFree
+                chipBg.color = "0x440000FF"
+                chipLabel.color = "0xFF8888FF"
+                chipLabel.text = "SLOP FREE"
+            else
+                chipBg.color = "0x1A0000FF"
+                chipLabel.color = "0xFFB4B4CC"
+                chipLabel.text = "WITH SLOP"
+            end if
+            continue for
+        end if
 
         isActive = false
         ' Check if this filter is in the active set

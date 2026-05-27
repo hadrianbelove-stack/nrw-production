@@ -21,6 +21,7 @@ data class HomeUiState(
     val filteredMovies: List<Movie> = emptyList(),
     val groupedMovies: Map<String, List<Movie>> = emptyMap(),
     val activeFilters: Set<FilterCategory> = emptySet(),
+    val slopFree: Boolean = false,
     val searchQuery: String = "",
     val playlistUrl: String? = null
 )
@@ -88,11 +89,23 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
+     * Toggle slop-free mode
+     */
+    fun toggleSlopFree() {
+        _uiState.value = _uiState.value.copy(slopFree = !_uiState.value.slopFree)
+        applyFilters()
+    }
+
+    /**
      * Apply filters and search to movies
      */
     private fun applyFilters() {
         val state = _uiState.value
         var filtered = repository.filterMoviesMulti(state.movies, state.activeFilters, state.searchQuery)
+
+        if (state.slopFree) {
+            filtered = filtered.filter { !it.isSlop }
+        }
 
         if (state.searchQuery.isNotBlank()) {
             filtered = repository.searchMovies(filtered, state.searchQuery)

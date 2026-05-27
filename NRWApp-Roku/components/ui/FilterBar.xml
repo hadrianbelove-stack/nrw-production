@@ -12,6 +12,9 @@
     <!-- Active filters array (multi-select state) -->
     <field id="activeFilters" type="array" value="[]" onChange="onFilterChanged" />
 
+    <!-- Slop free toggle state -->
+    <field id="slopFree" type="boolean" value="false" onChange="onFilterChanged" />
+
     <!-- Focus -->
     <field id="hasFocus" type="boolean" value="false" onChange="onFocusChanged" />
     <field id="focusedIndex" type="integer" value="0" />
@@ -106,6 +109,18 @@
         <Label id="chipLabel_pre_orders" text="Pre-Orders" width="110" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
+      <!-- Divider -->
+      <Rectangle id="filterDivider" width="1" height="28" color="0x444444FF"
+        translation="[0, 4]" />
+
+      <!-- Slop Toggle -->
+      <Group id="chip_slop_free">
+        <Rectangle id="chipBg_slop_free" width="120" height="36" color="0x1A0000FF" />
+        <Label id="chipLabel_slop_free" text="WITH SLOP" width="120" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFB4B4CC" />
       </Group>
     </LayoutGroup>
 

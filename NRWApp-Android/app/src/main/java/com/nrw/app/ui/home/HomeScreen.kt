@@ -123,7 +123,9 @@ fun HomeScreen(
                     // Filter chips
                     FilterChips(
                         activeFilters = uiState.activeFilters,
-                        onFilterToggled = { viewModel.toggleFilter(it) }
+                        onFilterToggled = { viewModel.toggleFilter(it) },
+                        slopFree = uiState.slopFree,
+                        onSlopFreeToggle = { viewModel.toggleSlopFree() }
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))

@@ -201,6 +201,8 @@ body {
 }
 .cat-btn:hover { border-color: #888; color: #ccc; }
 .cat-btn.on { border-color: var(--c); background: var(--c); color: var(--ct, #fff); }
+.cat-btn.guess { border-color: var(--c); color: var(--c); animation: guess-pulse 1.5s ease-in-out infinite; }
+@keyframes guess-pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
 
 /* Director */
 .r-dir {

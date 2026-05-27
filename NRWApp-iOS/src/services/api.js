@@ -188,10 +188,14 @@ export function filterMovies(movies, filter = null) {
 /**
  * Filter movies by multiple categories (OR logic - cumulative)
  */
-export function filterMoviesMulti(movies, activeFilters, searchQuery = '') {
+export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopFree = false) {
   if (!movies || !Array.isArray(movies)) return [];
   // Exclude reverted movies (failed JustWatch verification, no watch links)
   movies = movies.filter(m => m._enrichment_status !== 'reverted');
+  // Slop-free mode: hide flagged films
+  if (slopFree) {
+    movies = movies.filter(m => !m.is_slop);
+  }
   // Pre-orders only appear when the pre-orders filter is active OR search is active
   if (!activeFilters || !activeFilters.has('pre-orders')) {
     if (!searchQuery) {

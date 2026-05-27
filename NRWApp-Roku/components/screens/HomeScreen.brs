@@ -19,6 +19,7 @@ Sub Init()
     m.allMovies = []
     m.filteredMovies = []
     m.activeFilters = []
+    m.slopFree = false
     m.focusedArea = "grid"  ' "filter", "grid", or "detail"
 
     ' Set up observers
@@ -90,7 +91,20 @@ End Sub
 ' ============================================================================
 Sub ApplyFilters()
     ' Filter movies using multi-select OR logic
-    m.filteredMovies = FilterMoviesMulti(m.allMovies, m.activeFilters)
+    movies = FilterMoviesMulti(m.allMovies, m.activeFilters)
+
+    ' Slop-free mode: hide slop-flagged films
+    if m.slopFree
+        filtered = []
+        for each movie in movies
+            if movie.is_slop <> true
+                filtered.Push(movie)
+            end if
+        end for
+        m.filteredMovies = filtered
+    else
+        m.filteredMovies = movies
+    end if
 
     ' Group by date
     grouped = GroupMoviesByDate(m.filteredMovies)
@@ -140,6 +154,15 @@ End Sub
 ' ============================================================================
 Sub onFilterSelected()
     filterId = m.filterBar.selectedFilter
+
+    ' Slop toggle is separate from category filters
+    if filterId = "slop_free"
+        m.slopFree = NOT m.slopFree
+        m.filterBar.slopFree = m.slopFree
+        ApplyFilters()
+        return
+    end if
+
     ' Toggle filter in array
     index = ArrayIndexOf(m.activeFilters, filterId)
     if index >= 0

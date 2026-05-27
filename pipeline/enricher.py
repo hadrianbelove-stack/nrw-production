@@ -582,6 +582,21 @@ class MovieEnricher:
         else:
             enrichment_results['quality_gate'] = 'passed'
 
+        # Slop classifier guess (only set if not already confirmed by human)
+        if not result.get('is_slop') and result.get('is_slop') is not False:
+            try:
+                from scripts.slop_classifier import classify_slop
+                is_slop, reason, confidence = classify_slop(result)
+                if confidence == 'strong':
+                    result['is_slop'] = is_slop
+                    result.pop('_is_slop_guess', None)
+                else:
+                    result['_is_slop_guess'] = is_slop
+                    result.pop('is_slop', None)
+                result['_slop_reason'] = reason
+            except Exception as e:
+                self.ctx.logger.warning(f"Slop classifier failed for {title}: {e}")
+
         return result
 
     # ------------------------------------------------------------------

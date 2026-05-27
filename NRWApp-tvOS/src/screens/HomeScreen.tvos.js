@@ -103,6 +103,47 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) =>
   );
 });
 
+// Slop Toggle Button - TV remote focusable
+const SlopToggleButton = ({ slopFree, onPress }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.timing(scaleAnim, { toValue: 1.1, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      activeOpacity={1}
+      accessible={true}
+      accessibilityLabel={slopFree ? 'Slop Free mode active' : 'Showing all films including slop'}
+      accessibilityRole="button"
+    >
+      <Animated.View
+        style={[
+          styles.slopButton,
+          slopFree && styles.slopButtonActive,
+          isFocused && styles.slopButtonFocused,
+          { transform: [{ scale: scaleAnim }] },
+        ]}
+      >
+        <Text style={[styles.slopButtonText, slopFree && styles.slopButtonTextActive]}>
+          {slopFree ? 'SLOP FREE' : 'WITH SLOP'}
+        </Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
 // Date Card Component - non-focusable visual divider
 const DateCard = ({ dateParts }) => {
   const isPreOrder = dateParts.dayName === 'PRE-' || dateParts.dayName === 'PRE-ORDER';
@@ -277,6 +318,7 @@ const HomeScreenTvOS = () => {
 
   // Local state - multi-select filters (Set of active filter IDs)
   const [activeFilters, setActiveFilters] = useState(new Set());
+  const [slopFree, setSlopFree] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
 
@@ -336,14 +378,21 @@ const HomeScreenTvOS = () => {
 
   // Get movies based on active filters (multi-select with OR logic - cumulative)
   const displayMovies = useMemo(() => {
+    let movies = filteredMovies;
+
+    // Slop-free mode: hide flagged films
+    if (slopFree) {
+      movies = movies.filter(m => !m.is_slop);
+    }
+
     // If no filters selected, show all (pre-orders only shown when explicitly filtered or during search)
     if (activeFilters.size === 0) {
-      if (searchQuery) return filteredMovies;
-      return filteredMovies.filter(m => !m._is_preorder);
+      if (searchQuery) return movies;
+      return movies.filter(m => !m._is_preorder);
     }
 
     // Filter movies - must pass ANY selected filter (OR logic)
-    return filteredMovies.filter(movie => {
+    return movies.filter(movie => {
       for (const filter of activeFilters) {
         switch (filter) {
           case 'studio':
@@ -659,6 +708,8 @@ const HomeScreenTvOS = () => {
                 onPress={() => handleFilterChange(filter.id)}
               />
             ))}
+            <View style={styles.filterDivider} />
+            <SlopToggleButton slopFree={slopFree} onPress={() => setSlopFree(v => !v)} />
           </View>
         <View style={[styles.searchContainer, searchFocused && styles.searchContainerFocused]}>
           <Text style={styles.searchIcon}>⌕</Text>
@@ -798,6 +849,38 @@ const styles = StyleSheet.create({
   filterButtonTextActive: {
     color: Colors.background,
     fontWeight: '600',
+  },
+  filterDivider: {
+    width: 1,
+    height: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignSelf: 'center',
+    marginHorizontal: 4,
+  },
+  slopButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(255,100,100,0.4)',
+  },
+  slopButtonActive: {
+    backgroundColor: 'rgba(255,68,68,0.15)',
+    borderColor: '#ff4444',
+  },
+  slopButtonFocused: {
+    borderColor: '#ff8888',
+    borderWidth: 2,
+  },
+  slopButtonText: {
+    color: 'rgba(255,180,180,0.8)',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  slopButtonTextActive: {
+    color: '#ff8888',
   },
   listContent: {
     // Center the 5-column grid: (1920 - 5*344 - 4*16) / 2 = 68px
