@@ -1450,7 +1450,9 @@ class ProviderDiscoverer:
         # Save tracking if any pre-orders were graduated
         if tracking_changed and tracking_data:
             try:
-                self.storage.atomic_write_json(tracking_data, tracking_path)
+                if not self.storage.atomic_write_json(tracking_data, tracking_path):
+                    self.logger.error("gap_fill: failed to save tracking DB after pre-order graduation")
+                    errors += 1
                 _sync_parts = []
                 if preorders_graduated:
                     _sync_parts.append(f"{preorders_graduated} graduation(s)")

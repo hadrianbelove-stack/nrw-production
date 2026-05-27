@@ -140,47 +140,6 @@ class TrackingDB:
         conn.close()
         return json.loads(row[0]) if row else None
 
-    def set(self, movie_id: str, data: Dict, export_json: bool = True) -> None:
-        """Upsert a single movie record."""
-        conn = self._connect()
-        try:
-            conn.execute("BEGIN EXCLUSIVE")
-            conn.execute(
-                "INSERT OR REPLACE INTO movies (id, status, digital_date, enriched, data) "
-                "VALUES (?, ?, ?, ?, ?)",
-                (
-                    str(movie_id),
-                    data.get('status'),
-                    data.get('digital_date'),
-                    1 if data.get('enriched') else 0,
-                    json.dumps(data, ensure_ascii=False),
-                ),
-            )
-            conn.commit()
-        except Exception as e:
-            conn.rollback()
-            self.logger.error(f"TrackingDB.set failed for {movie_id}: {e}")
-            raise
-        finally:
-            conn.close()
-        if export_json:
-            try:
-                self.export_json(self.json_path)
-            except Exception as e:
-                self.logger.warning(f"TrackingDB: JSON export failed after set(): {e}")
-
-    def delete(self, movie_id: str, export_json: bool = True) -> None:
-        """Delete a movie record by ID."""
-        conn = self._connect()
-        conn.execute("DELETE FROM movies WHERE id = ?", (str(movie_id),))
-        conn.commit()
-        conn.close()
-        if export_json:
-            try:
-                self.export_json(self.json_path)
-            except Exception as e:
-                self.logger.warning(f"TrackingDB: JSON export failed after delete(): {e}")
-
     # ------------------------------------------------------------------
     # Queries
     # ------------------------------------------------------------------
@@ -217,7 +176,7 @@ class TrackingDB:
         """
         Dump all records to a JSON file (atomic write).
 
-        Called automatically by save_all/set/delete so movie_tracking.json
+        Called automatically by save_all so movie_tracking.json
         stays in sync for Git commits.
 
         Pass `data` to skip re-reading from SQLite (save_all uses this).
