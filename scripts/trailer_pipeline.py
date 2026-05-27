@@ -34,7 +34,7 @@ MEDIA_DIR = os.path.join(PROJECT_ROOT, 'media', 'trailers')
 # Add project root to path for imports
 sys.path.insert(0, SCRIPT_DIR)
 
-from trailer_uploader import load_env, get_b2_api, get_remote_files, upload_file, get_bucket_url
+from trailer_uploader import load_env, get_b2_api, get_remote_files, upload_file, get_bucket_url, ensure_bucket_cors
 from trailer_downloader import download_trailer, extract_youtube_id
 
 BAD_URLS_FILE = os.path.join(PROJECT_ROOT, 'cache', 'bad_trailer_urls.json')
@@ -222,6 +222,7 @@ def stamp_trailer_hosted_urls(dry_run=False):
     try:
         api, bucket, _ = get_b2_connection()
         mp4_ids, vtt_ids = get_hosted_trailer_ids(bucket)
+        ensure_bucket_cors(bucket)
     except Exception as e:
         print(f'WARNING: B2 connection failed ({type(e).__name__}: {str(e)[:100]})')
         print('Skipping stamp — YouTube trailer URLs remain as fallback.')
@@ -232,7 +233,7 @@ def stamp_trailer_hosted_urls(dry_run=False):
     with open(DATA_JSON, 'r') as f:
         data = json.load(f)
 
-    stats = {'stamped': 0, 'already_had': 0, 'no_trailer_in_b2': 0, 'stale_cleaned': 0}
+    stats = {'stamped': 0, 'already_had': 0, 'no_trailer_in_b2': 0, 'stale_cleaned': 0, 'subs_stamped': 0}
 
     for movie in data.get('movies', []):
         movie_id = str(movie.get('id', ''))
@@ -242,6 +243,16 @@ def stamp_trailer_hosted_urls(dry_run=False):
             # Verify existing URL — clean up if the B2 file was rotated out
             if movie_id in mp4_ids:
                 stats['already_had'] += 1
+                # Stamp or clean subtitle URL for already-hosted trailers
+                if movie_id in vtt_ids:
+                    subs_url = f'{bucket_url}/{movie_id}.en.vtt'
+                    if not dry_run and links.get('trailer_hosted_subs') != subs_url:
+                        links['trailer_hosted_subs'] = subs_url
+                        stats['subs_stamped'] += 1
+                elif 'trailer_hosted_subs' in links:
+                    if not dry_run:
+                        links.pop('trailer_hosted_subs')
+                        stats['subs_stamped'] += 1
             else:
                 if dry_run:
                     print(f'  Would clean stale URL: {movie.get("title", movie_id)}')
@@ -262,25 +273,26 @@ def stamp_trailer_hosted_urls(dry_run=False):
         else:
             stats['no_trailer_in_b2'] += 1
 
-        # Stamp or clean subtitle URL
+        # Stamp or clean subtitle URL for newly stamped trailers
         if movie_id in vtt_ids:
             subs_url = f'{bucket_url}/{movie_id}.en.vtt'
             if not dry_run:
                 links['trailer_hosted_subs'] = subs_url
+                stats['subs_stamped'] += 1
         elif 'trailer_hosted_subs' in links:
             if not dry_run:
                 links.pop('trailer_hosted_subs')
 
     # Save data.json
-    changes = stats['stamped'] + stats['stale_cleaned']
+    changes = stats['stamped'] + stats['stale_cleaned'] + stats['subs_stamped']
     if not dry_run and changes > 0:
         safe_write_json(DATA_JSON, data)
-        print(f'Saved data.json: {stats["stamped"]} stamped, {stats["stale_cleaned"]} stale cleaned')
+        print(f'Saved data.json: {stats["stamped"]} stamped, {stats["stale_cleaned"]} stale cleaned, {stats["subs_stamped"]} subs stamped')
 
     return stats
 
 
-def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, bucket_url, clean_after_upload=False, cookies_browser=None, rediscover_on_failure=True):
+def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, bucket_url, clean_after_upload=False, cookies_browser=None, rediscover_on_failure=True, original_language='en'):
     """
     Download a trailer from YouTube and upload to B2.
     Returns (hosted_url, new_trailer_url, fail_reason, fail_detail).
@@ -299,6 +311,7 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
         'year': year,
         'trailer_url': youtube_url,
         'video_id': video_id,
+        'original_language': original_language,
     }
 
     # Download
@@ -347,6 +360,16 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
         if clean_after_upload and os.path.exists(local_path):
             os.remove(local_path)
             print(f'    Cleaned local: {local_path}')
+        # Upload paired VTT subtitle if present (foreign trailers only)
+        vtt_path = os.path.join(MEDIA_DIR, f'{movie_id}.en.vtt')
+        if os.path.exists(vtt_path):
+            try:
+                upload_file(bucket, vtt_path, f'{movie_id}.en.vtt')
+                print(f'    Subtitles uploaded: {movie_id}.en.vtt')
+                if clean_after_upload:
+                    os.remove(vtt_path)
+            except Exception as e:
+                print(f'    VTT upload failed (non-fatal): {str(e)[:80]}')
         return hosted_url, None, None, None
     except Exception as e:
         print(f'    Upload failed: {str(e)[:100]}')
@@ -417,6 +440,7 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
             'title': movie.get('title', 'Unknown'),
             'year': movie.get('year', ''),
             'trailer_url': trailer_url,
+            'original_language': movie.get('original_language', 'en'),
         })
 
     if limit > 0:
@@ -465,7 +489,8 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
             movie['id'], movie['title'], movie['year'],
             movie['trailer_url'], bucket, url_base,
             clean_after_upload=clean_after,
-            cookies_browser=cookies_browser
+            cookies_browser=cookies_browser,
+            original_language=movie.get('original_language', 'en'),
         )
 
         if hosted_url:

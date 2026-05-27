@@ -109,14 +109,10 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
     # Skip if already downloaded
     if os.path.exists(output_path):
         size_mb = os.path.getsize(output_path) / (1024 * 1024)
-        return {
-            'status': 'skipped_exists',
-            'detail': f'{size_mb:.1f}MB on disk',
-            'subs_path': vtt_path if os.path.exists(vtt_path) else None,
-        }
+        return {'status': 'skipped_exists', 'detail': f'{size_mb:.1f}MB on disk'}
 
     if dry_run:
-        return {'status': 'dry_run', 'detail': f'Would download {movie["trailer_url"]}', 'subs_path': None}
+        return {'status': 'dry_run', 'detail': f'Would download {movie["trailer_url"]}'}
 
     ydl_opts = {
         'format': 'bestvideo[height<=1080][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best[height<=1080]',
@@ -157,10 +153,10 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
                 try:
                     info = future.result(timeout=MOVIE_TIMEOUT)
                 except concurrent.futures.TimeoutError:
-                    return {'status': 'failed', 'detail': f'Timed out after {MOVIE_TIMEOUT}s', 'subs_path': None}
+                    return {'status': 'failed', 'detail': f'Timed out after {MOVIE_TIMEOUT}s'}
 
             if info is None:
-                return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap', 'subs_path': None}
+                return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap'}
 
             # Verify the file was created
             if os.path.exists(output_path):
@@ -172,28 +168,24 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
                         cleaned = clean_vtt(f.read())
                     with open(vtt_path, 'w') as f:
                         f.write(cleaned)
-                return {
-                    'status': 'downloaded',
-                    'detail': f'{size_mb:.1f}MB, {duration}s',
-                    'subs_path': vtt_path if os.path.exists(vtt_path) else None,
-                }
+                return {'status': 'downloaded', 'detail': f'{size_mb:.1f}MB, {duration}s'}
             else:
-                return {'status': 'failed', 'detail': 'File not created after download', 'subs_path': None}
+                return {'status': 'failed', 'detail': 'File not created after download'}
 
     except yt_dlp.utils.DownloadError as e:
         error_msg = str(e).lower()
         if 'sign in' in error_msg or 'age' in error_msg:
-            return {'status': 'skipped_age_restricted', 'detail': str(e)[:100], 'subs_path': None}
+            return {'status': 'skipped_age_restricted', 'detail': str(e)[:100]}
         elif 'unavailable' in error_msg or 'removed' in error_msg or 'private' in error_msg:
-            return {'status': 'skipped_unavailable', 'detail': str(e)[:100], 'subs_path': None}
+            return {'status': 'skipped_unavailable', 'detail': str(e)[:100]}
         elif 'geo' in error_msg or 'country' in error_msg:
-            return {'status': 'skipped_region_locked', 'detail': str(e)[:100], 'subs_path': None}
+            return {'status': 'skipped_region_locked', 'detail': str(e)[:100]}
         elif 'filtered' in error_msg:
-            return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap', 'subs_path': None}
+            return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap'}
         else:
-            return {'status': 'failed', 'detail': str(e)[:150], 'subs_path': None}
+            return {'status': 'failed', 'detail': str(e)[:150]}
     except Exception as e:
-        return {'status': 'failed', 'detail': str(e)[:150], 'subs_path': None}
+        return {'status': 'failed', 'detail': str(e)[:150]}
 
 
 def main():
