@@ -185,7 +185,8 @@ const NRWMobile = {
             slopToggle.addEventListener('click', () => {
                 this.slopFree = !this.slopFree;
                 slopToggle.classList.toggle('active', this.slopFree);
-                slopToggle.textContent = this.slopFree ? 'SLOP FREE' : 'WITH SLOP';
+                const slopLabel = document.getElementById('slop-label');
+                if (slopLabel) slopLabel.textContent = this.slopFree ? 'SLOP-FREE' : 'WITH SLOP';
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);

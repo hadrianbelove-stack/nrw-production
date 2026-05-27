@@ -109,23 +109,54 @@ header h1 {
     align-self: stretch;
     margin: 0 0.25rem;
 }
-.slop-toggle {
-    border-color: rgba(255,100,100,0.4);
-    color: rgba(255,180,180,0.8);
+.slop-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    padding: 2px 0;
+    flex-shrink: 0;
 }
-.slop-toggle:hover {
-    background: rgba(255,68,68,0.15);
-    border-color: #ff4444;
-    color: #ff8888;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255,68,68,0.2);
+.slop-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #555;
+    transition: color 0.25s;
+    white-space: nowrap;
 }
-.slop-toggle.active {
-    background: rgba(255,68,68,0.15);
-    border-color: #ff4444;
-    color: #ff8888;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255,68,68,0.2);
+.slop-toggle-wrap.active .slop-label {
+    color: #00d4aa;
+}
+.slop-track {
+    width: 42px;
+    height: 24px;
+    border-radius: 25px;
+    background: #2a2a2a;
+    border: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.25s;
+}
+.slop-toggle-wrap.active .slop-track {
+    background: #00d4aa;
+}
+.slop-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 17px;
+    height: 17px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.5);
+    transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+}
+.slop-toggle-wrap.active .slop-thumb {
+    transform: translateX(18px);
 }
 
 /* Search input */
