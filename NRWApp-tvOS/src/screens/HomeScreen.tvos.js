@@ -188,6 +188,14 @@ const DateCard = ({ dateParts }) => {
           {!isPreOrder && dateParts.month ? (
             <Text style={styles.dateMonth}>{dateParts.month}</Text>
           ) : null}
+          {/* Cascading chevrons */}
+          <View style={styles.dateChevrons}>
+            {[0.9, 0.7, 0.5, 0.3, 0.15].map((opacity, i) => (
+              <Text key={i} style={[styles.dateChevron, {color: accentColor, opacity}]}>
+                {'›'}
+              </Text>
+            ))}
+          </View>
         </View>
       </View>
     </View>
@@ -1059,6 +1067,15 @@ const styles = StyleSheet.create({
     color: '#888',
     letterSpacing: 2,
     marginTop: 4,
+  },
+  dateChevrons: {
+    flexDirection: 'row',
+    marginTop: 6,
+  },
+  dateChevron: {
+    fontSize: 40,
+    fontWeight: '800',
+    lineHeight: 40,
   },
   cardWrapper: {
     marginRight: CARD_GAP,

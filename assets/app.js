@@ -482,9 +482,10 @@ const NRW = {
                 if (!preorderSectionStarted) {
                     preorderSectionStarted = true;
                     html += `<div class="date-divider-card">
-                        <div class="date-content date-content-preorder">
-                            <div class="date-day">PRE-</div>
-                            <div class="date-number">ORDER</div>
+                        <div class="date-bar date-bar-preorder"><div class="date-day">PRE-ORDER</div></div>
+                        <div class="date-body">
+                            <div class="date-number date-number-preorder">SOON</div>
+                            <div class="date-chevrons date-chevrons-preorder"><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span></div>
                         </div>
                     </div>`;
                 }
@@ -516,11 +517,12 @@ const NRW = {
                 const datePrefix = isBootstrapDate ? '~' : '';
                 const dateTitle = isBootstrapDate ? 'Approximate date - may have been available earlier' : '';
 
-                html += `<div class="date-divider-card">
-                    <div class="date-content ${isBootstrapDate ? 'date-approximate' : ''}" ${dateTitle ? `title="${dateTitle}"` : ''}>
-                        <div class="date-day">${d.toLocaleDateString('en', {weekday: 'short'}).toUpperCase()}</div>
+                html += `<div class="date-divider-card${isBootstrapDate ? ' date-approximate' : ''}" ${dateTitle ? `title="${dateTitle}"` : ''}>
+                    <div class="date-bar"><div class="date-day">${d.toLocaleDateString('en', {weekday: 'short'}).toUpperCase()}</div></div>
+                    <div class="date-body">
                         <div class="date-number">${datePrefix}${d.getDate()}</div>
                         <div class="date-month">${d.toLocaleDateString('en', {month: 'short'}).toUpperCase()}</div>
+                        <div class="date-chevrons"><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span></div>
                     </div>
                 </div>`;
 
