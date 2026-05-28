@@ -413,9 +413,5 @@ const styles = StyleSheet.create({
     fontSize: Typography.caption + 2,
     fontWeight: '700',
   },
-  country: {
-    color: Colors.textMuted,
-    fontSize: Typography.caption - 1,
-    marginTop: 1,
-  },
+
 });

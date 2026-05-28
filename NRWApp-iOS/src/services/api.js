@@ -221,9 +221,6 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopF
           if (movie.categories?.is_foreign ||
             (movie.original_language && movie.original_language !== 'en')) return true;
           break;
-        case 'plex':
-          if (movie.plex && movie.plex.deep_link) return true;
-          break;
         case 'restorations':
           if (movie.categories?.is_restoration === true) return true;
           break;
