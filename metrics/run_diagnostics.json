@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-27T13:53:10.272265",
-  "duration_seconds": 5712.527454,
+  "timestamp": "2026-05-28T03:16:06.911045",
+  "duration_seconds": 4234.193358,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,65 +8,65 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 7.790084,
+      "duration_seconds": 6.996342,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-25 to 2026-05-27 (incremental mode, 44 intaked)\n\u2705 Movie intake complete: 44 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-27 to 2026-05-27\n   \ud83d\udccb The Rain Leaves Traces (6 eps)\n   \ud83d\udccb My "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-05-26 to 2026-05-28 (incremental mode, 28 intaked)\n\u2705 Movie intake complete: 28 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-04-28 to 2026-05-28\n   \ud83d\udccb My Royal Nemesis (14 eps) on Netflix\n  "
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 387.593946,
+      "duration_seconds": 384.078109,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 172 festival slugs\nScanning 172 festivals for catalogs...\n  Progress: 75/172 slugs | 27 scanned | 627 films indexed\n  Progress: 100/172 slugs | 52 scanned | 1158 films indexed\n  Progress: 125/172 slugs | 77 scanned | 1414 films indexed\n  Progress: 150/172 slugs | 102 scanned | 1958 films indexed\n  Done: 124 festivals, 119 with films, 48 failed, 2208 total films\n  Active: 2208 | Expired: 0 | Unique: 168"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 171 festival slugs\nScanning 171 festivals for catalogs...\n  Progress: 75/171 slugs | 27 scanned | 695 films indexed\n  Progress: 100/171 slugs | 52 scanned | 1074 films indexed\n  Progress: 125/171 slugs | 77 scanned | 1438 films indexed\n  Progress: 150/171 slugs | 102 scanned | 1885 films indexed\n  Done: 123 festivals, 118 with films, 48 failed, 2212 total films\n  Active: 2212 | Expired: 0 | Unique: 168"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2835.871032,
+      "duration_seconds": 2588.412731,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17234 total movies\n\ud83d\udd0d Raw tracking filter: 13585 movies\n\ud83d\udd0d Assigned tracking_movies list: 13585\n\ud83d\udd0d Found 13585 movies in tracking status\n  Priority queue (last 180 days): 613 movies\n  Older movies: 12972 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13585 movies for digital availability...\n\n   \ud83d\udcdd Movie Room to Move already in data.json - skipping immediate add\n  \ud83d\udcc5 Room to Move \u2014 pendi"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17264 total movies\n\ud83d\udd0d Raw tracking filter: 13595 movies\n\ud83d\udd0d Assigned tracking_movies list: 13595\n\ud83d\udd0d Found 13595 movies in tracking status\n  Priority queue (last 180 days): 616 movies\n  Older movies: 12979 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13595 movies for digital availability...\n\n   \ud83d\udcdd Movie Emi Mart\u00ednez: The Kid Who Stops Time already in data.json - skipping immediate add\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 2060.360016,
+      "duration_seconds": 1081.478273,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 23 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 What's the Story, Wishbone?: Amazon not found\n      \u00b7 What's the Story, Wishbo"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 19 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Palestine 36: Amazon not found\n      \u2713 Palestine 36: Fandango found\n      \u00b7 Me"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 3.756576,
+      "duration_seconds": 1.685971,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 775 trailers and 0 subtitle files in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  638\n  Stale cleaned:    0\n  Not in B2:        185\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 781 trailers and 21 subtitle files in B2 bucket\nSaved data.json: 0 stamped, 0 stale cleaned, 12 subs stamped\n\nStamp results:\n  Stamped:          0\n  Already had URL:  637\n  Stale cleaned:    0\n  Not in B2:        178\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 164.287273,
+      "duration_seconds": 158.178557,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 295 of 823 wall movies (last 30 days)\n  \ud83c\udfac Mongrels \u2014 Director Wikipedia added (Jerome Yoo)\n  \ud83c\udfac Summer of '94 \u2014 Director Wikipedia added (Dave LaMattina)\n  \ud83c\udfac Kontinental '25 \u2014 Director Wikipedia added (Radu Jude)\n  + Blind Cop 2 \u2014 new services added\n  \ud83c\udf93 Blind Cop 2 \u2014 pre-order graduated (now available)\n  + The Last Viking \u2014 new services added\n  \ud83c\udf93 The Last Viking \u2014 pre-order graduated (now available)\n  + Two Prosecutors \u2014 new services"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 285 of 815 wall movies (last 30 days)\n  \ud83c\udfac I Swear \u2014 Director Wikipedia added (Kirk Jones)\n  + Kontinental '25 \u2014 new services added\n  \ud83c\udf93 Blind Cop 2 \u2014 pre-order graduated (now available)\n  \ud83c\udf93 The Last Viking \u2014 pre-order graduated (now available)\n  + Two Prosecutors \u2014 new services added\n  \ud83d\udcbe Tracking synced (2 graduation(s))\n\n  \ud83d\udcca Gap fill results (158s, 285 movies):\n     Watch links updated: 2\n     Wikipedia filled: 0\n     Director Wikip"
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 239.089299,
+      "duration_seconds": 0.602945,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 15 movies missing trailers:\n  \u2022 Maid Robot 2\n  \u2022 Whispers Next Door\n  \u2022 Akin's Desert\n  \u2022 Who Killed These Women? (The Tinley Park 5)\n  \u2022 Screw Mickiewicz 3\n  \u2022 \u00a1Quba!\n  \u2022 Making of Lord of the Flies\n  \u2022 Contact in the Woods: The Dr. Johnathan Reed Story\n  \u2022 KillTonyMania\n  \u2022 The Crossbow Murders: The Killings That Shocked Britain.\n  \u2022 Bride or Die\n  \u2022 Song of the Samurai - Chapter: Youthful Days in Edo\n  \u2022 Clash of the Superpowers: America"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\u2705 No trailer gaps eligible for retry\n\u2705 Trailer re-enrichment complete: 0 movies updated\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 13.179266,
+      "duration_seconds": 12.166459,
       "error": null,
       "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 63 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 29 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.428559,
+      "duration_seconds": 0.424791,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 10 movies (>90 days old) \u2192 data_archive.json\n   data.json: 813 movies | archive: 514 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 1 movies (>90 days old) \u2192 data_archive.json\n   data.json: 814 movies | archive: 517 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -77,50 +77,50 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 17234,
-    "tracking": 13565,
-    "available": 3318,
-    "data_movies": 813,
-    "movies_with_links": 787,
-    "movies_with_rt": 545,
+    "total": 17264,
+    "tracking": 13591,
+    "available": 3322,
+    "data_movies": 814,
+    "movies_with_links": 790,
+    "movies_with_rt": 543,
     "movies_with_wikipedia": 431,
-    "movies_with_trailers": 770
+    "movies_with_trailers": 775
   },
   "enrichment_metrics": {
-    "timestamp": "2026-05-27T13:46:08.404415",
-    "movies_requested": 22,
-    "movies_enriched": 19,
+    "timestamp": "2026-05-28T03:13:13.002233",
+    "movies_requested": 10,
+    "movies_enriched": 7,
     "movies_deferred": 3,
     "deferred_details": [
+      {
+        "title": "Emi Mart\u00ednez: The Kid Who Stops Time",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-05-28",
+        "discovered_at": "2026-05-04T12:19:01.279530",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Propeller One-Way Night Coach",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-05-28",
+        "discovered_at": "2026-05-10T05:10:08.974232",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
+      },
       {
         "title": "Palestine 36",
         "reason": "jw_revert:justwatch_no_valid_offers",
         "digital_date": "2026-05-19",
-        "discovered_at": "2026-05-27T12:24:43.068287",
+        "discovered_at": "2026-05-28T02:12:13.993955",
         "discovery_source": "tmdb_type4",
-        "revert_count": 10,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Chum",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-06-05",
-        "discovered_at": "2026-05-27T13:11:42.029703",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 1,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "What's the Story, Wishbone?",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-06-10",
-        "discovered_at": "2026-05-27T13:11:43.670452",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 1,
+        "revert_count": 11,
         "tmdb_platforms": []
       }
     ],
-    "enrichment_duration_seconds": 2058.98,
+    "enrichment_duration_seconds": 1080.08,
     "error_details": [],
     "total_errors": 0
   }
