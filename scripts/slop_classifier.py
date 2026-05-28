@@ -44,6 +44,8 @@ MANUAL_OVERRIDES = {
     1541658: False,   # One Golden Summer (MAX doc)
     1620034: False,   # Marty, Life Is Short (Imagine Documentaries)
     1658982: False,   # The Roast of Kevin Hart
+    # Human-confirmed slop
+    1686326: True,    # Emi Martínez: The Kid Who Stops Time
 }
 
 # ── Prestige streaming platforms → instant NOT SLOP ──────────────────────────
