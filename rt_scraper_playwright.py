@@ -197,39 +197,6 @@ class RTScraperPlaywright(PlaywrightScraperBase):
         # All attempts failed
         return None
 
-    def _capture_failure_diagnostics(self, title, year, error_msg):
-        """Capture screenshot and HTML on failure for debugging."""
-        if not self.screenshots_enabled or not self.page:
-            return {}
-
-        try:
-            os.makedirs(self.screenshot_dir, exist_ok=True)
-
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            safe_title = re.sub(r'[^a-zA-Z0-9_-]', '_', title)[:50]
-            filename_base = f"{safe_title}_{year}_{timestamp}"
-
-            screenshot_path = os.path.join(self.screenshot_dir, f"{filename_base}.png")
-            self.page.screenshot(path=screenshot_path, full_page=True)
-
-            html_path = os.path.join(self.screenshot_dir, f"{filename_base}.html")
-            html_content = self.page.content()
-            with open(html_path, 'w', encoding='utf-8') as f:
-                f.write(html_content)
-
-            self._log(f"Screenshot saved: {screenshot_path}")
-            self._cleanup_old_screenshots()
-
-            return {
-                'screenshot': screenshot_path,
-                'html': html_path,
-                'error': error_msg
-            }
-
-        except Exception as e:
-            self._log(f"Failed to capture diagnostics: {e}", level='warning')
-            return {'error': error_msg}
-
     def _is_cache_expired(self, cached_entry):
         """Check if cache entry has expired (90-day TTL)."""
         if 'scraped_at' not in cached_entry:
@@ -496,7 +463,7 @@ class RTScraperPlaywright(PlaywrightScraperBase):
             self._log(f"RT search error for {title}: {e}", level='error')
             return None
 
-    def _scrape_rt_page(self, title, year):
+    def _scrape_rt_page(self, title, year, director=None):
         """Find RT page URL and extract score.
 
         Strategy order:
@@ -506,6 +473,7 @@ class RTScraperPlaywright(PlaywrightScraperBase):
         Args:
             title: Movie title
             year: Release year
+            director: Optional director name for verification
 
         Returns:
             dict: {'url': ..., 'score': ...} or None if not found
@@ -577,7 +545,8 @@ class RTScraperPlaywright(PlaywrightScraperBase):
 
             rt_score = self._extract_score_from_rt_page(rt_link)
 
-            # Year verification: reject wrong-year matches (e.g. "30 Minutes" 2025 → "30 Minutes or Less" 2011)
+            # Year, title, and director verification
+            page_title = ""
             try:
                 page_year = None
                 # Try 1: Page title often has "(YYYY)" for newer movies
@@ -619,6 +588,23 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                 self._log(f"Year verification error: {e} — rejecting {rt_link}", level='warning')
                 rt_link = None
                 rt_score = None
+
+            # Title verification: confirm page shows the right movie
+            if rt_link:
+                movie_part = page_title.split('|')[0].strip() if '|' in page_title else page_title.strip()
+                page_movie_title = re.sub(r'\s*\(\d{4}\)\s*', '', movie_part).strip()
+                if page_movie_title and not page_title_matches(page_movie_title, title):
+                    self._log(f"Title mismatch: page='{page_movie_title}', expected='{title}' — rejecting {rt_link}", level='warning')
+                    rt_link = None
+                    rt_score = None
+
+            # Director verification: strongest signal — read from JSON-LD on loaded page
+            if rt_link and director:
+                page_directors = self._extract_directors_from_page()
+                if page_directors and not self._director_matches(director, page_directors):
+                    self._log(f"Director mismatch: page has {page_directors}, expected '{director}' — rejecting {rt_link}", level='warning')
+                    rt_link = None
+                    rt_score = None
 
             if not rt_link:
                 self._log(f"No RT link found for {title} ({year})", level='warning')
@@ -668,12 +654,47 @@ class RTScraperPlaywright(PlaywrightScraperBase):
             self.record_error(type(e).__name__)
             return None
 
-    def scrape_rt_score(self, title, year):
+    def _extract_directors_from_page(self):
+        """Extract director names from JSON-LD on the currently-loaded page."""
+        try:
+            scripts = self.page.query_selector_all('script[type="application/ld+json"]')
+            for script in scripts:
+                try:
+                    data = json.loads(script.text_content() or '{}')
+                    director_field = data.get('director', [])
+                    if isinstance(director_field, list):
+                        names = [d.get('name', '') for d in director_field if isinstance(d, dict) and d.get('name')]
+                        if names:
+                            return names
+                    elif isinstance(director_field, dict) and director_field.get('name'):
+                        return [director_field['name']]
+                except (json.JSONDecodeError, ValueError):
+                    continue
+        except Exception:
+            pass
+        return []
+
+    @staticmethod
+    def _director_matches(expected, page_directors):
+        """Compare expected director against page directors by last name."""
+        if not expected or not page_directors:
+            return True  # Can't verify — assume OK
+        expected_last = re.sub(r'[^a-z]', '', expected.strip().split()[-1].lower())
+        for pd in page_directors:
+            if not pd:
+                continue
+            pd_last = re.sub(r'[^a-z]', '', pd.strip().split()[-1].lower())
+            if expected_last and pd_last and expected_last == pd_last:
+                return True
+        return False
+
+    def scrape_rt_score(self, title, year, director=None):
         """Public wrapper function to scrape RT score with caching and retry logic.
 
         Args:
             title: Movie title
             year: Release year
+            director: Optional director name for verification
 
         Returns:
             dict: {'url': ..., 'score': ...} or None if not found
@@ -691,7 +712,7 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                     'score': cached_data.get('score')
                 } if cached_data.get('url') or cached_data.get('score') else None
 
-        result = self._retry_with_backoff(lambda: self._scrape_rt_page(title, year))
+        result = self._retry_with_backoff(lambda: self._scrape_rt_page(title, year, director))
         return result
 
     def close(self):

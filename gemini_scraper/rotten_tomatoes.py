@@ -573,7 +573,7 @@ class HybridRTFinder:
         playwright = self._get_playwright_scraper()
         if playwright:
             try:
-                result = playwright.scrape_rt_score(title, year)
+                result = playwright.scrape_rt_score(title, year, director=director)
                 if result and result.get('url'):
                     # OMDb cross-check: if score diverges >5 points from OMDb,
                     # Playwright landed on the wrong page — reject and fall through.
