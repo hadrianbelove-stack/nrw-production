@@ -620,7 +620,6 @@ class GeminiCapsuleWriter(GeminiFinderBase):
 
         return ''
 
-
     # -------------------------------------------------------------------------
     # Prompt building
     # -------------------------------------------------------------------------
@@ -901,6 +900,90 @@ VERIFICATION:"""
         self.stats['capsules_written'] += 1
         return capsule
 
+    def _generate_factoid_primer(self, sources: Dict, context: str,
+                                title: str, year: int, director: str = None) -> str:
+        """Generate a rich factoid primer — bullet list of production context,
+        interview quotes, and behind-the-scenes details for the capsule editor.
+
+        Uses already-fetched sources + Google Search grounding for interviews
+        and press coverage not captured by the scraping phase.
+        """
+        if not self._init_gemini():
+            return ''
+
+        source_lines = []
+        if sources.get('wikipedia'):
+            source_lines.append(f"WIKIPEDIA SUMMARY:\n{sources['wikipedia']}")
+        wiki_sections = sources.get('wiki_sections', {})
+        if wiki_sections:
+            for key in ['production', 'development', 'filming', 'reception', 'cast']:
+                if wiki_sections.get(key):
+                    source_lines.append(f"WIKIPEDIA — {key.upper()}:\n{wiki_sections[key]}")
+            quotes = wiki_sections.get('quotes', [])
+            if quotes:
+                source_lines.append("WIKIPEDIA QUOTES:\n" + '\n'.join(f'- "{q}"' for q in quotes))
+        if sources.get('imdb_trivia'):
+            source_lines.append(f"IMDB TRIVIA:\n{sources['imdb_trivia']}")
+        if sources.get('rt_consensus'):
+            source_lines.append(f"RT CONSENSUS:\n{sources['rt_consensus']}")
+        if sources.get('letterboxd'):
+            source_lines.append(f"LETTERBOXD REACTIONS:\n{sources['letterboxd']}")
+
+        source_block = '\n\n'.join(source_lines)
+        director_str = f" directed by {director}" if director else ""
+
+        prompt = f"""You are a film researcher preparing a detailed factoid primer for an editor who will write a short capsule description of "{title}" ({year}){director_str}.
+
+MOVIE METADATA:
+{context}
+
+{("SOURCE MATERIAL:" + chr(10) + source_block) if source_block else ""}
+
+Using the sources above AND Google Search, dig up everything interesting and useful about this film. Go deep — the editor wants enough material to make informed choices. Cover ALL of the following that apply:
+
+- Director's full track record: previous films, style, career arc, notable collaborators, why this project
+- Cast: each principal actor's relevant credits, why they're interesting in this role, any notable casting story
+- Production: how was it made, where shot, budget scale, production company, any unusual conditions or creative choices
+- Development and script: source material, how long in development, who wrote it, any interesting origin story
+- Direct quotes from interviews with the director, writer, or cast — include the speaker, the outlet, and the year when known. Go find them.
+- Festival run: every significant festival, awards won or nominated, how it performed critically at premiere
+- Distribution: who acquired it, theatrical run details, how it's being released, any interesting release strategy
+- Cultural, historical, or social context the film engages with — what's the film in conversation with?
+- Comparisons to other films or filmmakers that would help orient an editor
+- Anything surprising, counterintuitive, or that a well-read cinephile would find genuinely interesting
+
+Output ONLY a bullet list using • characters. Write 10–15 bullets. Bullets can be 2–3 sentences when the detail warrants it — don't truncate interesting information to fit a one-liner. If you have a direct quote, include it verbatim with full attribution. Do not number the bullets. No headers, no sections — just the bullets.
+
+FACTOID PRIMER:"""
+
+        def _make_request():
+            self._enforce_rate_limit()
+            config = self.types.GenerateContentConfig(
+                tools=[self.grounding_tool],
+                temperature=0.5
+            )
+            response = self._generate(prompt, config=config)
+            return response.text.strip() if response.text else None
+
+        try:
+            raw = self._retry_with_backoff(_make_request)
+            if raw:
+                lines = [l.strip() for l in raw.split('\n') if l.strip()]
+                bullets = []
+                for line in lines:
+                    # Skip header/label lines (e.g. "FACTOID PRIMER:")
+                    if line.endswith(':') and line == line.upper():
+                        continue
+                    if line.startswith(('•', '-', '*')):
+                        bullets.append('• ' + line.lstrip('•-* ').strip())
+                    elif line and not line.startswith('#'):
+                        bullets.append('• ' + line)
+                return '\n'.join(bullets)
+        except Exception as e:
+            logger.warning(f"Factoid primer failed for {title}: {e}")
+
+        return ''
+
     def write_capsule(
         self,
         title: str,
@@ -963,6 +1046,7 @@ VERIFICATION:"""
                                 'capsule': cached_data['capsule'],
                                 'capsules': cached_data.get('capsules', [cached_data['capsule']]),
                                 'verification': cached_data.get('verification', []),
+                                'factoid_primer': cached_data.get('factoid_primer', ''),
                                 'sources_used': cached_data.get('sources_used', {})
                             }
                     except (ValueError, TypeError):
@@ -1022,6 +1106,12 @@ VERIFICATION:"""
             }
             verification = self._verify_capsule(primary, sources, metadata)
 
+        # --- Phase 4: Factoid Primer ---
+        logger.info(f"  Generating factoid primer...")
+        factoid_primer = self._generate_factoid_primer(
+            sources, context, title, year, director=director
+        )
+
         # Cache result
         self.cache[cache_key] = {
             'capsule': primary,
@@ -1031,6 +1121,7 @@ VERIFICATION:"""
             'director': director,
             'word_count': word_count,
             'verification': verification,
+            'factoid_primer': factoid_primer,
             'sources_used': {
                 k: (v[:200] if isinstance(v, str) else v) if v else ''
                 for k, v in sources.items()
@@ -1045,6 +1136,7 @@ VERIFICATION:"""
             'capsule': primary,
             'capsules': capsules,
             'verification': verification,
+            'factoid_primer': factoid_primer,
             'sources_used': sources
         }
 
