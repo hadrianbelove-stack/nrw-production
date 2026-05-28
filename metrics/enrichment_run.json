@@ -1,38 +1,29 @@
 {
-  "timestamp": "2026-05-28T03:13:13.002233",
-  "movies_requested": 10,
-  "movies_enriched": 7,
-  "movies_deferred": 3,
+  "timestamp": "2026-05-28T13:23:44.464103",
+  "movies_requested": 5,
+  "movies_enriched": 3,
+  "movies_deferred": 2,
   "deferred_details": [
-    {
-      "title": "Emi Mart\u00ednez: The Kid Who Stops Time",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-05-28",
-      "discovered_at": "2026-05-04T12:19:01.279530",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": []
-    },
     {
       "title": "Propeller One-Way Night Coach",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-05-28",
-      "discovered_at": "2026-05-10T05:10:08.974232",
+      "discovered_at": "2026-05-28T12:31:09.971068",
       "discovery_source": "tmdb_type4",
-      "revert_count": 1,
+      "revert_count": 2,
       "tmdb_platforms": []
     },
     {
       "title": "Palestine 36",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-05-19",
-      "discovered_at": "2026-05-28T02:12:13.993955",
+      "discovered_at": "2026-05-28T12:31:16.044739",
       "discovery_source": "tmdb_type4",
-      "revert_count": 11,
+      "revert_count": 12,
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 1080.08,
+  "enrichment_duration_seconds": 628.21,
   "error_details": [],
   "total_errors": 0
 }

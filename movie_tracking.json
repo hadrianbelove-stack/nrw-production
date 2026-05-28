@@ -2490,7 +2490,8 @@
       "year": 2025,
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-19"
+      "_jw_reverted_at": "2026-05-19",
+      "_skip_provider_discovery": true
     },
     "1520821": {
       "title": "LETTERS / PISMA",
@@ -60504,7 +60505,7 @@
       "discovery_pass": "B",
       "has_providers": false,
       "year": 2025,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-27"
     },
@@ -114898,7 +114899,7 @@
       "festival": "Cannes",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 5,
+      "_jw_revert_count": 6,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-20"
     },
@@ -122196,7 +122197,7 @@
       "festival": "Tribeca",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-28"
     },
@@ -123386,7 +123387,7 @@
       "_is_preorder": true,
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 11,
+      "_jw_revert_count": 12,
       "_transitioned_at": "2026-05-28",
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-28"
@@ -204033,7 +204034,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-21"
     },
@@ -206728,12 +206729,22 @@
     "1537707": {
       "title": "Antarctica - Domain One",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-10",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-05-28",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "The Surf Network Amazon Channel"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-05-28",
+      "_transitioned_at": "2026-05-28"
     },
     "1507233": {
       "title": "Manithan Deivamagalam",
@@ -216265,7 +216276,7 @@
       "providers": {},
       "intake_pass": "B",
       "has_providers": false,
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-28"
     },
@@ -217975,7 +217986,7 @@
     "1686326": {
       "title": "Emi Martínez: The Kid Who Stops Time",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-05-04",
       "digital_date": "2026-05-28",
       "providers": {
@@ -217987,12 +217998,9 @@
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "has_providers": true,
-      "enriched": false,
-      "enrichment_date": null,
-      "_transitioned_at": "2026-05-28",
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-28",
-      "_jw_revert_count": 1
+      "enriched": true,
+      "enrichment_date": "2026-05-28",
+      "_transitioned_at": "2026-05-28"
     },
     "1620848": {
       "title": "Homunculus",
@@ -218604,7 +218612,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-21"
     },
@@ -220677,9 +220685,9 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-05-28",
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-28",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-05-28"
     },
     "1585239": {
       "title": "Club Kid",
@@ -224103,7 +224111,7 @@
       "digital_date": "2026-05-18",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-20"
     },
@@ -224348,7 +224356,7 @@
       "digital_date": "2026-05-18",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-20"
     },
@@ -224360,7 +224368,7 @@
       "digital_date": "2026-05-17",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-20"
     },
@@ -224706,7 +224714,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 5,
+      "_jw_revert_count": 6,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-23"
     },
@@ -224858,7 +224866,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-25"
     },
@@ -225468,7 +225476,7 @@
       "digital_date": "2026-05-21",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 6,
+      "_jw_revert_count": 7,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-22"
     },
@@ -225607,7 +225615,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 5,
+      "_jw_revert_count": 6,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-23"
     },
@@ -225790,7 +225798,7 @@
       "digital_date": "2026-05-23",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 5,
+      "_jw_revert_count": 6,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-23"
     },
@@ -225803,7 +225811,7 @@
       "providers": {},
       "intake_pass": "A",
       "has_providers": false,
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-24"
     },
@@ -226270,7 +226278,7 @@
       "digital_date": "2026-05-25",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-25"
     },
@@ -226511,7 +226519,7 @@
       "digital_date": "2026-05-26",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-27"
     },
@@ -226595,7 +226603,7 @@
       "digital_date": "2026-05-26",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-27"
     },
@@ -227545,6 +227553,56 @@
         "Shudder",
         "AMC+"
       ],
+      "has_providers": false
+    },
+    "1703621": {
+      "title": "Spider-Noir",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "A",
+      "has_providers": false
+    },
+    "1663925": {
+      "title": "Bonolata Sen",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1567834": {
+      "title": "Historias Breves 24",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1703542": {
+      "title": "Khostrov's Heart",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1703499": {
+      "title": "Sold to Death",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-05-28",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
       "has_providers": false
     }
   }
