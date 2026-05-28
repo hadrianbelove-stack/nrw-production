@@ -65,10 +65,15 @@ class TrackingDB:
         conn.commit()
         conn.close()
 
-        if not db_existed and os.path.exists(self.json_path):
-            self.logger.info(f"TrackingDB: fresh DB — importing from {self.json_path}")
-            count = self.import_json(self.json_path)
-            self.logger.info(f"TrackingDB: imported {count} movies from JSON")
+        if os.path.exists(self.json_path):
+            if not db_existed:
+                self.logger.info(f"TrackingDB: fresh DB — importing from {self.json_path}")
+                count = self.import_json(self.json_path)
+                self.logger.info(f"TrackingDB: imported {count} movies from JSON")
+            elif os.path.getmtime(self.json_path) > os.path.getmtime(self.db_path):
+                self.logger.info(f"TrackingDB: JSON is newer than DB — re-syncing from {self.json_path}")
+                count = self.import_json(self.json_path)
+                self.logger.info(f"TrackingDB: re-synced {count} movies from JSON")
 
     # ------------------------------------------------------------------
     # Bulk load/save  (matches the old 'load whole file / save whole file'

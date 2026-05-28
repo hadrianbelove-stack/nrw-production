@@ -16,10 +16,12 @@ detailed, scannable diagnostic report with:
 
 import json
 import os
+import sys
 from collections import Counter
 from datetime import date, timedelta
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE)
 today_dt = date.today()
 today = today_dt.isoformat()
 three_days_ago = (today_dt - timedelta(days=3)).isoformat()
@@ -58,8 +60,9 @@ try:
         if title:
             tracking[title] = m
         tracking[str(mid)] = m
-except Exception:
-    pass
+except Exception as _tdb_err:
+    import sys as _sys
+    print(f'Warning: tracking DB unavailable ({_tdb_err})', file=_sys.stderr)
 
 # ── Helper: get watch link services for a movie ─────────────────────────────
 

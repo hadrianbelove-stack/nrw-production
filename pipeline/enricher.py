@@ -1078,7 +1078,7 @@ class MovieEnricher:
                     _today_iso = datetime.now().strftime('%Y-%m-%d')
                     tracking_data['movies'][movie_id]['status'] = 'tracking'
                     tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason
-                    tracking_data['movies'][movie_id].setdefault('_jw_reverted_at', _today_iso)
+                    tracking_data['movies'][movie_id]['_jw_reverted_at'] = _today_iso
                     _revert_count = tracking_data['movies'][movie_id].get('_jw_revert_count', 0) + 1
                     tracking_data['movies'][movie_id]['_jw_revert_count'] = _revert_count
                     existing_movies[movie_index]['_jw_reverted'] = True
@@ -1311,7 +1311,7 @@ class MovieEnricher:
                                 _zl_revert_count = tracking_data['movies'][mid].get('_jw_revert_count', 0) + 1
                                 tracking_data['movies'][mid]['status'] = 'tracking'
                                 tracking_data['movies'][mid]['_jw_revert_reason'] = 'zero_watch_links'
-                                tracking_data['movies'][mid].setdefault('_jw_reverted_at', _today_zl)
+                                tracking_data['movies'][mid]['_jw_reverted_at'] = _today_zl
                                 tracking_data['movies'][mid]['_jw_revert_count'] = _zl_revert_count
                                 tracking_data['movies'][mid]['enriched'] = False
                                 tracking_data['movies'][mid].pop('enrichment_date', None)

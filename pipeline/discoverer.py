@@ -124,7 +124,7 @@ class ProviderDiscoverer:
             movie['_jw_revert_count'] = revert_count
             reason = 'justwatch_no_match' if result is None else 'justwatch_no_valid_offers'
             movie['_jw_revert_reason'] = reason
-            movie.setdefault('_jw_reverted_at', datetime.now().strftime('%Y-%m-%d'))
+            movie['_jw_reverted_at'] = datetime.now().strftime('%Y-%m-%d')
             print(f"  🚫 {title} — JW verification failed ({reason}), staying in tracking (attempt #{revert_count})")
             return None
 

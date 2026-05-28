@@ -8,15 +8,14 @@ import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native
 import {Colors, Typography, Spacing} from '../constants/colors';
 
 const FILTERS = [
-  {id: 'staff-picks', label: 'NRW Picks'},
-  {id: 'studio', label: 'Studio'},
+  {id: 'staff-picks', label: 'Picks'},
   {id: 'indie', label: 'Indie'},
-  {id: 'exploitation', label: 'Exploitation'},
+  {id: 'horror', label: 'Horror'},
+  {id: 'action', label: 'Action'},
+  {id: 'comedy', label: 'Comedy'},
   {id: 'foreign', label: 'Foreign'},
   {id: 'documentary', label: 'Docs'},
-  {id: 'series', label: 'Miniseries'},
   {id: 'restorations', label: 'Reissues'},
-  {id: 'virtual-screenings', label: 'V. Screenings'},
   {id: 'pre-orders', label: 'Pre-Orders'},
 ];
 

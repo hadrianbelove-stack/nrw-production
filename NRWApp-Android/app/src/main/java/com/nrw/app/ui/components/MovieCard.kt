@@ -406,8 +406,8 @@ fun MovieCard(
             Text(
                 text = infoText,
                 color = Primary,
-                fontSize = 9.sp,
-                fontWeight = FontWeight.Medium,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

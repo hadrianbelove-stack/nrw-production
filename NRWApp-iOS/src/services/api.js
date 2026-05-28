@@ -139,10 +139,6 @@ export function filterMovies(movies, filter = null) {
           !movie.hidden &&
           (movie.categories?.is_staff_pick || movie.featured === true),
       );
-    case 'studio':
-      return movies.filter(
-        movie => !movie.hidden && (movie.categories?.is_studio || movie.categories?.tier === 'studio'),
-      );
     case 'indie':
       return movies.filter(
         movie => !movie.hidden && (movie.categories?.is_indie || movie.categories?.tier === 'indie'),
@@ -162,21 +158,21 @@ export function filterMovies(movies, filter = null) {
       return movies.filter(
         movie => !movie.hidden && movie.categories?.is_documentary === true,
       );
-    case 'series':
-      return movies.filter(
-        movie => !movie.hidden && movie.content_type === 'limited_series',
-      );
-    case 'virtual-screenings':
-      return movies.filter(
-        movie => !movie.hidden && movie.categories?.is_virtual_screening,
-      );
     case 'pre-orders':
       return movies.filter(
         movie => !movie.hidden && movie._is_preorder === true,
       );
-    case 'exploitation':
+    case 'horror':
       return movies.filter(
-        movie => !movie.hidden && movie.categories?.is_exploitation === true,
+        movie => !movie.hidden && (movie.genres || []).some(g => g.toLowerCase().includes('horror')),
+      );
+    case 'action':
+      return movies.filter(
+        movie => !movie.hidden && (movie.genres || []).some(g => g.toLowerCase().includes('action')),
+      );
+    case 'comedy':
+      return movies.filter(
+        movie => !movie.hidden && (movie.genres || []).some(g => g.toLowerCase().includes('comedy')),
       );
     case 'hidden':
       return movies.filter(movie => movie.hidden === true);
@@ -218,18 +214,12 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopF
         case 'staff-picks':
           if (movie.categories?.is_staff_pick || movie.featured === true) return true;
           break;
-        case 'studio':
-          if (movie.categories?.is_studio || movie.categories?.tier === 'studio') return true;
-          break;
         case 'indie':
           if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;
           break;
         case 'foreign':
           if (movie.categories?.is_foreign ||
             (movie.original_language && movie.original_language !== 'en')) return true;
-          break;
-        case 'series':
-          if (movie.content_type === 'limited_series') return true;
           break;
         case 'plex':
           if (movie.plex && movie.plex.deep_link) return true;
@@ -240,14 +230,17 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopF
         case 'documentary':
           if (movie.categories?.is_documentary === true) return true;
           break;
-        case 'virtual-screenings':
-          if (movie.categories?.is_virtual_screening) return true;
-          break;
         case 'pre-orders':
           if (movie._is_preorder === true) return true;
           break;
-        case 'exploitation':
-          if (movie.categories?.is_exploitation === true) return true;
+        case 'horror':
+          if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) return true;
+          break;
+        case 'action':
+          if ((movie.genres || []).some(g => g.toLowerCase().includes('action'))) return true;
+          break;
+        case 'comedy':
+          if ((movie.genres || []).some(g => g.toLowerCase().includes('comedy'))) return true;
           break;
       }
     }

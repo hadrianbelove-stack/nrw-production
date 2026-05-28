@@ -277,27 +277,24 @@ body {
   display: block;
 }
 .grid-item-info {
-  padding: 4px 2px 0;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 2px;
 }
 .grid-item-title {
-  font-size: 0.6rem;
-  font-weight: 600;
-  color: #fff;
-  line-height: 1.25;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  display: none;
 }
 .grid-item-meta {
-  font-size: 0.5rem;
+  font-size: 0.6rem;
+  font-weight: 700;
   color: var(--accent);
-  line-height: 1.3;
-  margin-top: 1px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: center;
 }
 .grid-item-poster .staff-pick-badge {
   position: absolute;

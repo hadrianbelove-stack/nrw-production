@@ -32,25 +32,17 @@ const NRWMobile = {
 
     // Filter descriptions — shown when a single filter is active
     FILTER_DESCRIPTIONS: {
-        'studio': {
-            title: 'Studio',
-            text: 'The wide releases, the studio fare, the main-streamers. Not saying they\'re good, not saying they\'re bad, but these are the movies that have either entered or tried to enter the mainstream conversation.'
-        },
         'indie': {
             title: 'Indie',
             text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
         },
         'staff-picks': {
-            title: 'NRW Picks',
+            title: 'Picks',
             text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
         },
         'foreign': {
             title: 'Foreign',
             text: 'Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces.'
-        },
-        'series': {
-            title: 'Miniseries',
-            text: 'Not movies \u2014 limited series. The kind you can finish in a weekend. Prestige mini-series and limited runs that deserve the same attention as a good film.'
         },
         'restorations': {
             title: 'Reissues',
@@ -58,19 +50,23 @@ const NRWMobile = {
         },
         'documentary': {
             title: 'Documentary',
-            text: 'Non-fiction filmmaking. Documentaries covering real stories, real people, and real events \u2014 now available to stream at home.'
-        },
-        'virtual-screenings': {
-            title: 'Virtual Screenings',
-            text: 'Currently playing at film festivals. These aren\'t streaming yet \u2014 they\'re in theaters, at festivals, or doing the circuit.'
+            text: 'Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home.'
         },
         'pre-orders': {
             title: 'Pre-Orders',
             text: 'Coming soon. These movies have confirmed digital release dates and are available to pre-order now.'
         },
-        'exploitation': {
-            title: 'Exploitation',
-            text: 'The genre stuff. Horror, thrillers, action \u2014 the movies that know exactly what they are and lean all the way in.'
+        'horror': {
+            title: 'Horror',
+            text: 'The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter.'
+        },
+        'action': {
+            title: 'Action',
+            text: 'High-octane, kinetic filmmaking. Action movies now available to watch at home.'
+        },
+        'comedy': {
+            title: 'Comedy',
+            text: 'Films that are actually funny. Comedies — broad and subtle — now streaming.'
         }
     },
 
@@ -308,9 +304,6 @@ const NRWMobile = {
                 let matchesAny = false;
                 for (const filter of filters) {
                     switch (filter) {
-                        case 'studio':
-                            if (movie.categories?.is_studio || movie.categories?.tier === 'studio') matchesAny = true;
-                            break;
                         case 'indie':
                             if (movie.categories?.is_indie || movie.categories?.tier === 'indie') matchesAny = true;
                             break;
@@ -321,23 +314,23 @@ const NRWMobile = {
                             if (movie.categories?.is_foreign ||
                                 (movie.original_language && movie.original_language !== 'en')) matchesAny = true;
                             break;
-                        case 'series':
-                            if (movie.content_type === 'limited_series') matchesAny = true;
-                            break;
                         case 'restorations':
                             if (movie.categories?.is_restoration === true) matchesAny = true;
                             break;
                         case 'documentary':
                             if (movie.categories?.is_documentary === true) matchesAny = true;
                             break;
-                        case 'virtual-screenings':
-                            if (movie.categories?.is_virtual_screening === true) matchesAny = true;
-                            break;
                         case 'pre-orders':
                             if (movie._is_preorder === true) matchesAny = true;
                             break;
-                        case 'exploitation':
-                            if (movie.categories?.is_exploitation) matchesAny = true;
+                        case 'horror':
+                            if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) matchesAny = true;
+                            break;
+                        case 'action':
+                            if ((movie.genres || []).some(g => g.toLowerCase().includes('action'))) matchesAny = true;
+                            break;
+                        case 'comedy':
+                            if ((movie.genres || []).some(g => g.toLowerCase().includes('comedy'))) matchesAny = true;
                             break;
                     }
                     if (matchesAny) break;
@@ -524,10 +517,6 @@ const NRWMobile = {
         info.className = 'grid-item-info';
 
         const title = document.createElement('div');
-        title.className = 'grid-item-title';
-        title.textContent = movie.display_title || movie.title || '';
-        info.appendChild(title);
-
         const director = movie.crew?.director || movie.director || '';
         const dirWikiUrl = movie.links?.director_wiki;
         const genre = movie.genres?.[0] || '';
@@ -535,8 +524,8 @@ const NRWMobile = {
         const metaParts = [];
         if (director) {
             metaParts.push(dirWikiUrl
-                ? `<a href="${dirWikiUrl}" target="_blank" rel="noopener" class="mobile-dir-link">D: ${this.esc(director)}</a>`
-                : `D: ${this.esc(director)}`);
+                ? `<a href="${dirWikiUrl}" target="_blank" rel="noopener" class="mobile-dir-link">${this.esc(director)}</a>`
+                : this.esc(director));
         }
         if (genre) metaParts.push(this.esc(genre));
         if (country) metaParts.push(this.esc(country));

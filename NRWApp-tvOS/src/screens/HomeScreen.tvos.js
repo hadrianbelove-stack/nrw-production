@@ -34,15 +34,14 @@ import { setSharedMovieList } from './sharedMovieList';
 
 // Filter options - matches web categories
 const FILTERS = [
-  { id: 'staff-picks', label: 'NRW Picks' },
-  { id: 'studio', label: 'Studio' },
+  { id: 'staff-picks', label: 'Picks' },
   { id: 'indie', label: 'Indie' },
-  { id: 'exploitation', label: 'Exploitation' },
+  { id: 'horror', label: 'Horror' },
+  { id: 'action', label: 'Action' },
+  { id: 'comedy', label: 'Comedy' },
   { id: 'foreign', label: 'Foreign' },
   { id: 'documentary', label: 'Docs' },
-  { id: 'series', label: 'Miniseries' },
   { id: 'restorations', label: 'Reissues' },
-  { id: 'virtual-screenings', label: 'Virtual Screenings' },
   { id: 'pre-orders', label: 'Pre-Orders' },
 ];
 
@@ -428,9 +427,6 @@ const HomeScreenTvOS = () => {
     return movies.filter(movie => {
       for (const filter of activeFilters) {
         switch (filter) {
-          case 'studio':
-            if (movie.categories?.is_studio || movie.categories?.tier === 'studio') return true;
-            break;
           case 'indie':
             if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;
             break;
@@ -443,14 +439,8 @@ const HomeScreenTvOS = () => {
             if (isForeign) return true;
             break;
           }
-          case 'series':
-            if (movie.content_type === 'limited_series') return true;
-            break;
           case 'documentary':
             if (movie.categories?.is_documentary === true) return true;
-            break;
-          case 'virtual-screenings':
-            if (movie.categories?.is_virtual_screening) return true;
             break;
           case 'restorations':
             if (movie.categories?.is_restoration) return true;
@@ -458,8 +448,14 @@ const HomeScreenTvOS = () => {
           case 'pre-orders':
             if (movie._is_preorder === true) return true;
             break;
-          case 'exploitation':
-            if (movie.categories?.is_exploitation === true) return true;
+          case 'horror':
+            if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) return true;
+            break;
+          case 'action':
+            if ((movie.genres || []).some(g => g.toLowerCase().includes('action'))) return true;
+            break;
+          case 'comedy':
+            if ((movie.genres || []).some(g => g.toLowerCase().includes('comedy'))) return true;
             break;
         }
       }

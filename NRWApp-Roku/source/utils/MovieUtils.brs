@@ -8,32 +8,30 @@
 ' ============================================================================
 Function GetFilterCategories() as Object
     return {
-        STUDIO: "studio"
         INDIE: "indie"
         STAFF_PICKS: "staff_picks"
         FOREIGN: "foreign"
-        SERIES: "series"
         RESTORATIONS: "restorations"
         DOCUMENTARY: "documentary"
-        VIRTUAL_SCREENINGS: "virtual_screenings"
         PRE_ORDERS: "pre_orders"
-        EXPLOITATION: "exploitation"
+        HORROR: "horror"
+        ACTION: "action"
+        COMEDY: "comedy"
     }
 End Function
 
 ' Filter display names for UI
 Function GetFilterDisplayName(filter as String) as String
     names = {
-        studio: "Studio"
         indie: "Indie"
-        staff_picks: "NRW Picks"
+        staff_picks: "Picks"
         foreign: "Foreign"
-        series: "Miniseries"
         restorations: "Reissues"
         documentary: "Docs"
-        virtual_screenings: "V. Screenings"
         pre_orders: "Pre-Orders"
-        exploitation: "Exploitation"
+        horror: "Horror"
+        action: "Action"
+        comedy: "Comedy"
     }
 
     if names.DoesExist(filter)
@@ -63,12 +61,7 @@ Function FilterMovies(movies as Object, filter as String) as Object
 
         include = false
 
-        if filter = categories.STUDIO
-            if movie.categories <> invalid AND (movie.categories.is_studio = true OR movie.categories.tier = "studio")
-                include = true
-            end if
-
-        else if filter = categories.INDIE
+        if filter = categories.INDIE
             if movie.categories <> invalid AND (movie.categories.is_indie = true OR movie.categories.tier = "indie")
                 include = true
             end if
@@ -78,11 +71,6 @@ Function FilterMovies(movies as Object, filter as String) as Object
 
         else if filter = categories.FOREIGN
             include = IsForeign(movie)
-
-        else if filter = categories.SERIES
-            if movie.content_type = "limited_series"
-                include = true
-            end if
 
         else if filter = categories.RESTORATIONS
             if movie.categories <> invalid AND movie.categories.is_restoration = true
@@ -94,19 +82,30 @@ Function FilterMovies(movies as Object, filter as String) as Object
                 include = true
             end if
 
-        else if filter = categories.VIRTUAL_SCREENINGS
-            if movie.categories <> invalid AND movie.categories.is_virtual_screening = true
-                include = true
-            end if
-
         else if filter = categories.PRE_ORDERS
             if movie._is_preorder <> invalid AND movie._is_preorder = true
                 include = true
             end if
 
-        else if filter = categories.EXPLOITATION
-            if movie.categories <> invalid AND movie.categories.is_exploitation = true
-                include = true
+        else if filter = categories.HORROR
+            if movie.genres <> invalid
+                for each g in movie.genres
+                    if LCase(g).InStr("horror") >= 0 then include = true
+                end for
+            end if
+
+        else if filter = categories.ACTION
+            if movie.genres <> invalid
+                for each g in movie.genres
+                    if LCase(g).InStr("action") >= 0 then include = true
+                end for
+            end if
+
+        else if filter = categories.COMEDY
+            if movie.genres <> invalid
+                for each g in movie.genres
+                    if LCase(g).InStr("comedy") >= 0 then include = true
+                end for
             end if
         end if
 
@@ -156,11 +155,7 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
         ' OR logic: match ANY active filter
         matched = false
         for each filter in activeFilters
-            if filter = categories.STUDIO
-                if movie.categories <> invalid AND (movie.categories.is_studio = true OR movie.categories.tier = "studio")
-                    matched = true
-                end if
-            else if filter = categories.INDIE
+            if filter = categories.INDIE
                 if movie.categories <> invalid AND (movie.categories.is_indie = true OR movie.categories.tier = "indie")
                     matched = true
                 end if
@@ -168,10 +163,6 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
                 matched = IsStaffPick(movie)
             else if filter = categories.FOREIGN
                 matched = IsForeign(movie)
-            else if filter = categories.SERIES
-                if movie.content_type = "limited_series"
-                    matched = true
-                end if
             else if filter = categories.RESTORATIONS
                 if movie.categories <> invalid AND movie.categories.is_restoration = true
                     matched = true
@@ -180,17 +171,27 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
                 if movie.categories <> invalid AND movie.categories.is_documentary = true
                     matched = true
                 end if
-            else if filter = categories.VIRTUAL_SCREENINGS
-                if movie.categories <> invalid AND movie.categories.is_virtual_screening = true
-                    matched = true
-                end if
             else if filter = categories.PRE_ORDERS
                 if movie._is_preorder <> invalid AND movie._is_preorder = true
                     matched = true
                 end if
-            else if filter = categories.EXPLOITATION
-                if movie.categories <> invalid AND movie.categories.is_exploitation = true
-                    matched = true
+            else if filter = categories.HORROR
+                if movie.genres <> invalid
+                    for each g in movie.genres
+                        if LCase(g).InStr("horror") >= 0 then matched = true
+                    end for
+                end if
+            else if filter = categories.ACTION
+                if movie.genres <> invalid
+                    for each g in movie.genres
+                        if LCase(g).InStr("action") >= 0 then matched = true
+                    end for
+                end if
+            else if filter = categories.COMEDY
+                if movie.genres <> invalid
+                    for each g in movie.genres
+                        if LCase(g).InStr("comedy") >= 0 then matched = true
+                    end for
                 end if
             end if
 

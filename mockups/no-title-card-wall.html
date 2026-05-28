@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>NRW — No Title Card Mockup</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #00d4aa;
+      --accent-glow: rgba(0,212,170,0.4);
+      --accent-hover: #00ffbb;
+      --staff-pick: #dc143c;
+      --bg: #0a0a0a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 1.5rem 2rem 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(135deg, rgba(10,10,10,0.97) 0%, rgba(26,26,46,0.97) 100%);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    header h1 {
+      font-weight: 100;
+      letter-spacing: 0.3em;
+      font-size: clamp(1.1rem, 2.2vw, 2.5rem);
+      white-space: nowrap;
+      background: linear-gradient(45deg, #fff, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── SLOP / FEST TOGGLES ── */
+    .slop-toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .slop-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(0,212,170,0.75);
+      transition: color 0.25s;
+      white-space: nowrap;
+    }
+    .slop-toggle-wrap.active .slop-label { color: var(--accent); }
+
+    .slop-track {
+      width: 72px;
+      height: 26px;
+      border-radius: 13px;
+      background: #1a1a1a;
+      border: 1px solid rgba(0,212,170,0.45);
+      position: relative;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .slop-toggle-wrap.active .slop-track {
+      background: rgba(0,212,170,0.1);
+      border-color: var(--accent);
+      justify-content: flex-start;
+      padding-right: 0;
+      padding-left: 8px;
+    }
+    .slop-thumb {
+      position: absolute;
+      top: 4px; left: 4px;
+      width: 18px; height: 18px;
+      background: rgba(0,212,170,0.55);
+      border-radius: 50%;
+      transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
+    }
+    .slop-toggle-wrap.active .slop-thumb {
+      transform: translateX(46px);
+      background: var(--accent);
+    }
+    .slop-track-text {
+      font-size: 0.45rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(0,212,170,0.6);
+      position: relative;
+      z-index: 1;
+    }
+    .slop-toggle-wrap.active .slop-track-text { color: var(--accent); }
+
+    /* ── FILTERS ROW ── */
+    .filters {
+      display: flex;
+      justify-content: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    /* Search stays on same line as pills — wraps only if truly no room */
+    .filters .search-container {
+      flex-shrink: 0;
+      flex-grow: 0;
+      max-width: 240px;
+    }
+
+    .filter-btn {
+      padding: 0.45rem 1rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      cursor: pointer;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .filter-btn:hover { background: rgba(0,212,170,0.15); border-color: rgba(0,212,170,0.5); }
+    .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+      font-weight: 600;
+    }
+
+    /* ── SEARCH ── */
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex-grow: 1;          /* take remaining space in the filter row */
+      max-width: 320px;
+    }
+    .search-container input {
+      padding: 0.45rem 2rem 0.45rem 1rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      width: 100%;
+      transition: all 0.25s ease;
+    }
+    .search-container input:focus {
+      outline: none;
+      background: rgba(255,255,255,0.15);
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+    .search-container input::placeholder { color: rgba(255,255,255,0.45); }
+
+    /* ── WALL GRID ── */
+    #wall {
+      padding: 1.5rem 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem 1rem;
+    }
+
+    /* ── MOVIE CARD ── */
+    .movie-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .movie-card {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      cursor: pointer;
+      transition: transform 0.25s ease;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      position: relative;
+      background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+    }
+    .movie-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px var(--accent-glow);
+    }
+    .movie-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ── CAPTION — FIXED HEIGHT, ONE LINE ── */
+    .movie-info {
+      width: 100%;
+      height: 2.5rem;            /* locked — never changes regardless of text */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      overflow: hidden;
+    }
+
+    /* Single meta line: Director · Genre · Country */
+    .movie-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      color: var(--accent);
+      font-size: 1.1rem;
+      font-weight: 700;
+      width: 100%;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    /* Director: shrinks with ellipsis when long */
+    .m-dir {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+      flex-shrink: 1;
+    }
+
+    /* · Genre · Country: never drops or truncates */
+    .m-rest {
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="title-row">
+    <h1>THE NEW RELEASE WALL</h1>
+
+    <div class="slop-toggle-wrap" id="slop-toggle" onclick="this.classList.toggle('active'); document.getElementById('slop-text').textContent = this.classList.contains('active') ? 'ON' : 'OFF';">
+      <span class="slop-label">SLOP FILTER</span>
+      <div class="slop-track">
+        <div class="slop-thumb"></div>
+        <span class="slop-track-text" id="slop-text">OFF</span>
+      </div>
+    </div>
+
+    <div class="slop-toggle-wrap" id="fest-toggle" onclick="this.classList.toggle('active'); document.getElementById('fest-text').textContent = this.classList.contains('active') ? 'ON' : 'OFF';">
+      <span class="slop-label">FEST FILTER</span>
+      <div class="slop-track">
+        <div class="slop-thumb"></div>
+        <span class="slop-track-text" id="fest-text">OFF</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active">All</button>
+    <button class="filter-btn">NRW Picks</button>
+    <button class="filter-btn">Studio</button>
+    <button class="filter-btn">Indie</button>
+    <button class="filter-btn">Exploitation</button>
+    <button class="filter-btn">Foreign</button>
+    <button class="filter-btn">Docs</button>
+    <button class="filter-btn">Miniseries</button>
+    <button class="filter-btn">Reissues</button>
+    <button class="filter-btn">Pre-Orders</button>
+    <!-- Virtual Screenings pill removed -->
+    <div class="search-container">
+      <input type="text" placeholder="Search title, director, genre…" autocomplete="off">
+    </div>
+  </div>
+</header>
+
+<main id="wall"></main>
+
+<script>
+const movies = [
+  {"title":"Mongrels","director":"Jerome Yoo","genre":"Drama","country":"CAN","poster":"https://image.tmdb.org/t/p/w500/7W6W4rbacnLoVFkNdoWGHnpeCZj.jpg"},
+  {"title":"Kontinental '25","director":"Radu Jude","genre":"Comedy","country":"ROM","poster":"https://image.tmdb.org/t/p/w500/zilOI4BxPxKK3BbyJSHEdOTiTaJ.jpg"},
+  {"title":"The Strangers: Chapter 3","director":"Renny Harlin","genre":"Horror","country":"UK","poster":"https://image.tmdb.org/t/p/w500/yPHwX78mcwJw3I6YOJ9qh2wQBFr.jpg"},
+  {"title":"Vieja loca (Crazy Old Lady)","director":"Martín Mauregui","genre":"Horror","country":"ARG","poster":"https://image.tmdb.org/t/p/w500/pT28lZl2eYCNYFyxyThpSKttLfI.jpg"},
+  {"title":"Project Y","director":"Lee Hwan","genre":"Crime","country":"KOR","poster":"https://image.tmdb.org/t/p/w500/1KMG1inDAnKaGZ1W8Ac3wn6bdXu.jpg"},
+  {"title":"Among Neighbors","director":"Yoav Potash","genre":"Documentary","country":"USA","poster":"https://image.tmdb.org/t/p/w500/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg"},
+  {"title":"The Voice of Hind Rajab","director":"Kaouther Ben Hania","genre":"Drama","country":"FRA","poster":"https://image.tmdb.org/t/p/w500/q7M8kQB46T11vmDMD6E239jsqTz.jpg"},
+  {"title":"Atropia","director":"Hailey Benton Gates","genre":"Comedy","country":"USA","poster":"https://image.tmdb.org/t/p/w500/qurd8tG5E2T20QihO0ysaJCzAjL.jpg"},
+  {"title":"Snow Leopard Sisters","director":"Andrew Lynch","genre":"Documentary","country":"UK","poster":"https://image.tmdb.org/t/p/w500/3eT4xMPqHrLjqO5vOnfhHS8D6ml.jpg"},
+  {"title":"Tinā","director":"Miki Magasiva","genre":"Drama","country":"NZL","poster":"https://image.tmdb.org/t/p/w500/nx9DPAzainWTqPKuirLIXasbU3z.jpg"},
+  {"title":"Noseeums","director":"Raven Deshay Carter","genre":"Horror","country":"USA","poster":"https://image.tmdb.org/t/p/w500/tTk9ZAmgPzuWPs3x0y5fm45N1Ew.jpg"},
+  {"title":"The Big Johnson","director":"Lola Rock'N'Rolla","genre":"Documentary","country":"USA","poster":"https://image.tmdb.org/t/p/w500/b2N7arsRkNbleaXgZ6MnzE8mNff.jpg"},
+  {"title":"Formas de atravesar","director":"Gabriela Domínguez Ruvalcaba","genre":"Documentary","country":"MEX","poster":"https://image.tmdb.org/t/p/w500/2G5mioq84qAesYL8XfrQh3QrzUA.jpg"},
+  {"title":"Dhurandhar: The Revenge","director":"Aditya Dhar","genre":"Action","country":"IND","poster":"https://image.tmdb.org/t/p/w500/ov8vrRLZGoXHpYjSY9Vpv1tHJX7.jpg"},
+  {"title":"Bunny","director":"Ben Jacobson","genre":"Crime","country":"USA","poster":"https://images.justwatch.com/poster/340469195/s718/bunny-2025.jpg"},
+  {"title":"Queens of Joy","director":"Olga Gibelinda","genre":"Documentary","country":"UKR","poster":"https://image.tmdb.org/t/p/w500/6rQXCW5NK91sVnQbQFxIW16lyL4.jpg"}
+];
+
+const wall = document.getElementById('wall');
+
+movies.forEach(m => {
+  const container = document.createElement('div');
+  container.className = 'movie-container';
+  container.innerHTML = `
+    <div class="movie-card">
+      <img src="${m.poster}" alt="${m.title}" loading="lazy">
+    </div>
+    <div class="movie-info">
+      <div class="movie-meta">
+        <span class="m-dir">${m.director}</span><span class="m-rest"> · ${m.genre} · ${m.country}</span>
+      </div>
+    </div>
+  `;
+  wall.appendChild(container);
+});
+
+// Filter pill toggle (visual only)
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

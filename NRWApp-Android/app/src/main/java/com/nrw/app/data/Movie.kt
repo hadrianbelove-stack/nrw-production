@@ -277,15 +277,14 @@ data class InfoOption(
  * Filter categories for the UI
  */
 enum class FilterCategory(val id: String, val displayName: String) {
-    STAFF_PICKS("staff-picks", "NRW Picks"),
-    STUDIO("studio", "Studio"),
+    STAFF_PICKS("staff-picks", "Picks"),
     INDIE("indie", "Indie"),
-    EXPLOITATION("exploitation", "Exploitation"),
+    HORROR("horror", "Horror"),
+    ACTION("action", "Action"),
+    COMEDY("comedy", "Comedy"),
     FOREIGN("foreign", "Foreign"),
     DOCUMENTARY("documentary", "Docs"),
-    SERIES("series", "Miniseries"),
     RESTORATIONS("restorations", "Reissues"),
-    VIRTUAL_SCREENINGS("virtual-screenings", "V. Screenings"),
     PRE_ORDERS("pre-orders", "Pre-Orders")
 }
 

@@ -23,25 +23,17 @@ const NRW = {
 
     // Filter descriptions — shown when a single filter is active
     FILTER_DESCRIPTIONS: {
-        'studio': {
-            title: 'Studio',
-            text: 'The wide releases, the studio fare, the main-streamers. Not saying they\'re good, not saying they\'re bad, but these are the movies that have either entered or tried to enter the mainstream conversation. They have budgets, recognizable actors, and large-scale billboard campaigns.'
-        },
         'indie': {
             title: 'Indie',
             text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
         },
         'staff-picks': {
-            title: 'NRW Picks',
+            title: 'Picks',
             text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
         },
         'foreign': {
             title: 'Foreign',
             text: 'Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they\'re streaming now.'
-        },
-        'series': {
-            title: 'Miniseries',
-            text: 'Not movies — limited series. The kind you can finish in a weekend. Prestige mini-series and limited runs that landed on streaming and deserve the same attention as a good film.'
         },
         'restorations': {
             title: 'Reissues',
@@ -51,17 +43,21 @@ const NRW = {
             title: 'Documentary',
             text: 'Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home.'
         },
-        'virtual-screenings': {
-            title: 'Virtual Screenings',
-            text: 'Currently playing at film festivals. These aren\'t streaming yet — they\'re in theaters, at festivals, or doing the circuit. If you\'re near a screening, this is your heads-up.'
-        },
         'pre-orders': {
             title: 'Pre-Orders',
             text: 'Coming soon. These movies have confirmed digital release dates and are available to pre-order now on storefronts like Apple TV and Amazon.'
         },
-        'exploitation': {
-            title: 'Exploitation',
-            text: 'The genre stuff. Horror, thrillers, action \u2014 the movies that know exactly what they are and lean all the way in.'
+        'horror': {
+            title: 'Horror',
+            text: 'The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter.'
+        },
+        'action': {
+            title: 'Action',
+            text: 'High-octane, kinetic filmmaking. Action movies now available to watch at home.'
+        },
+        'comedy': {
+            title: 'Comedy',
+            text: 'Films that are actually funny. Comedies — broad and subtle — now streaming.'
         }
     },
 
@@ -162,11 +158,6 @@ const NRW = {
 
     setupFilterEventListeners() {
         const filterButtons = document.querySelectorAll('.filter-btn');
-        const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
-        const syncAllBtn = () => {
-            if (allBtn) allBtn.classList.toggle('active', this.activeFilters.size === 0);
-        };
-
         const btnArray = Array.from(filterButtons);
 
         filterButtons.forEach(btn => {
@@ -186,20 +177,14 @@ const NRW = {
                 const filter = btn.dataset.filter;
                 if (!filter) return;
 
-                if (filter === 'all') {
-                    this.activeFilters.clear();
-                    filterButtons.forEach(b => { if (b.dataset.filter !== 'all') b.classList.remove('active'); });
+                if (this.activeFilters.has(filter)) {
+                    this.activeFilters.delete(filter);
+                    btn.classList.remove('active');
                 } else {
-                    if (this.activeFilters.has(filter)) {
-                        this.activeFilters.delete(filter);
-                        btn.classList.remove('active');
-                    } else {
-                        this.activeFilters.add(filter);
-                        btn.classList.add('active');
-                    }
+                    this.activeFilters.add(filter);
+                    btn.classList.add('active');
                 }
 
-                syncAllBtn();
                 this.gridClearSelection();
                 this.displayedCount = this.loadIncrement;
                 this.applyFilter();
@@ -207,8 +192,6 @@ const NRW = {
                 this.renderWallWithMore();
             });
         });
-
-        syncAllBtn();
 
         // Slop-free toggle
         const slopToggle = document.getElementById('slop-free-toggle');
@@ -347,9 +330,6 @@ const NRW = {
                 let matchesAny = false;
                 for (const filter of filters) {
                     switch (filter) {
-                        case 'studio':
-                            if (movie.categories?.is_studio || movie.categories?.tier === 'studio') matchesAny = true;
-                            break;
                         case 'indie':
                             if (movie.categories?.is_indie || movie.categories?.tier === 'indie') matchesAny = true;
                             break;
@@ -362,23 +342,23 @@ const NRW = {
                             if (isForeign) matchesAny = true;
                             break;
                         }
-                        case 'series':
-                            if (movie.content_type === 'limited_series') matchesAny = true;
-                            break;
                         case 'restorations':
                             if (movie.categories?.is_restoration) matchesAny = true;
                             break;
                         case 'documentary':
                             if (movie.categories?.is_documentary) matchesAny = true;
                             break;
-                        case 'virtual-screenings':
-                            if (movie.categories?.is_virtual_screening) matchesAny = true;
-                            break;
                         case 'pre-orders':
                             if (movie._is_preorder) matchesAny = true;
                             break;
-                        case 'exploitation':
-                            if (movie.categories?.is_exploitation) matchesAny = true;
+                        case 'horror':
+                            if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) matchesAny = true;
+                            break;
+                        case 'action':
+                            if ((movie.genres || []).some(g => g.toLowerCase().includes('action'))) matchesAny = true;
+                            break;
+                        case 'comedy':
+                            if ((movie.genres || []).some(g => g.toLowerCase().includes('comedy'))) matchesAny = true;
                             break;
                     }
                     if (matchesAny) break;
@@ -635,8 +615,7 @@ const NRW = {
                     </div>
                 </div>
                 <div class="movie-info">
-                    <div class="movie-title">${movie.display_title || movie.title}</div>
-                    <div class="movie-meta"><span class="m-dir">D: ${NRW._directorLink(movie.crew?.director, movie.links?.director_wiki)}</span><span class="m-rest"> · ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
+                    <div class="movie-meta"><span class="m-dir">${NRW._directorLink(movie.crew?.director, movie.links?.director_wiki)}</span><span class="m-rest"> · ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
                 </div>
                 ${badgeBar}
             </div>`;

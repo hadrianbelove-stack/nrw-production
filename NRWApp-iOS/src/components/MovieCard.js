@@ -226,16 +226,13 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         )}
       </View>
 
-      <View style={styles.info}>
-        <Text style={styles.title} numberOfLines={2}>
-          {movie.display_title || movie.title}
-        </Text>
-        {metaText !== '' && (
+      {metaText !== '' && (
+        <View style={styles.info}>
           <Text style={styles.director} numberOfLines={1}>
             {metaText}
           </Text>
-        )}
-      </View>
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
@@ -409,17 +406,12 @@ const styles = StyleSheet.create({
   },
   info: {
     paddingTop: Spacing.sm,
-  },
-  title: {
-    color: Colors.textPrimary,
-    fontSize: Typography.caption + 2,
-    fontWeight: '600',
-    lineHeight: 18,
+    alignItems: 'center',
   },
   director: {
-    color: Colors.textSecondary,
-    fontSize: Typography.caption,
-    marginTop: 2,
+    color: Colors.accent,
+    fontSize: Typography.caption + 2,
+    fontWeight: '700',
   },
   country: {
     color: Colors.textMuted,

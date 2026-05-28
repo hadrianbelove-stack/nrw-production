@@ -147,9 +147,6 @@ class MovieRepository(private val context: Context) {
      */
     fun filterMovies(movies: List<Movie>, filter: FilterCategory): List<Movie> {
         return when (filter) {
-            FilterCategory.STUDIO -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && (it.categories?.isStudio == true || it.categories?.tier == "studio")
-            }
             FilterCategory.INDIE -> movies.filter {
                 it.hidden != true && it.enrichmentStatus != "reverted" && (it.categories?.isIndie == true || it.categories?.tier == "indie")
             }
@@ -159,23 +156,23 @@ class MovieRepository(private val context: Context) {
             FilterCategory.FOREIGN -> movies.filter {
                 it.hidden != true && it.enrichmentStatus != "reverted" && it.isForeign()
             }
-            FilterCategory.SERIES -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && it.contentType == "limited_series"
-            }
             FilterCategory.RESTORATIONS -> movies.filter {
                 it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isRestoration == true
             }
             FilterCategory.DOCUMENTARY -> movies.filter {
                 it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isDocumentary == true
             }
-            FilterCategory.VIRTUAL_SCREENINGS -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isVirtualScreening == true
-            }
             FilterCategory.PRE_ORDERS -> movies.filter {
                 it.hidden != true && it.enrichmentStatus != "reverted" && it.isPreorder
             }
-            FilterCategory.EXPLOITATION -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isExploitation == true
+            FilterCategory.HORROR -> movies.filter {
+                it.hidden != true && it.enrichmentStatus != "reverted" && (it.genres?.any { g -> g.lowercase().contains("horror") } == true)
+            }
+            FilterCategory.ACTION -> movies.filter {
+                it.hidden != true && it.enrichmentStatus != "reverted" && (it.genres?.any { g -> g.lowercase().contains("action") } == true)
+            }
+            FilterCategory.COMEDY -> movies.filter {
+                it.hidden != true && it.enrichmentStatus != "reverted" && (it.genres?.any { g -> g.lowercase().contains("comedy") } == true)
             }
         }
     }
@@ -195,16 +192,15 @@ class MovieRepository(private val context: Context) {
             if (movie.hidden == true || movie.enrichmentStatus == "reverted") return@filter false
             activeFilters.any { filter ->
                 when (filter) {
-                    FilterCategory.STUDIO -> movie.categories?.isStudio == true || movie.categories?.tier == "studio"
                     FilterCategory.INDIE -> movie.categories?.isIndie == true || movie.categories?.tier == "indie"
                     FilterCategory.STAFF_PICKS -> movie.isStaffPick()
                     FilterCategory.FOREIGN -> movie.isForeign()
-                    FilterCategory.SERIES -> movie.contentType == "limited_series"
                     FilterCategory.RESTORATIONS -> movie.categories?.isRestoration == true
                     FilterCategory.DOCUMENTARY -> movie.categories?.isDocumentary == true
-                    FilterCategory.VIRTUAL_SCREENINGS -> movie.categories?.isVirtualScreening == true
                     FilterCategory.PRE_ORDERS -> movie.isPreorder
-                    FilterCategory.EXPLOITATION -> movie.categories?.isExploitation == true
+                    FilterCategory.HORROR -> movie.genres?.any { it.lowercase().contains("horror") } == true
+                    FilterCategory.ACTION -> movie.genres?.any { it.lowercase().contains("action") } == true
+                    FilterCategory.COMEDY -> movie.genres?.any { it.lowercase().contains("comedy") } == true
                 }
             }
         }
