@@ -30,7 +30,7 @@ MANUAL_OVERRIDES = {
     # Documentary series
     1693906: False,   # Behind Bars - Shot in the Spotlight (Untold UK series)
     1684240: False,   # Untold UK: Jamie Vardy
-    1693906: False,   # Untold UK: Vinnie Jones
+    1684246: False,   # Untold UK: Vinnie Jones
     # Art-house / festival films without RT/wiki yet
     1303370: False,   # Ways to Traverse a Territory
     1422627: False,   # Snow Leopard Sisters
