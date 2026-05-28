@@ -1014,6 +1014,16 @@ class MovieEnricher:
                     else:
                         _jw_verified = True
                         _revert_reason = None
+                        # CINEMA + price check: theatrical ticket offer alongside a high-price
+                        # ($15+) rental is PVOD/pre-purchase, not a genuine digital release.
+                        # Pass-throughs: streaming available (day-and-date on Netflix/Max etc.),
+                        # or normal rental pricing (<$15, legitimate day-and-date VOD).
+                        if _jw_result.get('has_cinema') and not _jw_result.get('has_streaming'):
+                            _min_rent = _jw_result.get('min_rent_price')
+                            if _min_rent is None or _min_rent >= 15.0:
+                                _jw_verified = False
+                                _revert_reason = 'justwatch_theatrical_pvod'
+                                print(f"  🎬  {_title} — CINEMA offer + rent ${_min_rent or 'none'} → theatrical/PVOD, reverting")
                         # Cache pre-verified watch_links so enrichment skips redundant JW search
                         _wl = _jw_result.get('watch_links', {})
                         if _wl:

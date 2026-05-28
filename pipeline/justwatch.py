@@ -543,6 +543,13 @@ class JustWatchClient:
                 if service not in buy_names:
                     buy_names.append(service)
 
+        # Detect theatrical (CINEMA) offers — signals movie is still in theaters.
+        # Collected from raw offers before filtering so we catch all cinema services.
+        cinema_offers = [o for o in offers
+                         if o.get('monetizationType') == 'CINEMA'
+                         and o.get('standardWebURL') and o.get('package', {}).get('clearName')]
+        has_cinema = bool(cinema_offers)
+
         # Prefer HD prices: sort rent/buy so HD comes first per service
         _ptype_order = {'HD': 0, '4K': 1, 'SD': 2}
         rent_offers.sort(key=lambda o: _ptype_order.get(o.get('_ptype', ''), 99))
@@ -551,6 +558,20 @@ class JustWatchClient:
         has_streaming = bool(streaming_offers)
         has_rent = bool(rent_offers)
         has_buy = bool(buy_offers)
+
+        # Minimum filtered rent price — used to distinguish PVOD ($15+) from
+        # legitimate day-and-date releases with normal rental pricing (<$15).
+        min_rent_price = None
+        if has_cinema and rent_offers:
+            prices = []
+            for o in rent_offers:
+                p = o.get('price')
+                if p:
+                    try:
+                        prices.append(float(str(p).replace('$', '').strip()))
+                    except (ValueError, TypeError):
+                        pass
+            min_rent_price = min(prices) if prices else None
 
         # Determine verification status
         if has_rent or has_streaming:
@@ -594,6 +615,8 @@ class JustWatchClient:
             'has_rent': has_rent,
             'has_buy': has_buy,
             'buy_only': buy_only,
+            'has_cinema': has_cinema,
+            'min_rent_price': min_rent_price,
             '_presentation_types': sorted(presentation_types),
             'provider_names': {
                 'streaming': streaming_names,
