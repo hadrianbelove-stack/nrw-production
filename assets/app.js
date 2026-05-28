@@ -1228,6 +1228,24 @@ const NRW = {
                 : ` Virtual screening available as part of the ${festName}.`;
             synopsisEl.appendChild(callout);
         }
+
+        // Awards blurb (only if present)
+        const awardsEl = document.getElementById('lightbox-awards');
+        if (movie.awards) {
+            awardsEl.textContent = movie.awards;
+            awardsEl.style.display = '';
+        } else {
+            awardsEl.style.display = 'none';
+        }
+
+        // Box office (only if present)
+        const boxOfficeEl = document.getElementById('lightbox-box-office');
+        if (movie.box_office) {
+            boxOfficeEl.textContent = `Box office: ${movie.box_office}`;
+            boxOfficeEl.style.display = '';
+        } else {
+            boxOfficeEl.style.display = 'none';
+        }
     },
 
     _updateLightboxScores(movie) {
