@@ -393,11 +393,8 @@ class DataGenerator:
 
     @staticmethod
     def _compute_display_title(title, original_title, original_language):
-        """Compute display_title — foreign films get 'Original (English)' or 'English (Original)'."""
+        """Compute display_title — foreign films always use 'English (Original)' format."""
         if original_title and original_title != title and original_language != 'en':
-            _is_latin = bool(re.match(r'^[\u0000-\u024F\u1E00-\u1EFF\s\d\W]+$', original_title))
-            if _is_latin:
-                return f"{original_title} ({title})"
             return f"{title} ({original_title})"
         return title or ''
 

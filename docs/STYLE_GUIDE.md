@@ -71,6 +71,16 @@ Unmapped/new countries fall back to their first 3 letters, uppercased — add th
 
 ---
 
+## Movie Title Display
+
+Foreign-language films with an English title always display as **English (Original)**:
+- "The Last Viking (Den sidste viking)" ✓
+- "Den sidste viking (The Last Viking)" ✗
+
+This applies regardless of script (Latin, Cyrillic, CJK, etc.). The pipeline enforces this automatically via `_compute_display_title()` in `generator.py`. If a movie was manually corrected to the old format, it will be overwritten on the next CI run.
+
+---
+
 ## Typography
 
 ### Font Stack
