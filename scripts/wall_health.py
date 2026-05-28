@@ -442,6 +442,35 @@ if recent_gaps:
 if not bare_movies and not recent_gaps:
     print('  No critical coverage gaps')
 
+# ── Section 5b: SLOP REVIEW QUEUE ───────────────────────────────────────────
+# Movies the classifier auto-committed as slop (weak confidence) — need human confirmation.
+
+slop_queue = [
+    m for m in movies
+    if m.get('is_slop') is True and m.get('_is_slop_guess') is True
+]
+slop_queue.sort(key=lambda m: m.get('digital_date', '') or '', reverse=True)
+
+print()
+print('─' * 78)
+print('SLOP REVIEW QUEUE — %d movies (auto-classified, need confirmation)' % len(slop_queue))
+print('─' * 78)
+if slop_queue:
+    col_w = 38
+    print('  %-*s  %-12s  %-35s  %s' % (col_w, 'Title', 'Date', 'Reason', 'TMDB'))
+    print('  ' + '─' * (col_w + 72))
+    for m in slop_queue:
+        title = m.get('title', '?')
+        dd = m.get('digital_date', '')
+        reason = (m.get('_slop_reason') or '').replace('score:', 'signals:')[:35]
+        t_url = tmdb_url(m.get('id', ''))
+        print('  %-*s  %-12s  %-35s  %s' % (col_w, title[:col_w], fmt_date(dd), reason, t_url))
+    print()
+    print('  Confirm slop: add ID to MANUAL_OVERRIDES in scripts/slop_classifier.py')
+    print('  Clear (not slop): set is_slop=False + _is_slop_guess=False, or add to MANUAL_OVERRIDES as False')
+else:
+    print('  None — no pending slop confirmations')
+
 # ── Section 6: PRE-ORDERS & UPCOMING ────────────────────────────────────────
 
 # Merge: pre-order flagged movies + future-dated zero-link movies
