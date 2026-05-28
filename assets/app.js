@@ -329,7 +329,7 @@ const NRW = {
 
         this.filteredMovies = this.allMovies.filter(movie => {
             // Slop-free mode: hide flagged films
-            if (this.slopFree && movie.is_slop) return false;
+            if (this.slopFree && (movie.is_slop || movie._is_slop_guess)) return false;
 
             // Fest mode: hide virtual screenings unless toggle is ON
             if (!this.showFest && movie.categories?.is_virtual_screening) return false;
