@@ -419,7 +419,8 @@ class RTScraperPlaywright(PlaywrightScraperBase):
             self._log(f"Found {len(movie_links)} movie links in RT search", level='debug')
 
             candidates = []
-            title_words = set(re.sub(r'[^a-z0-9\s]', '', title.lower()).split())
+            _stop_words = {'the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'and', 'or', 'is', 'it'}
+            title_words = set(re.sub(r'[^a-z0-9\s]', '', title.lower()).split()) - _stop_words
             title_slug = re.sub(r'[^a-z0-9]', '', title.lower())
 
             for link in movie_links:
@@ -441,7 +442,7 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                     except:
                         parent = ''
 
-                    slug_words = set(slug.lower().replace('_', ' ').split())
+                    slug_words = set(slug.lower().replace('_', ' ').split()) - _stop_words
                     word_matches = len(title_words & slug_words)
 
                     candidates.append((full_url, parent, word_matches, slug_normalized))
