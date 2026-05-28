@@ -12,6 +12,7 @@ const NRW = {
     activeFilters: new Set(),  // Multi-select: Set of active filter IDs
     slopFree: true,            // When true, hide movies marked is_slop
     hideFest: false,           // When true, hide virtual screening movies
+    showPreorders: false,      // When true, show pre-order movies at the top
     searchQuery: '',     // Current search query
     displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
     loadIncrement: CONFIG.moviesPerPage,   // How many to add when clicking "More"
@@ -42,10 +43,6 @@ const NRW = {
         'documentary': {
             title: 'Documentary',
             text: 'Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home.'
-        },
-        'pre-orders': {
-            title: 'Pre-Orders',
-            text: 'Coming soon. These movies have confirmed digital release dates and are available to pre-order now on storefronts like Apple TV and Amazon.'
         },
         'horror': {
             title: 'Horror',
@@ -228,6 +225,24 @@ const NRW = {
                 this.renderWallWithMore();
             });
         }
+
+        // Pre-order toggle
+        const preorderToggle = document.getElementById('preorder-toggle');
+        if (preorderToggle) {
+            preorderToggle.classList.toggle('active', this.showPreorders);
+            const preorderText = document.getElementById('preorder-track-text');
+            if (preorderText) preorderText.textContent = this.showPreorders ? 'ON' : 'OFF';
+
+            preorderToggle.addEventListener('click', () => {
+                this.showPreorders = !this.showPreorders;
+                preorderToggle.classList.toggle('active', this.showPreorders);
+                const t = document.getElementById('preorder-track-text');
+                if (t) t.textContent = this.showPreorders ? 'ON' : 'OFF';
+                this.displayedCount = this.loadIncrement;
+                this.applyFilter();
+                this.renderWallWithMore();
+            });
+        }
     },
 
     // Show/hide filter description based on active filters
@@ -319,8 +334,8 @@ const NRW = {
             // Hide-fest mode: hide virtual screenings
             if (this.hideFest && movie.categories?.is_virtual_screening) return false;
 
-            // Pre-orders only appear when the pre-orders filter is active OR search is active
-            if (movie._is_preorder && !filters.has('pre-orders') && !query) return false;
+            // Pre-orders only appear when the pre-order toggle is ON or search is active
+            if (movie._is_preorder && !this.showPreorders && !query) return false;
 
             // If no filters selected, show all (except hidden)
             if (filters.size === 0) {
@@ -347,9 +362,6 @@ const NRW = {
                             break;
                         case 'documentary':
                             if (movie.categories?.is_documentary) matchesAny = true;
-                            break;
-                        case 'pre-orders':
-                            if (movie._is_preorder) matchesAny = true;
                             break;
                         case 'horror':
                             if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) matchesAny = true;
@@ -453,8 +465,8 @@ const NRW = {
         // Sort pre-orders by date ascending (nearest release first)
         preorderMovies.sort((a, b) => (a.digital_date || '').localeCompare(b.digital_date || ''));
 
-        // Combine: regular movies first, then pre-orders at the bottom
-        const orderedMovies = [...regularMovies, ...preorderMovies];
+        // Combine: pre-orders at top (nearest release first), then regular movies
+        const orderedMovies = [...preorderMovies, ...regularMovies];
 
         let html = '';
         let lastDate = '';
