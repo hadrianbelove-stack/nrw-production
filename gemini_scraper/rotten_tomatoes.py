@@ -504,6 +504,28 @@ class HybridRTFinder:
             # Don't trust unvalidated results — better no link than a wrong link
             return None
 
+    def _omdb_rt_score(self, imdb_id: str) -> Optional[int]:
+        """Fetch RT score from OMDb for cross-checking. Returns integer 0-100 or None."""
+        if not imdb_id:
+            return None
+        try:
+            import os, requests as _req
+            key = os.environ.get('OMDB_API_KEY')
+            if not key:
+                return None
+            r = _req.get('http://www.omdbapi.com/', params={'apikey': key, 'i': imdb_id}, timeout=6)
+            d = r.json() if r.status_code == 200 else {}
+            if d.get('Response') == 'False':
+                return None
+            for rat in d.get('Ratings', []):
+                if 'Rotten Tomatoes' in rat.get('Source', ''):
+                    val = rat.get('Value', '').rstrip('%')
+                    try: return int(val)
+                    except: pass
+        except Exception:
+            pass
+        return None
+
     def find_rt_score(
         self,
         title: str,
@@ -511,7 +533,8 @@ class HybridRTFinder:
         director: str = None,
         use_fallback: bool = True,
         original_language: str = None,
-        original_title: str = None
+        original_title: str = None,
+        imdb_id: str = None
     ) -> Optional[Dict[str, str]]:
         """
         Find RT score using Playwright-primary search, Gemini score-only fallback.
@@ -552,23 +575,33 @@ class HybridRTFinder:
             try:
                 result = playwright.scrape_rt_score(title, year)
                 if result and result.get('url'):
-                    # Playwright found the page — score extraction uses JSON-LD,
-                    # media-scorecard, CSS selectors, and text regex. If all four
-                    # methods found no score, the page genuinely has no Tomatometer
-                    # score yet (e.g. new release with insufficient reviews).
-                    # Do NOT fall back to Gemini — it returns stale/wrong scores.
+                    # OMDb cross-check: if score diverges >5 points from OMDb,
+                    # Playwright landed on the wrong page — reject and fall through.
+                    if result.get('score') and imdb_id:
+                        omdb_rt = self._omdb_rt_score(imdb_id)
+                        if omdb_rt is not None:
+                            try:
+                                our_rt = int(str(result['score']).rstrip('%'))
+                                if abs(our_rt - omdb_rt) > 5:
+                                    logger.warning(
+                                        f"RT wrong page rejected for '{title}' ({year}): "
+                                        f"playwright={our_rt}% omdb={omdb_rt}% url={result['url']}"
+                                    )
+                                    result = None
+                            except (ValueError, TypeError):
+                                pass
 
-                    # Cache the result
-                    self.gemini_finder.cache[cache_key] = {
-                        'url': result['url'],
-                        'score': result.get('score'),
-                        'title': title,
-                        'scraped_at': time.strftime('%Y-%m-%dT%H:%M:%S'),
-                        '_playwright_validated': True
-                    }
-                    self.gemini_finder._save_cache()
-                    self.stats['playwright_resolved'] += 1
-                    return result
+                    if result:
+                        self.gemini_finder.cache[cache_key] = {
+                            'url': result['url'],
+                            'score': result.get('score'),
+                            'title': title,
+                            'scraped_at': time.strftime('%Y-%m-%dT%H:%M:%S'),
+                            '_playwright_validated': True
+                        }
+                        self.gemini_finder._save_cache()
+                        self.stats['playwright_resolved'] += 1
+                        return result
             except Exception as e:
                 logger.error(f"Playwright RT search error for {title} ({year}): {e}")
 

@@ -354,6 +354,33 @@ class MovieEnricher:
         if imdb_id:
             result['links']['imdb'] = f"https://www.imdb.com/title/{imdb_id}/"
 
+        # OMDb: awards, box office, and RT/MC cross-check
+        if imdb_id:
+            try:
+                omdb = self.host.get_omdb_data(imdb_id)
+                if omdb:
+                    if omdb.get('awards'):
+                        result['awards'] = omdb['awards']
+                    if omdb.get('box_office'):
+                        result['box_office'] = omdb['box_office']
+                    # RT cross-check: flag if OMDb RT diverges >5 points from scraper
+                    if omdb.get('rt_score') and result.get('rt_score'):
+                        def _pct(s):
+                            try: return int(str(s).strip().rstrip('%'))
+                            except: return None
+                        omdb_rt = _pct(omdb['rt_score'])
+                        our_rt  = _pct(result['rt_score'])
+                        if omdb_rt is not None and our_rt is not None:
+                            if abs(omdb_rt - our_rt) > 5:
+                                result['_rt_unverified'] = True
+                                self.ctx.logger.warning(
+                                    f"RT score mismatch for {title} ({year}): "
+                                    f"scraper={our_rt}% omdb={omdb_rt}% — flagged _rt_unverified"
+                                )
+                    self.ctx.logger.debug(f"OMDb: awards={bool(omdb.get('awards'))} box_office={bool(omdb.get('box_office'))}")
+            except Exception as e:
+                self.ctx.logger.debug(f"OMDb enrichment error for {title}: {e}")
+
         # Letterboxd score and link
         self._current_enrichment_step = 'letterboxd_score'
         try:
@@ -1078,7 +1105,7 @@ class MovieEnricher:
                     _today_iso = datetime.now().strftime('%Y-%m-%d')
                     tracking_data['movies'][movie_id]['status'] = 'tracking'
                     tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason
-                    tracking_data['movies'][movie_id]['_jw_reverted_at'] = _today_iso
+                    tracking_data['movies'][movie_id].setdefault('_jw_reverted_at', _today_iso)
                     _revert_count = tracking_data['movies'][movie_id].get('_jw_revert_count', 0) + 1
                     tracking_data['movies'][movie_id]['_jw_revert_count'] = _revert_count
                     existing_movies[movie_index]['_jw_reverted'] = True
@@ -1311,7 +1338,7 @@ class MovieEnricher:
                                 _zl_revert_count = tracking_data['movies'][mid].get('_jw_revert_count', 0) + 1
                                 tracking_data['movies'][mid]['status'] = 'tracking'
                                 tracking_data['movies'][mid]['_jw_revert_reason'] = 'zero_watch_links'
-                                tracking_data['movies'][mid]['_jw_reverted_at'] = _today_zl
+                                tracking_data['movies'][mid].setdefault('_jw_reverted_at', _today_zl)
                                 tracking_data['movies'][mid]['_jw_revert_count'] = _zl_revert_count
                                 tracking_data['movies'][mid]['enriched'] = False
                                 tracking_data['movies'][mid].pop('enrichment_date', None)

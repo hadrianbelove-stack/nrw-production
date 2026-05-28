@@ -770,6 +770,54 @@ class DataGenerator:
             self.logger.debug(f"OMDb API error for '{title}': {e}")
             return None
 
+    def get_omdb_data(self, imdb_id):
+        """Fetch awards, box office, and scores from OMDb in one call.
+
+        Returns dict with keys: awards, box_office, rt_score, metacritic, imdb_rating
+        All values are strings or None. Returns None if imdb_id missing or API fails.
+        """
+        if not imdb_id:
+            return None
+
+        omdb_key = os.environ.get('OMDB_API_KEY') or self.config.get('api', {}).get('omdb_api_key')
+        if not omdb_key:
+            return None
+
+        try:
+            url = f"http://www.omdbapi.com/?i={imdb_id}&apikey={omdb_key}"
+            response = requests.get(url, timeout=8)
+            if response.status_code != 200:
+                return None
+            d = response.json()
+            if d.get('Response') == 'False':
+                return None
+
+            def _na(val):
+                return val if val and val != 'N/A' else None
+
+            rt_score = None
+            metacritic = None
+            for rat in d.get('Ratings', []):
+                src = rat.get('Source', '')
+                val = rat.get('Value', '')
+                if 'Rotten Tomatoes' in src:
+                    rt_score = _na(val)
+                elif 'Metacritic' in src:
+                    metacritic = _na(val.split('/')[0]) if val and '/' in val else _na(val)
+            if metacritic is None:
+                metacritic = _na(d.get('Metascore'))
+
+            return {
+                'awards':      _na(d.get('Awards')),
+                'box_office':  _na(d.get('BoxOffice')),
+                'rt_score':    rt_score,
+                'metacritic':  metacritic,
+                'imdb_rating': _na(d.get('imdbRating')),
+            }
+        except Exception as e:
+            self.logger.debug(f"OMDb get_omdb_data error for {imdb_id}: {e}")
+            return None
+
     def _load_imdb_cache(self):
         """Lazy-load IMDB rating cache from cache/imdb_rating_cache.json."""
         if self._imdb_rating_cache is None:
@@ -1178,7 +1226,7 @@ class DataGenerator:
             return None
 
         # 3. Use RT scraper (handles caching internally)
-        result = self.scrape_rt_score(title, year, director=director, original_language=original_language, original_title=original_title)
+        result = self.scrape_rt_score(title, year, director=director, original_language=original_language, original_title=original_title, imdb_id=imdb_id)
         if result:
             return result
 
@@ -1372,7 +1420,7 @@ class DataGenerator:
             return False
 
 
-    def scrape_rt_score(self, title, year, director=None, original_language=None, original_title=None):
+    def scrape_rt_score(self, title, year, director=None, original_language=None, original_title=None, imdb_id=None):
         """Public wrapper function to scrape RT score for external consumers
 
         Args:
@@ -1381,6 +1429,7 @@ class DataGenerator:
             director: Optional director name for disambiguation
             original_language: ISO 639-1 language code
             original_title: Original-language title from TMDB
+            imdb_id: IMDb ID for OMDb cross-check validation
 
         Returns:
             dict: {'url': ..., 'score': ...} or None if not found
@@ -1392,7 +1441,7 @@ class DataGenerator:
         try:
             # HybridRTFinder uses find_rt_score(); Playwright-only uses scrape_rt_score()
             if GEMINI_RT_AVAILABLE:
-                result = self.rt_scraper.find_rt_score(title, year, director=director, original_language=original_language, original_title=original_title)
+                result = self.rt_scraper.find_rt_score(title, year, director=director, original_language=original_language, original_title=original_title, imdb_id=imdb_id)
             else:
                 result = self.rt_scraper.scrape_rt_score(title, year)
 

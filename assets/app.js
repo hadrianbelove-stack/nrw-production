@@ -11,7 +11,7 @@ const NRW = {
     latestPlaylistUrl: null,  // YouTube trailers playlist URL
     activeFilters: new Set(),  // Multi-select: Set of active filter IDs
     slopFree: true,            // When true, hide movies marked is_slop
-    hideFest: false,           // When true, hide virtual screening movies
+    showFest: false,           // When true, show virtual screening movies
     showPreorders: false,      // When true, show pre-order movies at the top
     searchQuery: '',     // Current search query
     displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
@@ -211,15 +211,15 @@ const NRW = {
         // Fest (virtual screenings) toggle
         const festToggle = document.getElementById('fest-toggle');
         if (festToggle) {
-            festToggle.classList.toggle('active', this.hideFest);
+            festToggle.classList.toggle('active', this.showFest);
             const festText = document.getElementById('fest-track-text');
-            if (festText) festText.textContent = this.hideFest ? 'ON' : 'OFF';
+            if (festText) festText.textContent = this.showFest ? 'ON' : 'OFF';
 
             festToggle.addEventListener('click', () => {
-                this.hideFest = !this.hideFest;
-                festToggle.classList.toggle('active', this.hideFest);
+                this.showFest = !this.showFest;
+                festToggle.classList.toggle('active', this.showFest);
                 const t = document.getElementById('fest-track-text');
-                if (t) t.textContent = this.hideFest ? 'ON' : 'OFF';
+                if (t) t.textContent = this.showFest ? 'ON' : 'OFF';
                 this.displayedCount = this.loadIncrement;
                 this.applyFilter();
                 this.renderWallWithMore();
@@ -331,8 +331,8 @@ const NRW = {
             // Slop-free mode: hide flagged films
             if (this.slopFree && movie.is_slop) return false;
 
-            // Hide-fest mode: hide virtual screenings
-            if (this.hideFest && movie.categories?.is_virtual_screening) return false;
+            // Fest mode: hide virtual screenings unless toggle is ON
+            if (!this.showFest && movie.categories?.is_virtual_screening) return false;
 
             // Pre-orders only appear when the pre-order toggle is ON or search is active
             if (movie._is_preorder && !this.showPreorders && !query) return false;
