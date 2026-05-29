@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW — Slop On / Slop Off</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #fff;
+  padding-bottom: 60px;
+}
+
+/* ── Header ── */
+.site-header {
+  text-align: center;
+  padding: 24px 16px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.site-title {
+  font-size: 1.4rem;
+  font-weight: 100;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+.site-count {
+  font-size: 0.62rem;
+  color: #444;
+  letter-spacing: 0.12em;
+  margin-top: 4px;
+  transition: color 0.4s;
+}
+.site-count.clean { color: #00d4aa55; }
+
+/* ── Filter bar ── */
+.filter-bar {
+  padding: 11px 14px 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.fp {
+  border-radius: 25px;
+  padding: 5px 13px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #666;
+  background: rgba(255,255,255,0.05);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.18s;
+  -webkit-tap-highlight-color: transparent;
+}
+.fp:active { opacity: 0.7; }
+
+/* ── The toggle ── */
+.slop-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  padding: 2px 0;
+}
+
+.slop-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.25s;
+  white-space: nowrap;
+}
+
+/* OFF state = slop is visible */
+.slop-label.state-on  { color: #555; }   /* SLOP ON  — muted, not alarming */
+/* ON state = slop is hidden */
+.slop-label.state-off { color: #00d4aa; } /* SLOP OFF — teal, confirmed clean */
+
+.track {
+  width: 42px;
+  height: 24px;
+  border-radius: 25px;
+  background: #2a2a2a;
+  position: relative;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.25s;
+}
+.track.active { background: #00d4aa; }
+
+.thumb {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 17px; height: 17px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.5);
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+}
+.track.active .thumb { transform: translateX(18px); }
+
+/* divider before toggle */
+.bar-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,0.1);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+/* ── Status line ── */
+.status-line {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  letter-spacing: 0.07em;
+  color: transparent;
+  transition: color 0.4s;
+}
+.status-line.visible { color: #555; }
+
+/* ── Movie grid ── */
+.grid-wrap {
+  padding: 12px 12px 0;
+}
+
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.movie-card {
+  border-radius: 10px;
+  overflow: hidden;
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.movie-card.slop-card { transition: opacity 0.25s ease, transform 0.25s ease; }
+.movie-card.hiding {
+  opacity: 0;
+  transform: scale(0.88);
+  pointer-events: none;
+}
+.movie-card.showing {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.movie-card img {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  display: block;
+  background: #1a1a2e;
+}
+
+.caption {
+  padding: 5px 7px 7px;
+}
+.movie-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+.movie-meta {
+  font-size: 0.55rem;
+  color: #00d4aa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* slop overlay */
+.slop-badge {
+  position: absolute;
+  top: 5px; right: 5px;
+  background: rgba(100,100,100,0.82);
+  backdrop-filter: blur(6px);
+  color: #ccc;
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+/* dim slop cards slightly when filter is about to engage */
+.slop-dimming .slop-card {
+  opacity: 0.5;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="site-header">
+  <div class="site-title">The New Release Wall</div>
+  <div class="site-count" id="site-count">28 films</div>
+</div>
+
+<!-- Filter bar -->
+<div class="filter-bar">
+  <div class="fp">NRW Picks</div>
+  <div class="fp">Studio</div>
+  <div class="fp">Indie</div>
+  <div class="fp">Foreign</div>
+  <div class="fp">Docs</div>
+
+  <!-- spacer -->
+  <div style="flex:1; min-width:0;"></div>
+
+  <!-- divider -->
+  <div class="bar-divider"></div>
+
+  <!-- THE TOGGLE -->
+  <div class="slop-toggle-wrap" id="slop-toggle" onclick="flipSlop()">
+    <span class="slop-label state-on" id="slop-label">WITH SLOP</span>
+    <div class="track" id="slop-track">
+      <div class="thumb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Status -->
+<div class="status-line" id="status-line">8 slop titles hidden</div>
+
+<!-- Grid -->
+<div class="grid-wrap">
+  <div class="movie-grid" id="movie-grid"></div>
+</div>
+
+
+<script>
+const MOVIES = [
+  // Real movies
+  { id:1,  title:"Warfare",             meta:"Alex Garland · War · USA",        poster:"https://image.tmdb.org/t/p/w342/kVVAyMlMXxrjtpAXTMHSJKlGRPO.jpg", slop:false },
+  { id:2,  title:"The Brutalist",       meta:"Brady Corbet · Drama · UK",        poster:"https://image.tmdb.org/t/p/w342/91BjXa3pTfaVRQHbpMdwvqUKQLP.jpg", slop:false },
+  { id:3,  title:"A Real Pain",         meta:"Jesse Eisenberg · Drama · USA",    poster:"https://image.tmdb.org/t/p/w342/tFDLxUoFNz_3tG_aADcDkrT2sH7.jpg", slop:false },
+  { id:4,  title:"Conclave",            meta:"Edward Berger · Thriller · UK",    poster:"https://image.tmdb.org/t/p/w342/m4LMtBP3j2lWkOzWlxZ3iVMUO1m.jpg", slop:false },
+  { id:5,  title:"The Substance",       meta:"Coralie Fargeat · Horror · FRA",   poster:"https://image.tmdb.org/t/p/w342/lqoMzCcZYEFK729d6qzt349fB4o.jpg", slop:false },
+  { id:6,  title:"Queer",               meta:"Luca Guadagnino · Drama · ITA",    poster:"https://image.tmdb.org/t/p/w342/7YA8yIkuHDnPkIhPNDJVSU7BRGJ.jpg", slop:false },
+  { id:7,  title:"Nickel Boys",         meta:"RaMell Ross · Drama · USA",        poster:"https://image.tmdb.org/t/p/w342/jHBCpFcHoJP0BRBHQ7bS3f9XdA1.jpg", slop:false },
+  { id:8,  title:"Hard Truths",         meta:"Mike Leigh · Drama · UK",          poster:"https://image.tmdb.org/t/p/w342/7JJFIeUiXqUfCYzR5NxLXaVULi2.jpg", slop:false },
+  { id:9,  title:"Presence",            meta:"Soderbergh · Horror · USA",        poster:"https://image.tmdb.org/t/p/w342/ixmGpOlElBGQSTOmXXF7GEZ0YIS.jpg", slop:false },
+  { id:10, title:"I'm Still Here",      meta:"Walter Salles · Drama · BRA",      poster:"https://image.tmdb.org/t/p/w342/tpNSdEiXFb7KSbdE3lJSsZr2dUC.jpg", slop:false },
+  { id:11, title:"Babygirl",            meta:"Halina Reijn · Thriller · USA",    poster:"https://image.tmdb.org/t/p/w342/vB8o2p4ETnrfiWEgVxHmHWP9yRl.jpg", slop:false },
+  { id:12, title:"Flow",                meta:"Gints Zilbalodis · Anim. · LVA",   poster:"https://image.tmdb.org/t/p/w342/imKSymKBK7o73sajciEmndJoVkR.jpg", slop:false },
+  { id:13, title:"September 5",         meta:"Tim Fehlbaum · Thriller · GER",    poster:"https://image.tmdb.org/t/p/w342/fJcEt2h8mfW7V3lXUjYGizeBulW.jpg", slop:false },
+  { id:14, title:"Emilia Pérez",        meta:"Jacques Audiard · Musical · FRA",  poster:"https://image.tmdb.org/t/p/w342/ei5rJIWBmGVfGpTRFMNPXQvEbKK.jpg", slop:false },
+  { id:15, title:"Anora",               meta:"Sean Baker · Comedy · USA",        poster:"https://image.tmdb.org/t/p/w342/5MhLFO3pWQFLbQi0r6qCAkyBFv0.jpg", slop:false },
+  { id:16, title:"Juror #2",            meta:"Clint Eastwood · Thriller · USA",  poster:"https://image.tmdb.org/t/p/w342/qjQ6mKHgZ8rMMKcivBjLIVxjqM1.jpg", slop:false },
+  { id:17, title:"Maria",               meta:"Pablo Larraín · Drama · CHL",      poster:"https://image.tmdb.org/t/p/w342/f8mBHAUJJYfHPxuHyRJZ7T3dvV3.jpg", slop:false },
+  { id:18, title:"One of Them Days",    meta:"Lawrence Lamont · Comedy · USA",   poster:"https://image.tmdb.org/t/p/w342/3bfwwNpiqjIV6AMFYGVeKJIQmVF.jpg", slop:false },
+  { id:19, title:"Wolf Man",            meta:"Leigh Whannell · Horror · USA",    poster:"https://image.tmdb.org/t/p/w342/9lBlMtSJFKHaYIQK5tkBuILjpNT.jpg", slop:false },
+  { id:20, title:"Hard Truths",         meta:"Mike Leigh · Drama · UK",          poster:"https://image.tmdb.org/t/p/w342/7JJFIeUiXqUfCYzR5NxLXaVULi2.jpg", slop:false },
+
+  // Slop
+  { id:21, title:"Christmas at the Grand",            meta:"Unknown · Romance · USA",  poster:"https://image.tmdb.org/t/p/w342/c6bFpBSBjVMkr7uxSbIAd1bBWxR.jpg", slop:true },
+  { id:22, title:"Devil's Night: Dawn of the Nain Rouge", meta:"J. Williams · Horror · USA", poster:"https://image.tmdb.org/t/p/w342/oHZOmTEzLy5oaDQZGNhXJtaFkN2.jpg", slop:true },
+  { id:23, title:"Pyaar Ke Liye Teen Din",            meta:"Unknown · Romance · IND",  poster:"https://image.tmdb.org/t/p/w342/vcTX9kUMjbRhblNJTIrpKWHg0wj.jpg", slop:true },
+  { id:24, title:"Attack of the Meth Gator",          meta:"Thunder Levin · Horror",   poster:"https://image.tmdb.org/t/p/w342/3tAeMRnYFdLN5Xm9gKHsARhXSze.jpg", slop:true },
+  { id:25, title:"Love in Bloom",                     meta:"Unknown · Romance · USA",  poster:"https://image.tmdb.org/t/p/w342/3fYFOuTKiNDFfxgXWHPVkVkLvCU.jpg", slop:true },
+  { id:26, title:"Shaadi Mein Zaroor Aana 2",         meta:"Ratnaa S. · Romance · IND",poster:"https://image.tmdb.org/t/p/w342/e15b9VjMO1Zu2VWFR1hxm6lNHmN.jpg", slop:true },
+  { id:27, title:"Zombie Tidal Wave",                 meta:"Anthony C.F. · Horror",    poster:"https://image.tmdb.org/t/p/w342/2FvJyAIj3gQtKqTjWa7NIFN5UiS.jpg", slop:true },
+  { id:28, title:"A Cowboy Christmas Romance",        meta:"Unknown · Romance · USA",  poster:"https://image.tmdb.org/t/p/w342/vYNTOEA8A9XJRD0YVrNEFMdJblE.jpg", slop:true },
+];
+
+const REAL  = MOVIES.filter(m => !m.slop);
+const SLOP  = MOVIES.filter(m =>  m.slop);
+let slopOff = false; // false = SLOP ON (visible); true = SLOP OFF (hidden)
+
+// ── Initial render ──────────────────────────────────────────────
+function renderAll() {
+  const grid = document.getElementById('movie-grid');
+  grid.innerHTML = MOVIES.map(m => `
+    <div class="movie-card ${m.slop ? 'slop-card showing' : 'showing'}" id="card-${m.id}" data-slop="${m.slop}">
+      <img src="${m.poster}" alt="${m.title}" loading="lazy"
+           onerror="this.style.background='#1a1a2e';this.removeAttribute('src')">
+      ${m.slop ? '<div class="slop-badge">Slop</div>' : ''}
+      <div class="caption">
+        <div class="movie-title">${m.title}</div>
+        <div class="movie-meta">${m.meta}</div>
+      </div>
+    </div>`).join('');
+}
+
+renderAll();
+updateCount();
+
+// ── Toggle handler ──────────────────────────────────────────────
+function flipSlop() {
+  slopOff = !slopOff;
+
+  // Update toggle chrome
+  const label = document.getElementById('slop-label');
+  const track = document.getElementById('slop-track');
+  label.textContent = slopOff ? 'SLOP FREE' : 'WITH SLOP';
+  label.className   = 'slop-label ' + (slopOff ? 'state-off' : 'state-on');
+  track.classList.toggle('active', slopOff);
+
+  // Animate slop cards
+  SLOP.forEach(m => {
+    const card = document.getElementById('card-' + m.id);
+    if (!card) return;
+    if (slopOff) {
+      card.classList.add('hiding');
+      card.classList.remove('showing');
+    } else {
+      card.classList.remove('hiding');
+      card.classList.add('showing');
+    }
+  });
+
+  // After fade, actually hide from layout
+  if (slopOff) {
+    setTimeout(() => {
+      SLOP.forEach(m => {
+        const card = document.getElementById('card-' + m.id);
+        if (card) card.style.display = 'none';
+      });
+      updateCount();
+    }, 280);
+  } else {
+    SLOP.forEach(m => {
+      const card = document.getElementById('card-' + m.id);
+      if (card) {
+        card.style.display = '';
+        // force reflow then animate in
+        requestAnimationFrame(() => {
+          card.classList.remove('hiding');
+          card.classList.add('showing');
+        });
+      }
+    });
+    updateCount();
+  }
+
+  // Status line
+  const status = document.getElementById('status-line');
+  if (slopOff) {
+    status.textContent = `${SLOP.length} slop titles hidden`;
+    status.classList.add('visible');
+  } else {
+    status.classList.remove('visible');
+  }
+}
+
+function updateCount() {
+  const el = document.getElementById('site-count');
+  const n  = slopOff ? REAL.length : MOVIES.length;
+  el.textContent = `${n} films`;
+  el.classList.toggle('clean', slopOff);
+}
+</script>
+</body>
+</html>

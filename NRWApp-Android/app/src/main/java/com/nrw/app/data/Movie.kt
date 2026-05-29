@@ -79,6 +79,9 @@ data class Movie(
     @SerializedName("is_slop")
     val isSlop: Boolean = false,
 
+    @SerializedName("_is_slop_guess")
+    val isSlopGuess: Boolean = false,
+
     @SerializedName("_is_preorder")
     val isPreorder: Boolean = false,
 

@@ -10,8 +10,8 @@ Pipeline:
   5. RT/MC scraping adds supplemental quotes with guaranteed URLs
   6. Letterboxd quotes via Gemini with URL validation
 
-Quotes that can't be verified still display — they just won't have a
-clickable link. Manual curation (admin UI) is the final filter.
+Only verified quotes are returned. Gemini-discovered quotes without a
+confirmed review URL are dropped to prevent hallucinations surfacing in curation.
 """
 
 import re
@@ -781,7 +781,7 @@ Response:"""
         Quotes that can't be verified keep their text — they just won't
         have a clickable link on the site.
         """
-        to_verify = [q for q in quotes if not q.get('review_url') and q.get('critic')]
+        to_verify = [q for q in quotes if not q.get('review_url') and q.get('outlet')]
         if not to_verify:
             return quotes
 
@@ -802,7 +802,10 @@ Response:"""
             if not critic:
                 continue
 
-            prompt = f'Find the URL for {critic}\'s {outlet} review of "{title}" ({year}).'
+            if critic.lower() in ('', 'anonymous'):
+                prompt = f'Find the URL for the {outlet} review of "{title}" ({year}).'
+            else:
+                prompt = f'Find the URL for {critic}\'s {outlet} review of "{title}" ({year}).'
 
             try:
                 self._enforce_rate_limit()
@@ -986,6 +989,10 @@ Response:"""
         if lb_quotes:
             all_quotes.extend(lb_quotes)
             logger.info(f"Found {len(lb_quotes)} Letterboxd quotes for {title} ({year})")
+
+        # Drop unverified Gemini-discovered quotes — they may be hallucinated
+        all_quotes = [q for q in all_quotes
+                      if q.get('source') != 'gemini_critic' or q.get('review_url')]
 
         # Cache results (even if empty, to avoid re-fetching)
         if all_quotes:

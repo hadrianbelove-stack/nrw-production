@@ -21,6 +21,7 @@ const NRW = {
     SERVICE_MAP: NRWConfig.SERVICE_MAP,
     VOD_SERVICE_MAP: NRWConfig.VOD_SERVICE_MAP,
     abbreviateCountry: NRWConfig.abbreviateCountry,
+    lightboxCountry: NRWConfig.lightboxCountry,
 
     // Filter descriptions — shown when a single filter is active
     FILTER_DESCRIPTIONS: {
@@ -1204,12 +1205,12 @@ const NRW = {
             metaEl.appendChild(castName);
         }
 
-        // Line 3: Country • Year • Runtime • Studio
+        // Line 3: Country • Year • Runtime • Distributor
         const detailParts = [];
-        if (movie.country) detailParts.push(NRW.abbreviateCountry(movie.country) || movie.country);
+        if (movie.country) detailParts.push(NRW.lightboxCountry(movie.country) || movie.country);
         if (movie.year) detailParts.push(movie.year);
         if (movie.runtime) detailParts.push(`${movie.runtime} min`);
-        if (movie.studio) detailParts.push(movie.studio);
+        if (movie.distributor || movie.studio) detailParts.push(movie.distributor || movie.studio);
         if (detailParts.length) {
             if (metaEl.childNodes.length) metaEl.appendChild(document.createElement('br'));
             metaEl.appendChild(document.createTextNode(detailParts.join(' \u2022 ')));

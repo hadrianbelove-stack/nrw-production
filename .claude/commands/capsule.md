@@ -24,7 +24,7 @@ If "No movie found" or "Multiple matches": report and stop.
 
 ## Step 2 — Present capsules to user
 
-Show all 3 variants clearly numbered, with word counts. Format them so the user can easily compare:
+Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER** below them. This is the required format — never drop the primer:
 
 ```
 ## Capsule Variants for [Title] ([Year])
@@ -34,9 +34,15 @@ Show all 3 variants clearly numbered, with word counts. Format them so the user 
 **2.** [capsule text] _(XX words)_
 
 **3.** [capsule text] _(XX words)_
+
+---
+
+**FACTOID PRIMER**
+- [bullet: production fact, director quote, BTS detail, festival context, distribution story]
+- ...
 ```
 
-Then ask the user: "Pick one, remix parts, or write your own version."
+Then ask: "Pick 1, 2, or 3 — paste a rewrite — or skip."
 
 ---
 

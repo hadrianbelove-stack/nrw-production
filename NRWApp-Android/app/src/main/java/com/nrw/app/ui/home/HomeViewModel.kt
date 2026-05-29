@@ -110,7 +110,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         var filtered = repository.filterMoviesMulti(state.movies, state.activeFilters, state.searchQuery)
 
         if (state.slopFree) {
-            filtered = filtered.filter { !it.isSlop }
+            filtered = filtered.filter { !it.isSlop && !it.isSlopGuess }
         }
 
         if (state.hideFest) {

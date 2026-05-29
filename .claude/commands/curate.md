@@ -148,7 +148,11 @@ If no candidates: report "No new movies need capsules — curated through [water
 
 If candidates exist, process each movie **one at a time, most recent first**:
 1. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --force --variants 3 --skip-verify`
-2. Present 3 variants with word counts (use the same format as `/capsule`)
+2. Present the capsule variants in this **exact format** — always, every movie, no exceptions:
+   - Three numbered variants with word counts
+   - Then a **FACTOID PRIMER** section below the variants (bullet list of production facts, director quotes, BTS, festival context, distribution story)
+   - Then the pick prompt: "Pick 1, 2, or 3 — paste a rewrite — or skip."
+   - NEVER drop the factoid primer from the formatted message. It is the user's cheat sheet for editing.
 3. Wait for user response: pick a number, provide a rewrite, or "skip"
 4. **When the user provides edited text, that IS the final version** — they are editing
 5. If picked/rewritten:

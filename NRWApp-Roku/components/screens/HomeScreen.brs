@@ -102,7 +102,7 @@ Sub ApplyFilters()
     if m.slopFree
         filtered = []
         for each movie in movies
-            if movie.is_slop <> true
+            if movie.is_slop <> true AND movie._is_slop_guess <> true
                 filtered.Push(movie)
             end if
         end for

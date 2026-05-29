@@ -164,6 +164,13 @@ def print_capsule_result(result, movie, show_sources=False):
         print(result['capsule'])
         print(f"\n({len(result['capsule'].split())} words)")
 
+    # Factoid primer
+    factoid_primer = result.get('factoid_primer', '')
+    if factoid_primer:
+        print(f"{'- '*30}")
+        print("FACTOID PRIMER:")
+        print(factoid_primer)
+
     # Show verification
     verification = result.get('verification', [])
     if verification:

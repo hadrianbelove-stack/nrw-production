@@ -190,7 +190,7 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopF
   movies = movies.filter(m => m._enrichment_status !== 'reverted');
   // Slop-free mode: hide flagged films
   if (slopFree) {
-    movies = movies.filter(m => !m.is_slop);
+    movies = movies.filter(m => !m.is_slop && !m._is_slop_guess);
   }
   // Hide-fest mode: hide virtual screenings
   if (hideFest) {

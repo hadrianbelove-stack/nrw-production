@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Reissue Label + Lightbox Title Fix</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #fff;
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  h2.section-head {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* ── CARD SECTION ───────────────────────────────── */
+  .card-section { margin-bottom: 32px; }
+  .card-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .movie-container { cursor: pointer; }
+  .movie-card {
+    aspect-ratio: 2/3;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.15);
+    transition: transform 0.2s;
+  }
+  .movie-card:active { transform: scale(0.97); }
+
+  .card-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .card-poster-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    text-align: center;
+    color: #bbb;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+
+  /* Streaming badge (top bar) */
+  .streaming-badge {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 5px 8px;
+    font-size: 9px;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    z-index: 5;
+  }
+  .badge-mubi { background: #0F1923; color: #fff; }
+  .badge-netflix { background: #E50914; color: #fff; }
+  .badge-criterion { background: #222; color: #fff; border: 1px solid #444; }
+
+  /* Restoration badge — top-left pill */
+  .restoration-badge {
+    position: absolute;
+    top: 8px; left: 8px;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    z-index: 6;
+    background: #C8A951;
+    color: #000;
+    white-space: nowrap;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* When streaming badge is also present, push down */
+  .has-streaming .restoration-badge {
+    top: 30px;
+  }
+
+  .card-caption {
+    padding: 6px 2px 0 2px;
+  }
+  .card-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+  .card-meta {
+    font-size: 0.7rem;
+    color: #00d4aa;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+
+  /* ── OPTION TABS ──────────────────────────────────── */
+  .tabs-wrap {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 6px 14px;
+    border-radius: 25px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.07);
+    color: #bbb;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    background: #00d4aa;
+    border-color: #00d4aa;
+    color: #000;
+  }
+
+  .current-label {
+    display: none;
+    font-size: 0.72rem;
+    color: #00d4aa;
+    margin-bottom: 6px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .current-label.visible { display: block; }
+
+  /* ── LIGHTBOX SIMULATION ─────────────────────────── */
+  .lb-section { }
+  .lb-outer {
+    background: rgba(12,12,24,0.92);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    display: flex;
+    gap: 0;
+  }
+
+  .lb-poster-col {
+    flex: 0 0 36%;
+    background: linear-gradient(160deg, #0a0a0a 0%, #111118 50%, #0a0f14 100%);
+    aspect-ratio: 2/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    text-align: center;
+    color: #bbb;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    position: relative;
+  }
+  .lb-poster-img {
+    width: 100%; height: 100%; object-fit: cover; border-radius: 4px;
+  }
+
+  .lb-info-col {
+    flex: 1;
+    padding: 18px 16px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* Title row — fixed min-height so content doesn't jump */
+  .lb-title-area {
+    min-height: 3.8rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid rgba(0,212,170,0.35);
+  }
+
+  /* Title — always fits on one line */
+  .lb-title {
+    font-size: clamp(1.1rem, 4vw, 1.9rem);
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  /* Reissue pill — sits just below title */
+  .reissue-pill {
+    display: inline-block;
+    background: #C8A951;
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 10px;
+    margin-top: 3px;
+    align-self: flex-start;
+  }
+  .reissue-pill.hidden { display: none; }
+
+  /* Date — shown differently per option */
+  .lb-date-a { /* Option A: own small line below reissue pill */
+    font-size: 1rem;
+    font-weight: 700;
+    color: #00d4aa;
+    margin-top: 6px;
+    display: none;
+  }
+  .lb-date-c { /* Option C: right-aligned row below title area */
+    font-size: 1rem;
+    font-weight: 700;
+    color: #00d4aa;
+    text-align: right;
+    margin-top: 4px;
+    display: none;
+  }
+
+  /* CURRENT (broken) — date right-aligned in title row */
+  .lb-title-row-current {
+    display: none;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid rgba(0,212,170,0.35);
+  }
+  .lb-title-row-current .lb-title { flex: 1; min-width: 0; white-space: normal; }
+  .lb-date-current {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #00d4aa;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .lb-meta {
+    font-size: 0.82rem;
+    color: #888;
+    line-height: 1.7;
+    margin-bottom: 10px;
+  }
+  .lb-meta .label { color: #00d4aa; font-weight: 700; }
+  .lb-meta .value { color: #fff; font-weight: 700; }
+  .lb-meta .date-inline { color: #00d4aa; font-weight: 700; }
+
+  .lb-synopsis {
+    font-size: 0.8rem;
+    color: #bbb;
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  /* nav arrows */
+  .lb-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    gap: 6px;
+  }
+  .lb-arrow {
+    background: rgba(0,212,170,0.1);
+    border: 1px solid rgba(0,212,170,0.3);
+    color: #00d4aa;
+    font-size: 1.2rem;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .lb-arrow:active { background: rgba(0,212,170,0.25); }
+  .lb-movie-count {
+    font-size: 0.72rem;
+    color: #888;
+    text-align: center;
+    flex: 1;
+  }
+
+  /* Option label callout */
+  .option-desc {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: #888;
+    line-height: 1.5;
+  }
+  .option-desc strong { color: #00d4aa; }
+
+  /* ── CURRENT label ───────────────────────────────── */
+  .current-badge {
+    display: inline-block;
+    background: rgba(220,20,60,0.2);
+    border: 1px solid rgba(220,20,60,0.5);
+    color: #dc143c;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<!-- CARD SECTION -->
+<div class="card-section">
+  <h2 class="section-head">Card — Restoration Badge</h2>
+  <div class="card-row" id="card-row">
+    <!-- Cards rendered by JS -->
+  </div>
+</div>
+
+<!-- LIGHTBOX SECTION -->
+<div class="lb-section">
+  <h2 class="section-head">Lightbox — Date Placement <span class="current-badge">Tap cards above or nav below</span></h2>
+
+  <div class="tabs-wrap">
+    <button class="tab-btn" onclick="setOption('current')">Current ⚠</button>
+    <button class="tab-btn active" onclick="setOption('A')">A — Own Line</button>
+    <button class="tab-btn" onclick="setOption('B')">B — In Meta</button>
+    <button class="tab-btn" onclick="setOption('C')">C — Right Row</button>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lb-outer" id="lb">
+    <div class="lb-poster-col" id="lb-poster">
+      <span id="lb-poster-title"></span>
+    </div>
+    <div class="lb-info-col">
+
+      <!-- CURRENT (broken — title wraps, date squished right) -->
+      <div class="lb-title-row-current" id="lb-current-row">
+        <h2 class="lb-title" id="lb-title-current"></h2>
+        <span class="lb-date-current" id="lb-date-current"></span>
+      </div>
+
+      <!-- OPTIONS A / B / C — fixed-height title area -->
+      <div class="lb-title-area" id="lb-title-area" style="">
+        <h2 class="lb-title" id="lb-title-main"></h2>
+        <span class="reissue-pill" id="lb-reissue-pill"></span>
+        <!-- Option A: date as own teal line -->
+        <span class="lb-date-a" id="lb-date-a"></span>
+        <!-- Option C: date right-aligned below pill -->
+        <span class="lb-date-c" id="lb-date-c"></span>
+      </div>
+
+      <div class="lb-meta" id="lb-meta"></div>
+      <p class="lb-synopsis" id="lb-synopsis"></p>
+
+      <div class="lb-nav">
+        <button class="lb-arrow" onclick="navMovie(-1)">‹</button>
+        <span class="lb-movie-count" id="lb-count"></span>
+        <button class="lb-arrow" onclick="navMovie(1)">›</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="option-desc" id="option-desc"></div>
+</div>
+
+<script>
+const MOVIES = [
+  {
+    title: "Pan's Labyrinth",
+    year: 2006,
+    director: "Guillermo del Toro",
+    runtime: "118 min",
+    country: "ESP",
+    date: "May 10",
+    reissue: "20th Anniversary 4K Restoration",
+    reissue_short: "20th Anniv. 4K",
+    synopsis: "In post–civil war Spain, 10-year-old Ofelia discovers a labyrinth and a mysterious faun who tells her she is a princess.",
+    streaming: "MUBI",
+    streaming_class: "badge-mubi",
+    poster: null
+  },
+  {
+    title: "The Fast and the Furious",
+    year: 2001,
+    director: "Rob Cohen",
+    runtime: "106 min",
+    country: "USA",
+    date: "May 10",
+    reissue: "25th Anniversary Restoration",
+    reissue_short: "25th Anniversary",
+    synopsis: "An undercover cop infiltrates a crew of street racers suspected of a series of heists.",
+    streaming: null,
+    streaming_class: null,
+    poster: null
+  },
+  {
+    title: "Fight Club (4K Remaster)",
+    year: 1999,
+    director: "David Fincher",
+    runtime: "139 min",
+    country: "USA",
+    date: "May 12",
+    reissue: "4K Remaster",
+    reissue_short: "4K Remaster",
+    synopsis: "An insomniac office worker and a soap salesman build a global organization to express their rage.",
+    streaming: null,
+    streaming_class: null,
+    poster: null
+  },
+  {
+    title: "Sinners",
+    year: 2025,
+    director: "Ryan Coogler",
+    runtime: "137 min",
+    country: "USA",
+    date: "May 20",
+    reissue: null,
+    reissue_short: null,
+    synopsis: "Twin brothers return to their hometown only to discover an even greater evil than what they experienced at war.",
+    streaming: "MAX",
+    streaming_class: "badge-netflix",
+    poster: null
+  }
+];
+
+let currentMovie = 0;
+let currentOption = 'A';
+
+function renderCards() {
+  const row = document.getElementById('card-row');
+  row.innerHTML = MOVIES.map((m, i) => `
+    <div class="movie-container" onclick="openMovieLB(${i})">
+      <div class="movie-card ${m.streaming ? 'has-streaming' : ''}">
+        <div class="card-poster-fallback">${m.title}<br><span style="font-size:0.6rem;color:#555;margin-top:4px;display:block">${m.year}</span></div>
+        ${m.streaming ? `<div class="streaming-badge ${m.streaming_class}">${m.streaming}</div>` : ''}
+        ${m.reissue_short ? `<div class="restoration-badge">${m.reissue_short}</div>` : ''}
+      </div>
+      <div class="card-caption">
+        <div class="card-title">${m.title}</div>
+        <div class="card-meta">${m.director} · ${m.country}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openMovieLB(i) {
+  currentMovie = i;
+  renderLB();
+}
+
+function navMovie(dir) {
+  currentMovie = (currentMovie + dir + MOVIES.length) % MOVIES.length;
+  renderLB();
+}
+
+function setOption(opt) {
+  currentOption = opt;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderLB();
+}
+
+const OPTION_DESCS = {
+  current: `<strong>Current (broken):</strong> Date sits right-aligned in the same row as the title. Long titles like "The Fast and the Furious" wrap to 2 lines, shoving content below. Title area has no fixed height → the whole panel jumps between movies.`,
+  A: `<strong>Option A — Own Line:</strong> Date moves to a dedicated teal line inside the title area, below the reissue pill. Title area has a fixed min-height so nothing jumps. Title itself gets a smaller font-size that never wraps.`,
+  B: `<strong>Option B — In Meta:</strong> Date disappears from the title area entirely and joins the director/runtime line as "Available May 10". Clean and minimal — title area is just title + pill.`,
+  C: `<strong>Option C — Right Row:</strong> Date gets its own row right-aligned, separated from the title. Title area still has fixed height. Keeps the teal date prominent but doesn't compete with the title.`
+};
+
+function renderLB() {
+  const m = MOVIES[currentMovie];
+  const opt = currentOption;
+
+  // Poster col
+  document.getElementById('lb-poster-title').textContent = m.title;
+
+  // Movie count
+  document.getElementById('lb-count').textContent = `${currentMovie + 1} / ${MOVIES.length}`;
+
+  // Show/hide current vs options
+  const currentRow = document.getElementById('lb-current-row');
+  const titleArea = document.getElementById('lb-title-area');
+  currentRow.style.display = opt === 'current' ? 'flex' : 'none';
+  titleArea.style.display = opt === 'current' ? 'none' : 'flex';
+
+  if (opt === 'current') {
+    document.getElementById('lb-title-current').textContent = m.title;
+    document.getElementById('lb-date-current').textContent = m.date;
+  } else {
+    document.getElementById('lb-title-main').textContent = m.title;
+
+    // Reissue pill
+    const pill = document.getElementById('lb-reissue-pill');
+    if (m.reissue) {
+      pill.textContent = m.reissue.toUpperCase();
+      pill.classList.remove('hidden');
+    } else {
+      pill.classList.add('hidden');
+    }
+
+    // Date per option
+    const dateA = document.getElementById('lb-date-a');
+    const dateC = document.getElementById('lb-date-c');
+    dateA.style.display = 'none';
+    dateC.style.display = 'none';
+
+    if (opt === 'A') {
+      dateA.textContent = m.date;
+      dateA.style.display = 'block';
+    } else if (opt === 'C') {
+      dateC.textContent = m.date;
+      dateC.style.display = 'block';
+    }
+  }
+
+  // Meta block
+  const metaEl = document.getElementById('lb-meta');
+  let metaHTML = `<span class="label">Dir.</span> <span class="value">${m.director}</span> &nbsp;·&nbsp; ${m.year} &nbsp;·&nbsp; ${m.runtime} &nbsp;·&nbsp; ${m.country}`;
+  if (opt === 'B') {
+    metaHTML += ` &nbsp;·&nbsp; <span class="date-inline">Available ${m.date}</span>`;
+  }
+  metaEl.innerHTML = metaHTML;
+
+  // Synopsis
+  document.getElementById('lb-synopsis').textContent = m.synopsis;
+
+  // Option desc
+  document.getElementById('option-desc').innerHTML = OPTION_DESCS[opt];
+}
+
+renderCards();
+renderLB();
+</script>
+</body>
+</html>

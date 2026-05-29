@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Slop Toggle — Label & Design Showcase</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #fff;
+  padding-bottom: 60px;
+}
+
+h1 {
+  text-align: center;
+  font-weight: 100;
+  letter-spacing: 0.3em;
+  font-size: 1rem;
+  padding: 24px 16px 4px;
+  text-transform: uppercase;
+  color: #fff;
+}
+.subtitle {
+  text-align: center;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #444;
+  text-transform: uppercase;
+  padding-bottom: 18px;
+}
+
+/* ── Section headers ── */
+.section-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #333;
+  padding: 22px 16px 8px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.section-label span { color: #555; }
+
+/* ── Row container ── */
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.col {
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  background: #0a0a0a;
+}
+.col.on-col { background: #0d0d0d; }
+
+.state-label {
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #333;
+  align-self: flex-start;
+}
+.on-col .state-label { color: #00d4aa44; }
+
+.note {
+  font-size: 0.58rem;
+  color: #333;
+  text-align: center;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  padding: 0 6px;
+}
+
+/* ─────────────────────────────────────────
+   DESIGN FAMILIES
+───────────────────────────────────────── */
+
+/* ── A: iOS-style thumb toggle + label ── */
+.ios-wrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.ios-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.ios-track {
+  width: 44px;
+  height: 26px;
+  border-radius: 25px;
+  background: #2c2c2e;
+  position: relative;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.25s;
+}
+.ios-thumb {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 19px; height: 19px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.5);
+  transition: transform 0.25s;
+}
+.on-col .ios-track  { background: #00d4aa; }
+.on-col .ios-thumb  { transform: translateX(18px); }
+
+/* ── B: pill button (full pill, label inside) ── */
+.pill-btn {
+  border-radius: 25px;
+  padding: 8px 18px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1.5px solid;
+  white-space: nowrap;
+  text-align: center;
+}
+/* off state */
+.pill-off {
+  border-color: rgba(255,255,255,0.18);
+  color: #666;
+  background: transparent;
+}
+/* on states — different colors */
+.pill-on-teal {
+  border-color: #00d4aa;
+  color: #00d4aa;
+  background: rgba(0,212,170,0.1);
+}
+.pill-on-white {
+  border-color: #fff;
+  color: #000;
+  background: #fff;
+}
+.pill-on-green {
+  border-color: #2ecc71;
+  color: #2ecc71;
+  background: rgba(46,204,113,0.1);
+}
+.pill-on-gray {
+  border-color: rgba(255,255,255,0.3);
+  color: #fff;
+  background: rgba(255,255,255,0.12);
+}
+.pill-on-solid-teal {
+  border-color: #00d4aa;
+  color: #000;
+  background: #00d4aa;
+}
+
+/* ── C: dual-state segmented (two options, one selected) ── */
+.seg {
+  display: flex;
+  border-radius: 25px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255,255,255,0.12);
+}
+.seg-opt {
+  padding: 7px 14px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #444;
+  white-space: nowrap;
+}
+.seg-opt.sel-off  { background: rgba(255,255,255,0.1); color: #bbb; }
+.seg-opt.sel-teal { background: #00d4aa; color: #000; }
+.seg-opt.sel-white{ background: #fff; color: #000; }
+
+/* ── D: slash separator (LABEL / LABEL) ── */
+.slash-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.slash-a { color: #555; }
+.slash-b { color: #555; }
+.slash-sep { color: #2a2a2a; margin: 0 6px; }
+.slash-active { color: #fff; }
+.slash-active-teal { color: #00d4aa; }
+
+/* ── E: badge-style (like category badge) ── */
+.badge-toggle {
+  border-radius: 8px;
+  padding: 5px 11px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.badge-off  { background: rgba(255,255,255,0.06); color: #555; border: 1px solid rgba(255,255,255,0.1); }
+.badge-on-teal  { background: rgba(0,212,170,0.15); color: #00d4aa; border: 1px solid rgba(0,212,170,0.3); }
+.badge-on-gray  { background: #888; color: #000; border: 1px solid #888; }
+
+/* ── F: text button with underline indicator ── */
+.text-btn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding-bottom: 3px;
+}
+.text-btn-off  { color: #555; border-bottom: 1px solid transparent; }
+.text-btn-on   { color: #00d4aa; border-bottom: 1.5px solid #00d4aa; }
+
+/* ── G: icon + text combos ── */
+.icon-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.icon-label .ico { font-size: 1rem; line-height: 1; }
+
+/* ── H: Filter-bar style (like existing filter pills) ── */
+.filterbar-mock {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+.fp { /* filter-pill */
+  border-radius: 25px;
+  padding: 5px 12px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #666;
+  background: rgba(255,255,255,0.05);
+  white-space: nowrap;
+}
+.fp.slop-active-teal {
+  background: #00d4aa;
+  border-color: #00d4aa;
+  color: #000;
+}
+.fp.slop-active-white {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.3);
+  color: #fff;
+}
+.fp.slop-active-strike {
+  color: #00d4aa;
+  border-color: rgba(0,212,170,0.4);
+  background: rgba(0,212,170,0.08);
+  text-decoration: line-through;
+}
+
+/* divider between rows */
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.04);
+  margin: 0;
+}
+
+/* ── label key at top of each row pair ── */
+.row-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: rgba(255,255,255,0.02);
+}
+.rh-col {
+  padding: 5px 14px;
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #2a2a2a;
+  background: #0a0a0a;
+}
+.rh-col.on-side { color: rgba(0,212,170,0.3); }
+
+/* ── "idea number" badge ── */
+.idea-num {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #222;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 14px 0 4px;
+}
+</style>
+</head>
+<body>
+
+<h1>The New Release Wall</h1>
+<div class="subtitle">Slop Toggle — Label &amp; Style Concepts · Both States</div>
+
+<!-- ════════════════════════════════════════
+     SECTION 1 — IOS TOGGLE + LABEL PAIRS
+     The thumb-switch with text label next to it.
+     Different label ideas, same switch.
+════════════════════════════════════════ -->
+<div class="section-label">Section 1 — iOS toggle switch + label <span>// same switch, different words</span></div>
+
+<!-- ROW HEADER -->
+<div class="row-header">
+  <div class="rh-col">— Off (slop visible)</div>
+  <div class="rh-col on-side">— On (slop hidden)</div>
+</div>
+
+<!-- 1-1 -->
+<div class="idea-num">1 · "Slop Filter / No Slop"</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555">SLOP FILTER</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#00d4aa">NO SLOP</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">Classic. Clean. Instantly obvious what changed.</div>
+  </div>
+</div>
+
+<!-- 1-2 -->
+<div class="idea-num">2 · "All Films / Real Movies Only"</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555">ALL FILMS</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#fff">REAL MOVIES ONLY</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">Unpretentious. The toggle label IS the mode description.</div>
+  </div>
+</div>
+
+<!-- 1-3 -->
+<div class="idea-num">3 · "With Slop / Slop-Free"</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555">WITH SLOP</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#00d4aa">SLOP-FREE</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">Like "gluten-free." A little cheeky.</div>
+  </div>
+</div>
+
+<!-- 1-4 -->
+<div class="idea-num">4 · "Full Chaos / Taste Mode"</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555">FULL CHAOS</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#00d4aa">TASTE MODE</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">Funny, self-aware. Implies the wall has opinions.</div>
+  </div>
+</div>
+
+<!-- 1-5 -->
+<div class="idea-num">5 · "Slop On / Slop Off"</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555">SLOP ON</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#00d4aa">SLOP OFF</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">Brutally direct. Zero pretense.</div>
+  </div>
+</div>
+
+<!-- 1-6 -->
+<div class="idea-num">6 · "Unfiltered / Filtered"</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555">UNFILTERED</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#fff">FILTERED</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">Coffee-shop vibes. Also works for a generic future use case.</div>
+  </div>
+</div>
+
+<!-- 1-7 -->
+<div class="idea-num">7 · "Raw / Refined"</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555">RAW</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#00d4aa">REFINED</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">One word each. Very clean. Vaguely pretentious (in a good way).</div>
+  </div>
+</div>
+
+<!-- 1-8 -->
+<div class="idea-num">8 · "Everything / Curated"</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555">EVERYTHING</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#fff">CURATED</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">No slop in the word "curated" — feels editorial.</div>
+  </div>
+</div>
+
+<!-- 1-9 -->
+<div class="idea-num">9 · "Including the Garbage / No Garbage"</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555;font-size:0.58rem">INCL. THE GARBAGE</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#00d4aa;font-size:0.58rem">NO GARBAGE</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">Calls it "garbage" not slop. Harsher. Funnier.</div>
+  </div>
+</div>
+
+<!-- 1-10 -->
+<div class="idea-num">10 · "Good &amp; Bad / Good Only"</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555">GOOD &amp; BAD</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#00d4aa">GOOD ONLY</div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">Extremely blunt editorial voice. NRW has opinions.</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SECTION 2 — PILL BUTTON (toggles in place)
+     Single pill, label changes on tap.
+════════════════════════════════════════ -->
+<div class="section-label">Section 2 — Pill button <span>// single pill, presses to toggle state</span></div>
+
+<div class="row-header">
+  <div class="rh-col">— Off</div>
+  <div class="rh-col on-side">— On</div>
+</div>
+
+<!-- 2-1 -->
+<div class="idea-num">11 · Outlined pill, teal on active</div>
+<div class="row">
+  <div class="col">
+    <div class="pill-btn pill-off">SLOP FILTER</div>
+  </div>
+  <div class="col on-col">
+    <div class="pill-btn pill-on-teal">NO SLOP ✓</div>
+    <div class="note">Checkmark confirms active state.</div>
+  </div>
+</div>
+
+<!-- 2-2 -->
+<div class="idea-num">12 · Solid fill, white background on active</div>
+<div class="row">
+  <div class="col">
+    <div class="pill-btn pill-off">WITH SLOP</div>
+  </div>
+  <div class="col on-col">
+    <div class="pill-btn pill-on-white">SLOP-FREE</div>
+    <div class="note">High-contrast flip. Feels "sealed."</div>
+  </div>
+</div>
+
+<!-- 2-3 -->
+<div class="idea-num">13 · Solid teal fill on active</div>
+<div class="row">
+  <div class="col">
+    <div class="pill-btn pill-off">ALL FILMS</div>
+  </div>
+  <div class="col on-col">
+    <div class="pill-btn pill-on-solid-teal">REAL MOVIES ONLY</div>
+    <div class="note">Same weight as active filter pill. Fits in.</div>
+  </div>
+</div>
+
+<!-- 2-4 -->
+<div class="idea-num">14 · Dimmed outline → ghost white</div>
+<div class="row">
+  <div class="col">
+    <div class="pill-btn pill-off">SLOP ON</div>
+  </div>
+  <div class="col on-col">
+    <div class="pill-btn pill-on-gray">SLOP OFF</div>
+    <div class="note">Subtle. Doesn't demand attention.</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SECTION 3 — SEGMENTED CONTROL
+     Two named modes, one always selected.
+════════════════════════════════════════ -->
+<div class="section-label">Section 3 — Segmented control <span>// two options, one always selected</span></div>
+
+<div class="row-header">
+  <div class="rh-col">— "Everything" selected</div>
+  <div class="rh-col on-side">— "No Slop" selected</div>
+</div>
+
+<!-- 3-1 -->
+<div class="idea-num">15 · Everything / No Slop</div>
+<div class="row">
+  <div class="col">
+    <div class="seg">
+      <div class="seg-opt sel-off">Everything</div>
+      <div class="seg-opt">No Slop</div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="seg">
+      <div class="seg-opt">Everything</div>
+      <div class="seg-opt sel-teal">No Slop</div>
+    </div>
+    <div class="note">Explicit. You know exactly what both modes do.</div>
+  </div>
+</div>
+
+<!-- 3-2 -->
+<div class="idea-num">16 · The Full Wall / Real Movies</div>
+<div class="row">
+  <div class="col">
+    <div class="seg">
+      <div class="seg-opt sel-off">The Full Wall</div>
+      <div class="seg-opt">Real Movies</div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="seg">
+      <div class="seg-opt">The Full Wall</div>
+      <div class="seg-opt sel-teal">Real Movies</div>
+    </div>
+    <div class="note">"The Full Wall" implies the site knows it's messy.</div>
+  </div>
+</div>
+
+<!-- 3-3 -->
+<div class="idea-num">17 · With Slop / Without Slop (literal)</div>
+<div class="row">
+  <div class="col">
+    <div class="seg">
+      <div class="seg-opt sel-off">With Slop</div>
+      <div class="seg-opt">Without Slop</div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="seg">
+      <div class="seg-opt">With Slop</div>
+      <div class="seg-opt sel-white">Without Slop</div>
+    </div>
+    <div class="note">Crystal clear but says "slop" twice. Bold choice.</div>
+  </div>
+</div>
+
+<!-- 3-4 -->
+<div class="idea-num">18 · Chaos / Curated</div>
+<div class="row">
+  <div class="col">
+    <div class="seg">
+      <div class="seg-opt sel-off">Chaos</div>
+      <div class="seg-opt">Curated</div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="seg">
+      <div class="seg-opt">Chaos</div>
+      <div class="seg-opt sel-teal">Curated</div>
+    </div>
+    <div class="note">One-word. Fun. Has a personality.</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SECTION 4 — SLASH STYLE
+     LABEL / LABEL with active state bright.
+════════════════════════════════════════ -->
+<div class="section-label">Section 4 — Slash style <span>// inline WORD / WORD typography</span></div>
+
+<div class="row-header">
+  <div class="rh-col">— Off</div>
+  <div class="rh-col on-side">— On</div>
+</div>
+
+<!-- 4-1 -->
+<div class="idea-num">19 · SLOP / NO SLOP slash</div>
+<div class="row">
+  <div class="col">
+    <div class="slash-wrap">
+      <span class="slash-active">SLOP</span>
+      <span class="slash-sep">/</span>
+      <span class="slash-b">NO SLOP</span>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="slash-wrap">
+      <span class="slash-a">SLOP</span>
+      <span class="slash-sep">/</span>
+      <span class="slash-active-teal">NO SLOP</span>
+    </div>
+    <div class="note">Dense. Feels like a byline or switch.</div>
+  </div>
+</div>
+
+<!-- 4-2 -->
+<div class="idea-num">20 · ALL / CURATED slash</div>
+<div class="row">
+  <div class="col">
+    <div class="slash-wrap">
+      <span class="slash-active">ALL</span>
+      <span class="slash-sep"> · </span>
+      <span class="slash-b">CURATED</span>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="slash-wrap">
+      <span class="slash-a">ALL</span>
+      <span class="slash-sep"> · </span>
+      <span class="slash-active-teal">CURATED</span>
+    </div>
+    <div class="note">Matches the Director · Genre · Nation caption dot-style.</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SECTION 5 — IN THE FILTER BAR
+     How it looks inside the existing pills.
+════════════════════════════════════════ -->
+<div class="section-label">Section 5 — Fits in the filter bar <span>// lives as one more pill in the row</span></div>
+
+<div class="row-header">
+  <div class="rh-col">— Off state in context</div>
+  <div class="rh-col on-side">— On state in context</div>
+</div>
+
+<!-- 5-1 -->
+<div class="idea-num">21 · Matching pill style, teal active</div>
+<div class="row">
+  <div class="col">
+    <div class="filterbar-mock">
+      <div class="fp">NRW Picks</div>
+      <div class="fp">Studio</div>
+      <div class="fp">Indie</div>
+      <div class="fp">Foreign</div>
+      <div class="fp">Docs</div>
+      <div class="fp" style="color:#333;border-color:rgba(255,255,255,0.08)">No Slop</div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="filterbar-mock">
+      <div class="fp">NRW Picks</div>
+      <div class="fp">Studio</div>
+      <div class="fp">Indie</div>
+      <div class="fp">Foreign</div>
+      <div class="fp">Docs</div>
+      <div class="fp slop-active-teal">No Slop ✓</div>
+    </div>
+    <div class="note">Lives WITH the other filters. Feels native.</div>
+  </div>
+</div>
+
+<!-- 5-2 -->
+<div class="idea-num">22 · Strikethrough style when active — "crossing out" the slop</div>
+<div class="row">
+  <div class="col">
+    <div class="filterbar-mock">
+      <div class="fp">NRW Picks</div>
+      <div class="fp">Indie</div>
+      <div class="fp">Foreign</div>
+      <div class="fp">Docs</div>
+      <div class="fp" style="color:#333;border-color:rgba(255,255,255,0.08)">Slop</div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="filterbar-mock">
+      <div class="fp">NRW Picks</div>
+      <div class="fp">Indie</div>
+      <div class="fp">Foreign</div>
+      <div class="fp">Docs</div>
+      <div class="fp slop-active-strike">Slop</div>
+    </div>
+    <div class="note">Visual metaphor: the word "Slop" gets crossed out. Very literal, weirdly satisfying.</div>
+  </div>
+</div>
+
+<!-- 5-3 -->
+<div class="idea-num">23 · Right-aligned, separated by spacer (different from category pills)</div>
+<div class="row">
+  <div class="col">
+    <div class="filterbar-mock" style="justify-content:flex-start;padding:0 4px">
+      <div class="fp">NRW Picks</div>
+      <div class="fp">Indie</div>
+      <div class="fp">Docs</div>
+      <div class="fp">Foreign</div>
+      <div style="flex:1;min-width:8px;border-left:1px solid rgba(255,255,255,0.08);height:18px;margin:0 6px"></div>
+      <div class="fp" style="color:#333;border-color:rgba(255,255,255,0.08)">Show All</div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="filterbar-mock" style="justify-content:flex-start;padding:0 4px">
+      <div class="fp">NRW Picks</div>
+      <div class="fp">Indie</div>
+      <div class="fp">Docs</div>
+      <div class="fp">Foreign</div>
+      <div style="flex:1;min-width:8px;border-left:1px solid rgba(255,255,255,0.08);height:18px;margin:0 6px"></div>
+      <div class="fp slop-active-teal">No Slop</div>
+    </div>
+    <div class="note">Divider line separates it — signals "this is a different kind of thing."</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SECTION 6 — ICON + LABEL COMBOS
+════════════════════════════════════════ -->
+<div class="section-label">Section 6 — With icons <span>// emoji or symbol + label</span></div>
+
+<div class="row-header">
+  <div class="rh-col">— Off</div>
+  <div class="rh-col on-side">— On</div>
+</div>
+
+<!-- 6-1 -->
+<div class="idea-num">24 · Trash icon + label</div>
+<div class="row">
+  <div class="col">
+    <div class="pill-btn pill-off">
+      <div class="icon-label" style="justify-content:center">
+        <span class="ico">🗑️</span>
+        <span>INCL. SLOP</span>
+      </div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="pill-btn pill-on-teal">
+      <div class="icon-label" style="justify-content:center">
+        <span class="ico">✓</span>
+        <span>SLOP REMOVED</span>
+      </div>
+    </div>
+    <div class="note">Trash can = slop. Checkmark = clean. Emoji might feel too casual.</div>
+  </div>
+</div>
+
+<!-- 6-2 -->
+<div class="idea-num">25 · Star quality metaphor</div>
+<div class="row">
+  <div class="col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#555">
+        <span style="opacity:0.4">★</span> ALL QUALITY
+      </div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="ios-wrap">
+      <div class="ios-label" style="color:#00d4aa">
+        ★ QUALITY ONLY
+      </div>
+      <div class="ios-track"><div class="ios-thumb"></div></div>
+    </div>
+    <div class="note">Implies a quality bar without saying "slop."</div>
+  </div>
+</div>
+
+<!-- 6-3 -->
+<div class="idea-num">26 · Film-reel / garbage metaphor pairing</div>
+<div class="row">
+  <div class="col">
+    <div class="badge-toggle badge-off">
+      🎬 + 🗑️ &nbsp;ALL OF IT
+    </div>
+  </div>
+  <div class="col on-col">
+    <div class="badge-toggle badge-on-teal">
+      🎬 FILMS ONLY
+    </div>
+    <div class="note">Playful. Might read as too goofy depending on tone.</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SECTION 7 — WRITER'S PICKS (personal faves)
+════════════════════════════════════════ -->
+<div class="section-label">Section 7 — Personal favorites <span>// my top picks from above</span></div>
+
+<div style="padding:14px 14px 0;display:flex;flex-direction:column;gap:12px;">
+
+  <div style="background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.15);border-radius:10px;padding:12px 14px;">
+    <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#00d4aa;margin-bottom:8px;">★ Top Pick — #3 Slop-Free</div>
+    <div style="display:flex;gap:14px;align-items:center;justify-content:center;margin-bottom:8px;">
+      <div class="ios-wrap">
+        <div class="ios-label" style="color:#555">WITH SLOP</div>
+        <div class="ios-track"><div class="ios-thumb"></div></div>
+      </div>
+      <span style="color:#222;font-size:1rem;">→</span>
+      <div class="ios-wrap">
+        <div class="ios-label" style="color:#00d4aa">SLOP-FREE</div>
+        <div class="ios-track on-col"><div class="ios-thumb" style="transform:translateX(18px)"></div></div>
+      </div>
+    </div>
+    <div style="font-size:0.65rem;color:#666;line-height:1.5;">Cheeky (says "slop" to your face), communicates the mode, and the "-free" suffix has a familiar consumer-product ring to it.</div>
+  </div>
+
+  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
+    <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:8px;">Runner-up — #22 Strikethrough pill</div>
+    <div style="display:flex;gap:14px;align-items:center;justify-content:center;margin-bottom:8px;">
+      <div class="fp" style="color:#333;border-color:rgba(255,255,255,0.08)">Slop</div>
+      <span style="color:#222;font-size:1rem;">→</span>
+      <div class="fp slop-active-strike">Slop</div>
+    </div>
+    <div style="font-size:0.65rem;color:#666;line-height:1.5;">Visual metaphor does all the work. No extra words. One pill, crossed out when active. Weirdly satisfying to tap.</div>
+  </div>
+
+  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px 14px;">
+    <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:8px;">Runner-up — #4 Full Chaos / Taste Mode</div>
+    <div style="display:flex;gap:14px;align-items:center;justify-content:center;margin-bottom:8px;">
+      <div class="ios-wrap">
+        <div class="ios-label" style="color:#555">FULL CHAOS</div>
+        <div class="ios-track"><div class="ios-thumb"></div></div>
+      </div>
+      <span style="color:#222;font-size:1rem;">→</span>
+      <div class="ios-wrap">
+        <div class="ios-label" style="color:#00d4aa">TASTE MODE</div>
+        <div class="ios-track on-col"><div class="ios-thumb" style="transform:translateX(18px)"></div></div>
+      </div>
+    </div>
+    <div style="font-size:0.65rem;color:#666;line-height:1.5;">More personality. Frames the filtered mode as something aspirational, not just restrictive.</div>
+  </div>
+
+</div>
+
+<style>
+/* Make the ON track teal inside the faves section */
+.on-col .ios-track { background: #00d4aa; }
+</style>
+
+</body>
+</html>

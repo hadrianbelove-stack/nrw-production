@@ -291,7 +291,7 @@ const NRWMobile = {
 
         this.filteredMovies = this.allMovies.filter(movie => {
             // Slop-free mode: hide flagged films
-            if (this.slopFree && movie.is_slop) return false;
+            if (this.slopFree && (movie.is_slop || movie._is_slop_guess)) return false;
 
             // Hide-fest mode: hide virtual screenings
             if (this.hideFest && movie.categories?.is_virtual_screening) return false;

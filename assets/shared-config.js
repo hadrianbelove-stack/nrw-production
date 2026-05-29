@@ -118,6 +118,28 @@ const NRWConfig = {
         return country.replace(/[^A-Za-z]/g, '').slice(0, 3).toUpperCase() || country;
     },
 
+    // Lightbox variant: full country names, with USA as the one abbreviation exception.
+    lightboxCountry(country) {
+        if (!country) return null;
+        const lower = country.toLowerCase();
+        if (['united states of america', 'united states', 'us', 'usa'].includes(lower)) return 'USA';
+        const isoToFull = {
+            'ar':'Argentina','au':'Australia','at':'Austria','be':'Belgium','br':'Brazil',
+            'bg':'Bulgaria','kh':'Cambodia','ca':'Canada','cl':'Chile','cn':'China',
+            'co':'Colombia','hr':'Croatia','cu':'Cuba','cz':'Czech Republic','dk':'Denmark',
+            'fi':'Finland','fr':'France','ge':'Georgia','de':'Germany','gr':'Greece',
+            'gt':'Guatemala','hk':'Hong Kong','hu':'Hungary','in':'India','id':'Indonesia',
+            'iq':'Iraq','ie':'Ireland','il':'Israel','it':'Italy','jp':'Japan','ke':'Kenya',
+            'kr':'South Korea','ma':'Morocco','mx':'Mexico','np':'Nepal','nl':'Netherlands',
+            'nz':'New Zealand','ng':'Nigeria','no':'Norway','ph':'Philippines','pl':'Poland',
+            'pt':'Portugal','ro':'Romania','ru':'Russia','sa':'Saudi Arabia','sg':'Singapore',
+            'si':'Slovenia','za':'South Africa','es':'Spain','se':'Sweden','ch':'Switzerland',
+            'tw':'Taiwan','th':'Thailand','tr':'Turkey','ua':'Ukraine',
+            'gb':'United Kingdom','uk':'United Kingdom','ve':'Venezuela',
+        };
+        return isoToFull[lower] || country;
+    },
+
     // Strip storefront wrappers so we match the real brand, not the platform it's
     // sold through. "Shudder Amazon Channel" / "Britbox Apple TV Channel" /
     // "Starz Roku Premium Channel" are the brand (Shudder/Britbox/Starz) billed

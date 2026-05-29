@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Slop Filter Label Options</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 20px 16px 60px;
+  }
+  h1 {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: #555;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 0.58rem;
+    color: #444;
+    text-align: center;
+    margin-bottom: 24px;
+    letter-spacing: 0.05em;
+  }
+
+  .card {
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 18px 16px 16px;
+    margin-bottom: 14px;
+  }
+  .card-num {
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    color: #444;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* ── shared track/thumb ── */
+  .track {
+    width: 44px; height: 24px;
+    border-radius: 12px;
+    background: #1e1e1e;
+    border: 1px solid rgba(0,212,170,0.45);
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.25s, border-color 0.25s;
+    cursor: pointer;
+  }
+  .track.on { background: #00d4aa; border-color: #00d4aa; }
+  .thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+  }
+  .track.on .thumb { transform: translateX(20px); }
+
+
+  /* ══════════════════════════════════════════ OPTION 1 */
+  /* Label above, toggle + state text below */
+  .o1 { cursor: pointer; display: inline-flex; flex-direction: column; gap: 6px; }
+  .o1-cap {
+    font-size: 0.52rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: #666; font-weight: 600;
+  }
+  .o1-row { display: flex; align-items: center; gap: 9px; }
+  .o1-state {
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(0,212,170,0.75); transition: color 0.25s;
+  }
+  .o1.on .o1-state { color: #00d4aa; }
+
+  /* ══════════════════════════════════════════ OPTION 2 */
+  /* Label left, toggle right — full-width feel */
+  .o2 {
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: space-between;
+  }
+  .o2-left { display: flex; flex-direction: column; gap: 3px; }
+  .o2-name {
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(0,212,170,0.75); transition: color 0.25s;
+  }
+  .o2.on .o2-name { color: #00d4aa; }
+  .o2-sub {
+    font-size: 0.55rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #555; transition: color 0.25s;
+  }
+  .o2.on .o2-sub { color: rgba(0,212,170,0.5); }
+
+  /* ══════════════════════════════════════════ OPTION 3 */
+  /* Bordered pill: [SLOP FILTER | WITH SLOP ●] */
+  .o3 {
+    cursor: pointer; display: inline-flex; align-items: center;
+    gap: 0; border: 1px solid rgba(0,212,170,0.45);
+    border-radius: 22px; overflow: hidden; transition: border-color 0.25s;
+  }
+  .o3.on { border-color: #00d4aa; }
+  .o3-label {
+    padding: 6px 11px;
+    font-size: 0.6rem; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; color: #666;
+    border-right: 1px solid rgba(0,212,170,0.25);
+  }
+  .o3-state {
+    padding: 6px 11px;
+    font-size: 0.6rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(0,212,170,0.75); transition: color 0.25s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .o3.on .o3-state { color: #00d4aa; }
+  .o3-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(0,212,170,0.4); flex-shrink: 0;
+    transition: background 0.25s;
+  }
+  .o3.on .o3-dot { background: #00d4aa; }
+
+  /* ══════════════════════════════════════════ OPTION 4 */
+  /* Big "SLOP" word + "FILTER" micro + track */
+  .o4 { cursor: pointer; display: flex; align-items: center; gap: 12px; }
+  .o4-word {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+    line-height: 1;
+  }
+  .o4-big {
+    font-size: 1.05rem; font-weight: 900;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: rgba(0,212,170,0.75); transition: color 0.25s;
+  }
+  .o4.on .o4-big { color: #00d4aa; }
+  .o4-small {
+    font-size: 0.45rem; font-weight: 700;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: #555; margin-top: 1px;
+  }
+  .o4-status {
+    font-size: 0.55rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #555; transition: color 0.25s;
+  }
+  .o4.on .o4-status { color: rgba(0,212,170,0.55); }
+
+  /* ══════════════════════════════════════════ OPTION 5 */
+  /* Toggle with state text INSIDE the track */
+  .o5 { cursor: pointer; display: flex; align-items: center; gap: 10px; }
+  .o5-name {
+    font-size: 0.62rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(0,212,170,0.75); transition: color 0.25s; flex-shrink: 0;
+  }
+  .o5.on .o5-name { color: #00d4aa; }
+  .o5-track {
+    width: 72px; height: 24px; border-radius: 12px;
+    background: #1e1e1e; border: 1px solid rgba(0,212,170,0.45);
+    position: relative; display: flex; align-items: center;
+    justify-content: flex-end; padding-right: 7px;
+    transition: background 0.25s; cursor: pointer; flex-shrink: 0;
+  }
+  .o5.on .o5-track { background: rgba(0,212,170,0.12); border-color: #00d4aa; padding-right: 0; padding-left: 7px; justify-content: flex-start; }
+  .o5-inner {
+    font-size: 0.42rem; font-weight: 800;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(0,212,170,0.6); user-select: none;
+    transition: color 0.25s;
+  }
+  .o5.on .o5-inner { color: #00d4aa; }
+  .o5-thumb {
+    position: absolute; top: 3px; left: 3px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(0,212,170,0.5);
+    transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
+  }
+  .o5.on .o5-thumb { transform: translateX(48px); background: #00d4aa; }
+
+  /* ══════════════════════════════════════════ OPTION 6 */
+  /* Two separate lines: "SLOP FILTER" greyed, "NO SLOP / WITH SLOP" teal */
+  .o6 { cursor: pointer; display: flex; align-items: center; gap: 10px; }
+  .o6-text { display: flex; flex-direction: column; gap: 2px; }
+  .o6-cap {
+    font-size: 0.5rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: #555;
+  }
+  .o6-state {
+    font-size: 0.78rem; font-weight: 800;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(0,212,170,0.75); transition: color 0.25s; line-height: 1;
+  }
+  .o6.on .o6-state { color: #00d4aa; }
+
+  /* ══════════════════════════════════════════ OPTION 7 */
+  /* Segmented control feel: [SLOP FILTER] [WITH SLOP] */
+  .o7 { cursor: pointer; display: inline-flex; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,212,170,0.35); transition: border-color 0.25s; }
+  .o7.on { border-color: #00d4aa; }
+  .o7-seg {
+    padding: 7px 11px;
+    font-size: 0.58rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    transition: background 0.25s, color 0.25s;
+  }
+  .o7-seg:first-child {
+    background: rgba(255,255,255,0.04); color: #666;
+    border-right: 1px solid rgba(0,212,170,0.2);
+  }
+  .o7-seg:last-child { color: rgba(0,212,170,0.75); background: transparent; }
+  .o7.on .o7-seg:last-child { color: #000; background: #00d4aa; }
+
+  /* ══════════════════════════════════════════ OPTION 8 */
+  /* Checkbox-style with label */
+  .o8 { cursor: pointer; display: flex; align-items: center; gap: 10px; }
+  .o8-box {
+    width: 22px; height: 22px; border-radius: 6px;
+    border: 1.5px solid rgba(0,212,170,0.5);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background 0.2s, border-color 0.2s;
+  }
+  .o8.on .o8-box { background: #00d4aa; border-color: #00d4aa; }
+  .o8-check { color: #000; font-size: 13px; font-weight: 900; opacity: 0; transition: opacity 0.2s; }
+  .o8.on .o8-check { opacity: 1; }
+  .o8-labels { display: flex; flex-direction: column; gap: 2px; }
+  .o8-name {
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(0,212,170,0.75); transition: color 0.25s;
+  }
+  .o8.on .o8-name { color: #00d4aa; }
+  .o8-detail {
+    font-size: 0.55rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #555; transition: color 0.25s;
+  }
+  .o8.on .o8-detail { color: rgba(0,212,170,0.5); }
+
+  /* ══════════════════════════════════════════ OPTION 9 */
+  /* Glowing teal badge when active */
+  .o9 { cursor: pointer; display: inline-flex; flex-direction: column; gap: 5px; }
+  .o9-row { display: flex; align-items: center; gap: 9px; }
+  .o9-badge {
+    display: flex; flex-direction: column; align-items: flex-start;
+    background: rgba(0,212,170,0.06);
+    border: 1px solid rgba(0,212,170,0.3);
+    border-radius: 8px; padding: 6px 10px;
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .o9.on .o9-badge {
+    background: rgba(0,212,170,0.12);
+    border-color: #00d4aa;
+    box-shadow: 0 0 14px rgba(0,212,170,0.2);
+  }
+  .o9-title {
+    font-size: 0.58rem; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #666;
+  }
+  .o9-state {
+    font-size: 0.8rem; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: rgba(0,212,170,0.75); transition: color 0.25s; line-height: 1.1;
+  }
+  .o9.on .o9-state { color: #00d4aa; }
+
+  /* ══════════════════════════════════════════ OPTION 10 */
+  /* Pure text minimal — colon syntax */
+  .o10 { cursor: pointer; display: inline-flex; align-items: baseline; gap: 5px; }
+  .o10-prefix {
+    font-size: 0.62rem; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase; color: #666;
+  }
+  .o10-colon { color: #444; font-size: 0.62rem; }
+  .o10-state {
+    font-size: 0.7rem; font-weight: 800;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(0,212,170,0.75); transition: color 0.25s;
+    text-decoration: underline; text-underline-offset: 3px;
+    text-decoration-color: rgba(0,212,170,0.3);
+  }
+  .o10.on .o10-state { color: #00d4aa; text-decoration-color: #00d4aa; }
+
+</style>
+</head>
+<body>
+
+<h1>Slop Filter — 10 Design Options</h1>
+<p class="subtitle">Tap each to toggle on/off</p>
+
+<!-- 1 -->
+<div class="card">
+  <div class="card-num">1 — "Slop Filter" caption above, toggle + state text below</div>
+  <div class="o1" id="o1">
+    <div class="o1-cap">Slop Filter</div>
+    <div class="o1-row">
+      <div class="track" id="o1t"><div class="thumb"></div></div>
+      <div class="o1-state" id="o1s">With Slop</div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 -->
+<div class="card">
+  <div class="card-num">2 — "Slop Filter" left label + sub-state, toggle right</div>
+  <div class="o2" id="o2">
+    <div class="o2-left">
+      <div class="o2-name">Slop Filter</div>
+      <div class="o2-sub" id="o2s">Showing slop</div>
+    </div>
+    <div class="track" id="o2t"><div class="thumb"></div></div>
+  </div>
+</div>
+
+<!-- 3 -->
+<div class="card">
+  <div class="card-num">3 — Pill: [SLOP FILTER | WITH SLOP ●] inline</div>
+  <div class="o3" id="o3">
+    <div class="o3-label">Slop Filter</div>
+    <div class="o3-state" id="o3s">
+      <div class="o3-dot" id="o3d"></div>
+      <span id="o3txt">With Slop</span>
+    </div>
+  </div>
+</div>
+
+<!-- 4 -->
+<div class="card">
+  <div class="card-num">4 — Big "SLOP" word + "FILTER" micro label + toggle + status</div>
+  <div class="o4" id="o4">
+    <div class="o4-word">
+      <div class="o4-big">Slop</div>
+      <div class="o4-small">Filter</div>
+    </div>
+    <div class="track" id="o4t"><div class="thumb"></div></div>
+    <div class="o4-status" id="o4s">Off</div>
+  </div>
+</div>
+
+<!-- 5 -->
+<div class="card">
+  <div class="card-num">5 — "Slop Filter" label + wide track with state inside</div>
+  <div class="o5" id="o5">
+    <div class="o5-name">Slop Filter</div>
+    <div class="o5-track" id="o5t">
+      <div class="o5-thumb"></div>
+      <div class="o5-inner" id="o5s">Off</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6 -->
+<div class="card">
+  <div class="card-num">6 — Micro "SLOP FILTER" cap + big state text + toggle</div>
+  <div class="o6" id="o6">
+    <div class="track" id="o6t"><div class="thumb"></div></div>
+    <div class="o6-text">
+      <div class="o6-cap">Slop Filter</div>
+      <div class="o6-state" id="o6s">With Slop</div>
+    </div>
+  </div>
+</div>
+
+<!-- 7 -->
+<div class="card">
+  <div class="card-num">7 — Segmented control: [SLOP FILTER] [WITH SLOP]</div>
+  <div class="o7" id="o7">
+    <div class="o7-seg">Slop Filter</div>
+    <div class="o7-seg" id="o7s">With Slop</div>
+  </div>
+</div>
+
+<!-- 8 -->
+<div class="card">
+  <div class="card-num">8 — Checkbox + "Slop Filter" label + state subtitle</div>
+  <div class="o8" id="o8">
+    <div class="o8-box"><span class="o8-check">✓</span></div>
+    <div class="o8-labels">
+      <div class="o8-name">Slop Filter</div>
+      <div class="o8-detail" id="o8s">Off — showing slop</div>
+    </div>
+  </div>
+</div>
+
+<!-- 9 -->
+<div class="card">
+  <div class="card-num">9 — Glowing badge: "SLOP FILTER" header, state below</div>
+  <div class="o9" id="o9">
+    <div class="o9-badge">
+      <div class="o9-title">Slop Filter</div>
+      <div class="o9-state" id="o9s">With Slop</div>
+    </div>
+  </div>
+</div>
+
+<!-- 10 -->
+<div class="card">
+  <div class="card-num">10 — Pure text: "Slop Filter: With Slop" underlined state</div>
+  <div class="o10" id="o10">
+    <span class="o10-prefix">Slop Filter</span>
+    <span class="o10-colon">:</span>
+    <span class="o10-state" id="o10s">With Slop</span>
+  </div>
+</div>
+
+<script>
+  const items = [
+    { id:'o1', track:'o1t', fn: on => document.getElementById('o1s').textContent = on?'No Slop':'With Slop' },
+    { id:'o2', track:'o2t', fn: on => document.getElementById('o2s').textContent = on?'Slop hidden':'Showing slop' },
+    { id:'o3', track:null,  fn: on => { document.getElementById('o3txt').textContent = on?'No Slop':'With Slop'; document.getElementById('o3d').style.background = on?'#00d4aa':'rgba(0,212,170,0.4)'; } },
+    { id:'o4', track:'o4t', fn: on => document.getElementById('o4s').textContent = on?'On':'Off' },
+    { id:'o5', track:null,  fn: on => document.getElementById('o5s').textContent = on?'On':'Off' },
+    { id:'o6', track:'o6t', fn: on => document.getElementById('o6s').textContent = on?'No Slop':'With Slop' },
+    { id:'o7', track:null,  fn: on => document.getElementById('o7s').textContent = on?'No Slop':'With Slop' },
+    { id:'o8', track:null,  fn: on => document.getElementById('o8s').textContent = on?'On — slop hidden':'Off — showing slop' },
+    { id:'o9', track:null,  fn: on => document.getElementById('o9s').textContent = on?'No Slop':'With Slop' },
+    { id:'o10',track:null,  fn: on => document.getElementById('o10s').textContent = on?'No Slop':'With Slop' },
+  ];
+
+  const states = {};
+  items.forEach(({ id, track, fn }) => {
+    states[id] = false;
+    document.getElementById(id).addEventListener('click', () => {
+      states[id] = !states[id];
+      const on = states[id];
+      document.getElementById(id).classList.toggle('on', on);
+      if (track) document.getElementById(track).classList.toggle('on', on);
+      fn(on);
+    });
+  });
+</script>
+</body>
+</html>

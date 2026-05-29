@@ -190,7 +190,7 @@ const DateCard = ({ dateParts }) => {
           ) : null}
           {/* Cascading chevrons */}
           <View style={styles.dateChevrons}>
-            {[0.9, 0.7, 0.5, 0.3, 0.15].map((opacity, i) => (
+            {[1, 0.6, 0.3].map((opacity, i) => (
               <Text key={i} style={[styles.dateChevron, {color: accentColor, opacity}]}>
                 {'›'}
               </Text>
@@ -417,7 +417,7 @@ const HomeScreenTvOS = () => {
 
     // Slop-free mode: hide flagged films
     if (slopFree) {
-      movies = movies.filter(m => !m.is_slop);
+      movies = movies.filter(m => !m.is_slop && !m._is_slop_guess);
     }
 
     // Hide-fest mode: hide virtual screenings
@@ -1070,12 +1070,11 @@ const styles = StyleSheet.create({
   },
   dateChevrons: {
     flexDirection: 'row',
-    marginTop: 6,
+    marginTop: 14,
   },
   dateChevron: {
-    fontSize: 40,
-    fontWeight: '800',
-    lineHeight: 40,
+    fontSize: 80,
+    lineHeight: 80,
   },
   cardWrapper: {
     marginRight: CARD_GAP,
