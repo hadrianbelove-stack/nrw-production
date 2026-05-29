@@ -444,9 +444,10 @@ const NRW = {
     renderWall(movies) {
         const wall = document.getElementById('wall');
 
-        // Separate pre-orders from regular movies
-        const regularMovies = movies.filter(m => !m._is_preorder);
+        // Separate into three buckets: fest, pre-orders, regular
+        const festMovies = movies.filter(m => !m._is_preorder && m.categories?.is_virtual_screening);
         const preorderMovies = movies.filter(m => m._is_preorder);
+        const regularMovies = movies.filter(m => !m._is_preorder && !m.categories?.is_virtual_screening);
 
         // Sort regular movies by date descending, then staff picks first within each date
         regularMovies.sort((a, b) => {
@@ -466,20 +467,49 @@ const NRW = {
         // Sort pre-orders by date ascending (nearest release first)
         preorderMovies.sort((a, b) => (a.digital_date || '').localeCompare(b.digital_date || ''));
 
-        // Combine: pre-orders at top (nearest release first), then regular movies
-        const orderedMovies = [...preorderMovies, ...regularMovies];
+        // Sort fest: active screenings first (soonest to expire), expired last
+        festMovies.sort((a, b) => {
+            const aActive = a.virtual_screening_info?.status === 'active';
+            const bActive = b.virtual_screening_info?.status === 'active';
+            if (aActive !== bActive) return aActive ? -1 : 1;
+            if (aActive) {
+                // Both active: soonest to expire first
+                const aEnd = a.virtual_screening_info?.available_end || '';
+                const bEnd = b.virtual_screening_info?.available_end || '';
+                return aEnd.localeCompare(bEnd);
+            }
+            // Both expired: most recent first
+            return (b.digital_date || '').localeCompare(a.digital_date || '');
+        });
+
+        // Combine: fest at top, then pre-orders, then regular movies
+        const orderedMovies = [...festMovies, ...preorderMovies, ...regularMovies];
 
         let html = '';
         let lastDate = '';
         let isFirstDate = true;
+        let festSectionStarted = false;
         let preorderSectionStarted = false;
         const SHOW_TRAILERS_CARD = false; // Trailers card temporarily disabled — set true to restore
 
         orderedMovies.forEach(movie => {
             const date = (movie.digital_date || '').substring(0, 10);
+            const isFest = !movie._is_preorder && movie.categories?.is_virtual_screening;
 
+            // Fest movies: show section header once, no date dividers
+            if (isFest) {
+                if (!festSectionStarted) {
+                    festSectionStarted = true;
+                    html += `<div class="date-divider-card">
+                        <div class="date-bar date-bar-fest"><div class="date-day">FEST</div></div>
+                        <div class="date-body">
+                            <div class="date-number date-number-fest">NOW</div>
+                            <div class="date-chevrons date-chevrons-fest"><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span></div>
+                        </div>
+                    </div>`;
+                }
             // Pre-order movies: show section header once, no date dividers
-            if (movie._is_preorder) {
+            } else if (movie._is_preorder) {
                 if (!preorderSectionStarted) {
                     preorderSectionStarted = true;
                     html += `<div class="date-divider-card">

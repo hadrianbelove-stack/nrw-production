@@ -324,6 +324,10 @@ header h1 {
     background: #7c3aed;
 }
 
+.date-bar-fest {
+    background: #b45309;
+}
+
 .date-day {
     font-size: 0.72rem;
     color: #000;
@@ -350,6 +354,11 @@ header h1 {
 .date-number-preorder {
     font-size: 1.4rem;
     color: #7c3aed;
+}
+
+.date-number-fest {
+    font-size: 1.4rem;
+    color: #f59e0b;
 }
 
 .date-month {
@@ -381,6 +390,10 @@ header h1 {
 
 .date-chevrons-preorder span {
     color: #7c3aed;
+}
+
+.date-chevrons-fest span {
+    color: #f59e0b;
 }
 
 /* NEW TRAILERS card - same size as movie cards */
