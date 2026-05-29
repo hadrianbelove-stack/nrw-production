@@ -467,16 +467,23 @@ const NRW = {
         // Sort pre-orders by date ascending (nearest release first)
         preorderMovies.sort((a, b) => (a.digital_date || '').localeCompare(b.digital_date || ''));
 
-        // Sort fest: active screenings first (soonest to expire), expired last
+        // Sort fest: active (NOW) first by soonest expiry, then upcoming (FUTURE) ascending, then expired
+        const today = new Date().toISOString().slice(0, 10);
+        const festTier = m => {
+            if (m.virtual_screening_info?.status === 'active') return 0;
+            if ((m.digital_date || '') > today) return 1;
+            return 2;
+        };
         festMovies.sort((a, b) => {
-            const aActive = a.virtual_screening_info?.status === 'active';
-            const bActive = b.virtual_screening_info?.status === 'active';
-            if (aActive !== bActive) return aActive ? -1 : 1;
-            if (aActive) {
+            const ta = festTier(a), tb = festTier(b);
+            if (ta !== tb) return ta - tb;
+            if (ta === 0) {
                 // Both active: soonest to expire first
-                const aEnd = a.virtual_screening_info?.available_end || '';
-                const bEnd = b.virtual_screening_info?.available_end || '';
-                return aEnd.localeCompare(bEnd);
+                return (a.virtual_screening_info?.available_end || '').localeCompare(b.virtual_screening_info?.available_end || '');
+            }
+            if (ta === 1) {
+                // Both future: nearest date first
+                return (a.digital_date || '').localeCompare(b.digital_date || '');
             }
             // Both expired: most recent first
             return (b.digital_date || '').localeCompare(a.digital_date || '');

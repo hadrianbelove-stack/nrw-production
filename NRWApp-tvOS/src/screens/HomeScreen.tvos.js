@@ -485,7 +485,20 @@ const HomeScreenTvOS = () => {
 
     // Sort each bucket
     const byDateDesc = (a, b) => (b.digital_date || '0000-00-00').localeCompare(a.digital_date || '0000-00-00');
-    const sortedFest = [...festMovies].sort(byDateDesc);
+    // Fest: active (NOW) first by soonest expiry, then upcoming (FUTURE) ascending, then expired
+    const today = new Date().toISOString().slice(0, 10);
+    const festTier = m => {
+      if (m.virtual_screening_info?.status === 'active') return 0;
+      if ((m.digital_date || '') > today) return 1;
+      return 2;
+    };
+    const sortedFest = [...festMovies].sort((a, b) => {
+      const ta = festTier(a), tb = festTier(b);
+      if (ta !== tb) return ta - tb;
+      if (ta === 0) return (a.virtual_screening_info?.available_end || '').localeCompare(b.virtual_screening_info?.available_end || '');
+      if (ta === 1) return (a.digital_date || '').localeCompare(b.digital_date || '');
+      return (b.digital_date || '').localeCompare(a.digital_date || '');
+    });
     const sortedPreorders = [...preorderMovies].sort((a, b) => (a.digital_date || '').localeCompare(b.digital_date || ''));
     const sortedRegular = [...regularMovies].sort(byDateDesc);
 
