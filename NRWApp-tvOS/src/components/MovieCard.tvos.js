@@ -105,6 +105,7 @@ const MovieCard = forwardRef(({
   hasTVPreferredFocus = false,
   testID,
   nextFocusUp,
+  nextFocusDown,
   nextFocusLeft,
   nextFocusRight,
 }, ref) => {
@@ -274,6 +275,7 @@ const MovieCard = forwardRef(({
       testID={testID}
       style={styles.touchable}
       nextFocusUp={nextFocusUp}
+      nextFocusDown={nextFocusDown}
       nextFocusLeft={nextFocusLeft}
       nextFocusRight={nextFocusRight}
     >
