@@ -1,19 +1,47 @@
 {
-  "timestamp": "2026-05-28T13:18:44.309767",
-  "movies_requested": 5,
-  "movies_enriched": 3,
-  "movies_deferred": 2,
+  "timestamp": "2026-05-29T13:31:49.121162",
+  "movies_requested": 17,
+  "movies_enriched": 13,
+  "movies_deferred": 4,
   "deferred_details": [
     {
-      "title": "ID:1662414",
-      "reason": "not_in_data_json"
+      "title": "The Furious",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-05-29",
+      "discovered_at": "2026-05-29T12:19:48.290400",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "tmdb_platforms": []
     },
     {
-      "title": "ID:1432596",
-      "reason": "not_in_data_json"
+      "title": "Palestine 36",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-05-19",
+      "discovered_at": "2026-05-29T12:19:56.617816",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 13,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "In the Hand of Dante",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-24",
+      "discovered_at": "2026-05-29T12:24:18.910448",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Real Couples",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-04",
+      "discovered_at": "2026-05-29T12:54:19.442616",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 259.86,
+  "enrichment_duration_seconds": 1775.33,
   "error_details": [],
   "total_errors": 0
 }
