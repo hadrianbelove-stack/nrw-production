@@ -15,6 +15,7 @@ const NRWMobile = {
     activeFilters: new Set(),
     slopFree: true,
     hideFest: false,
+    showPreorders: false,
     searchQuery: '',
     currentView: 0,
     currentMovieIndex: 0,
@@ -213,6 +214,25 @@ const NRWMobile = {
                 this.dom.gridView.scrollTop = 0;
             });
         }
+
+        // Pre-order toggle
+        const preorderToggle = document.getElementById('preorder-toggle');
+        if (preorderToggle) {
+            preorderToggle.classList.toggle('active', this.showPreorders);
+            const preorderText = document.getElementById('preorder-track-text');
+            if (preorderText) preorderText.textContent = this.showPreorders ? 'ON' : 'OFF';
+
+            preorderToggle.addEventListener('click', () => {
+                this.showPreorders = !this.showPreorders;
+                preorderToggle.classList.toggle('active', this.showPreorders);
+                const t = document.getElementById('preorder-track-text');
+                if (t) t.textContent = this.showPreorders ? 'ON' : 'OFF';
+                this.applyFilter();
+                this.buildGrid();
+                this.setView(0);
+                this.dom.gridView.scrollTop = 0;
+            });
+        }
     },
 
     updateFilterDesc() {
@@ -296,8 +316,8 @@ const NRWMobile = {
             // Hide-fest mode: hide virtual screenings
             if (this.hideFest && movie.categories?.is_virtual_screening) return false;
 
-            // Pre-orders only appear when the pre-orders filter is active OR search is active
-            if (movie._is_preorder && !filters.has('pre-orders') && !this.searchQuery) return false;
+            // Pre-orders only appear when toggle is ON or search is active
+            if (movie._is_preorder && !this.showPreorders && !this.searchQuery) return false;
 
             // Category filters (OR logic)
             if (filters.size > 0) {
@@ -319,9 +339,6 @@ const NRWMobile = {
                             break;
                         case 'documentary':
                             if (movie.categories?.is_documentary === true) matchesAny = true;
-                            break;
-                        case 'pre-orders':
-                            if (movie._is_preorder === true) matchesAny = true;
                             break;
                         case 'horror':
                             if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) matchesAny = true;

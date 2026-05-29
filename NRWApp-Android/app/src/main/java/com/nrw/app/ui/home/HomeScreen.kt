@@ -127,7 +127,9 @@ fun HomeScreen(
                         slopFree = uiState.slopFree,
                         onSlopFreeToggle = { viewModel.toggleSlopFree() },
                         hideFest = uiState.hideFest,
-                        onHideFestToggle = { viewModel.toggleHideFest() }
+                        onHideFestToggle = { viewModel.toggleHideFest() },
+                        showPreorders = uiState.showPreorders,
+                        onShowPreordersToggle = { viewModel.toggleShowPreorders() }
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))

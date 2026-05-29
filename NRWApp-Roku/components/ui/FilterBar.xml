@@ -18,6 +18,9 @@
     <!-- Hide virtual screenings toggle state -->
     <field id="hideFest" type="boolean" value="false" onChange="onFilterChanged" />
 
+    <!-- Show pre-orders toggle state -->
+    <field id="showPreorders" type="boolean" value="false" onChange="onFilterChanged" />
+
     <!-- Focus -->
     <field id="hasFocus" type="boolean" value="false" onChange="onFocusChanged" />
     <field id="focusedIndex" type="integer" value="0" />
@@ -98,14 +101,6 @@
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
-      <!-- Pre-Orders -->
-      <Group id="chip_pre_orders">
-        <Rectangle id="chipBg_pre_orders" width="110" height="36" color="0x333333FF" />
-        <Label id="chipLabel_pre_orders" text="Pre-Orders" width="110" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
-
       <!-- Divider -->
       <Rectangle id="filterDivider" width="1" height="28" color="0x444444FF"
         translation="[0, 4]" />
@@ -122,6 +117,14 @@
       <Group id="chip_hide_fest">
         <Rectangle id="chipBg_hide_fest" width="110" height="36" color="0x0D0D0DFF" />
         <Label id="chipLabel_hide_fest" text="WITH FEST" width="110" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0x59595959" />
+      </Group>
+
+      <!-- Pre-Orders Toggle -->
+      <Group id="chip_show_preorders">
+        <Rectangle id="chipBg_show_preorders" width="130" height="36" color="0x0D0D0DFF" />
+        <Label id="chipLabel_show_preorders" text="NO PRE-ORDERS" width="130" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0x59595959" />
       </Group>

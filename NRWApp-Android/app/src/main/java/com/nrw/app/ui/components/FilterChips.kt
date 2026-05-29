@@ -51,6 +51,8 @@ fun FilterChips(
     onSlopFreeToggle: () -> Unit = {},
     hideFest: Boolean = false,
     onHideFestToggle: () -> Unit = {},
+    showPreorders: Boolean = false,
+    onShowPreordersToggle: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     TvLazyRow(
@@ -95,6 +97,15 @@ fun FilterChips(
                 activeLabel = "NO FEST",
                 inactiveLabel = "WITH FEST",
                 onClick = onHideFestToggle
+            )
+        }
+
+        item {
+            MetaTogglePill(
+                isActive = showPreorders,
+                activeLabel = "PRE-ORDERS",
+                inactiveLabel = "NO PRE-ORDERS",
+                onClick = onShowPreordersToggle
             )
         }
     }

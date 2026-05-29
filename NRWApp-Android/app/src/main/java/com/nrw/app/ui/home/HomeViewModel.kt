@@ -23,6 +23,7 @@ data class HomeUiState(
     val activeFilters: Set<FilterCategory> = emptySet(),
     val slopFree: Boolean = true,
     val hideFest: Boolean = false,
+    val showPreorders: Boolean = false,
     val searchQuery: String = "",
     val playlistUrl: String? = null
 )
@@ -102,6 +103,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         applyFilters()
     }
 
+    fun toggleShowPreorders() {
+        _uiState.value = _uiState.value.copy(showPreorders = !_uiState.value.showPreorders)
+        applyFilters()
+    }
+
     /**
      * Apply filters and search to movies
      */
@@ -115,6 +121,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         if (state.hideFest) {
             filtered = filtered.filter { it.categories?.isVirtualScreening != true }
+        }
+
+        if (!state.showPreorders && state.searchQuery.isBlank()) {
+            filtered = filtered.filter { !it.isPreorder }
         }
 
         if (state.searchQuery.isNotBlank()) {

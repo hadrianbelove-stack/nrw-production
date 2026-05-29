@@ -20,6 +20,7 @@ Sub Init()
     m.filteredMovies = []
     m.activeFilters = []
     m.slopFree = true
+    m.showPreorders = false
     m.hideFest = false
     m.focusedArea = "grid"  ' "filter", "grid", or "detail"
 
@@ -124,6 +125,18 @@ Sub ApplyFilters()
         movies = filtered
     end if
 
+    ' Pre-orders: only show when toggle is ON (search always shows all)
+    if NOT m.showPreorders
+        filtered = []
+        for each movie in movies
+            isPreorder = (movie._is_preorder = true)
+            if NOT isPreorder
+                filtered.Push(movie)
+            end if
+        end for
+        movies = filtered
+    end if
+
     m.filteredMovies = movies
 
     ' Group by date
@@ -187,6 +200,14 @@ Sub onFilterSelected()
     if filterId = "hide_fest"
         m.hideFest = NOT m.hideFest
         m.filterBar.hideFest = m.hideFest
+        ApplyFilters()
+        return
+    end if
+
+    ' Pre-orders toggle is separate from category filters
+    if filterId = "show_preorders"
+        m.showPreorders = NOT m.showPreorders
+        m.filterBar.showPreorders = m.showPreorders
         ApplyFilters()
         return
     end if

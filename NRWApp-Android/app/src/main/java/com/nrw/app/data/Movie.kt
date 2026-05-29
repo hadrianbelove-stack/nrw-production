@@ -287,8 +287,7 @@ enum class FilterCategory(val id: String, val displayName: String) {
     COMEDY("comedy", "Comedy"),
     FOREIGN("foreign", "Foreign"),
     DOCUMENTARY("documentary", "Docs"),
-    RESTORATIONS("restorations", "Reissues"),
-    PRE_ORDERS("pre-orders", "Pre-Orders")
+    RESTORATIONS("restorations", "Reissues")
 }
 
 /**

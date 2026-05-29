@@ -8,7 +8,7 @@ Sub Init()
     m.focusIndicator = m.top.FindNode("focusIndicator")
 
     ' Filter chip IDs in order
-    m.filterIds = ["staff_picks", "indie", "horror", "action", "comedy", "foreign", "documentary", "restorations", "pre_orders", "slop_free", "hide_fest"]
+    m.filterIds = ["staff_picks", "indie", "horror", "action", "comedy", "foreign", "documentary", "restorations", "slop_free", "hide_fest", "show_preorders"]
 
     ' Chip widths for focus indicator positioning
     m.chipWidths = {
@@ -20,9 +20,9 @@ Sub Init()
         foreign: 80
         documentary: 60
         restorations: 90
-        pre_orders: 110
         slop_free: 120
         hide_fest: 110
+        show_preorders: 130
     }
 
     ' Store chip references
@@ -64,6 +64,7 @@ Sub UpdateChipStyles()
     activeFilters = m.top.activeFilters
     slopFree = m.top.slopFree
     hideFest = m.top.hideFest
+    showPreorders = m.top.showPreorders
 
     for each filterId in m.filterIds
         chipBg = m.chipBgs[filterId]
@@ -93,6 +94,20 @@ Sub UpdateChipStyles()
                 chipBg.color = "0x0D0D0DFF"
                 chipLabel.color = "0x00D4AA73"
                 chipLabel.text = "WITH FEST"
+            end if
+            continue for
+        end if
+
+        ' Pre-orders toggle has its own visual treatment
+        if filterId = "show_preorders"
+            if showPreorders
+                chipBg.color = "0x00342AFF"
+                chipLabel.color = "0x00D4AAFF"
+                chipLabel.text = "PRE-ORDERS"
+            else
+                chipBg.color = "0x0D0D0DFF"
+                chipLabel.color = "0x00D4AA73"
+                chipLabel.text = "NO PRE-ORDERS"
             end if
             continue for
         end if

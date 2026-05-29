@@ -47,6 +47,7 @@ export default function HomeScreen({navigation}) {
   const [activeFilters, setActiveFilters] = useState(new Set());
   const [slopFree, setSlopFree] = useState(true);
   const [hideFest, setHideFest] = useState(false);
+  const [showPreorders, setShowPreorders] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Initial load
@@ -56,7 +57,7 @@ export default function HomeScreen({navigation}) {
 
   // Apply filters and search
   useEffect(() => {
-    let result = filterMoviesMulti(movies, activeFilters, searchQuery, slopFree, hideFest);
+    let result = filterMoviesMulti(movies, activeFilters, searchQuery, slopFree, hideFest, showPreorders);
     if (searchQuery.trim()) {
       result = searchMovies(result, searchQuery);
     }
@@ -235,7 +236,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={[styles.container, {paddingBottom: insets.bottom}]}>
-      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopFree={slopFree} onSlopFreeChange={setSlopFree} hideFest={hideFest} onHideFestChange={setHideFest} />
+      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopFree={slopFree} onSlopFreeChange={setSlopFree} hideFest={hideFest} onHideFestChange={setHideFest} showPreorders={showPreorders} onShowPreordersChange={setShowPreorders} />
 
       <FlatList
         data={gridItems}

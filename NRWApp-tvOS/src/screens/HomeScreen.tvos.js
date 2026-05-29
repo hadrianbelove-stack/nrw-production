@@ -42,7 +42,6 @@ const FILTERS = [
   { id: 'foreign', label: 'Foreign' },
   { id: 'documentary', label: 'Docs' },
   { id: 'restorations', label: 'Reissues' },
-  { id: 'pre-orders', label: 'Pre-Orders' },
 ];
 
 // Filter Button Component - forwardRef to allow focus navigation from grid
@@ -354,6 +353,7 @@ const HomeScreenTvOS = () => {
   const [activeFilters, setActiveFilters] = useState(new Set());
   const [slopFree, setSlopFree] = useState(true);
   const [hideFest, setHideFest] = useState(false);
+  const [showPreorders, setShowPreorders] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
 
@@ -425,10 +425,14 @@ const HomeScreenTvOS = () => {
       movies = movies.filter(m => !m.categories?.is_virtual_screening);
     }
 
-    // If no filters selected, show all (pre-orders only shown when explicitly filtered or during search)
+    // Pre-orders: only show when toggle is ON or search is active
+    if (!showPreorders && !searchQuery) {
+      movies = movies.filter(m => !m._is_preorder);
+    }
+
+    // If no filters selected, show all
     if (activeFilters.size === 0) {
-      if (searchQuery) return movies;
-      return movies.filter(m => !m._is_preorder);
+      return movies;
     }
 
     // Filter movies - must pass ANY selected filter (OR logic)
@@ -453,9 +457,6 @@ const HomeScreenTvOS = () => {
           case 'restorations':
             if (movie.categories?.is_restoration) return true;
             break;
-          case 'pre-orders':
-            if (movie._is_preorder === true) return true;
-            break;
           case 'horror':
             if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) return true;
             break;
@@ -469,7 +470,7 @@ const HomeScreenTvOS = () => {
       }
       return false;
     });
-  }, [filteredMovies, activeFilters, slopFree, hideFest]);
+  }, [filteredMovies, activeFilters, slopFree, hideFest, showPreorders, searchQuery]);
 
   // Build flat list data with date markers interspersed
   // Each date marker takes one grid cell (same size as movie card)
@@ -656,9 +657,29 @@ const HomeScreenTvOS = () => {
         return undefined;
       };
 
+      // Find nearest focusable node handle in same column, stepping by NUM_COLUMNS
+      const findNearestHandleVertical = (start, step) => {
+        for (let i = start; i >= 0 && i < listData.length; i += step) {
+          const handle = itemNodeHandles.get(i);
+          if (handle) return handle;
+        }
+        return undefined;
+      };
+
       // Get node handles for wrap-around targets (skips date cards)
       const nextFocusRight = isRowEnd ? findNearestHandle(index + 1, 1) : undefined;
       const nextFocusLeft = isRowStart && index > 0 ? findNearestHandle(index - 1, -1) : undefined;
+
+      // Skip over date card rows when navigating up/down
+      const belowItem = listData[index + NUM_COLUMNS];
+      const nextFocusDown = (belowItem && belowItem.type === 'date')
+        ? findNearestHandleVertical(index + 2 * NUM_COLUMNS, NUM_COLUMNS)
+        : undefined;
+
+      const aboveItem = listData[index - NUM_COLUMNS];
+      const nextFocusUpVertical = (!isFirstRow && aboveItem && aboveItem.type === 'date')
+        ? findNearestHandleVertical(index - 2 * NUM_COLUMNS, -NUM_COLUMNS)
+        : undefined;
 
       // Movie card
       return (
@@ -671,7 +692,8 @@ const HomeScreenTvOS = () => {
             onFocus={() => handleMovieFocus(item.movie, index)}
             hasTVPreferredFocus={giveInitialFocus && index === (SHOW_TRAILERS_CARD ? 2 : 1)}
             testID={`movie-card-${index}`}
-            nextFocusUp={focusUpTarget}
+            nextFocusUp={focusUpTarget || nextFocusUpVertical}
+            nextFocusDown={nextFocusDown}
             nextFocusLeft={nextFocusLeft}
             nextFocusRight={nextFocusRight}
           />
@@ -790,6 +812,14 @@ const HomeScreenTvOS = () => {
             onLabel="NO FEST"
             accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
             onPress={() => setHideFest(v => !v)}
+            nextFocusUp={headerNodeHandle}
+          />
+          <MetaToggle
+            isActive={showPreorders}
+            offLabel="NO PRE-ORDERS"
+            onLabel="PRE-ORDERS"
+            accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
+            onPress={() => setShowPreorders(v => !v)}
             nextFocusUp={headerNodeHandle}
           />
         </View>

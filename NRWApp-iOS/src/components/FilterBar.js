@@ -16,10 +16,9 @@ const FILTERS = [
   {id: 'foreign', label: 'Foreign'},
   {id: 'documentary', label: 'Docs'},
   {id: 'restorations', label: 'Reissues'},
-  {id: 'pre-orders', label: 'Pre-Orders'},
 ];
 
-export default function FilterBar({activeFilters, onFilterChange, slopFree, onSlopFreeChange, hideFest, onHideFestChange}) {
+export default function FilterBar({activeFilters, onFilterChange, slopFree, onSlopFreeChange, hideFest, onHideFestChange, showPreorders, onShowPreordersChange}) {
   return (
     <View style={styles.container}>
       <ScrollView
@@ -50,6 +49,15 @@ export default function FilterBar({activeFilters, onFilterChange, slopFree, onSl
           activeOpacity={0.7}>
           <Text style={[styles.filterText, styles.slopText, hideFest && styles.slopTextActive]}>
             {hideFest ? 'NO FEST' : 'WITH FEST'}
+          </Text>
+        </TouchableOpacity>
+        <View style={styles.divider} />
+        <TouchableOpacity
+          style={[styles.filterButton, styles.slopButton, showPreorders && styles.slopButtonActive]}
+          onPress={() => onShowPreordersChange(!showPreorders)}
+          activeOpacity={0.7}>
+          <Text style={[styles.filterText, styles.slopText, showPreorders && styles.slopTextActive]}>
+            {showPreorders ? 'PRE-ORDERS' : 'NO PRE-ORDERS'}
           </Text>
         </TouchableOpacity>
       </ScrollView>

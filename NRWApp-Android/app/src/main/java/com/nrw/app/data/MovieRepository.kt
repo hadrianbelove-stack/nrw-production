@@ -162,9 +162,6 @@ class MovieRepository(private val context: Context) {
             FilterCategory.DOCUMENTARY -> movies.filter {
                 it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isDocumentary == true
             }
-            FilterCategory.PRE_ORDERS -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && it.isPreorder
-            }
             FilterCategory.HORROR -> movies.filter {
                 it.hidden != true && it.enrichmentStatus != "reverted" && (it.genres?.any { g -> g.lowercase().contains("horror") } == true)
             }
@@ -181,14 +178,10 @@ class MovieRepository(private val context: Context) {
      * Filter movies by multiple categories (OR logic - cumulative)
      */
     fun filterMoviesMulti(movies: List<Movie>, activeFilters: Set<FilterCategory>, searchQuery: String = ""): List<Movie> {
-        // Pre-orders only appear when the pre-orders filter is active OR search is active
-        val filtered = if (FilterCategory.PRE_ORDERS !in activeFilters && searchQuery.isBlank()) {
-            movies.filter { !it.isPreorder }
-        } else movies
         if (activeFilters.isEmpty()) {
-            return filtered.filter { it.hidden != true && it.enrichmentStatus != "reverted" }
+            return movies.filter { it.hidden != true && it.enrichmentStatus != "reverted" }
         }
-        return filtered.filter { movie ->
+        return movies.filter { movie ->
             if (movie.hidden == true || movie.enrichmentStatus == "reverted") return@filter false
             activeFilters.any { filter ->
                 when (filter) {
@@ -197,7 +190,6 @@ class MovieRepository(private val context: Context) {
                     FilterCategory.FOREIGN -> movie.isForeign()
                     FilterCategory.RESTORATIONS -> movie.categories?.isRestoration == true
                     FilterCategory.DOCUMENTARY -> movie.categories?.isDocumentary == true
-                    FilterCategory.PRE_ORDERS -> movie.isPreorder
                     FilterCategory.HORROR -> movie.genres?.any { it.lowercase().contains("horror") } == true
                     FilterCategory.ACTION -> movie.genres?.any { it.lowercase().contains("action") } == true
                     FilterCategory.COMEDY -> movie.genres?.any { it.lowercase().contains("comedy") } == true

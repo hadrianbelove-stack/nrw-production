@@ -184,7 +184,7 @@ export function filterMovies(movies, filter = null) {
 /**
  * Filter movies by multiple categories (OR logic - cumulative)
  */
-export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopFree = false, hideFest = false) {
+export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopFree = false, hideFest = false, showPreorders = false) {
   if (!movies || !Array.isArray(movies)) return [];
   // Exclude reverted movies (failed JustWatch verification, no watch links)
   movies = movies.filter(m => m._enrichment_status !== 'reverted');
@@ -196,11 +196,9 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopF
   if (hideFest) {
     movies = movies.filter(m => !m.categories?.is_virtual_screening);
   }
-  // Pre-orders only appear when the pre-orders filter is active OR search is active
-  if (!activeFilters || !activeFilters.has('pre-orders')) {
-    if (!searchQuery) {
-      movies = movies.filter(m => !m._is_preorder);
-    }
+  // Pre-orders only appear when toggle is ON or search is active
+  if (!showPreorders && !searchQuery) {
+    movies = movies.filter(m => !m._is_preorder);
   }
   if (!activeFilters || activeFilters.size === 0) {
     return movies.filter(movie => !movie.hidden);
@@ -226,9 +224,6 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopF
           break;
         case 'documentary':
           if (movie.categories?.is_documentary === true) return true;
-          break;
-        case 'pre-orders':
-          if (movie._is_preorder === true) return true;
           break;
         case 'horror':
           if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) return true;
