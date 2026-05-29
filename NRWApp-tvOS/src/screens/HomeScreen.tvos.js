@@ -162,8 +162,9 @@ const MetaToggle = forwardRef(({ isActive, offLabel, onLabel, accessibilityLabel
 // Date Card Component - non-focusable visual divider
 const DateCard = ({ dateParts }) => {
   const isPreOrder = dateParts.dayName === 'PRE-' || dateParts.dayName === 'PRE-ORDER';
-  const barColor = isPreOrder ? '#7c3aed' : Colors.primary;
-  const accentColor = isPreOrder ? '#7c3aed' : Colors.primary;
+  const isFest = dateParts.dayName === 'FEST';
+  const barColor = isPreOrder ? '#7c3aed' : isFest ? '#b45309' : Colors.primary;
+  const accentColor = isPreOrder ? '#7c3aed' : isFest ? '#f59e0b' : Colors.primary;
 
   return (
     <View
@@ -175,16 +176,16 @@ const DateCard = ({ dateParts }) => {
         {/* Top bar */}
         <View style={[styles.dateBar, { backgroundColor: barColor }]}>
           <Text style={styles.dateBarText}>
-            {isPreOrder ? 'PRE-ORDER' : dateParts.dayName}
+            {isPreOrder ? 'PRE-ORDER' : isFest ? 'FEST' : dateParts.dayName}
           </Text>
         </View>
 
         {/* Body */}
         <View style={styles.dateBody}>
-          <Text style={[styles.dateNumber, { color: isPreOrder ? accentColor : '#fff' }]}>
-            {isPreOrder ? 'SOON' : dateParts.day}
+          <Text style={[styles.dateNumber, { color: (isPreOrder || isFest) ? accentColor : '#fff' }]}>
+            {isPreOrder ? 'SOON' : isFest ? 'NOW' : dateParts.day}
           </Text>
-          {!isPreOrder && dateParts.month ? (
+          {!isPreOrder && !isFest && dateParts.month ? (
             <Text style={styles.dateMonth}>{dateParts.month}</Text>
           ) : null}
           {/* Cascading chevrons */}
@@ -477,70 +478,50 @@ const HomeScreenTvOS = () => {
   const listData = useMemo(() => {
     if (!displayMovies || displayMovies.length === 0) return [];
 
-    // Separate pre-orders from regular movies
-    const regularMovies = displayMovies.filter(m => !m._is_preorder);
+    // Split into three buckets: fest (virtual screenings), pre-orders, regular
+    const festMovies = displayMovies.filter(m => !m._is_preorder && m.categories?.is_virtual_screening);
     const preorderMovies = displayMovies.filter(m => m._is_preorder);
+    const regularMovies = displayMovies.filter(m => !m._is_preorder && !m.categories?.is_virtual_screening);
 
-    // Sort regular movies by digital_date descending (newest first)
-    const sorted = [...regularMovies].sort((a, b) => {
-      const dateA = a.digital_date || '0000-00-00';
-      const dateB = b.digital_date || '0000-00-00';
-      return dateB.localeCompare(dateA);
-    });
-
-    // Sort pre-orders by date ascending (nearest release first)
-    preorderMovies.sort((a, b) => (a.digital_date || '').localeCompare(b.digital_date || ''));
+    // Sort each bucket
+    const byDateDesc = (a, b) => (b.digital_date || '0000-00-00').localeCompare(a.digital_date || '0000-00-00');
+    const sortedFest = [...festMovies].sort(byDateDesc);
+    const sortedPreorders = [...preorderMovies].sort((a, b) => (a.digital_date || '').localeCompare(b.digital_date || ''));
+    const sortedRegular = [...regularMovies].sort(byDateDesc);
 
     const items = [];
-    let currentDate = null;
-    let isFirstDate = true;
 
-    sorted.forEach((movie, index) => {
-      const movieDate = movie.digital_date || 'Unknown';
-
-      // Insert date marker when date changes
-      if (movieDate !== currentDate) {
-        currentDate = movieDate;
-
-        // Add NEW TRAILERS button before the first date
-        if (isFirstDate && SHOW_TRAILERS_CARD) {
-          items.push({
-            type: 'trailers',
-            id: 'new-trailers-button',
-            playlistUrl: latestPlaylistUrl,
-          });
-          isFirstDate = false;
-        }
-
-        items.push({
-          type: 'date',
-          id: `date-${movieDate}-${index}`,
-          date: movieDate,
-        });
-      }
-
-      items.push({
-        type: 'movie',
-        id: movie.tmdb_id || movie.id || `movie-${index}`,
-        movie: movie,
-      });
-    });
-
-    // Add pre-orders section at the end
-    if (preorderMovies.length > 0) {
-      items.push({
-        type: 'date',
-        id: 'date-preorder',
-        date: 'PRE-ORDER',
-      });
-      preorderMovies.forEach((movie, index) => {
-        items.push({
-          type: 'movie',
-          id: movie.tmdb_id || movie.id || `preorder-${index}`,
-          movie: movie,
-        });
+    // 1. FEST section at top (amber card)
+    if (sortedFest.length > 0) {
+      items.push({ type: 'date', id: 'date-fest-top', date: 'SCREENING' });
+      sortedFest.forEach((movie, index) => {
+        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `fest-${index}`, movie });
       });
     }
+
+    // 2. PRE-ORDERS section (purple card)
+    if (sortedPreorders.length > 0) {
+      items.push({ type: 'date', id: 'date-preorder-top', date: 'PRE-ORDER' });
+      sortedPreorders.forEach((movie, index) => {
+        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `preorder-${index}`, movie });
+      });
+    }
+
+    // 3. Regular movies with date dividers (optional trailers card before first date)
+    let currentDate = null;
+    let trailersPushed = false;
+    sortedRegular.forEach((movie, index) => {
+      const movieDate = movie.digital_date || 'Unknown';
+      if (movieDate !== currentDate) {
+        currentDate = movieDate;
+        if (!trailersPushed && SHOW_TRAILERS_CARD) {
+          items.push({ type: 'trailers', id: 'new-trailers-button', playlistUrl: latestPlaylistUrl });
+          trailersPushed = true;
+        }
+        items.push({ type: 'date', id: `date-${movieDate}-${index}`, date: movieDate });
+      }
+      items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie });
+    });
 
     return items;
   }, [displayMovies, latestPlaylistUrl]);
@@ -598,6 +579,9 @@ const HomeScreenTvOS = () => {
     }
     if (dateString === 'PRE-ORDER') {
       return { dayName: 'PRE-', day: 'ORDER', month: '' };
+    }
+    if (dateString === 'SCREENING') {
+      return { dayName: 'FEST', day: 'NOW', month: '' };
     }
     try {
       const date = new Date(dateString + 'T12:00:00'); // Noon to avoid timezone issues
