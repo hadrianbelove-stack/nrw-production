@@ -648,9 +648,25 @@ const HomeScreenTvOS = () => {
       const isRowEnd = columnIndex === NUM_COLUMNS - 1;
       const isRowStart = columnIndex === 0;
 
-      // Find nearest focusable node handle stepping by `step` (skips date cards naturally)
+      // Scan linearly for nearest focusable handle (skips date cards which have no handle)
       const findNearestHandle = (start, step) => {
         for (let i = start; i >= 0 && i < listData.length; i += step) {
+          const handle = itemNodeHandles.get(i);
+          if (handle) return handle;
+        }
+        return undefined;
+      };
+
+      // Find nearest focusable handle within the same row as pivotIndex,
+      // scanning right from pivot first, then left — produces the "slide" effect
+      const findNearestInRow = (pivotIndex) => {
+        const rowStart = Math.floor(pivotIndex / NUM_COLUMNS) * NUM_COLUMNS;
+        const rowEnd = Math.min(rowStart + NUM_COLUMNS - 1, listData.length - 1);
+        for (let i = pivotIndex; i <= rowEnd; i++) {
+          const handle = itemNodeHandles.get(i);
+          if (handle) return handle;
+        }
+        for (let i = pivotIndex - 1; i >= rowStart; i--) {
           const handle = itemNodeHandles.get(i);
           if (handle) return handle;
         }
@@ -662,24 +678,25 @@ const HomeScreenTvOS = () => {
       const belowItem = listData[index + NUM_COLUMNS];
       const aboveItem = index >= NUM_COLUMNS ? listData[index - NUM_COLUMNS] : undefined;
 
-      // RIGHT: wrap at row end, or skip a date card sitting in the next cell
+      // RIGHT: wrap at row end, or skip a date card in the next cell
       const nextFocusRight = isRowEnd
         ? findNearestHandle(index + 1, 1)
         : (rightNeighbor && rightNeighbor.type === 'date' ? findNearestHandle(index + 2, 1) : undefined);
 
-      // LEFT: wrap at row start, or skip a date card sitting in the previous cell
+      // LEFT: wrap at row start, or skip a date card in the previous cell
       const nextFocusLeft = isRowStart
         ? (index > 0 ? findNearestHandle(index - 1, -1) : undefined)
         : (leftNeighbor && leftNeighbor.type === 'date' ? findNearestHandle(index - 2, -1) : undefined);
 
-      // DOWN: skip date card row; step by NUM_COLUMNS to stay in the same visual column
+      // DOWN: if date card is directly below, slide into that row at the nearest movie
       const nextFocusDown = (belowItem && belowItem.type === 'date')
-        ? findNearestHandle(index + 2 * NUM_COLUMNS, NUM_COLUMNS)
+        ? findNearestInRow(index + NUM_COLUMNS)
         : undefined;
 
-      // UP: skip date card row; fall back to toggle when the date card is in the first row
+      // UP: if date card is directly above, slide into that row at the nearest movie;
+      //     fall back to toggle when the date card is in the first row (nothing above it)
       const nextFocusUpVertical = (!isFirstRow && aboveItem && aboveItem.type === 'date')
-        ? (findNearestHandle(index - 2 * NUM_COLUMNS, -NUM_COLUMNS) || toggleNodeHandle)
+        ? (findNearestInRow(index - NUM_COLUMNS) || toggleNodeHandle)
         : undefined;
 
       // Movie card
@@ -693,7 +710,7 @@ const HomeScreenTvOS = () => {
             onFocus={() => handleMovieFocus(item.movie, index)}
             hasTVPreferredFocus={giveInitialFocus && index === (SHOW_TRAILERS_CARD ? 2 : 1)}
             testID={`movie-card-${index}`}
-            nextFocusUp={focusUpTarget || nextFocusUpVertical}
+            nextFocusUp={isFirstRow ? toggleNodeHandle : nextFocusUpVertical}
             nextFocusDown={nextFocusDown}
             nextFocusLeft={nextFocusLeft}
             nextFocusRight={nextFocusRight}
