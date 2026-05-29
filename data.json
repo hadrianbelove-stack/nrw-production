@@ -5309,6 +5309,15 @@
       "_enrichment_gaps": [
         "rt_score",
         "metacritic_score"
+      ],
+      "pull_quotes": [
+        {
+          "text": "Dark, dreary, and full of subtitles you won't even notice after a while.",
+          "critic": "Ash",
+          "outlet": "PopHorror",
+          "source": "rt_critic",
+          "review_url": "https://pophorror.com/a-mothers-love-smother-2025-movie-review/"
+        }
       ]
     },
     {
@@ -5950,7 +5959,20 @@
       "reissue_label": null,
       "is_slop": false,
       "_slop_reason": "score:3(no_rt,no_imdb)",
-      "_slop_confidence": "weak"
+      "_slop_confidence": "weak",
+      "pull_quotes": [
+        {
+          "text": "A profound and devastating story of unspeakable loss.",
+          "critic": "TIFF Best Canadian Feature Film Award Jury",
+          "outlet": "AfroToronto.com",
+          "source": "rt_critic",
+          "verbatim": true,
+          "selected": true,
+          "fresh": null,
+          "review_url": "",
+          "added_at": "2026-05-16T13:50:06"
+        }
+      ]
     },
     {
       "id": "1353467",
