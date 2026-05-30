@@ -683,8 +683,10 @@ class GeminiCapsuleWriter(GeminiFinderBase):
     VARIANT_ANGLES = [
         (
             "ANGLE: Lead with the FILMMAKER. Your first sentence must be about the "
-            "director — their track record, previous films, or debut story. Do NOT "
-            "open with the film's title or premise."
+            "director — their track record, style, key previous films, or notable "
+            "collaborators. Do NOT open with the film's title or premise. Do NOT "
+            "open with 'directorial debut' or 'feature debut' — if it's a debut, "
+            "mention it briefly mid-sentence at most."
         ),
         (
             "ANGLE: Lead with the PREMISE & GENRE. Your first sentence must describe "
@@ -693,8 +695,8 @@ class GeminiCapsuleWriter(GeminiFinderBase):
         ),
         (
             "ANGLE: Lead with a CONCRETE DETAIL — a production fact, a festival moment, "
-            "a number, a quote, an anecdote. Something specific and surprising. "
-            "Do NOT open with the director's name or the film's premise."
+            "a number, a quote, an anecdote, the cultural context. Something specific "
+            "and surprising. Do NOT open with the director's name or the film's premise."
         ),
     ]
 
@@ -952,7 +954,7 @@ Using the sources above AND Google Search, dig up everything interesting and use
 - Comparisons to other films or filmmakers that would help orient an editor
 - Anything surprising, counterintuitive, or that a well-read cinephile would find genuinely interesting
 
-Output ONLY a bullet list using • characters. Write 10–15 bullets. Bullets can be 2–3 sentences when the detail warrants it — don't truncate interesting information to fit a one-liner. If you have a direct quote, include it verbatim with full attribution. Do not number the bullets. No headers, no sections — just the bullets.
+Output ONLY a bullet list using • characters. Write 10–15 bullets. This is a research dump — go long. Each bullet should be as detailed as the material warrants: 2–4 sentences is normal, more if needed. Do NOT truncate interesting information into a terse one-liner. If you have a direct quote, include it verbatim and in full with attribution. Prioritize specific, surprising, or non-obvious details over generic biography. Do not number the bullets. No headers, no sections — just the bullets.
 
 FACTOID PRIMER:"""
 

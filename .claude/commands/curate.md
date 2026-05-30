@@ -1,6 +1,6 @@
 ---
 description: Curate new arrivals — staff picks, sections, pull quotes, capsules
-allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob
+allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 ---
 
 Curate movies added since last session. Runs 4 stages in order, each with a user prompt. Resumable — if interrupted, re-running picks up where you left off.
@@ -31,8 +31,7 @@ Before starting, check for an existing session:
   "stages": {
     "staff_picks": "pending",
     "sections": "pending",
-    "pull_quotes": "pending",
-    "capsules": "pending"
+    "per_movie": "pending"
   }
 }
 ```
@@ -100,69 +99,166 @@ For each movie, list all active categories from its `categories` object (is_stud
 
 ---
 
-## Stage 3: Pull Quote Curation
+## Stage 3: Per-Movie Curation (Capsule + Pull Quotes together)
 
-**Find the window**: Scan `data.json` for all movies that already have a `pull_quotes` array. Find the most recent `digital_date` among those — that's the watermark (where curation last left off). If no movies have pull quotes yet, default to 7 days ago.
+Capsules and pull quotes are done together, movie by movie — not as separate passes.
 
-**Find candidates** from `data.json` where ALL of these are true:
-- `digital_date` is after the watermark AND `digital_date` is today or earlier (exclude future pre-orders)
-- Movie has an `rt_score`
-- Movie does NOT already have a `pull_quotes` array
-- Movie is NOT a reissue/restoration (`is_restoration` flag, or title contains "Remaster"/"Restoration"/"4K", or `year` is 10+ years before current year)
+**Find candidates**: Take the union of:
+- Movies needing a capsule: `digital_date` > capsule watermark (most recent `digital_date` among movies in `cache/approved_capsules.json`), not already approved, not a restoration
+- Movies needing pull quotes: `digital_date` > pull quote watermark (most recent `digital_date` among movies with a `pull_quotes` array in `data.json`), not already having `pull_quotes`, not a restoration
 
-If no candidates: report "No new movies need pull quotes — curated through [watermark date]." and mark stage `completed`.
+Merge into one list, deduplicated, sorted by `digital_date` descending. For each movie, track which work it needs: capsule, quotes, or both.
 
-If candidates exist:
-1. Check `cache/pull_quotes_cache.json` for existing scraped quotes
-2. Scrape any uncached movies using `GeminiPullQuoteFinder` from `gemini_scraper.pull_quotes`
-3. Present each movie **one at a time, most recent first**, showing:
-   - Movie title, year, RT score, digital date
-   - All quotes numbered, with full text, critic name, and outlet
-4. Wait for user response: numbers to select, "skip", or trimmed text (an edit)
-5. **When the user shortens a quote, that trimmed text IS the final version** — they are editing
-6. For reissues/restorations: only show quotes specifically about the reissue, not original-era reviews
+If no candidates for either: report through-dates and mark stage `completed`.
 
-**Key: persist to the cache FIRST, then inject — per-movie, not at the end.**
+**For each movie, in order:**
 
-⚠️ The master list the pipeline rebuilds from is `cache/pull_quotes_combined.json`. If you only write to data.json, the quotes WILL be silently deleted on the next local `generate_data.py` run (the inject treats the cache as source of truth). So after each movie's quotes are selected/edited:
+### Step A — Capsule (if needed)
 
-1. **Write the selections into the cache** `cache/pull_quotes_combined.json`. For each chosen quote, set `selected: true` and store the user's FINAL (edited) text under `text`. If the movie has no entry, create one: `{"title", "year", "rt_quotes": [...], "lb_quotes": []}`. If a matching quote already exists, flip it to `selected: true` and overwrite its `text` with the edit. Schema per quote: `text`/`critic`/`outlet`/`source`/`review_url`/`selected`.
-2. **Then inject** the selected quotes into that movie's `pull_quotes` array in `data.json` using the same logic as `pipeline/display.py`'s `inject_selected_pull_quotes()` — so data.json and the cache always agree.
-3. Commit + push: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] APPROVED: DELETE" && git push origin main`
-   (The `cache/*.json` files are gitignored — they stay LOCAL as the source of truth and are not committed. Do not `git add` them; it's a silent no-op.)
-
-After all movies are processed, mark stage `completed` in progress file.
-
----
-
-## Stage 4: Capsule Rewrites
-
-**Find the window**: Find the most recent `digital_date` among movies in `data.json` whose ID appears in `cache/approved_capsules.json`. That's the capsule watermark. If no approved capsules exist, default to 7 days ago.
-
-**Find candidates** from `data.json` where ALL of these are true:
-- `digital_date` is after the capsule watermark AND `digital_date` is today or earlier (exclude future pre-orders)
-- Movie is NOT already in `cache/approved_capsules.json`
-- Movie is NOT a reissue/restoration (`is_restoration` flag, or title contains "Remaster"/"Restoration"/"4K", or `year` is 10+ years before current year)
-
-If no candidates: report "No new movies need capsules — curated through [watermark date]." and mark stage `completed`.
-
-If candidates exist, process each movie **one at a time, most recent first**:
 1. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --force --variants 3 --skip-verify`
-2. Present the capsule variants in this **exact format** — always, every movie, no exceptions:
-   - Three numbered variants with word counts
-   - Then a **FACTOID PRIMER** section below the variants (bullet list of production facts, director quotes, BTS, festival context, distribution story)
-   - Then the pick prompt: "Pick 1, 2, or 3 — paste a rewrite — or skip."
-   - NEVER drop the factoid primer from the formatted message. It is the user's cheat sheet for editing.
-3. Wait for user response: pick a number, provide a rewrite, or "skip"
-4. **When the user provides edited text, that IS the final version** — they are editing
-5. If picked/rewritten:
-   1. Apply standard capsule formatting (**bold** names, *italic* titles)
-   2. Write final text to `cache/rewrite.txt`
-   3. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py approve "TITLE" --file cache/rewrite.txt`
-   4. Commit + push: `cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && git push origin main`
-      (Commit only `data.json`. `cache/approved_capsules.json` and `cache/capsule_cache.json` are gitignored local source-of-truth — don't `git add` them; it's a silent no-op.)
+2. Present in this **exact format** — always, no exceptions:
+   - Three numbered variants with word counts (full text, not summaries)
+   - **FACTOID PRIMER** section below (full bullet list — never summarize or abbreviate it)
+   - **SUGGESTED LINKS** section below the primer (see below)
+   - Pick prompt: "Pick 1, 2, or 3 — paste a rewrite — or skip."
+3. Wait for user response. **When user provides edited text, that IS the final version.**
+4. If picked/rewritten:
+   1. Apply standard formatting (**bold** names, *italic* titles)
+   2. **Pre-embed Wikipedia links** into the chosen text (see Step A-Links below), then confirm with user before continuing
+   3. Write final approved text to `cache/rewrite.txt`
+   4. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py approve "TITLE" --file cache/rewrite.txt`
+   5. Write cast wiki links to data.json (see Step A-Links below)
 
-After all movies are processed, mark stage `completed` in progress file.
+### Step A-Links — Wikipedia Links (runs inside Step A)
+
+**Generating SUGGESTED LINKS (shown below the factoid primer):**
+
+Identify up to 5 linkable entities for this film:
+- **Always**: WebSearch the top 3 cast members from `movie.crew.cast` for their Wikipedia pages
+- **Also**: up to 3 notable historical figures, events, movements, or organizations referenced by the film. Skip the director (already linked in the site header).
+
+Present as:
+```
+**SUGGESTED LINKS**
+- [Ellie Bamber](https://en.wikipedia.org/wiki/Ellie_Bamber) — cast
+- [Derek Jacobi](https://en.wikipedia.org/wiki/Derek_Jacobi) — cast
+- [Lucian Freud](https://en.wikipedia.org/wiki/Lucian_Freud) — painter, subject of film
+```
+
+If a cast member has no Wikipedia page, skip them silently.
+
+**Pre-embedding links (after user picks a variant):**
+
+Once the user picks a variant or provides a rewrite:
+1. Embed ALL suggested links into the text:
+   - Entity name appears as `**bold**` → change to `**[Name](url)**`
+   - Entity name appears as plain text → change to `[Name](url)`
+   - Entity name not in the capsule text → skip (will still be saved to cast_wiki for the metadata line)
+2. Show the modified capsule with links visible in the markdown
+3. Ask: "Approve with these links — or say 'remove [Name]' to drop any."
+4. If user removes any: strip that link, show updated capsule again
+5. When user approves: this is the final text — proceed to write cache/rewrite.txt
+
+**Saving cast wiki links (after approve script runs):**
+
+For each cast member that had a Wikipedia URL in SUGGESTED LINKS, write to `movie.links.cast_wiki`:
+
+```bash
+cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
+import json, sys
+title, cast_wiki_json = sys.argv[1], sys.argv[2]
+cast_wiki = json.loads(cast_wiki_json)
+data = json.load(open('data.json'))
+for m in data['movies']:
+    if m.get('title', '').lower() == title.lower():
+        m.setdefault('links', {})
+        m['links']['cast_wiki'] = cast_wiki
+        break
+json.dump(data, open('data.json', 'w'), indent=2, ensure_ascii=False)
+" "MOVIE_TITLE" '{"Ellie Bamber": "https://...", "Derek Jacobi": "https://..."}'
+```
+
+Only include cast members (not historical figures or events — those are for capsule text only). Wikipedia URLs with parentheses: encode `(` as `%28` and `)` as `%29`.
+
+### Step B — Pull Quotes (immediately after capsule, same movie)
+
+Show pull quotes for this movie right after the capsule is resolved (picked, skipped, or not needed).
+
+**1. Get the quotes — always scrape fresh**
+
+Run the validated scraper (not just cache):
+
+```python
+from gemini_scraper.pull_quotes import GeminiPullQuoteFinder
+finder = GeminiPullQuoteFinder()
+quotes = finder.find_pull_quotes(
+    title="TITLE", year=YEAR, director="DIRECTOR",
+    num_quotes=10, deep_read=True,
+    rt_url=movie.get('links',{}).get('rt'),
+    mc_url=movie.get('links',{}).get('mc')
+)
+```
+
+After scraping, update `cache/pull_quotes_combined.json` with any new quotes found (merge, don't overwrite existing selected quotes).
+
+**Filter noise before presenting**: drop any quotes from YouTube, generic news blurbs (Mashable "what's new this week" type), or press releases. Keep critics, publications, and Letterboxd.
+
+**2. Rank by taste profile**
+
+Read `cache/taste_profile_pullquotes.json`. Rank all quotes from best match to worst. The profile consistently shows:
+- **Prefers**: specific vivid language, punchy fragments, wit, emotional precision
+- **Avoids**: vague generic praise ("brilliant", "stunning"), academic jargon, plot summary masquerading as criticism, quotes that repeat the movie title
+- Top critics and known outlets rank higher when quotes are otherwise equal
+- A short sharp fragment trimmed from a longer quote can outperform a full sentence
+
+**3. Present — grouped by outlet, full list**
+
+Show all usable quotes (up to ~12), grouped by outlet. Format exactly like this:
+
+```
+**Outlet Name**
+1. *"Quote text here."* — Critic Name  ▶ (top pick)
+
+**Another Outlet**
+2. *"Another quote."* — Critic Name
+3. *"Third quote from same outlet."* — Critic Name
+
+**Letterboxd**
+4. *"Letterboxd quote."* — @username
+
+Pick a number — paste a trim — or skip.
+```
+
+- Group quotes from the same outlet together
+- Mark the top-ranked quote `▶` with a brief note (one phrase: "specific language", "punchy fragment", etc.)
+- All quote text in *italics*
+- Critic name after em-dash
+- No ✓/✗ on every quote — only the `▶` pick gets a note
+
+**4. Wait for user response**
+
+- Number → use that quote verbatim
+- Trimmed text → **that trimmed text IS the final version** (never revert to original)
+- "skip" → move on
+
+**5. Save**
+
+Two writes required — both must happen:
+- `cache/pull_quotes_combined.json`: find the quote entry (by critic + outlet), set `selected: true`, update `text` to the final version (original or trimmed). If no matching entry exists, create one.
+- `data.json` `pull_quotes` array: inject the selected quote as `{text, critic, outlet, review_url}` (include `review_url` if available in the cache entry)
+
+### Step C — Commit (once per movie, after both steps)
+
+After both capsule and pull quote are resolved for a movie:
+
+- If capsule only: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && git push origin main`
+- If pull quote only: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] APPROVED: DELETE" && git push origin main`
+- If both: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule + pull quote: [TITLE] APPROVED: DELETE" && git push origin main`
+- If both skipped: no commit needed, move to next movie
+
+(`cache/*.json` files are gitignored — do not `git add` them.)
+
+After all movies processed, mark stage `completed` in progress file.
 
 ---
 
@@ -173,6 +269,5 @@ After all 4 stages, report a summary:
 CURATION COMPLETE
 - Staff picks: N added (M total)
 - Sections: N overrides applied
-- Pull quotes: N movies curated
-- Capsules: N movies rewritten
+- Capsules: N written | Pull quotes: N selected
 ```

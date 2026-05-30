@@ -59,6 +59,9 @@ WHAT NOT TO DO
   detail, a concrete observation.
 - Do NOT editorialize about a film's importance or what it "means." Just present
   the context and let it land.
+- Do NOT open with or prominently feature "directorial debut" or "feature debut."
+  It's overused and usually not the most interesting thing. If it matters,
+  mention it briefly mid-sentence or leave it for the factoid primer.
 
 CATEGORY-SPECIFIC TONE
 ----------------------
@@ -87,8 +90,28 @@ FORMATTING
   reader can place them. E.g. **Rachel Sennott** (*Bodies Bodies Bodies*,
   *Bottoms*), **Brady Corbet** (*The Brutalist*). Skip this for unknowns with
   no notable credits.
+- Only name cast members when it's genuinely interesting — a recognizable star,
+  a surprising casting choice, or someone with relevant context. If the cast is
+  obscure with no notable credits, don't name them in the capsule at all.
 - Markers must be balanced. See docs/STYLE_GUIDE.md "Synopsis / Capsule Text
   Formatting" for the renderer spec used across all devices.
+
+VARIANTS
+--------
+When generating multiple variants, each one must take a genuinely different
+ANGLE — not just rearranged sentences covering the same ground. Examples of
+distinct angles:
+
+- Lead with the director/filmmaker and their track record
+- Lead with the production backstory or shooting conditions
+- Lead with the premise and what kind of movie it is
+- Lead with the cast and why they're interesting here
+- Lead with the cultural/historical context
+- Lead with festival reception or critical moment
+
+If variant 1 leads with the director, variant 2 should lead with something
+else entirely. The user picks between meaningfully different takes, not
+slight rewrites.
 
 LENGTH
 ------
