@@ -14,6 +14,7 @@ Only verified quotes are returned. Gemini-discovered quotes without a
 confirmed review URL are dropped to prevent hallucinations surfacing in curation.
 """
 
+import html as html_module
 import re
 import time
 import logging
@@ -47,8 +48,10 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
     def _scrape_rt_reviews(self, rt_url: str, expected_title: str = '') -> list:
         """Scrape critic quotes directly from the RT reviews page.
 
-        Loads {rt_url}/reviews with Playwright and parses the review blocks.
-        Returns ground-truth quotes with verified review URLs.
+        PRIMARY: Intercepts RT's internal napi/rtcf/v1/movies/{UUID}/reviews API
+        call which fires when the page loads — returns clean JSON with critic,
+        outlet, quote, and review URL for every review.
+        FALLBACK: Text parser for when the API intercept returns nothing.
 
         Args:
             rt_url: The RT movie URL (e.g. https://www.rottentomatoes.com/m/the_brutalist)
@@ -56,7 +59,11 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
                 page title doesn't match, returns empty list (safety net against
                 wrong-movie URLs).
         """
-        reviews_url = rt_url.rstrip('/') + '/reviews'
+        # Normalise URL — accept either base URL or /reviews URL
+        base_url = rt_url.rstrip('/')
+        if base_url.endswith('/reviews'):
+            base_url = base_url[:-len('/reviews')]
+        reviews_url = base_url + '/reviews'
         quotes = []
 
         try:
@@ -67,17 +74,33 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
                 browser = p.chromium.launch(headless=True)
                 page = browser.new_page()
 
-                resp = page.goto(reviews_url, timeout=15000, wait_until='domcontentloaded')
+                # Intercept RT's internal reviews API
+                api_payload = {}
+                def handle_response(response):
+                    if ('napi/rtcf/v1/movies' in response.url and
+                            '/reviews' in response.url and
+                            not api_payload):
+                        try:
+                            api_payload['data'] = response.json()
+                            api_payload['url'] = response.url
+                        except Exception:
+                            pass
+
+                page.on('response', handle_response)
+
+                resp = page.goto(reviews_url, timeout=20000, wait_until='domcontentloaded')
                 if not resp or resp.status >= 400:
                     logger.info(f"RT reviews page returned {resp.status if resp else 'no response'}: {reviews_url}")
                     browser.close()
                     return []
 
-                time.sleep(2)
+                page.wait_for_timeout(3000)
 
                 # Safety net: verify RT page is for the right movie
+                # Strip RT boilerplate ("| Audience Reviews | Rotten Tomatoes" etc.)
+                # so the validator only compares the movie title portion.
                 if expected_title:
-                    page_title = page.title() or ''
+                    page_title = re.sub(r'\s*\|.*$', '', page.title() or '').strip()
                     if not page_title_matches(page_title, expected_title):
                         logger.warning(
                             f"RT page title mismatch: '{page_title}' vs expected '{expected_title}' "
@@ -86,71 +109,123 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
                         browser.close()
                         return []
 
-                html = page.content()
-                body = page.inner_text('body')
+                # --- PRIMARY: parse RT internal API response ---
+                if api_payload.get('data'):
+                    reviews = api_payload['data'].get('reviews', [])
+                    for r in reviews:
+                        quote_text = html_module.unescape(r.get('reviewQuote', '') or '').strip()
+                        if not quote_text or len(quote_text) < 15:
+                            continue
+                        critic_obj = r.get('critic') or {}
+                        pub_obj = r.get('publication') or {}
+                        quotes.append({
+                            'text': quote_text,
+                            'critic': critic_obj.get('displayName', ''),
+                            'outlet': pub_obj.get('name', ''),
+                            'source': 'rt_critic',
+                            'review_url': r.get('publicationReviewUrl', ''),
+                            'selected': False,
+                            'added_at': time.strftime('%Y-%m-%dT%H:%M:%S')
+                        })
+                    if quotes:
+                        logger.info(f"RT API intercepted {len(quotes)} reviews")
 
-                # Extract full review URLs from HTML
-                review_urls = re.findall(
-                    r'href="(https?://[^"]+)"[^>]*>\s*(?:[^<]*Go to Full Review|[^<]*Full Review)',
-                    html
-                )
-
-                # Parse text structure: CriticName, Outlet, Date, [Score], QuoteText, 'Go to Full Review'
-                lines = [l.strip() for l in body.split('\n') if l.strip()]
-                url_idx = 0
-
-                for i, line in enumerate(lines):
-                    if 'Go to Full Review' not in line:
-                        continue
-
-                    # Quote text is right before 'Go to Full Review'
-                    quote_text = lines[i - 1] if i > 0 else ''
-
-                    # Score might be before quote (like '9/10' or 'Fresh')
-                    j = i - 2
-                    if j >= 0 and re.match(r'^[\d./]+$|^Fresh$|^Rotten$', lines[j]):
-                        j -= 1
-
-                    # Date
-                    j -= 0  # date line
-                    date = lines[j] if j >= 0 else ''
-                    j -= 1
-
-                    # Outlet
-                    outlet = lines[j] if j >= 0 else ''
-                    j -= 1
-
-                    # Critic name
-                    critic = lines[j] if j >= 0 else ''
-
-                    review_url = review_urls[url_idx] if url_idx < len(review_urls) else ''
-                    url_idx += 1
-
-                    # Skip very short quotes or obvious non-quotes
-                    if len(quote_text) < 15:
-                        continue
-
-                    # Skip if critic/outlet look like navigation elements
-                    if any(nav in critic.lower() for nav in ['all critics', 'top critics', 'audience', 'login']):
-                        continue
-
-                    quotes.append({
-                        'text': quote_text,
-                        'critic': critic,
-                        'outlet': outlet,
-                        'source': 'rt_critic',
-                        'review_url': review_url,
-                        'selected': False,
-                        'added_at': time.strftime('%Y-%m-%dT%H:%M:%S')
-                    })
+                # --- FALLBACK: text parser if API returned nothing ---
+                if not quotes:
+                    logger.warning(f"RT API intercept returned nothing for {reviews_url} — trying text parser")
+                    body = page.inner_text('body')
+                    lines = [l.strip() for l in body.split('\n') if l.strip()]
+                    for i in range(len(lines) - 1):
+                        line = lines[i]
+                        next_line = lines[i + 1]
+                        # Heuristic: long quote line followed by short outlet-name line
+                        if (len(line) > 40 and 15 < len(next_line) < 60 and
+                                next_line[0].isupper() and
+                                not next_line.endswith('.') and
+                                ' ' in next_line and
+                                not any(nav in next_line.lower() for nav in ['all critics', 'top critics', 'login', 'sign in'])):
+                            quotes.append({
+                                'text': line,
+                                'critic': '',
+                                'outlet': next_line,
+                                'source': 'rt_critic',
+                                'review_url': '',
+                                'selected': False,
+                                'added_at': time.strftime('%Y-%m-%dT%H:%M:%S')
+                            })
 
                 browser.close()
 
         except Exception as e:
             logger.warning(f"Error scraping RT reviews from {reviews_url}: {e}")
 
-        logger.info(f"Scraped {len(quotes)} critic quotes from RT reviews page")
+        if not quotes:
+            logger.warning(f"RT reviews scraper returned 0 quotes for {reviews_url}")
+        else:
+            logger.info(f"Scraped {len(quotes)} critic quotes from RT reviews page")
         return quotes
+
+    def _find_rt_url_via_gemini(self, title: str, year: int, director: str = None) -> str:
+        """Use Gemini web search grounding to find the RT movie URL.
+
+        Called when enrichment didn't find an RT URL. Searches for the /reviews
+        page (heavily indexed, easier to find) and strips the suffix to get the
+        base movie URL.
+
+        Returns base RT URL (e.g. https://www.rottentomatoes.com/m/miss_you_love_you)
+        or empty string if not found.
+        """
+        if not self._init_gemini():
+            return ''
+
+        context = f'"{title}" ({year})'
+        if director:
+            context += f' directed by {director}'
+
+        prompt = (
+            f'What is the Rotten Tomatoes URL for the movie {context}? '
+            f'Return only the URL in the format https://www.rottentomatoes.com/m/[slug] '
+            f'and nothing else.'
+        )
+
+        try:
+            self._enforce_rate_limit()
+
+            def _fetch():
+                api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
+                response = self._generate(prompt, config=api_config)
+
+                # Check grounding sources first — more reliable than response text
+                if hasattr(response, 'candidates') and response.candidates:
+                    for candidate in response.candidates:
+                        gm = getattr(candidate, 'grounding_metadata', None)
+                        if gm and hasattr(gm, 'grounding_chunks'):
+                            for chunk in (gm.grounding_chunks or []):
+                                web = getattr(chunk, 'web', None)
+                                uri = getattr(web, 'uri', '') if web else ''
+                                if uri and 'rottentomatoes.com/m/' in uri:
+                                    return uri
+
+                # Fall back to extracting from response text
+                text = (response.text or '').strip()
+                matches = re.findall(
+                    r'https?://(?:www\.)?rottentomatoes\.com/m/[a-zA-Z0-9_/-]+',
+                    text
+                )
+                return matches[0] if matches else ''
+
+            raw_url = self._retry_with_backoff(_fetch)
+            if raw_url:
+                # Normalise: strip /reviews suffix, validate slug format
+                base_url = raw_url.rstrip('/').replace('/reviews', '')
+                if re.match(r'https?://(www\.)?rottentomatoes\.com/m/[a-zA-Z0-9_-]+$', base_url):
+                    logger.info(f"Gemini found RT URL for {title} ({year}): {base_url}")
+                    return base_url
+
+        except Exception as e:
+            logger.debug(f"Gemini RT URL search failed for {title} ({year}): {e}")
+
+        return ''
 
     def _scrape_mc_reviews(self, mc_url: str) -> list:
         """Scrape critic quotes from the Metacritic critic reviews page.
@@ -956,6 +1031,10 @@ Response:"""
 
         # --- Step 3: RT/MC scraping for supplemental quotes (already have URLs) ---
         existing_critics = {q.get('critic', '').lower().strip() for q in all_quotes if q.get('critic')}
+
+        # If no RT URL from enrichment, try to discover it via Gemini
+        if not rt_url:
+            rt_url = self._find_rt_url_via_gemini(title, year, director)
 
         if rt_url:
             rt_quotes = self._scrape_rt_reviews(rt_url, expected_title=title)
