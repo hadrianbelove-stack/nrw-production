@@ -78,6 +78,11 @@ fi
 CI_DATE=$(/usr/bin/python3 -c "import json; print(json.load(open('metrics/run_diagnostics.json'))['timestamp'][:10])" 2>/dev/null)
 TODAY=$(date +%Y-%m-%d)
 if [ "$CI_DATE" = "$TODAY" ]; then
+    # Step 4: Scrape pull quotes for new movies (ready for morning curation)
+    echo "Scraping pull quotes for new arrivals..." >> "$LOG"
+    /usr/bin/python3 scripts/batch_pull_quotes.py >> "$LOG" 2>&1
+    echo "  Pull quotes done" >> "$LOG"
+
     touch "$SENTINEL"
     echo "  CI data is current ($CI_DATE) — sentinel created, done for today" >> "$LOG"
 else
