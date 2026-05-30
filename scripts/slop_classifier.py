@@ -177,9 +177,13 @@ def classify_slop(movie):
     if not movie.get('rt_score'):
         score += 2
         reasons.append('no_rt')
-    if not movie.get('imdb_rating'):
+    imdb = movie.get('imdb_rating')
+    if not imdb:
         score += 1
         reasons.append('no_imdb')
+    elif float(imdb) < 6:
+        score += 1
+        reasons.append('low_imdb')
     if movie.get('content_type') == 'tv_movie':
         score += 3
         reasons.append('tv_movie')
