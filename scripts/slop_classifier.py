@@ -48,6 +48,7 @@ MANUAL_OVERRIDES = {
     1658982: False,   # The Roast of Kevin Hart
     # Human-confirmed slop
     1686326: True,    # Emi Martínez: The Kid Who Stops Time
+    934584:  True,    # Rich Flu (La fiebre de los ricos)
 }
 
 # ── Prestige streaming platforms → instant NOT SLOP ──────────────────────────
