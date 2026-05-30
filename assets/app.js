@@ -333,8 +333,8 @@ const NRW = {
             // Pre-orders only appear when the pre-order toggle is ON or search is active
             if (movie._is_preorder && !this.showPreorders && !query) return false;
 
-            // If no filters selected, show all (except hidden)
-            if (filters.size === 0) {
+            // If no filters selected OR search is active, show all (search bypasses category filters)
+            if (filters.size === 0 || query) {
                 // No category filter - show all
             } else {
                 // Must pass ANY selected filter (OR logic - cumulative)
