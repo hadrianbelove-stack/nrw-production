@@ -113,55 +113,66 @@ body {
 .slop-toggle-wrap.active .slop-label {
   color: #00d4aa;
 }
+#slop-state-label {
+  width: 70px;
+  display: inline-block;
+}
 .slop-track {
-  width: 62px;
-  height: 22px;
-  border-radius: 11px;
+  width: 96px;
+  height: 28px;
+  border-radius: 14px;
   background: #1a1a1a;
   border: 1px solid rgba(0,212,170,0.45);
   position: relative;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 7px;
-  transition: background 0.25s, border-color 0.25s, padding 0.25s, justify-content 0s;
+  transition: background 0.25s, border-color 0.25s;
 }
 .slop-toggle-wrap.active .slop-track {
-  background: rgba(0,212,170,0.1);
-  border-color: #00d4aa;
-  justify-content: flex-start;
-  padding-right: 0;
-  padding-left: 7px;
+  background: #00d4aa;
+  border-color: rgba(0,0,0,0.35);
 }
 .slop-thumb {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
   background: rgba(0,212,170,0.55);
   border-radius: 50%;
   transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
 }
 .slop-toggle-wrap.active .slop-thumb {
-  transform: translateX(40px);
+  transform: translateX(64px);
+  background: #ffffff;
+}
+/* 3-state slop toggle */
+#slop-free-toggle[data-state="free"] .slop-track {
+  background: #00d4aa;
+  border-color: rgba(0,0,0,0.35);
+}
+#slop-free-toggle[data-state="free"] .slop-thumb {
+  transform: translateX(0);
+  background: #ffffff;
+}
+#slop-free-toggle[data-state="free"] #slop-state-label { color: #00d4aa; }
+#slop-free-toggle[data-state="all"] .slop-track {
+  background: rgba(0,212,170,0.1);
+  border-color: #00d4aa;
+}
+#slop-free-toggle[data-state="all"] .slop-thumb {
+  transform: translateX(33px);
   background: #00d4aa;
 }
-.slop-track-text {
-  font-size: 0.42rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(0,212,170,0.6);
-  transition: color 0.25s;
-  user-select: none;
-  position: relative;
-  z-index: 1;
+#slop-free-toggle[data-state="all"] #slop-state-label { color: #00d4aa; }
+#slop-free-toggle[data-state="only"] .slop-track {
+  background: #ff9500;
+  border-color: rgba(0,0,0,0.35);
 }
-.slop-toggle-wrap.active .slop-track-text {
-  color: #00d4aa;
+#slop-free-toggle[data-state="only"] .slop-thumb {
+  transform: translateX(68px);
+  background: #ffffff;
 }
+#slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
 .search-container {
   flex: 1;
   position: relative;

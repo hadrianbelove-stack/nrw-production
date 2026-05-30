@@ -13,7 +13,7 @@ const NRWMobile = {
 
     // UI state
     activeFilters: new Set(),
-    slopFree: true,
+    slopMode: 'free',
     hideFest: false,
     showPreorders: false,
     searchQuery: '',
@@ -177,18 +177,21 @@ const NRWMobile = {
             this.dom.gridView.scrollTop = 0;
         });
 
-        // Slop-free toggle (separate from category pills)
+        // Slop toggle (3-state: free / all / only)
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
-            slopToggle.classList.toggle('active', this.slopFree);
-            const slopText = document.getElementById('slop-track-text');
-            if (slopText) slopText.textContent = this.slopFree ? 'ON' : 'OFF';
-
+            const SLOP_STATES = ['free', 'all', 'only'];
+            const SLOP_LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
+            const updateSlopToggle = () => {
+                slopToggle.dataset.state = this.slopMode;
+                const label = document.getElementById('slop-state-label');
+                if (label) label.textContent = SLOP_LABELS[this.slopMode];
+            };
+            updateSlopToggle();
             slopToggle.addEventListener('click', () => {
-                this.slopFree = !this.slopFree;
-                slopToggle.classList.toggle('active', this.slopFree);
-                const t = document.getElementById('slop-track-text');
-                if (t) t.textContent = this.slopFree ? 'ON' : 'OFF';
+                const idx = SLOP_STATES.indexOf(this.slopMode);
+                this.slopMode = SLOP_STATES[(idx + 1) % 3];
+                updateSlopToggle();
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);
@@ -200,14 +203,9 @@ const NRWMobile = {
         const festToggle = document.getElementById('fest-toggle');
         if (festToggle) {
             festToggle.classList.toggle('active', this.hideFest);
-            const festText = document.getElementById('fest-track-text');
-            if (festText) festText.textContent = this.hideFest ? 'ON' : 'OFF';
-
             festToggle.addEventListener('click', () => {
                 this.hideFest = !this.hideFest;
                 festToggle.classList.toggle('active', this.hideFest);
-                const t = document.getElementById('fest-track-text');
-                if (t) t.textContent = this.hideFest ? 'ON' : 'OFF';
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);
@@ -219,14 +217,9 @@ const NRWMobile = {
         const preorderToggle = document.getElementById('preorder-toggle');
         if (preorderToggle) {
             preorderToggle.classList.toggle('active', this.showPreorders);
-            const preorderText = document.getElementById('preorder-track-text');
-            if (preorderText) preorderText.textContent = this.showPreorders ? 'ON' : 'OFF';
-
             preorderToggle.addEventListener('click', () => {
                 this.showPreorders = !this.showPreorders;
                 preorderToggle.classList.toggle('active', this.showPreorders);
-                const t = document.getElementById('preorder-track-text');
-                if (t) t.textContent = this.showPreorders ? 'ON' : 'OFF';
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);
@@ -310,8 +303,10 @@ const NRWMobile = {
         const filters = this.activeFilters;
 
         this.filteredMovies = this.allMovies.filter(movie => {
-            // Slop-free mode: hide flagged films
-            if (this.slopFree && (movie.is_slop || movie._is_slop_guess)) return false;
+            // Slop mode filter
+            const isSlop = movie.is_slop || movie._is_slop_guess;
+            if (this.slopMode === 'free' && isSlop) return false;
+            if (this.slopMode === 'only' && !isSlop) return false;
 
             // Hide-fest mode: hide virtual screenings
             if (this.hideFest && movie.categories?.is_virtual_screening) return false;
@@ -711,7 +706,16 @@ const NRWMobile = {
         // Line 2: Cast (label teal, name white)
         const cast = movie.crew?.cast;
         let castLine = '';
-        if (cast?.length) castLine = '<span class="crew-label">Cast:</span> <span class="crew-name">' + this.esc(cast.slice(0, 3).join(', ')) + '</span>';
+        if (cast?.length) {
+            const castWiki = movie.links?.cast_wiki || {};
+            const castParts = cast.slice(0, 3).map(name => {
+                const url = castWiki[name];
+                return url
+                    ? '<a href="' + url + '" target="_blank" rel="noopener" class="crew-link">' + this.esc(name) + '</a>'
+                    : this.esc(name);
+            });
+            castLine = '<span class="crew-label">Cast:</span> <span class="crew-name">' + castParts.join(', ') + '</span>';
+        }
 
         // Line 3 (gray): Country • Year • Runtime • Studio
         const detailParts = [];

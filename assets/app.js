@@ -10,7 +10,7 @@ const NRW = {
     staffPicks: [],  // Renamed from featuredMovies
     latestPlaylistUrl: null,  // YouTube trailers playlist URL
     activeFilters: new Set(),  // Multi-select: Set of active filter IDs
-    slopFree: true,            // When true, hide movies marked is_slop
+    slopMode: 'free',          // 'free' = hide slop, 'all' = show all, 'only' = show only slop
     showFest: false,           // When true, show virtual screening movies
     showPreorders: false,      // When true, show pre-order movies at the top
     searchQuery: '',     // Current search query
@@ -191,18 +191,21 @@ const NRW = {
             });
         });
 
-        // Slop-free toggle
+        // Slop toggle (3-state: free / all / only)
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
-            slopToggle.classList.toggle('active', this.slopFree);
-            const slopText = document.getElementById('slop-track-text');
-            if (slopText) slopText.textContent = this.slopFree ? 'ON' : 'OFF';
-
+            const SLOP_STATES = ['free', 'all', 'only'];
+            const SLOP_LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
+            const updateSlopToggle = () => {
+                slopToggle.dataset.state = this.slopMode;
+                const label = document.getElementById('slop-state-label');
+                if (label) label.textContent = SLOP_LABELS[this.slopMode];
+            };
+            updateSlopToggle();
             slopToggle.addEventListener('click', () => {
-                this.slopFree = !this.slopFree;
-                slopToggle.classList.toggle('active', this.slopFree);
-                const t = document.getElementById('slop-track-text');
-                if (t) t.textContent = this.slopFree ? 'ON' : 'OFF';
+                const idx = SLOP_STATES.indexOf(this.slopMode);
+                this.slopMode = SLOP_STATES[(idx + 1) % 3];
+                updateSlopToggle();
                 this.displayedCount = this.loadIncrement;
                 this.applyFilter();
                 this.renderWallWithMore();
@@ -213,14 +216,9 @@ const NRW = {
         const festToggle = document.getElementById('fest-toggle');
         if (festToggle) {
             festToggle.classList.toggle('active', this.showFest);
-            const festText = document.getElementById('fest-track-text');
-            if (festText) festText.textContent = this.showFest ? 'ON' : 'OFF';
-
             festToggle.addEventListener('click', () => {
                 this.showFest = !this.showFest;
                 festToggle.classList.toggle('active', this.showFest);
-                const t = document.getElementById('fest-track-text');
-                if (t) t.textContent = this.showFest ? 'ON' : 'OFF';
                 this.displayedCount = this.loadIncrement;
                 this.applyFilter();
                 this.renderWallWithMore();
@@ -231,14 +229,9 @@ const NRW = {
         const preorderToggle = document.getElementById('preorder-toggle');
         if (preorderToggle) {
             preorderToggle.classList.toggle('active', this.showPreorders);
-            const preorderText = document.getElementById('preorder-track-text');
-            if (preorderText) preorderText.textContent = this.showPreorders ? 'ON' : 'OFF';
-
             preorderToggle.addEventListener('click', () => {
                 this.showPreorders = !this.showPreorders;
                 preorderToggle.classList.toggle('active', this.showPreorders);
-                const t = document.getElementById('preorder-track-text');
-                if (t) t.textContent = this.showPreorders ? 'ON' : 'OFF';
                 this.displayedCount = this.loadIncrement;
                 this.applyFilter();
                 this.renderWallWithMore();
@@ -329,8 +322,10 @@ const NRW = {
         const query = this.searchQuery;
 
         this.filteredMovies = this.allMovies.filter(movie => {
-            // Slop-free mode: hide flagged films
-            if (this.slopFree && (movie.is_slop || movie._is_slop_guess)) return false;
+            // Slop mode filter
+            const isSlop = movie.is_slop || movie._is_slop_guess;
+            if (this.slopMode === 'free' && isSlop) return false;
+            if (this.slopMode === 'only' && !isSlop) return false;
 
             // Fest mode: hide virtual screenings unless toggle is ON
             if (!this.showFest && movie.categories?.is_virtual_screening) return false;
@@ -1237,7 +1232,19 @@ const NRW = {
             castLabel.textContent = 'Cast: ';
             const castName = document.createElement('span');
             castName.className = 'lightbox-crew-name';
-            castName.textContent = movie.crew.cast.slice(0, 3).join(', ');
+            const castWiki = movie.links?.cast_wiki || {};
+            movie.crew.cast.slice(0, 3).forEach((name, i) => {
+                if (i > 0) castName.appendChild(document.createTextNode(', '));
+                const url = castWiki[name];
+                if (url) {
+                    const a = document.createElement('a');
+                    a.href = url; a.target = '_blank'; a.rel = 'noopener';
+                    a.className = 'lightbox-crew-link'; a.textContent = name;
+                    castName.appendChild(a);
+                } else {
+                    castName.appendChild(document.createTextNode(name));
+                }
+            });
             metaEl.appendChild(castLabel);
             metaEl.appendChild(castName);
         }

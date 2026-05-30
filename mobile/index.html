@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0a">
     <title>NRW - New Release Wall</title>
-    <link rel="stylesheet" href="mobile.css?v=70">
+    <link rel="stylesheet" href="mobile.css?v=71">
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="../favicon.png">
@@ -29,28 +29,25 @@
                 <button class="filter-pill" data-filter="documentary">Docs</button>
                 <button class="filter-pill" data-filter="restorations">Reissues</button>
                 <div class="filter-pill-divider"></div>
-                <div class="slop-toggle-wrap" id="slop-free-toggle">
-                    <span class="slop-label">SLOP FILTER</span>
-                    <div class="slop-track" id="slop-track">
+                <div class="slop-toggle-wrap" id="slop-free-toggle" data-state="free">
+                    <div class="slop-track">
                         <div class="slop-thumb"></div>
-                        <span class="slop-track-text" id="slop-track-text">OFF</span>
                     </div>
+                    <span class="slop-label" id="slop-state-label">SLOP FREE</span>
                 </div>
                 <div class="filter-pill-divider"></div>
                 <div class="slop-toggle-wrap" id="fest-toggle">
-                    <span class="slop-label">FEST FILTER</span>
                     <div class="slop-track">
                         <div class="slop-thumb"></div>
-                        <span class="slop-track-text" id="fest-track-text">OFF</span>
                     </div>
+                    <span class="slop-label">FESTS</span>
                 </div>
                 <div class="filter-pill-divider"></div>
                 <div class="slop-toggle-wrap" id="preorder-toggle">
-                    <span class="slop-label">PRE-ORDER</span>
                     <div class="slop-track">
                         <div class="slop-thumb"></div>
-                        <span class="slop-track-text" id="preorder-track-text">OFF</span>
                     </div>
+                    <span class="slop-label">PRE-ORDER</span>
                 </div>
                 <div class="filter-row-spacer"></div>
                 <div class="search-container">
