@@ -1,47 +1,40 @@
 {
-  "timestamp": "2026-05-29T13:31:49.121162",
-  "movies_requested": 17,
+  "timestamp": "2026-05-30T12:22:02.974099",
+  "movies_requested": 16,
   "movies_enriched": 13,
-  "movies_deferred": 4,
+  "movies_deferred": 3,
   "deferred_details": [
-    {
-      "title": "The Furious",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-05-29",
-      "discovered_at": "2026-05-29T12:19:48.290400",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 2,
-      "tmdb_platforms": []
-    },
     {
       "title": "Palestine 36",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-05-19",
-      "discovered_at": "2026-05-29T12:19:56.617816",
+      "discovered_at": "2026-05-30T10:53:33.134930",
       "discovery_source": "tmdb_type4",
-      "revert_count": 13,
+      "revert_count": 14,
       "tmdb_platforms": []
     },
     {
-      "title": "In the Hand of Dante",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-24",
-      "discovered_at": "2026-05-29T12:24:18.910448",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 2,
+      "title": "Duplicity",
+      "reason": "under_60min",
+      "digital_date": "2026-06-26",
+      "discovered_at": "2026-05-30T11:23:14.148305",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
       "tmdb_platforms": []
     },
     {
-      "title": "Real Couples",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-04",
-      "discovered_at": "2026-05-29T12:54:19.442616",
-      "discovery_source": "tmdb_type4",
+      "title": "The Currents",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "",
+      "discovered_at": "2026-05-30T11:36:16.427774",
+      "discovery_source": "provider_availability_check",
       "revert_count": 1,
-      "tmdb_platforms": []
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ]
     }
   ],
-  "enrichment_duration_seconds": 1775.33,
+  "enrichment_duration_seconds": 1445.06,
   "error_details": [],
   "total_errors": 0
 }
