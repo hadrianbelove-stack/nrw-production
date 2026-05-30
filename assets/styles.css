@@ -244,7 +244,7 @@ header h1 {
     padding: 1.5rem 2rem;
     display: grid;
     /* Fluid gallery: fit as many ~260px posters as the window allows; they stretch to fill */
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem 1rem;
 }
 
@@ -852,7 +852,7 @@ header h1 {
 @media (max-width: 900px) {
     #wall {
         /* smaller fluid posters on tablets / large phones */
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
     }
 }
 
