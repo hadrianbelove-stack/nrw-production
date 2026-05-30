@@ -38,6 +38,7 @@ MANUAL_OVERRIDES = {
     1207622: False,   # Salt Along the Tongue (Yellow Veil)
     # Films with Wikipedia pages that still score poorly
     1368881: False,   # Ladies First
+    1425373: False,   # The Golden Spurtle (7.6 IMDb, no RT/wiki yet)
     1380291: False,   # Tom Clancy's Jack Ryan: Ghost War
     # HBO/PBS/MAX docs with sparse metadata
     1559776: False,   # The A List: 15 Stories from Asian and Pacific Diasporas
@@ -184,6 +185,9 @@ def classify_slop(movie):
     elif float(imdb) < 6:
         score += 1
         reasons.append('low_imdb')
+    elif float(imdb) >= 6.5:
+        score -= 1
+        reasons.append('good_imdb')
     if movie.get('content_type') == 'tv_movie':
         score += 3
         reasons.append('tv_movie')
