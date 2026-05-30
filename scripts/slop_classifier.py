@@ -39,6 +39,7 @@ MANUAL_OVERRIDES = {
     # Films with Wikipedia pages that still score poorly
     1368881: False,   # Ladies First
     1425373: False,   # The Golden Spurtle (7.6 IMDb, no RT/wiki yet)
+    1535130: False,   # Kylie: Tension Tour Live
     1380291: False,   # Tom Clancy's Jack Ryan: Ghost War
     # HBO/PBS/MAX docs with sparse metadata
     1559776: False,   # The A List: 15 Stories from Asian and Pacific Diasporas
