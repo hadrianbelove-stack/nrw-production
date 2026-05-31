@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-30T21:46:43.741679",
-  "count": 786,
+  "generated_at": "2026-05-31T00:20:18.635778",
+  "count": 783,
   "movies": [
     {
       "id": "1385773",
@@ -4474,6 +4474,7 @@
           "text": "I can't believe I sat through it",
           "critic": "@sauserkraut",
           "outlet": "Letterboxd",
+          "source": "letterboxd",
           "review_url": "https://letterboxd.com/sauserkraut/film/the-secret-between-us-2026/"
         }
       ]
@@ -4579,12 +4580,14 @@
           "text": "ok but why make the doll look like that though",
           "critic": "@raine",
           "outlet": "Letterboxd",
+          "source": "letterboxd",
           "review_url": "https://letterboxd.com/raineyvllz/film/the-lotto-winner/"
         },
         {
           "text": "the ending was heart shattering but ofc it was predictable, and it was the special thing that made the movie unforgettable",
           "critic": "@savorynspicy",
           "outlet": "Letterboxd",
+          "source": "letterboxd",
           "review_url": "https://letterboxd.com/savorynspicy/film/the-lotto-winner/"
         }
       ]
@@ -4785,12 +4788,14 @@
           "text": "abominable acting and grimacing and an utterly daft plot so I gave up after an hour.",
           "critic": "@Chris 🇬🇧🇫🇷 ML",
           "outlet": "Letterboxd",
+          "source": "letterboxd",
           "review_url": "https://letterboxd.com/martinpentony/film/food-truck-stolen-love-and-moo-deng/"
         },
         {
           "text": "i am the first person in my family lifeline to see a CGI moo deng get fucking punted into the ocean by a thai cop",
           "critic": "@mdblan",
           "outlet": "Letterboxd",
+          "source": "letterboxd",
           "review_url": "https://letterboxd.com/mdblan/film/food-truck-stolen-love-and-moo-deng/"
         }
       ]
@@ -4925,13 +4930,18 @@
         "metacritic": "https://www.metacritic.com/movie/miss-you-love-you/",
         "imdb": "https://www.imdb.com/title/tt30343126/",
         "letterboxd": "https://letterboxd.com/film/miss-you-love-you",
-        "director_wiki": "https://en.wikipedia.org/wiki/Jim_Rash"
+        "director_wiki": "https://en.wikipedia.org/wiki/Jim_Rash",
+        "cast_wiki": {
+          "Allison Janney": "https://en.wikipedia.org/wiki/Allison_Janney",
+          "Andrew Rannells": "https://en.wikipedia.org/wiki/Andrew_Rannells",
+          "Suzy Nakamura": "https://en.wikipedia.org/wiki/Suzy_Nakamura"
+        }
       },
       "watch_links": {
         "streaming": [
           {
             "service": "Max",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.5f355d54-5886-466c-a826-c2afae46e44f"
+            "link": "https://play.hbomax.com/show/66933fc1-73bd-44fb-a511-f4bbf674af87?utm_source=universal_search"
           }
         ]
       },
@@ -4940,7 +4950,7 @@
       "_discovered_at": "2026-05-30T11:57:46.141131",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/odnel7VLYHTdW3OdgRl7N5nSlpM.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/aVt8ubqnuBU8R5MVNbuf9OTy8sa.jpg",
       "studio": "The Walsh Company",
       "budget": 0,
       "country": "United States of America",
@@ -4958,14 +4968,14 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 2,
-      "_last_enrichment_attempt": "2026-05-30",
+      "_enrichment_attempts": 4,
+      "_last_enrichment_attempt": "2026-05-31",
       "imdb_rating": "7.9",
       "letterboxd_score": null,
-      "_trailer_source": "gemini_playwright",
+      "_trailer_source": "cache",
       "metacritic_score": "62",
       "_digital_date_source": "tmdb_type4",
-      "_needs_review": true,
+      "_needs_review": false,
       "_quality_warnings": [
         "Watch link domain mismatch: 'Max' link is 'https://watch.amazon.com/detail?gti=amzn1.dv.gti.5f355d54-5886-466c-a826-c2afae46e44f' (expected domains: ['max.com', 'play.max.com'])"
       ],
@@ -4997,12 +5007,14 @@
           "text": "A virtual two-hander, 'Miss You, Love You' is a rare accomplishment -- just enough of a good thing.",
           "critic": "John Anderson",
           "outlet": "Wall Street Journal",
+          "source": "rt_critic",
           "review_url": "https://www.wsj.com/arts-culture/television/miss-you-love-you-review-allison-janneys-brittle-widow-on-hbo-e04eec70"
         },
         {
           "text": "Allison Janney in this is like every gay boy's dream mom, and her son is a prick to not love and appreciate her.",
           "critic": "@Stephen Dow",
           "outlet": "Letterboxd",
+          "source": "letterboxd",
           "review_url": "https://letterboxd.com/snoopy1216/film/miss-you-love-you/"
         }
       ],
@@ -5662,16 +5674,21 @@
           "critic": "Pat Mullen",
           "outlet": "POV Magazine",
           "source": "rt_critic",
-          "review_url": "",
-          "selected": true
+          "review_url": ""
+        },
+        {
+          "text": "Fascinating because of its (largely sociopathic) subjects but there was the potential for a truly great doc with interesting things to say that never materializes.",
+          "critic": "tessa",
+          "outlet": "Letterboxd",
+          "source": "letterboxd",
+          "review_url": ""
         },
         {
           "text": "And while I enjoy collecting Michelin stars like they're Pokémon, there is absolutely no way I'm paying $780 for a sushi omakase.",
           "critic": "Mark Churaman",
           "outlet": "Letterboxd",
           "source": "letterboxd",
-          "review_url": "",
-          "selected": true
+          "review_url": ""
         }
       ],
       "_trailer_source": "override"
@@ -6114,6 +6131,7 @@
           "text": "'Kara' review: Dhanush's thriller, directed by Vignesh Raja, is technically ambitious, emotionally inert.",
           "critic": "Sajin Shrijith",
           "outlet": "The Week",
+          "source": "rt_critic",
           "review_url": "https://www.theweek.in/review/movies/2026/04/30/kara-review-dhanushs-thriller-directed-by-vignesh-raja-is-technically-ambitious-emotionally-inert.html"
         }
       ],
@@ -6881,12 +6899,14 @@
           "text": "feels like Run Lola Run on cocaine.",
           "critic": "ScreenAnarchy",
           "outlet": "ScreenAnarchy",
+          "source": "gemini_critic",
           "review_url": "https://screenanarchy.com/2026/05/now-streaming-my-two-cents-murder-mindfully-the-four-seasons-take-aim-at-comedy-around-the-world.html"
         },
         {
           "text": "his introspective passages... are so deep they could practically carve a hole in you.",
           "critic": "@PxxrThing",
           "outlet": "Letterboxd",
+          "source": "letterboxd",
           "review_url": "https://letterboxd.com/pxxrthing/film/my-2-cents/"
         }
       ]
@@ -8847,7 +8867,10 @@
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1257406.mp4",
         "trailer_hosted_subs": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1257406.en.vtt"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [],
+        "vod": []
+      },
       "pre_order_links": [
         {
           "service": "Amazon Video",
@@ -9232,12 +9255,14 @@
           "text": "a meditation on the inheritance of land, labour, defiance, and fear.",
           "critic": "Dipankar Sarkar",
           "outlet": "Talking Films",
+          "source": "gemini_critic",
           "review_url": ""
         },
         {
           "text": "a deeply personal, highly specific story that has universal resonance...",
           "critic": "Jason Gorber",
           "outlet": "POV Magazine",
+          "source": "gemini_critic",
           "review_url": ""
         }
       ]
@@ -9348,6 +9373,7 @@
           "text": "With an endearing, earthy honesty and gentle eye for ironic humour",
           "critic": "Carmen Gray",
           "outlet": "The Film Verdict",
+          "source": "gemini_critic",
           "review_url": ""
         }
       ]
@@ -9865,16 +9891,18 @@
       "_slop_confidence": "strong",
       "pull_quotes": [
         {
+          "text": "a weird and wonderful thing.",
+          "critic": "Alyssa Christian",
+          "outlet": "Next Best Picture",
+          "source": "rt_critic",
+          "review_url": "https://nextbestpicture.com/mermaid/"
+        },
+        {
           "text": "wickedly funny and unabashedly absurd",
           "critic": "Avi Offer",
           "outlet": "NYC Movie Guru",
-          "review_url": ""
-        },
-        {
-          "text": "a weird and wonderful thing.",
-          "critic": "Dennis Harvey",
-          "outlet": "48 Hills",
-          "review_url": "https://48hills.org/2026/04/screen-grabs-aliens-witches-mermaids-and-other-swell-company/"
+          "source": "rt_critic",
+          "review_url": "http://nycmovieguru.com/april10th26.html#mermaid26"
         }
       ]
     },
@@ -11808,7 +11836,7 @@
       "genres": [
         "Comedy"
       ],
-      "runtime": 0,
+      "runtime": 60,
       "year": 2026,
       "rt_score": null,
       "providers": {
@@ -11829,7 +11857,7 @@
         "streaming": [
           {
             "service": "Max",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.36d05681-e009-42f9-8526-93a3dbddb9ab"
+            "link": "https://play.hbomax.com/show/47fa368e-d91d-4da7-856b-32ff6c870733?utm_source=universal_search"
           }
         ]
       },
@@ -11852,13 +11880,13 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-05-24",
-      "imdb_rating": "7.4",
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-05-31",
+      "imdb_rating": "7.0",
       "letterboxd_score": null,
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "tmdb_type4",
-      "_needs_review": true,
+      "_needs_review": false,
       "_quality_warnings": [
         "Watch link domain mismatch: 'Max' link is 'https://watch.amazon.com/detail?gti=amzn1.dv.gti.36d05681-e009-42f9-8526-93a3dbddb9ab' (expected domains: ['max.com', 'play.max.com'])"
       ],
@@ -21010,10 +21038,9 @@
       "manually_corrected": false,
       "synopsis": "An investigation into one of Turkey's most shocking cases -- and how one man was able to enact total control over a tight-knit family.",
       "genres": [
-        "Documentary",
-        "Crime"
+        "Documentary"
       ],
-      "runtime": null,
+      "runtime": 45,
       "year": 2026,
       "rt_score": "64%",
       "providers": {
@@ -21029,13 +21056,14 @@
         "rt": "https://www.rottentomatoes.com/m/the_von_trapp_family_a_life_of_music",
         "imdb": "https://www.imdb.com/title/tt41634339/",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/tv_319804.mp4",
-        "letterboxd": "https://letterboxd.com/film/the-palu-family-under-a-dark-spell"
+        "letterboxd": "https://letterboxd.com/film/the-palu-family-under-a-dark-spell",
+        "justwatch": "https://www.justwatch.com/us/tv-show/the-palu-family-under-a-dark-spell"
       },
       "watch_links": {
         "streaming": [
           {
             "service": "Max",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.b06db8ef-ce16-4ac1-97c6-d7a0e8eb3b35"
+            "link": "https://play.hbomax.com/video/watch/be150723-6072-4f61-8023-a3114161faca?utm_source=universal_search"
           }
         ]
       },
@@ -21066,19 +21094,21 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-05-15",
-      "imdb_rating": "4.8",
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-05-31",
+      "imdb_rating": "4.6",
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "first_air_date",
-      "_needs_review": true,
+      "_needs_review": false,
       "_quality_warnings": [
         "Watch link domain mismatch: 'Max' link is 'https://watch.amazon.com/detail?gti=amzn1.dv.gti.b06db8ef-ce16-4ac1-97c6-d7a0e8eb3b35' (expected domains: ['max.com', 'play.max.com'])"
       ],
       "status": "available",
       "_enrichment_gaps": [
+        "rt_score",
         "wikipedia",
-        "metacritic_score"
+        "metacritic_score",
+        "letterboxd_score"
       ],
       "categories": {
         "tier": null,
@@ -21098,7 +21128,8 @@
       "reissue_label": null,
       "is_slop": false,
       "_slop_reason": "prestige_streaming:max",
-      "_slop_confidence": "strong"
+      "_slop_confidence": "strong",
+      "letterboxd_score": null
     },
     {
       "id": "1330021",
@@ -50114,13 +50145,18 @@
         "trailer": "https://www.youtube.com/watch?v=pXWgl7pOpMM",
         "rt": null,
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1659501.mp4",
-        "letterboxd": "https://letterboxd.com/film/when-soccer-came-to-america-goals-glamour"
+        "letterboxd": "https://letterboxd.com/film/when-soccer-came-to-america-goals-glamour",
+        "justwatch": "https://www.justwatch.com/us/movie/when-soccer-came-to-america-goals-glamour-and-the-beautiful-game",
+        "cast_wiki": {
+          "Shep Messing": "https://en.wikipedia.org/wiki/Shep_Messing",
+          "Calum Best": "https://en.wikipedia.org/wiki/Calum_Best"
+        }
       },
       "watch_links": {
         "streaming": [
           {
             "service": "Max",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.e36e233f-d0d4-4bf7-a785-73b5d39afd29"
+            "link": "https://play.hbomax.com/video/watch/320aa69a-0c89-494c-979b-0b9e40fd2fa0?utm_source=universal_search"
           }
         ]
       },
@@ -50131,7 +50167,7 @@
       "poster": "https://image.tmdb.org/t/p/w500/gp99gHONvjcl33F8D4hSnBzwb8t.jpg",
       "studio": "ITN Productions",
       "budget": 0,
-      "country": null,
+      "country": "US",
       "original_language": "en",
       "original_title": "When Soccer Came to America: Goals, Glamour and the Beautiful Game",
       "crew": {
@@ -50145,18 +50181,20 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 3,
+      "_enrichment_attempts": 4,
       "imdb_rating": null,
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
-      "_needs_review": true,
+      "_needs_review": false,
       "_quality_warnings": [
         "Watch link domain mismatch: 'Max' link is 'https://watch.amazon.com/detail?gti=amzn1.dv.gti.e36e233f-d0d4-4bf7-a785-73b5d39afd29' (expected domains: ['max.com', 'play.max.com'])"
       ],
       "_enrichment_gaps": [
         "rt_score",
         "wikipedia",
-        "imdb_rating"
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
       ],
       "categories": {
         "tier": null,
@@ -50177,7 +50215,10 @@
       "reissue_label": null,
       "is_slop": false,
       "_slop_reason": "prestige_streaming:max",
-      "_slop_confidence": "strong"
+      "_slop_confidence": "strong",
+      "_last_enrichment_attempt": "2026-05-31",
+      "letterboxd_score": null,
+      "status": "available"
     },
     {
       "id": "1620272",
@@ -54094,13 +54135,15 @@
         "trailer": "https://www.youtube.com/watch?v=Eo-hOjcfJW8",
         "rt": "https://www.rottentomatoes.com/m/lady_ninja_kasumi_2_love_and_betrayal",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/tv_317607.mp4",
-        "letterboxd": "https://letterboxd.com/film/willie-the-kid"
+        "letterboxd": "https://letterboxd.com/film/willie-the-kid",
+        "justwatch": "https://www.justwatch.com/us/tv-show/boom-box-beats-and-betrayal",
+        "imdb": "https://www.imdb.com/title/tt41877538/"
       },
       "watch_links": {
         "streaming": [
           {
             "service": "Max",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.961712e8-3d61-486c-8b33-01bcb1d45658"
+            "link": "https://play.hbomax.com/video/watch/9a9a5d3b-7bf5-4948-b94f-e5e19b919c97?utm_source=universal_search"
           }
         ]
       },
@@ -54124,17 +54167,19 @@
         "cast": []
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "imdb_rating": null,
+      "_enrichment_attempts": 2,
+      "imdb_rating": "7.6",
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
-      "_needs_review": true,
+      "_needs_review": false,
       "_quality_warnings": [
         "Watch link domain mismatch: 'Max' link is 'https://watch.amazon.com/detail?gti=amzn1.dv.gti.961712e8-3d61-486c-8b33-01bcb1d45658' (expected domains: ['max.com', 'play.max.com'])"
       ],
       "_enrichment_gaps": [
+        "rt_score",
         "wikipedia",
-        "imdb_rating"
+        "metacritic_score",
+        "letterboxd_score"
       ],
       "categories": {
         "tier": null,
@@ -54155,7 +54200,10 @@
       "reissue_label": null,
       "is_slop": false,
       "_slop_reason": "prestige_streaming:max",
-      "_slop_confidence": "strong"
+      "_slop_confidence": "strong",
+      "_last_enrichment_attempt": "2026-05-31",
+      "letterboxd_score": null,
+      "status": "available"
     },
     {
       "id": "tv_316790",
@@ -74072,290 +74120,6 @@
       "_slop_confidence": "strong"
     },
     {
-      "id": "1387976",
-      "title": "Videoheaven",
-      "digital_date": "2026-03-01",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Since the 1980s, the video shop has been a desperately necessary space for film culture. In Videoheaven, Alex Ross Perry tells the story of the neighbourhood video shop to consider wider, changing social histories, using appropriated footage from the high and lowbrow.",
-      "genres": [
-        "Documentary"
-      ],
-      "runtime": 172,
-      "year": 2025,
-      "rt_score": "87%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "Criterion Channel"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Videoheaven",
-        "trailer": "https://www.youtube.com/watch?v=niB0kLj-SG4",
-        "rt": "https://www.rottentomatoes.com/m/videoheaven",
-        "imdb": "https://www.imdb.com/title/tt35649428/",
-        "metacritic": "https://www.metacritic.com/movie/videoheaven/",
-        "letterboxd": "https://letterboxd.com/film/videoheaven",
-        "director_wiki": "https://en.wikipedia.org/wiki/Alex_Ross_Perry"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "Criterion",
-            "link": "https://www.criterionchannel.com/videos/videoheaven"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-03-03T09:48:53.120792",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/n5CziKEE050jWJF2OsF8v9IDYuh.jpg",
-      "studio": "Cinema Conservancy",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "original_title": "Videoheaven",
-      "crew": {
-        "director": "Alex Ross Perry",
-        "cast": [
-          "Maya Hawke"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "tmdb_type4",
-      "categories": {
-        "tier": null,
-        "is_studio": false,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": true,
-        "is_exploitation": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "imdb_rating": "7.0",
-      "display_title": "Videoheaven",
-      "metacritic_score": "71",
-      "letterboxd_score": "3.5",
-      "distributor": "Cinema Conservancy",
-      "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "prestige_streaming:criterion",
-      "_slop_confidence": "strong"
-    },
-    {
-      "id": "82695",
-      "title": "Les Misérables",
-      "digital_date": "2026-03-01",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "An adaptation of the successful stage musical based on Victor Hugo's classic novel set in 19th-century France. Jean Valjean, a man imprisoned for stealing bread, must flee a relentless policeman named Javert. The pursuit consumes both men's lives, and soon Valjean finds himself in the midst of the student revolutions in France.",
-      "genres": [
-        "History",
-        "Drama"
-      ],
-      "runtime": 158,
-      "year": 2012,
-      "rt_score": "70%",
-      "providers": {
-        "rent": [
-          "Amazon Video",
-          "Apple TV Store",
-          "Google Play Movies",
-          "YouTube",
-          "Fandango At Home"
-        ],
-        "buy": [
-          "Amazon Video",
-          "Apple TV Store",
-          "Google Play Movies",
-          "YouTube",
-          "Fandango At Home"
-        ],
-        "streaming": [
-          "Amazon Prime Video",
-          "Amazon Prime Video with Ads"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Les_Mis%C3%A9rables_(2012_film)",
-        "trailer": "https://www.youtube.com/watch?v=28sHoKcpugw",
-        "rt": "https://www.rottentomatoes.com/m/les_miserables",
-        "imdb": "https://www.imdb.com/title/tt1707386/",
-        "letterboxd": "https://letterboxd.com/film/les-miserables-2012",
-        "director_wiki": "https://en.wikipedia.org/wiki/Tom_Hooper"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.94a9f773-7f1c-69fc-67b9-4ccae68a606d&tag=nrw04-20"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/les-miserables/umc.cmc.74wk121u9bd0acbgzlr4o8rpq?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A592746206"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-03-01T10:10:08.925510",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/6CuzBs2Lb8At7qQr64mLXg2RYRb.jpg",
-      "studio": "Universal Pictures",
-      "budget": 61000000,
-      "country": "United Kingdom",
-      "original_language": "en",
-      "original_title": "Les Misérables",
-      "crew": {
-        "director": "Tom Hooper",
-        "cast": [
-          "Hugh Jackman",
-          "Russell Crowe"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_digital_date_source": "tmdb_type4",
-      "categories": {
-        "tier": "studio",
-        "is_studio": true,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": true,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "is_exploitation": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "imdb_rating": "7.5",
-      "display_title": "Les Misérables",
-      "letterboxd_score": "3.6",
-      "distributor": "Melbourne / UIP-Dunafilm / Netflix / iTunes",
-      "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "prestige_studio:universal pictures",
-      "_slop_confidence": "strong"
-    },
-    {
-      "id": "tv_316830",
-      "title": "Seeking Persephone",
-      "digital_date": "2026-03-01",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "To save her family, Persephone marries a cold, distant duke - never expecting to awaken a love that could change them both forever.",
-      "genres": [
-        "Drama"
-      ],
-      "runtime": null,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [
-          "Amazon Video",
-          "Fandango At Home"
-        ],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=KeaCxpmP2pw",
-        "rt": null,
-        "imdb": "https://www.imdb.com/title/tt29666911/",
-        "letterboxd": "https://letterboxd.com/film/illusive-crime"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.22d94b60-c57e-4361-a0f3-d8be61995591"
-          }
-        ],
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.e29cc01b-6b09-4a0a-81fe-75aac9ccfadb&tag=nrw04-20"
-          },
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Seeking-Persephone-Season-1/4911377"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-05-06T14:46:14.840683",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "content_type": "limited_series",
-      "episode_count": 4,
-      "networks": [
-        "Prime Video",
-        "Fandango at Home"
-      ],
-      "poster": "https://image.tmdb.org/t/p/w500/tJsS5oFvcKsJ3NdlTbuG7nyCDIK.jpg",
-      "studio": "Mainstay Productions",
-      "budget": 0,
-      "country": "US",
-      "original_language": "en",
-      "original_title": "Seeking Persephone",
-      "crew": {
-        "director": "Sarah M. Eden",
-        "cast": [
-          "Ryann Bailey",
-          "Jake Stormoen",
-          "Will Kemp",
-          "Toby-Alexander Smith",
-          "Wynne Potts"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
-      "_last_enrichment_attempt": "2026-05-06",
-      "imdb_rating": "7.5",
-      "_trailer_source": "tmdb_official",
-      "_digital_date_source": "first_air_date",
-      "_needs_review": false,
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "wikipedia",
-        "metacritic_score"
-      ],
-      "categories": {
-        "tier": null,
-        "is_studio": false,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": true,
-        "is_documentary": false,
-        "is_exploitation": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "display_title": "Seeking Persephone",
-      "reissue_label": null,
-      "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
-      "_slop_confidence": "weak"
-    },
-    {
       "id": "1225202",
       "title": "Round the Decay",
       "bootstrap_date": false,
@@ -75086,7 +74850,8 @@
     "1102883",
     "1178602",
     "1242332",
-    "1410189"
+    "1410189",
+    "1425373"
   ],
   "featured": [
     "1608619",
@@ -75098,12 +74863,8 @@
     "1102883",
     "1178602",
     "1242332",
-    "1410189"
+    "1410189",
+    "1425373"
   ],
-  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tG5i1DvKveoC8ZtrT9ZGnXy",
-  "_metadata": {
-    "last_discovery_write": "2026-05-30T11:57:53.682974",
-    "discovery_count": 795,
-    "schema_version": "2.0"
-  }
+  "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tG5i1DvKveoC8ZtrT9ZGnXy"
 }

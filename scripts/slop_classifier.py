@@ -51,6 +51,7 @@ MANUAL_OVERRIDES = {
     934584:  True,    # Rich Flu (La fiebre de los ricos)
     1424649: True,    # Sampung Utos Kay Josh
     1174334: True,    # A Foggy Tale
+    1433117: True,    # Kara
 }
 
 # ── Prestige streaming platforms → instant NOT SLOP ──────────────────────────
