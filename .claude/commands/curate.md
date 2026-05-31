@@ -3,7 +3,7 @@ description: Curate new arrivals — staff picks, sections, pull quotes, capsule
 allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 ---
 
-Curate movies added since last session. Runs 4 stages in order, each with a user prompt. Resumable — if interrupted, re-running picks up where you left off.
+Curate movies added since last session. Runs 3 stages in order, each with a user prompt. Resumable — if interrupted, re-running picks up where you left off.
 
 ## Before You Start — pull latest
 
@@ -38,11 +38,13 @@ Before starting, check for an existing session:
 
 Update the progress file after completing each stage (set to `completed`). Set a stage to `in_progress` when you begin it.
 
-## Candidate List (shared by all stages)
+## Candidate List (shared by Stages 1 and 2)
 
 Load movies from `data.json` where `digital_date` is after the session timestamp in `.claude/last_nrw_session.json` AND `digital_date` is today or earlier (exclude future pre-orders). If the session file doesn't exist, default to 7 days ago. Exclude reissues/restorations (`is_restoration` flag, or title contains "Remaster"/"Restoration"/"4K", or `year` is 10+ years before current year).
 
 Sort by `digital_date` descending (most recent first).
+
+**Note**: Stage 3 (Per-Movie Curation) uses its own watermark-based candidate logic — see that stage for details.
 
 ---
 
@@ -73,10 +75,10 @@ For each movie row show: title, year, RT score (or `--`), Metacritic score (or `
 
 ## Stage 2: Section Review
 
-Show each candidate with its **pipeline-assigned categories** (from `data.json` `categories` object). This is what the pipeline already detected — the user reviews and corrects.
+Show each candidate with its auto-detected filters (from TMDB genres, language, and distributor data). Review and correct any misses.
 
 ```
-SECTIONS — review what the pipeline assigned
+FILTERS — check auto-detected assignments
 
  1. Title (Year) — Studio
  2. Title (Year) — Foreign, Documentary
@@ -89,13 +91,15 @@ Reply with changes (e.g. "2: remove foreign; 4: add indie") or "looks good" to c
 
 For each movie, list all active categories from its `categories` object (is_studio, is_indie, is_foreign, is_documentary, is_exploitation, is_virtual_screening, is_restoration, is_series). Show as human-readable names. If no categories are set, show "(none)".
 
+Note: Comedy, Horror, and Action filters on the site are driven by TMDB `genres` data stored in `movie.genres` — they are not in the `categories` object and won't appear here. If a film is miscategorized at the genre level, that's a TMDB data issue.
+
 **On user reply:**
 - For studio/indie overrides: read `admin/category_overrides.json`, add entries, write back
 - For restoration overrides: read `admin/restorations.json`, add IDs, write back
 - Commit + push any override file changes
 - Mark stage `completed` in progress file
 
-**Note**: Most categories (foreign, documentary, exploitation, virtual screening, miniseries) are auto-detected by the pipeline in `pipeline/display.py` using `category_config.json`. To improve detection logic (e.g. add indie distributor rules), update the pipeline code — not this command.
+**Note**: All filters are auto-detected from TMDB data — genres (Comedy, Horror, Action), language (Foreign), and distributor rules (Indie, Studio, Documentary). To improve detection logic (e.g. add indie distributor rules), update the pipeline code — not this command.
 
 ---
 
@@ -103,8 +107,8 @@ For each movie, list all active categories from its `categories` object (is_stud
 
 Capsules and pull quotes are done together, movie by movie — not as separate passes.
 
-**Find candidates**: Take the union of:
-- Movies needing a capsule: `digital_date` > capsule watermark (most recent `digital_date` among movies in `cache/approved_capsules.json`), not already approved, not a restoration
+**Find candidates**: Stage 3 uses watermark logic, not the Stage 1/2 candidate list. Take the union of:
+- Movies needing a capsule: `digital_date` > capsule watermark (most recent `digital_date` among movies in `cache/approved_capsules.json`), not already in `cache/approved_capsules.json` by title, not a restoration
 - Movies needing pull quotes: `digital_date` > pull quote watermark (most recent `digital_date` among movies with a `pull_quotes` array in `data.json`), not already having `pull_quotes`, not a restoration
 
 Merge into one list, deduplicated, sorted by `digital_date` descending. For each movie, track which work it needs: capsule, quotes, or both.
@@ -123,7 +127,7 @@ If no candidates for either: report through-dates and mark stage `completed`.
    - Pick prompt: "Pick 1, 2, or 3 — paste a rewrite — or skip."
 3. Wait for user response. **When user provides edited text, that IS the final version.**
 4. If picked/rewritten:
-   1. Apply standard formatting (**bold** names, *italic* titles)
+   1. Apply standard formatting: **bold** the director's name and cast member names; *italicize* titles of other films mentioned in the text
    2. **Pre-embed Wikipedia links** into the chosen text (see Step A-Links below), then confirm with user before continuing
    3. Write final approved text to `cache/rewrite.txt`
    4. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py approve "TITLE" --file cache/rewrite.txt`
@@ -135,7 +139,7 @@ If no candidates for either: report through-dates and mark stage `completed`.
 
 Identify up to 5 linkable entities for this film:
 - **Always**: WebSearch the top 3 cast members from `movie.crew.cast` for their Wikipedia pages
-- **Also**: up to 3 notable historical figures, events, movements, or organizations referenced by the film. Skip the director (already linked in the site header).
+- **Also**: up to 3 notable historical figures, events, movements, or organizations referenced by the film. Skip the director — the site template links them automatically from the `crew.director` field.
 
 Present as:
 ```
@@ -168,13 +172,16 @@ cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
 import json, sys
 title, cast_wiki_json = sys.argv[1], sys.argv[2]
 cast_wiki = json.loads(cast_wiki_json)
-data = json.load(open('data.json'))
-for m in data['movies']:
+with open('data.json') as f:
+    data = json.load(f)
+movies = data if isinstance(data, list) else data.get('movies', [])
+for m in movies:
     if m.get('title', '').lower() == title.lower():
         m.setdefault('links', {})
         m['links']['cast_wiki'] = cast_wiki
         break
-json.dump(data, open('data.json', 'w'), indent=2, ensure_ascii=False)
+with open('data.json', 'w') as f:
+    json.dump(data, f, indent=2, ensure_ascii=False)
 " "MOVIE_TITLE" '{"Ellie Bamber": "https://...", "Derek Jacobi": "https://..."}'
 ```
 
@@ -188,15 +195,23 @@ Show pull quotes for this movie right after the capsule is resolved (picked, ski
 
 Run the validated scraper (not just cache):
 
-```python
+```bash
+cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
 from gemini_scraper.pull_quotes import GeminiPullQuoteFinder
+import json
 finder = GeminiPullQuoteFinder()
+with open('data.json') as f:
+    data = json.load(f)
+movies = data if isinstance(data, list) else data.get('movies', [])
+movie = next((m for m in movies if m.get('title','').lower() == 'TITLE'.lower()), None)
 quotes = finder.find_pull_quotes(
-    title="TITLE", year=YEAR, director="DIRECTOR",
+    title='TITLE', year=YEAR, director='DIRECTOR',
     num_quotes=10, deep_read=True,
-    rt_url=movie.get('links',{}).get('rt'),
-    mc_url=movie.get('links',{}).get('mc')
+    rt_url=movie.get('links',{}).get('rt') if movie else None,
+    mc_url=movie.get('links',{}).get('metacritic') if movie else None
 )
+print(json.dumps(quotes, indent=2))
+"
 ```
 
 After scraping, update `cache/pull_quotes_combined.json` with any new quotes found (merge, don't overwrite existing selected quotes).
@@ -264,7 +279,7 @@ After all movies processed, mark stage `completed` in progress file.
 
 ## Completion
 
-After all 4 stages, report a summary:
+After all 3 stages, report a summary:
 ```
 CURATION COMPLETE
 - Staff picks: N added (M total)
