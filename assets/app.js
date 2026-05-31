@@ -578,7 +578,7 @@ const NRW = {
 
             const formatShortDate = NRW.formatShortDate;
 
-            // Streaming service pill badge for card front
+            // Streaming service Gallery Label frame for card front
             const getStreamingBadge = (movie) => {
                 const watchLinks = movie.watch_links || {};
                 const providers = movie.providers || {};
@@ -588,7 +588,10 @@ const NRW = {
                     const poDate = movie.digital_date
                         ? NRW.formatShortDate(movie.digital_date)
                         : 'TBD';
-                    return '<div class="streaming-badge badge-preorder"><span class="po-label">PRE-ORDER</span><span class="po-date">' + poDate + '</span></div>';
+                    return {
+                        html: '<div class="streaming-badge badge-preorder"><span class="po-label">PRE-ORDER</span><span class="po-date">' + poDate + '</span></div>',
+                        isFrame: false
+                    };
                 }
 
                 // Get streaming service name
@@ -601,23 +604,31 @@ const NRW = {
                     service = realStreamers[0] || null;
                 }
 
-                if (!service) return '';
+                if (!service) return { html: '', isFrame: false };
 
                 // Map service to display name and CSS class
                 const resolved = NRW.resolveService(service);
-                let displayName, badgeClass;
+                let displayName, svcClass;
                 if (resolved) {
                     displayName = resolved.badgeName;
-                    badgeClass = 'badge-' + resolved.class;
+                    svcClass = resolved.class;
                 } else {
                     displayName = NRW.cleanServiceName(service).toUpperCase().slice(0, 10);
-                    badgeClass = 'badge-other';
+                    svcClass = 'other';
                 }
 
-                return `<div class="streaming-badge ${badgeClass}">${displayName}</div>`;
+                const textColor = svcClass === 'hulu' ? 'black' : 'white';
+                return {
+                    html: `<div class="streaming-frame-header" style="color:${textColor}">
+                        <div class="streaming-frame-super">NOW STREAMING</div>
+                        <div class="streaming-frame-name">${displayName}</div>
+                    </div>`,
+                    isFrame: true,
+                    svcClass
+                };
             };
 
-            const streamingBadge = getStreamingBadge(movie);
+            const { html: streamingBadgeHtml, isFrame: hasStreamingFrame, svcClass: streamingSvcClass } = getStreamingBadge(movie);
             const restorationBadge = movie.reissue_label
                 ? `<div class="restoration-badge">${movie.reissue_label.toUpperCase()}</div>`
                 : (movie.categories?.is_restoration ? '<div class="restoration-badge">RESTORED</div>' : '');
@@ -656,8 +667,8 @@ const NRW = {
             <div class="movie-container${staffPickClass}${screeningClass}">
                 <div class="movie-card">
                     <div class="card-inner">
-                        <div class="card-front">
-                            ${streamingBadge}
+                        <div class="card-front${hasStreamingFrame ? ' streaming-frame' : ''}"${hasStreamingFrame ? ` style="background:var(--svc-${streamingSvcClass},#444);padding:0 12px 12px;"` : ''}>
+                            ${streamingBadgeHtml}
                             ${restorationBadge}
                             <div class="poster-fallback"><span class="poster-fallback-title">${title}</span></div>
                             <img src="${movie.poster || ''}"
