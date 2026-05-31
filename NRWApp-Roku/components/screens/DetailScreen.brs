@@ -244,9 +244,11 @@ Sub LoadMovie(index as Integer)
         m.pullQuotesLabel.visible = false
     end if
 
-    ' Set synopsis — render **bold**/*italic* as MultiStyleLabel tags (see docs/STYLE_GUIDE.md)
-    if movie.synopsis <> invalid AND movie.synopsis <> ""
-        synopsisText = MarkdownToMultiStyle(movie.synopsis)
+    ' Set synopsis — prefer editorial capsule over raw TMDB synopsis (see docs/STYLE_GUIDE.md)
+    displayText = movie.capsule
+    if displayText = invalid OR displayText = "" then displayText = movie.synopsis
+    if displayText <> invalid AND displayText <> ""
+        synopsisText = MarkdownToMultiStyle(displayText)
         ' Append screening callout to synopsis (plain text, default style)
         if movie.categories <> invalid AND movie.categories.is_virtual_screening = true AND movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid
             callout = " Virtual screening available as part of the " + movie.virtual_screening_info.screening_name + "."

@@ -260,7 +260,7 @@ export function searchMovies(movies, query) {
     const director = (movie.crew?.director || movie.director || '').toLowerCase();
     const genres = (movie.genres || []).map(g => g.toLowerCase());
     const country = (movie.country || '').toLowerCase();
-    const synopsis = (movie.synopsis || '').toLowerCase();
+    const synopsis = (movie.capsule || movie.synopsis || '').toLowerCase();
     const year = String(movie.year || '');
 
     return (

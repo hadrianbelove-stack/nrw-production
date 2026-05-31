@@ -363,7 +363,7 @@ const NRWMobile = {
                 const q = norm(this.searchQuery);
                 const title = norm(movie.title || '');
                 const director = norm(movie.crew?.director || movie.director || '');
-                const synopsis = norm(movie.synopsis || '');
+                const synopsis = norm(movie.capsule || movie.synopsis || '');
                 const genres = norm((movie.genres || []).join(' '));
                 const country = norm(movie.country || '');
                 const year = String(movie.year || '');
@@ -878,7 +878,7 @@ const NRWMobile = {
 
         // Synopsis (renders **bold**/*italic* markdown)
         html += '<div class="sheet-section-label">Synopsis</div>' +
-            '<div class="sheet-synopsis">' + NRWConfig.renderMarkdown(movie.synopsis || 'No synopsis available.') + '</div>';
+            '<div class="sheet-synopsis">' + NRWConfig.renderMarkdown(movie.capsule || movie.synopsis || 'No synopsis available.') + '</div>';
 
         html += '<div style="height:50px"></div>';
 

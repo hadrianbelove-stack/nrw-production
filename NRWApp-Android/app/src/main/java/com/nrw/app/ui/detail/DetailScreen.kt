@@ -521,8 +521,8 @@ private fun MovieDetail(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
 
-                // Synopsis - compact
-                movie.synopsis?.let { synopsis ->
+                // Synopsis - compact (prefers editorial capsule over raw TMDB synopsis)
+                (movie.capsule ?: movie.synopsis)?.let { synopsis ->
                     val screeningCallout = if (movie.categories?.isVirtualScreening == true && movie.screeningInfo?.screeningName != null) {
                         val festName = movie.screeningInfo!!.screeningName!!
                         val endStr = movie.screeningInfo?.availableEnd?.let { " Ends ${formatShortDate(it)}." } ?: ""

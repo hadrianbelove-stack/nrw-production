@@ -404,11 +404,11 @@ export default function MovieDetail({route}) {
       )}
 
       {/* Synopsis */}
-      {movie.synopsis && (
+      {(movie.capsule || movie.synopsis) && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Synopsis</Text>
           <Text style={styles.synopsis}>
-            {renderMarkdownSpans(movie.synopsis)}
+            {renderMarkdownSpans(movie.capsule || movie.synopsis)}
             {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
               <Text style={styles.screeningCallout}>
                 {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}

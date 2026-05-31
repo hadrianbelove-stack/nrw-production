@@ -14,6 +14,7 @@ data class Movie(
     val year: Int? = null,
     val rating: String? = null,
     val runtime: Int? = null,
+    val capsule: String? = null,
     val synopsis: String? = null,
     val director: String? = null,
     val crew: Crew? = null,

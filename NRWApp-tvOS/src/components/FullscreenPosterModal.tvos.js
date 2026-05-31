@@ -252,7 +252,7 @@ const FullscreenPosterModal = ({
 
             <ScrollView style={styles.synopsisContainer} showsVerticalScrollIndicator={false}>
               <Text style={styles.synopsis}>
-                {movie.synopsis ? renderMarkdownSpans(movie.synopsis) : 'Synopsis coming soon.'}
+                {(movie.capsule || movie.synopsis) ? renderMarkdownSpans(movie.capsule || movie.synopsis) : 'Synopsis coming soon.'}
               </Text>
             </ScrollView>
 
