@@ -1288,8 +1288,8 @@ header h1 {
 }
 
 .lightbox-title {
-    font-size: clamp(1.3rem, 3.5vw, 2.2rem);
-    font-weight: 600;
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 800;
     color: #fff;
     margin: 0;
     line-height: 1;
@@ -1432,9 +1432,9 @@ header h1 {
 .pq-card {
     position: relative;
     padding: 0.6rem 0.75rem;
-    background: rgba(255,255,255,0.04);
+    background: rgba(0,212,170,0.07);
     border-radius: 6px;
-    border-left: 2px solid rgba(255,255,255,0.15);
+    border-left: 3px solid #00d4aa;
 }
 
 .pq-link {
@@ -1443,13 +1443,13 @@ header h1 {
 }
 
 .pq-link:hover .pq-text {
-    color: #fff;
+    color: #00ffbb;
 }
 
 .pq-text {
     display: block;
     font-style: italic;
-    color: #ddd;
+    color: #00d4aa;
     font-size: 1rem;
     line-height: 1.5;
     quotes: "\201C" "\201D";
@@ -1459,7 +1459,7 @@ header h1 {
     display: block;
     font-style: normal;
     font-size: 0.85rem;
-    color: #888;
+    color: rgba(0,212,170,0.55);
     margin-top: 0.25rem;
 }
 
