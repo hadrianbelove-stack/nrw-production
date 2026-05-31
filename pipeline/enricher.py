@@ -282,7 +282,8 @@ class MovieEnricher:
                 result['links']['director_wiki'] = director_wiki_url
 
         # Cast Wikipedia links (top 3 cast members — skip any already manually curated)
-        cast_members = (movie_details.get('crew', {}).get('cast') or [])[:3] if movie_details else []
+        _tmdb_cast = (movie_details.get('credits', {}).get('cast', []) if movie_details else [])[:3]
+        cast_members = [c['name'] for c in _tmdb_cast if c.get('name')]
         existing_cast_wiki = movie_data.get('links', {}).get('cast_wiki', {})
         cast_to_lookup = [n for n in cast_members if n not in existing_cast_wiki]
         if cast_to_lookup:
