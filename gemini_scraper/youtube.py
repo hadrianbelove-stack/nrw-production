@@ -229,6 +229,25 @@ YouTube URL:"""
                         self.stats['invalid_urls'] += 1
                         self.stats['gemini_failures'] += 1
                         return None
+                    # Primary-segment check — movie title must appear before the first | or —
+                    # Catches cast-name-as-title confusion (e.g. Eva Marcille ≠ film Eva)
+                    _stop = {'the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'for', 'is', 'it', 'and'}
+                    _mw = [w for w in re.sub(r'[^\w\s]', ' ', title.lower()).split() if w not in _stop]
+                    if not _mw:
+                        _mw = title.lower().split()
+                    if _mw:
+                        _primary = re.split(r'\s*[|—]\s*', video_title)[0].strip()
+                        _primary = re.sub(r'\([^)]*\)', '', _primary).strip()
+                        _pw = set(re.sub(r'[^\w\s]', ' ', _primary.lower()).split())
+                        _seg_ratio = sum(1 for w in _mw if w in _pw) / len(_mw)
+                        if _seg_ratio < 0.75:
+                            logger.warning(
+                                f"Gemini title absent from primary segment for {title} ({year}): "
+                                f"primary='{_primary[:50]}', video='{video_title[:60]}'"
+                            )
+                            self.stats['invalid_urls'] += 1
+                            self.stats['gemini_failures'] += 1
+                            return None
                 logger.info(f"Found trailer for {title} ({year}): {url}")
                 self.cache[cache_key] = url
                 self._save_cache()
