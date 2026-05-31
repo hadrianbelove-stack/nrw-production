@@ -137,35 +137,43 @@ If no candidates for either: report through-dates and mark stage `completed`.
 
 **Generating SUGGESTED LINKS (shown below the factoid primer):**
 
-Identify up to 5 linkable entities for this film:
-- **Always**: WebSearch the top 3 cast members from `movie.crew.cast` for their Wikipedia pages
-- **Also**: up to 3 notable historical figures, events, movements, or organizations referenced by the film. Skip the director — the site template links them automatically from the `crew.director` field.
+Identify linkable entities in two passes:
+
+**Pass 1 — Cast + Director (from data):**
+- Read `movie.links.cast_wiki` from data.json — auto-populated by the enrichment pipeline. List any cast members that have URLs.
+- Read `movie.links.director_wiki` from data.json. Include the director even though the template also auto-links them — they may appear by name in the capsule text and deserve an inline link too.
+- If cast_wiki is missing or incomplete, WebSearch any top-3 cast members (`movie.crew.cast`) not already covered.
+
+**Pass 2 — Other named entities (your judgment):**
+- Identify up to 3 notable historical figures, events, movements, organizations, or other works referenced by this film. WebSearch each for a Wikipedia page.
 
 Present as:
 ```
 **SUGGESTED LINKS**
 - [Ellie Bamber](https://en.wikipedia.org/wiki/Ellie_Bamber) — cast
 - [Derek Jacobi](https://en.wikipedia.org/wiki/Derek_Jacobi) — cast
+- [Zerocalcare](https://en.wikipedia.org/wiki/Zerocalcare) — director
 - [Lucian Freud](https://en.wikipedia.org/wiki/Lucian_Freud) — painter, subject of film
 ```
 
-If a cast member has no Wikipedia page, skip them silently.
+If a person has no Wikipedia page, skip them silently.
 
 **Pre-embedding links (after user picks a variant):**
 
 Once the user picks a variant or provides a rewrite:
-1. Embed ALL suggested links into the text:
+1. **Scan the final capsule text for any `**bold**` names not already in SUGGESTED LINKS.** WebSearch each unlisted bold name for a Wikipedia page and add to the list if found.
+2. Embed ALL links into the text:
    - Entity name appears as `**bold**` → change to `**[Name](url)**`
    - Entity name appears as plain text → change to `[Name](url)`
-   - Entity name not in the capsule text → skip (will still be saved to cast_wiki for the metadata line)
-2. Show the modified capsule with links visible in the markdown
-3. Ask: "Approve with these links — or say 'remove [Name]' to drop any."
-4. If user removes any: strip that link, show updated capsule again
-5. When user approves: this is the final text — proceed to write cache/rewrite.txt
+   - Entity name not in the capsule text → skip (still save to cast_wiki for the metadata line)
+3. Show the modified capsule with links visible in the markdown
+4. Ask: "Approve with these links — or say 'remove [Name]' to drop any."
+5. If user removes any: strip that link, show updated capsule again
+6. When user approves: this is the final text — proceed to write cache/rewrite.txt
 
 **Saving cast wiki links (after approve script runs):**
 
-For each cast member that had a Wikipedia URL in SUGGESTED LINKS, write to `movie.links.cast_wiki`:
+For each cast member that had a Wikipedia URL (from either data.json or WebSearch), write to `movie.links.cast_wiki` — merging with any existing entries, not overwriting:
 
 ```bash
 cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
@@ -178,14 +186,16 @@ movies = data if isinstance(data, list) else data.get('movies', [])
 for m in movies:
     if m.get('title', '').lower() == title.lower():
         m.setdefault('links', {})
-        m['links']['cast_wiki'] = cast_wiki
+        existing = m['links'].get('cast_wiki', {})
+        existing.update(cast_wiki)
+        m['links']['cast_wiki'] = existing
         break
 with open('data.json', 'w') as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
 " "MOVIE_TITLE" '{"Ellie Bamber": "https://...", "Derek Jacobi": "https://..."}'
 ```
 
-Only include cast members (not historical figures or events — those are for capsule text only). Wikipedia URLs with parentheses: encode `(` as `%28` and `)` as `%29`.
+Only include cast members in cast_wiki (not director, historical figures, or events — those are capsule-text links only). Wikipedia URLs with parentheses: encode `(` as `%28` and `)` as `%29`.
 
 ### Step B — Pull Quotes (immediately after capsule, same movie)
 

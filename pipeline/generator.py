@@ -1047,6 +1047,27 @@ class DataGenerator:
             self.logger.error(f"Director Wikipedia lookup error for {name}: {e}")
             return None
 
+    def find_cast_wikipedia_url(self, name):
+        """Find a cast member's Wikipedia URL using the existing scraper infrastructure."""
+        if not name or not self.enrichment_enabled:
+            return None
+        if self.wikipedia_scraper is None:
+            try:
+                from wikipedia_scraper_playwright import WikipediaScraperPlaywright
+                self.wikipedia_scraper = WikipediaScraperPlaywright(
+                    cache_file='cache/wikipedia_cache.json',
+                    config=self.config,
+                    logger=self.logger
+                )
+            except Exception as e:
+                self.logger.error(f"Failed to initialize Wikipedia scraper for cast lookup: {e}")
+                return None
+        try:
+            return self.wikipedia_scraper.find_cast_wikipedia_url(name)
+        except Exception as e:
+            self.logger.error(f"Cast Wikipedia lookup error for {name}: {e}")
+            return None
+
     def _validate_youtube_url_live(self, url):
         """Check if a YouTube URL actually resolves to a playable video.
         Uses YouTube's oEmbed endpoint — fast (~100ms), no API key needed."""

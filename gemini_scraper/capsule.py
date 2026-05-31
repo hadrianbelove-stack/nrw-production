@@ -28,7 +28,7 @@ from gemini_scraper.base import GeminiFinderBase
 logger = logging.getLogger('gemini_scraper.capsule')
 
 APPROVED_BANK_PATH = 'cache/approved_capsules.json'
-MAX_APPROVED_EXAMPLES = 10  # Use the N most recent approved capsules in prompt
+MAX_APPROVED_EXAMPLES = 9999  # Use all approved capsules in prompt
 
 
 class GeminiCapsuleWriter(GeminiFinderBase):

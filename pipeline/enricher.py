@@ -248,6 +248,7 @@ class MovieEnricher:
         enrichment_results = {
             'wikipedia': 'not_attempted',
             'director_wiki': 'not_attempted',
+            'cast_wiki': 'not_attempted',
             'trailer': 'not_attempted',
             'rt_score': 'not_attempted',
             'letterboxd_score': 'not_attempted',
@@ -279,6 +280,29 @@ class MovieEnricher:
                 enrichment_results, title, year)
             if director_wiki_url:
                 result['links']['director_wiki'] = director_wiki_url
+
+        # Cast Wikipedia links (top 3 cast members — skip any already manually curated)
+        cast_members = (movie_details.get('crew', {}).get('cast') or [])[:3] if movie_details else []
+        existing_cast_wiki = movie_data.get('links', {}).get('cast_wiki', {})
+        cast_to_lookup = [n for n in cast_members if n not in existing_cast_wiki]
+        if cast_to_lookup:
+            try:
+                cast_wiki = dict(existing_cast_wiki)
+                for cast_name in cast_to_lookup:
+                    url = self.host.find_cast_wikipedia_url(cast_name)
+                    if url:
+                        cast_wiki[cast_name] = url
+                if cast_wiki:
+                    result['links']['cast_wiki'] = cast_wiki
+                    enrichment_results['cast_wiki'] = 'success'
+                else:
+                    enrichment_results['cast_wiki'] = 'not_found'
+            except Exception as e:
+                enrichment_results['cast_wiki'] = 'error'
+                self.ctx.logger.warning(f"cast_wiki: Error for {title} ({year}): {type(e).__name__}: {str(e)[:100]}")
+        elif existing_cast_wiki:
+            result['links']['cast_wiki'] = existing_cast_wiki
+            enrichment_results['cast_wiki'] = 'success'
 
         # Trailer link
         trailer_result = self._run_enrichment_source(
@@ -590,13 +614,14 @@ class MovieEnricher:
 
         wiki_icon = status_icons.get(enrichment_results['wikipedia'], '?')
         dir_wiki_icon = status_icons.get(enrichment_results.get('director_wiki', 'not_attempted'), '?')
+        cast_wiki_icon = status_icons.get(enrichment_results.get('cast_wiki', 'not_attempted'), '?')
         trailer_icon = status_icons.get(enrichment_results['trailer'], '?')
         rt_icon = status_icons.get(enrichment_results['rt_score'], '?')
         pq_icon = status_icons.get(enrichment_results.get('pull_quotes', 'not_attempted'), '?')
         links_icon = status_icons.get(enrichment_results['watch_links'], '?')
         date_icon = status_icons.get(enrichment_results['digital_date'], '?')
 
-        print(f"  \u26a1 {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Dir:{dir_wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} PQ:{pq_icon} Links:{links_icon} Date:{date_icon} | {success_count} success, {error_count} errors")
+        print(f"  \u26a1 {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Dir:{dir_wiki_icon} Cast:{cast_wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} PQ:{pq_icon} Links:{links_icon} Date:{date_icon} | {success_count} success, {error_count} errors")
 
         # Detailed logging for metrics
         self.ctx.logger.info(f"Enrichment completed for {title} ({year}) in {movie_duration:.1f}s: {enrichment_results}")

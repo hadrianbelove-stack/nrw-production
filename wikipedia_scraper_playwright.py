@@ -774,6 +774,111 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
         self._save_cache()
         return None
 
+    def find_cast_wikipedia_url(self, name):
+        """Find a cast member's Wikipedia page URL.
+
+        Waterfall:
+        1. Cache (key: cast_{name})
+        2. Wikidata SPARQL by name + actor occupation
+        3. Wikipedia REST API (verify extract mentions actor/performer/film)
+        4. Negative cache if all fail (30-day TTL)
+
+        Never uses Playwright. Never returns a search URL.
+        """
+        if not name:
+            return None
+
+        cache_key = f'cast_{name}'
+
+        # 1. Cache check
+        if cache_key in self.cache:
+            cached = self.cache[cache_key]
+            if isinstance(cached, dict):
+                url = cached.get('url')
+                source = cached.get('source', '')
+                if cached.get('negative') and source == 'no_article':
+                    cached_at = cached.get('cached_at', '')
+                    try:
+                        age = (datetime.now() - datetime.fromisoformat(cached_at)).days
+                        if age < 30:
+                            self._log(f"Cast negative cache hit for {name} ({age}d)", level='debug')
+                            return None
+                    except (ValueError, TypeError):
+                        pass
+                elif url and '/wiki/' in url:
+                    self._log(f"Cast cache hit for {name}: {source}", level='debug')
+                    return url
+
+        # 2. Wikidata SPARQL — look up by name + actor occupation (Q33999)
+        self.stats['wikidata_attempts'] += 1
+        safe_name = name.replace('\\', '\\\\').replace('"', '\\"')
+        sparql_query = f"""
+        SELECT ?article WHERE {{
+          ?item wdt:P31 wd:Q5 ;
+                wdt:P106/wdt:P279* wd:Q33999 ;
+                rdfs:label "{safe_name}"@en .
+          OPTIONAL {{
+            ?article schema:about ?item ;
+                     schema:isPartOf <https://en.wikipedia.org/> .
+          }}
+        }}
+        LIMIT 3
+        """
+        try:
+            headers = {
+                'User-Agent': 'NewReleaseWall/1.0 (hadrianbelove@gmail.com)',
+                'Accept': 'application/sparql-results+json'
+            }
+            response = requests.get(
+                'https://query.wikidata.org/sparql',
+                params={'query': sparql_query},
+                headers=headers,
+                timeout=10
+            )
+            if response.status_code == 200:
+                results = response.json().get('results', {}).get('bindings', [])
+                for r in results:
+                    article = r.get('article', {}).get('value', '')
+                    if article and article.startswith('https://en.wikipedia.org/wiki/'):
+                        self._log(f"Wikidata found cast page for {name}", level='debug')
+                        self._cache_result(cache_key, article, name, 'wikidata_cast')
+                        self.stats['wikidata_successes'] += 1
+                        self.stats['successes'] += 1
+                        return article
+        except Exception as e:
+            self._log(f"Wikidata cast query error for {name}: {e}", level='debug')
+
+        # 3. Wikipedia REST API — try plain name, verify it's about a performer
+        try:
+            headers = {'User-Agent': 'NewReleaseWall/1.0 (hadrianbelove@gmail.com)'}
+            url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{quote(name)}"
+            response = requests.get(url, headers=headers, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('type') != 'disambiguation':
+                    extract = data.get('extract', '').lower()
+                    wiki_url = data.get('content_urls', {}).get('desktop', {}).get('page')
+                    if wiki_url and any(w in extract for w in ('actor', 'actress', 'performer', 'comedian', 'film', 'television')):
+                        self._log(f"REST API found cast page for {name}", level='debug')
+                        self._cache_result(cache_key, wiki_url, name, 'api_cast')
+                        self.stats['api_successes'] += 1
+                        self.stats['successes'] += 1
+                        return wiki_url
+        except Exception as e:
+            self._log(f"REST API cast lookup error for {name}: {e}", level='debug')
+
+        # 4. Negative cache
+        self._log(f"No Wikipedia cast page found for {name}", level='debug')
+        self.cache[cache_key] = {
+            'url': None,
+            'title': name,
+            'cached_at': datetime.now().isoformat(),
+            'source': 'no_article',
+            'negative': True
+        }
+        self._save_cache()
+        return None
+
     def close(self):
         """Clean up browser resources."""
         self._cleanup_browser()
