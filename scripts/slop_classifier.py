@@ -49,6 +49,8 @@ MANUAL_OVERRIDES = {
     # Human-confirmed slop
     1686326: True,    # Emi Martínez: The Kid Who Stops Time
     934584:  True,    # Rich Flu (La fiebre de los ricos)
+    1424649: True,    # Sampung Utos Kay Josh
+    1174334: True,    # A Foggy Tale
 }
 
 # ── Prestige streaming platforms → instant NOT SLOP ──────────────────────────

@@ -4663,7 +4663,8 @@
         "Service 'JustWatch TV' not in TMDB providers for this title (TMDB has: ['youtube', 'google play movies'])",
         "Title matches original foreign title (language: tl): 'Sampung Utos Kay Josh'"
       ],
-      "_slop_reason": "score:3(no_rt,no_rt_link)",
+      "_slop_reason": "manual_override",
+      "is_slop": true,
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
