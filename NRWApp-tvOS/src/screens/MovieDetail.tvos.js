@@ -360,8 +360,12 @@ const trailerBtnStyles = StyleSheet.create({
 });
 
 // Compact score badge — small inline pill matching site's .score-badge (display-only)
-const ScoreBadge = ({ logo, score, color, accessibilityLabel }) => (
-  <View style={badgeStyles.pill} accessible={true} accessibilityLabel={accessibilityLabel}>
+const ScoreBadge = ({ logo, score, color, borderColor, bgColor, accessibilityLabel }) => (
+  <View
+    style={[badgeStyles.pill, borderColor && { borderColor, backgroundColor: bgColor }]}
+    accessible={true}
+    accessibilityLabel={accessibilityLabel}
+  >
     <Image source={logo} style={[badgeStyles.logo, { tintColor: color }]} />
     <Text style={[badgeStyles.score, { color }]}>{score}</Text>
   </View>
@@ -381,8 +385,8 @@ const badgeStyles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   logo: {
     width: 24,
@@ -767,6 +771,8 @@ const MovieDetailTvOS = () => {
                     logo={require('../../assets/logos/rt.png')}
                     score={rtScore.label}
                     color="#ff6b6b"
+                    borderColor="rgba(255,107,107,0.55)"
+                    bgColor="rgba(255,107,107,0.08)"
                     accessibilityLabel={`Rotten Tomatoes ${rtScore.label}`}
                   />
                 )}
@@ -775,6 +781,8 @@ const MovieDetailTvOS = () => {
                     logo={require('../../assets/logos/imdb.png')}
                     score={imdbScore.label}
                     color="#f5c518"
+                    borderColor="rgba(245,197,24,0.55)"
+                    bgColor="rgba(245,197,24,0.08)"
                     accessibilityLabel={`IMDb rating ${imdbScore.label}`}
                   />
                 )}
@@ -783,6 +791,8 @@ const MovieDetailTvOS = () => {
                     logo={require('../../assets/logos/metacritic.png')}
                     score={mcScore.label}
                     color="#7ddf64"
+                    borderColor="rgba(125,223,100,0.55)"
+                    bgColor="rgba(125,223,100,0.08)"
                     accessibilityLabel={`Metacritic score ${mcScore.label}`}
                   />
                 )}
@@ -791,6 +801,8 @@ const MovieDetailTvOS = () => {
                     logo={require('../../assets/logos/letterboxd.png')}
                     score={lbScore.label}
                     color="#00E054"
+                    borderColor="rgba(0,224,84,0.55)"
+                    bgColor="rgba(0,224,84,0.08)"
                     accessibilityLabel={`Letterboxd rating ${lbScore.label}`}
                   />
                 )}

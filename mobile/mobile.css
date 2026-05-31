@@ -488,9 +488,9 @@ body {
   gap: 3px;
   text-decoration: none;
 }
-.score-badge.rt { color: #ff6b6b; }
-.score-badge.imdb { color: #f5c518; }
-.score-badge.meta { color: #7ddf64; }
+.score-badge.rt   { color: #ff6b6b; border-color: rgba(255,107,107,0.55); }
+.score-badge.imdb { color: #f5c518; border-color: rgba(245,197,24,0.55); }
+.score-badge.meta { color: #7ddf64; border-color: rgba(125,223,100,0.55); }
 .score-badge .score-logo {
   height: 11px;
   width: auto;
@@ -686,7 +686,14 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: transparent;
 }
+.sheet-score:has(.rt)   { border-color: rgba(255,107,107,0.55); background: rgba(255,107,107,0.08); }
+.sheet-score:has(.imdb) { border-color: rgba(245,197,24,0.55);  background: rgba(245,197,24,0.08); }
+.sheet-score:has(.meta) { border-color: rgba(125,223,100,0.55); background: rgba(125,223,100,0.08); }
 .sheet-score-logo {
   height: 14px;
   object-fit: contain;
@@ -699,7 +706,7 @@ body {
   font-size: 0.8rem;
   font-weight: 700;
 }
-.sheet-score-value.rt { color: #ff6b6b; }
+.sheet-score-value.rt   { color: #ff6b6b; }
 .sheet-score-value.imdb { color: #f5c518; }
 .sheet-score-value.meta { color: #7ddf64; }
 

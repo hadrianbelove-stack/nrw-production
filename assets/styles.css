@@ -1362,21 +1362,21 @@ header h1 {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 3px 7px;
-    border-radius: 5px;
+    padding: 4px 9px;
+    border-radius: 6px;
     font-size: 0.85rem;
     font-weight: 600;
     text-decoration: none;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    transition: background 0.2s;
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    transition: all 0.2s;
 }
-.lightbox-scores .score-badge:hover { background: rgba(255,255,255,0.12); }
-.lightbox-scores .score-badge.rt { color: #ff6b6b; }
-.lightbox-scores .score-badge.mc { color: #7ddf64; }
-.lightbox-scores .score-badge.imdb { color: #f5c518; }
-.lightbox-scores .score-badge.lb { color: #00e054; }
-.lightbox-scores .score-badge.wiki { color: #fff; }
+.lightbox-scores .score-badge:hover { filter: brightness(1.15); }
+.lightbox-scores .score-badge.rt   { color: #ff6b6b; border-color: rgba(255,107,107,0.55); background: rgba(255,107,107,0.08); }
+.lightbox-scores .score-badge.mc   { color: #7ddf64; border-color: rgba(125,223,100,0.55); background: rgba(125,223,100,0.08); }
+.lightbox-scores .score-badge.imdb { color: #f5c518; border-color: rgba(245,197,24,0.55);  background: rgba(245,197,24,0.08); }
+.lightbox-scores .score-badge.lb   { color: #00e054; border-color: rgba(0,224,84,0.55);    background: rgba(0,224,84,0.08); }
+.lightbox-scores .score-badge.wiki { color: #bbb;    border-color: rgba(255,255,255,0.3);   background: rgba(255,255,255,0.05); }
 .lightbox-scores .score-badge .score-logo {
     height: 18px;
     width: auto;

@@ -199,7 +199,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         {(movie.rt_score || (movie.metacritic_score && movie.metacritic_score !== "0") || movie.imdb_rating) && (
           <View style={styles.scoreBadgeRow}>
             {movie.rt_score && (
-              <View style={styles.scoreBadge}>
+              <View style={[styles.scoreBadge, styles.scoreBadgeRt]}>
                 <View style={styles.scoreBadgeContent}>
                   <Image source={require('../assets/logos/rt.png')} style={styles.scoreBadgeLogo} />
                   <Text style={styles.rtScoreText}>{movie.rt_score}</Text>
@@ -207,7 +207,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
               </View>
             )}
             {movie.metacritic_score && movie.metacritic_score !== "0" && (
-              <View style={styles.scoreBadge}>
+              <View style={[styles.scoreBadge, styles.scoreBadgeMc]}>
                 <View style={styles.scoreBadgeContent}>
                   <Image source={require('../assets/logos/metacritic.png')} style={[styles.scoreBadgeLogo, { tintColor: '#7ddf64' }]} />
                   <Text style={styles.mcScoreText}>{movie.metacritic_score}</Text>
@@ -215,7 +215,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
               </View>
             )}
             {movie.imdb_rating && (
-              <View style={styles.scoreBadge}>
+              <View style={[styles.scoreBadge, styles.scoreBadgeImdb]}>
                 <View style={styles.scoreBadgeContent}>
                   <Image source={require('../assets/logos/imdb.png')} style={styles.scoreBadgeLogo} />
                   <Text style={styles.imdbScoreText}>{movie.imdb_rating}</Text>
@@ -376,9 +376,12 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 6,
     backgroundColor: 'rgba(0,0,0,0.7)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
+  scoreBadgeRt:   { borderColor: 'rgba(255,107,107,0.55)' },
+  scoreBadgeMc:   { borderColor: 'rgba(125,223,100,0.55)' },
+  scoreBadgeImdb: { borderColor: 'rgba(245,197,24,0.55)' },
   scoreBadgeContent: {
     flexDirection: 'row',
     alignItems: 'center',
