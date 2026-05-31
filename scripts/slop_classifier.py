@@ -230,7 +230,7 @@ def main():
             counts['weak'] += 1
 
     with open('data.json', 'w') as f:
-        json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
     total = counts['slop'] + counts['not_slop']
     print(f"Classified {total} films")
