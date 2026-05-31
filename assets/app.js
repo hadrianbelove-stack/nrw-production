@@ -617,7 +617,7 @@ const NRW = {
                     svcClass = 'other';
                 }
 
-                const textColor = svcClass === 'hulu' ? 'black' : 'white';
+                const textColor = ['hulu', 'prime', 'pluto'].includes(svcClass) ? 'black' : 'white';
                 return {
                     html: `<div class="streaming-frame-header" style="color:${textColor}">
                         <div class="streaming-frame-name">${displayName}</div>

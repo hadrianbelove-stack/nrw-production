@@ -324,9 +324,7 @@ const MovieCard = forwardRef(({
           {streamingBadge && (
             <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }, streamingBadge.subtext && { flexDirection: 'row', gap: 8 }]}>
               <Text style={styles.streamingBadgeText}>{streamingBadge.name}</Text>
-              {streamingBadge.subtext && (
-                <Text style={styles.streamingBadgeSubtext}>{streamingBadge.subtext}</Text>
-              )}
+              <Text style={styles.streamingBadgeSubtext}>{streamingBadge.subtext || 'NOW STREAMING'}</Text>
             </View>
           )}
 

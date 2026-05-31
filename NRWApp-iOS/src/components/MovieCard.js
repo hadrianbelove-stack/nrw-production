@@ -150,6 +150,9 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
             <Text style={[styles.streamingBarText, streamingBadge.textColor && {color: streamingBadge.textColor}]}>
               {streamingBadge.name}
             </Text>
+            <Text style={[styles.streamingBarSubtext, streamingBadge.textColor && {color: streamingBadge.textColor}]}>
+              NOW STREAMING
+            </Text>
           </View>
         )}
 
@@ -307,6 +310,13 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '700',
     letterSpacing: 0.8,
+  },
+  streamingBarSubtext: {
+    color: '#fff',
+    fontSize: 7,
+    fontWeight: '500',
+    letterSpacing: 1,
+    opacity: 0.75,
   },
   preOrderBadge: {
     position: 'absolute',
