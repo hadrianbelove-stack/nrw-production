@@ -47,7 +47,7 @@ query = '$QUERY'.lower()
 for i, m in enumerate(d['movies']):
     if query in m.get('title','').lower() or str(m.get('id','')) == query or str(m.get('tmdb_id','')) == query:
         print(f'{m[\"title\"]} (ID: {m[\"id\"]})')
-        print(f'  Synopsis: {m.get(\"synopsis\",\"\")[:80]}...')
+        print(f'  Capsule: {m.get(\"capsule\",\"\")[:80]}...' if m.get('capsule') else f'  Synopsis (TMDB): {m.get(\"synopsis\",\"\")[:80]}...')
         print(f'  Director: {m.get(\"crew\",{}).get(\"director\",\"?\")}  Country: {m.get(\"country\",\"?\")}')
         print(f'  Enrichment: {m.get(\"_enrichment_status\",\"?\")}')
         print(f'  Watch links: {[(v[\"service\"]) for v in m.get(\"watch_links\",{}).get(\"vod\",[])]}')

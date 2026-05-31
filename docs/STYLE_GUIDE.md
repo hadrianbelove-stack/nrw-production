@@ -108,7 +108,11 @@ Use system fonts. No custom web fonts.
 
 ## Synopsis / Capsule Text Formatting
 
-Movie `synopsis` text in `data.json` may contain a tiny markdown subset:
+Two distinct fields in `data.json` — displayed text prefers `capsule`, falls back to `synopsis`:
+- **`capsule`** — your hand-written editorial text (set by `/capsule`, never overwritten by the pipeline)
+- **`synopsis`** — raw TMDB plot text (regenerated daily by the pipeline; treat as read-only)
+
+Both fields may contain a tiny markdown subset:
 
 | Marker | Meaning | Example |
 |--------|---------|---------|
@@ -129,7 +133,7 @@ Renderers — all must match the spec above:
 | iOS / tvOS | `renderMarkdownSpans()` in `src/utils/markdown.js` (one identical copy per app — keep in sync) |
 | Android TV | `appendMarkdown()` in `ui/detail/DetailScreen.kt` |
 | Roku | `MultiStyleLabel` + `MarkdownToMultiStyle()` in `components/screens/DetailScreen.brs` (italic uses bundled `fonts/Italic.ttf`) |
-| Newsletter | n/a — does not display synopsis |
+| Newsletter | n/a — does not display capsule/synopsis |
 
 ---
 

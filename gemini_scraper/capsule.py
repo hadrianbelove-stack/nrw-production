@@ -1178,11 +1178,11 @@ FACTOID PRIMER:"""
         except Exception as e:
             logger.error(f"Failed to save approved capsule: {e}")
 
-        # 2. Update data.json synopsis field (goes live on site)
+        # 2. Update data.json capsule field (goes live on site; synopsis stays as TMDB fallback)
         self._publish_to_data_json(title, year, capsule_text)
 
     def _publish_to_data_json(self, title: str, year: int, capsule_text: str):
-        """Write approved capsule into data.json's synopsis field."""
+        """Write approved capsule into data.json's capsule field (not synopsis — that's the TMDB fallback)."""
         data_path = 'data.json'
         try:
             with open(data_path, 'r') as f:
@@ -1194,7 +1194,7 @@ FACTOID PRIMER:"""
             for m in movies:
                 if (m.get('title', '').lower() == title.lower() and
                         m.get('year') == year):
-                    m['synopsis'] = capsule_text
+                    m['capsule'] = capsule_text
                     updated = True
                     break
 

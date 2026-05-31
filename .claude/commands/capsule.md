@@ -109,7 +109,7 @@ cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/wri
 
 This does TWO things automatically:
 - Adds to `cache/approved_capsules.json` (training bank — improves future generations)
-- Updates `data.json` synopsis field (goes live on site)
+- Updates `data.json` **capsule** field (goes live on site — NOT synopsis, which is the TMDB fallback text and gets overwritten by the daily pipeline)
 
 3. Write cast wiki links for each cast member from SUGGESTED LINKS that has a Wikipedia URL:
 

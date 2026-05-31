@@ -42,8 +42,8 @@ quote-wipe landmine.
 | You want to… | Use |
 |---|---|
 | Add/edit **pull quotes** | `/curate` (pull-quotes stage) — keeps the cache in sync |
-| Write/rewrite a **capsule** (synopsis) | `/capsule` |
-| Fix a **trailer, poster, synopsis, links, TMDB ID**, or any field | `/correct`, or `scripts/edit_movie.py` |
+| Write/rewrite a **capsule** (editorial text — stored in `capsule` field, shown instead of TMDB synopsis) | `/capsule` |
+| Fix a **trailer, poster, TMDB synopsis, links, TMDB ID**, or any field | `/correct`, or `scripts/edit_movie.py` |
 | **Add / remove** a movie | `/add-movie` / `/remove` |
 | Re-enrich **one** movie | `generate_data.py --enrich-id <id>` (single record) |
 | Re-enrich a **fresh** batch (the daily job) | let CI run, or `/daily-update` |

@@ -387,7 +387,7 @@ const NRW = {
                 const nq = norm(query);
                 const title = norm(movie.title || '');
                 const director = norm(movie.crew?.director || '');
-                const synopsis = norm(movie.synopsis || '');
+                const synopsis = norm(movie.capsule || movie.synopsis || '');
                 const genres = norm((movie.genres || []).join(' '));
                 const country = norm(movie.country || '');
                 const year = String(movie.year || '');
@@ -1271,7 +1271,7 @@ const NRW = {
 
         // Synopsis text (renders **bold**/*italic* markdown)
         const synopsisEl = document.getElementById('lightbox-synopsis');
-        synopsisEl.innerHTML = NRW._linkBoldTitles(NRWConfig.renderMarkdown(movie.synopsis || 'Synopsis coming soon.'));
+        synopsisEl.innerHTML = NRW._linkBoldTitles(NRWConfig.renderMarkdown(movie.capsule || movie.synopsis || 'Synopsis coming soon.'));
 
         // Screening callout appended to synopsis
         if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {

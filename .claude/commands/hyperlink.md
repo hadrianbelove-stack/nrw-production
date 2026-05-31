@@ -18,7 +18,7 @@ Parse $ARGUMENTS to extract:
 
 If no movie title was given, ask: "Which movie's capsule should I add this link to?"
 
-Find the movie in data.json. When comparing IDs or titles, always use case-insensitive string comparison. Show the current synopsis and cast list so the user can see the context.
+Find the movie in data.json. When comparing IDs or titles, always use case-insensitive string comparison. Show the current displayed text (the `capsule` field if non-empty, otherwise `synopsis`) and the cast list so the user can see the context.
 
 ---
 
@@ -36,7 +36,7 @@ If the URL contains parentheses (e.g. `_(film)`, `_(painter)`), encode them as `
 
 Check two things independently:
 
-**A. Capsule text** — does the entity name appear in the synopsis?
+**A. Capsule text** — does the entity name appear in the displayed text (`capsule` if present, else `synopsis`)?
 - If yes: propose wrapping it as `**[Name](url)**` (if bold) or `[Name](url)` (if plain text)
 - If no: note this; the capsule text won't change
 
@@ -70,14 +70,15 @@ title, entity, url, is_cast = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 data = json.load(open('data.json'))
 for m in data['movies']:
     if m.get('title', '').lower() == title.lower():
-        # Update capsule text if entity appears there
-        syn = m.get('synopsis', '')
+        # Edit whichever field is displayed: capsule if present, else synopsis
+        field = 'capsule' if m.get('capsule') else 'synopsis'
+        syn = m.get(field, '')
         import re
         # Replace bold occurrence
         syn = re.sub(r'\*\*(' + re.escape(entity) + r')\*\*', r'**[' + entity + r'](' + url + r')**', syn)
         # Replace plain text occurrence (not already linked)
         syn = re.sub(r'(?<!\[)(?<!\*\*)(' + re.escape(entity) + r')(?!\]\()(?!\*\*)', r'[' + entity + r'](' + url + r')', syn)
-        m['synopsis'] = syn
+        m[field] = syn
         # Update cast_wiki if cast member
         if is_cast:
             m.setdefault('links', {})
@@ -93,12 +94,12 @@ print('done')
 cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Hyperlink: [MOVIE TITLE] — [ENTITY] APPROVED: DELETE" && git push origin main
 ```
 
-Report: show the final synopsis, confirm the push succeeded, and note if cast_wiki was also updated.
+Report: show the final capsule text (whichever field was edited), confirm the push succeeded, and note if cast_wiki was also updated.
 
 ---
 
 ## Important Notes
 
 - Wikipedia URLs with parentheses: encode `(` as `%28` and `)` as `%29`
-- If the entity appears multiple times in the synopsis, only the first occurrence is linked (the regex stops after one match per pass)
+- If the entity appears multiple times in the capsule text, only the first occurrence is linked (the regex stops after one match per pass)
 - This is an AUTHORIZED override of the CLAUDE.md data rule — the user is explicitly requesting data.json modification via this command.
