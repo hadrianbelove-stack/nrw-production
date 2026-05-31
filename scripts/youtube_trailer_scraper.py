@@ -163,13 +163,14 @@ class YouTubeTrailerScraper:
                 pass
             self.playwright = None
 
-    def find_trailer(self, title, year):
+    def find_trailer(self, title, year, director=None):
         """
         Find direct YouTube trailer link for a movie
 
         Args:
             title: Movie title
             year: Movie year
+            director: Optional director name — appended to search for short/ambiguous titles
 
         Returns:
             Direct YouTube watch URL or None if not found
@@ -184,10 +185,16 @@ class YouTubeTrailerScraper:
         # Initialize browser if needed
         self._init_browser()
 
-        # Try "official trailer" first, then "preview" as fallback
+        # For short titles (≤2 significant words), add director to disambiguate.
+        # "Immortals", "Eva", "Mongrels" are common words; director makes the query specific.
+        _stop = YouTubeTrailerScraper.STOP_WORDS | {'s'}
+        _sig = [w for w in re.sub(r'[^\w\s]', ' ', title.lower()).split()
+                if w not in _stop and not w.isdigit()]
+        _dir = f" {director}" if director and len(_sig) <= 2 else ""
+
         search_terms = [
-            f"{title} {year} official trailer",
-            f"{title} {year} official preview",
+            f"{title}{_dir} {year} official trailer",
+            f"{title}{_dir} {year} official preview",
         ]
 
         for search_query in search_terms:
@@ -253,7 +260,7 @@ class YouTubeTrailerScraper:
 
         return None
 
-    def find_trailer_broad(self, title, year):
+    def find_trailer_broad(self, title, year, director=None):
         """
         Broader trailer search — tries 'trailer' then 'preview' as search terms,
         and filters results to only accept videos with 'trailer' or 'preview' in
@@ -263,6 +270,7 @@ class YouTubeTrailerScraper:
         Args:
             title: Movie title
             year: Movie year
+            director: Optional director name — appended to search for short/ambiguous titles
 
         Returns:
             Direct YouTube watch URL or None if not found
@@ -276,9 +284,14 @@ class YouTubeTrailerScraper:
         # Initialize browser if needed
         self._init_browser()
 
+        _stop = YouTubeTrailerScraper.STOP_WORDS | {'s'}
+        _sig = [w for w in re.sub(r'[^\w\s]', ' ', title.lower()).split()
+                if w not in _stop and not w.isdigit()]
+        _dir = f" {director}" if director and len(_sig) <= 2 else ""
+
         search_terms = [
-            f"{title} {year} trailer",
-            f"{title} {year} preview",
+            f"{title}{_dir} {year} trailer",
+            f"{title}{_dir} {year} preview",
         ]
 
         for search_query in search_terms:

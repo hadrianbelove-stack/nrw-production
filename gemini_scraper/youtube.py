@@ -354,7 +354,7 @@ class HybridYouTubeFinder:
             playwright = self._get_playwright_finder()
             if playwright:
                 try:
-                    result = playwright.find_trailer(title, str(year))
+                    result = playwright.find_trailer(title, str(year), director=director)
                     if result:
                         self.stats['playwright_resolved'] += 1
                         return result
