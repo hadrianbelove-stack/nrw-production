@@ -1145,9 +1145,12 @@ const NRW = {
     _updateLightboxHeader(movie) {
         document.getElementById('lightbox-title').textContent = movie.display_title || movie.title;
 
-        // Release date (with screening date range for virtual screenings)
+        // Date row: Country \u00b7 Genre \u00b7 Date
         const dateEl = document.getElementById('lightbox-date');
         if (dateEl) {
+            const parts = [];
+            if (movie.country) parts.push(NRW.lightboxCountry(movie.country) || movie.country);
+            if (movie.genres?.[0]) parts.push(movie.genres[0]);
             if (movie.digital_date) {
                 const [y, m, d] = movie.digital_date.split('-');
                 const dt = new Date(y, m - 1, d);
@@ -1161,10 +1164,9 @@ const NRW = {
                         dateText += '\u2013' + endDt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     }
                 }
-                dateEl.textContent = dateText;
-            } else {
-                dateEl.textContent = '';
+                parts.push(dateText);
             }
+            dateEl.textContent = parts.join(' \u00b7 ');
         }
 
         // Staff Pick badge
@@ -1267,17 +1269,6 @@ const NRW = {
             metaEl.appendChild(castName);
         }
 
-        // Line 3: Country • Year • Runtime • Distributor
-        const detailParts = [];
-        if (movie.country) detailParts.push(NRW.lightboxCountry(movie.country) || movie.country);
-        if (movie.year) detailParts.push(movie.year);
-        if (movie.runtime) detailParts.push(`${movie.runtime} min`);
-        if (movie.distributor || movie.studio) detailParts.push(movie.distributor || movie.studio);
-        if (detailParts.length) {
-            if (metaEl.childNodes.length) metaEl.appendChild(document.createElement('br'));
-            metaEl.appendChild(document.createTextNode(detailParts.join(' \u2022 ')));
-        }
-
         // Synopsis text (renders **bold**/*italic* markdown)
         const synopsisEl = document.getElementById('lightbox-synopsis');
         synopsisEl.innerHTML = NRW._linkBoldTitles(NRWConfig.renderMarkdown(movie.synopsis || 'Synopsis coming soon.'));
@@ -1292,6 +1283,22 @@ const NRW = {
                 ? ` Virtual screening available as part of the ${festName}. Ends ${NRW.formatShortDate(endDate)}.`
                 : ` Virtual screening available as part of the ${festName}.`;
             synopsisEl.appendChild(callout);
+        }
+
+
+        // Year • Runtime • Distributor — below synopsis
+        const runtimeEl = document.getElementById('lightbox-runtime');
+        if (runtimeEl) {
+            const runtimeParts = [];
+            if (movie.year) runtimeParts.push(movie.year);
+            if (movie.runtime) runtimeParts.push(`${movie.runtime} min`);
+            if (movie.distributor || movie.studio) runtimeParts.push(movie.distributor || movie.studio);
+            if (runtimeParts.length) {
+                runtimeEl.textContent = runtimeParts.join(' \u2022 ');
+                runtimeEl.style.display = '';
+            } else {
+                runtimeEl.style.display = 'none';
+            }
         }
 
         // Awards blurb (only if present)

@@ -1460,6 +1460,12 @@ header h1 {
 }
 .lightbox-synopsis a:hover { text-decoration-color: rgba(255,255,255,0.85); }
 
+.lightbox-runtime {
+    color: #666;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+}
+
 .lightbox-awards {
     font-size: 0.78rem;
     color: rgba(255,255,255,0.45);
