@@ -620,8 +620,8 @@ const NRW = {
                 const textColor = svcClass === 'hulu' ? 'black' : 'white';
                 return {
                     html: `<div class="streaming-frame-header" style="color:${textColor}">
-                        <div class="streaming-frame-super">NOW STREAMING</div>
                         <div class="streaming-frame-name">${displayName}</div>
+                        <div class="streaming-frame-super">NOW STREAMING</div>
                     </div>`,
                     isFrame: true,
                     svcClass

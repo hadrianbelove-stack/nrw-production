@@ -624,29 +624,29 @@ header h1 {
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     padding: 0 14px;
-    gap: 5px;
     position: relative;
     z-index: 2;
     background: inherit;
 }
 
-.streaming-frame-super {
-    font-size: 8px;
-    font-weight: 600;
-    letter-spacing: 1.8px;
-    text-transform: uppercase;
-    opacity: 0.85;
-    line-height: 1;
-}
-
 .streaming-frame-name {
     font-size: 15px;
     font-weight: 800;
-    letter-spacing: 1.2px;
+    letter-spacing: 1.4px;
     text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.streaming-frame-super {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.75;
     line-height: 1;
 }
 
