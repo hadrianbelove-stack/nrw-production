@@ -31,6 +31,8 @@ Priority order — first match wins:
 - Confidence matching prevents linking to the wrong movie (`min_confidence` in config)
 - Config: `justwatch_verification.enabled`, `justwatch_verification.min_confidence`
 
+**Channel offer filtering**: JustWatch returns separate offers for each platform a service is accessible through — e.g., "Shudder" (direct), "Shudder Amazon Channel" (via Amazon), "Shudder Apple TV Channel" (via Apple TV). NRW always prefers the direct service link and discards any offer whose name ends in " Amazon Channel" or " Apple TV Channel". This means Max links to max.com, Shudder to shudder.com, etc. Exception: **Hallmark+ and Wonder Project** have no direct JustWatch links and are acceptable through Amazon.
+
 ### Tier 5: VOD Scraper (backup)
 - Source: Playwright headless browser (`streaming_platform_scraper.py`)
 - Scrapes Amazon.com and Apple TV search pages to find deep links

@@ -359,8 +359,13 @@ class JustWatchClient:
             if 'youtube.com/results' in url:
                 continue
 
+            # Skip third-party channel offers hosted on Amazon or Apple TV — prefer direct service links
+            # e.g. "Shudder Amazon Channel", "HBO Max Amazon Channel", "AMC Plus Apple TV Channel"
+            service_lower = service.strip().lower()
+            if service_lower.endswith(' amazon channel') or service_lower.endswith(' apple tv channel'):
+                continue
+
             # Skip physical media offers (DVD/Blu-ray) — NRW is digital-only
-            service_lower = service.lower()
             if 'dvd' in service_lower or 'blu-ray' in service_lower:
                 self.logger.debug(f"Skipping physical media offer '{service}' for '{title}'")
                 continue
@@ -522,8 +527,12 @@ class JustWatchClient:
             if 'youtube.com/results' in url:
                 continue
 
+            # Skip third-party channel offers hosted on Amazon or Apple TV — prefer direct service links
+            service_lower = service.strip().lower()
+            if service_lower.endswith(' amazon channel') or service_lower.endswith(' apple tv channel'):
+                continue
+
             # Skip physical media offers (DVD/Blu-ray) — NRW is digital-only
-            service_lower = service.lower()
             if 'dvd' in service_lower or 'blu-ray' in service_lower:
                 self.logger.debug(f"Skipping physical media offer '{service}' for '{title}'")
                 continue
