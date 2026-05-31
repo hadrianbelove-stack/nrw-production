@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T00:20:18.635778",
+  "generated_at": "2026-05-31T00:24:19.763005",
   "count": 783,
   "movies": [
     {
@@ -29503,8 +29503,7 @@
       "genres": [
         "Drama",
         "Horror",
-        "Mystery",
-        "TV Movie"
+        "Mystery"
       ],
       "runtime": 61,
       "year": 2024,
@@ -29518,17 +29517,18 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Witte_Wieven_(film)",
-        "trailer": "https://www.youtube.com/watch?v=4N2JrbBopXU",
+        "trailer": "https://www.youtube.com/watch?v=ehuoCUr5BP4",
         "rt": "https://www.rottentomatoes.com/m/heresy",
         "imdb": "https://www.imdb.com/title/tt27524853/",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1219739.mp4",
-        "letterboxd": "https://letterboxd.com/film/heresy-2024"
+        "letterboxd": "https://letterboxd.com/film/heresy-2024",
+        "justwatch": "https://www.justwatch.com/us/movie/heresy"
       },
       "watch_links": {
         "streaming": [
           {
-            "service": "AMC+",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.2e8fdfdb-5565-49b5-b26e-63de71f99221"
+            "service": "Shudder",
+            "link": "https://watch.shudder.com/interstitial/943242"
           }
         ]
       },
@@ -29536,7 +29536,7 @@
       "_discovered_at": "2026-04-29T11:38:31.014394",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/uzceD8FvRaXMbP2MZ0p10UuNGV.jpg",
+      "poster": "https://image.tmdb.org/t/p/w500/gGStwXLjGe9WaodCCgeVwkDDwS3.jpg",
       "studio": "Make Way Film",
       "budget": 0,
       "country": "Netherlands",
@@ -29553,11 +29553,11 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "imdb_rating": "6.7",
-      "_trailer_source": "tmdb_official",
+      "_enrichment_attempts": 2,
+      "imdb_rating": "6.3",
+      "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
-      "_needs_review": false,
+      "_needs_review": true,
       "categories": {
         "tier": null,
         "is_studio": false,
@@ -29578,7 +29578,16 @@
       "reissue_label": null,
       "is_slop": false,
       "_slop_reason": "score:2(no_rt)",
-      "_slop_confidence": "weak"
+      "_slop_confidence": "weak",
+      "_last_enrichment_attempt": "2026-05-31",
+      "_quality_warnings": [
+        "Service 'Shudder' not in TMDB providers for this title (TMDB has: ['amc+ amazon channel'])"
+      ],
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "metacritic_score"
+      ]
     },
     {
       "id": "1309735",
@@ -58786,13 +58795,42 @@
         "imdb": "https://www.imdb.com/title/tt37676099/",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1511505.mp4",
         "metacritic": "https://www.metacritic.com/movie/1000-women-in-horror/",
-        "letterboxd": "https://letterboxd.com/film/1000-women-in-horror"
+        "letterboxd": "https://letterboxd.com/film/1000-women-in-horror",
+        "justwatch": "https://www.justwatch.com/us/movie/1000-women-in-horror",
+        "cast_wiki": {
+          "Alexandra Heller-Nicholas": "https://en.wikipedia.org/wiki/Alexandra_Heller-Nicholas",
+          "Roxanne Benjamin": "https://en.wikipedia.org/wiki/Roxanne_Benjamin",
+          "Akela Cooper": "https://en.wikipedia.org/wiki/Akela_Cooper"
+        }
       },
       "watch_links": {
         "streaming": [
           {
-            "service": "Shudder Amazon Channel",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.61f355ee-0020-4656-894a-0c4e625cbdbd"
+            "service": "Shudder",
+            "link": "https://tv.apple.com/us"
+          }
+        ],
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.61f355ee-0020-4656-894a-0c4e625cbdbd&tag=nrw04-20",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/1000-women-in-horror/umc.cmc.22siyvv7g6tri0zzuoebpa4qb?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1884980471",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/1000-Women-in-Horror/4919812",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
           }
         ]
       },
@@ -58810,7 +58848,10 @@
         "director": "Donna Davies",
         "cast": [
           "Alexandra Heller-Nicholas",
-          "Roxanne Benjamin"
+          "Roxanne Benjamin",
+          "Akela Cooper",
+          "Mattie Do",
+          "Brea Grant"
         ]
       },
       "_discovery_source": "provider_availability_check",
@@ -58838,7 +58879,19 @@
       "reissue_label": null,
       "is_slop": false,
       "_slop_reason": "score:2(no_wiki)",
-      "_slop_confidence": "weak"
+      "_slop_confidence": "weak",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-31",
+      "_trailer_source": "tmdb_official",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Watch link domain mismatch: 'Shudder' link is 'https://tv.apple.com/us' (expected domains: ['shudder.com'])",
+        "Service 'Fandango' not in TMDB providers for this title (TMDB has: ['shudder apple tv channel', 'shudder amazon channel', 'amc plus apple tv channel ', 'amc+ amazon channel', 'sundance now'])"
+      ],
+      "status": "available",
+      "_enrichment_gaps": [
+        "wikipedia"
+      ]
     },
     {
       "id": "999136",
@@ -63752,13 +63805,35 @@
         "imdb": "https://www.imdb.com/title/tt37538172/",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1510745.mp4",
         "metacritic": "https://www.metacritic.com/movie/bodycam/",
-        "letterboxd": "https://letterboxd.com/film/bodycam-2025"
+        "letterboxd": "https://letterboxd.com/film/bodycam-2025",
+        "justwatch": "https://www.justwatch.com/us/movie/bodycam",
+        "wikipedia": "https://en.wikipedia.org/wiki/Bodycam_(film)",
+        "cast_wiki": {
+          "Sean Rogerson": "https://en.wikipedia.org/wiki/Sean_Rogerson",
+          "Catherine Lough Haggquist": "https://en.wikipedia.org/wiki/Catherine_Lough_Haggquist"
+        }
       },
       "watch_links": {
         "streaming": [
           {
-            "service": "Shudder Amazon Channel",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.bfe7fb9e-cce9-4e6b-a11c-ada1cf6d9b5b"
+            "service": "Shudder",
+            "link": "https://watch.shudder.com/interstitial/920095"
+          }
+        ],
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.bfe7fb9e-cce9-4e6b-a11c-ada1cf6d9b5b&tag=nrw04-20",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Bodycam/4919818",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
           }
         ]
       },
@@ -63776,7 +63851,10 @@
         "director": "Brandon Christensen",
         "cast": [
           "Jaime M. Callica",
-          "Sean Rogerson"
+          "Sean Rogerson",
+          "Catherine Lough Haggquist",
+          "Angel Prater",
+          "Keegan Connor Tracy"
         ]
       },
       "_discovery_source": "provider_availability_check",
@@ -63804,7 +63882,18 @@
       "reissue_label": null,
       "is_slop": false,
       "_slop_reason": "score:2(no_wiki)",
-      "_slop_confidence": "weak"
+      "_slop_confidence": "weak",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-31",
+      "_trailer_source": "tmdb_official",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Fandango' not in TMDB providers for this title (TMDB has: ['shudder amazon channel', 'amc plus apple tv channel ', 'shudder apple tv channel', 'amc+ amazon channel'])"
+      ],
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score"
+      ]
     },
     {
       "id": "1636891",

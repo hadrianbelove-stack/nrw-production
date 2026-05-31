@@ -29,6 +29,28 @@ def validate_youtube_url_live(url: str) -> bool:
         return True  # If check fails, don't block — assume valid
 
 
+def get_youtube_oembed_title(url: str) -> Optional[str]:
+    """Fetch the video title from YouTube oEmbed. Returns None on failure."""
+    try:
+        import requests
+        oembed = f"https://www.youtube.com/oembed?url={url}&format=json"
+        resp = requests.get(oembed, timeout=5)
+        if resp.status_code == 200:
+            return resp.json().get('title', '')
+        return None
+    except Exception:
+        return None
+
+
+# Words that cannot appear in a legitimate film trailer title.
+# "Concept trailer" = fan-made. "Review" = not a trailer. "PS5"/"Xbox" = video game.
+_WRONG_SIGNALS = {
+    'concept', 'fan', 'review', 'reviews', 'ps5', 'ps4', 'xbox', 'nintendo',
+    'gameplay', 'walkthrough', 'dlc', 'unboxing', 'reaction', 'explained',
+    'analysis', 'breakdown',
+}
+
+
 class GeminiYouTubeFinder(GeminiFinderBase):
     """
     Finds YouTube trailer URLs using Gemini API with Google Search grounding.
@@ -194,6 +216,19 @@ YouTube URL:"""
                     self.stats['invalid_urls'] += 1
                     self.stats['gemini_failures'] += 1
                     return None
+                # Content check — reject non-movie content (game trailers, reviews, fan concepts)
+                video_title = get_youtube_oembed_title(url)
+                if video_title:
+                    vt_words = set(re.sub(r'[^\w\s]', ' ', video_title.lower()).split())
+                    hits = vt_words & _WRONG_SIGNALS
+                    if hits:
+                        logger.warning(
+                            f"Gemini returned non-movie content for {title} ({year}): "
+                            f"'{video_title}' (signals: {hits})"
+                        )
+                        self.stats['invalid_urls'] += 1
+                        self.stats['gemini_failures'] += 1
+                        return None
                 logger.info(f"Found trailer for {title} ({year}): {url}")
                 self.cache[cache_key] = url
                 self._save_cache()
