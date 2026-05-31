@@ -216,8 +216,10 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
 
             raw_url = self._retry_with_backoff(_fetch)
             if raw_url:
-                # Normalise: strip /reviews suffix, validate slug format
-                base_url = raw_url.rstrip('/').replace('/reviews', '')
+                # Normalise: strip trailing /reviews suffix only (not mid-slug occurrences)
+                base_url = raw_url.rstrip('/')
+                if base_url.endswith('/reviews'):
+                    base_url = base_url[:-len('/reviews')]
                 if re.match(r'https?://(www\.)?rottentomatoes\.com/m/[a-zA-Z0-9_-]+$', base_url):
                     logger.info(f"Gemini found RT URL for {title} ({year}): {base_url}")
                     return base_url
