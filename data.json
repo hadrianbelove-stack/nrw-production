@@ -6098,7 +6098,7 @@
       "title": "Smothered",
       "digital_date": "2026-05-29",
       "bootstrap_date": false,
-      "manually_corrected": false,
+      "manually_corrected": true,
       "synopsis": "This Indonesian psychological thriller reinterprets the Minangkabau folktale of Malin Kundang, following an artist with amnesia who suspects the woman claiming to be his mother is not who she says she is. Produced independently, and acquired by Shudder.",
       "genres": [
         "Drama",
@@ -6108,7 +6108,11 @@
       "runtime": 99,
       "year": 2025,
       "rt_score": null,
-      "providers": {},
+      "providers": {
+        "streaming": {
+          "name": "Shudder"
+        }
+      },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Smothered_(2025_film)",
         "trailer": "https://www.youtube.com/watch?v=Vq4viC-YAXg",
@@ -6121,7 +6125,7 @@
       "watch_links": {
         "streaming": [
           {
-            "service": "AMC+",
+            "service": "Shudder",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.1a79884e-4749-4d04-8942-246f507c9a21"
           }
         ]
