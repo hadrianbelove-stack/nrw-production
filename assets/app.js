@@ -1285,7 +1285,6 @@ const NRW = {
             synopsisEl.appendChild(callout);
         }
 
-
         // Year • Runtime • Distributor — below synopsis
         const runtimeEl = document.getElementById('lightbox-runtime');
         if (runtimeEl) {

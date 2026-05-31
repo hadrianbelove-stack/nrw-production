@@ -211,24 +211,3 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
     return false
 End Function
 
-' ============================================================================
-' Get Filter ID at Index
-' ============================================================================
-Function GetFilterIdAtIndex(index as Integer) as String
-    if index >= 0 AND index < m.filterIds.Count()
-        return m.filterIds[index]
-    end if
-    return m.filterIds[0]
-End Function
-
-' ============================================================================
-' Get Index for Filter ID
-' ============================================================================
-Function GetIndexForFilterId(filterId as String) as Integer
-    for i = 0 to m.filterIds.Count() - 1
-        if m.filterIds[i] = filterId
-            return i
-        end if
-    end for
-    return 0
-End Function

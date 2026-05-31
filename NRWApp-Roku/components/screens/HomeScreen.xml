@@ -8,10 +8,6 @@
   <interface>
     <!-- Deep link support -->
     <field id="deepLinkMovieId" type="string" onChange="onDeepLink" />
-
-    <!-- Current state -->
-    <field id="currentFilter" type="string" value="" />
-    <field id="searchQuery" type="string" value="" />
   </interface>
 
   <script type="text/brightscript" uri="HomeScreen.brs" />

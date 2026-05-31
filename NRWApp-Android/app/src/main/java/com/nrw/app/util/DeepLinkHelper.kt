@@ -225,27 +225,6 @@ object DeepLinkHelper {
     }
 
     /**
-     * Open an app by package name
-     */
-    private fun openApp(context: Context, packageName: String): Boolean {
-        return try {
-            val intent = context.packageManager.getLeanbackLaunchIntentForPackage(packageName)
-                ?: context.packageManager.getLaunchIntentForPackage(packageName)
-
-            if (intent != null) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-                true
-            } else {
-                false
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error opening app: $packageName", e)
-            false
-        }
-    }
-
-    /**
      * Check if a package is installed
      */
     private fun isPackageInstalled(context: Context, packageName: String): Boolean {

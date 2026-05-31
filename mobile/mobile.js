@@ -535,7 +535,6 @@ const NRWMobile = {
         const info = document.createElement('div');
         info.className = 'grid-item-info';
 
-        const title = document.createElement('div');
         const director = movie.crew?.director || movie.director || '';
         const dirWikiUrl = movie.links?.director_wiki;
         const genre = movie.genres?.[0] || '';

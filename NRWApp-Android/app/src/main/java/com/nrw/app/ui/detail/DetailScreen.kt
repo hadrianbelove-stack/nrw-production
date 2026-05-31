@@ -71,9 +71,7 @@ import com.nrw.app.data.isStaffPick
 import com.nrw.app.ui.components.WatchButton
 import com.nrw.app.ui.components.getServiceColor
 import com.nrw.app.ui.theme.Background
-import com.nrw.app.ui.theme.Green
 import com.nrw.app.ui.theme.Primary
-import com.nrw.app.ui.theme.Red
 import com.nrw.app.ui.theme.RestorationGold
 import com.nrw.app.ui.theme.StaffPickRed
 import com.nrw.app.ui.theme.TextMuted

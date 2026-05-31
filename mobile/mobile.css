@@ -295,9 +295,6 @@ body {
   overflow: hidden;
   padding: 0 2px;
 }
-.grid-item-title {
-  display: none;
-}
 .grid-item-meta {
   font-size: 0.6rem;
   font-weight: 700;
@@ -628,12 +625,6 @@ body {
   font-weight: 700;
   margin-bottom: 3px;
   line-height: 1.25;
-}
-.sheet-date {
-  font-size: 0.75rem;
-  color: var(--accent);
-  font-weight: 500;
-  margin-bottom: 4px;
 }
 .sheet-crew {
   font-size: 0.75rem;

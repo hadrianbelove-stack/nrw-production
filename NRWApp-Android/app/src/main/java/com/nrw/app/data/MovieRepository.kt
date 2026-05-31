@@ -143,41 +143,6 @@ class MovieRepository(private val context: Context) {
     }
 
     /**
-     * Filter movies by category
-     */
-    fun filterMovies(movies: List<Movie>, filter: FilterCategory): List<Movie> {
-        return when (filter) {
-            FilterCategory.INDIE -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && (it.categories?.isIndie == true || it.categories?.tier == "indie")
-            }
-            FilterCategory.STAFF_PICKS -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && it.isStaffPick()
-            }
-            FilterCategory.FOREIGN -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && it.isForeign()
-            }
-            FilterCategory.RESTORATIONS -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isRestoration == true
-            }
-            FilterCategory.DOCUMENTARY -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && it.categories?.isDocumentary == true
-            }
-            FilterCategory.HORROR -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && (it.genres?.any { g -> g.lowercase().contains("horror") } == true)
-            }
-            FilterCategory.ACTION -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && (it.genres?.any { g -> g.lowercase().contains("action") } == true)
-            }
-            FilterCategory.COMEDY -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && (it.genres?.any { g -> g.lowercase().contains("comedy") } == true)
-            }
-            FilterCategory.FAMILY -> movies.filter {
-                it.hidden != true && it.enrichmentStatus != "reverted" && (it.genres?.any { g -> g.lowercase().contains("family") } == true)
-            }
-        }
-    }
-
-    /**
      * Filter movies by multiple categories (OR logic - cumulative)
      */
     fun filterMoviesMulti(movies: List<Movie>, activeFilters: Set<FilterCategory>, searchQuery: String = ""): List<Movie> {

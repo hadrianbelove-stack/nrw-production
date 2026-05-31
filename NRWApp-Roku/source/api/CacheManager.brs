@@ -125,58 +125,6 @@ Sub ClearAllCache()
     sec.Flush()
 End Sub
 
-' ============================================================================
-' Check if Cache is Valid
-' ============================================================================
-Function IsCacheValid(key as String) as Boolean
-    sec = CreateObject("roRegistrySection", CACHE_SECTION)
-
-    timestampKey = key + "_timestamp"
-    if NOT sec.Exists(timestampKey)
-        return false
-    end if
-
-    timestamp = sec.Read(timestampKey).ToInt()
-    now = CreateObject("roDateTime").AsSeconds()
-
-    return (now - timestamp) <= CACHE_DURATION_SECONDS
-End Function
-
-' ============================================================================
-' Get Cache Age (in seconds)
-' ============================================================================
-Function GetCacheAge(key as String) as Integer
-    sec = CreateObject("roRegistrySection", CACHE_SECTION)
-
-    timestampKey = key + "_timestamp"
-    if NOT sec.Exists(timestampKey)
-        return -1
-    end if
-
-    timestamp = sec.Read(timestampKey).ToInt()
-    now = CreateObject("roDateTime").AsSeconds()
-
-    return now - timestamp
-End Function
-
-' ============================================================================
-' Save User Preferences (no expiry)
-' ============================================================================
-Sub SavePreference(key as String, value as String)
-    sec = CreateObject("roRegistrySection", "nrw_prefs")
-    sec.Write(key, value)
-    sec.Flush()
-End Sub
-
-Function GetPreference(key as String, defaultValue as String) as String
-    sec = CreateObject("roRegistrySection", "nrw_prefs")
-
-    if sec.Exists(key)
-        return sec.Read(key)
-    end if
-
-    return defaultValue
-End Function
 
 ' ============================================================================
 ' Focus Memory (for restoring position after navigation)

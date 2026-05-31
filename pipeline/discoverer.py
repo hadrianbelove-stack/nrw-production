@@ -199,7 +199,7 @@ class ProviderDiscoverer:
 
         # Sort by premiere_date/digital_date (most recent first) for smart prioritization
         def get_sort_key(item):
-            movie_id, movie = item
+            movie = item[1]
             date_str = movie.get('digital_date') or movie.get('premiere_date')
             if date_str:
                 try:

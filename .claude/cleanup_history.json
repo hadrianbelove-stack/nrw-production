@@ -48,5 +48,52 @@
     "items_found": 9,
     "items_fixed": 9,
     "notes": "Deleted MovieShelf.tvos.js (304-line orphaned component). Removed 7 unused imports + dead InfoButton export (~94 lines) and its 3 orphaned styles. All 6 touched JS files pass node --check. 38 other 'dead export' candidates left intact \u2014 they are live functions used internally in service/utility modules (sentry/analytics/focus/cache/links), i.e. over-exported API surface, not dead code. Android/Roku not scanned."
+  },
+  {
+    "timestamp": "2026-05-31T00:23:27",
+    "target": "last several commits (enricher.py, generator.py, capsule.py, slop_classifier.py, wikipedia_scraper_playwright.py, app.js, styles.css, index.html)",
+    "files_scanned": [
+      "pipeline/enricher.py",
+      "pipeline/generator.py",
+      "gemini_scraper/capsule.py",
+      "scripts/slop_classifier.py",
+      "wikipedia_scraper_playwright.py",
+      "assets/app.js",
+      "assets/styles.css",
+      "index.html"
+    ],
+    "items_found": 3,
+    "items_fixed": 3,
+    "notes": "Removed dead MAX_APPROVED_EXAMPLES constant (9999 = all, slice was a no-op). Removed double blank line in app.js lightbox. Updated stale CSS comment on .streaming-badge (was streaming service, now pre-order only)."
+  },
+  {
+    "timestamp": "2026-05-31T00:46:30",
+    "target": "generator.py + Android TV app + Roku app",
+    "files_scanned": [
+      "pipeline/generator.py",
+      "NRWApp-Android/**/*.kt (16 files)",
+      "NRWApp-Roku/**/*.brs + *.xml (13 files)"
+    ],
+    "items_found": 27,
+    "items_fixed": 27,
+    "notes": "generator.py: 2 unused except-as-e. Android: 1 unused import FilterChips, 2 unused imports DetailScreen, 2 dead Color constants (FocusRing/AppleGray), 1 dead private fn openApp(), 1 dead fn filterMovies(), 1 dead groupedMovies state field+computation. Roku: 4 dead Colors.brs fns (HexToRokuColor/GetTypography/GetSpacing/GetFocusStyles), 2 dead MovieUtils fns (FilterMovies/SearchMovies), 2 dead NRWApi fns (GetStaffPickIds/GetPlaylistUrl), 4 dead CacheManager fns (IsCacheValid/GetCacheAge/SavePreference/GetPreference), 1 dead DeepLinkUtils fn (ShowInstallChannelDialog), 2 dead FilterBar fns (GetFilterIdAtIndex/GetIndexForFilterId), 2 dead HomeScreen.xml fields (currentFilter/searchQuery)."
+  },
+  {
+    "timestamp": "2026-05-31T12:17:57",
+    "target": "mobile web + pipeline core + scrapers",
+    "files_scanned": [
+      "mobile/mobile.js",
+      "mobile/mobile.css",
+      "mobile/index.html",
+      "pipeline/discoverer.py",
+      "pipeline/enricher.py",
+      "wikipedia_scraper_playwright.py",
+      "gemini_scraper/base.py",
+      "gemini_scraper/capsule.py",
+      "gemini_scraper/vod_date.py"
+    ],
+    "items_found": 11,
+    "items_fixed": 11,
+    "notes": "mobile: orphaned title div, 2 dead CSS classes (.grid-item-title, .sheet-date). pipeline: dead movie_id unpack in discoverer, bare except->specific in enricher. wiki scraper: except ImportError as e, dead last_error var. gemini base: dead _error_log attr+appends. capsule: dead recent alias, 2 dead stat keys (amazon_synopsis_fetched, imdb_trivia_fetched). vod_date: dead preorder_detected stat."
   }
 ]

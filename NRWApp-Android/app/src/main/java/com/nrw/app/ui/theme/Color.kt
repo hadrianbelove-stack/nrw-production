@@ -15,13 +15,11 @@ val TextSecondary = Color(0xFFBBBBBB)
 val TextMuted = Color(0xFF888888)
 val Green = Color(0xFF34C759)  // Apple system green (RT Fresh)
 val Red = Color(0xFFFF3B30)    // Apple system red (RT Rotten)
-val FocusRing = Color(0xFF00D4AA)
 
 // Service colors for watch buttons
 // Source of truth: assets/service-colors.json
 val TrailerRed = Color(0xFFE50914)   // YouTube/Trailer button
 val AmazonOrange = Color(0xFFFF9900)
-val AppleGray = Color(0xFFAAAAAA)  // Lighter gray per style guide
 val NetflixRed = Color(0xFFE50914)
 val TubiOrangeRed = Color(0xFFFA382F)
 val HuluGreen = Color(0xFF1CE783)

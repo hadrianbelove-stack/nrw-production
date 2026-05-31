@@ -22,7 +22,7 @@ try:
     from gemini_scraper import HybridYouTubeFinder
     from gemini_scraper.youtube import validate_youtube_url_live
     GEMINI_AVAILABLE = True
-except ImportError as e:
+except ImportError:
     # Fallback: If Gemini module fails, use Playwright-only scraper
     from scripts.youtube_trailer_scraper import YouTubeTrailerScraper as HybridYouTubeFinder
     GEMINI_AVAILABLE = False
@@ -39,7 +39,7 @@ except ImportError as e:
 try:
     from gemini_scraper import HybridRTFinder
     GEMINI_RT_AVAILABLE = True
-except ImportError as e:
+except ImportError:
     # Fallback: If Gemini module fails, use Playwright-only scraper
     from rt_scraper_playwright import RTScraperPlaywright as HybridRTFinder
     GEMINI_RT_AVAILABLE = False

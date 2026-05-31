@@ -168,26 +168,6 @@ Function ExtractMovies(apiResponse as Object) as Object
 End Function
 
 ' ============================================================================
-' Get Staff Picks IDs from API Response
-' ============================================================================
-Function GetStaffPickIds(apiResponse as Object) as Object
-    if apiResponse = invalid OR apiResponse.staff_picks = invalid
-        return []
-    end if
-    return apiResponse.staff_picks
-End Function
-
-' ============================================================================
-' Get Latest Playlist URL
-' ============================================================================
-Function GetPlaylistUrl(apiResponse as Object) as String
-    if apiResponse = invalid OR apiResponse.latest_playlist_url = invalid
-        return ""
-    end if
-    return apiResponse.latest_playlist_url
-End Function
-
-' ============================================================================
 ' Helper: Format date as YYYY-MM-DD
 ' ============================================================================
 Function FormatDateString(dateObj as Object) as String

@@ -113,7 +113,6 @@ Response:"""
 
             if 'PREORDER_ONLY' in result_text:
                 logger.info(f"Pre-order only confirmed for {title} ({year}), no date yet")
-                self.stats['preorder_detected'] = self.stats.get('preorder_detected', 0) + 1
                 return 'PREORDER_ONLY'
 
             # Extract date from response

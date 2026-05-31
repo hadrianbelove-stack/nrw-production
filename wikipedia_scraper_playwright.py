@@ -22,7 +22,7 @@ from scraper_base import PlaywrightScraperBase
 try:
     from gemini_scraper import GeminiWikipediaFinder
     GEMINI_WIKIPEDIA_AVAILABLE = True
-except ImportError as e:
+except ImportError:
     GeminiWikipediaFinder = None
     GEMINI_WIKIPEDIA_AVAILABLE = False
 
@@ -142,7 +142,6 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
         if jitter_ratio is None:
             jitter_ratio = backoff_config.get('jitter_ratio', 0.2)
 
-        last_error = None
         for attempt in range(max_attempts):
             try:
                 result = fn()
@@ -162,7 +161,6 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
                 self.record_error('not_found')
                 return None
             except (PlaywrightTimeoutError, Exception) as e:
-                last_error = e
                 self._log(f"Attempt {attempt + 1} error: {e}", level='debug')
                 if isinstance(e, PlaywrightTimeoutError):
                     self.record_error('timeout')

@@ -19,7 +19,6 @@ data class HomeUiState(
     val error: String? = null,
     val movies: List<Movie> = emptyList(),
     val filteredMovies: List<Movie> = emptyList(),
-    val groupedMovies: Map<String, List<Movie>> = emptyMap(),
     val activeFilters: Set<FilterCategory> = emptySet(),
     val slopFree: Boolean = true,
     val hideFest: Boolean = false,
@@ -131,11 +130,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             filtered = repository.searchMovies(filtered, state.searchQuery)
         }
 
-        val grouped = repository.groupMoviesByDate(filtered)
-
         _uiState.value = _uiState.value.copy(
-            filteredMovies = filtered,
-            groupedMovies = grouped
+            filteredMovies = filtered
         )
     }
 

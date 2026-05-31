@@ -311,19 +311,6 @@ Function OpenTrailer(trailerUrl as String) as Object
 End Function
 
 ' ============================================================================
-' Show Install Channel Dialog
-' ============================================================================
-Sub ShowInstallChannelDialog(channelId as String, serviceName as String)
-    dialog = CreateObject("roSGNode", "Dialog")
-    dialog.title = "Channel Not Installed"
-    dialog.message = serviceName + " is not installed. Would you like to install it?"
-    dialog.buttons = ["Install", "Cancel"]
-
-    ' Note: Dialog handling should be done in the component that calls this
-    ' This is just a helper to create the dialog
-End Sub
-
-' ============================================================================
 ' Get Service Display Name
 ' ============================================================================
 Function GetServiceDisplayName(service as String) as String

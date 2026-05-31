@@ -79,9 +79,6 @@ class GeminiFinderBase:
         self.max_retries = scraper_config.get('max_retries', 3)
         self.last_request_time = 0
 
-        # Error log for diagnostic breadcrumbs (capped at 50)
-        self._error_log = []
-
         # Base stats - subclasses extend via _get_extra_stats()
         self.stats = {
             'gemini_attempts': 0,
@@ -158,13 +155,6 @@ class GeminiFinderBase:
                     error_type = 'auth_error'
                 else:
                     error_type = etype
-
-                if len(self._error_log) < 50:
-                    self._error_log.append({
-                        'error_type': error_type,
-                        'message': str(e)[:500],
-                        'timestamp': datetime.now().isoformat(),
-                    })
 
                 if attempt < max_attempts - 1:
                     # Exponential backoff: 0.5s, 1s, 2s, capped at 5s

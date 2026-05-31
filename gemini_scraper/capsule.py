@@ -28,8 +28,6 @@ from gemini_scraper.base import GeminiFinderBase
 logger = logging.getLogger('gemini_scraper.capsule')
 
 APPROVED_BANK_PATH = 'cache/approved_capsules.json'
-MAX_APPROVED_EXAMPLES = 9999  # Use all approved capsules in prompt
-
 
 class GeminiCapsuleWriter(GeminiFinderBase):
     """
@@ -123,10 +121,8 @@ class GeminiCapsuleWriter(GeminiFinderBase):
         if not bank:
             return ''
 
-        # Use the most recent N approved capsules
-        recent = bank[-MAX_APPROVED_EXAMPLES:]
         lines = ['YOUR APPROVED CAPSULES (match this voice):']
-        for entry in recent:
+        for entry in bank:
             title = entry.get('title', '?')
             year = entry.get('year', '?')
             director = entry.get('director', 'Unknown')
@@ -482,8 +478,6 @@ class GeminiCapsuleWriter(GeminiFinderBase):
                     # Cap at 600 chars
                     if len(synopsis) > 600:
                         synopsis = synopsis[:600].rsplit(' ', 1)[0] + '...'
-                    self.stats.setdefault('amazon_synopsis_fetched', 0)
-                    self.stats['amazon_synopsis_fetched'] += 1
                     logger.info(f"Fetched Amazon synopsis: {len(synopsis)} chars")
                     return synopsis
 
@@ -553,8 +547,6 @@ class GeminiCapsuleWriter(GeminiFinderBase):
                     lines.append(f"{i}. {text}")
 
                 result = '\n'.join(lines)
-                self.stats.setdefault('imdb_trivia_fetched', 0)
-                self.stats['imdb_trivia_fetched'] += 1
                 logger.info(f"Fetched {len(items)} IMDb trivia items")
                 return result
 

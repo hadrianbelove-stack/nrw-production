@@ -392,7 +392,7 @@ class MovieEnricher:
                     if omdb.get('rt_score') and result.get('rt_score'):
                         def _pct(s):
                             try: return int(str(s).strip().rstrip('%'))
-                            except: return None
+                            except (ValueError, TypeError): return None
                         omdb_rt = _pct(omdb['rt_score'])
                         our_rt  = _pct(result['rt_score'])
                         if omdb_rt is not None and our_rt is not None:
