@@ -890,6 +890,10 @@ body {
 /* Pull quotes */
 .sheet-pq {
   margin-bottom: 10px;
+  padding: 6px 8px;
+  background: rgba(0,212,170,0.07);
+  border-left: 3px solid #00d4aa;
+  border-radius: 4px;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -913,7 +917,7 @@ body {
 }
 .sheet-pq-text {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: #00d4aa;
   font-style: italic;
   line-height: 1.5;
   quotes: "\201C" "\201D";
@@ -922,7 +926,7 @@ body {
   display: block;
   width: 100%;
   font-size: 0.65rem;
-  color: var(--text-muted);
+  color: rgba(0,212,170,0.55);
   font-style: normal;
   margin-top: -2px;
   padding-left: 30px;

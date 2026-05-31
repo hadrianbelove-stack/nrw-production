@@ -824,10 +824,10 @@ const MovieDetailTvOS = () => {
             )}
 
             {/* 7. Synopsis */}
-            {movie.synopsis && (
+            {(movie.capsule || movie.synopsis) && (
               <View style={styles.synopsisContainer}>
                 <Text style={styles.synopsis} numberOfLines={6} ellipsizeMode="tail">
-                  {renderMarkdownSpans(movie.synopsis)}
+                  {renderMarkdownSpans(movie.capsule || movie.synopsis)}
                   {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
                     <Text style={styles.screeningCallout}>
                       {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
