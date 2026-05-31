@@ -585,7 +585,7 @@ header h1 {
     object-fit: cover;
 }
 
-/* Streaming service bar badge on poster (full-width top bar) */
+/* Pre-order badge on poster (full-width top bar) */
 .streaming-badge {
     position: absolute;
     top: 0;
@@ -1461,7 +1461,7 @@ header h1 {
 .lightbox-synopsis a:hover { text-decoration-color: rgba(255,255,255,0.85); }
 
 .lightbox-runtime {
-    color: #666;
+    color: rgba(255,255,255,0.4);
     font-size: 0.85rem;
     margin-bottom: 0.75rem;
 }

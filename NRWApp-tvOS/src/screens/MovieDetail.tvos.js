@@ -709,14 +709,18 @@ const MovieDetailTvOS = () => {
               >
                 {movie.display_title || movie.title}
               </Text>
-              {movie.digital_date && (
-                <Text style={styles.titleDate}>
-                  {formatShortDate(movie.digital_date)}
-                  {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.available_end
-                    ? '\u2013' + formatShortDate(movie.virtual_screening_info.available_end)
-                    : ''}
-                </Text>
-              )}
+              {(() => {
+                const hp = [];
+                if (formattedCountries) hp.push(formattedCountries);
+                if (movie.genres?.[0]) hp.push(movie.genres[0]);
+                if (movie.digital_date) {
+                  let d = formatShortDate(movie.digital_date);
+                  if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.available_end)
+                    d += '\u2013' + formatShortDate(movie.virtual_screening_info.available_end);
+                  hp.push(d);
+                }
+                return hp.length > 0 ? <Text style={styles.titleDate}>{hp.join(' \u00b7 ')}</Text> : null;
+              })()}
             </View>
 
             {/* 2. Virtual screening badge */}
@@ -734,10 +738,6 @@ const MovieDetailTvOS = () => {
               <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Cast: </Text><Text style={styles.metadataCrewName}>{movie.crew.cast.slice(0, 3).join(', ')}</Text></Text>
             )}
             <View style={styles.metadataRow}>
-              {formattedCountries && (
-                <Text style={styles.metadataText}>{formattedCountries}</Text>
-              )}
-              {formattedCountries && movie.year && <Text style={styles.metadataDot}>•</Text>}
               {movie.year && (
                 <Text style={styles.metadataText}>{movie.year}</Text>
               )}

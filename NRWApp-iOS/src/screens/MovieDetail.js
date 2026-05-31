@@ -268,9 +268,13 @@ export default function MovieDetail({route}) {
         <View style={styles.heroInfo}>
           <View style={styles.titleRow}>
             <Text style={styles.title}>{movie.display_title || movie.title}</Text>
-            {movie.digital_date && (
-              <Text style={styles.titleDate}>{formatShortDate(movie.digital_date)}</Text>
-            )}
+            {(() => {
+              const hp = [];
+              if (movie.country) hp.push(formatCountry(movie.country) || movie.country);
+              if (movie.genres?.[0]) hp.push(movie.genres[0]);
+              if (movie.digital_date) hp.push(formatShortDate(movie.digital_date));
+              return hp.length > 0 ? <Text style={styles.titleDate}>{hp.join(' · ')}</Text> : null;
+            })()}
           </View>
 
           {/* Virtual screening badge */}
@@ -284,8 +288,6 @@ export default function MovieDetail({route}) {
           {director && <Text style={styles.metaCrewLine}><Text style={styles.metaCrewLabel}>Director: </Text><Text style={styles.metaCrewName}>{director}</Text></Text>}
           {cast.length > 0 && <Text style={styles.metaCrewLine}><Text style={styles.metaCrewLabel}>Cast: </Text><Text style={styles.metaCrewName}>{Array.isArray(cast) ? cast.slice(0, 3).join(', ') : cast}</Text></Text>}
           <View style={styles.metaRow}>
-            {movie.country && <Text style={styles.metaText}>{movie.country}</Text>}
-            {movie.country && year && <Text style={styles.metaDot}>•</Text>}
             {year && <Text style={styles.metaText}>{year}</Text>}
             {runtime && (
               <>
