@@ -13,6 +13,7 @@ const FILTERS = [
   {id: 'horror', label: 'Horror'},
   {id: 'action', label: 'Action'},
   {id: 'comedy', label: 'Comedy'},
+  {id: 'family', label: 'Family'},
   {id: 'foreign', label: 'Foreign'},
   {id: 'documentary', label: 'Docs'},
   {id: 'restorations', label: 'Reissues'},

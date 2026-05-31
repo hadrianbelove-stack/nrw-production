@@ -77,6 +77,14 @@
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
+      <!-- Family -->
+      <Group id="chip_family">
+        <Rectangle id="chipBg_family" width="80" height="36" color="0x333333FF" />
+        <Label id="chipLabel_family" text="Family" width="80" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
       <!-- Foreign -->
       <Group id="chip_foreign">
         <Rectangle id="chipBg_foreign" width="80" height="36" color="0x333333FF" />

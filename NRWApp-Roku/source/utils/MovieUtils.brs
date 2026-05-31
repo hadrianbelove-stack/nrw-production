@@ -17,6 +17,7 @@ Function GetFilterCategories() as Object
         HORROR: "horror"
         ACTION: "action"
         COMEDY: "comedy"
+        FAMILY: "family"
     }
 End Function
 
@@ -32,6 +33,7 @@ Function GetFilterDisplayName(filter as String) as String
         horror: "Horror"
         action: "Action"
         comedy: "Comedy"
+        family: "Family"
     }
 
     if names.DoesExist(filter)
@@ -105,6 +107,12 @@ Function FilterMovies(movies as Object, filter as String) as Object
             if movie.genres <> invalid
                 for each g in movie.genres
                     if LCase(g).InStr("comedy") >= 0 then include = true
+                end for
+            end if
+        else if filter = categories.FAMILY
+            if movie.genres <> invalid
+                for each g in movie.genres
+                    if LCase(g).InStr("family") >= 0 then include = true
                 end for
             end if
         end if
@@ -191,6 +199,12 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
                 if movie.genres <> invalid
                     for each g in movie.genres
                         if LCase(g).InStr("comedy") >= 0 then matched = true
+                    end for
+                end if
+            else if filter = categories.FAMILY
+                if movie.genres <> invalid
+                    for each g in movie.genres
+                        if LCase(g).InStr("family") >= 0 then matched = true
                     end for
                 end if
             end if

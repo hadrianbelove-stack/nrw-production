@@ -68,6 +68,10 @@ const NRWMobile = {
         'comedy': {
             title: 'Comedy',
             text: 'Films that are actually funny. Comedies — broad and subtle — now streaming.'
+        },
+        'family': {
+            title: 'Family',
+            text: 'Films for all ages. Family movies now available to watch at home.'
         }
     },
 
@@ -343,6 +347,9 @@ const NRWMobile = {
                             break;
                         case 'comedy':
                             if ((movie.genres || []).some(g => g.toLowerCase().includes('comedy'))) matchesAny = true;
+                            break;
+                        case 'family':
+                            if ((movie.genres || []).some(g => g.toLowerCase().includes('family'))) matchesAny = true;
                             break;
                     }
                     if (matchesAny) break;

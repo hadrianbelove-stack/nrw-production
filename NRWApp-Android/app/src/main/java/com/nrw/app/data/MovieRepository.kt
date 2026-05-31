@@ -171,6 +171,9 @@ class MovieRepository(private val context: Context) {
             FilterCategory.COMEDY -> movies.filter {
                 it.hidden != true && it.enrichmentStatus != "reverted" && (it.genres?.any { g -> g.lowercase().contains("comedy") } == true)
             }
+            FilterCategory.FAMILY -> movies.filter {
+                it.hidden != true && it.enrichmentStatus != "reverted" && (it.genres?.any { g -> g.lowercase().contains("family") } == true)
+            }
         }
     }
 
@@ -193,6 +196,7 @@ class MovieRepository(private val context: Context) {
                     FilterCategory.HORROR -> movie.genres?.any { it.lowercase().contains("horror") } == true
                     FilterCategory.ACTION -> movie.genres?.any { it.lowercase().contains("action") } == true
                     FilterCategory.COMEDY -> movie.genres?.any { it.lowercase().contains("comedy") } == true
+                    FilterCategory.FAMILY -> movie.genres?.any { it.lowercase().contains("family") } == true
                 }
             }
         }
