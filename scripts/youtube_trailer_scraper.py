@@ -46,6 +46,29 @@ class YouTubeTrailerScraper:
         ratio = matching / len(movie_words) if movie_words else 0.0
         return ratio, ratio >= YouTubeTrailerScraper.TITLE_MATCH_THRESHOLD
 
+    @staticmethod
+    def check_primary_segment(movie_title, video_title):
+        """Check movie title appears in the primary film-title segment of the video title.
+
+        Splits at | or — to isolate the primary portion, strips parentheticals (cast
+        credits, dates), then checks word overlap. Catches cast-name-as-title confusion
+        where the movie title only appears in a parenthetical credit like (Eva Marcille).
+
+        Returns (ratio, passed) same shape as check_title_match.
+        """
+        cleaned_movie = re.sub(r'[^\w\s]', ' ', movie_title.lower())
+        movie_words = [w for w in cleaned_movie.split()
+                       if w not in YouTubeTrailerScraper.STOP_WORDS]
+        if not movie_words:
+            movie_words = cleaned_movie.split()
+
+        primary = re.split(r'\s*[|—]\s*', video_title)[0].strip()
+        primary_clean = re.sub(r'\([^)]*\)', '', primary).strip()
+        primary_words = set(re.sub(r'[^\w\s]', ' ', primary_clean.lower()).split())
+        matching = sum(1 for w in movie_words if w in primary_words)
+        ratio = matching / len(movie_words) if movie_words else 0.0
+        return ratio, ratio >= YouTubeTrailerScraper.TITLE_MATCH_THRESHOLD
+
     def __init__(self, cache_file='cache/youtube_trailer_cache.json', headless=True):
         self.cache_file = cache_file
         self.cache = self._load_cache()
@@ -197,6 +220,10 @@ class YouTubeTrailerScraper:
                     if not passed:
                         print(f"  ✗ Title mismatch ({ratio:.0%}): '{video_title_text[:60]}' for '{title}'")
                         continue
+                    _, seg_passed = self.check_primary_segment(title, video_title_text)
+                    if not seg_passed:
+                        print(f"  ✗ Title in credit only: '{video_title_text[:60]}' for '{title}'")
+                        continue
 
                     # Normalize relative URLs to absolute URLs
                     if video_url.startswith('/watch'):
@@ -285,6 +312,10 @@ class YouTubeTrailerScraper:
                     ratio, passed = self.check_title_match(title, video_title)
                     if not passed:
                         print(f"  ✗ Broad search title mismatch ({ratio:.0%}): '{video_title[:60]}' for '{title}'")
+                        continue
+                    _, seg_passed = self.check_primary_segment(title, video_title)
+                    if not seg_passed:
+                        print(f"  ✗ Broad search title in credit only: '{video_title[:60]}' for '{title}'")
                         continue
 
                     if video_url.startswith('/watch'):
