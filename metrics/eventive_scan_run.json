@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-05-30T10:53:17.249670",
+  "timestamp": "2026-05-31T11:01:52.696770",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 124,
     "festivals_with_films": 119,
     "festivals_failed": 48,
-    "total_films_indexed": 2323,
+    "total_films_indexed": 2315,
     "expired_filtered": 0,
-    "unique_active": 1723,
-    "tracking_matches": 95,
-    "wall_matches": 37,
-    "new_cached": 103,
+    "unique_active": 1722,
+    "tracking_matches": 94,
+    "wall_matches": 42,
+    "new_cached": 107,
     "skipped_undated": 29
   },
   "tracking_matches": [
@@ -70,7 +70,7 @@
       "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69efc4136fff3ee369e3e3cd",
       "start": "2026-05-30T16:00:00.000Z",
       "end": "2026-06-01T03:59:00.000Z",
-      "status": "upcoming",
+      "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -339,18 +339,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1277882",
-      "nrw_title": "Out of Love",
-      "eventive_title": "Out of Love",
-      "festival": "Focus on French Cinema Festival 2026",
-      "link": "https://watch.eventive.org/focusonfrenchcinema/play/69987b9e1ab3800c3fdbb0fc",
-      "start": "2026-05-11T04:00:00.000Z",
-      "end": "2026-05-31T03:45:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1585144",
       "nrw_title": "Connection",
       "eventive_title": "The Connection",
@@ -368,18 +356,6 @@
       "eventive_title": "The Golden Age",
       "festival": "ILLUMINATE Film Festival",
       "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1591027",
-      "nrw_title": "Tadaima",
-      "eventive_title": "Tadaima",
-      "festival": "Films of Remembrance On Demand",
-      "link": "https://watch.eventive.org/for-on-demand/play/6695b277bf22b6004f82e7e7",
       "start": "",
       "end": "",
       "status": "active",
@@ -539,18 +515,6 @@
       "start": "2026-05-26T22:00:00.000Z",
       "end": "2026-06-30T22:00:00.000Z",
       "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1514056",
-      "nrw_title": "Nika & Madison",
-      "eventive_title": "Nika & Madison",
-      "festival": "2026 Annual Oakville Film Festival",
-      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
-      "start": "2026-06-17T11:00:00.000Z",
-      "end": "2026-06-28T03:00:00.000Z",
-      "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -831,6 +795,18 @@
       "nrw_status": "tracking"
     },
     {
+      "movie_id": "1591027",
+      "nrw_title": "Tadaima",
+      "eventive_title": "Tadaima",
+      "festival": "Films of Remembrance On Demand",
+      "link": "https://watch.eventive.org/for-on-demand/play/6695b277bf22b6004f82e7e7",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
       "movie_id": "1560360",
       "nrw_title": "Baristas vs Billionaires",
       "eventive_title": "Baristas vs Billionaires",
@@ -1080,7 +1056,7 @@
       "end": "2026-09-24T03:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1546068",
@@ -1092,7 +1068,7 @@
       "end": "2026-10-01T03:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1258157",
@@ -1104,7 +1080,7 @@
       "end": "2026-09-24T03:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1000092",
@@ -1116,7 +1092,7 @@
       "end": "2026-09-24T03:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1514721",
@@ -1128,7 +1104,19 @@
       "end": "2026-09-24T03:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1514056",
+      "nrw_title": "Nika & Madison",
+      "eventive_title": "Nika & Madison",
+      "festival": "2026 Annual Oakville Film Festival",
+      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
+      "start": "2026-06-17T11:00:00.000Z",
+      "end": "2026-06-28T03:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
     },
     {
       "movie_id": "1456667",
@@ -1164,7 +1152,7 @@
       "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69efc4136fff3ee369e3e3cd",
       "start": "2026-05-30T16:00:00.000Z",
       "end": "2026-06-01T03:59:00.000Z",
-      "status": "upcoming",
+      "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -1457,18 +1445,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1514056",
-      "nrw_title": "Nika & Madison",
-      "eventive_title": "Nika & Madison",
-      "festival": "2026 Annual Oakville Film Festival",
-      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
-      "start": "2026-06-17T11:00:00.000Z",
-      "end": "2026-06-28T03:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1239140",
       "nrw_title": "Random",
       "eventive_title": "Random",
@@ -1584,6 +1560,78 @@
       "link": "https://watch.eventive.org/chattfilmfest/play/6a027e679ea0b418685dc6b8",
       "start": "2026-06-19T04:00:00.000Z",
       "end": "2026-06-28T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1480593",
+      "nrw_title": "Bombacha",
+      "eventive_title": "Bombacha (2025)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a8cc7b413a91640095e22",
+      "start": "2026-06-12T23:00:00.000Z",
+      "end": "2026-09-24T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1546068",
+      "nrw_title": "3000 Lesbians Go To York",
+      "eventive_title": "3000 Lesbians Go To York (2025)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a6ffb9cec8430a9307fe3",
+      "start": "2026-06-19T23:00:00.000Z",
+      "end": "2026-10-01T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1258157",
+      "nrw_title": "Lakeview",
+      "eventive_title": "Lakeview (2024)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a945b1cfaef70f304e86d",
+      "start": "2026-06-19T23:00:00.000Z",
+      "end": "2026-09-24T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1000092",
+      "nrw_title": "Nowhere",
+      "eventive_title": "Nowhere (2021)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a962917178824a3beb905",
+      "start": "2026-06-19T23:00:00.000Z",
+      "end": "2026-09-24T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1514721",
+      "nrw_title": "Duplicity",
+      "eventive_title": "Duplicity (2026)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a7e4f3091294a896864a1",
+      "start": "2026-06-26T23:00:00.000Z",
+      "end": "2026-09-24T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1514056",
+      "nrw_title": "Nika & Madison",
+      "eventive_title": "Nika & Madison",
+      "festival": "2026 Annual Oakville Film Festival",
+      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
+      "start": "2026-06-17T11:00:00.000Z",
+      "end": "2026-06-28T03:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
