@@ -46,7 +46,7 @@ class JustWatchClient:
         # Tier 3: Library/public broadcasting free services
         'Kanopy', 'Hoopla', 'PBS', 'PBS Documentaries',
         # Tier 4: Niche paid subscriptions
-        'MUBI', 'Criterion Channel', 'Shudder', 'AMC Plus', 'Bloodstream'
+        'MUBI', 'Criterion Channel', 'Shudder', 'Bloodstream'
     ]
 
     VOD_PRIORITY = [

@@ -17,7 +17,7 @@ tracking:
   archive_available_on_detect: false  # Archive available movies to separate file (experimental)
   compaction_batch_size: 50  # Maximum entries to move per compaction run
   compaction_recent_days: null  # Only compact entries from last N days (null = no age limit)
-  excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki', 'Futo']  # Fandango allowed for VOD. Google Play excluded (YouTube is separate).
+  excluded_services: ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki', 'Futo', 'AMC Plus']  # Fandango allowed for VOD. Google Play excluded (YouTube is separate). AMC Plus excluded (no reliable direct links).
   # Metadata fields set by false-positive revert logic (generator.py post-enrichment):
   #   _reverted_from_available: true = movie was reverted from available→tracking (zero watch links)
   #   _false_positive_source: 'tmdb_type4' or 'provider_availability_check' = which discovery triggered the false positive
@@ -652,7 +652,7 @@ trailer_hosting:
   enabled: true                      # Master toggle for trailer hosting pipeline
   bucket_url: "https://f004.backblazeb2.com/file/NRW-TRAILERS"  # Public URL base (change when CloudFlare is set up)
   max_hosted: 200                    # Only the 200 most recent movies get trailers; oldest rotate out
-  cookies_browser: chrome            # Browser for yt-dlp cookies (safari blocked by macOS sandbox in LaunchAgent)
+  cookies_browser: safari            # Browser for yt-dlp cookies (chrome stopped working May 2026; safari works for manual runs)
   clean_local_after_upload: true     # Auto-delete local MP4 after confirmed B2 upload
   pipeline_integration: true         # Auto-host trailers for new movies during daily enrichment
   trailer_gap_batch_size: 30         # Max movies to retry per trailer gap fill run
