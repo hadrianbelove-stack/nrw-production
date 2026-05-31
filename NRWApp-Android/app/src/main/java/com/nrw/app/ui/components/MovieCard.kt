@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -156,10 +157,11 @@ private val StreamingColors = mapOf(
     "paramount_plus" to Color(0xFF0064FF),
     "apple_tv" to Color(0xFF000000),
     "mubi" to Color(0xFFDA2128),
-    "shudder" to Color(0xFF8B0000),  // Synced with CSS
+    "shudder" to Color(0xFF8B0000),
     "criterion" to Color(0xFF000000),
     "tubi" to Color(0xFFFA382F),
-    "fawesome" to Color(0xFF5B8DEF)
+    "fawesome" to Color(0xFF5B8DEF),
+    "pluto" to Color(0xFF00B4E4)
 )
 
 /**
@@ -444,16 +446,17 @@ private fun StreamingBadge(
         s.contains("criterion") -> "CRITERION" to "criterion"
         s.contains("tubi") -> "TUBI" to "tubi"
         s.contains("fawesome") -> "FAWESOME" to "fawesome"
+        s.contains("pluto") -> "PLUTO TV" to "pluto"
         else -> cleaned.uppercase().take(10) to "other"
     }
     val backgroundColor = StreamingColors[colorKey] ?: Color(0xFF333333)
-    val textColor = if (colorKey == "hulu") Color.Black else TextPrimary
+    val textColor = if (colorKey in listOf("hulu", "prime", "pluto")) Color.Black else TextPrimary
 
-    Box(
+    Column(
         modifier = modifier
             .background(backgroundColor)
-            .padding(vertical = 4.dp),
-        contentAlignment = Alignment.Center
+            .padding(vertical = 3.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = displayName,
@@ -461,6 +464,13 @@ private fun StreamingBadge(
             fontSize = 7.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 0.8.sp
+        )
+        Text(
+            text = "NOW STREAMING",
+            color = textColor.copy(alpha = 0.75f),
+            fontSize = 5.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.5.sp
         )
     }
 }
@@ -470,18 +480,15 @@ private fun RtBadge(
     score: Int,
     modifier: Modifier = Modifier
 ) {
+    val brandColor = Color(0xFFFF6B6B)
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(3.dp))
-            .background(Color(0xFFFA3232).copy(alpha = 0.85f))
+            .background(brandColor.copy(alpha = 0.08f))
+            .border(1.dp, brandColor.copy(alpha = 0.55f), RoundedCornerShape(3.dp))
             .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
-        Text(
-            text = "RT $score%",
-            color = Color.White,
-            fontSize = 7.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Text(text = "RT $score%", color = brandColor, fontSize = 7.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -490,18 +497,15 @@ private fun McBadge(
     score: Int,
     modifier: Modifier = Modifier
 ) {
+    val brandColor = Color(0xFF7DDF64)
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(3.dp))
-            .background(Color(0xFF66CC33).copy(alpha = 0.85f))
+            .background(brandColor.copy(alpha = 0.08f))
+            .border(1.dp, brandColor.copy(alpha = 0.55f), RoundedCornerShape(3.dp))
             .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
-        Text(
-            text = "MC $score",
-            color = Color.White,
-            fontSize = 7.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Text(text = "MC $score", color = brandColor, fontSize = 7.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -510,18 +514,15 @@ private fun ImdbBadge(
     rating: String,
     modifier: Modifier = Modifier
 ) {
+    val brandColor = Color(0xFFF5C518)
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(3.dp))
-            .background(Color(0xFFF5C518).copy(alpha = 0.9f))
+            .background(brandColor.copy(alpha = 0.08f))
+            .border(1.dp, brandColor.copy(alpha = 0.55f), RoundedCornerShape(3.dp))
             .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
-        Text(
-            text = rating,
-            color = Color.Black,
-            fontSize = 7.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Text(text = rating, color = brandColor, fontSize = 7.sp, fontWeight = FontWeight.Bold)
     }
 }
 

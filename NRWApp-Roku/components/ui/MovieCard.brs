@@ -13,10 +13,14 @@ Sub Init()
     ' Badges
     m.serviceBadgeBg = m.top.FindNode("serviceBadgeBg")
     m.serviceBadge = m.top.FindNode("serviceBadge")
+    m.serviceBadgeSubtext = m.top.FindNode("serviceBadgeSubtext")
+    m.rtBadgeBorder = m.top.FindNode("rtBadgeBorder")
     m.rtBadgeBg = m.top.FindNode("rtBadgeBg")
     m.rtBadge = m.top.FindNode("rtBadge")
+    m.mcBadgeBorder = m.top.FindNode("mcBadgeBorder")
     m.mcBadgeBg = m.top.FindNode("mcBadgeBg")
     m.mcBadge = m.top.FindNode("mcBadge")
+    m.imdbBadgeBorder = m.top.FindNode("imdbBadgeBorder")
     m.imdbBadgeBg = m.top.FindNode("imdbBadgeBg")
     m.imdbBadge = m.top.FindNode("imdbBadge")
     m.staffPickStrip = m.top.FindNode("staffPickStrip")
@@ -116,6 +120,7 @@ Sub onMovieChanged()
     else
         m.serviceBadge.visible = false
         m.serviceBadgeBg.visible = false
+        m.serviceBadgeSubtext.visible = false
     end if
 
     ' Pre-order badge (top-right, replaces streaming badge)
@@ -171,6 +176,7 @@ Sub onMovieChanged()
     else
         m.rtBadge.visible = false
         m.rtBadgeBg.visible = false
+        m.rtBadgeBorder.visible = false
     end if
 
     ' Set Metacritic score badge
@@ -179,6 +185,7 @@ Sub onMovieChanged()
     else
         m.mcBadge.visible = false
         m.mcBadgeBg.visible = false
+        m.mcBadgeBorder.visible = false
     end if
 
     ' Set IMDb rating badge
@@ -187,6 +194,7 @@ Sub onMovieChanged()
     else
         m.imdbBadge.visible = false
         m.imdbBadgeBg.visible = false
+        m.imdbBadgeBorder.visible = false
     end if
 
     ' Shift score badges up if festival strip is visible at bottom
@@ -209,18 +217,21 @@ Sub PositionScoreBadges(baseY as Integer)
     if m.rtBadge.visible
         m.rtBadge.translation = [xPos, baseY]
         m.rtBadgeBg.translation = [xPos, baseY]
+        m.rtBadgeBorder.translation = [xPos - 1, baseY - 1]
         xPos = xPos - 40  ' 44 width - 4 overlap
     end if
 
     if m.imdbBadge.visible
         m.imdbBadge.translation = [xPos, baseY]
         m.imdbBadgeBg.translation = [xPos, baseY]
+        m.imdbBadgeBorder.translation = [xPos - 1, baseY - 1]
         xPos = xPos - 40  ' 36 width + 4 gap
     end if
 
     if m.mcBadge.visible
         m.mcBadge.translation = [xPos, baseY]
         m.mcBadgeBg.translation = [xPos, baseY]
+        m.mcBadgeBorder.translation = [xPos - 1, baseY - 1]
     end if
 End Sub
 
@@ -235,6 +246,7 @@ Sub SetupServiceBadge(service as String)
     ' Set badge text
     m.serviceBadge.text = badgeText
     m.serviceBadge.visible = true
+    m.serviceBadgeSubtext.visible = true
 
     ' Set badge color
     if colors.DoesExist(normalized)
@@ -244,10 +256,19 @@ Sub SetupServiceBadge(service as String)
     end if
     m.serviceBadgeBg.visible = true
 
+    ' Light backgrounds (hulu, prime, pluto) need dark text
+    if normalized = "hulu" OR normalized = "prime" OR normalized = "pluto"
+        m.serviceBadge.color = "0x000000FF"
+        m.serviceBadgeSubtext.color = "0x000000BF"
+    else
+        m.serviceBadge.color = "0xFFFFFFFF"
+        m.serviceBadgeSubtext.color = "0xFFFFFFBF"
+    end if
+
     ' Full-width bar — always 200px wide at top
     m.serviceBadge.width = 200
     m.serviceBadgeBg.width = 200
-    m.serviceBadge.translation = [0, 0]
+    m.serviceBadge.translation = [0, 2]
     m.serviceBadgeBg.translation = [0, 0]
 End Sub
 
@@ -276,8 +297,8 @@ Sub SetupRtBadge(score as Dynamic)
     ' Set badge text
     m.rtBadge.text = "RT " + scoreInt.ToStr() + "%"
     m.rtBadge.visible = true
-    m.rtBadgeBg.color = "0x000000B3"  ' Dark glass background
     m.rtBadgeBg.visible = true
+    m.rtBadgeBorder.visible = true
 End Sub
 
 ' ============================================================================
@@ -303,8 +324,8 @@ Sub SetupMcBadge(score as Dynamic)
 
     m.mcBadge.text = "MC " + scoreInt.ToStr()
     m.mcBadge.visible = true
-    m.mcBadgeBg.color = "0x000000B3"
     m.mcBadgeBg.visible = true
+    m.mcBadgeBorder.visible = true
 End Sub
 
 ' ============================================================================
@@ -333,6 +354,7 @@ Sub SetupImdbBadge(rating as Dynamic)
     m.imdbBadge.text = ratingStr
     m.imdbBadge.visible = true
     m.imdbBadgeBg.visible = true
+    m.imdbBadgeBorder.visible = true
 End Sub
 
 ' ============================================================================
