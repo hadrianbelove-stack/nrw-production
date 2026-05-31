@@ -1448,9 +1448,7 @@ header h1 {
     color: #ccc;
     font-size: 1.05rem;
     line-height: 1.7;
-    flex: 1;
     margin-bottom: 1.25rem;
-    overflow-y: auto;
 }
 .lightbox-synopsis a {
     color: inherit;
@@ -1461,8 +1459,8 @@ header h1 {
 .lightbox-synopsis a:hover { text-decoration-color: rgba(255,255,255,0.85); }
 
 .lightbox-runtime {
-    color: rgba(255,255,255,0.4);
-    font-size: 0.85rem;
+    color: #ccc;
+    font-size: 1.05rem;
     margin-bottom: 0.75rem;
 }
 
