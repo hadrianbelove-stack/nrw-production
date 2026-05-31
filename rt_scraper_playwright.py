@@ -576,11 +576,7 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                                 continue
                     except Exception:
                         pass
-                if page_year is None:
-                    self._log(f"Year verification failed: could not extract year from RT page — rejecting {rt_link}", level='warning')
-                    rt_link = None
-                    rt_score = None
-                elif abs(page_year - year) > 1:
+                if page_year is not None and abs(page_year - year) > 1:
                     self._log(f"Year mismatch: page has {page_year}, expected {year} — rejecting {rt_link}", level='warning')
                     rt_link = None
                     rt_score = None

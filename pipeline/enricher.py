@@ -187,7 +187,7 @@ class MovieEnricher:
     # Per-movie enrichment field extraction
     # ------------------------------------------------------------------
 
-    def get_enrichment_only_fields(self, movie_id, movie_data, movie_details, force_refresh=False):
+    def get_enrichment_only_fields(self, movie_id, movie_data, movie_details, force_refresh=False, existing_movie=None):
         """Extract enrichment-only fields with graceful partial failure handling
 
         This method implements a graceful degradation strategy where individual
@@ -215,6 +215,14 @@ class MovieEnricher:
         release_date = movie_details.get('first_air_date' if is_tv else 'release_date', '')
         year = release_date[:4] if release_date else ''
         imdb_id = movie_details.get('external_ids', {}).get('imdb_id')
+
+        # Reuse IMDb ID from previously enriched data.json entry (avoids redundant OMDb call)
+        if not imdb_id and existing_movie:
+            _existing_imdb_url = existing_movie.get('links', {}).get('imdb', '')
+            if _existing_imdb_url:
+                _imdb_match = re.search(r'(tt\d+)', _existing_imdb_url)
+                if _imdb_match:
+                    imdb_id = _imdb_match.group(1)
 
         # OMDb fallback: If TMDB doesn't have IMDb ID, try OMDb
         if not imdb_id:
@@ -379,7 +387,8 @@ class MovieEnricher:
         if imdb_id:
             result['links']['imdb'] = f"https://www.imdb.com/title/{imdb_id}/"
 
-        # OMDb: awards, box office, and RT/MC cross-check
+        # OMDb: awards, box office, and scores (preferred source for score accuracy)
+        # Scrapers still run above for URLs/links; OMDb wins for the numbers.
         if imdb_id:
             try:
                 omdb = self.host.get_omdb_data(imdb_id)
@@ -388,21 +397,19 @@ class MovieEnricher:
                         result['awards'] = omdb['awards']
                     if omdb.get('box_office'):
                         result['box_office'] = omdb['box_office']
-                    # RT cross-check: flag if OMDb RT diverges >5 points from scraper
-                    if omdb.get('rt_score') and result.get('rt_score'):
-                        def _pct(s):
-                            try: return int(str(s).strip().rstrip('%'))
-                            except (ValueError, TypeError): return None
-                        omdb_rt = _pct(omdb['rt_score'])
-                        our_rt  = _pct(result['rt_score'])
-                        if omdb_rt is not None and our_rt is not None:
-                            if abs(omdb_rt - our_rt) > 5:
-                                result['_rt_unverified'] = True
-                                self.ctx.logger.warning(
-                                    f"RT score mismatch for {title} ({year}): "
-                                    f"scraper={our_rt}% omdb={omdb_rt}% — flagged _rt_unverified"
-                                )
-                    self.ctx.logger.debug(f"OMDb: awards={bool(omdb.get('awards'))} box_office={bool(omdb.get('box_office'))}")
+                    if omdb.get('rt_score'):
+                        result['rt_score'] = omdb['rt_score']
+                        enrichment_results['rt_score'] = 'success'
+                    if omdb.get('metacritic'):
+                        result['metacritic_score'] = omdb['metacritic']
+                        enrichment_results['metacritic_score'] = 'success'
+                    if omdb.get('imdb_rating'):
+                        result['imdb_rating'] = omdb['imdb_rating']
+                    self.ctx.logger.debug(
+                        f"OMDb: rt={omdb.get('rt_score')} mc={omdb.get('metacritic')} "
+                        f"imdb={omdb.get('imdb_rating')} awards={bool(omdb.get('awards'))} "
+                        f"box_office={bool(omdb.get('box_office'))}"
+                    )
             except Exception as e:
                 self.ctx.logger.debug(f"OMDb enrichment error for {title}: {e}")
 
@@ -1191,7 +1198,7 @@ class MovieEnricher:
 
                 # Get enrichment fields only
                 _movie_start = time.time()
-                enrichment_fields = self.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh=False)
+                enrichment_fields = self.get_enrichment_only_fields(movie_id, movie_data, movie_details, force_refresh=False, existing_movie=existing_movies[movie_index])
                 _movie_elapsed = time.time() - _movie_start
                 if _movie_elapsed > 90:
                     print(f"  \u26a0\ufe0f {movie_data.get('title', movie_id)} took {_movie_elapsed:.0f}s (slow)", flush=True)
