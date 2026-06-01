@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Genre placement</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%; overflow: hidden;
+  background: #0a0a0a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #fff;
+}
+.nav-chrome {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.5rem 0.75rem; height: 42px;
+  background: rgba(0,0,0,0.9);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.nav-counter { color: #00d4aa; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; min-width: 40px; }
+.nav-title { color: #999; font-size: 0.65rem; text-align: center; flex: 1; padding: 0 0.5rem; }
+.nav-btns { display: flex; gap: 0.35rem; min-width: 40px; justify-content: flex-end; }
+.nav-arrow {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff;
+  border-radius: 6px; width: 28px; height: 28px; font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.viewer { position: fixed; inset: 0; top: 42px; overflow: hidden; }
+.slide { position: absolute; inset: 0; display: none; overflow-y: auto; }
+.slide.active { display: block; }
+
+.lb {
+  min-height: calc(100vh - 42px);
+  background: rgba(12,12,24,0.97);
+  padding: 1.75rem 1.5rem 8rem 1.5rem;
+}
+.lb-title {
+  font-size: 2rem; font-weight: 800; color: #fff;
+  line-height: 1.1; margin-bottom: 0.2rem;
+}
+/* Date row — country · genre · date, all same size/color/weight */
+.lb-date-row {
+  color: #00d4aa; font-size: 1.4rem; font-weight: 700;
+  display: flex; align-items: baseline; gap: 0.45rem;
+}
+.lb-date-row span + span::before {
+  content: '·';
+  margin-right: 0.45rem;
+  opacity: 0.5;
+}
+hr {
+  border: none; border-top: 2px solid rgba(0,212,170,0.4);
+  margin: 0.75rem 0 1rem 0;
+}
+.lb-meta { color: #888; font-size: 1rem; line-height: 1.65; margin-bottom: 1.1rem; }
+.crew-label { color: #00d4aa; font-weight: 700; }
+.crew-name  { color: #fff;    font-weight: 700; }
+.lb-scores  { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+.score-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; border: 1px solid;
+}
+.score-badge.imdb { color: #f5c518; border-color: rgba(245,197,24,0.55); background: rgba(245,197,24,0.08); }
+.score-badge.lb   { color: #00e054; border-color: rgba(0,224,84,0.55);   background: rgba(0,224,84,0.08); }
+.score-badge.wiki { color: #bbb;    border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.05); }
+.lb-synopsis { color: #bbb; font-size: 0.95rem; line-height: 1.65; margin-bottom: 0.6rem; }
+.lb-runtime { color: #666; font-size: 0.85rem; }
+.lb-buttons {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding: 0.75rem 1.5rem 1.5rem 1.5rem;
+  background: linear-gradient(to bottom, transparent, rgba(12,12,24,0.99) 35%);
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.watch-btn {
+  padding: 0.7rem 1rem; border-radius: 8px; font-size: 0.8rem;
+  font-weight: 700; border: none; cursor: pointer;
+  text-transform: uppercase; letter-spacing: 0.08em; text-align: center;
+}
+.watch-btn.streaming { background: #E50914; color: #fff; }
+.watch-btn.vod { background: rgba(255,149,0,0.12); color: #ff9500; border: 1px solid rgba(255,149,0,0.4); }
+</style>
+</head>
+<body>
+
+<div class="nav-chrome">
+  <span class="nav-counter" id="counter">1 / 2</span>
+  <span class="nav-title" id="slide-title">dot separator</span>
+  <div class="nav-btns">
+    <button class="nav-arrow" onclick="prev()">‹</button>
+    <button class="nav-arrow" onclick="next()">›</button>
+  </div>
+</div>
+
+<div class="viewer">
+
+<div class="slide active" id="s1">
+  <div class="lb">
+    <div class="lb-title">Sampung Utos Kay Josh</div>
+    <div class="lb-date-row">
+      <span>Philippines</span><span>Comedy</span><span>May 30</span>
+    </div>
+    <hr>
+    <div class="lb-meta">
+      <span class="crew-label">Dir: </span><span class="crew-name">Marius Talampas</span><br>
+      <span class="crew-label">Cast: </span><span class="crew-name">Jerald Napoles, Pepe Herrera, Albie Casiño</span>
+    </div>
+    <div class="lb-scores">
+      <span class="score-badge imdb">IMDb 6.1</span>
+      <span class="score-badge lb">★★★½</span>
+      <span class="score-badge wiki">Wikipedia</span>
+    </div>
+    <p class="lb-synopsis">Josh, a devout loan executive who believes his faith and adherence to the Ten Commandments have brought him a good life. When a series of misfortunes strike, he begins to feel abandoned by his faith — and decides to rebel by breaking each commandment.</p>
+    <p class="lb-runtime">2025 · 104 min · Viva Films</p>
+  </div>
+  <div class="lb-buttons">
+    <button class="watch-btn streaming">Watch on Netflix</button>
+    <button class="watch-btn vod">Rent from $3.99 · Buy from $12.99</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+document.getElementById('counter').textContent = '';
+document.getElementById('slide-title').textContent = 'Philippines · Comedy · May 30';
+</script>
+</body>
+</html>

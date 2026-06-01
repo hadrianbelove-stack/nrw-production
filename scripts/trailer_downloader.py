@@ -148,12 +148,15 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-                future = executor.submit(ydl.extract_info, movie['trailer_url'], download=True)
-                try:
-                    info = future.result(timeout=MOVIE_TIMEOUT)
-                except concurrent.futures.TimeoutError:
-                    return {'status': 'failed', 'detail': f'Timed out after {MOVIE_TIMEOUT}s'}
+            executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+            future = executor.submit(ydl.extract_info, movie['trailer_url'], download=True)
+            try:
+                info = future.result(timeout=MOVIE_TIMEOUT)
+            except concurrent.futures.TimeoutError:
+                # shutdown(wait=False) abandons the stuck thread instead of blocking forever
+                executor.shutdown(wait=False, cancel_futures=True)
+                return {'status': 'failed', 'detail': f'Timed out after {MOVIE_TIMEOUT}s'}
+            executor.shutdown(wait=False)
 
             if info is None:
                 return {'status': 'skipped_too_long', 'detail': 'Exceeded 5 min duration cap'}

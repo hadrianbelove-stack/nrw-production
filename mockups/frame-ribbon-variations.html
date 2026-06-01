@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frame + Ribbon — 10 Variations</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      background-attachment: fixed;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #fff;
+      padding: 24px 16px 60px;
+    }
+
+    h1 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #00d4aa;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 11px;
+      color: #444;
+      margin-bottom: 28px;
+    }
+
+    /* Each variation block */
+    .variation {
+      margin-bottom: 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 24px;
+    }
+
+    .var-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 3px;
+    }
+    .var-label strong { color: #bbb; }
+    .var-desc {
+      font-size: 10px;
+      color: #444;
+      margin-bottom: 10px;
+      letter-spacing: 0.03em;
+    }
+
+    .cards-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    /* Shared caption below each card */
+    .card-wrap { display:flex; flex-direction:column; gap:5px; }
+    .cap {
+      font-size: 9px;
+      color: #555;
+      text-align: center;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Base card shell — each variation overrides this via inline styles */
+    .base-card {
+      width: 120px;
+      aspect-ratio: 2/3;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+      flex-shrink: 0;
+    }
+    .base-card img { width:100%; height:100%; object-fit:cover; display:block; }
+  </style>
+</head>
+<body>
+
+<h1>Frame + Ribbon — 10 Variations</h1>
+<p class="subtitle">Netflix · MAX · Shudder · no badge — same layout, different label treatment</p>
+
+<div id="root"></div>
+
+<script>
+/* Real poster images */
+const NETFLIX = 'https://image.tmdb.org/t/p/w500/nj1QyqHN48Wn66U9JYXIywNX8Nj.jpg';  // A Foggy Tale
+const MAX     = 'https://image.tmdb.org/t/p/w500/jj9U8r7erBDzFYRfDPUmcqX3Mut.jpg';  // Behind Bars
+const SHUDDER = 'https://image.tmdb.org/t/p/w500/3ElTptvgbI7kWmsqWNqBKkMsD3e.jpg';  // 1000 Women
+const PLAIN   = 'https://image.tmdb.org/t/p/w500/odnel7VLYHTdW3OdgRl7N5nSlpM.jpg';  // Miss You (no badge)
+
+const SVC = {
+  netflix: { l:'NETFLIX',  h:'#E50914', t:'white' },
+  max:     { l:'MAX',      h:'#B537F2', t:'white' },
+  shudder: { l:'SHUDDER',  h:'#8B0000', t:'white' },
+};
+
+/* Shared card wrapper — no-badge version (plain full poster) */
+function plain(poster) {
+  return `<div class="base-card"><img src="${poster}" loading="lazy" alt="no badge"></div>`;
+}
+
+/* Helper: img tag that fills flexed space */
+const IMG = (p) => `<img src="${p}" loading="lazy" alt="" style="flex:1;width:100%;object-fit:cover;display:block;min-height:0;">`;
+
+/*
+  Ten variations — each is a function (poster, svc) → card HTML.
+  All maintain width:120px via .base-card sizing context.
+  The variation handles all internal layout differences.
+*/
+const VARIATIONS = [
+
+  /* 1. Standard Rail — baseline */
+  {
+    name: '1 — Standard Rail',
+    desc: '8px frame · 34px header · centered name',
+    card(p, s) {
+      if (!s) return plain(p);
+      return `<div class="base-card" style="background:${s.h};display:flex;flex-direction:column;padding:0 8px 8px;">
+        <div style="height:34px;margin:0 -8px;display:flex;align-items:center;justify-content:center;font:800 10px/1 system-ui;letter-spacing:1.1px;text-transform:uppercase;color:${s.t};">${s.l}</div>
+        ${IMG(p)}
+      </div>`;
+    }
+  },
+
+  /* 2. Gallery Label — taller header with supertitle */
+  {
+    name: '2 — Gallery Label',
+    desc: '6px frame · 46px header · "NOW STREAMING" supertitle',
+    card(p, s) {
+      if (!s) return plain(p);
+      return `<div class="base-card" style="background:${s.h};display:flex;flex-direction:column;padding:0 6px 6px;">
+        <div style="height:46px;margin:0 -6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;">
+          <div style="font:700 6px/1 system-ui;letter-spacing:2px;text-transform:uppercase;color:${s.t};opacity:0.65;">NOW STREAMING</div>
+          <div style="font:800 11px/1 system-ui;letter-spacing:1.2px;text-transform:uppercase;color:${s.t};">${s.l}</div>
+        </div>
+        ${IMG(p)}
+      </div>`;
+    }
+  },
+
+  /* 3. Tight Stripe — thicker frame, minimal header */
+  {
+    name: '3 — Tight Stripe',
+    desc: '10px frame · 22px header · compact',
+    card(p, s) {
+      if (!s) return plain(p);
+      return `<div class="base-card" style="background:${s.h};display:flex;flex-direction:column;padding:0 10px 10px;">
+        <div style="height:22px;margin:0 -10px;display:flex;align-items:center;justify-content:center;font:800 9px/1 system-ui;letter-spacing:1.3px;text-transform:uppercase;color:${s.t};">${s.l}</div>
+        ${IMG(p)}
+      </div>`;
+    }
+  },
+
+  /* 4. Bold Marquee — thin frame, very tall header */
+  {
+    name: '4 — Bold Marquee',
+    desc: '4px frame · 52px header · large type',
+    card(p, s) {
+      if (!s) return plain(p);
+      return `<div class="base-card" style="background:${s.h};display:flex;flex-direction:column;padding:0 4px 4px;">
+        <div style="height:52px;margin:0 -4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
+          <div style="font:900 14px/1 system-ui;letter-spacing:1.5px;text-transform:uppercase;color:${s.t};">${s.l}</div>
+          <div style="width:30px;height:2px;background:${s.t};opacity:0.4;border-radius:1px;"></div>
+        </div>
+        ${IMG(p)}
+      </div>`;
+    }
+  },
+
+  /* 5. Bottom Rail — label flipped to bottom */
+  {
+    name: '5 — Bottom Rail',
+    desc: '8px frame · 34px FOOTER · label below the poster',
+    card(p, s) {
+      if (!s) return plain(p);
+      return `<div class="base-card" style="background:${s.h};display:flex;flex-direction:column;padding:8px 8px 0;">
+        ${IMG(p)}
+        <div style="height:34px;margin:0 -8px;display:flex;align-items:center;justify-content:center;font:800 10px/1 system-ui;letter-spacing:1.1px;text-transform:uppercase;color:${s.t};">${s.l}</div>
+      </div>`;
+    }
+  },
+
+  /* 6. Letterbox — header + footer bars, name only on top */
+  {
+    name: '6 — Letterbox',
+    desc: '8px sides only · 24px top header · 14px bottom accent strip',
+    card(p, s) {
+      if (!s) return plain(p);
+      return `<div class="base-card" style="background:${s.h};display:flex;flex-direction:column;padding:0 8px;">
+        <div style="height:24px;margin:0 -8px;display:flex;align-items:center;justify-content:center;font:800 9px/1 system-ui;letter-spacing:1.2px;text-transform:uppercase;color:${s.t};">${s.l}</div>
+        ${IMG(p)}
+        <div style="height:14px;margin:0 -8px;"></div>
+      </div>`;
+    }
+  },
+
+  /* 7. Thick Museum Frame — 14px all around, name engraved in bottom rail */
+  {
+    name: '7 — Thick Museum Frame',
+    desc: '14px frame all sides · no header · name sits IN the bottom rail',
+    card(p, s) {
+      if (!s) return plain(p);
+      return `<div class="base-card" style="background:${s.h};position:relative;padding:14px;">
+        <img src="${p}" loading="lazy" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+        <div style="position:absolute;bottom:0;left:0;right:0;height:14px;display:flex;align-items:center;justify-content:center;font:800 7px/1 system-ui;letter-spacing:1.4px;text-transform:uppercase;color:${s.t};">${s.l}</div>
+      </div>`;
+    }
+  },
+
+  /* 8. Left Column — rotated label on left side */
+  {
+    name: '8 — Left Column',
+    desc: '8px frame top/right/bottom · 30px rotated label on left',
+    card(p, s) {
+      if (!s) return plain(p);
+      return `<div class="base-card" style="background:${s.h};display:flex;flex-direction:row;padding:8px 8px 8px 0;">
+        <div style="width:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          <div style="transform:rotate(-90deg);white-space:nowrap;font:800 9px/1 system-ui;letter-spacing:1.3px;text-transform:uppercase;color:${s.t};">${s.l}</div>
+        </div>
+        <img src="${p}" loading="lazy" alt="" style="flex:1;min-width:0;height:100%;object-fit:cover;display:block;">
+      </div>`;
+    }
+  },
+
+  /* 9. Dark Frame — neutral black frame, service color header only */
+  {
+    name: '9 — Dark Frame',
+    desc: '#111 frame all sides · service color only in header',
+    card(p, s) {
+      if (!s) return plain(p);
+      return `<div class="base-card" style="background:#111;display:flex;flex-direction:column;padding:0 8px 8px;">
+        <div style="height:34px;margin:0 -8px;background:${s.h};display:flex;align-items:center;justify-content:center;font:800 10px/1 system-ui;letter-spacing:1.1px;text-transform:uppercase;color:${s.t};">${s.l}</div>
+        ${IMG(p)}
+      </div>`;
+    }
+  },
+
+  /* 10. White Mat — service color frame + thin white mat border inside */
+  {
+    name: '10 — White Mat',
+    desc: '8px frame · 30px header · 2px white mat inside the frame',
+    card(p, s) {
+      if (!s) return plain(p);
+      return `<div class="base-card" style="background:${s.h};display:flex;flex-direction:column;padding:0 8px 8px;">
+        <div style="height:30px;margin:0 -8px;display:flex;align-items:center;justify-content:center;font:800 10px/1 system-ui;letter-spacing:1.1px;text-transform:uppercase;color:${s.t};">${s.l}</div>
+        <div style="flex:1;min-height:0;border:2px solid rgba(255,255,255,0.25);border-radius:2px;overflow:hidden;">
+          <img src="${p}" loading="lazy" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </div>
+      </div>`;
+    }
+  },
+
+];
+
+/* Services to show per variation (left → right) */
+const SAMPLES = [
+  { poster: NETFLIX, svc: SVC.netflix, cap: 'Netflix' },
+  { poster: MAX,     svc: SVC.max,     cap: 'MAX' },
+  { poster: SHUDDER, svc: SVC.shudder, cap: 'Shudder' },
+  { poster: PLAIN,   svc: null,        cap: 'No badge' },
+];
+
+/* Render */
+const root = document.getElementById('root');
+for (const v of VARIATIONS) {
+  const div = document.createElement('div');
+  div.className = 'variation';
+  const cards = SAMPLES.map(s =>
+    `<div class="card-wrap">
+      ${v.card(s.poster, s.svc)}
+      <div class="cap">${s.cap}</div>
+    </div>`
+  ).join('');
+  div.innerHTML = `
+    <div class="var-label"><strong>${v.name}</strong></div>
+    <div class="var-desc">${v.desc}</div>
+    <div class="cards-row">${cards}</div>
+  `;
+  root.appendChild(div);
+}
+</script>
+</body>
+</html>

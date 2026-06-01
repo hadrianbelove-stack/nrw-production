@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Lightbox Redesigns — 20 Options</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; background: #000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+/* ── NAV CHROME ── */
+.nav-chrome {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.45rem 0.75rem;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.nav-counter { color: #00d4aa; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; min-width: 52px; }
+.nav-title { color: #999; font-size: 0.67rem; letter-spacing: 0.05em; text-align: center; flex: 1; padding: 0 0.4rem; }
+.nav-btns { display: flex; gap: 0.35rem; min-width: 52px; justify-content: flex-end; }
+.nav-arrow {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff;
+  border-radius: 6px; width: 30px; height: 30px; font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-arrow:active { background: rgba(255,255,255,0.2); }
+
+/* ── SLIDES ── */
+.viewer { position: fixed; inset: 0; top: 38px; }
+.slide { position: absolute; inset: 0; display: none; }
+.slide.active { display: flex; }
+
+/* ══════════════════════════════════════════════════════
+   BASE LAYOUT — poster left, scrollable info right
+   ALL 20 designs share this skeleton
+══════════════════════════════════════════════════════ */
+.lb {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Left column: poster, fixed, full height */
+.lb-poster-col {
+  width: 38%;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center top;
+  background-image: url('https://image.tmdb.org/t/p/w500/gFPGHCC7yJrtoL6C3jlcXhutq3y.jpg');
+  position: relative;
+}
+
+/* Right column: scrollable */
+.lb-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Scrollable info area */
+.lb-info {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.9rem 0.85rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Screening name banner */
+.lb-screening-name {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0.25rem 0.4rem; margin-bottom: 0.5rem; border-radius: 3px; text-align: center;
+  background: rgba(255,215,0,0.15); color: #FFD700; border: 1px solid rgba(255,215,0,0.3);
+}
+
+/* Title area */
+.lb-title-area {
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 2px solid rgba(0,212,170,0.4);
+}
+.lb-title-row { display: flex; align-items: baseline; gap: 0.4rem; margin-bottom: 0.2rem; flex-wrap: wrap; }
+.lb-title { font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1.05; flex-shrink: 1; min-width: 0; letter-spacing: -0.01em; }
+.lb-staff-pick {
+  background: #dc143c; color: #fff; font-size: 0.55rem; font-weight: 700;
+  letter-spacing: 0.08em; padding: 0.18rem 0.4rem; border-radius: 3px;
+  text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+}
+.lb-title-sub { display: flex; align-items: center; justify-content: space-between; min-height: 1.2rem; }
+.lb-reissue-pill {
+  background: #C8A951; color: #000; font-size: 0.55rem; font-weight: 800;
+  letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 7px; border-radius: 8px;
+}
+.lb-date { color: #00d4aa; font-size: 0.9rem; font-weight: 700; }
+
+/* Meta */
+.lb-meta { font-size: 0.72rem; line-height: 1.6; margin-bottom: 0.55rem; color: #888; }
+.lb-crew-label { font-weight: 700; color: #00d4aa; }
+.lb-crew-name { font-weight: 700; color: #fff; }
+.lb-crew-link { text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.25); color: inherit; }
+
+/* Scores */
+.lb-scores { display: flex; flex-wrap: wrap; gap: 0.28rem; margin-bottom: 0.55rem; }
+.score-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 700;
+  text-decoration: none; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+}
+.score-badge.rt   { color: #ff6b6b; }
+.score-badge.mc   { color: #7ddf64; }
+.score-badge.imdb { color: #f5c518; }
+.score-badge.lb   { color: #00e054; }
+.score-badge.wiki { color: #ddd; }
+
+/* Pull quotes — always ABOVE synopsis */
+.lb-pull-quotes { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.6rem; }
+.pq-card { padding: 0.45rem 0.6rem; border-radius: 5px; background: rgba(0,212,170,0.07); border-left: 3px solid #00d4aa; }
+.pq-text { display: block; font-style: italic; font-size: 0.82rem; line-height: 1.5; color: #00d4aa; }
+.pq-cite { display: block; font-size: 0.65rem; color: rgba(0,212,170,0.5); margin-top: 0.18rem; font-style: normal; }
+
+/* Synopsis */
+.lb-synopsis { font-size: 0.82rem; line-height: 1.7; color: #ccc; margin-bottom: 0.5rem; }
+
+/* Awards / box office */
+.lb-awards, .lb-box-office { font-size: 0.65rem; color: rgba(255,255,255,0.35); margin-bottom: 0.3rem; }
+
+/* Buttons — sticky bottom */
+.lb-buttons { flex-shrink: 0; padding: 0.55rem 0.7rem 0.85rem; border-top: 1px solid rgba(255,255,255,0.06); }
+
+/* Nav row */
+.lb-nav-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.lb-nav-btn {
+  width: 42px; height: 42px; border-radius: 50%; border: none;
+  background: rgba(0,212,170,0.1); color: #00d4aa;
+  font-size: 1.4rem; font-weight: 300; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.lb-trailer-btn {
+  flex: 1; height: 42px; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 8px;
+  background: #E50914; color: #fff; font-size: 0.8rem; font-weight: 800;
+  letter-spacing: 0.18em; cursor: pointer;
+}
+
+/* Stream row */
+.lb-stream-row { margin-bottom: 5px; }
+.stream-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; padding: 11px; border-radius: 8px; text-decoration: none;
+  color: #fff; font-weight: 800; font-size: 0.8rem; letter-spacing: 0.06em;
+  text-transform: uppercase; border: none; min-height: 46px; cursor: pointer;
+}
+.stream-btn.netflix { background: #E50914; }
+.stream-btn.prime   { background: #00A8E1; }
+.stream-btn.mubi    { background: #302020; border: 1px solid #553333; }
+
+/* VOD row */
+.lb-vod-row { display: flex; gap: 5px; }
+.lb-vod-row > * { flex: 1; min-width: 0; }
+.vod-btn {
+  display: flex; align-items: stretch; border-radius: 8px; overflow: hidden;
+  text-decoration: none; color: #fff; min-height: 44px; border: 1px solid rgba(255,255,255,0.1);
+}
+.vod-btn .logo-half {
+  display: flex; align-items: center; justify-content: center;
+  width: 38%; padding: 5px 3px; font-size: 0.58rem; font-weight: 800; text-transform: uppercase;
+}
+.vod-btn .price-half {
+  display: flex; align-items: center; justify-content: center;
+  width: 62%; padding: 5px 3px; background: rgba(0,0,0,0.4);
+  font-size: 0.6rem; font-weight: 700; line-height: 1.25; text-align: center; color: #fff;
+}
+.vod-btn.amazon   .logo-half { background: #00A8E1; }
+.vod-btn.apple    .logo-half { background: #333; }
+.vod-btn.fandango .logo-half { background: #282056; }
+
+/* ══════════════════════════════════════════════════════
+   20 THEME OVERRIDES
+   Every design starts from the base above;
+   overrides only what changes per design.
+══════════════════════════════════════════════════════ */
+
+/* 1 – Production Current (no change from base) */
+.d1 .lb-right { background: rgba(12,12,24,1); }
+.d1 .lb-buttons { background: rgba(8,8,16,0.97); }
+
+/* 2 – Teal Quote */
+.d2 .lb-right { background: #0c0c18; }
+.d2 .pq-card  { background: rgba(0,212,170,0.07); border-left-color: #00d4aa; }
+.d2 .pq-text  { color: #00d4aa; }
+.d2 .pq-cite  { color: rgba(0,212,170,0.5); }
+.d2 .lb-synopsis { color: #fff; }
+.d2 .lb-buttons { background: rgba(6,6,14,0.97); }
+
+/* 3 – Crimson accents, teal quotes */
+.d3 .lb-right { background: #0e0b0b; }
+.d3 .lb-title-area { border-bottom-color: rgba(220,20,60,0.4); }
+.d3 .lb-date  { color: #dc143c; }
+.d3 .lb-crew-label { color: #dc143c; }
+.d3 .lb-synopsis { color: #fff; }
+.d3 .lb-nav-btn { color: #dc143c; background: rgba(220,20,60,0.1); }
+.d3 .lb-buttons { background: rgba(10,7,7,0.97); border-top-color: rgba(220,20,60,0.15); }
+
+/* 4 – Gold Cinema, teal quotes */
+.d4 .lb-right { background: linear-gradient(180deg, #0e0c00, #0a0800); }
+.d4 .lb-title-area { border-bottom-color: rgba(200,169,81,0.35); }
+.d4 .lb-date  { color: #C8A951; }
+.d4 .lb-meta  { color: #7a6840; }
+.d4 .lb-crew-label { color: #C8A951; }
+.d4 .lb-crew-name  { color: #e8d080; }
+.d4 .score-badge { border-color: rgba(200,169,81,0.2); background: rgba(200,169,81,0.05); }
+.d4 .lb-synopsis { color: #b09060; }
+.d4 .lb-nav-btn { color: #C8A951; background: rgba(200,169,81,0.1); }
+.d4 .lb-trailer-btn { background: #C8A951; color: #000; border-color: transparent; }
+.d4 .lb-buttons { background: rgba(10,8,0,0.97); border-top-color: rgba(200,169,81,0.15); }
+
+/* 5 – Editorial Light */
+.d5 .lb-right { background: #f0ebe0; }
+.d5 .lb-title-area { border-bottom: 2px solid #8B0000; }
+.d5 .lb-title { color: #111; }
+.d5 .lb-date  { color: #8B0000; font-size: 0.8rem; }
+.d5 .lb-meta  { color: #555; }
+.d5 .lb-crew-label { color: #8B0000; }
+.d5 .lb-crew-name  { color: #111; }
+.d5 .lb-crew-link  { border-bottom-color: rgba(0,0,0,0.25); color: #111; }
+.d5 .score-badge { background: rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.12); color: #333 !important; }
+.d5 .score-badge.rt { color: #a00 !important; }
+.d5 .score-badge.imdb { color: #8a6000 !important; }
+.d5 .pq-card  { background: rgba(0,150,120,0.08); border-left: 3px solid #009478; }
+.d5 .pq-text  { color: #007a60; font-size: 0.85rem; }
+.d5 .pq-cite  { color: #999; }
+.d5 .lb-synopsis { color: #222; }
+.d5 .lb-awards, .d5 .lb-box-office { color: #555; }
+.d5 .lb-nav-btn { color: #8B0000; background: rgba(139,0,0,0.08); }
+.d5 .lb-trailer-btn { background: #8B0000; border-color: transparent; }
+.d5 .vod-btn .price-half { background: rgba(0,0,0,0.1); color: #111; }
+.d5 .vod-btn { border-color: rgba(0,0,0,0.15); }
+.d5 .lb-buttons { background: #e4d8c8; border-top-color: #ccc; }
+
+/* 6 – Neon Pink */
+.d6 .lb-right { background: #060510; }
+.d6 .lb-title-area { border-bottom-color: rgba(255,0,200,0.25); }
+.d6 .lb-date  { color: #ff00cc; }
+.d6 .lb-meta  { color: #443344; }
+.d6 .lb-crew-label { color: #ff00cc; }
+.d6 .lb-crew-name  { color: #cc88cc; }
+.d6 .score-badge { border-color: rgba(255,0,200,0.2); background: rgba(255,0,200,0.04); }
+.d6 .lb-synopsis { color: #fff; }
+.d6 .lb-nav-btn { color: #ff00cc; background: rgba(255,0,200,0.1); }
+.d6 .lb-buttons { background: rgba(4,3,8,0.97); border-top-color: rgba(255,0,200,0.15); }
+
+/* 7 – Blurred Poster BG (poster col same image, right gets blur overlay) */
+.d7 .lb-right {
+  background: rgba(0,0,0,0.35);
+  position: relative;
+}
+.d7 .lb-right::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0;
+  background-image: url('https://image.tmdb.org/t/p/w500/gFPGHCC7yJrtoL6C3jlcXhutq3y.jpg');
+  background-size: cover; background-position: left top;
+  filter: blur(18px) brightness(0.18);
+}
+.d7 .lb-info, .d7 .lb-buttons { position: relative; z-index: 1; }
+.d7 .lb-title-area { border-bottom-color: rgba(255,215,0,0.3); }
+.d7 .lb-date  { color: #FFD700; }
+.d7 .lb-meta  { color: rgba(255,255,255,0.5); }
+.d7 .lb-crew-label { color: #FFD700; }
+.d7 .lb-crew-name  { color: rgba(255,255,255,0.85); }
+.d7 .score-badge { background: rgba(0,0,0,0.35); border-color: rgba(255,255,255,0.12); }
+.d7 .pq-card  { background: rgba(0,0,0,0.3); border-left-color: #00d4aa; }
+
+.d7 .lb-synopsis { color: rgba(255,255,255,0.8); }
+.d7 .lb-nav-btn { color: #FFD700; background: rgba(255,215,0,0.1); }
+.d7 .lb-buttons { background: rgba(0,0,0,0.65); border-top-color: rgba(255,215,0,0.15); }
+
+/* 8 – Sky Blue Quote */
+.d8 .lb-right { background: #060e18; }
+.d8 .lb-title-area { border-bottom-color: rgba(56,189,248,0.3); }
+.d8 .lb-date  { color: #38bdf8; }
+.d8 .lb-meta  { color: #334155; }
+.d8 .lb-crew-label { color: #38bdf8; }
+.d8 .lb-crew-name  { color: #94a3b8; }
+.d8 .score-badge { border-color: rgba(56,189,248,0.2); background: rgba(56,189,248,0.04); }
+.d8 .lb-synopsis { color: #fff; }
+.d8 .lb-nav-btn { color: #38bdf8; background: rgba(56,189,248,0.08); }
+.d8 .lb-buttons { background: rgba(4,8,14,0.97); border-top-color: rgba(56,189,248,0.12); }
+
+/* 9 – Purple Drama */
+.d9 .lb-right { background: #0a060f; }
+.d9 .lb-title-area { border-bottom-color: rgba(192,132,252,0.25); }
+.d9 .lb-date  { color: #c084fc; }
+.d9 .lb-meta  { color: #443355; }
+.d9 .lb-crew-label { color: #c084fc; }
+.d9 .lb-crew-name  { color: #cc99ee; }
+.d9 .score-badge { border-color: rgba(192,132,252,0.2); background: rgba(192,132,252,0.04); }
+.d9 .lb-synopsis { color: #fff; }
+.d9 .lb-nav-btn { color: #c084fc; background: rgba(192,132,252,0.1); }
+.d9 .lb-buttons { background: rgba(6,4,10,0.97); border-top-color: rgba(192,132,252,0.12); }
+
+/* 10 – Amber Warm */
+.d10 .lb-right { background: linear-gradient(180deg, #140e00, #0a0800); }
+.d10 .lb-title-area { border-bottom-color: rgba(255,149,0,0.3); }
+.d10 .lb-date  { color: #ff9500; }
+.d10 .lb-meta  { color: #665030; }
+.d10 .lb-crew-label { color: #ff9500; }
+.d10 .lb-crew-name  { color: #c89060; }
+.d10 .score-badge { border-color: rgba(255,149,0,0.2); background: rgba(255,149,0,0.05); }
+.d10 .lb-synopsis { color: #fff; }
+.d10 .lb-nav-btn { color: #ff9500; background: rgba(255,149,0,0.1); }
+.d10 .lb-buttons { background: rgba(8,6,0,0.97); border-top-color: rgba(255,149,0,0.15); }
+
+/* 11 – Ultra Minimal */
+.d11 .lb-right { background: #080808; }
+.d11 .lb-title { font-weight: 300; letter-spacing: 0.015em; }
+.d11 .lb-title-area { border-bottom: 1px solid rgba(255,255,255,0.05); }
+.d11 .lb-date  { color: #888; font-size: 0.75rem; font-weight: 400; }
+.d11 .lb-meta  { color: #333; }
+.d11 .lb-crew-label { color: #444; font-weight: 400; }
+.d11 .lb-crew-name  { color: #444; font-weight: 400; }
+.d11 .score-badge { background: transparent; border-color: rgba(255,255,255,0.05); font-size: 0.62rem; }
+.d11 .pq-card  { background: transparent; border-left: 1px solid rgba(255,255,255,0.08); padding-left: 0.5rem; }
+.d11 .pq-text  { color: #e0e0e0; font-size: 0.78rem; }
+.d11 .pq-cite  { color: #2e2e2e; }
+.d11 .lb-synopsis { color: #555; }
+.d11 .lb-nav-btn { color: #444; background: rgba(255,255,255,0.04); }
+.d11 .lb-trailer-btn { background: transparent; border-color: rgba(255,255,255,0.12); color: #888; font-weight: 400; }
+.d11 .stream-btn.netflix { background: rgba(229,9,20,0.12); border: 1px solid rgba(229,9,20,0.3); color: #ff5050; }
+.d11 .lb-buttons { background: #050505; border-top-color: rgba(255,255,255,0.04); }
+
+/* 12 – Coral Accent */
+.d12 .lb-right { background: #0e0a08; }
+.d12 .lb-title-area { border-bottom-color: rgba(255,123,84,0.3); }
+.d12 .lb-date  { color: #ff7b54; }
+.d12 .lb-meta  { color: #554030; }
+.d12 .lb-crew-label { color: #ff7b54; }
+.d12 .lb-crew-name  { color: #cc8870; }
+.d12 .score-badge { border-color: rgba(255,123,84,0.2); background: rgba(255,123,84,0.04); }
+.d12 .lb-synopsis { color: #fff; }
+.d12 .lb-nav-btn { color: #ff7b54; background: rgba(255,123,84,0.1); }
+.d12 .lb-buttons { background: rgba(8,5,4,0.97); border-top-color: rgba(255,123,84,0.12); }
+
+/* 13 – Wider Poster (50% col — poster dominant) */
+.d13 .lb-poster-col { width: 50%; }
+.d13 .lb-right { background: #0c0c18; }
+.d13 .lb-info  { padding: 0.75rem 0.7rem 0.3rem; }
+.d13 .lb-title { font-size: 1.1rem; }
+.d13 .lb-date  { font-size: 0.78rem; }
+.d13 .lb-meta  { font-size: 0.66rem; }
+.d13 .score-badge { font-size: 0.6rem; padding: 2px 4px; }
+.d13 .pq-card  { background: rgba(0,212,170,0.07); border-left-color: #00d4aa; }
+.d13 .pq-text  { color: #00d4aa; font-size: 0.75rem; }
+.d13 .pq-cite  { font-size: 0.6rem; color: rgba(0,212,170,0.45); }
+.d13 .lb-synopsis { color: #fff; font-size: 0.75rem; }
+.d13 .lb-buttons { background: rgba(6,6,14,0.97); padding: 0.45rem 0.6rem 0.75rem; }
+.d13 .lb-nav-btn { width: 36px; height: 36px; font-size: 1.2rem; }
+.d13 .lb-trailer-btn { height: 36px; font-size: 0.72rem; }
+.d13 .stream-btn { min-height: 38px; font-size: 0.7rem; }
+.d13 .vod-btn { min-height: 36px; }
+.d13 .vod-btn .logo-half { font-size: 0.52rem; }
+.d13 .vod-btn .price-half { font-size: 0.52rem; }
+
+/* 14 – Compact Poster (28% col — more room for info) */
+.d14 .lb-poster-col { width: 28%; }
+.d14 .lb-right { background: #0c0c18; }
+.d14 .lb-info  { padding: 0.9rem 1rem 0.4rem; }
+.d14 .lb-title { font-size: 1.3rem; }
+.d14 .pq-card  { background: rgba(0,212,170,0.06); border-left-color: #00d4aa; }
+.d14 .pq-text  { color: #00d4aa; }
+.d14 .pq-cite  { color: rgba(0,212,170,0.45); }
+.d14 .lb-synopsis { color: #fff; }
+.d14 .lb-buttons { background: rgba(6,6,14,0.97); }
+
+/* 15 – Bold Typography */
+.d15 .lb-right { background: #0c0c18; }
+.d15 .lb-title { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; }
+.d15 .lb-date  { color: #00d4aa; font-size: 1rem; }
+.d15 .lb-meta  { color: #888; font-size: 0.76rem; }
+.d15 .lb-scores { margin-bottom: 0.7rem; }
+.d15 .score-badge { font-size: 0.75rem; padding: 3px 8px; }
+.d15 .pq-card  { background: transparent; border-left: none; padding: 0 0 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 0.4rem; }
+.d15 .pq-text  { color: #00d4aa; font-size: 0.95rem; font-weight: 300; line-height: 1.45; }
+.d15 .pq-cite  { color: #444; font-size: 0.65rem; margin-top: 0.2rem; }
+.d15 .lb-synopsis { color: #fff; font-size: 0.88rem; font-weight: 300; line-height: 1.8; }
+.d15 .lb-trailer-btn { font-size: 0.9rem; letter-spacing: 0.22em; }
+.d15 .lb-buttons { background: rgba(6,6,14,0.97); }
+
+/* 16 – Big Quote Mark */
+.d16 .lb-right { background: #0c0c18; }
+.d16 .pq-card  { background: rgba(0,212,170,0.04); border-left: none; padding-left: 0; }
+.d16 .pq-bigmark { font-size: 3rem; line-height: 0.55; color: rgba(0,212,170,0.25); font-style: italic; display: block; margin-bottom: 0.25rem; }
+.d16 .pq-text  { color: #fff; font-size: 0.85rem; font-weight: 300; }
+.d16 .pq-cite  { color: #00d4aa; font-size: 0.65rem; margin-top: 0.25rem; }
+.d16 .lb-synopsis { color: #bbb; }
+.d16 .lb-buttons { background: rgba(6,6,14,0.97); }
+
+/* 17 – Critics Section Label + Yellow */
+.d17 .lb-right { background: #111; }
+.d17 .pq-section-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #ffc800; margin-bottom: 0.35rem; }
+.d17 .lb-synopsis { color: #fff; }
+.d17 .lb-buttons { background: rgba(8,8,8,0.97); border-top-color: rgba(255,200,0,0.1); }
+
+/* 18 – Full-Width Quote Banner (edge-to-edge strips) */
+.d18 .lb-right { background: #0c0c18; }
+.d18 .lb-info  { padding: 0; }
+.d18 .lb-info-top    { padding: 0.9rem 0.85rem 0; }
+.d18 .lb-info-bottom { padding: 0.6rem 0.85rem 0.4rem; }
+.d18 .lb-pull-quotes { margin: 0; gap: 0; }
+.d18 .pq-card {
+  background: linear-gradient(90deg, rgba(0,212,170,0.13), rgba(0,212,170,0.04));
+  border-left: none;
+  border-top: 1px solid rgba(0,212,170,0.18);
+  border-bottom: 1px solid rgba(0,212,170,0.08);
+  border-radius: 0; padding: 0.6rem 0.85rem;
+}
+.d18 .pq-text  { color: #00d4aa; font-size: 0.83rem; }
+.d18 .pq-cite  { color: rgba(0,212,170,0.5); }
+.d18 .lb-synopsis { color: #fff; }
+.d18 .lb-buttons { background: rgba(6,6,14,0.97); border-top-color: rgba(0,212,170,0.1); }
+
+/* 19 – Tiny scores, large quote+synopsis */
+.d19 .lb-right { background: #0c0c18; }
+.d19 .lb-scores { gap: 0.2rem; margin-bottom: 0.5rem; }
+.d19 .score-badge { font-size: 0.6rem; padding: 1px 5px; border-radius: 20px; background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.07); }
+.d19 .pq-card  { background: rgba(0,212,170,0.06); border-left-color: #00d4aa; border-radius: 0 5px 5px 0; }
+.d19 .pq-text  { color: #00d4aa; font-size: 0.92rem; font-weight: 400; }
+.d19 .pq-cite  { color: #3a7a70; }
+.d19 .lb-synopsis { color: #fff; font-size: 0.92rem; line-height: 1.75; }
+.d19 .lb-buttons { background: rgba(6,6,14,0.97); }
+
+/* 20 – Monochrome + Teal Quotes Only */
+.d20 .lb-poster-col { filter: grayscale(100%) brightness(0.55); }
+.d20 .lb-right { background: #080808; }
+.d20 .lb-title { font-weight: 200; }
+.d20 .lb-title-area { border-bottom: 1px solid rgba(255,255,255,0.05); }
+.d20 .lb-date  { color: #555; font-weight: 400; font-size: 0.75rem; }
+.d20 .lb-meta  { color: #2a2a2a; }
+.d20 .lb-crew-label { color: #333; font-weight: 400; }
+.d20 .lb-crew-name  { color: #333; font-weight: 400; }
+.d20 .score-badge { background: transparent; border-color: rgba(255,255,255,0.04); color: #2e2e2e !important; }
+.d20 .pq-card  { background: rgba(0,212,170,0.08); border-left: 3px solid #00d4aa; }
+.d20 .pq-text  { color: #00d4aa; }
+.d20 .pq-cite  { color: rgba(0,212,170,0.4); }
+.d20 .lb-synopsis { color: #3a3a3a; }
+.d20 .lb-nav-btn { color: rgba(0,212,170,0.4); background: rgba(0,212,170,0.05); }
+.d20 .lb-trailer-btn { background: rgba(0,212,170,0.1); border-color: rgba(0,212,170,0.2); color: #00d4aa; font-weight: 400; }
+.d20 .stream-btn.netflix { background: rgba(229,9,20,0.1); border: 1px solid rgba(229,9,20,0.2); color: rgba(229,9,20,0.5); }
+.d20 .vod-btn .logo-half { filter: grayscale(1) opacity(0.4); }
+.d20 .lb-buttons { background: #050505; border-top-color: rgba(0,212,170,0.1); }
+</style>
+</head>
+<body>
+
+<div class="nav-chrome">
+  <div class="nav-counter" id="counter">1 / 20</div>
+  <div class="nav-title" id="design-name"></div>
+  <div class="nav-btns">
+    <button class="nav-arrow" onclick="go(-1)">‹</button>
+    <button class="nav-arrow" onclick="go(1)">›</button>
+  </div>
+</div>
+
+<div class="viewer" id="slides">
+
+<!-- shared inner HTML; only the theme class (d1–d20) changes -->
+<!-- I use a JS template to avoid copy-pasting 20× -->
+
+</div>
+
+<script>
+const DESIGNS = [
+  { cls:'d1',  name:'Current (baseline)' },
+  { cls:'d2',  name:'Teal quote' },
+  { cls:'d3',  name:'Crimson quote' },
+  { cls:'d4',  name:'Gold cinema' },
+  { cls:'d5',  name:'Editorial / light bg' },
+  { cls:'d6',  name:'Neon pink' },
+  { cls:'d7',  name:'Blurred poster bg' },
+  { cls:'d8',  name:'Sky blue quote' },
+  { cls:'d9',  name:'Purple drama' },
+  { cls:'d10', name:'Amber warm' },
+  { cls:'d11', name:'Ultra minimal' },
+  { cls:'d12', name:'Coral accent' },
+  { cls:'d13', name:'Poster dominant (50% col)' },
+  { cls:'d14', name:'Compact poster (28% col)' },
+  { cls:'d15', name:'Bold typography' },
+  { cls:'d16', name:'Big quote mark' },
+  { cls:'d17', name:'Critics section label' },
+  { cls:'d18', name:'Full-width quote banner' },
+  { cls:'d19', name:'Larger quote + synopsis' },
+  { cls:'d20', name:'Monochrome + teal quotes' },
+];
+
+const INNER = (d) => `
+<div class="lb ${d.cls}">
+  <div class="lb-poster-col"></div>
+  <div class="lb-right">
+    ${ d.cls==='d18' ? infoD18() : infoStandard() }
+    <div class="lb-buttons">
+      <div class="lb-nav-row">
+        <button class="lb-nav-btn">‹</button>
+        <button class="lb-trailer-btn">TRAILER</button>
+        <button class="lb-nav-btn">›</button>
+      </div>
+      <div class="lb-stream-row"><a class="stream-btn netflix">WATCH ON NETFLIX</a></div>
+      <div class="lb-vod-row">
+        <a class="vod-btn amazon"><div class="logo-half">AMAZON</div><div class="price-half">Rent $5.99 / Buy $14.99</div></a>
+        <a class="vod-btn apple"><div class="logo-half">APPLE</div><div class="price-half">Rent $5.99</div></a>
+        <a class="vod-btn fandango"><div class="logo-half">FANDANGO</div><div class="price-half">Rent $5.99</div></a>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+function titleBlock() {
+  return `
+    <div class="lb-title-area">
+      <div class="lb-title-row">
+        <div class="lb-title">Bunny</div>
+        <span class="lb-staff-pick">Staff Pick</span>
+      </div>
+      <div class="lb-title-sub">
+        <span class="lb-reissue-pill">REISSUE</span>
+        <span class="lb-date">May 16</span>
+      </div>
+    </div>`;
+}
+function metaBlock() {
+  return `
+    <div class="lb-meta">
+      <span class="lb-crew-label">Dir: </span><span class="lb-crew-name">Ben Jacobson</span><br>
+      <span class="lb-crew-label">Cast: </span><span class="lb-crew-name">Mo Stark, Stefan Marolachakis, Ben Jacobson</span><br>
+      USA · 2025 · 87 min · Pragma
+    </div>`;
+}
+function scoresBlock() {
+  return `
+    <div class="lb-scores">
+      <span class="score-badge rt">RT 80%</span>
+      <span class="score-badge imdb">IMDb 9.0</span>
+      <span class="score-badge mc">MC 72</span>
+      <span class="score-badge lb">★★★½</span>
+      <span class="score-badge wiki">Wikipedia</span>
+    </div>`;
+}
+function quotesBlock(d) {
+  const label = d.cls === 'd17' ? '<div class="pq-section-label">What Critics Say</div>' : '';
+  const bigmark = d.cls === 'd16' ? '<span class="pq-bigmark">"</span>' : '';
+  return `
+    <div class="lb-pull-quotes">
+      ${label}
+      <div class="pq-card">${bigmark}<q class="pq-text">Alive, exciting, funny, and original, Bunny is a gem not to be overlooked.</q><cite class="pq-cite">— Kristy Puchko, Mashable</cite></div>
+      <div class="pq-card">${bigmark}<q class="pq-text">A zany comic throwback to extreme indie NYC movies that find a manic energy and rhythm.</q><cite class="pq-cite">— Pete Hammond, Deadline</cite></div>
+    </div>`;
+}
+function synopsisBlock() {
+  return `<p class="lb-synopsis">Two best friends rally the neighbors in their tenement building to help them hide a dead body over the best/worst night of their lives.</p>`;
+}
+
+function infoStandard(d) {
+  return `<div class="lb-info">${titleBlock()}${metaBlock()}${scoresBlock()}${quotesBlock(d||{})}${synopsisBlock()}</div>`;
+}
+// Design 18: full-width strips need the pull-quotes outside the padded container
+function infoD18() {
+  return `
+    <div class="lb-info">
+      <div class="lb-info-top">${titleBlock()}${metaBlock()}${scoresBlock()}</div>
+      <div class="lb-pull-quotes">
+        <div class="pq-card"><q class="pq-text">Alive, exciting, funny, and original, Bunny is a gem not to be overlooked.</q><cite class="pq-cite">— Kristy Puchko, Mashable</cite></div>
+        <div class="pq-card"><q class="pq-text">A zany comic throwback to extreme indie NYC movies that find a manic energy and rhythm.</q><cite class="pq-cite">— Pete Hammond, Deadline</cite></div>
+      </div>
+      <div class="lb-info-bottom">${synopsisBlock()}</div>
+    </div>`;
+}
+
+// Build & inject all 20 slides
+const container = document.getElementById('slides');
+DESIGNS.forEach((d, i) => {
+  const slide = document.createElement('div');
+  slide.className = 'slide';
+  slide.id = 's' + (i + 1);
+  const inner = d.cls === 'd18'
+    ? INNER(d).replace(infoStandard(), infoD18())
+    : INNER(d).replace('${ d.cls===\'d18\' ? infoD18() : infoStandard() }', infoStandard(d));
+  // Simpler: just set innerHTML directly
+  slide.innerHTML = buildSlide(d);
+  container.appendChild(slide);
+});
+
+function buildSlide(d) {
+  let info;
+  if (d.cls === 'd18') {
+    info = `<div class="lb-info">
+      <div class="lb-info-top">${titleBlock()}${metaBlock()}${scoresBlock()}</div>
+      <div class="lb-pull-quotes">
+        <div class="pq-card"><q class="pq-text">Alive, exciting, funny, and original, Bunny is a gem not to be overlooked.</q><cite class="pq-cite">— Kristy Puchko, Mashable</cite></div>
+        <div class="pq-card"><q class="pq-text">A zany comic throwback to extreme indie NYC movies that find a manic energy and rhythm.</q><cite class="pq-cite">— Pete Hammond, Deadline</cite></div>
+      </div>
+      <div class="lb-info-bottom">${synopsisBlock()}</div>
+    </div>`;
+  } else {
+    info = `<div class="lb-info">${titleBlock()}${metaBlock()}${scoresBlock()}${quotesBlock(d)}${synopsisBlock()}</div>`;
+  }
+
+  return `<div class="lb ${d.cls}">
+  <div class="lb-poster-col"></div>
+  <div class="lb-right">
+    ${info}
+    <div class="lb-buttons">
+      <div class="lb-nav-row">
+        <button class="lb-nav-btn">‹</button>
+        <button class="lb-trailer-btn">TRAILER</button>
+        <button class="lb-nav-btn">›</button>
+      </div>
+      <div class="lb-stream-row"><a class="stream-btn netflix">WATCH ON NETFLIX</a></div>
+      <div class="lb-vod-row">
+        <a class="vod-btn amazon"><div class="logo-half">AMAZON</div><div class="price-half">Rent $5.99 / Buy $14.99</div></a>
+        <a class="vod-btn apple"><div class="logo-half">APPLE</div><div class="price-half">Rent $5.99</div></a>
+        <a class="vod-btn fandango"><div class="logo-half">FANDANGO</div><div class="price-half">Rent $5.99</div></a>
+      </div>
+    </div>
+  </div>
+</div>`;
+}
+
+let cur = 1;
+function show(n) {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('s' + n);
+  el.classList.add('active');
+  // reset scroll on right info panel
+  const info = el.querySelector('.lb-info');
+  if (info) info.scrollTop = 0;
+  document.getElementById('counter').textContent = n + ' / ' + DESIGNS.length;
+  document.getElementById('design-name').textContent = DESIGNS[n-1].name;
+  cur = n;
+}
+function go(dir) {
+  let next = cur + dir;
+  if (next < 1) next = DESIGNS.length;
+  if (next > DESIGNS.length) next = 1;
+  show(next);
+}
+show(1);
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+});
+
+// Swipe
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 48) go(dx < 0 ? 1 : -1);
+}, { passive: true });
+</script>
+</body>
+</html>

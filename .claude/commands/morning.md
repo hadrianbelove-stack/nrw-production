@@ -44,13 +44,50 @@ Then present this report in order:
 ---
 
 ### New Arrivals
-List every movie added to the wall since yesterday's session (from `data.json` where `digital_date` is today or yesterday). For each:
-```
-• Title (Year) — Service | RT% | Trailer ✓/⚠ | Watch links ✓/⚠
-```
-Flag `⚠` for: no trailer, zero watch links, Plex-only.
 
-**Watch link check**: a film has links if `watch_links.streaming` OR `watch_links.vod` is non-empty. Check both — VOD-only films (no streaming) still have links. Only flag `⚠ no links` if both arrays are empty or missing.
+Run this script — reads exact field paths, no guessing:
+
+```bash
+/usr/bin/python3 -c "
+import json
+from datetime import date, timedelta
+
+data = json.load(open('data.json'))
+today = str(date.today())
+
+try:
+    sess = json.load(open('.claude/last_nrw_session.json'))
+    from_date = sess['timestamp'][:10]
+except Exception:
+    from_date = str(date.today() - timedelta(days=1))
+
+arrivals = [m for m in data['movies']
+            if from_date <= m.get('digital_date', '') <= today]
+arrivals.sort(key=lambda m: m.get('digital_date', ''), reverse=True)
+
+if not arrivals:
+    print(f'No new arrivals since {from_date}')
+else:
+    print(f'{len(arrivals)} arrival(s) since {from_date}:')
+    for m in arrivals:
+        title = m.get('title', '?')
+        year = m.get('year', '?')
+        rt = m.get('rt_score') or '--'
+        streaming = [s['service'] for s in m.get('watch_links', {}).get('streaming', [])]
+        vod = [v['service'] for v in m.get('watch_links', {}).get('vod', [])]
+        services = streaming + vod
+        trailer_hosted = bool(m.get('links', {}).get('trailer_hosted', ''))
+        trailer_yt = bool(m.get('links', {}).get('trailer', ''))
+        has_links = bool(streaming or vod)
+        plex_only = services == ['Plex']
+        t_flag = 'trailer:hosted' if trailer_hosted else ('trailer:YT' if trailer_yt else '⚠ NO TRAILER')
+        l_flag = ('⚠ PLEX ONLY' if plex_only else 'links:ok') if has_links else '⚠ NO LINKS'
+        svc = ', '.join(services) if services else '—'
+        print(f'  • {title} ({year}) — {svc} | RT:{rt} | {t_flag} | {l_flag}')
+"
+```
+
+Present the output directly. Any `⚠` flags become Concerns below.
 
 ---
 
@@ -61,11 +98,11 @@ From `run_diagnostics.json` `stall_status` — is the pipeline stalled? How many
 
 ### Concerns
 Bullet list of anything actionable:
-- Phase failures
-- Films with zero watch links
-- Films missing trailers (more than 3 days old)
+- Phase failures (from `run_diagnostics.json` `failures`)
+- Any `⚠ NO TRAILER` from the New Arrivals script above
+- Any `⚠ NO LINKS` or `⚠ PLEX ONLY` from the New Arrivals script above
 - Enrichment errors
-- Pull quote gaps (films in curation queue with no scraped quotes)
+- Pull quote gaps (films in curation queue with no entry in `pull_quotes_combined.json`)
 
 If nothing: "No concerns."
 

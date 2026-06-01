@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Score Badge Options — NRW</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    background-attachment: fixed;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    padding: 3rem 2rem;
+}
+
+h1 {
+    text-align: center;
+    font-weight: 100;
+    letter-spacing: 0.3em;
+    font-size: 1.4rem;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ========== SHARED PANEL CHROME ========== */
+.panel {
+    background: rgba(12, 12, 24, 0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.option-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #00d4aa;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0,212,170,0.2);
+    padding-bottom: 0.5rem;
+}
+
+/* Title area */
+.title-area {
+    min-height: 5.5rem;
+    border-bottom: 2px solid rgba(0, 212, 170, 0.4);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.movie-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+.movie-meta-sub {
+    font-size: 0.78rem;
+    color: #888;
+    margin-top: 0.3rem;
+}
+
+/* Meta line */
+.meta-line {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+.meta-line span { color: #00d4aa; font-weight: 600; }
+
+/* ========== SCORE BADGES — SHARED BASE ========== */
+.lightbox-scores {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.score-logo {
+    height: 16px;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 3px;
+    display: inline-block;
+}
+
+/* Emoji stand-ins for logos (no image files needed) */
+.rt-icon::before    { content: "🍅"; font-size: 13px; margin-right: 3px; }
+.imdb-icon::before  { content: "⭐"; font-size: 11px; margin-right: 3px; }
+.mc-icon::before    { content: "🎯"; font-size: 12px; margin-right: 3px; }
+.lb-icon::before    { content: "◎"; font-size: 12px; margin-right: 3px; }
+.wiki-icon::before  { content: "W"; font-size: 12px; font-weight: 800; margin-right: 2px; font-style: italic; }
+
+/* Synopsis */
+.synopsis {
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+}
+
+/* ============================================================
+   OPTION A  —  CURRENT (dim grey)
+   ============================================================ */
+.current .score-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 7px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.current .score-badge.rt   { color: #ff6b6b; }
+.current .score-badge.mc   { color: #7ddf64; }
+.current .score-badge.imdb { color: #f5c518; }
+.current .score-badge.lb   { color: #00e054; }
+.current .score-badge.wiki { color: #fff; }
+
+/* ============================================================
+   OPTION A  —  COLORED GHOST BORDERS
+   ============================================================ */
+.option-a .score-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.option-a .score-badge.rt {
+    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.55);
+    background: rgba(255, 107, 107, 0.08);
+}
+.option-a .score-badge.imdb {
+    color: #f5c518;
+    border-color: rgba(245, 197, 24, 0.55);
+    background: rgba(245, 197, 24, 0.08);
+}
+.option-a .score-badge.mc {
+    color: #7ddf64;
+    border-color: rgba(125, 223, 100, 0.55);
+    background: rgba(125, 223, 100, 0.08);
+}
+.option-a .score-badge.lb {
+    color: #00e054;
+    border-color: rgba(0, 224, 84, 0.55);
+    background: rgba(0, 224, 84, 0.08);
+}
+.option-a .score-badge.wiki {
+    color: #bbb;
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.05);
+}
+
+/* ============================================================
+   OPTION B  —  PILL CAPSULES
+   ============================================================ */
+.option-b .score-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 11px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.option-b .score-badge.rt {
+    color: #ff8888;
+    background: rgba(255, 107, 107, 0.18);
+}
+.option-b .score-badge.imdb {
+    color: #f5c518;
+    background: rgba(245, 197, 24, 0.15);
+}
+.option-b .score-badge.mc {
+    color: #7ddf64;
+    background: rgba(125, 223, 100, 0.15);
+}
+.option-b .score-badge.lb {
+    color: #00e054;
+    background: rgba(0, 224, 84, 0.15);
+}
+.option-b .score-badge.wiki {
+    color: #ccc;
+    background: rgba(255,255,255,0.1);
+}
+
+/* ============================================================
+   OPTION C  —  SOLID COLORED BLOCKS
+   ============================================================ */
+.option-c .score-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-decoration: none;
+    border: none;
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+.option-c .score-badge.rt {
+    background: rgba(250, 50, 50, 0.8);
+    color: #fff;
+}
+.option-c .score-badge.imdb {
+    background: rgba(245, 197, 24, 0.9);
+    color: #000;
+}
+.option-c .score-badge.mc {
+    background: rgba(102, 204, 51, 0.8);
+    color: #fff;
+}
+.option-c .score-badge.lb {
+    background: rgba(0, 224, 84, 0.75);
+    color: #000;
+}
+.option-c .score-badge.wiki {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+}
+</style>
+</head>
+<body>
+
+<h1>NRW — Score Badge Redesign Options</h1>
+
+<div class="grid">
+
+    <!-- CURRENT -->
+    <div class="panel current">
+        <div class="option-label">Current (for reference)</div>
+        <div class="title-area">
+            <div class="movie-title">Miss You, Love You</div>
+            <div class="movie-meta-sub">2026 &middot; 86 min &middot; USA</div>
+        </div>
+        <div class="meta-line">
+            <span>Dir:</span> Dustin Shroff &nbsp;&middot;&nbsp;
+            <span>Genre:</span> Romance &nbsp;&middot;&nbsp;
+            <span>Date:</span> May 9
+        </div>
+        <div class="lightbox-scores">
+            <a href="#" class="score-badge rt"><span class="rt-icon"></span>89%</a>
+            <a href="#" class="score-badge imdb"><span class="imdb-icon"></span>7.1</a>
+            <a href="#" class="score-badge mc"><span class="mc-icon"></span>72</a>
+            <a href="#" class="score-badge lb"><span class="lb-icon"></span>★★★½</a>
+            <a href="#" class="score-badge wiki"><span class="wiki-icon"></span></a>
+        </div>
+        <p class="synopsis">A virtual two-hander, <em>Miss You, Love You</em> is a rare accomplishment — just enough of a good thing.</p>
+    </div>
+
+    <!-- OPTION A -->
+    <div class="panel option-a">
+        <div class="option-label">Option A — Colored Ghost Borders</div>
+        <div class="title-area">
+            <div class="movie-title">Miss You, Love You</div>
+            <div class="movie-meta-sub">2026 &middot; 86 min &middot; USA</div>
+        </div>
+        <div class="meta-line">
+            <span>Dir:</span> Dustin Shroff &nbsp;&middot;&nbsp;
+            <span>Genre:</span> Romance &nbsp;&middot;&nbsp;
+            <span>Date:</span> May 9
+        </div>
+        <div class="lightbox-scores">
+            <a href="#" class="score-badge rt"><span class="rt-icon"></span>89%</a>
+            <a href="#" class="score-badge imdb"><span class="imdb-icon"></span>7.1</a>
+            <a href="#" class="score-badge mc"><span class="mc-icon"></span>72</a>
+            <a href="#" class="score-badge lb"><span class="lb-icon"></span>★★★½</a>
+            <a href="#" class="score-badge wiki"><span class="wiki-icon"></span></a>
+        </div>
+        <p class="synopsis">A virtual two-hander, <em>Miss You, Love You</em> is a rare accomplishment — just enough of a good thing.</p>
+    </div>
+
+    <!-- OPTION B -->
+    <div class="panel option-b">
+        <div class="option-label">Option B — Pill Capsules</div>
+        <div class="title-area">
+            <div class="movie-title">Miss You, Love You</div>
+            <div class="movie-meta-sub">2026 &middot; 86 min &middot; USA</div>
+        </div>
+        <div class="meta-line">
+            <span>Dir:</span> Dustin Shroff &nbsp;&middot;&nbsp;
+            <span>Genre:</span> Romance &nbsp;&middot;&nbsp;
+            <span>Date:</span> May 9
+        </div>
+        <div class="lightbox-scores">
+            <a href="#" class="score-badge rt"><span class="rt-icon"></span>89%</a>
+            <a href="#" class="score-badge imdb"><span class="imdb-icon"></span>7.1</a>
+            <a href="#" class="score-badge mc"><span class="mc-icon"></span>72</a>
+            <a href="#" class="score-badge lb"><span class="lb-icon"></span>★★★½</a>
+            <a href="#" class="score-badge wiki"><span class="wiki-icon"></span></a>
+        </div>
+        <p class="synopsis">A virtual two-hander, <em>Miss You, Love You</em> is a rare accomplishment — just enough of a good thing.</p>
+    </div>
+
+    <!-- OPTION C -->
+    <div class="panel option-c" style="grid-column: 2;">
+        <div class="option-label">Option C — Solid Colored Blocks</div>
+        <div class="title-area">
+            <div class="movie-title">Miss You, Love You</div>
+            <div class="movie-meta-sub">2026 &middot; 86 min &middot; USA</div>
+        </div>
+        <div class="meta-line">
+            <span>Dir:</span> Dustin Shroff &nbsp;&middot;&nbsp;
+            <span>Genre:</span> Romance &nbsp;&middot;&nbsp;
+            <span>Date:</span> May 9
+        </div>
+        <div class="lightbox-scores">
+            <a href="#" class="score-badge rt"><span class="rt-icon"></span>89%</a>
+            <a href="#" class="score-badge imdb"><span class="imdb-icon"></span>7.1</a>
+            <a href="#" class="score-badge mc"><span class="mc-icon"></span>72</a>
+            <a href="#" class="score-badge lb"><span class="lb-icon"></span>★★★½</a>
+            <a href="#" class="score-badge wiki"><span class="wiki-icon"></span></a>
+        </div>
+        <p class="synopsis">A virtual two-hander, <em>Miss You, Love You</em> is a rare accomplishment — just enough of a good thing.</p>
+    </div>
+
+</div>
+
+</body>
+</html>

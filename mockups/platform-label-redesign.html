@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NRW — Frame + Ribbon Variations</title>
+  <style>
+    :root {
+      --accent-primary: #00d4aa;
+      --svc-netflix: #E50914;
+      --svc-max:     #B537F2;
+      --svc-hulu:    #1CE783;
+      --svc-prime:   #00A8E1;
+      --svc-mubi:    #DA2128;
+      --svc-shudder: #8B0000;
+      --svc-apple:   #aaaaaa;
+      --svc-peacock: #111111;
+      --svc-amc:     #1B6FE0;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 100%);
+      background-attachment: fixed;
+      color:#fff;
+      font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      line-height:1.6;
+      min-height:100vh;
+      padding-bottom:90px;
+    }
+
+    /* ── NRW Header ── */
+    header {
+      padding:1.5rem 1rem 1rem;
+      text-align:center;
+      border-bottom:1px solid #333;
+      background:rgba(0,0,0,0.5);
+      backdrop-filter:blur(10px);
+    }
+    .title-row { display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-bottom:.5rem;flex-wrap:wrap; }
+    header h1 { font-weight:100;letter-spacing:.3em;font-size:2.5rem;background:linear-gradient(45deg,#fff,var(--accent-primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+    .slop-toggle-wrap { display:flex;align-items:center;gap:8px; }
+    .slop-label { font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,212,170,.75);white-space:nowrap; }
+    .slop-track { width:108px;height:32px;border-radius:16px;background:#1a1a1a;border:1px solid rgba(0,212,170,.45);position:relative; }
+    .slop-thumb { position:absolute;top:3px;left:4px;width:24px;height:24px;border-radius:50%;background:var(--accent-primary); }
+    .slop-toggle-wrap.on .slop-track { background:var(--accent-primary); }
+    .slop-toggle-wrap.on .slop-thumb { transform:translateX(72px);background:#000; }
+    .filters { display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap;margin-top:.5rem; }
+    .filter-btn { padding:.5rem 1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:25px;font-size:.9rem; }
+    .search-container { display:flex;align-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:25px;padding:0 .75rem; }
+    .search-container input { background:none;border:none;color:#fff;padding:.5rem .25rem;font-size:.9rem;outline:none;width:200px; }
+    .search-container input::placeholder { color:#555; }
+
+    /* ── Wall grid ── */
+    #wall {
+      padding:1.5rem 2rem;
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+      gap:2rem 1rem;
+    }
+
+    .movie-container { display:flex;flex-direction:column;align-items:center;min-width:0; }
+
+    /* Date divider */
+    .date-divider-card { width:100%;aspect-ratio:2/3;background:#0a0a0a;border-radius:15px;display:flex;flex-direction:column;align-items:flex-start;overflow:hidden; }
+    .date-bar { width:100%;background:var(--accent-primary);padding:5px 10px; }
+    .date-day { font-size:.72rem;color:#000;font-weight:800;letter-spacing:.08em; }
+    .date-body { padding:0 0 0 10px;flex:1;display:flex;flex-direction:column;justify-content:center;width:100%; }
+    .date-number { font-size:3.2rem;font-weight:800;color:#fff;line-height:.85; }
+    .date-month { font-size:.6rem;color:#888;letter-spacing:.1em;margin-top:.2rem; }
+    .date-chevrons { display:flex;gap:0;margin-top:.3rem; }
+    .date-chevrons span { font-size:2.2rem;font-weight:800;color:var(--accent-primary);line-height:1; }
+    .date-chevrons span:nth-child(1){opacity:.9}.date-chevrons span:nth-child(2){opacity:.7}
+    .date-chevrons span:nth-child(3){opacity:.5}.date-chevrons span:nth-child(4){opacity:.3}
+    .date-chevrons span:nth-child(5){opacity:.15}
+
+    /* Movie card shell */
+    .movie-card { width:100%;aspect-ratio:2/3;border-radius:15px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.4);position:relative;background:#111;cursor:pointer; }
+    .movie-card img { width:100%;height:100%;object-fit:cover;display:block; }
+
+    /* Score overlay */
+    .card-score-overlay { position:absolute;bottom:8px;left:8px;display:flex;gap:4px;z-index:5; }
+    .card-score-badge { padding:3px 6px;border-radius:6px;font-size:.65rem;font-weight:800;line-height:1;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1); }
+    .card-score-badge.imdb { color:#f5c518; }
+
+    /* Caption */
+    .movie-caption { width:100%;margin-top:6px; }
+    .movie-caption-title { font-size:.85rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .movie-caption-meta { font-size:.78rem;color:var(--accent-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+
+    /* ── Grid version toggle ── */
+    .wall-version { display:none; }
+    .wall-version.active { display:contents; }
+
+    /* ── Floating navigator ── */
+    .nav-bar {
+      position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+      z-index:999;
+      display:flex;align-items:center;gap:0;
+      background:rgba(6,6,18,.96);
+      backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:32px;
+      padding:6px 6px;
+      box-shadow:0 8px 32px rgba(0,0,0,.7);
+    }
+    .nav-arrow {
+      width:36px;height:36px;border-radius:50%;background:none;
+      border:none;color:#555;font-size:20px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition:color .15s,background .15s;flex-shrink:0;
+    }
+    .nav-arrow:hover { color:#fff;background:rgba(255,255,255,.08); }
+    .nav-center {
+      display:flex;flex-direction:column;align-items:center;
+      min-width:180px;padding:0 6px;
+    }
+    .nav-count { font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#555; }
+    .nav-name  { font-size:11px;font-weight:700;letter-spacing:.06em;color:#bbb;white-space:nowrap; }
+
+    @media (max-width:700px) {
+      #wall { grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem .6rem;padding:1rem; }
+      header h1 { font-size:1.4rem;letter-spacing:.2em; }
+      .slop-toggle-wrap { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="title-row">
+    <h1>THE&nbsp;NEW RELEASE WALL</h1>
+    <div class="slop-toggle-wrap on"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">SLOP FREE</span></div>
+    <div class="slop-toggle-wrap"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">FESTS</span></div>
+    <div class="slop-toggle-wrap"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">PRE-ORDER</span></div>
+  </div>
+  <div class="filters">
+    <button class="filter-btn">Picks</button><button class="filter-btn">Indie</button>
+    <button class="filter-btn">Horror</button><button class="filter-btn">Action</button>
+    <button class="filter-btn">Comedy</button><button class="filter-btn">Foreign</button>
+    <button class="filter-btn">Docs</button><button class="filter-btn">Reissues</button>
+    <div class="search-container"><input type="text" placeholder="Search title, director, genre..."></div>
+  </div>
+</header>
+
+<main id="wall"></main>
+
+<div class="nav-bar">
+  <button class="nav-arrow" id="btn-prev">‹</button>
+  <div class="nav-center">
+    <div class="nav-count" id="nav-count">1 of 10</div>
+    <div class="nav-name"  id="nav-name">Standard Rail</div>
+  </div>
+  <button class="nav-arrow" id="btn-next">›</button>
+</div>
+
+<script>
+/* ── Wall items ── */
+const WALL = [
+  {type:'date', day:'SAT', num:'30', mon:'MAY'},
+  {type:'movie', title:'A Foggy Tale (大濛)',     poster:'https://image.tmdb.org/t/p/w500/nj1QyqHN48Wn66U9JYXIywNX8Nj.jpg', svc:'Netflix',            director:'Chen Yu-hsun', genre:'Drama',       country:'TWN', imdb:'7.7'},
+  {type:'movie', title:'The Lotto Winner',        poster:'https://image.tmdb.org/t/p/w500/sdPxiTp9bf2muVWyxptC5TSsalU.jpg', svc:'Netflix',            director:null,           genre:'Family',      country:'PHI', imdb:'6.1'},
+  {type:'movie', title:'Food Truck: Stolen Love', poster:'https://image.tmdb.org/t/p/w500/fOhSmHSEm0iVQ2AdG5SkjXnsvUM.jpg', svc:'Netflix',            director:null,           genre:'Comedy',      country:'THA'},
+  {type:'movie', title:'Sampung Utos Kay Josh',   poster:'https://image.tmdb.org/t/p/w500/3fSfR0hI5p9aOFtlg6GXGnwNnHS.jpg', svc:null,                 director:null,           genre:'Comedy',      country:'PHI', imdb:'6.1'},
+  {type:'date', day:'FRI', num:'29', mon:'MAY'},
+  {type:'movie', title:'Miss You, Love You',      poster:'https://image.tmdb.org/t/p/w500/odnel7VLYHTdW3OdgRl7N5nSlpM.jpg', svc:null,                 director:null,           genre:'Drama',       country:'USA'},
+  {type:'movie', title:'Behind Bars',             poster:'https://image.tmdb.org/t/p/w500/jj9U8r7erBDzFYRfDPUmcqX3Mut.jpg', svc:'HBO Max',            director:null,           genre:'Documentary', country:'ESP'},
+  {type:'movie', title:'My 2 Cents (Due spicci)', poster:'https://image.tmdb.org/t/p/w500/ezu9oAG68yRoFRsx5qzb1yt5MMJ.jpg', svc:'Netflix',            director:null,           genre:'Animation',   country:'ITA'},
+  {type:'date', day:'THU', num:'28', mon:'MAY'},
+  {type:'movie', title:'1000 Women in Horror',    poster:'https://image.tmdb.org/t/p/w500/3ElTptvgbI7kWmsqWNqBKkMsD3e.jpg', svc:'Shudder',            director:null,           genre:'Documentary', country:'USA', imdb:'7.2'},
+  {type:'movie', title:'Edge of Night',           poster:'https://image.tmdb.org/t/p/w500/16sWK08q6cDLs7UfeI7nkZdz6fx.jpg', svc:'MUBI',               director:null,           genre:'Drama',       country:'GER', imdb:'5.9'},
+  {type:'movie', title:'Aida, the Movie',         poster:'https://image.tmdb.org/t/p/w500/k3Bk1v28P0ZVQKFL90WtttpQhEP.jpg', svc:'Amazon Prime Video', director:null,           genre:'Comedy',      country:'ESP'},
+  {type:'movie', title:'Lakeview',                poster:'https://image.tmdb.org/t/p/w500/pyEhZ2eSKWe12P5IWqOCAvWYra8.jpg', svc:null,                 director:null,           genre:'Comedy',      country:'USA', imdb:'7.1'},
+  {type:'movie', title:'The Nightmare Upstairs',  poster:'https://image.tmdb.org/t/p/w500/ijUqXJ8SpOyZo3BvfXqooHyQb7S.jpg', svc:'Hulu',               director:null,           genre:'Documentary', country:'USA'},
+];
+
+function resolve(raw) {
+  if (!raw) return null;
+  const l = raw.toLowerCase();
+  if (l.includes('netflix'))                    return {label:'NETFLIX',  h:'#E50914', t:'white'};
+  if (l.includes('max')||l.includes('hbo'))     return {label:'MAX',      h:'#B537F2', t:'white'};
+  if (l.includes('hulu'))                       return {label:'HULU',     h:'#1CE783', t:'black'};
+  if (l.includes('mubi'))                       return {label:'MUBI',     h:'#DA2128', t:'white'};
+  if (l.includes('amazon')||l.includes('prime'))return {label:'PRIME',    h:'#00A8E1', t:'white'};
+  if (l.includes('apple'))                      return {label:'APPLE TV', h:'#888888', t:'white'};
+  if (l.includes('peacock'))                    return {label:'PEACOCK',  h:'#222222', t:'white'};
+  if (l.includes('shudder'))                    return {label:'SHUDDER',  h:'#8B0000', t:'white'};
+  if (l.includes('amc'))                        return {label:'AMC+',     h:'#1B6FE0', t:'white'};
+  if (l.includes('tubi'))                       return {label:'TUBI',     h:'#FA382F', t:'white'};
+  return {label:raw.substring(0,12).toUpperCase(), h:'#444', t:'white'};
+}
+
+/* Flex image helper */
+const FIMG = p => `<img src="${p}" loading="lazy" alt="" style="flex:1;width:100%;object-fit:cover;display:block;min-height:0;">`;
+
+/* Plain card (no badge) */
+const plain = p => `<div class="movie-card"><img src="${p}" loading="lazy" alt=""></div>`;
+
+/* ── 10 Gallery Label variations ──
+   All use: 10–12px frame (via padding + bg color) + header strip at top
+   with a supertitle descriptor + service name. Only the header treatment changes.
+*/
+const VARIANTS = [
+  { name:'1 — Readable Baseline',   desc:'8px supertitle, 85% opacity, tighter spacing — the fix' },
+  { name:'2 — Watch On',            desc:'"WATCH ON" supertitle — shorter, more natural' },
+  { name:'3 — Available On',        desc:'"AVAILABLE ON" — slightly more formal phrasing' },
+  { name:'4 — Name First',          desc:'Service name larger on top, supertitle small below' },
+  { name:'5 — Single Line',         desc:'"on NETFLIX" — two weights in one line' },
+  { name:'6 — Pill Supertitle',     desc:'Supertitle in a small rounded pill badge above name' },
+  { name:'7 — Rule Separator',      desc:'Hairline rule between supertitle and name' },
+  { name:'8 — Left Aligned',        desc:'Both lines left-aligned, editorial feel' },
+  { name:'9 — Taller / Airy',       desc:'64px header, generous breathing room' },
+  { name:'10 — Dot Framed',         desc:'Name centered between two · · · separators' },
+];
+
+/* All 10 share the same outer frame structure — 12px padding on sides + bottom,
+   header strip bleeds to edges via margin: 0 -12px */
+function renderCard(varIdx, poster, svc) {
+  const s = svc;
+  if (!s) return plain(poster);
+
+  const F = 12; /* frame thickness (px) */
+  const outerStyle = `background:${s.h};display:flex;flex-direction:column;padding:0 ${F}px ${F}px;`;
+
+  function header(h, inner) {
+    return `<div style="height:${h}px;margin:0 -${F}px;display:flex;flex-direction:column;align-items:center;justify-content:center;">${inner}</div>`;
+  }
+
+  switch (varIdx) {
+
+    case 0: /* Readable Baseline — same layout, supertitle made legible */
+      return `<div class="movie-card" style="${outerStyle}">
+        ${header(52, `
+          <div style="font:600 8px/1 system-ui;letter-spacing:1.8px;text-transform:uppercase;color:${s.t};opacity:0.85;margin-bottom:5px;">NOW STREAMING</div>
+          <div style="font:800 14px/1 system-ui;letter-spacing:1.3px;text-transform:uppercase;color:${s.t};">${s.label}</div>
+        `)}
+        ${FIMG(poster)}
+      </div>`;
+
+    case 1: /* Watch On */
+      return `<div class="movie-card" style="${outerStyle}">
+        ${header(52, `
+          <div style="font:600 8px/1 system-ui;letter-spacing:1.8px;text-transform:uppercase;color:${s.t};opacity:0.85;margin-bottom:5px;">WATCH ON</div>
+          <div style="font:800 14px/1 system-ui;letter-spacing:1.3px;text-transform:uppercase;color:${s.t};">${s.label}</div>
+        `)}
+        ${FIMG(poster)}
+      </div>`;
+
+    case 2: /* Available On */
+      return `<div class="movie-card" style="${outerStyle}">
+        ${header(52, `
+          <div style="font:600 8px/1 system-ui;letter-spacing:1.8px;text-transform:uppercase;color:${s.t};opacity:0.85;margin-bottom:5px;">AVAILABLE ON</div>
+          <div style="font:800 14px/1 system-ui;letter-spacing:1.3px;text-transform:uppercase;color:${s.t};">${s.label}</div>
+        `)}
+        ${FIMG(poster)}
+      </div>`;
+
+    case 3: /* Name First — service name on top, supertitle below */
+      return `<div class="movie-card" style="${outerStyle}">
+        ${header(52, `
+          <div style="font:800 15px/1 system-ui;letter-spacing:1.4px;text-transform:uppercase;color:${s.t};margin-bottom:5px;">${s.label}</div>
+          <div style="font:500 8px/1 system-ui;letter-spacing:2px;text-transform:uppercase;color:${s.t};opacity:0.75;">NOW STREAMING</div>
+        `)}
+        ${FIMG(poster)}
+      </div>`;
+
+    case 4: /* Single Line — "on NETFLIX" two weights */
+      return `<div class="movie-card" style="${outerStyle}">
+        ${header(44, `
+          <div style="display:flex;align-items:baseline;gap:5px;">
+            <span style="font:400 9px/1 system-ui;text-transform:uppercase;letter-spacing:1px;color:${s.t};opacity:0.75;">on</span>
+            <span style="font:800 15px/1 system-ui;letter-spacing:1.4px;text-transform:uppercase;color:${s.t};">${s.label}</span>
+          </div>
+        `)}
+        ${FIMG(poster)}
+      </div>`;
+
+    case 5: /* Pill Supertitle */
+      return `<div class="movie-card" style="${outerStyle}">
+        ${header(56, `
+          <div style="background:rgba(0,0,0,0.25);border-radius:10px;padding:3px 8px;font:700 7px/1 system-ui;letter-spacing:1.6px;text-transform:uppercase;color:${s.t};margin-bottom:6px;">NOW STREAMING</div>
+          <div style="font:800 14px/1 system-ui;letter-spacing:1.3px;text-transform:uppercase;color:${s.t};">${s.label}</div>
+        `)}
+        ${FIMG(poster)}
+      </div>`;
+
+    case 6: /* Rule Separator */
+      return `<div class="movie-card" style="${outerStyle}">
+        ${header(56, `
+          <div style="font:600 8px/1 system-ui;letter-spacing:1.8px;text-transform:uppercase;color:${s.t};opacity:0.85;margin-bottom:6px;">NOW STREAMING</div>
+          <div style="width:28px;height:1px;background:${s.t};opacity:0.4;margin-bottom:6px;"></div>
+          <div style="font:800 14px/1 system-ui;letter-spacing:1.3px;text-transform:uppercase;color:${s.t};">${s.label}</div>
+        `)}
+        ${FIMG(poster)}
+      </div>`;
+
+    case 7: /* Left Aligned */
+      return `<div class="movie-card" style="${outerStyle}">
+        <div style="height:52px;margin:0 -${F}px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:0 14px;gap:5px;">
+          <div style="font:600 8px/1 system-ui;letter-spacing:1.8px;text-transform:uppercase;color:${s.t};opacity:0.85;">NOW STREAMING</div>
+          <div style="font:800 15px/1 system-ui;letter-spacing:1.2px;text-transform:uppercase;color:${s.t};">${s.label}</div>
+        </div>
+        ${FIMG(poster)}
+      </div>`;
+
+    case 8: /* Taller / Airy — lots of breathing room */
+      return `<div class="movie-card" style="${outerStyle}">
+        ${header(64, `
+          <div style="font:600 8px/1 system-ui;letter-spacing:2px;text-transform:uppercase;color:${s.t};opacity:0.8;margin-bottom:8px;">NOW STREAMING</div>
+          <div style="font:800 16px/1 system-ui;letter-spacing:1.5px;text-transform:uppercase;color:${s.t};">${s.label}</div>
+        `)}
+        ${FIMG(poster)}
+      </div>`;
+
+    case 9: /* Dot Framed — · · · NAME · · · */
+      return `<div class="movie-card" style="${outerStyle}">
+        ${header(52, `
+          <div style="font:600 7px/1 system-ui;letter-spacing:2px;text-transform:uppercase;color:${s.t};opacity:0.75;margin-bottom:5px;">· · NOW STREAMING · ·</div>
+          <div style="font:800 14px/1 system-ui;letter-spacing:1.3px;text-transform:uppercase;color:${s.t};">${s.label}</div>
+        `)}
+        ${FIMG(poster)}
+      </div>`;
+  }
+}
+
+function dateCard(day, num, mon) {
+  return `<div class="date-divider-card">
+    <div class="date-bar"><div class="date-day">${day}</div></div>
+    <div class="date-body">
+      <div class="date-number">${num}</div>
+      <div class="date-month">${mon}</div>
+      <div class="date-chevrons"><span>›</span><span>›</span><span>›</span><span>›</span><span>›</span></div>
+    </div>
+  </div>`;
+}
+
+function caption(m) {
+  const dir = m.director ? `${m.director} · ` : '';
+  const country = m.country ? ` · ${m.country}` : '';
+  return `<div class="movie-caption">
+    <div class="movie-caption-title">${m.title}</div>
+    <div class="movie-caption-meta">${dir}${m.genre||''}${country}</div>
+  </div>`;
+}
+
+function buildVersion(varIdx) {
+  let html = '';
+  for (const item of WALL) {
+    if (item.type === 'date') {
+      html += `<div class="movie-container">${dateCard(item.day,item.num,item.mon)}</div>`;
+      continue;
+    }
+    const s = resolve(item.svc);
+    const scoreHTML = item.imdb
+      ? `<div class="card-score-overlay"><span class="card-score-badge imdb">IMDb ${item.imdb}</span></div>` : '';
+
+    html += `<div class="movie-container">`;
+
+    if (!s) {
+      html += `<div class="movie-card"><img src="${item.poster}" loading="lazy" alt="${item.title}">${scoreHTML}</div>`;
+    } else {
+      /* Score overlay for variations that need it (absolute inside movie-card) */
+      const cardHTML = renderCard(varIdx, item.poster, s);
+      /* Inject score into card — insert before closing </div> */
+      html += cardHTML.replace('</div>', `${scoreHTML}</div>`);
+    }
+
+    html += caption(item) + '</div>';
+  }
+  return html;
+}
+
+/* Render all 10 versions */
+const wall = document.getElementById('wall');
+for (let i = 0; i < VARIANTS.length; i++) {
+  const div = document.createElement('div');
+  div.className = 'wall-version' + (i === 0 ? ' active' : '');
+  div.id = 'v' + i;
+  div.innerHTML = buildVersion(i);
+  wall.appendChild(div);
+}
+
+/* Navigator */
+let current = 0;
+function go(delta) {
+  document.getElementById('v' + current).classList.remove('active');
+  current = (current + delta + VARIANTS.length) % VARIANTS.length;
+  document.getElementById('v' + current).classList.add('active');
+  document.getElementById('nav-count').textContent = `${current+1} of ${VARIANTS.length}`;
+  document.getElementById('nav-name').textContent = VARIANTS[current].name;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.getElementById('btn-prev').onclick = () => go(-1);
+document.getElementById('btn-next').onclick = () => go(1);
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft')  go(-1);
+  if (e.key === 'ArrowRight') go(1);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Slop 3-State Toggle</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #fff;
+    padding: 50px 28px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #444;
+    margin-bottom: 18px;
+  }
+
+  /* ── Shared toggle wrapper (matches production) ── */
+  .slop-toggle-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .slop-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.25s;
+    width: 80px;
+    display: inline-block;
+  }
+
+  /* ════════════════════════════════════════
+     OPTION A — wider pill, 3-stop thumb
+     same height/radius as production toggle
+     ════════════════════════════════════════ */
+
+  .track-a {
+    width: 96px;
+    height: 26px;
+    border-radius: 13px;
+    background: #1a1a1a;
+    border: 1px solid rgba(0,212,170,0.45);
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.25s, border-color 0.25s;
+  }
+
+  .thumb-a {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
+  }
+
+  /* thumb x positions: left=0, center=35, right=70 */
+
+  /* ════════════════════════════════════════
+     OPTION B — taller pill, bigger thumb
+     more physical / satisfying feel
+     ════════════════════════════════════════ */
+
+  .track-b {
+    width: 108px;
+    height: 32px;
+    border-radius: 16px;
+    background: #1a1a1a;
+    border: 1px solid rgba(0,212,170,0.45);
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.25s, border-color 0.25s;
+  }
+
+  .thumb-b {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
+  }
+
+  /* thumb x positions: left=0, center=36, right=72 */
+
+  /* ════════════════════════════════════════
+     Track text (sits inside track, opposite thumb)
+     ════════════════════════════════════════ */
+  .track-text {
+    position: absolute;
+    font-size: 0.42rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    pointer-events: none;
+    transition: opacity 0.2s, color 0.25s;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ OPTION A ══ -->
+<div>
+  <div class="section-label">Option A — same size as current toggle</div>
+  <div class="slop-toggle-wrap" id="wrapA">
+    <span class="slop-label" id="labelA">SLOP FREE</span>
+    <div class="track-a" id="trackA">
+      <div class="thumb-a" id="thumbA"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ OPTION B ══ -->
+<div>
+  <div class="section-label">Option B — slightly larger, more physical</div>
+  <div class="slop-toggle-wrap" id="wrapB">
+    <span class="slop-label" id="labelB">SLOP FREE</span>
+    <div class="track-b" id="trackB">
+      <div class="thumb-b" id="thumbB"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ OPTION B2 — label on right ══ -->
+<div>
+  <div class="section-label">Option B2 — label on right side of track</div>
+  <div class="slop-toggle-wrap" id="wrapB2">
+    <div class="track-b" id="trackB2">
+      <div class="thumb-b" id="thumbB2"></div>
+    </div>
+    <span class="slop-label" id="labelB2">SLOP FREE</span>
+  </div>
+</div>
+
+<script>
+  // States: 0 = SLOP FREE, 1 = ALL, 2 = SLOP ONLY
+  const LABELS = ['SLOP FREE', 'ALL', 'SLOP ONLY'];
+
+  // SLOP FREE = teal fill, ALL = subtle tint, SLOP ONLY = amber fill
+  // Border and label always same color/brightness per state
+  const THUMB_COLORS  = ['#ffffff',   '#00d4aa',                  '#ffffff'];
+  const TRACK_BKGS    = ['#00d4aa',   'rgba(0,212,170,0.1)',      '#ff9500'];
+  const TRACK_BORDERS = ['#00d4aa',   '#00d4aa',                  '#ff9500'];
+  const LABEL_COLORS  = ['#00d4aa',   '#00d4aa',                  '#ff9500'];
+
+  function makeToggle(wrapId, trackId, thumbId, labelId, xPositions) {
+    let state = 0;
+
+    const track = document.getElementById(trackId);
+    const thumb = document.getElementById(thumbId);
+    const label = document.getElementById(labelId);
+
+    function update(animate) {
+      if (!animate) {
+        thumb.style.transition = 'none';
+      } else {
+        thumb.style.transition = 'transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s';
+      }
+      thumb.style.transform  = `translateX(${xPositions[state]}px)`;
+      thumb.style.background = THUMB_COLORS[state];
+      track.style.background = TRACK_BKGS[state];
+      track.style.borderColor = TRACK_BORDERS[state];
+      label.textContent = LABELS[state];
+      label.style.color = LABEL_COLORS[state];
+    }
+
+    document.getElementById(wrapId).addEventListener('click', () => {
+      state = (state + 1) % 3;
+      update(true);
+    });
+
+    update(false);
+  }
+
+  // Option A: track 96px, thumb 18px, pad 4px
+  // positions: 0→0, 1→35, 2→70
+  makeToggle('wrapA', 'trackA', 'thumbA', 'labelA', [0, 35, 70]);
+
+  // Option B: track 108px, thumb 24px, pad 4px
+  // positions: 0→0, 1→36, 2→72
+  makeToggle('wrapB', 'trackB', 'thumbB', 'labelB', [0, 36, 72]);
+
+  // Option B2: same dimensions as B but label on right
+  makeToggle('wrapB2', 'trackB2', 'thumbB2', 'labelB2', [0, 36, 72]);
+</script>
+</body>
+</html>
