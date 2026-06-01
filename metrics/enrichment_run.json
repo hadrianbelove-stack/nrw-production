@@ -1,32 +1,23 @@
 {
-  "timestamp": "2026-05-31T12:01:59.345008",
-  "movies_requested": 9,
-  "movies_enriched": 5,
-  "movies_deferred": 4,
+  "timestamp": "2026-06-01T16:20:09.217122",
+  "movies_requested": 18,
+  "movies_enriched": 12,
+  "movies_deferred": 6,
   "deferred_details": [
     {
       "title": "Your Heart Will Be Broken",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-05-31",
-      "discovered_at": "2026-05-04T12:13:25.335248",
+      "discovered_at": "2026-06-01T15:05:44.330318",
       "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Palestine 36",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-05-19",
-      "discovered_at": "2026-05-31T11:02:03.927705",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 15,
+      "revert_count": 2,
       "tmdb_platforms": []
     },
     {
       "title": "In the Grey",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-05-31",
-      "discovered_at": "2026-05-31T11:43:01.427254",
+      "discovered_at": "2026-06-01T15:05:44.885624",
       "discovery_source": "provider_availability_check",
       "revert_count": 1,
       "tmdb_platforms": [
@@ -34,18 +25,43 @@
       ]
     },
     {
-      "title": "The Breadwinner",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-05-31T11:43:58.750135",
-      "discovery_source": "provider_availability_check",
+      "title": "Earth, Wind & Fire (To Be Celestial vs. That's the Weight of the World)",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-07",
+      "discovered_at": "2026-06-01T15:57:04.177422",
+      "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ]
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Finnegan's Foursome",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-19",
+      "discovered_at": "2026-06-01T15:57:14.646225",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Bang My Box: The Robin Byrd Story",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-30",
+      "discovered_at": "2026-06-01T15:57:17.212300",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Freefall: A Reckoning for Boeing",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-08-19",
+      "discovered_at": "2026-06-01T15:57:21.624213",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 1059.58,
+  "enrichment_duration_seconds": 1366.37,
   "error_details": [],
   "total_errors": 0
 }
