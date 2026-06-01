@@ -43,14 +43,18 @@ git pull origin main
 /usr/bin/python3 -c "
 import json
 d = json.load(open('data.json'))
-query = '$QUERY'.lower()
-for i, m in enumerate(d['movies']):
-    if query in m.get('title','').lower() or str(m.get('id','')) == query or str(m.get('tmdb_id','')) == query:
-        print(f'{m[\"title\"]} (ID: {m[\"id\"]})')
-        print(f'  Capsule: {m.get(\"capsule\",\"\")[:80]}...' if m.get('capsule') else f'  Synopsis (TMDB): {m.get(\"synopsis\",\"\")[:80]}...')
-        print(f'  Director: {m.get(\"crew\",{}).get(\"director\",\"?\")}  Country: {m.get(\"country\",\"?\")}')
-        print(f'  Enrichment: {m.get(\"_enrichment_status\",\"?\")}')
-        print(f'  Watch links: {[(v[\"service\"]) for v in m.get(\"watch_links\",{}).get(\"vod\",[])]}')
+query = '$ARGUMENTS'.lower().strip()
+for m in d['movies']:
+    if query in m.get('title','').lower() or str(m.get('id','')) == query:
+        streaming = [s['service'] for s in m.get('watch_links',{}).get('streaming',[])]
+        vod = [v['service'] for v in m.get('watch_links',{}).get('vod',[])]
+        print(f\"{m['title']} ({m.get('year','?')}) ID:{m.get('id')}\")
+        print(f\"  Text: {(m.get('capsule') or m.get('synopsis',''))[:80]}...\")
+        print(f\"  Director:{m.get('crew',{}).get('director','?')}  Country:{m.get('country','?')}\")
+        print(f\"  Enrichment:{m.get('_enrichment_status','?')}\")
+        print(f\"  Streaming:{streaming or 'none'}  VOD:{vod or 'none'}\")
+        print(f\"  Trailer YT:     {m.get('links',{}).get('trailer') or 'none'}\")
+        print(f\"  Trailer hosted: {m.get('links',{}).get('trailer_hosted') or 'none'}\")
 "
 ```
 
@@ -80,7 +84,7 @@ If the poster, synopsis, director, and genres are ALL wrong — the movie is map
 import requests, os
 from dotenv import load_dotenv
 load_dotenv()
-key = os.environ['TMDB_API_KEY']
+key = os.environ.get('TMDB_API_KEY', '')
 r = requests.get('https://api.themoviedb.org/3/search/movie', params={'api_key': key, 'query': '\$TITLE'})
 for res in r.json().get('results', [])[:8]:
     print(f'ID: {res[\"id\"]}  {res[\"title\"]} ({res.get(\"release_date\",\"?\")[:4]})')
@@ -140,13 +144,15 @@ Set `"manually_corrected": true`.
 
 ## Step 4 — Commit and push immediately
 
-Push RIGHT AWAY before CI runs (CI runs at 9 AM UTC / 2 AM Pacific daily). data.json is accumulative — CI overlays enrichment, so your committed corrections persist. But if CI runs before you push, you'll get a merge conflict.
+Push RIGHT AWAY before CI runs (CI runs at 9 AM UTC / 2 AM Pacific daily). data.json is accumulative — CI overlays enrichment, so your committed corrections persist.
 
 ```bash
 git add data.json movie_tracking.json
 NRW_ALLOW_DATA_COMMIT=1 git commit -m "Correct [FIELD(S)] for [TITLE]"
-git push origin main
+git push origin main || (git pull --rebase origin main && git push origin main)
 ```
+
+If the rebase fails (data.json merge conflict): STOP, do not force-push, tell the user to re-run after resolving.
 
 ---
 

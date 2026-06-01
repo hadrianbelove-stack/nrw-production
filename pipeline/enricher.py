@@ -239,6 +239,11 @@ class MovieEnricher:
         else:
             runtime = movie_details.get('runtime')
 
+        # Keywords: movies return keywords.keywords, TV returns keywords.results
+        _kw_block = movie_details.get('keywords', {})
+        _kw_list = _kw_block.get('keywords') or _kw_block.get('results') or []
+        _keywords = [k['name'] for k in _kw_list if k.get('name')]
+
         result = {
             'title': title,
             'poster': f"https://image.tmdb.org/t/p/w500{movie_details['poster_path']}" if movie_details.get('poster_path') else None,
@@ -249,7 +254,8 @@ class MovieEnricher:
             'imdb_rating': None,
             'letterboxd_score': None,
             'links': {},
-            'watch_links': {}
+            'watch_links': {},
+            'keywords': _keywords
         }
 
         # Track enrichment success/failure for detailed logging

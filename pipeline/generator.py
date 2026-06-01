@@ -331,7 +331,7 @@ class DataGenerator:
         params = {
             'api_key': self.tmdb_key,
             'language': 'en-US',
-            'append_to_response': 'credits,videos,external_ids,alternative_titles'
+            'append_to_response': 'credits,videos,external_ids,alternative_titles,keywords'
         }
 
         try:
@@ -348,7 +348,7 @@ class DataGenerator:
         params = {
             'api_key': self.tmdb_key,
             'language': 'en-US',
-            'append_to_response': 'credits,videos,external_ids,alternative_titles'
+            'append_to_response': 'credits,videos,external_ids,alternative_titles,keywords'
         }
 
         try:

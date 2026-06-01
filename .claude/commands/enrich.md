@@ -26,7 +26,10 @@ for m in d['movies']:
         stream = links.get('streaming', [])
         print(f\"Found: {m['title']} ({m.get('year','?')})\")
         print(f\"  ID: {m.get('id')}  |  Enrichment status: {m.get('_enrichment_status','unknown')}\")
-        print(f\"  RT: {m.get('rt_score','none')}  |  Wiki: {'yes' if m.get('wiki_url') else 'no'}  |  Trailer: {'yes' if m.get('links',{}).get('trailer') else 'no'}\")
+        trailer_hosted = bool(m.get('links',{}).get('trailer_hosted',''))
+        trailer_yt = bool(m.get('links',{}).get('trailer',''))
+        t_str = 'hosted' if trailer_hosted else ('YT' if trailer_yt else 'none')
+        print(f\"  RT:{m.get('rt_score','none')}  Wiki:{'yes' if m.get('wiki_url') else 'no'}  Trailer:{t_str}\")
         print(f\"  Watch links: {[v['service'] for v in vod]} (VOD)  {[s['service'] for s in stream]} (stream)\")
 "
 ```
@@ -68,8 +71,11 @@ for m in d['movies']:
         links = m.get('watch_links', {})
         vod = links.get('vod', [])
         stream = links.get('streaming', [])
+        trailer_hosted = bool(m.get('links',{}).get('trailer_hosted',''))
+        trailer_yt = bool(m.get('links',{}).get('trailer',''))
+        t_str = 'hosted' if trailer_hosted else ('YT' if trailer_yt else 'none')
         print(f\"After enrichment: {m['title']}\")
-        print(f\"  RT: {m.get('rt_score','none')}  |  Wiki: {'yes' if m.get('wiki_url') else 'no'}  |  Trailer: {'yes' if m.get('links',{}).get('trailer') else 'no'}\")
+        print(f\"  RT:{m.get('rt_score','none')}  Wiki:{'yes' if m.get('wiki_url') else 'no'}  Trailer:{t_str}\")
         print(f\"  Watch links: {[v['service'] for v in vod]} (VOD)  {[s['service'] for s in stream]} (stream)\")
         print(f\"  Enrichment status: {m.get('_enrichment_status','?')}\")
 "
@@ -84,7 +90,7 @@ Only commit if enrichment actually added or fixed something:
 ```bash
 git add data.json movie_tracking.json 2>/dev/null || git add data.json
 NRW_ALLOW_DATA_COMMIT=1 git commit -m "Re-enrich [TITLE]: [what changed]"
-git push origin main
+git push origin main || (git pull --rebase origin main && git push origin main)
 ```
 
 ---
