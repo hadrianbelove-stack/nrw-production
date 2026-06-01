@@ -9042,11 +9042,22 @@
     "1269644": {
       "title": "Amrum",
       "premiere_date": "2025-10-09",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-06-01",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-10-14T13:52:00.990478",
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_transitioned_at": "2026-06-01"
     },
     "1559308": {
       "title": "Reflections of Doubt",
@@ -26403,11 +26414,21 @@
       "title": "Ni tabac, ni cancer, le combat d'une vie",
       "status": "tracking",
       "first_seen": "2025-11-05",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-01",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "fuboTV"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-01"
     },
     "1574641": {
       "title": "Metaverso em Desencanto",
@@ -60564,7 +60585,7 @@
       "discovery_pass": "B",
       "has_providers": false,
       "year": 2025,
-      "_jw_revert_count": 6,
+      "_jw_revert_count": 7,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-27"
     },
@@ -98552,7 +98573,7 @@
       "year": 2025,
       "premiere_date": "2025-04-02",
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-31"
     },
@@ -107680,14 +107701,24 @@
     },
     "1496179": {
       "title": "I’ve Seen All I Need to See",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-01",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-08-06"
+      "premiere_date": "2025-08-06",
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_transitioned_at": "2026-06-01"
     },
     "1485025": {
       "title": "CONTENT",
@@ -119070,7 +119101,7 @@
       "festival": "Berlin/Berlinale",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-31"
     },
@@ -120859,8 +120890,8 @@
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-05-31",
-      "_transitioned_at": "2026-05-31",
+      "enrichment_date": "2026-06-01",
+      "_transitioned_at": "2026-06-01",
       "_buyonly_preorder": true,
       "is_slop": false
     },
@@ -122356,7 +122387,6 @@
       "year": 2025,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": "2026-05-28",
       "providers": {
         "rent": [],
         "buy": [
@@ -122368,9 +122398,10 @@
       "festival": "Tribeca",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 5,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-28"
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_transitioned_at": "2026-06-01",
+      "_buyonly_preorder": true
     },
     "1454469": {
       "title": "Monikondee",
@@ -123555,7 +123586,7 @@
     "1432596": {
       "title": "Palestine 36",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
       "digital_date": "2026-05-19",
       "providers": {
@@ -123568,12 +123599,9 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "enriched": false,
-      "enrichment_date": null,
-      "_jw_revert_count": 15,
-      "_transitioned_at": "2026-05-31",
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-31"
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_transitioned_at": "2026-06-01"
     },
     "1421539": {
       "title": "Julian",
@@ -198612,7 +198640,7 @@
       "providers": {},
       "intake_pass": "B",
       "has_providers": false,
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-31"
     },
@@ -201424,10 +201452,10 @@
       "_is_preorder": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-05-31",
+      "_transitioned_at": "2026-06-01",
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-31",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-06-01"
     },
     "1512841": {
       "title": "Champion",
@@ -207059,7 +207087,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-29"
     },
@@ -210181,10 +210209,20 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-04-17",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-01",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-01"
     },
     "1596163": {
       "title": "The Quiet Beekeeper",
@@ -219438,7 +219476,8 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-05-11"
+      "enrichment_date": "2026-05-11",
+      "_buyonly_preorder": true
     },
     "1685946": {
       "title": "Shai Maestro Quartet @ Jazz sous les Pommiers 2026",
@@ -222497,9 +222536,9 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-05-31",
+      "_transitioned_at": "2026-06-01",
       "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-05-31",
+      "_jw_reverted_at": "2026-06-01",
       "_jw_revert_count": 1
     },
     "1001111": {
@@ -223716,12 +223755,22 @@
     "1380316": {
       "title": "Is God Is",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-05-15",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-01",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_transitioned_at": "2026-06-01"
     },
     "1354945": {
       "title": "I Died",
@@ -225065,7 +225114,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-23"
     },
@@ -225829,7 +225878,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-05-22"
+      "_jw_reverted_at": "2026-05-22",
+      "_skip_provider_discovery": true
     },
     "1688575": {
       "title": "Kyle Larson vs. The Double",
@@ -225966,7 +226016,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-23"
     },
@@ -226149,7 +226199,7 @@
       "digital_date": "2026-05-23",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-23"
     },
@@ -226162,7 +226212,7 @@
       "providers": {},
       "intake_pass": "A",
       "has_providers": false,
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-24"
     },
@@ -226629,7 +226679,7 @@
       "digital_date": "2026-05-25",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 7,
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-25"
     },
@@ -226870,7 +226920,7 @@
       "digital_date": "2026-05-26",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 6,
+      "_jw_revert_count": 7,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-27"
     },
@@ -226954,7 +227004,7 @@
       "digital_date": "2026-05-26",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 6,
+      "_jw_revert_count": 7,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-05-27"
     },
@@ -227996,7 +228046,7 @@
       "digital_date": "2026-05-30",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-29"
     },
@@ -228430,7 +228480,7 @@
       "title": "Brazil '70: The Third Star",
       "content_type": "limited_series",
       "tmdb_id": 292532,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-05-29",
       "digital_date": "2026-05-29",
       "episode_count": 6,
@@ -228442,21 +228492,28 @@
       ],
       "original_language": "pt",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
       },
       "intake_date": "2026-05-29",
       "networks": [
         "Netflix"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_transitioned_at": "2026-06-01"
     },
     "tv_279884": {
       "title": "Rafa",
       "content_type": "limited_series",
       "tmdb_id": 279884,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-05-29",
       "digital_date": "2026-05-29",
       "episode_count": 4,
@@ -228468,15 +228525,22 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
       },
       "intake_date": "2026-05-29",
       "networks": [
         "Netflix"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_transitioned_at": "2026-06-01"
     },
     "tv_278168": {
       "title": "A Dog and a Plane",
@@ -229045,21 +229109,27 @@
       "digital_date": "2026-05-31",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-31"
     },
     "1677574": {
       "title": "The 51st AFI Life Achievement Award: A Tribute to Eddie Murphy",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-05-31",
       "digital_date": "2026-05-31",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "_jw_revert_count": 1,
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-31"
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-06-01"
     },
     "1705347": {
       "title": "Toast to Milan",
@@ -229069,7 +229139,7 @@
       "digital_date": "2026-05-30",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-05-31"
     },
@@ -229296,6 +229366,1208 @@
       "intake_date": "2026-05-31",
       "networks": [
         "Channel 4"
+      ],
+      "has_providers": false
+    },
+    "1684243": {
+      "title": "The Last Light",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": "2026-06-01",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-01"
+    },
+    "1646124": {
+      "title": "Tiger's Rampage",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": "2026-06-01",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-01"
+    },
+    "768744": {
+      "title": "My Hero Academia: World Heroes' Mission",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-06-01",
+      "digital_date": "2026-06-01",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-06-01"
+    },
+    "1704777": {
+      "title": "Musical Day",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": "2026-05-31",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-01"
+    },
+    "1706151": {
+      "title": "Welcome to Borovia",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1701566": {
+      "title": "La corta vida de las flores",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1696446": {
+      "title": "House of Ants",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1685099": {
+      "title": "Face Value",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1685073": {
+      "title": "Out of Options",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1669984": {
+      "title": "Accidental Truth: Next - Beyond UFO Disclosure",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-06-01",
+      "digital_date": "2026-06-01",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_transitioned_at": "2026-06-01"
+    },
+    "1663711": {
+      "title": "Jean-Sébastien Bach : oeuvres pour orgue à la Thomaskirche de Leipzig",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1658452": {
+      "title": "Magic Hour",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1644683": {
+      "title": "Blue Zone",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1633540": {
+      "title": "The Barrel",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1614487": {
+      "title": "The Alice Paradox",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1484708": {
+      "title": "Sugar Beach",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1195309": {
+      "title": "Feast or Famine",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1705939": {
+      "title": "The Leo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1705809": {
+      "title": "Live infinita do jean",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1705615": {
+      "title": "Zona de Conforto",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1705786": {
+      "title": "Leave a Comment",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1705621": {
+      "title": "La Tierra Explota, el Tiempo se Acaba",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1705254": {
+      "title": "Christel de Laat: En Door?!",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1663525": {
+      "title": "Haunted Harmony Mysteries: Key to the Castle",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1698022": {
+      "title": "Dracula: The Night Around Us",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1361071": {
+      "title": "Earth, Wind & Fire (To Be Celestial vs. That's the Weight of the World)",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": "2026-06-07",
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-01",
+      "_jw_revert_count": 1
+    },
+    "1676525": {
+      "title": "Matininó",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676514": {
+      "title": "Retrieval",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676496": {
+      "title": "American Zoo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676486": {
+      "title": "TikTok Never Dies",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676399": {
+      "title": "Kids Like Me",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1675218": {
+      "title": "Sara Bareilles: Good Grief",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1675147": {
+      "title": "Turn It Up!",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1674517": {
+      "title": "Mario",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1674258": {
+      "title": "Frampton",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1573783": {
+      "title": "The Wedding Entertainer (The Tale of Moishe Badhan)",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1504899": {
+      "title": "Recluse",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1454004": {
+      "title": "Skateboarding Is Not for Girls",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676527": {
+      "title": "The Haunting of Pennhurst",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676460": {
+      "title": "The Tropic Sun and His Eyes",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1675271": {
+      "title": "Stealing Magic",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1675169": {
+      "title": "The A-Word: The Future of Aging",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1674068": {
+      "title": "Airport BLVD",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1530279": {
+      "title": "Via Negativa",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1516818": {
+      "title": "Happy Hours, Part 1",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1413200": {
+      "title": "Cotton Fever",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1404080": {
+      "title": "The Revisionist",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1289485": {
+      "title": "Funk",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1269706": {
+      "title": "Micronations",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1158642": {
+      "title": "Jean-Michel",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1087393": {
+      "title": "The Leader",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676532": {
+      "title": "Mutter: The Diary of a Mother",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676521": {
+      "title": "Deepfake",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676500": {
+      "title": "Jail Time Records",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676454": {
+      "title": "Stand Up",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676398": {
+      "title": "Harvest",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676176": {
+      "title": "Time Warp",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1675254": {
+      "title": "AI: Probably Nothing to Worry About",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1656571": {
+      "title": "Something You Should Know About Me",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1637456": {
+      "title": "Memorizu",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1569780": {
+      "title": "Only What We Carry",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1530940": {
+      "title": "Bob and David Climb Machu Picchu",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1496696": {
+      "title": "Breeder",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1360385": {
+      "title": "The Last Day",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1281096": {
+      "title": "Labrador — Autopsy of Silence",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1034256": {
+      "title": "Mineshaft: The Cruising Murders",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676466": {
+      "title": "Full Circle: The First All Black Everest Ascent",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1675324": {
+      "title": "Ephemera",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1674236": {
+      "title": "Noga",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1672994": {
+      "title": "Miss Representation: Rise Up",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1632613": {
+      "title": "The Siege of Paradise",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1575438": {
+      "title": "Finnegan's Foursome",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": "2026-06-19",
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-01",
+      "_jw_revert_count": 1
+    },
+    "1563970": {
+      "title": "Caity",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1513261": {
+      "title": "Dante",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "874510": {
+      "title": "Colors of White Rock",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1684016": {
+      "title": "Katy Perry: The Lifetimes Tour - Live from Paris",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676498": {
+      "title": "The Gymnasts of Fisherman Colony",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1675225": {
+      "title": "March Forth",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1675138": {
+      "title": "What Is To Come",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1455193": {
+      "title": "Summer of Three",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1336808": {
+      "title": "That Friend",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676506": {
+      "title": "Mexicanamerican",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1674087": {
+      "title": "Bang My Box: The Robin Byrd Story",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": "2026-06-30",
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-01",
+      "_jw_revert_count": 1
+    },
+    "1577158": {
+      "title": "Needle & The Chronic",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1699862": {
+      "title": "Dreams of Violets",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676477": {
+      "title": "How to Feed a Dictator",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1655544": {
+      "title": "Act One",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1674248": {
+      "title": "Trinity: The Story of The LOX",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1674012": {
+      "title": "The Lion Queen",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1581056": {
+      "title": "Pescador",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1489535": {
+      "title": "A Drop in the Ocean",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1362365": {
+      "title": "This Is Buzz",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-06-01",
+      "digital_date": "2026-06-19",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "_virtual_screening": true,
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-06-01",
+      "_transitioned_at": "2026-06-01"
+    },
+    "1689558": {
+      "title": "The Endless Frontier",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1675174": {
+      "title": "Born Melo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1674220": {
+      "title": "Mumford & Sons: The House Band",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1561564": {
+      "title": "MOUTH FULL OF GOLDS",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1676472": {
+      "title": "Guggi",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1674155": {
+      "title": "Alicia Keys: Girl From Hell’s Kitchen",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1688804": {
+      "title": "Freefall: A Reckoning for Boeing",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-01",
+      "digital_date": "2026-08-19",
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Tribeca",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-01",
+      "_jw_revert_count": 1
+    },
+    "tv_322974": {
+      "title": "Bring Me the Beauties: A Model Cult",
+      "content_type": "limited_series",
+      "tmdb_id": 322974,
+      "status": "tracking",
+      "first_air_date": "2026-06-01",
+      "digital_date": "2026-06-01",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/k8Dtiv903vlZNl1Txqqxoejtb2I.jpg",
+      "synopsis": "Follows the Eternal Values cult of the ’80s and ’90s, led by Manhattan socialite Frederick von Mierers.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-01",
+      "networks": [
+        "HBO"
+      ],
+      "has_providers": false
+    },
+    "tv_323528": {
+      "title": "Backdoor",
+      "content_type": "limited_series",
+      "tmdb_id": 323528,
+      "status": "tracking",
+      "first_air_date": "2026-05-31",
+      "digital_date": "2026-05-31",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/fOSPp1q8e3upjFft2CrDCU85YO7.jpg",
+      "synopsis": "An anonymous stranger saves Doyun from a career-ending crisis. When the mystery savior turns out to be Jihyeok, the privileged rookie he despises the most, it sparks a tense and complicated office romance.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-01",
+      "networks": [
+        "YouTube"
+      ],
+      "has_providers": false
+    },
+    "tv_299988": {
+      "title": "Rose on Jasmine and Narcissus",
+      "content_type": "limited_series",
+      "tmdb_id": 299988,
+      "status": "tracking",
+      "first_air_date": "2026-05-31",
+      "digital_date": "2026-05-31",
+      "episode_count": 15,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/enD8EeChbrHZnrrHxrG0CPzY94C.jpg",
+      "synopsis": "A chance encounter between two people leading very different lives sets off a chain of charming mishaps and surprises. As a heartfelt romance emerges, their love is put to the ultimate test.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-01",
+      "networks": [
+        "MBC Shahid"
       ],
       "has_providers": false
     }
