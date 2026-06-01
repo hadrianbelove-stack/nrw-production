@@ -5,7 +5,7 @@ description: Wall health report — standardized data quality snapshot
 Run the wall health script:
 
 ```bash
-python3 scripts/wall_health.py
+/usr/bin/python3 scripts/wall_health.py
 ```
 
 ## Presentation Rules
