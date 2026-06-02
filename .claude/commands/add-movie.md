@@ -115,7 +115,7 @@ Push RIGHT AWAY before CI runs (CI runs at 9 AM UTC / 2 AM Pacific daily).
 ```bash
 git add data.json movie_tracking.json
 NRW_ALLOW_DATA_COMMIT=1 git commit -m "Add [TITLE] to NRW wall"
-git push origin main
+git push origin main || (git pull --rebase origin main && git push origin main)
 ```
 
 ---

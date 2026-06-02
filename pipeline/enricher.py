@@ -273,6 +273,9 @@ class MovieEnricher:
         # Wikipedia link
         wiki_director = movie_details.get('crew', {}).get('director') if movie_details else None
         wiki_orig_title = movie_details.get('original_name' if is_tv else 'original_title') if movie_details else None
+        _tmdb_cast = (movie_details.get('credits', {}).get('cast', []) if movie_details else [])[:3]
+        cast_members = [c['name'] for c in _tmdb_cast if c.get('name')]
+
         wiki_url = self._run_enrichment_source(
             'wikipedia',
             lambda: self.host.find_wikipedia_url(title, year, imdb_id, movie_id,
@@ -285,24 +288,41 @@ class MovieEnricher:
         if wikidata_distributors:
             result['wikidata_distributors'] = wikidata_distributors
 
-        # Director Wikipedia link
-        if wiki_director:
-            director_wiki_url = self._run_enrichment_source(
-                'director_wiki',
-                lambda: self.host.find_director_wikipedia_url(wiki_director),
-                enrichment_results, title, year)
-            if director_wiki_url:
-                result['links']['director_wiki'] = director_wiki_url
+        # Extract crew Wikipedia links from the film's own Wikipedia page (single API call).
+        # Falls back to per-person SPARQL for any names not found this way.
+        film_page_crew = {}
+        if wiki_url and (wiki_director or cast_members):
+            try:
+                film_page_crew = self.host.extract_crew_links_from_film_page(
+                    wiki_url, wiki_director, cast_members) or {}
+            except Exception as e:
+                self.ctx.logger.debug(f"Film page crew extraction failed for {title}: {e}")
 
-        # Cast Wikipedia links (top 3 cast members — skip any already manually curated)
-        _tmdb_cast = (movie_details.get('credits', {}).get('cast', []) if movie_details else [])[:3]
-        cast_members = [c['name'] for c in _tmdb_cast if c.get('name')]
+        # Director Wikipedia link — film page first, SPARQL fallback
+        if wiki_director:
+            if wiki_director in film_page_crew:
+                result['links']['director_wiki'] = film_page_crew[wiki_director]
+                enrichment_results['director_wiki'] = 'success'
+            else:
+                director_wiki_url = self._run_enrichment_source(
+                    'director_wiki',
+                    lambda: self.host.find_director_wikipedia_url(wiki_director),
+                    enrichment_results, title, year)
+                if director_wiki_url:
+                    result['links']['director_wiki'] = director_wiki_url
+
+        # Cast Wikipedia links — film page first, SPARQL fallback for misses
         existing_cast_wiki = movie_data.get('links', {}).get('cast_wiki', {})
         cast_to_lookup = [n for n in cast_members if n not in existing_cast_wiki]
         if cast_to_lookup:
             try:
                 cast_wiki = dict(existing_cast_wiki)
+                # Primary: film page links
                 for cast_name in cast_to_lookup:
+                    if cast_name in film_page_crew:
+                        cast_wiki[cast_name] = film_page_crew[cast_name]
+                # Fallback: SPARQL for any still missing
+                for cast_name in [n for n in cast_to_lookup if n not in cast_wiki]:
                     url = self.host.find_cast_wikipedia_url(cast_name)
                     if url:
                         cast_wiki[cast_name] = url

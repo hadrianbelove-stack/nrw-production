@@ -877,6 +877,101 @@ class WikipediaScraperPlaywright(PlaywrightScraperBase):
         self._save_cache()
         return None
 
+    def extract_crew_links_from_film_page(self, wiki_url, director, cast_names):
+        """Extract director and cast Wikipedia links from the film's own Wikipedia page.
+
+        Uses the MediaWiki parse API to fetch all internal links on the film's
+        article in one request — far faster than per-person SPARQL queries.
+        Returns a dict of {person_name: wikipedia_url} for every match found.
+
+        Matching handles disambiguation titles like "John Smith (actor)" by
+        checking whether the cast/director name is a prefix of the link title.
+
+        Args:
+            wiki_url: The film's Wikipedia URL (e.g. https://en.wikipedia.org/wiki/The_Brutalist_(film))
+            director: Director name string or None
+            cast_names: List of cast name strings
+
+        Returns:
+            dict mapping matched person names to their Wikipedia URLs, or {} on failure
+        """
+        if not wiki_url:
+            return {}
+
+        # Extract page title from URL
+        match = re.search(r'/wiki/(.+)$', wiki_url)
+        if not match:
+            return {}
+        page_title = match.group(1)
+
+        try:
+            headers = {'User-Agent': 'NewReleaseWall/1.0 (hadrianbelove@gmail.com)'}
+            response = requests.get(
+                'https://en.wikipedia.org/w/api.php',
+                params={
+                    'action': 'parse',
+                    'page': page_title,
+                    'prop': 'links',
+                    'redirects': '1',
+                    'format': 'json'
+                },
+                headers=headers,
+                timeout=10
+            )
+            if response.status_code != 200:
+                return {}
+
+            data = response.json()
+            links = data.get('parse', {}).get('links', [])
+            # Namespace 0 = article links only (skip categories, files, etc.)
+            article_links = [l['*'] for l in links if l.get('ns') == 0]
+
+        except Exception as e:
+            self._log(f"Film page crew link extraction failed for {wiki_url}: {e}", level='debug')
+            return {}
+
+        if not article_links:
+            return {}
+
+        # Build lookup set for fast matching
+        link_set = set(article_links)
+        link_lower = {l.lower(): l for l in article_links}
+
+        def match_name(name):
+            # 1. Exact match
+            if name in link_set:
+                return name
+            # 2. Case-insensitive
+            canonical = link_lower.get(name.lower())
+            if canonical:
+                return canonical
+            # 3. Disambiguation prefix: "Name (actor)", "Name (filmmaker)", etc.
+            name_lower = name.lower()
+            for link in article_links:
+                if link.lower().startswith(name_lower + ' ('):
+                    return link
+            return None
+
+        result = {}
+        names_to_check = []
+        if director:
+            names_to_check.append(('director', director))
+        for cast_name in (cast_names or []):
+            names_to_check.append(('cast', cast_name))
+
+        for role, name in names_to_check:
+            matched_title = match_name(name)
+            if matched_title:
+                wiki_link = 'https://en.wikipedia.org/wiki/' + matched_title.replace(' ', '_')
+                result[name] = wiki_link
+                self._log(f"Film page: matched {role} '{name}' → {wiki_link}", level='debug')
+
+        self._log(
+            f"Film page crew links: {len(result)}/{len(names_to_check)} matched for {page_title}",
+            level='debug'
+        )
+        return result
+
     def close(self):
         """Clean up browser resources."""
         self._cleanup_browser()
