@@ -29,7 +29,7 @@ for m in d['movies']:
         trailer_hosted = bool(m.get('links',{}).get('trailer_hosted',''))
         trailer_yt = bool(m.get('links',{}).get('trailer',''))
         t_str = 'hosted' if trailer_hosted else ('YT' if trailer_yt else 'none')
-        print(f\"  RT:{m.get('rt_score','none')}  Wiki:{'yes' if m.get('wiki_url') else 'no'}  Trailer:{t_str}\")
+        print(f\"  RT:{m.get('rt_score','none')}  Wiki:{'yes' if m.get('links',{}).get('wikipedia') else 'no'}  Trailer:{t_str}\")
         print(f\"  Watch links: {[v['service'] for v in vod]} (VOD)  {[s['service'] for s in stream]} (stream)\")
 "
 ```
@@ -75,7 +75,7 @@ for m in d['movies']:
         trailer_yt = bool(m.get('links',{}).get('trailer',''))
         t_str = 'hosted' if trailer_hosted else ('YT' if trailer_yt else 'none')
         print(f\"After enrichment: {m['title']}\")
-        print(f\"  RT:{m.get('rt_score','none')}  Wiki:{'yes' if m.get('wiki_url') else 'no'}  Trailer:{t_str}\")
+        print(f\"  RT:{m.get('rt_score','none')}  Wiki:{'yes' if m.get('links',{}).get('wikipedia') else 'no'}  Trailer:{t_str}\")
         print(f\"  Watch links: {[v['service'] for v in vod]} (VOD)  {[s['service'] for s in stream]} (stream)\")
         print(f\"  Enrichment status: {m.get('_enrichment_status','?')}\")
 "

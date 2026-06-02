@@ -87,7 +87,7 @@ for movie_id, tracking_data in matches:
         stream = wall.get('watch_links',{}).get('streaming',[])
         print(f"WALL_RT: {wall.get('rt_score','none')}")
         print(f"WALL_IMDB: {wall.get('imdb_id','none')} rating={wall.get('imdb_rating','none')}")
-        print(f"WALL_WIKI: {wall.get('wiki_url') or 'none'}")
+        print(f"WALL_WIKI: {wall.get('links',{}).get('wikipedia') or 'none'}")
         print(f"WALL_TRAILER: {wall.get('links',{}).get('trailer') or 'none'}")
         print(f"WALL_HOSTED: {wall.get('links',{}).get('trailer_hosted') or 'none'}")
         for v in vod:

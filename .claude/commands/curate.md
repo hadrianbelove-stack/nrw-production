@@ -40,9 +40,51 @@ Update the progress file after completing each stage (set to `completed`). Set a
 
 ## Candidate List (shared by Stages 1 and 2)
 
-Load movies from `data.json` where `digital_date` is after the session timestamp in `.claude/last_nrw_session.json` AND `digital_date` is today or earlier (exclude future pre-orders). If the session file doesn't exist, default to 7 days ago. Exclude reissues/restorations (`is_restoration` flag, or title contains "Remaster"/"Restoration"/"4K", or `year` is 10+ years before current year).
+Run this script to build the candidate list. Both Stage 1 and Stage 2 operate on this exact output — do not re-derive it:
 
-Sort by `digital_date` descending (most recent first).
+```bash
+/usr/bin/python3 -c "
+import json
+from datetime import date, timedelta
+
+data = json.load(open('data.json'))
+today = str(date.today())
+
+try:
+    sess = json.load(open('.claude/last_nrw_session.json'))
+    from_date = sess['timestamp'][:10]
+except Exception:
+    from_date = str(date.today() - timedelta(days=7))
+
+current_year = date.today().year
+candidates = []
+for m in data['movies']:
+    dd = m.get('digital_date', '')
+    if not (from_date < dd <= today):
+        continue
+    cats = m.get('categories', {})
+    if cats.get('is_restoration'):
+        continue
+    title = m.get('title', '')
+    year = m.get('year', 0) or 0
+    if any(kw in title for kw in ('Remaster', 'Restoration', '4K')) or (year and current_year - int(year) >= 10):
+        continue
+    streaming = [s['service'] for s in m.get('watch_links', {}).get('streaming', [])]
+    vod = [v['service'] for v in m.get('watch_links', {}).get('vod', [])]
+    services = streaming + vod
+    rt = m.get('rt_score') or '--'
+    mc = m.get('metacritic_score') or '--'
+    svc = ', '.join(services) if services else '--'
+    candidates.append((dd, m.get('id'), title, m.get('year','?'), rt, mc, svc))
+
+candidates.sort(key=lambda x: x[0], reverse=True)
+print(f'{len(candidates)} candidate(s) since {from_date}:')
+for i, (dd, mid, title, year, rt, mc, svc) in enumerate(candidates, 1):
+    print(f'  {i}. {title} ({year}) — RT:{rt} | MC:{mc} | {svc}  [id:{mid}]')
+"
+```
+
+If the output shows 0 candidates, report "No new arrivals to curate since [from_date]" and stop.
 
 **Note**: Stage 3 (Per-Movie Curation) uses its own watermark-based candidate logic — see that stage for details.
 
@@ -145,9 +187,8 @@ If no candidates for either: report through-dates and mark stage `completed`.
 Cast and director Wikipedia links are **auto-approved** — collect them silently for later embedding but do NOT list them in SUGGESTED LINKS for user review.
 
 **Pass 1 — Cast + Director (silent, no user review):**
-- Read `movie.links.cast_wiki` and `movie.links.director_wiki` from data.json — populated by the enrichment pipeline, already used in the lightbox.
-- Do not WebSearch for cast or director links. Use only what enrichment already found.
-- When their names appear in the capsule text, embed silently.
+- Read `movie.links.cast_wiki` and `movie.links.director_wiki` from data.json.
+- Embed whatever is there wherever their names appear in the capsule text. If a name has no URL, skip it silently — many actors don't have Wikipedia pages.
 
 **Pass 2 — Other named entities in the capsule text (user reviews these):**
 - Identify non-cast/non-director people, places, movements, or works that are named in the capsule text itself (e.g. a manga creator, historical figure, referenced filmmaker). Up to 3.

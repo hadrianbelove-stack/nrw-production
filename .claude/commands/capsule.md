@@ -31,6 +31,9 @@ Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER
 ```
 ## Capsule Variants for [Title] ([Year])
 
+*directed by [Director] | [Genres, up to 2] | [Runtime] min | [Country] | [Platform(s)]*
+[Keywords up to 6, space-separated with · — omit line if no keywords]
+
 **1.** [capsule text] _(XX words)_
 
 **2.** [capsule text] _(XX words)_
@@ -56,8 +59,8 @@ Then ask: "Pick 1, 2, or 3 — paste a rewrite — or skip."
 
 ## Step 2b — Suggested Wikipedia links
 
-**Director and cast — already in data.json, no searching needed:**
-Read `movie.links.director_wiki` and `movie.links.cast_wiki` from data.json. These were populated by the enrichment pipeline and are already used in the lightbox. Do not WebSearch for them. When their names appear in the capsule text, embed silently — no user approval needed.
+**Director and cast links:**
+Read `movie.links.director_wiki` and `movie.links.cast_wiki` from data.json. Embed whatever is there wherever their names appear in the capsule text — no user approval needed. If a name has no URL, skip it silently (many actors don't have Wikipedia pages).
 
 **SUGGESTED LINKS — for user approval only:**
 Identify non-cast/non-director named entities that appear in the capsule text: historical figures, referenced filmmakers, organizations, other works. Up to 3. WebSearch each for a Wikipedia page. Present only these to the user (numbered). If none exist, omit the SUGGESTED LINKS block entirely.
@@ -110,7 +113,7 @@ This does TWO things automatically:
 3. Commit and push:
 
 ```bash
-cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && git push origin main
+cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
 ```
 
 Commit **only** `data.json`. Cache files are gitignored — do not `git add` them.

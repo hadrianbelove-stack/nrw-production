@@ -531,8 +531,6 @@ gemini_scraper:
   rt_enabled: true                 # RT-specific toggle - set false for Playwright-only RT
   rt_search_enabled: false         # Gemini URL search for RT (disabled — 0% success on indie films, Playwright-primary now)
   wikipedia_enabled: true          # Wikipedia-specific toggle - set false for Playwright-only Wikipedia
-  pull_quotes_enabled: true        # Pull quotes - find critic/Letterboxd quotes per movie
-  pull_quotes_count: 8             # Number of critic quotes to request per movie
   timeout_seconds: 30              # Prevent hanging API calls
   rate_limit: 1.0                  # Seconds between API calls
   cache_ttl_days: 90               # How long to cache results

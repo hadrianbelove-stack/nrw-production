@@ -266,7 +266,6 @@ class MovieEnricher:
             'trailer': 'not_attempted',
             'rt_score': 'not_attempted',
             'letterboxd_score': 'not_attempted',
-            'pull_quotes': 'not_attempted',
             'watch_links': 'not_attempted',
             'digital_date': 'not_attempted'
         }
@@ -465,28 +464,6 @@ class MovieEnricher:
                 'error_type': type(e).__name__, 'error_message': str(e)[:500],
             })
 
-        # Pull quotes (isolated failure handling)
-        pull_quotes_enabled = self.ctx.config.get('gemini_scraper', {}).get('pull_quotes_enabled', False)
-        if pull_quotes_enabled:
-            try:
-                from gemini_scraper import GeminiPullQuoteFinder
-                pq_finder = GeminiPullQuoteFinder()
-                pq_director = result.get('crew', {}).get('director') if result.get('crew') else None
-                pq_count = self.ctx.config.get('gemini_scraper', {}).get('pull_quotes_count', 8)
-                pq_rt_url = result.get('links', {}).get('rt', '')
-                pq_mc_url = result.get('links', {}).get('metacritic', '')
-                pq_lb_url = result.get('links', {}).get('letterboxd', '')
-                quotes = pq_finder.find_pull_quotes(title, year, director=pq_director, num_quotes=pq_count, rt_url=pq_rt_url, mc_url=pq_mc_url, lb_url=pq_lb_url)
-                if quotes:
-                    enrichment_results['pull_quotes'] = 'success'
-                else:
-                    enrichment_results['pull_quotes'] = 'not_found'
-            except Exception as e:
-                enrichment_results['pull_quotes'] = 'error'
-                self.ctx.logger.warning(f"Pull quotes: Error for {title} ({year}): {str(e)[:500]}")
-        else:
-            enrichment_results['pull_quotes'] = 'disabled'
-
         # Watch links (isolated failure handling)
         self._current_enrichment_step = 'watch_links'
         try:
@@ -653,11 +630,10 @@ class MovieEnricher:
         cast_wiki_icon = status_icons.get(enrichment_results.get('cast_wiki', 'not_attempted'), '?')
         trailer_icon = status_icons.get(enrichment_results['trailer'], '?')
         rt_icon = status_icons.get(enrichment_results['rt_score'], '?')
-        pq_icon = status_icons.get(enrichment_results.get('pull_quotes', 'not_attempted'), '?')
         links_icon = status_icons.get(enrichment_results['watch_links'], '?')
         date_icon = status_icons.get(enrichment_results['digital_date'], '?')
 
-        print(f"  \u26a1 {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Dir:{dir_wiki_icon} Cast:{cast_wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} PQ:{pq_icon} Links:{links_icon} Date:{date_icon} | {success_count} success, {error_count} errors")
+        print(f"  \u26a1 {title} ({movie_duration:.1f}s) - Wiki:{wiki_icon} Dir:{dir_wiki_icon} Cast:{cast_wiki_icon} Trailer:{trailer_icon} RT:{rt_icon} Links:{links_icon} Date:{date_icon} | {success_count} success, {error_count} errors")
 
         # Detailed logging for metrics
         self.ctx.logger.info(f"Enrichment completed for {title} ({year}) in {movie_duration:.1f}s: {enrichment_results}")
