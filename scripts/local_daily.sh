@@ -51,7 +51,8 @@ fi
 
 # Step 2: Upload new trailers to B2 (download from YouTube + upload, no data.json writes)
 echo "Hosting new trailers..." >> "$LOG"
-/opt/homebrew/bin/python3.11 scripts/trailer_pipeline.py host >> "$LOG" 2> >(grep -v "Cookies.binarycookies" >> "$LOG")
+/usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
+    /opt/homebrew/bin/python3.11 scripts/trailer_pipeline.py host >> "$LOG" 2> >(grep -v "Cookies.binarycookies" >> "$LOG")
 
 # Step 3: Stamp hosted trailer URLs into data.json and push to GitHub
 # This eliminates the ~19-hour gap where trailers show as YouTube fallbacks.
