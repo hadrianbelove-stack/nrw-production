@@ -619,10 +619,6 @@ class DataGenerator:
 
         release_date_str = movie_details.get(date_field, '')
 
-        _kw_block = movie_details.get('keywords', {})
-        _kw_list = _kw_block.get('keywords') or _kw_block.get('results') or []
-        entry_keywords = [k['name'] for k in _kw_list if k.get('name')]
-
         # Start with minimal entry structure
         entry = {
             'id': str(movie_id),
@@ -638,7 +634,6 @@ class DataGenerator:
             'providers': movie_data.get('providers', {'rent': [], 'buy': [], 'streaming': []}),
             'links': {'wikipedia': None, 'trailer': None, 'rt': None},
             'watch_links': {},
-            'keywords': entry_keywords,
             'pre_order_links': movie_data.get('pre_order_links', []),
             '_enrichment_status': 'pending',
             '_discovered_at': datetime.now().isoformat(),  # ISO timestamp when we found it
