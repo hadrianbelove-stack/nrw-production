@@ -215,7 +215,7 @@ def stamp_trailer_hosted_urls(dry_run=False):
 
     if not bucket_url:
         print('ERROR: No bucket_url in config.yaml trailer_hosting section')
-        return {'stamped': 0, 'already_had': 0, 'no_trailer_in_b2': 0}
+        return {'stamped': 0, 'already_had': 0, 'no_trailer_in_b2': 0, 'stale_cleaned': 0, 'subs_stamped': 0}
 
     # Connect to B2 and get hosted IDs
     print('Connecting to B2...')
@@ -226,7 +226,7 @@ def stamp_trailer_hosted_urls(dry_run=False):
     except Exception as e:
         print(f'WARNING: B2 connection failed ({type(e).__name__}: {str(e)[:100]})')
         print('Skipping stamp — YouTube trailer URLs remain as fallback.')
-        return {'stamped': 0, 'already_had': 0, 'no_trailer_in_b2': 0}
+        return {'stamped': 0, 'already_had': 0, 'no_trailer_in_b2': 0, 'stale_cleaned': 0, 'subs_stamped': 0}
     print(f'Found {len(mp4_ids)} trailers and {len(vtt_ids)} subtitle files in B2 bucket')
 
     # Load data.json

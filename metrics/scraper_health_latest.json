@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-17T14:22:12.133438",
+  "timestamp": "2026-06-02T11:21:48.260319",
   "scrapers": {
     "rt_scraper": {
       "attempts": 1,
@@ -10,6 +10,14 @@
       "error_types": {}
     },
     "mc_scraper": {
+      "attempts": 1,
+      "successes": 0,
+      "cache_hits": 0,
+      "success_rate": 0.0,
+      "cache_hit_rate": 0.0,
+      "error_types": {}
+    },
+    "lb_scraper": {
       "attempts": 0,
       "successes": 0,
       "cache_hits": 1,
@@ -18,17 +26,15 @@
       "error_types": {}
     },
     "wikipedia_scraper": {
-      "wikidata_attempts": 1,
-      "wikidata_successes": 1,
-      "success_rate": 100.0,
+      "wikidata_attempts": 0,
+      "wikidata_successes": 0,
+      "success_rate": null,
       "error_types": {}
     },
     "trailer_scraper": {
-      "attempts": 0,
-      "successes": 0,
-      "cache_hits": 0,
-      "success_rate": null,
-      "cache_hit_rate": null
+      "attempts": 1,
+      "successes": 1,
+      "success_rate": 100.0
     },
     "streaming_scraper": {
       "attempts": 0,

@@ -1,53 +1,10 @@
 {
-  "timestamp": "2026-06-02T14:00:15.515725",
-  "movies_requested": 13,
-  "movies_enriched": 9,
-  "movies_deferred": 4,
-  "deferred_details": [
-    {
-      "title": "Your Heart Will Be Broken",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-05-31",
-      "discovered_at": "2026-06-02T12:45:50.150255",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 3,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "In the Grey",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-06-02",
-      "discovered_at": "2026-06-02T12:45:50.650950",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
-    },
-    {
-      "title": "Tuner",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-06-02T12:50:37.348340",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "A Man with Sole: The Impact of Kenneth Cole",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-02T13:20:06.477127",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Eventive"
-      ]
-    }
-  ],
-  "enrichment_duration_seconds": 1255.31,
+  "timestamp": "2026-06-02T11:21:47.666394",
+  "movies_requested": 1,
+  "movies_enriched": 1,
+  "movies_deferred": 0,
+  "deferred_details": [],
+  "enrichment_duration_seconds": 36.76,
   "error_details": [],
   "total_errors": 0
 }
