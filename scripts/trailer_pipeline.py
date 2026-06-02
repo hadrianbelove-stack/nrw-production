@@ -131,6 +131,7 @@ def record_host_failure(movie_id, title, year, reason, trailer_url='', detail=''
 def rediscover_trailer_url(title, year, bad_url):
     """Try to find an alternative trailer URL using Gemini/YouTube search.
     Returns a new YouTube URL different from bad_url, or None."""
+    finder = None
     try:
         sys.path.insert(0, PROJECT_ROOT)
         from gemini_scraper import HybridYouTubeFinder
@@ -146,6 +147,12 @@ def rediscover_trailer_url(title, year, bad_url):
                 return broad_url
     except Exception as e:
         print(f'    Re-discovery error: {e}')
+    finally:
+        if finder:
+            try:
+                finder.cleanup()
+            except Exception:
+                pass
     return None
 
 
