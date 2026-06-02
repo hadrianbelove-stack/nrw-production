@@ -328,8 +328,13 @@ class MovieEnricher:
             result['links']['trailer'] = trailer_url
             result['_trailer_source'] = trailer_source
 
-        # RT score and link (isolated failure handling)
+        # RT score and link.
+        # OMDb is the authoritative score source (runs later and overwrites).
+        # RT scraper's job here is finding the verified RT link and a fallback score.
+        # If OMDb has a score but scraper finds no link → _rt_scraper_failed flag.
+        # If both find a score and they differ >5 pts → _rt_score_conflict flag.
         self._current_enrichment_step = 'rt_score'
+        scraper_rt_score = None
         try:
             rt_director = movie_details.get('crew', {}).get('director') if movie_details else None
             rt_lang = movie_details.get('original_language') if movie_details else None
@@ -339,10 +344,10 @@ class MovieEnricher:
                 if isinstance(rt_data, dict):
                     if rt_data.get('url'):
                         result['links']['rt'] = rt_data.get('url')
-                    result['rt_score'] = rt_data.get('score')
+                    scraper_rt_score = rt_data.get('score')
+                    result['rt_score'] = scraper_rt_score
                 else:
                     result['links']['rt'] = rt_data
-                # Only mark success if we actually got a score value
                 if result.get('rt_score'):
                     enrichment_results['rt_score'] = 'success'
                 else:
@@ -393,8 +398,8 @@ class MovieEnricher:
         if imdb_id:
             result['links']['imdb'] = f"https://www.imdb.com/title/{imdb_id}/"
 
-        # OMDb: awards, box office, and scores (preferred source for score accuracy)
-        # Scrapers still run above for URLs/links; OMDb wins for the numbers.
+        # OMDb: authoritative score source + awards/box office.
+        # Overwrites scraper scores. After overwrite, compare to detect scraper failures.
         if imdb_id:
             try:
                 omdb = self.host.get_omdb_data(imdb_id)
@@ -403,14 +408,31 @@ class MovieEnricher:
                         result['awards'] = omdb['awards']
                     if omdb.get('box_office'):
                         result['box_office'] = omdb['box_office']
-                    if omdb.get('rt_score'):
-                        result['rt_score'] = omdb['rt_score']
-                        enrichment_results['rt_score'] = 'success'
                     if omdb.get('metacritic'):
                         result['metacritic_score'] = omdb['metacritic']
                         enrichment_results['metacritic_score'] = 'success'
                     if omdb.get('imdb_rating'):
                         result['imdb_rating'] = omdb['imdb_rating']
+                    if omdb.get('rt_score'):
+                        omdb_rt = omdb['rt_score']
+                        result['rt_score'] = omdb_rt
+                        enrichment_results['rt_score'] = 'success'
+                        # Flag: OMDb has a score but RT scraper found no link
+                        if not result['links'].get('rt'):
+                            result['_rt_scraper_failed'] = True
+                            self.ctx.logger.warning(f"RT scraper failed: OMDb has {omdb_rt} for {title} but no RT link found")
+                        # Flag: both sources found a score but disagree by >5 points
+                        elif scraper_rt_score:
+                            def _pct(s):
+                                try: return int(str(s).strip().rstrip('%'))
+                                except (ValueError, TypeError): return None
+                            omdb_n = _pct(omdb_rt)
+                            scraper_n = _pct(scraper_rt_score)
+                            if omdb_n is not None and scraper_n is not None and abs(omdb_n - scraper_n) > 5:
+                                result['_rt_score_conflict'] = True
+                                self.ctx.logger.warning(
+                                    f"RT score conflict for {title}: OMDb={omdb_n}% scraper={scraper_n}%"
+                                )
                     self.ctx.logger.debug(
                         f"OMDb: rt={omdb.get('rt_score')} mc={omdb.get('metacritic')} "
                         f"imdb={omdb.get('imdb_rating')} awards={bool(omdb.get('awards'))} "

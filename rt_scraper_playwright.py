@@ -466,9 +466,8 @@ class RTScraperPlaywright(PlaywrightScraperBase):
     def _scrape_rt_page(self, title, year, director=None):
         """Find RT page URL and extract score.
 
-        Strategy order:
-        1. RT search page (most reliable)
-        2. Direct URL construction (fallback)
+        Uses RT's own search page. URL construction was removed — RT slugs are
+        too unpredictable to guess reliably, and guessing risks landing on the wrong movie.
 
         Args:
             title: Movie title
@@ -486,48 +485,11 @@ class RTScraperPlaywright(PlaywrightScraperBase):
         rt_score = None
 
         try:
-            # Primary method: Search RT directly
             rt_link = self._search_rt_directly(title, year)
-
             if rt_link:
                 self._log(f"RT search found: {rt_link}", level='debug')
             else:
-                # Fallback: Try direct URL construction
-                self._log(f"RT search failed, trying URL construction for {title} ({year})", level='debug')
-                candidate_urls = self._construct_rt_url(title, year)
-
-                for candidate_url in candidate_urls:
-                    self._log(f"Trying direct URL: {candidate_url}", level='debug')
-
-                    response = self.page.goto(candidate_url, wait_until='domcontentloaded')
-                    time.sleep(1)
-
-                    # Check HTTP status code first
-                    if response and response.status >= 400:
-                        continue
-
-                    page_title_raw = self.page.title() or ''
-                    page_title_lower = page_title_raw.lower()
-                    if ('rotten tomatoes' in page_title_lower and
-                        'not found' not in page_title_lower and
-                        '404' not in page_title_lower):
-                        # Extract movie title from RT format: "Movie Name (YYYY) | Rotten Tomatoes"
-                        movie_part = page_title_raw.split('|')[0].strip() if '|' in page_title_raw else page_title_raw.strip()
-                        # Year check: reject if page year is >1 year off
-                        page_year_match = re.search(r'\((\d{4})\)', movie_part)
-                        if page_year_match and year:
-                            page_year = int(page_year_match.group(1))
-                            if abs(page_year - int(year)) > 1:
-                                self._log(f"URL construction: year mismatch {page_year} vs {year} for {candidate_url}", level='debug')
-                                continue
-                        # Title check: extract movie name and verify
-                        page_movie_title = re.sub(r'\s*\(\d{4}\)\s*$', '', movie_part).strip()
-                        if page_title_matches(page_movie_title, title):
-                            rt_link = candidate_url
-                            self._log(f"URL construction: title+year verified for {candidate_url}", level='debug')
-                            break
-                        else:
-                            self._log(f"URL construction: title mismatch - page='{page_movie_title}', expected='{title}'", level='debug')
+                self._log(f"RT search found nothing for {title} ({year})", level='debug')
 
             if not rt_link:
                 self._log(f"No RT link found for {title} ({year})", level='warning')
@@ -545,25 +507,36 @@ class RTScraperPlaywright(PlaywrightScraperBase):
 
             rt_score = self._extract_score_from_rt_page(rt_link)
 
-            # Year, title, and director verification
-            page_title = ""
+            # Verification: year → title → director
+            # Year sources in priority order (first hit wins):
+            #   1. URL slug  — RT's own disambiguation (e.g. /m/primate_2025). Most reliable.
+            #   2. Page title tag — present when title is ambiguous (e.g. "Primate (2025) | RT")
+            #   3. JSON-LD releasedEvent.startDate — rarely present but structured
+            # If no source finds a year: proceed (title + director carry verification).
+            # If any source finds a year and it mismatches: reject immediately.
+            page_title = self.page.title() or ""
             try:
                 page_year = None
-                # Try 1: Page title often has "(YYYY)" for newer movies
-                page_title = self.page.title() or ""
-                year_match = re.search(r'\((\d{4})\)', page_title)
-                if year_match:
-                    page_year = int(year_match.group(1))
-                # Try 2: JSON-LD releasedEvent or year from page content
-                # NOTE: dateCreated is unreliable — it's the RT page creation date,
-                # not the movie release year (e.g. Son-In-Law 1993 shows dateCreated: 2026-05-01)
+
+                # Try 1: URL slug (e.g. /m/primate_2025 → 2025)
+                slug_year_match = re.search(r'_(\d{4})(?:/|$)', rt_link)
+                if slug_year_match:
+                    page_year = int(slug_year_match.group(1))
+
+                # Try 2: Page title tag (e.g. "Primate (2025) | Rotten Tomatoes")
+                if page_year is None:
+                    title_year_match = re.search(r'\((\d{4})\)', page_title)
+                    if title_year_match:
+                        page_year = int(title_year_match.group(1))
+
+                # Try 3: JSON-LD releasedEvent.startDate
+                # NOTE: dateCreated is unreliable — it's the RT page creation date, not the film year
                 if page_year is None:
                     try:
                         json_ld_scripts = self.page.query_selector_all('script[type="application/ld+json"]')
                         for script in json_ld_scripts:
                             try:
                                 data = json.loads(script.text_content() or '{}')
-                                # Check releasedEvent.startDate if present
                                 released = data.get('releasedEvent', {})
                                 if isinstance(released, dict):
                                     start_date = released.get('startDate', '')
@@ -576,6 +549,7 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                                 continue
                     except Exception:
                         pass
+
                 if page_year is not None and abs(page_year - year) > 1:
                     self._log(f"Year mismatch: page has {page_year}, expected {year} — rejecting {rt_link}", level='warning')
                     rt_link = None

@@ -442,6 +442,30 @@ if recent_gaps:
 if not bare_movies and not recent_gaps:
     print('  No critical coverage gaps')
 
+# ── Section 5c: RT SCRAPER FLAGS ─────────────────────────────────────────────
+# _rt_scraper_failed: OMDb has an RT score but scraper couldn't find the RT link
+# _rt_score_conflict: OMDb and scraper both found a score but disagree by >5 points
+
+rt_failed  = [m for m in movies if m.get('_rt_scraper_failed')]
+rt_conflict = [m for m in movies if m.get('_rt_score_conflict')]
+
+if rt_failed or rt_conflict:
+    print()
+    print('─' * 78)
+    print('RT SCRAPER FLAGS')
+    print('─' * 78)
+    if rt_failed:
+        print('  SCRAPER FAILED — OMDb has score but no RT link found (%d):' % len(rt_failed))
+        for m in rt_failed:
+            print('  %-42s  rt_score=%-6s  %s' % (
+                m.get('title','?')[:42], m.get('rt_score','?'), tmdb_url(m.get('id',''))))
+    if rt_conflict:
+        print()
+        print('  SCORE CONFLICT — OMDb vs scraper differ >5 pts (%d):' % len(rt_conflict))
+        for m in rt_conflict:
+            print('  %-42s  rt_score=%-6s  %s' % (
+                m.get('title','?')[:42], m.get('rt_score','?'), tmdb_url(m.get('id',''))))
+
 # ── Section 5b: SLOP REVIEW QUEUE ───────────────────────────────────────────
 # Movies the classifier auto-committed as slop (weak confidence) — need human confirmation.
 
