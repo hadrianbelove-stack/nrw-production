@@ -84,7 +84,7 @@ If the poster, synopsis, director, and genres are ALL wrong — the movie is map
 import requests, os
 from dotenv import load_dotenv
 load_dotenv()
-key = os.environ.get('TMDB_API_KEY', '')
+key = os.environ['TMDB_API_KEY']
 r = requests.get('https://api.themoviedb.org/3/search/movie', params={'api_key': key, 'query': '\$TITLE'})
 for res in r.json().get('results', [])[:8]:
     print(f'ID: {res[\"id\"]}  {res[\"title\"]} ({res.get(\"release_date\",\"?\")[:4]})')

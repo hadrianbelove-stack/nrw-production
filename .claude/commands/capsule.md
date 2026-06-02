@@ -46,8 +46,8 @@ Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER
 ---
 
 **SUGGESTED LINKS**
-- [Name](https://en.wikipedia.org/wiki/Name) — cast / role / context
-- ...
+1. [Name](https://en.wikipedia.org/wiki/Name) — cast / role / context
+2. ...
 ```
 
 Then ask: "Pick 1, 2, or 3 — paste a rewrite — or skip."
@@ -56,13 +56,11 @@ Then ask: "Pick 1, 2, or 3 — paste a rewrite — or skip."
 
 ## Step 2b — Suggested Wikipedia links
 
-Generate the SUGGESTED LINKS block shown above.
+**Director and cast — already in data.json, no searching needed:**
+Read `movie.links.director_wiki` and `movie.links.cast_wiki` from data.json. These were populated by the enrichment pipeline and are already used in the lightbox. Do not WebSearch for them. When their names appear in the capsule text, embed silently — no user approval needed.
 
-**Always include**: the top 3 cast members from `movie.crew.cast` — WebSearch each for their Wikipedia page.
-
-**Also include**: up to 3 more linkable entities — key historical figures, events, movements, or organizations referenced by the film. Skip the director (already linked in the site header).
-
-If a cast member has no Wikipedia page, skip them silently. If no useful non-cast links found, just show the cast links.
+**SUGGESTED LINKS — for user approval only:**
+Identify non-cast/non-director named entities that appear in the capsule text: historical figures, referenced filmmakers, organizations, other works. Up to 3. WebSearch each for a Wikipedia page. Present only these to the user (numbered). If none exist, omit the SUGGESTED LINKS block entirely.
 
 Wikipedia URLs with parentheses (e.g. `_(painter)`, `_(film)`): encode `(` as `%28` and `)` as `%29`.
 
@@ -79,14 +77,12 @@ If they ask for more: re-run Step 1 with `--force`.
 
 **Once they pick a variant or provide a rewrite:**
 
-1. Automatically embed ALL suggested links into the chosen text:
-   - Entity name appears as `**bold**` → change to `**[Name](url)**`
-   - Entity name appears as plain text → change to `[Name](url)`
-   - Entity name not in the capsule text → skip (still saved to cast_wiki for the metadata line)
-2. Show the modified capsule with links visible in the markdown
-3. Ask: "Approve with these links — or say 'remove [Name]' to drop any."
-4. If user removes any: strip that link, show updated capsule again
-5. When user approves: this is the final text — proceed to Step 4
+1. Silently embed director/cast links from data.json (`director_wiki`, `cast_wiki`) wherever their names appear in the text — bold names become `**[Name](url)**`, plain text becomes `[Name](url)`.
+2. Embed any approved SUGGESTED LINKS the same way.
+3. Show the modified capsule with all links visible.
+4. Ask: "Approve with these links — or say 'remove [Name]' to drop any."
+5. If user removes any: strip that link, show updated capsule again.
+6. When user approves: proceed to Step 4.
 
 ---
 
@@ -111,26 +107,7 @@ This does TWO things automatically:
 - Adds to `cache/approved_capsules.json` (training bank — improves future generations)
 - Updates `data.json` **capsule** field (goes live on site — NOT synopsis, which is the TMDB fallback text and gets overwritten by the daily pipeline)
 
-3. Write cast wiki links for each cast member from SUGGESTED LINKS that has a Wikipedia URL:
-
-```bash
-cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
-import json, sys
-title, cast_wiki_json = sys.argv[1], sys.argv[2]
-cast_wiki = json.loads(cast_wiki_json)
-data = json.load(open('data.json'))
-for m in data['movies']:
-    if m.get('title', '').lower() == title.lower():
-        m.setdefault('links', {})
-        m['links']['cast_wiki'] = cast_wiki
-        break
-json.dump(data, open('data.json', 'w'), indent=2, ensure_ascii=False)
-" "$MOVIE_TITLE" '{"Actor Name": "https://en.wikipedia.org/wiki/Actor_Name"}'
-```
-
-Only include cast members (not historical figures or events).
-
-4. Commit and push:
+3. Commit and push:
 
 ```bash
 cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && git push origin main
@@ -144,7 +121,6 @@ Commit **only** `data.json`. Cache files are gitignored — do not `git add` the
 
 Tell the user:
 - The approved capsule (show final text)
-- Which cast wiki links were saved (e.g. "Ellie Bamber and Derek Jacobi now linked in cast metadata")
 - Confirmed it's in the training bank (show count)
 - Confirmed it's live in data.json
 - Push status

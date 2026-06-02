@@ -85,6 +85,7 @@ else:
 - Any `⚠ NO TRAILER` from the New Arrivals script above
 - Any `⚠ NO LINKS` or `⚠ PLEX ONLY` from the New Arrivals script above
 - Trailer hosting failures from launchagent log
+- **Pull quote gaps**: check `cache/pull_quotes_combined.json` — for each new arrival, look up `"{title}_{year}"`. If a movie is absent from the cache entirely, flag it: `⚠ [Title] — no pull quotes scraped (morning batch missed it)`
 - If no concerns, say "No concerns."
 
 ### Data Quality Snapshot (LIVE from data.json)

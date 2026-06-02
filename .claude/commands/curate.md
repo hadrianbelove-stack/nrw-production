@@ -126,7 +126,7 @@ If no candidates for either: report through-dates and mark stage `completed`.
        Use `--` for any missing field. List primary watch platform(s) (streaming first, then VOD).
      - Line 2 (conditional — omit entirely if nothing applies): TMDB keywords if present (up to 6, space-separated with `·`), then badges: `[SLOP]` if `is_slop=true`, `[VIRTUAL SCREENING]` if `is_virtual_screening=true`, `[PREORDER]` if `digital_date` is in the future.
        If keywords are empty, still show any applicable badges; omit line 2 only if both keywords and badges are absent.
-   - Three numbered variants with word counts (full text, not summaries)
+   - Three numbered variants with word counts (full text, not summaries). Each variant should take a **different approach** — e.g. one anchored in critical reception, one in production/filmmaker context, one in premise/hook. Label the approach in one word after the word count: e.g. `(62 words — hook)`, `(71 words — filmmaker)`, `(68 words — critical)`.
    - **FACTOID PRIMER** section below (full bullet list — never summarize or abbreviate it)
    - **SUGGESTED LINKS** section below the primer (see below)
    - Pick prompt: "Pick 1, 2, or 3 — paste a rewrite — or skip."
@@ -142,23 +142,22 @@ If no candidates for either: report through-dates and mark stage `completed`.
 
 **Generating SUGGESTED LINKS (shown below the factoid primer):**
 
-Identify linkable entities in two passes:
+Cast and director Wikipedia links are **auto-approved** — collect them silently for later embedding but do NOT list them in SUGGESTED LINKS for user review.
 
-**Pass 1 — Cast + Director (from data):**
-- Read `movie.links.cast_wiki` from data.json — auto-populated by the enrichment pipeline. List any cast members that have URLs.
-- Read `movie.links.director_wiki` from data.json. Include the director even though the template also auto-links them — they may appear by name in the capsule text and deserve an inline link too.
-- If cast_wiki is missing or incomplete, WebSearch any top-3 cast members (`movie.crew.cast`) not already covered.
+**Pass 1 — Cast + Director (silent, no user review):**
+- Read `movie.links.cast_wiki` and `movie.links.director_wiki` from data.json — populated by the enrichment pipeline, already used in the lightbox.
+- Do not WebSearch for cast or director links. Use only what enrichment already found.
+- When their names appear in the capsule text, embed silently.
 
-**Pass 2 — Other named entities (your judgment):**
-- Identify up to 3 notable historical figures, events, movements, organizations, or other works referenced by this film. WebSearch each for a Wikipedia page.
+**Pass 2 — Other named entities in the capsule text (user reviews these):**
+- Identify non-cast/non-director people, places, movements, or works that are named in the capsule text itself (e.g. a manga creator, historical figure, referenced filmmaker). Up to 3.
+- WebSearch each for a Wikipedia page.
+- If none exist, omit the SUGGESTED LINKS section entirely.
 
-Present as:
+Present only Pass 2 results:
 ```
 **SUGGESTED LINKS**
-- [Ellie Bamber](https://en.wikipedia.org/wiki/Ellie_Bamber) — cast
-- [Derek Jacobi](https://en.wikipedia.org/wiki/Derek_Jacobi) — cast
-- [Zerocalcare](https://en.wikipedia.org/wiki/Zerocalcare) — director
-- [Lucian Freud](https://en.wikipedia.org/wiki/Lucian_Freud) — painter, subject of film
+1. [Lucian Freud](https://en.wikipedia.org/wiki/Lucian_Freud) — painter, subject of film
 ```
 
 If a person has no Wikipedia page, skip them silently.
@@ -206,30 +205,15 @@ Only include cast members in cast_wiki (not director, historical figures, or eve
 
 Show pull quotes for this movie right after the capsule is resolved (picked, skipped, or not needed).
 
-**1. Get the quotes — always scrape fresh**
+**1. Get the quotes — read from cache**
 
-Run the validated scraper (not just cache):
+The morning launchagent (`scripts/batch_pull_quotes.py`) scrapes pull quotes for all new arrivals before curation runs. Read from `cache/pull_quotes_combined.json` using the cache key `"{title}_{year}"`.
 
-```bash
-cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
-from gemini_scraper.pull_quotes import GeminiPullQuoteFinder
-import json
-finder = GeminiPullQuoteFinder()
-with open('data.json') as f:
-    data = json.load(f)
-movies = data if isinstance(data, list) else data.get('movies', [])
-movie = next((m for m in movies if m.get('title','').lower() == 'TITLE'.lower()), None)
-quotes = finder.find_pull_quotes(
-    title='TITLE', year=YEAR, director='DIRECTOR',
-    num_quotes=10, deep_read=True,
-    rt_url=movie.get('links',{}).get('rt') if movie else None,
-    mc_url=movie.get('links',{}).get('metacritic') if movie else None
-)
-print(json.dumps(quotes, indent=2))
-"
-```
+- If the movie **has quotes in cache**: use them. Do not re-scrape.
+- If the movie is **absent from cache entirely**: show this flag and skip pull quotes for this movie:
+  `⚠ No pull quotes in cache — morning batch may have missed this movie. Check Concerns in tomorrow's launchagent report.`
 
-After scraping, update `cache/pull_quotes_combined.json` with any new quotes found (merge, don't overwrite existing selected quotes).
+Do not re-scrape. The morning batch is the canonical source.
 
 **Filter noise before presenting**: drop any quotes from YouTube, generic news blurbs (Mashable "what's new this week" type), or press releases. Keep critics, publications, and Letterboxd.
 
