@@ -26,19 +26,19 @@ Also read the movie's cast from data.json (`movie.crew.cast`) — you'll need it
 
 ## Step 2 — Present capsules to user
 
-Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER** below them, then the **SUGGESTED LINKS** block (Step 2b). This is the required format — never drop the primer or links:
+Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER** below them, then the **SUGGESTED LINKS** block (Step 2b). This is the required format — never drop the primer or links. **This is the single source of truth for capsule presentation — `/curate` defers to this format.**
 
 ```
 ## Capsule Variants for [Title] ([Year])
 
 *directed by [Director] | [Genres, up to 2] | [Runtime] min | [Country] | [Platform(s)]*
-[Keywords up to 6, space-separated with · — omit line if no keywords]
+[Keywords up to 6, space-separated with · — then badges: [SLOP] if is_slop=true, [VIRTUAL SCREENING] if is_virtual_screening=true, [PREORDER] if digital_date is in the future — omit this line entirely if no keywords and no badges apply]
 
-**1.** [capsule text] _(XX words)_
+**1.** [capsule text] _(XX words — hook)_
 
-**2.** [capsule text] _(XX words)_
+**2.** [capsule text] _(XX words — filmmaker)_
 
-**3.** [capsule text] _(XX words)_
+**3.** [capsule text] _(XX words — critical)_
 
 ---
 
@@ -52,6 +52,8 @@ Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER
 1. [Name](https://en.wikipedia.org/wiki/Name) — cast / role / context
 2. ...
 ```
+
+Each variant takes a different approach: one anchored in premise/hook, one in filmmaker/production context, one in critical reception. Label the approach after the word count as shown above.
 
 Then ask: "Pick 1, 2, or 3 — paste a rewrite — or skip."
 

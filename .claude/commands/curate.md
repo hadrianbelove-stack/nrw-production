@@ -162,16 +162,7 @@ If no candidates for either: report through-dates and mark stage `completed`.
 ### Step A — Capsule (if needed)
 
 1. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --force --variants 3 --skip-verify`
-2. Present in this **exact format** — always, no exceptions:
-   - **Movie header** (before the variants):
-     - Line 1 (italic): `*directed by [Director] | [Genres, up to 2] | [Runtime] min | [Country] | [Platform(s)]*`
-       Use `--` for any missing field. List primary watch platform(s) (streaming first, then VOD).
-     - Line 2 (conditional — omit entirely if nothing applies): TMDB keywords if present (up to 6, space-separated with `·`), then badges: `[SLOP]` if `is_slop=true`, `[VIRTUAL SCREENING]` if `is_virtual_screening=true`, `[PREORDER]` if `digital_date` is in the future.
-       If keywords are empty, still show any applicable badges; omit line 2 only if both keywords and badges are absent.
-   - Three numbered variants with word counts (full text, not summaries). Each variant should take a **different approach** — e.g. one anchored in critical reception, one in production/filmmaker context, one in premise/hook. Label the approach in one word after the word count: e.g. `(62 words — hook)`, `(71 words — filmmaker)`, `(68 words — critical)`.
-   - **FACTOID PRIMER** section below (full bullet list — never summarize or abbreviate it)
-   - **SUGGESTED LINKS** section below the primer (see below)
-   - Pick prompt: "Pick 1, 2, or 3 — paste a rewrite — or skip."
+2. **Read `.claude/commands/capsule.md` Step 2** for the exact presentation format — that file is the single source of truth. Use it exactly: movie header (director/genres/runtime/country/platforms), keyword/badge line, three variants with approach labels, FACTOID PRIMER, SUGGESTED LINKS, pick prompt.
 3. Wait for user response. **When user provides edited text, that IS the final version.**
 4. If picked/rewritten:
    1. Apply standard formatting: **bold** the director's name and cast member names; *italicize* titles of other films mentioned in the text

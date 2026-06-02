@@ -16,10 +16,17 @@ Goal: Find when a movie first became available on VOD (rent/buy).
 ### Steps:
 
 1. **Search TMDB** for the movie to get its title and confirm it exists:
+   ```bash
+   /usr/bin/python3 -c "
+   import requests, os
+   from dotenv import load_dotenv
+   load_dotenv('/Users/hadrianbelove/Downloads/nrw-production/.env')
+   key = os.environ.get('TMDB_API_KEY', '')
+   r = requests.get('https://api.themoviedb.org/3/search/movie', params={'api_key': key, 'query': '$ARGUMENTS'})
+   for res in r.json().get('results', [])[:5]:
+       print(f'  {res[\"id\"]}  {res[\"title\"]} ({res.get(\"release_date\",\"\")[:4]})')
+   "
    ```
-   curl -s "https://api.themoviedb.org/3/search/movie?api_key=<KEY>&query=<MOVIE_NAME>"
-   ```
-   Load TMDB_API_KEY from `.env` file.
 
 2. **Build the JustWatch URL slug** from the title:
    - Lowercase, replace spaces with hyphens, strip special characters

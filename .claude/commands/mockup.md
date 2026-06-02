@@ -48,7 +48,7 @@ Create a **self-contained HTML file** in `mockups/`:
 lsof -ti:8090 -ti:8091 2>/dev/null | xargs kill 2>/dev/null || true
 
 # Start server in background
-cd /Users/hadrianbelove/Downloads/nrw-production && python3 -m http.server 8090 &
+cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -m http.server 8090 &
 
 # Get local IP for phone testing
 ipconfig getifaddr en0

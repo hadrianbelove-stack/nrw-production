@@ -91,7 +91,7 @@ print('done')
 ```
 
 ```bash
-cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Hyperlink: [MOVIE TITLE] — [ENTITY] APPROVED: DELETE" && git push origin main
+cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Hyperlink: [MOVIE TITLE] — [ENTITY] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
 ```
 
 Report: show the final capsule text (whichever field was edited), confirm the push succeeded, and note if cast_wiki was also updated.

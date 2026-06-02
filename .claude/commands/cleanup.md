@@ -164,7 +164,7 @@ For approved items:
 - Consolidate redundant logic into one location
 - Delete stale comments entirely
 - Remove debug code
-- After all changes, run a quick syntax check (`python3 -c "import ast; ast.parse(open('file').read())"` for Python, or equivalent)
+- After all changes, run a quick syntax check (`/usr/bin/python3 -c "import ast; ast.parse(open('FILENAME.py').read())"` for Python — replace FILENAME.py with the actual file)
 
 ### Step 7: Summary
 
