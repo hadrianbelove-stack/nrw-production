@@ -86,14 +86,12 @@ function toggleCategory(movieId, statusType, value) {
                 const title = btn.getAttribute('title');
                 const typeMap = {
                     'Staff Pick': 'featured',
-                    'Studio': 'studio',
                     'Indie': 'indie',
                     'Foreign': 'foreign',
                     'Series': 'series',
                     'Restoration': 'restoration',
                     'Virtual Screening': 'virtual_screening',
                     'Documentary': 'documentary',
-                    'Exploitation': 'exploitation',
                     'Slop': 'slop'
                 };
                 if (typeMap[title] === statusType) {

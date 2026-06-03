@@ -180,14 +180,12 @@
         {% set movie_id = movie.id|string %}
         {% set cats = movie.get('categories', {}) %}
         {% set is_pick = cats.get('is_staff_pick', false) or movie_id in featured %}
-        {% set is_big = cats.get('is_studio', false) or cats.get('tier') == 'studio' %}
-        {% set is_indie = cats.get('is_indie', false) or cats.get('tier') == 'indie' %}
+        {% set is_indie = cats.get('is_indie', false) %}
         {% set is_foreign = cats.get('is_foreign', false) %}
         {% set is_series = cats.get('is_series', false) %}
         {% set is_rest = cats.get('is_restoration', false) or movie_id in restorations %}
         {% set is_vscr = cats.get('is_virtual_screening', false) %}
         {% set is_doc = cats.get('is_documentary', false) %}
-        {% set is_expl = cats.get('is_exploitation', false) %}
         {% set is_slop = movie.get('is_slop', false) %}
         {% set slop_guess = movie.get('_is_slop_guess') %}
         {% set trailer_url = movie.get('links', {}).get('trailer_hosted', '') or movie.get('links', {}).get('trailer', '') %}
@@ -227,14 +225,12 @@
                 <div class="r-title" title="{{ movie.title }}">{{ movie.title }}</div>
                 <div class="row-cat-btns" onclick="event.stopPropagation()">
                     <button class="cat-btn {{ 'on' if is_pick else '' }}" style="--c:#ffd700;--ct:#000" onclick="toggleCategory('{{ movie_id }}', 'featured', {{ 'false' if is_pick else 'true' }})" title="Staff Pick">&#9733;</button>
-                    <button class="cat-btn {{ 'on' if is_big else '' }}" style="--c:#ff6b6b" onclick="toggleCategory('{{ movie_id }}', 'studio', {{ 'false' if is_big else 'true' }})" title="Studio">STU</button>
                     <button class="cat-btn {{ 'on' if is_indie else '' }}" style="--c:#4a90d9" onclick="toggleCategory('{{ movie_id }}', 'indie', {{ 'false' if is_indie else 'true' }})" title="Indie">INDIE</button>
                     <button class="cat-btn {{ 'on' if is_foreign else '' }}" style="--c:#9b59b6" onclick="toggleCategory('{{ movie_id }}', 'foreign', {{ 'false' if is_foreign else 'true' }})" title="Foreign">FRGN</button>
                     <button class="cat-btn {{ 'on' if is_series else '' }}" style="--c:#17a2b8" onclick="toggleCategory('{{ movie_id }}', 'series', {{ 'false' if is_series else 'true' }})" title="Series">SERIES</button>
                     <button class="cat-btn {{ 'on' if is_rest else '' }}" style="--c:#C8A951;--ct:#000" onclick="toggleCategory('{{ movie_id }}', 'restoration', {{ 'false' if is_rest else 'true' }})" title="Restoration">REST</button>
                     <button class="cat-btn {{ 'on' if is_vscr else '' }}" style="--c:#e67e22" onclick="toggleCategory('{{ movie_id }}', 'virtual_screening', {{ 'false' if is_vscr else 'true' }})" title="Virtual Screening">VSCR</button>
                     <button class="cat-btn {{ 'on' if is_doc else '' }}" style="--c:#4A90D9" onclick="toggleCategory('{{ movie_id }}', 'documentary', {{ 'false' if is_doc else 'true' }})" title="Documentary">DOC</button>
-                    <button class="cat-btn {{ 'on' if is_expl else '' }}" style="--c:#e74c3c" onclick="toggleCategory('{{ movie_id }}', 'exploitation', {{ 'false' if is_expl else 'true' }})" title="Exploitation">EXPL</button>
                     <button class="cat-btn {{ 'on' if is_slop else '' }} {{ 'guess' if slop_guess is not none and not is_slop else '' }}" style="--c:#ff4444" onclick="toggleCategory('{{ movie_id }}', 'slop', {{ 'false' if is_slop else 'true' }})" title="Slop{% if slop_guess is not none and not is_slop %} (guess: {{ 'slop' if slop_guess else 'not slop' }}){% endif %}">SLOP</button>
                 </div>
             </div>

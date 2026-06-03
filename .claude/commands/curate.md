@@ -119,21 +119,27 @@ For each movie row show: title, year, RT score (or `--`), Metacritic score (or `
 
 Show each candidate with its auto-detected filters (from TMDB genres, language, and distributor data). Review and correct any misses.
 
+Present as a markdown table with columns: `#`, `Title (Year)`, `Sections`. Hyperlink the title to the movie's Wikipedia page if one exists in `movie.links.wikipedia` (or found via WebSearch). If no Wikipedia page, plain text. Categories should all be in the same column so they scan cleanly vertically.
+
 ```
 FILTERS — check auto-detected assignments
 
- 1. Title (Year) — Studio
- 2. Title (Year) — Foreign, Documentary
- 3. Title (Year) — Indie
- 4. Title (Year) — (none)
- ...
+| # | Title (Year) | Sections |
+|---|--------------|----------|
+| 1 | [Title (Year)](https://en.wikipedia.org/wiki/...) | Studio |
+| 2 | [Title (Year)](https://en.wikipedia.org/wiki/...) | Foreign, Documentary |
+| 3 | Title (Year) | Indie |
+| 4 | Title (Year) | (none) |
 
 Reply with changes (e.g. "2: remove foreign; 4: add indie") or "looks good" to confirm all.
 ```
 
-For each movie, list all active categories from its `categories` object (is_studio, is_indie, is_foreign, is_documentary, is_exploitation, is_virtual_screening, is_restoration, is_series). Show as human-readable names. If no categories are set, show "(none)".
+For each movie, show **all active filters** — meaning everything a user could filter by on the site:
 
-Note: Comedy, Horror, and Action filters on the site are driven by TMDB `genres` data stored in `movie.genres` — they are not in the `categories` object and won't appear here. If a film is miscategorized at the genre level, that's a TMDB data issue.
+- From `movie.categories`: Indie, Foreign, Documentary, Virtual Screening, Restoration (check `is_indie`, `is_foreign`, `is_documentary`, `is_virtual_screening`, `is_restoration`)
+- From `movie.genres`: Horror, Action, Comedy, Family, Thriller (check if genre name appears in the array)
+
+Show as human-readable names. If no filters are active, show "(none)". Staff Picks is handled in Stage 1 — omit it here.
 
 **On user reply:**
 - For studio/indie overrides: read `admin/category_overrides.json`, add entries, write back

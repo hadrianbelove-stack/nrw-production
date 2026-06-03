@@ -222,13 +222,7 @@ class DisplayGenerator:
         # Determine documentary status from TMDB genres
         is_documentary = 'Documentary' in genres
 
-        # Determine exploitation status (Horror / Thriller / Action)
-        exploitation_genres = {'Horror', 'Thriller', 'Action'}
-        is_exploitation = bool(set(genres) & exploitation_genres)
-
         return {
-            'tier': tier,  # Kept for backward compatibility
-            'is_studio': tier == 'studio',
             'is_indie': tier == 'indie',
             'is_foreign': is_foreign,
             'is_staff_pick': False,  # Set later from staff_picks.json
@@ -236,9 +230,9 @@ class DisplayGenerator:
             'is_virtual_screening': False,  # Set later from watch_links detection
             'is_series': False,  # Set later from content_type detection
             'is_documentary': is_documentary,
-            'is_exploitation': is_exploitation,
             'auto_categorized': auto_categorized,
-            'manual_override': manual_override
+            'manual_override': manual_override,
+            '_tier': tier,  # Internal only — used by override logic, not written to data.json
         }
 
     def apply_admin_overrides(self, display_movies):
@@ -416,14 +410,12 @@ class DisplayGenerator:
         screening_end_dates_map = self.ctx.config.get('screening_end_dates', {})
 
         # Apply categorization to all movies
-        studio_count = 0
         indie_count = 0
         uncategorized_count = 0
         foreign_count = 0
         restoration_count = 0
         virtual_screening_count = 0
         documentary_count = 0
-        exploitation_count = 0
         screening_services = ['eventive']
         screening_url_patterns = ['eventive.org', 'festivalplayer.sundance.org', 'shift72.com']
 
@@ -447,9 +439,9 @@ class DisplayGenerator:
             # Check for manual category override from tracking data
             if movie_id in tracking_data and tracking_data[movie_id].get('categories'):
                 manual_categories = tracking_data[movie_id]['categories']
-                # Apply manual override - preserve tier and other manual settings
                 if manual_categories.get('manual_override'):
-                    categories['tier'] = manual_categories.get('tier', categories['tier'])
+                    stored_tier = manual_categories.get('tier') or manual_categories.get('manual_override')
+                    categories['is_indie'] = (stored_tier == 'indie')
                     categories['manual_override'] = manual_categories['manual_override']
                     categories['auto_categorized'] = False
 
@@ -604,23 +596,16 @@ class DisplayGenerator:
                     if key in categories:
                         categories[key] = val
                         categories['auto_categorized'] = False
-                # Sync tier field for backward compatibility
-                if categories.get('is_studio'):
-                    categories['tier'] = 'studio'
-                elif categories.get('is_indie'):
-                    categories['tier'] = 'indie'
-                elif 'is_studio' in overrides or 'is_indie' in overrides:
-                    categories['tier'] = None
-
             # Set 'featured' field for backwards compatibility (true or false)
             movie['featured'] = categories['is_staff_pick']
 
+            # Strip internal-only fields before writing to data.json
+            categories.pop('_tier', None)
+
             # Count for stats
-            if categories.get('is_studio'):
-                studio_count += 1
             if categories.get('is_indie'):
                 indie_count += 1
-            if not categories.get('is_studio') and not categories.get('is_indie'):
+            else:
                 uncategorized_count += 1
             if categories['is_foreign']:
                 foreign_count += 1
@@ -630,8 +615,6 @@ class DisplayGenerator:
                 virtual_screening_count += 1
             if categories.get('is_documentary'):
                 documentary_count += 1
-            if categories.get('is_exploitation'):
-                exploitation_count += 1
 
         # Apply editorial ordering if specified
         if ordering:
@@ -659,7 +642,7 @@ class DisplayGenerator:
         ordered_count = len(ordering) if ordering else 0
 
         print(f"\U0001f4dd Admin overrides applied:")
-        print(f"  Categories: {studio_count} Studio, {indie_count} Indie, {uncategorized_count} Uncategorized, {foreign_count} Foreign, {restoration_count} Restorations, {virtual_screening_count} Virtual Screenings, {documentary_count} Documentaries, {exploitation_count} Exploitation")
+        print(f"  Filters: {indie_count} Indie, {uncategorized_count} Uncategorized, {foreign_count} Foreign, {restoration_count} Restorations, {virtual_screening_count} Virtual Screenings, {documentary_count} Documentaries")
         print(f"  Staff Picks: {staff_pick_count}")
         if ordered_count > 0:
             print(f"  Editorial ordering: {ordered_count} movies pinned to top")
