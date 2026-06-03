@@ -48,7 +48,7 @@ fun FilterChips(
     onFilterToggled: (FilterCategory) -> Unit,
     slopMode: String = "free",
     onSlopModeToggle: () -> Unit = {},
-    hideFest: Boolean = false,
+    hideFest: Boolean = true,
     onHideFestToggle: () -> Unit = {},
     showPreorders: Boolean = false,
     onShowPreordersToggle: () -> Unit = {},

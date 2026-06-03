@@ -164,6 +164,23 @@ Function GroupMoviesByDate(movies as Object) as Object
         end if
     end for
 
+    ' Within each date group, float staff picks to the top
+    for each dateKey in groups.Keys()
+        grp = groups[dateKey]
+        picks = []
+        others = []
+        for each m in grp
+            isStaff = false
+            if m.filters <> invalid AND m.filters.is_staff_pick = true then isStaff = true
+            if m.featured = true then isStaff = true
+            if isStaff then picks.Push(m) else others.Push(m)
+        end for
+        sorted = []
+        for each m in picks : sorted.Push(m) : end for
+        for each m in others : sorted.Push(m) : end for
+        groups[dateKey] = sorted
+    end for
+
     ' Get sorted date keys (descending)
     sortedDates = SortDatesDescending(groups.Keys())
 

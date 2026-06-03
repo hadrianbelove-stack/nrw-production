@@ -206,7 +206,7 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopM
   if (!showPreorders && !searchQuery) {
     movies = movies.filter(m => !m._is_preorder);
   }
-  if (!activeFilters || activeFilters.size === 0) {
+  if (!activeFilters || activeFilters.size === 0 || searchQuery) {
     return movies.filter(movie => !movie.hidden);
   }
 
@@ -255,23 +255,24 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopM
 export function searchMovies(movies, query) {
   if (!movies || !Array.isArray(movies) || !query) return movies;
 
-  const lowerQuery = query.toLowerCase().trim();
+  const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const nq = norm(query.trim());
 
   return movies.filter(movie => {
-    const title = (movie.title || '').toLowerCase();
-    const director = (movie.crew?.director || movie.director || '').toLowerCase();
-    const genres = (movie.genres || []).map(g => g.toLowerCase());
-    const country = (movie.country || '').toLowerCase();
-    const synopsis = (movie.capsule || movie.synopsis || '').toLowerCase();
+    const title = norm(movie.title || '');
+    const director = norm(movie.crew?.director || movie.director || '');
+    const genres = (movie.genres || []).map(g => norm(g));
+    const country = norm(movie.country || '');
+    const synopsis = norm(movie.capsule || movie.synopsis || '');
     const year = String(movie.year || '');
 
     return (
-      title.includes(lowerQuery) ||
-      director.includes(lowerQuery) ||
-      genres.some(g => g.includes(lowerQuery)) ||
-      country.includes(lowerQuery) ||
-      synopsis.includes(lowerQuery) ||
-      year.includes(lowerQuery)
+      title.includes(nq) ||
+      director.includes(nq) ||
+      genres.some(g => g.includes(nq)) ||
+      country.includes(nq) ||
+      synopsis.includes(nq) ||
+      year.includes(nq)
     );
   });
 }
@@ -283,9 +284,31 @@ export function sortByDate(movies) {
   if (!movies || !Array.isArray(movies)) return [];
 
   return [...movies].sort((a, b) => {
+    // Pre-orders sort to the end
+    if (a._is_preorder && !b._is_preorder) return 1;
+    if (!a._is_preorder && b._is_preorder) return -1;
+    if (a._is_preorder && b._is_preorder)
+      return (a.digital_date || '').localeCompare(b.digital_date || '');
+
+    // Virtual screenings: sort by tier (active → upcoming → expired)
+    const screeningTier = m => {
+      if (!m.filters?.is_virtual_screening) return -1;
+      const s = m.virtual_screening_info?.status;
+      return s === 'active' ? 0 : s === 'expired' ? 2 : 1;
+    };
+    const ta = screeningTier(a), tb = screeningTier(b);
+    if (ta >= 0 && tb >= 0 && ta !== tb) return ta - tb;
+
     const dateA = a.digital_date || a.premiere_date || a.release_date || '';
     const dateB = b.digital_date || b.premiere_date || b.release_date || '';
-    return dateB.localeCompare(dateA);
+    if (dateB !== dateA) return dateB.localeCompare(dateA);
+
+    // Same date: staff picks first
+    const aStaff = a.filters?.is_staff_pick || a.featured;
+    const bStaff = b.filters?.is_staff_pick || b.featured;
+    if (aStaff && !bStaff) return -1;
+    if (!aStaff && bStaff) return 1;
+    return 0;
   });
 }
 

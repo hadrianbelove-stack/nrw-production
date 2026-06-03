@@ -131,28 +131,30 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
       style={styles.container}
       onPress={() => onPress?.(movie)}
       activeOpacity={0.8}>
-      <View style={styles.posterContainer}>
+      <View style={[
+        styles.posterContainer,
+        streamingBadge && {backgroundColor: streamingBadge.color},
+      ]}>
+        {/* Gallery Label Frame header (replaces overlay bar) */}
+        {streamingBadge && (
+          <View style={styles.streamingFrameHeader}>
+            <Text style={[styles.streamingFrameText, {color: streamingBadge.textColor || '#fff'}]}>
+              {streamingBadge.name}
+            </Text>
+            <Text style={[styles.streamingFrameSubtext, {color: streamingBadge.textColor || '#fff'}]}>
+              NOW STREAMING
+            </Text>
+          </View>
+        )}
         {posterUrl ? (
           <Image
             source={{uri: posterUrl}}
-            style={styles.poster}
+            style={[styles.poster, streamingBadge && styles.posterFrame]}
             resizeMode="cover"
           />
         ) : (
-          <View style={styles.posterPlaceholder}>
+          <View style={[styles.posterPlaceholder, streamingBadge && styles.posterFrame]}>
             <Text style={styles.placeholderText}>No Poster</Text>
-          </View>
-        )}
-
-        {/* Streaming service bar badge (full-width top bar) */}
-        {streamingBadge && (
-          <View style={[styles.streamingBar, {backgroundColor: streamingBadge.color}]}>
-            <Text style={[styles.streamingBarText, streamingBadge.textColor && {color: streamingBadge.textColor}]}>
-              {streamingBadge.name}
-            </Text>
-            <Text style={[styles.streamingBarSubtext, streamingBadge.textColor && {color: streamingBadge.textColor}]}>
-              NOW STREAMING
-            </Text>
           </View>
         )}
 
@@ -166,7 +168,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         {/* Restoration badge */}
         {movie.filters?.is_restoration && (
           <View style={styles.restorationBadge}>
-            <Text style={styles.restorationText}>RESTORED</Text>
+            <Text style={styles.restorationText}>{(movie.reissue_label || 'RESTORED').toUpperCase()}</Text>
           </View>
         )}
 
@@ -296,27 +298,30 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5,
   },
-  streamingBar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    paddingVertical: 5,
+  streamingFrameHeader: {
+    height: 28,
+    width: '100%',
     alignItems: 'center',
-    zIndex: 5,
+    justifyContent: 'center',
+    flexShrink: 0,
   },
-  streamingBarText: {
+  streamingFrameText: {
     color: '#fff',
     fontSize: 9,
-    fontWeight: '700',
+    fontWeight: '800',
     letterSpacing: 0.8,
   },
-  streamingBarSubtext: {
+  streamingFrameSubtext: {
     color: '#fff',
     fontSize: 7,
     fontWeight: '500',
     letterSpacing: 1,
     opacity: 0.75,
+  },
+  posterFrame: {
+    flex: 1,
+    height: undefined,
+    width: '100%',
   },
   preOrderBadge: {
     position: 'absolute',

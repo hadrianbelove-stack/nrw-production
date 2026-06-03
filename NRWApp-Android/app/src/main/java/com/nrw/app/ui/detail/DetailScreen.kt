@@ -482,12 +482,24 @@ private fun MovieDetail(
                     )
                 }
 
+                // Awards
+                movie.awards?.let { awards ->
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = awards, color = TextMuted, fontSize = 11.sp)
+                }
+
+                // Box office
+                movie.boxOffice?.let { bo ->
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = "Box office: $bo", color = TextMuted, fontSize = 11.sp)
+                }
+
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // Pull quotes
                 if (!movie.pullQuotes.isNullOrEmpty()) {
                     val pqContext = LocalContext.current
-                    movie.pullQuotes!!.take(2).forEach { pq ->
+                    movie.pullQuotes!!.forEach { pq ->
                         pq.text?.let { quoteText ->
                             Column(
                                 modifier = Modifier

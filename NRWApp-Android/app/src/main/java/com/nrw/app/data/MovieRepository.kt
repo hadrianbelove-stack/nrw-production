@@ -146,7 +146,7 @@ class MovieRepository(private val context: Context) {
      * Filter movies by multiple categories (OR logic - cumulative)
      */
     fun filterMoviesMulti(movies: List<Movie>, activeFilters: Set<FilterCategory>, searchQuery: String = ""): List<Movie> {
-        if (activeFilters.isEmpty()) {
+        if (activeFilters.isEmpty() || searchQuery.isNotBlank()) {
             return movies.filter { it.hidden != true && it.enrichmentStatus != "reverted" }
         }
         return movies.filter { movie ->
@@ -173,15 +173,24 @@ class MovieRepository(private val context: Context) {
     fun searchMovies(movies: List<Movie>, query: String): List<Movie> {
         if (query.isBlank()) return movies
 
-        val lowerQuery = query.lowercase().trim()
-        return movies.filter { movie ->
-            val title = movie.title.lowercase()
-            val director = movie.getDirector()?.lowercase() ?: ""
-            val genres = movie.genres?.map { it.lowercase() } ?: emptyList()
+        fun norm(s: String) = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD)
+            .replace(Regex("\\p{InCombiningDiacriticalMarks}+"), "").lowercase()
 
-            title.contains(lowerQuery) ||
-                    director.contains(lowerQuery) ||
-                    genres.any { it.contains(lowerQuery) }
+        val nq = norm(query.trim())
+        return movies.filter { movie ->
+            val title = norm(movie.title)
+            val director = norm(movie.getDirector() ?: "")
+            val genres = movie.genres?.map { norm(it) } ?: emptyList()
+            val country = norm(movie.country ?: "")
+            val synopsis = norm(movie.capsule ?: movie.synopsis ?: "")
+            val year = movie.year?.toString() ?: ""
+
+            title.contains(nq) ||
+                director.contains(nq) ||
+                genres.any { it.contains(nq) } ||
+                country.contains(nq) ||
+                synopsis.contains(nq) ||
+                year.contains(nq)
         }
     }
 
@@ -191,18 +200,50 @@ class MovieRepository(private val context: Context) {
     fun groupMoviesByDate(movies: List<Movie>): Map<String, List<Movie>> {
         val grouped = movies.groupBy { it.getDisplayDate() ?: "Unknown" }
 
-        // Sort by date descending
-        return grouped.toSortedMap(compareByDescending { dateStr ->
-            if (dateStr == "Unknown") {
-                Long.MIN_VALUE
-            } else {
-                try {
-                    java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
-                        .parse(dateStr)?.time ?: Long.MIN_VALUE
-                } catch (e: Exception) {
-                    Long.MIN_VALUE
-                }
+        // Sort groups by date descending; pre-orders last; virtual screenings by tier
+        val screeningTier: (String) -> Int = { dateStr ->
+            when {
+                dateStr == "Unknown" -> Int.MAX_VALUE - 1
+                dateStr == "pre-order" -> Int.MAX_VALUE
+                else -> 0
             }
-        })
+        }
+        return grouped
+            .mapValues { (_, group) -> group.sortedWith(compareBy { !it.isStaffPick() }) }
+            .toSortedMap(Comparator { a, b ->
+                val ta = screeningTier(a); val tb = screeningTier(b)
+                if (ta != tb) return@Comparator ta.compareTo(tb)
+                if (a == "Unknown") return@Comparator 1
+                if (b == "Unknown") return@Comparator -1
+                try {
+                    val fmt = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+                    val da = fmt.parse(a)?.time ?: Long.MIN_VALUE
+                    val db = fmt.parse(b)?.time ?: Long.MIN_VALUE
+                    db.compareTo(da) // descending
+                } catch (e: Exception) { 0 }
+            })
+    }
+
+    /**
+     * Sort flat movie list: pre-orders last, virtual screenings by tier, date desc, staff picks first
+     */
+    fun sortMovies(movies: List<Movie>): List<Movie> {
+        return movies.sortedWith { a, b ->
+            if (a.isPreorder && !b.isPreorder) return@sortedWith 1
+            if (!a.isPreorder && b.isPreorder) return@sortedWith -1
+            if (a.isPreorder && b.isPreorder)
+                return@sortedWith (a.digitalDate ?: "").compareTo(b.digitalDate ?: "")
+            val tier: (Movie) -> Int = { m ->
+                if (m.filters?.isVirtualScreening != true) -1
+                else when (m.screeningInfo?.status) { "active" -> 0; "expired" -> 2; else -> 1 }
+            }
+            val ta = tier(a); val tb = tier(b)
+            if (ta >= 0 && tb >= 0 && ta != tb) return@sortedWith ta.compareTo(tb)
+            val dateA = a.getDisplayDate() ?: ""; val dateB = b.getDisplayDate() ?: ""
+            if (dateB != dateA) return@sortedWith dateB.compareTo(dateA)
+            if (a.isStaffPick() && !b.isStaffPick()) return@sortedWith -1
+            if (!a.isStaffPick() && b.isStaffPick()) return@sortedWith 1
+            0
+        }
     }
 }

@@ -137,6 +137,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             filtered = repository.searchMovies(filtered, state.searchQuery)
         }
 
+        filtered = repository.sortMovies(filtered)
+
         _uiState.value = _uiState.value.copy(
             filteredMovies = filtered
         )

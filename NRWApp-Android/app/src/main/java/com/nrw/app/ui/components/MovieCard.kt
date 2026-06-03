@@ -212,7 +212,7 @@ fun MovieCard(
     )
 
     Column(
-        modifier = modifier.width(CARD_WIDTH),
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Poster card with optional staff pick border
@@ -545,7 +545,7 @@ fun DateDividerCard(
 
     Column(
         modifier = modifier
-            .width(CARD_WIDTH)
+            .fillMaxWidth()
             .aspectRatio(POSTER_ASPECT_RATIO)
             .clip(RoundedCornerShape(8.dp))
             .background(Color(0xFF0A0A0A))
@@ -655,7 +655,7 @@ fun TrailersCard(
     Surface(
         onClick = onClick,
         modifier = modifier
-            .width(CARD_WIDTH)
+            .fillMaxWidth()
             .aspectRatio(POSTER_ASPECT_RATIO)
             .onFocusChanged { isFocused = it.isFocused },
         shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(8.dp)),

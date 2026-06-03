@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
   NRW Home Screen
-  Main screen with 8-column grid of movie posters
+  Main screen with 5-column grid of movie posters
   Matches tvOS HomeScreen.tvos.js and Android HomeScreen.kt
 -->
 <component name="HomeScreen" extends="Scene">
@@ -87,13 +87,35 @@
         translation="[0, 10]" />
     </LayoutGroup>
 
+    <!-- Filter description (shown when exactly 1 filter active) -->
+    <Group id="filterDescGroup"
+      translation="[60, 150]"
+      visible="false">
+      <Label id="filterDescTitle"
+        text=""
+        font="font:SmallBoldSystemFont"
+        color="0x00D4AAFF"
+        width="160"
+        height="56"
+        vertAlign="center" />
+      <Label id="filterDescText"
+        text=""
+        font="font:SmallSystemFont"
+        color="0x888888FF"
+        translation="[176, 0]"
+        width="1640"
+        height="56"
+        vertAlign="center"
+        wrap="true" />
+    </Group>
+
     <!-- Movie grid -->
     <MarkupGrid id="movieGrid"
-      translation="[60, 150]"
+      translation="[60, 218]"
       visible="false"
       itemComponentName="MovieCard"
-      numColumns="8"
-      itemSize="[220, 360]"
+      numColumns="5"
+      itemSize="[344, 516]"
       itemSpacing="[20, 20]"
       drawFocusFeedback="false"
       vertFocusAnimationStyle="floatingFocus"

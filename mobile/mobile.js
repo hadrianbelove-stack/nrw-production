@@ -31,6 +31,26 @@ const NRWMobile = {
     // Wide logos that need CSS invert on dark backgrounds
     INVERT_KEYS: new Set(['apple', 'mubi', 'criterion', 'docuramafilms', 'fandor']),
 
+    // Service brand colors for Gallery Label Frame on grid cards
+    STREAMING_FRAME_COLORS: {
+        netflix: { color: '#e50914', textColor: '#fff' },
+        hulu: { color: '#1ce783', textColor: '#000' },
+        max: { color: '#002be7', textColor: '#fff' },
+        apple: { color: '#1c1c1e', textColor: '#fff' },
+        amazon: { color: '#00a8e0', textColor: '#000' },
+        disney: { color: '#113ccf', textColor: '#fff' },
+        peacock: { color: '#000000', textColor: '#fff' },
+        paramount: { color: '#0064ff', textColor: '#fff' },
+        mubi: { color: '#060606', textColor: '#fff' },
+        criterion: { color: '#1a1a1a', textColor: '#fff' },
+        amc: { color: '#1b6fe0', textColor: '#fff' },
+        shudder: { color: '#18b558', textColor: '#fff' },
+        tubi: { color: '#fa5100', textColor: '#fff' },
+        plex: { color: '#e5a00d', textColor: '#000' },
+        starz: { color: '#000000', textColor: '#fff' },
+        mgmplus: { color: '#000000', textColor: '#fff' },
+    },
+
     // Filter descriptions — shown when a single filter is active
     FILTER_DESCRIPTIONS: {
         'indie': {
@@ -143,6 +163,15 @@ const NRWMobile = {
             if (!a._is_preorder && b._is_preorder) return -1;
             if (a._is_preorder && b._is_preorder)
                 return (a.digital_date || '').localeCompare(b.digital_date || '');
+
+            // Virtual screenings: sort by tier (active → upcoming → expired)
+            const screeningTier = m => {
+                if (!m.filters?.is_virtual_screening) return -1;
+                const s = m.virtual_screening_info?.status;
+                return s === 'active' ? 0 : s === 'expired' ? 2 : 1;
+            };
+            const ta = screeningTier(a), tb = screeningTier(b);
+            if (ta >= 0 && tb >= 0 && ta !== tb) return ta - tb;
 
             const dateA = new Date(a.digital_date);
             const dateB = new Date(b.digital_date);
@@ -318,8 +347,8 @@ const NRWMobile = {
             // Pre-orders only appear when toggle is ON or search is active
             if (movie._is_preorder && !this.showPreorders && !this.searchQuery) return false;
 
-            // Category filters (OR logic)
-            if (filters.size > 0) {
+            // Category filters (OR logic) — bypassed when search is active
+            if (filters.size > 0 && !this.searchQuery) {
                 let matchesAny = false;
                 for (const filter of filters) {
                     switch (filter) {
@@ -488,6 +517,7 @@ const NRWMobile = {
     createGridItem(movie, index) {
         const isStaffPick = movie.filters?.is_staff_pick || this.staffPicks.includes(String(movie.id));
         const isScreening = movie.filters?.is_virtual_screening;
+        const streamingSvc = this.getGridStreamingService(movie);
 
         const item = document.createElement('div');
         item.className = 'grid-item' + (isScreening ? ' screening-movie' : '');
@@ -496,37 +526,91 @@ const NRWMobile = {
         const posterWrap = document.createElement('div');
         posterWrap.className = 'grid-item-poster';
 
-        if (movie.poster) {
+        let badgeTarget; // where position:absolute badges attach
+
+        if (streamingSvc) {
+            // Gallery Label Frame: service color background + header strip
+            posterWrap.style.cssText = 'background:' + streamingSvc.color + ';display:flex;flex-direction:column;';
+            const header = document.createElement('div');
+            header.style.cssText = 'flex-shrink:0;height:22px;display:flex;align-items:center;' +
+                'justify-content:center;padding:0 3px;overflow:hidden;';
+            header.innerHTML = '<span style="color:' + streamingSvc.textColor + ';font-size:0.33rem;' +
+                'font-weight:800;letter-spacing:0.06em;white-space:nowrap;">' +
+                this.esc(streamingSvc.name.toUpperCase()) + ' · NOW STREAMING</span>';
+            posterWrap.appendChild(header);
+            const imgWrap = document.createElement('div');
+            imgWrap.style.cssText = 'flex:1;position:relative;overflow:hidden;';
+            if (movie.poster) {
+                const img = document.createElement('img');
+                img.src = movie.poster;
+                img.alt = movie.title || '';
+                img.loading = 'lazy';
+                img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                img.onerror = function() { this.style.display = 'none'; };
+                imgWrap.appendChild(img);
+            }
+            posterWrap.appendChild(imgWrap);
+            badgeTarget = imgWrap;
+        } else if (movie.poster) {
             const img = document.createElement('img');
             img.src = movie.poster;
             img.alt = movie.title || '';
             img.loading = 'lazy';
             img.onerror = function() { this.style.display = 'none'; };
             posterWrap.appendChild(img);
+            badgeTarget = posterWrap;
         } else {
             const fallback = document.createElement('div');
             fallback.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1a1a2e;font-size:0.45rem;color:#888;text-align:center;padding:4px';
             fallback.textContent = movie.display_title || movie.title || '';
             posterWrap.appendChild(fallback);
+            badgeTarget = posterWrap;
         }
 
         if (isScreening) {
             const banner = document.createElement('span');
             banner.className = 'screening-banner';
             banner.textContent = 'Virtual Screening';
-            posterWrap.appendChild(banner);
+            badgeTarget.appendChild(banner);
         }
         if (isStaffPick) {
             const badge = document.createElement('span');
             badge.className = 'staff-pick-badge';
             badge.textContent = 'Staff Pick';
-            posterWrap.appendChild(badge);
+            badgeTarget.appendChild(badge);
         }
         if (movie._is_preorder) {
             const badge = document.createElement('span');
             badge.className = 'preorder-badge';
             badge.textContent = 'Pre-Order';
-            posterWrap.appendChild(badge);
+            badgeTarget.appendChild(badge);
+        }
+        if (movie.filters?.is_restoration) {
+            const badge = document.createElement('span');
+            badge.style.cssText = 'position:absolute;top:4px;left:4px;background:#4a7c3f;color:#fff;' +
+                'font-size:0.32rem;font-weight:700;letter-spacing:0.03em;padding:2px 4px;' +
+                'border-radius:2px;text-transform:uppercase;z-index:3;';
+            badge.textContent = (movie.reissue_label || 'RESTORED').toUpperCase();
+            badgeTarget.appendChild(badge);
+        }
+        if (movie.rt_score || movie.imdb_rating) {
+            const scoreRow = document.createElement('div');
+            scoreRow.style.cssText = 'position:absolute;bottom:3px;left:3px;display:flex;gap:2px;z-index:3;';
+            if (movie.rt_score) {
+                const s = document.createElement('span');
+                s.style.cssText = 'background:#b81c20;color:#fff;font-size:0.3rem;font-weight:700;' +
+                    'padding:2px 3px;border-radius:2px;line-height:1;';
+                s.textContent = movie.rt_score;
+                scoreRow.appendChild(s);
+            }
+            if (movie.imdb_rating) {
+                const s = document.createElement('span');
+                s.style.cssText = 'background:#f5c518;color:#000;font-size:0.3rem;font-weight:700;' +
+                    'padding:2px 3px;border-radius:2px;line-height:1;';
+                s.textContent = parseFloat(movie.imdb_rating).toFixed(1);
+                scoreRow.appendChild(s);
+            }
+            badgeTarget.appendChild(scoreRow);
         }
 
         item.appendChild(posterWrap);
@@ -775,6 +859,8 @@ const NRWMobile = {
             (dirLine ? '<div class="sheet-crew">' + dirLine + '</div>' : '') +
             (castLine ? '<div class="sheet-crew">' + castLine + '</div>' : '') +
             (detailParts.length ? '<div class="sheet-meta"><span>' + detailParts.join(' \u00b7 ') + '</span></div>' : '') +
+            (movie.awards ? '<div class="sheet-meta" style="margin-top:2px"><span style="color:var(--text-muted);font-size:0.72rem">' + this.esc(movie.awards) + '</span></div>' : '') +
+            (movie.box_office ? '<div class="sheet-meta" style="margin-top:2px"><span style="color:var(--text-muted);font-size:0.72rem">Box office: ' + this.esc(movie.box_office) + '</span></div>' : '') +
             scoresHtml +
             '</div></div>';
 
@@ -943,6 +1029,23 @@ const NRWMobile = {
             link: link || null,
             resolvedKey: resolved?.class
         };
+    },
+
+    getGridStreamingService(movie) {
+        const wl = movie.watch_links || {};
+        const streamingWl = wl.streaming;
+        let service = null;
+        if (Array.isArray(streamingWl) && streamingWl.length > 0) {
+            service = streamingWl[0].service;
+        } else if (streamingWl?.service) {
+            service = streamingWl.service;
+        }
+        if (!service) return null;
+        const resolved = this.resolveService(service);
+        const key = resolved?.class;
+        const frame = key && this.STREAMING_FRAME_COLORS[key];
+        if (!frame) return null;
+        return { key, name: resolved?.name || service, ...frame };
     },
 
     getVODList(movie) {

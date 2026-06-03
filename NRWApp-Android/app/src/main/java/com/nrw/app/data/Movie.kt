@@ -97,7 +97,15 @@ data class Movie(
     val pullQuotes: List<PullQuote>? = null,
 
     @SerializedName("virtual_screening_info")
-    val screeningInfo: ScreeningInfo? = null
+    val screeningInfo: ScreeningInfo? = null,
+
+    val awards: String? = null,
+
+    @SerializedName("box_office")
+    val boxOffice: String? = null,
+
+    @SerializedName("reissue_label")
+    val reissueLabel: String? = null
 )
 
 data class Country(

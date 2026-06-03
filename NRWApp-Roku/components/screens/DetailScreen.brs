@@ -218,9 +218,7 @@ Sub LoadMovie(index as Integer)
     ' Pull quotes
     if movie.pull_quotes <> invalid AND movie.pull_quotes.Count() > 0
         pqText = ""
-        maxQuotes = 2
-        if movie.pull_quotes.Count() < maxQuotes then maxQuotes = movie.pull_quotes.Count()
-        for i = 0 to maxQuotes - 1
+        for i = 0 to movie.pull_quotes.Count() - 1
             pq = movie.pull_quotes[i]
             if pq.text <> invalid AND pq.text <> ""
                 if pqText <> "" then pqText = pqText + chr(10)

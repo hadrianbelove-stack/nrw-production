@@ -260,7 +260,7 @@ export default function MovieDetail({route}) {
           {/* Restoration badge */}
           {movie.filters?.is_restoration && (
             <View style={styles.restorationBadge}>
-              <Text style={styles.restorationBadgeText}>RESTORED</Text>
+              <Text style={styles.restorationBadgeText}>{(movie.reissue_label || 'RESTORED').toUpperCase()}</Text>
             </View>
           )}
         </View>
@@ -385,7 +385,7 @@ export default function MovieDetail({route}) {
       {/* Pull Quotes */}
       {movie.pull_quotes?.length > 0 && (
         <View style={styles.section}>
-          {movie.pull_quotes.slice(0, 2).map((pq, i) => {
+          {movie.pull_quotes.map((pq, i) => {
             const content = (
               <View key={i} style={styles.pullQuoteCard}>
                 <Text style={styles.pqText}>{'\u201C'}{pq.text}{'\u201D'}</Text>
@@ -439,6 +439,18 @@ export default function MovieDetail({route}) {
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Available</Text>
             <Text style={styles.detailValue}>{movie.digital_date}</Text>
+          </View>
+        )}
+        {movie.awards && (
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Awards</Text>
+            <Text style={styles.detailValue}>{movie.awards}</Text>
+          </View>
+        )}
+        {movie.box_office && (
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Box office</Text>
+            <Text style={styles.detailValue}>{movie.box_office}</Text>
           </View>
         )}
       </View>
