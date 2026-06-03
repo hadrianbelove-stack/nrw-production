@@ -235,10 +235,10 @@ const NRWMobile = {
         // Fest (virtual screenings) toggle
         const festToggle = document.getElementById('fest-toggle');
         if (festToggle) {
-            festToggle.classList.toggle('active', this.hideFest);
+            festToggle.classList.toggle('active', !this.hideFest);
             festToggle.addEventListener('click', () => {
                 this.hideFest = !this.hideFest;
-                festToggle.classList.toggle('active', this.hideFest);
+                festToggle.classList.toggle('active', !this.hideFest);
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);

@@ -936,9 +936,9 @@ const HomeScreenTvOS = () => {
             nextFocusUp={headerNodeHandle}
           />
           <MetaToggle
-            isActive={hideFest}
-            offLabel="WITH FEST"
-            onLabel="NO FEST"
+            isActive={!hideFest}
+            offLabel="NO FEST"
+            onLabel="FESTS"
             accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
             onPress={() => setHideFest(v => !v)}
             nextFocusUp={headerNodeHandle}

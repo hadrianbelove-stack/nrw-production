@@ -88,18 +88,18 @@
           color="0xFFFFFFFF"
           visible="false" />
 
-        <!-- Staff Pick badge -->
+        <!-- Staff Pick badge (top of poster, matching tvOS/iOS top-left placement) -->
         <Rectangle id="staffPickBadge"
           width="600"
           height="40"
-          translation="[3, 866]"
+          translation="[3, 8]"
           color="0xDC143CFF"
           visible="false" />
         <Label id="staffPickLabel"
           text="STAFF PICK"
           width="600"
           height="40"
-          translation="[3, 866]"
+          translation="[3, 8]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallBoldSystemFont"

@@ -39,20 +39,20 @@ export default function FilterBar({activeFilters, onFilterChange, slopMode, onSl
         ))}
         <View style={styles.divider} />
         <TouchableOpacity
-          style={[styles.filterButton, styles.slopButton, slopMode !== 'all' && styles.slopButtonActive]}
+          style={[styles.filterButton, styles.slopButton, slopMode !== 'all' && styles.slopButtonActive, slopMode === 'only' && styles.slopButtonOnly]}
           onPress={() => onSlopModeChange(SLOP_STATES[(SLOP_STATES.indexOf(slopMode) + 1) % 3])}
           activeOpacity={0.7}>
-          <Text style={[styles.filterText, styles.slopText, slopMode !== 'all' && styles.slopTextActive]}>
+          <Text style={[styles.filterText, styles.slopText, slopMode !== 'all' && styles.slopTextActive, slopMode === 'only' && styles.slopTextOnly]}>
             {SLOP_LABELS[slopMode] || 'SLOP FREE'}
           </Text>
         </TouchableOpacity>
         <View style={styles.divider} />
         <TouchableOpacity
-          style={[styles.filterButton, styles.slopButton, hideFest && styles.slopButtonActive]}
+          style={[styles.filterButton, styles.slopButton, !hideFest && styles.slopButtonActive]}
           onPress={() => onHideFestChange(!hideFest)}
           activeOpacity={0.7}>
-          <Text style={[styles.filterText, styles.slopText, hideFest && styles.slopTextActive]}>
-            {hideFest ? 'NO FEST' : 'WITH FEST'}
+          <Text style={[styles.filterText, styles.slopText, !hideFest && styles.slopTextActive]}>
+            {hideFest ? 'NO FEST' : 'FESTS'}
           </Text>
         </TouchableOpacity>
         <View style={styles.divider} />
@@ -133,6 +133,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,212,170,0.15)',
     borderColor: '#00d4aa',
   },
+  slopButtonOnly: {
+    backgroundColor: 'rgba(255,149,0,0.15)',
+    borderColor: '#ff9500',
+  },
   slopText: {
     color: 'rgba(0,212,170,0.45)',
     fontWeight: '600',
@@ -141,5 +145,8 @@ const styles = StyleSheet.create({
   },
   slopTextActive: {
     color: '#00d4aa',
+  },
+  slopTextOnly: {
+    color: '#ff9500',
   },
 });
