@@ -1,10 +1,49 @@
 {
-  "timestamp": "2026-06-02T11:21:47.666394",
-  "movies_requested": 1,
-  "movies_enriched": 1,
-  "movies_deferred": 0,
-  "deferred_details": [],
-  "enrichment_duration_seconds": 36.76,
+  "timestamp": "2026-06-03T14:12:45.340375",
+  "movies_requested": 9,
+  "movies_enriched": 5,
+  "movies_deferred": 4,
+  "deferred_details": [
+    {
+      "title": "In the Grey",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-06-02",
+      "discovered_at": "2026-06-03T13:21:19.349116",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
+    },
+    {
+      "title": "Your Heart Will Be Broken",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-31",
+      "discovered_at": "2026-06-03T13:21:20.821830",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Thing in the Fog",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-12",
+      "discovered_at": "2026-06-03T13:39:47.580916",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Michael",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-09",
+      "discovered_at": "2026-06-03T14:01:39.569000",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    }
+  ],
+  "enrichment_duration_seconds": 458.65,
   "error_details": [],
   "total_errors": 0
 }

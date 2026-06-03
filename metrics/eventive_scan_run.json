@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-06-02T12:45:44.804338",
+  "timestamp": "2026-06-03T13:21:15.312415",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 124,
     "festivals_with_films": 118,
     "festivals_failed": 48,
-    "total_films_indexed": 2292,
+    "total_films_indexed": 2296,
     "expired_filtered": 0,
-    "unique_active": 1698,
-    "tracking_matches": 95,
+    "unique_active": 1701,
+    "tracking_matches": 97,
     "wall_matches": 44,
-    "new_cached": 109,
-    "skipped_undated": 30
+    "new_cached": 110,
+    "skipped_undated": 31
   },
   "tracking_matches": [
     {
@@ -130,66 +130,6 @@
       "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd26bd48fa0d6a803238",
       "start": "2026-05-28T07:00:00.000Z",
       "end": "2026-06-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1533246",
-      "nrw_title": "Diversion",
-      "eventive_title": "Diversion",
-      "festival": "20th Los Angeles Greek Film Festival 2026",
-      "link": "https://watch.eventive.org/lagff26/play/6a002fac7812ed430d07c66e",
-      "start": "2026-06-02T07:00:00.000Z",
-      "end": "2026-06-15T06:45:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1472048",
-      "nrw_title": "I Will Love You in November",
-      "eventive_title": "I Will Love You in November",
-      "festival": "20th Los Angeles Greek Film Festival 2026",
-      "link": "https://watch.eventive.org/lagff26/play/6a002c08434f7458548a8427",
-      "start": "2026-06-02T07:00:00.000Z",
-      "end": "2026-06-15T06:45:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1569143",
-      "nrw_title": "Little Man-Eater",
-      "eventive_title": "Little Man-Eater",
-      "festival": "20th Los Angeles Greek Film Festival 2026",
-      "link": "https://watch.eventive.org/lagff26/play/6a002de22e84f6c66897c688",
-      "start": "2026-06-02T07:00:00.000Z",
-      "end": "2026-06-15T06:45:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1569807",
-      "nrw_title": "Receptions",
-      "eventive_title": "Receptions",
-      "festival": "20th Los Angeles Greek Film Festival 2026",
-      "link": "https://watch.eventive.org/lagff26/play/6a002cf5c58d23e3933e459d",
-      "start": "2026-06-02T07:00:00.000Z",
-      "end": "2026-06-15T06:45:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1374708",
-      "nrw_title": "Smaragda - I Got Thick Skin and I Can't Jump",
-      "eventive_title": "Smaragda - I Got Thick Skin and I Can't Jump",
-      "festival": "20th Los Angeles Greek Film Festival 2026",
-      "link": "https://watch.eventive.org/lagff26/play/6a002e59945c93691e83d47a",
-      "start": "2026-06-02T07:00:00.000Z",
-      "end": "2026-06-15T06:45:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
@@ -351,6 +291,78 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1533246",
+      "nrw_title": "Diversion",
+      "eventive_title": "Diversion",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a002fac7812ed430d07c66e",
+      "start": "2026-06-02T07:00:00.000Z",
+      "end": "2026-06-15T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1472048",
+      "nrw_title": "I Will Love You in November",
+      "eventive_title": "I Will Love You in November",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a002c08434f7458548a8427",
+      "start": "2026-06-02T07:00:00.000Z",
+      "end": "2026-06-15T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1462784",
+      "nrw_title": "Life in a Beat",
+      "eventive_title": "Life in a Beat",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a1e301255ab84b75e24b3d3",
+      "start": "2026-06-02T15:00:00.000Z",
+      "end": "2026-06-15T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1569143",
+      "nrw_title": "Little Man-Eater",
+      "eventive_title": "Little Man-Eater",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a002de22e84f6c66897c688",
+      "start": "2026-06-02T07:00:00.000Z",
+      "end": "2026-06-15T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1569807",
+      "nrw_title": "Receptions",
+      "eventive_title": "Receptions",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a002cf5c58d23e3933e459d",
+      "start": "2026-06-02T07:00:00.000Z",
+      "end": "2026-06-15T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1374708",
+      "nrw_title": "Smaragda - I Got Thick Skin and I Can't Jump",
+      "eventive_title": "Smaragda - I Got Thick Skin and I Can't Jump",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a002e59945c93691e83d47a",
+      "start": "2026-06-02T07:00:00.000Z",
+      "end": "2026-06-15T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1425485",
       "nrw_title": "3670",
       "eventive_title": "3670",
@@ -493,30 +505,6 @@
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
-    },
-    {
-      "movie_id": "1585144",
-      "nrw_title": "Connection",
-      "eventive_title": "The Connection",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1049439",
-      "nrw_title": "The Golden Age",
-      "eventive_title": "The Golden Age",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
     },
     {
       "movie_id": "1405753",
@@ -675,6 +663,42 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1585144",
+      "nrw_title": "Connection",
+      "eventive_title": "The Connection",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1049439",
+      "nrw_title": "The Golden Age",
+      "eventive_title": "The Golden Age",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1514056",
+      "nrw_title": "Nika & Madison",
+      "eventive_title": "Nika & Madison",
+      "festival": "2026 Annual Oakville Film Festival",
+      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
+      "start": "2026-06-17T11:00:00.000Z",
+      "end": "2026-06-28T03:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1604573",
       "nrw_title": "Isolation",
       "eventive_title": "Isolation",
@@ -728,6 +752,18 @@
       "eventive_title": "TESTAMENT",
       "festival": "Rendez-vous French Film Festival 2026",
       "link": "https://watch.eventive.org/rendezvousfrenchfilmfestival/play/65c14de5c3ce16004f36e465",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1687466",
+      "nrw_title": "Test",
+      "eventive_title": "Test",
+      "festival": "Annual DC South Asian Film Festival 2021",
+      "link": "https://watch.eventive.org/annualdcsaff2021/play/61e6e68288f6410053b9b172",
       "start": "",
       "end": "",
       "status": "active",
@@ -1119,18 +1155,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1514056",
-      "nrw_title": "Nika & Madison",
-      "eventive_title": "Nika & Madison",
-      "festival": "2026 Annual Oakville Film Festival",
-      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
-      "start": "2026-06-17T11:00:00.000Z",
-      "end": "2026-06-28T03:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1456667",
       "nrw_title": "Miles Away",
       "eventive_title": "Miles Away",
@@ -1188,42 +1212,6 @@
       "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd36bf881f9dbaa5a17c",
       "start": "2026-05-28T07:00:00.000Z",
       "end": "2026-06-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1472048",
-      "nrw_title": "I Will Love You in November",
-      "eventive_title": "I Will Love You in November",
-      "festival": "20th Los Angeles Greek Film Festival 2026",
-      "link": "https://watch.eventive.org/lagff26/play/6a002c08434f7458548a8427",
-      "start": "2026-06-02T07:00:00.000Z",
-      "end": "2026-06-15T06:45:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1569143",
-      "nrw_title": "Little Man-Eater",
-      "eventive_title": "Little Man-Eater",
-      "festival": "20th Los Angeles Greek Film Festival 2026",
-      "link": "https://watch.eventive.org/lagff26/play/6a002de22e84f6c66897c688",
-      "start": "2026-06-02T07:00:00.000Z",
-      "end": "2026-06-15T06:45:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1569807",
-      "nrw_title": "Receptions",
-      "eventive_title": "Receptions",
-      "festival": "20th Los Angeles Greek Film Festival 2026",
-      "link": "https://watch.eventive.org/lagff26/play/6a002cf5c58d23e3933e459d",
-      "start": "2026-06-02T07:00:00.000Z",
-      "end": "2026-06-15T06:45:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
@@ -1332,6 +1320,42 @@
       "link": "https://watch.eventive.org/doxumentale/play/69e7e1d734ea8d41e24978d9",
       "start": "2026-05-26T22:00:00.000Z",
       "end": "2026-06-30T22:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1472048",
+      "nrw_title": "I Will Love You in November",
+      "eventive_title": "I Will Love You in November",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a002c08434f7458548a8427",
+      "start": "2026-06-02T07:00:00.000Z",
+      "end": "2026-06-15T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1569143",
+      "nrw_title": "Little Man-Eater",
+      "eventive_title": "Little Man-Eater",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a002de22e84f6c66897c688",
+      "start": "2026-06-02T07:00:00.000Z",
+      "end": "2026-06-15T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1569807",
+      "nrw_title": "Receptions",
+      "eventive_title": "Receptions",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a002cf5c58d23e3933e459d",
+      "start": "2026-06-02T07:00:00.000Z",
+      "end": "2026-06-15T06:45:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
@@ -1529,6 +1553,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1514056",
+      "nrw_title": "Nika & Madison",
+      "eventive_title": "Nika & Madison",
+      "festival": "2026 Annual Oakville Film Festival",
+      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
+      "start": "2026-06-17T11:00:00.000Z",
+      "end": "2026-06-28T03:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "tv_279884",
       "nrw_title": "Rafa",
       "eventive_title": "RAFA",
@@ -1656,18 +1692,6 @@
       "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a7e4f3091294a896864a1",
       "start": "2026-06-26T23:00:00.000Z",
       "end": "2026-09-24T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1514056",
-      "nrw_title": "Nika & Madison",
-      "eventive_title": "Nika & Madison",
-      "festival": "2026 Annual Oakville Film Festival",
-      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
-      "start": "2026-06-17T11:00:00.000Z",
-      "end": "2026-06-28T03:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
