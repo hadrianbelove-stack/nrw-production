@@ -168,12 +168,12 @@ export const PARALLAX_PROPERTIES = {
  */
 export const FOCUS_STYLES = {
   movieCard: {
-    scale: 1.1,
-    shadowColor: '#00d4aa',
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    borderWidth: 2,
-    borderColor: '#00d4aa',
+    scale: 1.12,
+    shadowColor: '#ff9500',
+    shadowOpacity: 0.85,
+    shadowRadius: 28,
+    borderWidth: 5,
+    borderColor: '#ff9500',
   },
   button: {
     scale: 1.15,

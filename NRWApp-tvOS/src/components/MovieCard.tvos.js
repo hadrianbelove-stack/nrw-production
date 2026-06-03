@@ -112,7 +112,6 @@ const MovieCard = forwardRef(({
   const [isFocused, setIsFocused] = useState(false);
   const [imageError, setImageError] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const shadowAnim = useRef(new Animated.Value(0)).current;
 
   // Get card dimensions based on featured status
   const cardWidth = isFeatured
@@ -126,47 +125,31 @@ const MovieCard = forwardRef(({
   const handleFocus = useCallback(() => {
     setIsFocused(true);
 
-    // Animate scale and shadow with smooth timing (no spring bounce)
-    Animated.parallel([
-      Animated.timing(scaleAnim, {
-        toValue: FOCUS_STYLES.movieCard.scale,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shadowAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: false,
-      }),
-    ]).start();
+    Animated.timing(scaleAnim, {
+      toValue: FOCUS_STYLES.movieCard.scale,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
 
     if (onFocus) {
       onFocus(movie);
     }
-  }, [movie, onFocus, scaleAnim, shadowAnim]);
+  }, [movie, onFocus, scaleAnim]);
 
   // Handle blur event
   const handleBlur = useCallback(() => {
     setIsFocused(false);
 
-    // Animate scale and shadow back
-    Animated.parallel([
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shadowAnim, {
-        toValue: 0,
-        duration: 150,
-        useNativeDriver: false,
-      }),
-    ]).start();
+    Animated.timing(scaleAnim, {
+      toValue: 1,
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
 
     if (onBlur) {
       onBlur(movie);
     }
-  }, [movie, onBlur, scaleAnim, shadowAnim]);
+  }, [movie, onBlur, scaleAnim]);
 
   // Handle selection (remote click)
   const handleSelect = useCallback(() => {
@@ -181,12 +164,6 @@ const MovieCard = forwardRef(({
       onLongPress(movie);
     }
   }, [movie, onLongPress]);
-
-  // Interpolate shadow opacity
-  const shadowOpacity = shadowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, FOCUS_STYLES.movieCard.shadowOpacity],
-  });
 
   // Get poster URL
   const posterUrl = movie.poster_url || movie.posterUrl || movie.poster;
@@ -280,9 +257,10 @@ const MovieCard = forwardRef(({
       nextFocusRight={nextFocusRight}
     >
       <View style={[styles.cardContainer, { width: cardWidth }]}>
+        {/* Scale + shadow layer — no overflow clipping so shadow glows outside */}
         <Animated.View
           style={[
-            styles.posterContainer,
+            styles.scaleLayer,
             {
               width: cardWidth,
               height: cardHeight,
@@ -290,66 +268,68 @@ const MovieCard = forwardRef(({
               zIndex: isFocused ? 1000 : 1,
               elevation: isFocused ? 10 : 0,
             },
+            isFocused && styles.scaleLayerFocused,
           ]}
         >
-          {/* Shadow layer (only visible when focused) */}
-          <Animated.View
-            style={[
-              styles.shadowLayer,
-              {
-                opacity: shadowOpacity,
-                shadowColor: FOCUS_STYLES.movieCard.shadowColor,
-                shadowRadius: FOCUS_STYLES.movieCard.shadowRadius,
-              },
-            ]}
-          />
+          {/* Clip container — overflow:hidden keeps image and overlays inside rounded corners */}
+          <View style={[styles.posterContainer, { width: cardWidth, height: cardHeight }]}>
+            {/* Poster image or placeholder */}
+            {hasPoster && !imageError ? (
+              <Image
+                source={{ uri: posterUrl }}
+                style={styles.poster}
+                resizeMode="cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <View style={styles.posterPlaceholder}>
+                <Text style={styles.placeholderText} numberOfLines={3}>
+                  {movie.display_title || movie.title}
+                </Text>
+              </View>
+            )}
 
-          {/* Poster image or placeholder */}
-          {hasPoster && !imageError ? (
-            <Image
-              source={{ uri: posterUrl }}
-              style={styles.poster}
-              resizeMode="cover"
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <View style={styles.posterPlaceholder}>
-              <Text style={styles.placeholderText} numberOfLines={3}>
-                {movie.display_title || movie.title}
-              </Text>
-            </View>
-          )}
+            {/* Streaming service bar badge (full-width top bar) */}
+            {streamingBadge && (
+              <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }, streamingBadge.subtext && { flexDirection: 'row', gap: 8 }]}>
+                <Text style={styles.streamingBadgeText}>{streamingBadge.name}</Text>
+                <Text style={styles.streamingBadgeSubtext}>{streamingBadge.subtext || 'NOW STREAMING'}</Text>
+              </View>
+            )}
 
-          {/* Streaming service bar badge (full-width top bar) */}
-          {streamingBadge && (
-            <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }, streamingBadge.subtext && { flexDirection: 'row', gap: 8 }]}>
-              <Text style={styles.streamingBadgeText}>{streamingBadge.name}</Text>
-              <Text style={styles.streamingBadgeSubtext}>{streamingBadge.subtext || 'NOW STREAMING'}</Text>
-            </View>
-          )}
+            {/* Restoration/reissue badge - top-left, matches desktop */}
+            {(movie.categories?.is_restoration || movie.reissue_label) && (
+              <View style={styles.restorationCardBadge}>
+                <Text style={styles.restorationCardBadgeText}>
+                  {movie.reissue_label?.toUpperCase() || 'RESTORED'}
+                </Text>
+              </View>
+            )}
 
-          {/* Staff Pick strip - bottom red banner */}
-          {movie.featured && (
-            <View style={styles.featuredStrip}>
-              <Text style={styles.featuredStripText}>STAFF PICK</Text>
-            </View>
-          )}
+            {/* Staff Pick strip - bottom red banner */}
+            {(movie.categories?.is_staff_pick || movie.featured) && (
+              <View style={styles.featuredStrip}>
+                <Text style={styles.featuredStripText}>STAFF PICK</Text>
+              </View>
+            )}
 
-          {/* Virtual screening festival name ribbon */}
-          {movie.categories?.is_virtual_screening && !movie.featured && movie.virtual_screening_info?.screening_name && (
-            <View style={styles.screeningRibbon}>
-              <Text style={styles.screeningRibbonText} numberOfLines={2}>
-                {decodeHtml(movie.virtual_screening_info.screening_name)}
-              </Text>
-            </View>
-          )}
+            {/* Virtual screening festival name ribbon */}
+            {movie.categories?.is_virtual_screening && !(movie.categories?.is_staff_pick || movie.featured) && movie.virtual_screening_info?.screening_name && (
+              <View style={styles.screeningRibbon}>
+                <Text style={styles.screeningRibbonText} numberOfLines={2}>
+                  {decodeHtml(movie.virtual_screening_info.screening_name)}
+                </Text>
+              </View>
+            )}
 
-          {/* Virtual screening gold border */}
-          {movie.categories?.is_virtual_screening && !movie.featured && (
-            <View style={styles.screeningBorder} />
-          )}
+            {/* Virtual screening gold border */}
+            {movie.categories?.is_virtual_screening && !(movie.categories?.is_staff_pick || movie.featured) && (
+              <View style={styles.screeningBorder} />
+            )}
+          </View>
 
-          {/* Focus border */}
+          {/* Double-border focus ring: black halo behind teal ring */}
+          {isFocused && <View style={styles.focusBorderOuter} />}
           {isFocused && <View style={styles.focusBorder} />}
         </Animated.View>
 
@@ -373,18 +353,20 @@ const styles = StyleSheet.create({
   cardContainer: {
     overflow: 'visible',
   },
+  scaleLayer: {
+    borderRadius: 12,
+    position: 'relative',
+  },
+  scaleLayerFocused: {
+    shadowColor: FOCUS_STYLES.movieCard.shadowColor,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: FOCUS_STYLES.movieCard.shadowOpacity,
+    shadowRadius: FOCUS_STYLES.movieCard.shadowRadius,
+  },
   posterContainer: {
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: Colors.backgroundSecondary,
-    position: 'relative',
-  },
-  shadowLayer: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 12,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.5,
-    backgroundColor: 'transparent',
   },
   poster: {
     width: '100%',
@@ -407,6 +389,22 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.body,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  restorationCardBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: Colors.restoration,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+    zIndex: 6,
+  },
+  restorationCardBadgeText: {
+    color: Colors.restorationText,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   streamingBadge: {
     position: 'absolute',
@@ -472,6 +470,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
     borderColor: '#FFD700',
+  },
+  focusBorderOuter: {
+    position: 'absolute',
+    top: -4,
+    left: -4,
+    right: -4,
+    bottom: -4,
+    borderRadius: 16,
+    borderWidth: 4,
+    borderColor: '#000',
   },
   focusBorder: {
     ...StyleSheet.absoluteFillObject,

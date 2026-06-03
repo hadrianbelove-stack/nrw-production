@@ -45,6 +45,19 @@ const FILTERS = [
   { id: 'restorations', label: 'Reissues' },
 ];
 
+// Filter descriptions — shown below filter row when a single filter is active (matches web)
+const FILTER_DESCRIPTIONS = {
+  'staff-picks': { title: 'Picks', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
+  'indie':       { title: 'Indie', text: "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home." },
+  'horror':      { title: 'Horror', text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." },
+  'action':      { title: 'Action', text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." },
+  'comedy':      { title: 'Comedy', text: "Films that are actually funny. Comedies — broad and subtle — now streaming." },
+  'family':      { title: 'Family', text: "Films for all ages. Family movies now available to watch at home." },
+  'foreign':     { title: 'Foreign', text: "Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they're streaming now." },
+  'documentary': { title: 'Documentary', text: "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home." },
+  'restorations':{ title: 'Reissues', text: "Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers." },
+};
+
 // Filter Button Component - forwardRef to allow focus navigation from grid
 const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -161,7 +174,7 @@ const MetaToggle = forwardRef(({ isActive, offLabel, onLabel, accessibilityLabel
 });
 
 // Date Card Component - non-focusable visual divider
-const DateCard = ({ dateParts }) => {
+const DateCard = ({ dateParts, isBootstrap }) => {
   const isPreOrder = dateParts.dayName === 'PRE-' || dateParts.dayName === 'PRE-ORDER';
   const isFest = dateParts.dayName === 'FEST';
   const barColor = isPreOrder ? '#7c3aed' : isFest ? '#b45309' : Colors.primary;
@@ -173,7 +186,7 @@ const DateCard = ({ dateParts }) => {
       focusable={false}
       isTVSelectable={false}
     >
-      <View style={styles.dateCard}>
+      <View style={[styles.dateCard, isBootstrap && styles.dateCardApproximate]}>
         {/* Top bar */}
         <View style={[styles.dateBar, { backgroundColor: barColor }]}>
           <Text style={styles.dateBarText}>
@@ -183,15 +196,15 @@ const DateCard = ({ dateParts }) => {
 
         {/* Body */}
         <View style={styles.dateBody}>
-          <Text style={[styles.dateNumber, { color: (isPreOrder || isFest) ? accentColor : '#fff' }]}>
-            {isPreOrder ? 'SOON' : isFest ? 'NOW' : dateParts.day}
+          <Text style={[styles.dateNumber, { color: (isPreOrder || isFest) ? accentColor : '#fff', fontStyle: isBootstrap ? 'italic' : 'normal' }]}>
+            {isPreOrder ? 'SOON' : isFest ? 'NOW' : (isBootstrap ? '~' : '') + dateParts.day}
           </Text>
           {!isPreOrder && !isFest && dateParts.month ? (
             <Text style={styles.dateMonth}>{dateParts.month}</Text>
           ) : null}
-          {/* Cascading chevrons */}
+          {/* Cascading chevrons — 5 levels matching desktop */}
           <View style={styles.dateChevrons}>
-            {[1, 0.6, 0.3].map((opacity, i) => (
+            {[0.9, 0.7, 0.5, 0.3, 0.15].map((opacity, i) => (
               <Text key={i} style={[styles.dateChevron, {color: accentColor, opacity}]}>
                 {'›'}
               </Text>
@@ -354,7 +367,7 @@ const HomeScreenTvOS = () => {
   // Local state - multi-select filters (Set of active filter IDs)
   const [activeFilters, setActiveFilters] = useState(new Set());
   const [slopFree, setSlopFree] = useState(true);
-  const [hideFest, setHideFest] = useState(false);
+  const [hideFest, setHideFest] = useState(true); // default: hide fests (matches desktop default)
   const [showPreorders, setShowPreorders] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -374,6 +387,15 @@ const HomeScreenTvOS = () => {
     } else {
       itemRefsMap.current.delete(index);
     }
+  }, []);
+
+  // Wrapper refs for z-index elevation on focus — imperative, avoids re-renders
+  const wrapperRefsMap = useRef(new Map());
+  const prevFocusedWrapper = useRef(null);
+
+  const registerWrapperRef = useCallback((index, ref) => {
+    if (ref) wrapperRefsMap.current.set(index, ref);
+    else wrapperRefsMap.current.delete(index);
   }, []);
 
   // Update node handles after layout is complete using InteractionManager
@@ -535,7 +557,7 @@ const HomeScreenTvOS = () => {
           items.push({ type: 'trailers', id: 'new-trailers-button', playlistUrl: latestPlaylistUrl });
           trailersPushed = true;
         }
-        items.push({ type: 'date', id: `date-${movieDate}-${index}`, date: movieDate });
+        items.push({ type: 'date', id: `date-${movieDate}-${index}`, date: movieDate, isBootstrap: !!movie.bootstrap_date });
       }
       items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie });
     });
@@ -569,9 +591,25 @@ const HomeScreenTvOS = () => {
     }
   }, [displayMovies]);
 
-  // Handle movie focus
+  // Handle movie focus — also elevates wrapper z-index so focus ring isn't clipped by right sibling
   const handleMovieFocus = useCallback((movie, index) => {
     trackMovieFocus(movie, 0, index);
+    if (prevFocusedWrapper.current) {
+      prevFocusedWrapper.current.setNativeProps({ style: { zIndex: 1 } });
+    }
+    const wrapper = wrapperRefsMap.current.get(index);
+    if (wrapper) {
+      wrapper.setNativeProps({ style: { zIndex: 100 } });
+      prevFocusedWrapper.current = wrapper;
+    }
+  }, []);
+
+  const handleMovieBlur = useCallback((index) => {
+    const wrapper = wrapperRefsMap.current.get(index);
+    if (wrapper) {
+      wrapper.setNativeProps({ style: { zIndex: 1 } });
+    }
+    prevFocusedWrapper.current = null;
   }, []);
 
   // Handle TV remote events
@@ -637,7 +675,7 @@ const HomeScreenTvOS = () => {
         const dateParts = formatDateParts(item.date);
         return (
           <View style={styles.cardWrapper}>
-            <DateCard dateParts={dateParts} />
+            <DateCard dateParts={dateParts} isBootstrap={item.isBootstrap} />
           </View>
         );
       }
@@ -659,17 +697,23 @@ const HomeScreenTvOS = () => {
       };
 
       // Find nearest focusable handle within the same row as pivotIndex,
-      // scanning right from pivot first, then left — produces the "slide" effect
+      // scanning outward in both directions from pivot — lands on the closest movie
       const findNearestInRow = (pivotIndex) => {
         const rowStart = Math.floor(pivotIndex / NUM_COLUMNS) * NUM_COLUMNS;
         const rowEnd = Math.min(rowStart + NUM_COLUMNS - 1, listData.length - 1);
-        for (let i = pivotIndex; i <= rowEnd; i++) {
-          const handle = itemNodeHandles.get(i);
-          if (handle) return handle;
-        }
-        for (let i = pivotIndex - 1; i >= rowStart; i--) {
-          const handle = itemNodeHandles.get(i);
-          if (handle) return handle;
+        const pivotHandle = itemNodeHandles.get(pivotIndex);
+        if (pivotHandle) return pivotHandle;
+        for (let offset = 1; offset < NUM_COLUMNS; offset++) {
+          const right = pivotIndex + offset;
+          const left = pivotIndex - offset;
+          if (right <= rowEnd) {
+            const handle = itemNodeHandles.get(right);
+            if (handle) return handle;
+          }
+          if (left >= rowStart) {
+            const handle = itemNodeHandles.get(left);
+            if (handle) return handle;
+          }
         }
         return undefined;
       };
@@ -702,13 +746,14 @@ const HomeScreenTvOS = () => {
 
       // Movie card
       return (
-        <View style={styles.cardWrapper}>
+        <View ref={(ref) => registerWrapperRef(index, ref)} style={styles.cardWrapper}>
           <MovieCard
             ref={(ref) => registerItemRef(index, ref)}
             movie={item.movie}
             onSelect={() => handleMovieSelect(item.movie)}
             onLongPress={() => handleOpenFullscreen(item.movie)}
             onFocus={() => handleMovieFocus(item.movie, index)}
+            onBlur={() => handleMovieBlur(index)}
             hasTVPreferredFocus={giveInitialFocus && index === (SHOW_TRAILERS_CARD ? 2 : 1)}
             testID={`movie-card-${index}`}
             nextFocusUp={isFirstRow ? toggleNodeHandle : nextFocusUpVertical}
@@ -719,7 +764,7 @@ const HomeScreenTvOS = () => {
         </View>
       );
     },
-    [formatDateParts, handleMovieSelect, handleMovieFocus, handleOpenFullscreen, headerNodeHandle, toggleNodeHandle, itemNodeHandles, listData, registerItemRef, giveInitialFocus]
+    [formatDateParts, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, toggleNodeHandle, itemNodeHandles, listData, registerItemRef, registerWrapperRef, giveInitialFocus]
   );
 
   // Key extractor
@@ -844,6 +889,19 @@ const HomeScreenTvOS = () => {
         </View>
       </View>
 
+      {/* Filter description — shown when exactly one filter is active (matches web) */}
+      {activeFilters.size === 1 && (() => {
+        const filterId = Array.from(activeFilters)[0];
+        const desc = FILTER_DESCRIPTIONS[filterId];
+        if (!desc) return null;
+        return (
+          <View style={styles.filterDescriptionRow}>
+            <Text style={styles.filterDescriptionTitle}>{desc.title}</Text>
+            <Text style={styles.filterDescriptionText}>{desc.text}</Text>
+          </View>
+        );
+      })()}
+
       {/* Vertical scrolling grid - the wall */}
       <FlatList
         ref={flatListRef}
@@ -851,6 +909,7 @@ const HomeScreenTvOS = () => {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         numColumns={NUM_COLUMNS}
+        extraData={itemNodeHandles}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         columnWrapperStyle={styles.row}
@@ -962,8 +1021,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   filterButtonTextActive: {
-    color: Colors.background,
-    fontWeight: '600',
+    color: '#ffffff', // white on teal — matches desktop (body color: #fff)
+    fontWeight: '700',
   },
   filterDivider: {
     width: 1,
@@ -1091,6 +1150,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#0a0a0a',
     overflow: 'hidden',
   },
+  dateCardApproximate: {
+    opacity: 0.8,
+  },
   dateBar: {
     paddingVertical: 6,
     paddingHorizontal: 10,
@@ -1172,6 +1234,30 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.tvos.body,
     textAlign: 'center',
+  },
+  // Filter description panel — shown when exactly 1 filter active (matches web)
+  filterDescriptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 40,
+    paddingHorizontal: 68,
+    paddingVertical: 14,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.08)',
+  },
+  filterDescriptionTitle: {
+    fontSize: 36,
+    fontWeight: '800',
+    letterSpacing: 4,
+    color: Colors.primary,
+    flexShrink: 0,
+    textTransform: 'uppercase',
+  },
+  filterDescriptionText: {
+    fontSize: 20,
+    color: Colors.textMuted,
+    lineHeight: 30,
+    flex: 1,
   },
 });
 
