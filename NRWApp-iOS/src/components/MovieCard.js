@@ -157,14 +157,14 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         )}
 
         {/* Featured badge */}
-        {(isFeatured || movie.featured || movie.categories?.is_staff_pick) && (
+        {(isFeatured || movie.featured || movie.filters?.is_staff_pick) && (
           <View style={styles.featuredBadge}>
             <Text style={styles.featuredText}>★ PICK</Text>
           </View>
         )}
 
         {/* Restoration badge */}
-        {movie.categories?.is_restoration && (
+        {movie.filters?.is_restoration && (
           <View style={styles.restorationBadge}>
             <Text style={styles.restorationText}>RESTORED</Text>
           </View>
@@ -183,14 +183,14 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         )}
 
         {/* Virtual screening top banner */}
-        {movie.categories?.is_virtual_screening && !isFeatured && !movie.featured && (
+        {movie.filters?.is_virtual_screening && !isFeatured && !movie.featured && (
           <View style={styles.screeningTopBanner}>
             <Text style={styles.screeningTopBannerText}>VIRTUAL SCREENING</Text>
           </View>
         )}
 
         {/* Virtual screening festival name ribbon */}
-        {movie.categories?.is_virtual_screening && !isFeatured && !movie.featured && movie.virtual_screening_info?.screening_name && (
+        {movie.filters?.is_virtual_screening && !isFeatured && !movie.featured && movie.virtual_screening_info?.screening_name && (
           <View style={styles.screeningRibbon}>
             <Text style={styles.screeningRibbonText} numberOfLines={2}>
               {movie.virtual_screening_info.screening_name}

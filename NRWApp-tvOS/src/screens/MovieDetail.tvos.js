@@ -580,7 +580,7 @@ const MovieDetailTvOS = () => {
       navigation.goBack();
     },
     [TV_EVENTS.PLAY_PAUSE]: () => {
-      if (movie?.links?.trailer_hosted) {
+      if (movie?.links?.trailer_hosted || movie?.links?.trailer) {
         setTrailerVisible(true);
       }
     },
@@ -676,16 +676,18 @@ const MovieDetailTvOS = () => {
           />
 
           {/* Staff Pick badge */}
-          {(movie.featured || movie.categories?.is_staff_pick) && (
+          {(movie.featured || movie.filters?.is_staff_pick) && (
             <View style={styles.staffPickBadge}>
               <Text style={styles.staffPickText}>STAFF PICK</Text>
             </View>
           )}
 
           {/* Restoration badge */}
-          {movie.categories?.is_restoration && (
+          {(movie.filters?.is_restoration || movie.reissue_label) && (
             <View style={styles.restorationBadge}>
-              <Text style={styles.restorationBadgeText}>RESTORED</Text>
+              <Text style={styles.restorationBadgeText}>
+                {movie.reissue_label?.toUpperCase() || 'RESTORED'}
+              </Text>
             </View>
           )}
 
@@ -715,7 +717,7 @@ const MovieDetailTvOS = () => {
                 if (movie.genres?.[0]) hp.push(movie.genres[0]);
                 if (movie.digital_date) {
                   let d = formatShortDate(movie.digital_date);
-                  if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.available_end)
+                  if (movie.filters?.is_virtual_screening && movie.virtual_screening_info?.available_end)
                     d += '\u2013' + formatShortDate(movie.virtual_screening_info.available_end);
                   hp.push(d);
                 }
@@ -724,15 +726,15 @@ const MovieDetailTvOS = () => {
             </View>
 
             {/* 2. Virtual screening badge */}
-            {movie.categories?.is_virtual_screening && (
+            {movie.filters?.is_virtual_screening && (
               <Text style={styles.screeningName}>
                 {decodeHtml(movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING')}
               </Text>
             )}
 
             {/* 3. Meta block — Director, Cast, details line */}
-            {movie.director && (
-              <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Director: </Text><Text style={styles.metadataCrewName}>{movie.director}</Text></Text>
+            {(movie.crew?.director || movie.director) && (
+              <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Director: </Text><Text style={styles.metadataCrewName}>{movie.crew?.director || movie.director}</Text></Text>
             )}
             {movie.crew?.cast?.length > 0 && (
               <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Cast: </Text><Text style={styles.metadataCrewName}>{movie.crew.cast.slice(0, 3).join(', ')}</Text></Text>
@@ -747,10 +749,10 @@ const MovieDetailTvOS = () => {
                   <Text style={styles.metadataText}>{formattedRuntime}</Text>
                 </>
               )}
-              {movie.studio && (
+              {(movie.distributor || movie.studio) && (
                 <>
                   <Text style={styles.metadataDot}>•</Text>
-                  <Text style={styles.metadataText}>{movie.studio}</Text>
+                  <Text style={styles.metadataText}>{movie.distributor || movie.studio}</Text>
                 </>
               )}
             </View>
@@ -812,7 +814,7 @@ const MovieDetailTvOS = () => {
             {/* 6. Pull Quotes */}
             {movie.pull_quotes?.length > 0 && (
               <View style={styles.pullQuotesSection}>
-                {movie.pull_quotes.slice(0, 2).map((pq, i) => (
+                {movie.pull_quotes.map((pq, i) => (
                   <View key={i} style={styles.pullQuoteCard}>
                     <Text style={styles.pqText}>{'\u201C'}{pq.text}{'\u201D'}</Text>
                     {(pq.critic || pq.outlet) && (
@@ -826,14 +828,22 @@ const MovieDetailTvOS = () => {
             {/* 7. Synopsis */}
             {(movie.capsule || movie.synopsis) && (
               <View style={styles.synopsisContainer}>
-                <Text style={styles.synopsis} numberOfLines={6} ellipsizeMode="tail">
+                <Text style={styles.synopsis}>
                   {renderMarkdownSpans(movie.capsule || movie.synopsis)}
-                  {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
+                  {movie.filters?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
                     <Text style={styles.screeningCallout}>
                       {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
                     </Text>
                   )}
                 </Text>
+              </View>
+            )}
+
+            {/* 7b. Awards */}
+            {movie.awards && (
+              <View style={styles.creditRow}>
+                <Text style={styles.creditLabel}>Awards</Text>
+                <Text style={styles.creditValue}>{movie.awards}</Text>
               </View>
             )}
 
@@ -844,14 +854,16 @@ const MovieDetailTvOS = () => {
                 <NavArrowIndicator direction="left" flash={arrowFlash === 'left'} />
               )}
 
-              {movie?.links?.trailer_hosted ? (
+              {(movie?.links?.trailer_hosted || movie?.links?.trailer) ? (
                 <TrailerButton
                   ref={trailerRefCallback}
                   onPress={() => setTrailerVisible(true)}
                   hasTVPreferredFocus={true}
                 />
               ) : (
-                <View style={{ flex: 1 }} />
+                <View style={[trailerBtnStyles.button, { opacity: 0.35 }]}>
+                  <Text style={trailerBtnStyles.text}>NO TRAILER</Text>
+                </View>
               )}
 
               {movieList.length > 1 && (
@@ -865,7 +877,7 @@ const MovieDetailTvOS = () => {
                 <StreamButton
                   service={streamingLinks[0].service}
                   onPress={() => handleWatchPress(streamingLinks[0])}
-                  hasTVPreferredFocus={!movie?.links?.trailer_hosted}
+                  hasTVPreferredFocus={!movie?.links?.trailer_hosted && !movie?.links?.trailer}
                   nextFocusUp={trailerHandle}
                   testID="action-btn-stream"
                 />
@@ -893,7 +905,7 @@ const MovieDetailTvOS = () => {
                         rentPrice={link.rentPrice}
                         buyPrice={link.buyPrice}
                         onPress={() => handleWatchPress(link)}
-                        hasTVPreferredFocus={!movie?.links?.trailer_hosted && streamingLinks.length === 0 && i === 0}
+                        hasTVPreferredFocus={!movie?.links?.trailer_hosted && !movie?.links?.trailer && streamingLinks.length === 0 && i === 0}
                         testID={`action-btn-purchase-${i}`}
                       />
                     );
@@ -1069,7 +1081,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: Spacing.tvos.sm,
     overflow: 'hidden',
-    alignSelf: 'flex-start',
     borderRadius: 4,
   },
   screeningCallout: {
@@ -1174,7 +1185,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   pqText: {
-    color: Colors.textSecondary,
+    color: Colors.primary,
     fontSize: Typography.tvos.body - 2,
     fontStyle: 'italic',
     lineHeight: (Typography.tvos.body - 2) * 1.4,

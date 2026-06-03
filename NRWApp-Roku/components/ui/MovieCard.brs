@@ -109,9 +109,9 @@ Sub onMovieChanged()
 
     ' Determine card state flags
     isStaffPick = IsStaffPick(movie)
-    isScreening = (movie.categories <> invalid AND movie.categories.is_virtual_screening = true)
+    isScreening = (movie.filters <> invalid AND movie.filters.is_virtual_screening = true)
     isPreOrder = (movie._is_preorder <> invalid AND movie._is_preorder = true)
-    isRestoration = (movie.categories <> invalid AND movie.categories.is_restoration = true)
+    isRestoration = (movie.filters <> invalid AND movie.filters.is_restoration = true)
 
     ' Set streaming service badge (hidden for pre-orders — pre-order badge takes that spot)
     streaming = GetStreamingService(movie)

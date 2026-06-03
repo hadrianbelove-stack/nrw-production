@@ -1741,7 +1741,7 @@ class DataGenerator:
             data = json.load(f)
 
         movies = data.get('movies', [])
-        screening_movies = [m for m in movies if m.get('categories', {}).get('is_virtual_screening')]
+        screening_movies = [m for m in movies if m.get('filters', {}).get('is_virtual_screening')]
 
         if not screening_movies:
             print("  No virtual screening movies found")

@@ -149,8 +149,8 @@ const NRWMobile = {
             if (dateB.getTime() !== dateA.getTime()) return dateB - dateA;
 
             // Same date: staff picks first
-            const aStaff = a.categories?.is_staff_pick || this.staffPicks.includes(String(a.id));
-            const bStaff = b.categories?.is_staff_pick || this.staffPicks.includes(String(b.id));
+            const aStaff = a.filters?.is_staff_pick || this.staffPicks.includes(String(a.id));
+            const bStaff = b.filters?.is_staff_pick || this.staffPicks.includes(String(b.id));
             if (aStaff && !bStaff) return -1;
             if (!aStaff && bStaff) return 1;
             return 0;
@@ -313,7 +313,7 @@ const NRWMobile = {
             if (this.slopMode === 'only' && !isSlop) return false;
 
             // Hide-fest mode: hide virtual screenings
-            if (this.hideFest && movie.categories?.is_virtual_screening) return false;
+            if (this.hideFest && movie.filters?.is_virtual_screening) return false;
 
             // Pre-orders only appear when toggle is ON or search is active
             if (movie._is_preorder && !this.showPreorders && !this.searchQuery) return false;
@@ -324,20 +324,20 @@ const NRWMobile = {
                 for (const filter of filters) {
                     switch (filter) {
                         case 'indie':
-                            if (movie.categories?.is_indie || movie.categories?.tier === 'indie') matchesAny = true;
+                            if (movie.filters?.is_indie) matchesAny = true;
                             break;
                         case 'staff-picks':
-                            if (movie.categories?.is_staff_pick || movie.featured || this.staffPicks.includes(String(movie.id))) matchesAny = true;
+                            if (movie.filters?.is_staff_pick || movie.featured || this.staffPicks.includes(String(movie.id))) matchesAny = true;
                             break;
                         case 'foreign':
-                            if (movie.categories?.is_foreign ||
+                            if (movie.filters?.is_foreign ||
                                 (movie.original_language && movie.original_language !== 'en')) matchesAny = true;
                             break;
                         case 'restorations':
-                            if (movie.categories?.is_restoration === true) matchesAny = true;
+                            if (movie.filters?.is_restoration === true) matchesAny = true;
                             break;
                         case 'documentary':
-                            if (movie.categories?.is_documentary === true) matchesAny = true;
+                            if (movie.filters?.is_documentary === true) matchesAny = true;
                             break;
                         case 'horror':
                             if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) matchesAny = true;
@@ -486,8 +486,8 @@ const NRWMobile = {
     },
 
     createGridItem(movie, index) {
-        const isStaffPick = movie.categories?.is_staff_pick || this.staffPicks.includes(String(movie.id));
-        const isScreening = movie.categories?.is_virtual_screening;
+        const isStaffPick = movie.filters?.is_staff_pick || this.staffPicks.includes(String(movie.id));
+        const isScreening = movie.filters?.is_virtual_screening;
 
         const item = document.createElement('div');
         item.className = 'grid-item' + (isScreening ? ' screening-movie' : '');
@@ -696,8 +696,8 @@ const NRWMobile = {
             setTimeout(() => content.classList.remove(cls), 250);
         }
 
-        const isStaffPick = movie.categories?.is_staff_pick || this.staffPicks.includes(String(movie.id));
-        const isScreening = movie.categories?.is_virtual_screening;
+        const isStaffPick = movie.filters?.is_staff_pick || this.staffPicks.includes(String(movie.id));
+        const isScreening = movie.filters?.is_virtual_screening;
         const screeningInfo = movie.virtual_screening_info || {};
 
         // Line 1: Director (label teal, name white)

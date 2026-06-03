@@ -252,13 +252,13 @@ export default function MovieDetail({route}) {
             </TouchableOpacity>
           )}
           {/* Staff Pick badge */}
-          {(movie.featured || movie.categories?.is_staff_pick) && (
+          {(movie.featured || movie.filters?.is_staff_pick) && (
             <View style={styles.staffPickBadge}>
               <Text style={styles.staffPickText}>STAFF PICK</Text>
             </View>
           )}
           {/* Restoration badge */}
-          {movie.categories?.is_restoration && (
+          {movie.filters?.is_restoration && (
             <View style={styles.restorationBadge}>
               <Text style={styles.restorationBadgeText}>RESTORED</Text>
             </View>
@@ -278,7 +278,7 @@ export default function MovieDetail({route}) {
           </View>
 
           {/* Virtual screening badge */}
-          {movie.categories?.is_virtual_screening && (
+          {movie.filters?.is_virtual_screening && (
             <Text style={styles.screeningName}>
               {movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING'}
             </Text>
@@ -409,7 +409,7 @@ export default function MovieDetail({route}) {
           <Text style={styles.sectionTitle}>Synopsis</Text>
           <Text style={styles.synopsis}>
             {renderMarkdownSpans(movie.capsule || movie.synopsis)}
-            {movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
+            {movie.filters?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
               <Text style={styles.screeningCallout}>
                 {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
               </Text>

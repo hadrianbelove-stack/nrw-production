@@ -1395,7 +1395,7 @@ class MovieEnricher:
                                 _enrich_success += 1
                                 print(f"  \u23ed\ufe0f  {_title_zl} \u2014 zero links but pre-order (future date {_dd_zl}), keeping")
                             # Guard: virtual screenings (own lifecycle)
-                            elif movie.get('categories', {}).get('is_virtual_screening'):
+                            elif movie.get('filters', {}).get('is_virtual_screening'):
                                 _enrich_success += 1
                                 print(f"  \u23ed\ufe0f  {_title_zl} \u2014 zero links but virtual screening, keeping")
                             # Guard: manually-added movies (curator decision)

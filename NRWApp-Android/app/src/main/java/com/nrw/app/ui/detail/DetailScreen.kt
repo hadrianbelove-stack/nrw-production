@@ -371,7 +371,7 @@ private fun MovieDetail(
                                     )
                                 }
                             }
-                            if (movie.categories?.isRestoration == true) {
+                            if (movie.filters?.isRestoration == true) {
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(4.dp))
@@ -387,7 +387,7 @@ private fun MovieDetail(
                                     )
                                 }
                             }
-                            if (movie.categories?.isVirtualScreening == true) {
+                            if (movie.filters?.isVirtualScreening == true) {
                                 Text(
                                     text = movie.screeningInfo?.screeningName ?: "VIRTUAL SCREENING",
                                     color = Color.Black,
@@ -523,7 +523,7 @@ private fun MovieDetail(
 
                 // Synopsis - compact (prefers editorial capsule over raw TMDB synopsis)
                 (movie.capsule ?: movie.synopsis)?.let { synopsis ->
-                    val screeningCallout = if (movie.categories?.isVirtualScreening == true && movie.screeningInfo?.screeningName != null) {
+                    val screeningCallout = if (movie.filters?.isVirtualScreening == true && movie.screeningInfo?.screeningName != null) {
                         val festName = movie.screeningInfo!!.screeningName!!
                         val endStr = movie.screeningInfo?.availableEnd?.let { " Ends ${formatShortDate(it)}." } ?: ""
                         " Virtual screening available as part of the $festName.$endStr"

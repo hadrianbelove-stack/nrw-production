@@ -58,7 +58,8 @@ data class Movie(
     @SerializedName("content_type")
     val contentType: String? = null,
 
-    val categories: Categories? = null,
+    @SerializedName("filters")
+    val filters: Categories? = null,
 
     @SerializedName("rt_score")
     val rtScore: String? = null,
@@ -334,11 +335,11 @@ fun Movie.getRtInfo(): Pair<Int, Boolean>? {
 }
 
 fun Movie.isStaffPick(): Boolean {
-    return categories?.isStaffPick == true || featured == true
+    return filters?.isStaffPick == true || featured == true
 }
 
 fun Movie.isForeign(): Boolean {
-    return categories?.isForeign == true || (originalLanguage != null && originalLanguage != "en")
+    return filters?.isForeign == true || (originalLanguage != null && originalLanguage != "en")
 }
 
 fun Movie.getDirector(): String? {

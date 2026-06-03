@@ -250,7 +250,7 @@ Sub LoadMovie(index as Integer)
     if displayText <> invalid AND displayText <> ""
         synopsisText = MarkdownToMultiStyle(displayText)
         ' Append screening callout to synopsis (plain text, default style)
-        if movie.categories <> invalid AND movie.categories.is_virtual_screening = true AND movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid
+        if movie.filters <> invalid AND movie.filters.is_virtual_screening = true AND movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid
             callout = " Virtual screening available as part of the " + movie.virtual_screening_info.screening_name + "."
             if movie.virtual_screening_info.available_end <> invalid AND movie.virtual_screening_info.available_end <> ""
                 callout = callout + " Ends " + FormatShortDate(movie.virtual_screening_info.available_end) + "."
@@ -274,7 +274,7 @@ Sub LoadMovie(index as Integer)
     end if
 
     ' Restoration badge
-    if movie.categories <> invalid AND movie.categories.is_restoration = true
+    if movie.filters <> invalid AND movie.filters.is_restoration = true
         m.restorationBadge.visible = true
         m.restorationLabel.visible = true
     else
@@ -295,7 +295,7 @@ Sub LoadMovie(index as Integer)
     end if
 
     ' Virtual screening badge — show festival name if available
-    if movie.categories <> invalid AND movie.categories.is_virtual_screening = true
+    if movie.filters <> invalid AND movie.filters.is_virtual_screening = true
         if movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid AND movie.virtual_screening_info.screening_name <> ""
             m.screeningLabel.text = movie.virtual_screening_info.screening_name
         else

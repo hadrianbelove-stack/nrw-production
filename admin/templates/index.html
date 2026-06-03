@@ -178,7 +178,7 @@
     {# ---- Movie row macro (used by both sections) ---- #}
     {% macro movie_row(movie) %}
         {% set movie_id = movie.id|string %}
-        {% set cats = movie.get('categories', {}) %}
+        {% set cats = movie.get('filters', {}) %}
         {% set is_pick = cats.get('is_staff_pick', false) or movie_id in featured %}
         {% set is_indie = cats.get('is_indie', false) %}
         {% set is_foreign = cats.get('is_foreign', false) %}

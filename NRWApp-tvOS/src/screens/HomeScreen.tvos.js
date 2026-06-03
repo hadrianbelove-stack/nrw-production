@@ -446,7 +446,7 @@ const HomeScreenTvOS = () => {
 
     // Hide-fest mode: hide virtual screenings
     if (hideFest) {
-      movies = movies.filter(m => !m.categories?.is_virtual_screening);
+      movies = movies.filter(m => !m.filters?.is_virtual_screening);
     }
 
     // Pre-orders: only show when toggle is ON or search is active
@@ -464,22 +464,22 @@ const HomeScreenTvOS = () => {
       for (const filter of activeFilters) {
         switch (filter) {
           case 'indie':
-            if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;
+            if (movie.filters?.is_indie) return true;
             break;
           case 'staff-picks':
-            if (movie.categories?.is_staff_pick || movie.featured) return true;
+            if (movie.filters?.is_staff_pick || movie.featured) return true;
             break;
           case 'foreign': {
-            const isForeign = movie.categories?.is_foreign ??
+            const isForeign = movie.filters?.is_foreign ??
               (movie.original_language && movie.original_language !== 'en');
             if (isForeign) return true;
             break;
           }
           case 'documentary':
-            if (movie.categories?.is_documentary === true) return true;
+            if (movie.filters?.is_documentary === true) return true;
             break;
           case 'restorations':
-            if (movie.categories?.is_restoration) return true;
+            if (movie.filters?.is_restoration) return true;
             break;
           case 'horror':
             if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) return true;
@@ -505,9 +505,9 @@ const HomeScreenTvOS = () => {
     if (!displayMovies || displayMovies.length === 0) return [];
 
     // Split into three buckets: fest (virtual screenings), pre-orders, regular
-    const festMovies = displayMovies.filter(m => !m._is_preorder && m.categories?.is_virtual_screening);
+    const festMovies = displayMovies.filter(m => !m._is_preorder && m.filters?.is_virtual_screening);
     const preorderMovies = displayMovies.filter(m => m._is_preorder);
-    const regularMovies = displayMovies.filter(m => !m._is_preorder && !m.categories?.is_virtual_screening);
+    const regularMovies = displayMovies.filter(m => !m._is_preorder && !m.filters?.is_virtual_screening);
 
     // Sort each bucket
     const byDateDesc = (a, b) => (b.digital_date || '0000-00-00').localeCompare(a.digital_date || '0000-00-00');

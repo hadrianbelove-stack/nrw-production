@@ -115,8 +115,8 @@ Sub ApplyFilters()
         filtered = []
         for each movie in movies
             isVS = false
-            if movie.categories <> invalid
-                isVS = (movie.categories.is_virtual_screening = true)
+            if movie.filters <> invalid
+                isVS = (movie.filters.is_virtual_screening = true)
             end if
             if NOT isVS
                 filtered.Push(movie)

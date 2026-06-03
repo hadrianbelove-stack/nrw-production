@@ -153,11 +153,11 @@ class MovieRepository(private val context: Context) {
             if (movie.hidden == true || movie.enrichmentStatus == "reverted") return@filter false
             activeFilters.any { filter ->
                 when (filter) {
-                    FilterCategory.INDIE -> movie.categories?.isIndie == true || movie.categories?.tier == "indie"
+                    FilterCategory.INDIE -> movie.filters?.isIndie == true
                     FilterCategory.STAFF_PICKS -> movie.isStaffPick()
                     FilterCategory.FOREIGN -> movie.isForeign()
-                    FilterCategory.RESTORATIONS -> movie.categories?.isRestoration == true
-                    FilterCategory.DOCUMENTARY -> movie.categories?.isDocumentary == true
+                    FilterCategory.RESTORATIONS -> movie.filters?.isRestoration == true
+                    FilterCategory.DOCUMENTARY -> movie.filters?.isDocumentary == true
                     FilterCategory.HORROR -> movie.genres?.any { it.lowercase().contains("horror") } == true
                     FilterCategory.ACTION -> movie.genres?.any { it.lowercase().contains("action") } == true
                     FilterCategory.COMEDY -> movie.genres?.any { it.lowercase().contains("comedy") } == true

@@ -165,18 +165,18 @@ export function filterMovies(movies, filters = []) {
     for (const filter of filterArray) {
       switch (filter) {
         case 'studio':
-          if (movie.categories?.is_studio || movie.categories?.tier === 'studio') return true;
+          if () return true;
           break;
         case 'indie':
-          if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;
+          if (movie.filters?.is_indie || movie.filters?.tier === 'indie') return true;
           break;
         case 'staff-picks': {
-          const isStaffPick = movie.categories?.is_staff_pick || movie.featured === true;
+          const isStaffPick = movie.filters?.is_staff_pick || movie.featured === true;
           if (isStaffPick) return true;
           break;
         }
         case 'foreign': {
-          const isForeign = movie.categories?.is_foreign ??
+          const isForeign = movie.filters?.is_foreign ??
             (movie.original_language && movie.original_language !== 'en');
           if (isForeign) return true;
           break;
@@ -188,19 +188,19 @@ export function filterMovies(movies, filters = []) {
           if (movie.plex && movie.plex.deep_link) return true;
           break;
         case 'restorations':
-          if (movie.categories?.is_restoration) return true;
+          if (movie.filters?.is_restoration) return true;
           break;
         case 'documentary':
-          if (movie.categories?.is_documentary === true) return true;
+          if (movie.filters?.is_documentary === true) return true;
           break;
         case 'virtual-screenings':
-          if (movie.categories?.is_virtual_screening) return true;
+          if (movie.filters?.is_virtual_screening) return true;
           break;
         case 'pre-orders':
           if (movie._is_preorder === true) return true;
           break;
         case 'featured': {
-          const isFeatured = movie.categories?.is_staff_pick || movie.featured === true;
+          const isFeatured = movie.filters?.is_staff_pick || movie.featured === true;
           if (isFeatured) return true;
           break;
         }
@@ -226,7 +226,7 @@ export function searchMovies(movies, query) {
     const director = (movie.director || movie.crew?.director || '').toLowerCase();
     const genres = (movie.genres || []).map(g => g.toLowerCase());
     const country = (movie.country || '').toLowerCase();
-    const synopsis = (movie.synopsis || '').toLowerCase();
+    const synopsis = (movie.capsule || movie.synopsis || '').toLowerCase();
     const year = String(movie.year || '');
 
     return (

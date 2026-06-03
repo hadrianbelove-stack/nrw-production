@@ -119,7 +119,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (state.hideFest) {
-            filtered = filtered.filter { it.categories?.isVirtualScreening != true }
+            filtered = filtered.filter { it.filters?.isVirtualScreening != true }
         }
 
         if (!state.showPreorders && state.searchQuery.isBlank()) {

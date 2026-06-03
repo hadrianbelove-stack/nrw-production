@@ -163,7 +163,7 @@ class DisplayGenerator:
         wikidata_distributors = movie.get('wikidata_distributors', [])
 
         # Check for existing manual override from movie_tracking.json
-        manual_override = movie.get('categories', {}).get('manual_override')
+        manual_override = movie.get('filters', {}).get('manual_override')
 
         # Determine foreign status (needed for indie check)
         is_foreign = original_language and original_language != 'en'
@@ -437,6 +437,7 @@ class DisplayGenerator:
             categories = self.categorize_movie(movie, category_config, distributor_lookup)
 
             # Check for manual category override from tracking data
+            # ('categories' here is the tracking DB format, not the data.json 'filters' field)
             if movie_id in tracking_data and tracking_data[movie_id].get('categories'):
                 manual_categories = tracking_data[movie_id]['categories']
                 if manual_categories.get('manual_override'):
@@ -580,7 +581,7 @@ class DisplayGenerator:
             # Mark limited series
             categories['is_series'] = movie.get('content_type') == 'limited_series'
 
-            movie['categories'] = categories
+            movie['filters'] = categories
 
             # Apply category overrides from admin panel
             if movie_id in category_overrides:
@@ -638,7 +639,7 @@ class DisplayGenerator:
             # Combine ordered + remaining
             display_movies = ordered_movies + remaining_movies
 
-        staff_pick_count = len([m for m in display_movies if m.get('categories', {}).get('is_staff_pick')])
+        staff_pick_count = len([m for m in display_movies if m.get('filters', {}).get('is_staff_pick')])
         ordered_count = len(ordering) if ordering else 0
 
         print(f"\U0001f4dd Admin overrides applied:")

@@ -332,7 +332,7 @@ const NRW = {
             if (this.slopMode === 'only' && !isSlop) return false;
 
             // Fest mode: hide virtual screenings unless toggle is ON
-            if (!this.showFest && movie.categories?.is_virtual_screening) return false;
+            if (!this.showFest && movie.filters?.is_virtual_screening) return false;
 
             // Pre-orders only appear when the pre-order toggle is ON or search is active
             if (movie._is_preorder && !this.showPreorders && !query) return false;
@@ -346,22 +346,22 @@ const NRW = {
                 for (const filter of filters) {
                     switch (filter) {
                         case 'indie':
-                            if (movie.categories?.is_indie || movie.categories?.tier === 'indie') matchesAny = true;
+                            if (movie.filters?.is_indie) matchesAny = true;
                             break;
                         case 'staff-picks':
-                            if (movie.categories?.is_staff_pick || movie.featured) matchesAny = true;
+                            if (movie.filters?.is_staff_pick || movie.featured) matchesAny = true;
                             break;
                         case 'foreign': {
-                            const isForeign = movie.categories?.is_foreign ??
+                            const isForeign = movie.filters?.is_foreign ??
                                 (movie.original_language && movie.original_language !== 'en');
                             if (isForeign) matchesAny = true;
                             break;
                         }
                         case 'restorations':
-                            if (movie.categories?.is_restoration) matchesAny = true;
+                            if (movie.filters?.is_restoration) matchesAny = true;
                             break;
                         case 'documentary':
-                            if (movie.categories?.is_documentary) matchesAny = true;
+                            if (movie.filters?.is_documentary) matchesAny = true;
                             break;
                         case 'horror':
                             if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) matchesAny = true;
@@ -447,9 +447,9 @@ const NRW = {
         const wall = document.getElementById('wall');
 
         // Separate into three buckets: fest, pre-orders, regular
-        const festMovies = movies.filter(m => !m._is_preorder && m.categories?.is_virtual_screening);
+        const festMovies = movies.filter(m => !m._is_preorder && m.filters?.is_virtual_screening);
         const preorderMovies = movies.filter(m => m._is_preorder);
-        const regularMovies = movies.filter(m => !m._is_preorder && !m.categories?.is_virtual_screening);
+        const regularMovies = movies.filter(m => !m._is_preorder && !m.filters?.is_virtual_screening);
 
         // Sort regular movies by date descending, then staff picks first within each date
         regularMovies.sort((a, b) => {
@@ -459,8 +459,8 @@ const NRW = {
                 return dateB - dateA;  // Newest first
             }
             // Same date: staff picks first
-            const aStaffPick = a.categories?.is_staff_pick || this.staffPicks.includes(a.id);
-            const bStaffPick = b.categories?.is_staff_pick || this.staffPicks.includes(b.id);
+            const aStaffPick = a.filters?.is_staff_pick || this.staffPicks.includes(a.id);
+            const bStaffPick = b.filters?.is_staff_pick || this.staffPicks.includes(b.id);
             if (aStaffPick && !bStaffPick) return -1;
             if (!aStaffPick && bStaffPick) return 1;
             return 0;
@@ -503,7 +503,7 @@ const NRW = {
 
         orderedMovies.forEach(movie => {
             const date = (movie.digital_date || '').substring(0, 10);
-            const isFest = !movie._is_preorder && movie.categories?.is_virtual_screening;
+            const isFest = !movie._is_preorder && movie.filters?.is_virtual_screening;
 
             // Fest movies: show section header once, no date dividers
             if (isFest) {
@@ -573,7 +573,7 @@ const NRW = {
             const title = movie.title || 'Untitled';
             const year = movie.year || new Date(movie.digital_date).getFullYear();
             
-            const isStaffPick = movie.categories?.is_staff_pick || this.staffPicks.includes(movie.id);
+            const isStaffPick = movie.filters?.is_staff_pick || this.staffPicks.includes(movie.id);
             const staffPickClass = isStaffPick ? ' staff-pick-movie' : '';
 
             const formatShortDate = NRW.formatShortDate;
@@ -631,8 +631,8 @@ const NRW = {
             const { html: streamingBadgeHtml, isFrame: hasStreamingFrame, svcClass: streamingSvcClass } = getStreamingBadge(movie);
             const restorationBadge = movie.reissue_label
                 ? `<div class="restoration-badge">${movie.reissue_label.toUpperCase()}</div>`
-                : (movie.categories?.is_restoration ? '<div class="restoration-badge">RESTORED</div>' : '');
-            const isScreening = movie.categories?.is_virtual_screening;
+                : (movie.filters?.is_restoration ? '<div class="restoration-badge">RESTORED</div>' : '');
+            const isScreening = movie.filters?.is_virtual_screening;
             const screeningClass = isScreening ? ' screening-movie' : '';
             const festivalName = movie.virtual_screening_info?.screening_name;
             const badgeBar = isScreening
@@ -1155,7 +1155,7 @@ const NRW = {
                 const [y, m, d] = movie.digital_date.split('-');
                 const dt = new Date(y, m - 1, d);
                 let dateText = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.available_end) {
+                if (movie.filters?.is_virtual_screening && movie.virtual_screening_info?.available_end) {
                     const [ey, em, ed] = movie.virtual_screening_info.available_end.split('-');
                     if (em === m) {
                         dateText += '\u2013' + parseInt(ed, 10);
@@ -1172,7 +1172,7 @@ const NRW = {
         // Staff Pick badge
         const staffPickBadge = document.getElementById('lightbox-staff-pick');
         if (staffPickBadge) {
-            staffPickBadge.style.display = movie.categories?.is_staff_pick ? 'inline-block' : 'none';
+            staffPickBadge.style.display = movie.filters?.is_staff_pick ? 'inline-block' : 'none';
         }
 
         // Reissue label pill
@@ -1190,7 +1190,7 @@ const NRW = {
         // Screening name banner
         const screeningNameEl = document.getElementById('lightbox-screening-name');
         if (screeningNameEl) {
-            if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
+            if (movie.filters?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
                 screeningNameEl.textContent = movie.virtual_screening_info.screening_name;
                 screeningNameEl.style.display = 'block';
             } else {
@@ -1274,7 +1274,7 @@ const NRW = {
         synopsisEl.innerHTML = NRW._linkBoldTitles(NRWConfig.renderMarkdown(movie.capsule || movie.synopsis || 'Synopsis coming soon.'));
 
         // Screening callout appended to synopsis
-        if (movie.categories?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
+        if (movie.filters?.is_virtual_screening && movie.virtual_screening_info?.screening_name) {
             const festName = movie.virtual_screening_info.screening_name;
             const endDate = movie.virtual_screening_info?.available_end;
             const callout = document.createElement('span');

@@ -176,8 +176,8 @@ fun MovieCard(
     modifier: Modifier = Modifier
 ) {
     var isFocused by remember { mutableStateOf(false) }
-    val isStaffPick = movie.featured == true || movie.categories?.isStaffPick == true
-    val isScreening = movie.categories?.isVirtualScreening == true
+    val isStaffPick = movie.featured == true || movie.filters?.isStaffPick == true
+    val isScreening = movie.filters?.isVirtualScreening == true
 
     // Animated gradient for focus state (Option E - rotating gradient border)
     val infiniteTransition = rememberInfiniteTransition(label = "gradientRotation")

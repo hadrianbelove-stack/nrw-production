@@ -137,26 +137,26 @@ export function filterMovies(movies, filter = null) {
       return movies.filter(
         movie =>
           !movie.hidden &&
-          (movie.categories?.is_staff_pick || movie.featured === true),
+          (movie.filters?.is_staff_pick || movie.featured === true),
       );
     case 'indie':
       return movies.filter(
-        movie => !movie.hidden && (movie.categories?.is_indie || movie.categories?.tier === 'indie'),
+        movie => !movie.hidden && (movie.filters?.is_indie),
       );
     case 'foreign':
       return movies.filter(
         movie =>
           !movie.hidden &&
-          (movie.categories?.is_foreign ||
+          (movie.filters?.is_foreign ||
             (movie.original_language && movie.original_language !== 'en')),
       );
     case 'restorations':
       return movies.filter(
-        movie => !movie.hidden && movie.categories?.is_restoration === true,
+        movie => !movie.hidden && movie.filters?.is_restoration === true,
       );
     case 'documentary':
       return movies.filter(
-        movie => !movie.hidden && movie.categories?.is_documentary === true,
+        movie => !movie.hidden && movie.filters?.is_documentary === true,
       );
     case 'pre-orders':
       return movies.filter(
@@ -198,7 +198,7 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopF
   }
   // Hide-fest mode: hide virtual screenings
   if (hideFest) {
-    movies = movies.filter(m => !m.categories?.is_virtual_screening);
+    movies = movies.filter(m => !m.filters?.is_virtual_screening);
   }
   // Pre-orders only appear when toggle is ON or search is active
   if (!showPreorders && !searchQuery) {
@@ -214,20 +214,20 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopF
     for (const filter of activeFilters) {
       switch (filter) {
         case 'staff-picks':
-          if (movie.categories?.is_staff_pick || movie.featured === true) return true;
+          if (movie.filters?.is_staff_pick || movie.featured === true) return true;
           break;
         case 'indie':
-          if (movie.categories?.is_indie || movie.categories?.tier === 'indie') return true;
+          if (movie.filters?.is_indie) return true;
           break;
         case 'foreign':
-          if (movie.categories?.is_foreign ||
+          if (movie.filters?.is_foreign ||
             (movie.original_language && movie.original_language !== 'en')) return true;
           break;
         case 'restorations':
-          if (movie.categories?.is_restoration === true) return true;
+          if (movie.filters?.is_restoration === true) return true;
           break;
         case 'documentary':
-          if (movie.categories?.is_documentary === true) return true;
+          if (movie.filters?.is_documentary === true) return true;
           break;
         case 'horror':
           if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) return true;

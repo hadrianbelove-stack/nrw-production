@@ -82,7 +82,7 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
         matched = false
         for each filter in activeFilters
             if filter = categories.INDIE
-                if movie.categories <> invalid AND (movie.categories.is_indie = true OR movie.categories.tier = "indie")
+                if movie.filters <> invalid AND (movie.filters.is_indie = true)
                     matched = true
                 end if
             else if filter = categories.STAFF_PICKS
@@ -90,11 +90,11 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
             else if filter = categories.FOREIGN
                 matched = IsForeign(movie)
             else if filter = categories.RESTORATIONS
-                if movie.categories <> invalid AND movie.categories.is_restoration = true
+                if movie.filters <> invalid AND movie.filters.is_restoration = true
                     matched = true
                 end if
             else if filter = categories.DOCUMENTARY
-                if movie.categories <> invalid AND movie.categories.is_documentary = true
+                if movie.filters <> invalid AND movie.filters.is_documentary = true
                     matched = true
                 end if
             else if filter = categories.PRE_ORDERS
@@ -267,7 +267,7 @@ Function IsStaffPick(movie as Object) as Boolean
     if movie.featured = true
         return true
     end if
-    if movie.categories <> invalid AND movie.categories.is_staff_pick = true
+    if movie.filters <> invalid AND movie.filters.is_staff_pick = true
         return true
     end if
     return false
@@ -275,7 +275,7 @@ End Function
 
 ' Check if movie is foreign (non-English)
 Function IsForeign(movie as Object) as Boolean
-    if movie.categories <> invalid AND movie.categories.is_foreign = true
+    if movie.filters <> invalid AND movie.filters.is_foreign = true
         return true
     end if
     if movie.original_language <> invalid AND movie.original_language <> "en"

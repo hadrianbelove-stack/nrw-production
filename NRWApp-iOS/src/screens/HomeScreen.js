@@ -164,7 +164,7 @@ export default function HomeScreen({navigation}) {
         <MovieCard
           movie={item}
           onPress={handleMoviePress}
-          isFeatured={item.featured || item.categories?.is_staff_pick}
+          isFeatured={item.featured || item.filters?.is_staff_pick}
         />
       </View>
     );

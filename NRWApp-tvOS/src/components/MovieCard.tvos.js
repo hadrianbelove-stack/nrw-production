@@ -298,7 +298,7 @@ const MovieCard = forwardRef(({
             )}
 
             {/* Restoration/reissue badge - top-left, matches desktop */}
-            {(movie.categories?.is_restoration || movie.reissue_label) && (
+            {(movie.filters?.is_restoration || movie.reissue_label) && (
               <View style={styles.restorationCardBadge}>
                 <Text style={styles.restorationCardBadgeText}>
                   {movie.reissue_label?.toUpperCase() || 'RESTORED'}
@@ -307,14 +307,14 @@ const MovieCard = forwardRef(({
             )}
 
             {/* Staff Pick strip - bottom red banner */}
-            {(movie.categories?.is_staff_pick || movie.featured) && (
+            {(movie.filters?.is_staff_pick || movie.featured) && (
               <View style={styles.featuredStrip}>
                 <Text style={styles.featuredStripText}>STAFF PICK</Text>
               </View>
             )}
 
             {/* Virtual screening festival name ribbon */}
-            {movie.categories?.is_virtual_screening && !(movie.categories?.is_staff_pick || movie.featured) && movie.virtual_screening_info?.screening_name && (
+            {movie.filters?.is_virtual_screening && !(movie.filters?.is_staff_pick || movie.featured) && movie.virtual_screening_info?.screening_name && (
               <View style={styles.screeningRibbon}>
                 <Text style={styles.screeningRibbonText} numberOfLines={2}>
                   {decodeHtml(movie.virtual_screening_info.screening_name)}
@@ -323,7 +323,7 @@ const MovieCard = forwardRef(({
             )}
 
             {/* Virtual screening gold border */}
-            {movie.categories?.is_virtual_screening && !(movie.categories?.is_staff_pick || movie.featured) && (
+            {movie.filters?.is_virtual_screening && !(movie.filters?.is_staff_pick || movie.featured) && (
               <View style={styles.screeningBorder} />
             )}
           </View>
