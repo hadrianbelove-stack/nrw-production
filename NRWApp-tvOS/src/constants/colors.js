@@ -76,7 +76,7 @@ export const getServiceColor = (service) => {
     fandango: '#FF6600',
     mubi: '#DA2128',
     criterion: '#000000',
-    amc: '#1BB74B',
+    amc: '#1B6FE0',
     shudder: '#8B0000',
     tubi: '#FA382F',
   };

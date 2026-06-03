@@ -103,10 +103,12 @@ export function useMovieDetail(movie) {
     return { value: score, label };
   }, [movie]);
 
-  // Get formatted countries
+  // Get formatted countries — prefer countries array, fall back to country string
   const formattedCountries = useMemo(() => {
-    if (!movie?.countries || !Array.isArray(movie.countries)) return '';
-    return movie.countries.join(', ');
+    if (movie?.countries && Array.isArray(movie.countries) && movie.countries.length > 0) {
+      return movie.countries.join(', ');
+    }
+    return movie?.country || '';
   }, [movie]);
 
   // Get formatted language
