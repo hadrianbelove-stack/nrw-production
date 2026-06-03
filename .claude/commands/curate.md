@@ -262,6 +262,8 @@ Read `cache/taste_profile_pullquotes.json`. Rank all quotes from best match to w
 Show all usable quotes (up to ~12), grouped by outlet. Format exactly like this:
 
 ```
+[Film Title] PULL QUOTES
+
 **Outlet Name**
 1. *"Quote text here."* — Critic Name  ▶ (top pick)
 

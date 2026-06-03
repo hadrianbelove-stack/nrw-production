@@ -868,22 +868,38 @@ const NRWMobile = {
                 const badgeClass = q.source === 'letterboxd' ? 'pq-badge-lb' : 'pq-badge-rt';
                 const badgeText = q.source === 'letterboxd' ? 'LB' : 'RT';
                 const attribution = [q.critic, q.outlet].filter(Boolean).join(', ');
+                const quoteInner = '<q class="sheet-pq-text">' + this.esc(q.text || '') + '</q>';
+                const quoteEl = q.review_url
+                    ? '<a href="' + this.esc(q.review_url) + '" target="_blank" rel="noopener" class="sheet-pq-link">' + quoteInner + '</a>'
+                    : quoteInner;
                 html += '<div class="sheet-pq">' +
                     '<span class="sheet-pq-badge ' + badgeClass + '">' + badgeText + '</span>' +
-                    '<q class="sheet-pq-text">' + this.esc(q.text || '') + '</q>' +
+                    quoteEl +
                     (attribution ? '<cite class="sheet-pq-cite">' + this.esc(attribution) + '</cite>' : '') +
                     '</div>';
             });
         }
 
-        // Synopsis (renders **bold**/*italic* markdown)
+        // Synopsis (renders **bold**/*italic* markdown, bold film titles hyperlinked)
         html += '<div class="sheet-section-label">Synopsis</div>' +
-            '<div class="sheet-synopsis">' + NRWConfig.renderMarkdown(movie.capsule || movie.synopsis || 'No synopsis available.') + '</div>';
+            '<div class="sheet-synopsis">' + this._linkBoldTitles(NRWConfig.renderMarkdown(movie.capsule || movie.synopsis || 'No synopsis available.')) + '</div>';
 
         html += '<div style="height:50px"></div>';
 
         content.innerHTML = html;
         content.scrollTop = 0;
+    },
+
+    _linkBoldTitles(html) {
+        const wikiMap = {};
+        (this.allMovies || []).forEach(m => {
+            if (m.links?.wikipedia) wikiMap[m.title.toLowerCase()] = m.links.wikipedia;
+        });
+        return html.replace(/<strong>([^<]+)<\/strong>/g, (match, title) => {
+            const known = wikiMap[title.toLowerCase()];
+            if (!known) return match;
+            return '<strong><a href="' + known + '" target="_blank" rel="noopener">' + title + '</a></strong>';
+        });
     },
 
     // ===== PROVIDER HELPERS =====

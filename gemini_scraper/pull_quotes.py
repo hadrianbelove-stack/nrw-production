@@ -615,6 +615,8 @@ Best pull quote:"""
 
         # --- Step 2: Load reviews page with stealth Playwright ---
         reviews_url = lb_url + '/reviews/by/popular/'
+        # Extract film slug from lb_url for constructing review permalinks
+        film_slug = lb_url.rstrip('/').split('/film/')[-1].rstrip('/')
         quotes = []
 
         try:
@@ -638,31 +640,27 @@ Best pull quote:"""
                 )
 
                 resp = page.goto(reviews_url, timeout=15000, wait_until='domcontentloaded')
-                # Wait for review elements to appear, then scroll to load more
-                try:
-                    page.wait_for_selector('li.film-detail', timeout=5000)
-                except Exception:
-                    pass  # Some pages use different selectors
-                time.sleep(0.5)
-                # Scroll down to trigger lazy-loaded reviews
-                page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
-                time.sleep(1)
                 if not resp or resp.status >= 400:
                     logger.info(f"Letterboxd reviews page returned {resp.status if resp else 'none'}: {reviews_url}")
                     browser.close()
                     return []
+                # Wait for reviews to appear, then scroll 3x to load lazy content
+                try:
+                    page.wait_for_selector('article.production-viewing', timeout=5000)
+                except Exception:
+                    pass
+                for _ in range(3):
+                    page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
+                    time.sleep(0.8)
 
                 # --- Step 3: Extract reviews via DOM ---
                 extracted = page.evaluate('''() => {
                     let results = [];
-                    let articles = document.querySelectorAll("li.film-detail");
-                    if (!articles.length) {
-                        articles = document.querySelectorAll("article.production-viewing");
-                    }
+                    let articles = document.querySelectorAll("article.production-viewing");
                     for (let art of articles) {
                         let r = {};
                         // Username
-                        let name = art.querySelector("strong.name, strong.displayname, a.context strong");
+                        let name = art.querySelector("strong.displayname, strong.name");
                         r.username = name ? name.textContent.trim() : null;
                         if (!r.username) {
                             let link = art.querySelector("a.avatar, a.name");
@@ -670,12 +668,12 @@ Best pull quote:"""
                         }
                         if (!r.username) continue;
                         // Review text
-                        let body = art.querySelector(".body-text, .js-review-body");
+                        let body = art.querySelector(".js-review-body, .body-text");
                         r.text = body ? body.textContent.trim() : "";
                         if (!r.text || r.text.length < 10) continue;
-                        // Review URL
-                        let reviewLink = art.querySelector("a.context");
-                        r.reviewUrl = reviewLink ? reviewLink.getAttribute("href") : null;
+                        // Avatar link gives the real account slug (not display name)
+                        let avatarLink = art.querySelector("a.avatar, a[href^='/'][href$='/']");
+                        r.slug = avatarLink ? avatarLink.getAttribute("href").replace(/^\/|\/$/g, "") : null;
                         results.push(r);
                     }
                     return results;
@@ -685,27 +683,29 @@ Best pull quote:"""
 
                 now = time.strftime('%Y-%m-%dT%H:%M:%S')
 
-                # Filter non-English reviews and extract best quote sentence
+                # Filter non-English reviews — require at least 1 common English word
+                # (was 3, which was too aggressive and dropped short English reviews)
                 english_reviews = []
                 for item in extracted:
                     text = item.get('text', '')
-                    # Quick language heuristic: check for common English words
-                    english_words = {'the', 'and', 'this', 'that', 'with', 'for', 'was', 'but', 'not', 'you', 'film', 'movie'}
+                    english_words = {'the', 'a', 'an', 'and', 'this', 'that', 'with', 'for', 'was',
+                                     'but', 'not', 'you', 'film', 'movie', 'is', 'it', 'i', 'of',
+                                     'to', 'in', 'are', 'be', 'at', 'as', 'its', 'on', 'by'}
                     words = set(text.lower().split()[:30])
-                    if len(words & english_words) < 3:
+                    if not (words & english_words):
                         continue
                     english_reviews.append(item)
 
                 # Build review dicts for batch quote extraction
-                capped_reviews = english_reviews[:12]  # Extract from top 12 to find 4 good quotes
+                capped_reviews = english_reviews[:12]  # Extract from top 12 to find 6 good quotes
                 review_dicts = []
                 for item in capped_reviews:
-                    review_url = ''
-                    if item.get('reviewUrl'):
-                        review_url = 'https://letterboxd.com' + item['reviewUrl']
+                    username = item['username']
+                    slug = item.get('slug')
+                    review_url = f'https://letterboxd.com/{slug}/film/{film_slug}/' if slug else ''
                     review_dicts.append({
                         'text': item['text'],
-                        'critic': '@' + item['username'] if not item['username'].startswith('@') else item['username'],
+                        'critic': '@' + username if not username.startswith('@') else username,
                         'review_url': review_url,
                     })
 
@@ -730,8 +730,8 @@ Best pull quote:"""
                         'added_at': now
                     })
 
-                # Cap at 4 Letterboxd quotes — enough choice without noise
-                quotes = quotes[:4]
+                # Cap at 6 Letterboxd quotes
+                quotes = quotes[:6]
 
         except Exception as e:
             logger.warning(f"Error scraping Letterboxd reviews for {title}: {e}")

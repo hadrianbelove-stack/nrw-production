@@ -931,6 +931,14 @@ body {
   margin-top: -2px;
   padding-left: 30px;
 }
+.sheet-pq-link {
+  color: inherit;
+  text-decoration: none;
+}
+.sheet-pq-link:hover .sheet-pq-text {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 
 /* Slide animations */
 @keyframes slideLeftEnter {
