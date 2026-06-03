@@ -124,8 +124,8 @@ fun HomeScreen(
                     FilterChips(
                         activeFilters = uiState.activeFilters,
                         onFilterToggled = { viewModel.toggleFilter(it) },
-                        slopFree = uiState.slopFree,
-                        onSlopFreeToggle = { viewModel.toggleSlopFree() },
+                        slopMode = uiState.slopMode,
+                        onSlopModeToggle = { viewModel.cycleSlopMode() },
                         hideFest = uiState.hideFest,
                         onHideFestToggle = { viewModel.toggleHideFest() },
                         showPreorders = uiState.showPreorders,

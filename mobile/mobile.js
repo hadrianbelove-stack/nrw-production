@@ -14,7 +14,7 @@ const NRWMobile = {
     // UI state
     activeFilters: new Set(),
     slopMode: 'free',
-    hideFest: false,
+    hideFest: true,
     showPreorders: false,
     searchQuery: '',
     currentView: 0,

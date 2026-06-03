@@ -188,13 +188,15 @@ export function filterMovies(movies, filter = null) {
 /**
  * Filter movies by multiple categories (OR logic - cumulative)
  */
-export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopFree = false, hideFest = false, showPreorders = false) {
+export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopMode = 'free', hideFest = false, showPreorders = false) {
   if (!movies || !Array.isArray(movies)) return [];
   // Exclude reverted movies (failed JustWatch verification, no watch links)
   movies = movies.filter(m => m._enrichment_status !== 'reverted');
-  // Slop-free mode: hide flagged films
-  if (slopFree) {
+  // Slop mode: free = hide slop, all = show everything, only = show only slop
+  if (slopMode === 'free') {
     movies = movies.filter(m => !m.is_slop && !m._is_slop_guess);
+  } else if (slopMode === 'only') {
+    movies = movies.filter(m => m.is_slop || m._is_slop_guess);
   }
   // Hide-fest mode: hide virtual screenings
   if (hideFest) {

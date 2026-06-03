@@ -63,7 +63,7 @@ End Sub
 ' ============================================================================
 Sub UpdateChipStyles()
     activeFilters = m.top.activeFilters
-    slopFree = m.top.slopFree
+    slopMode = m.top.slopMode
     hideFest = m.top.hideFest
     showPreorders = m.top.showPreorders
 
@@ -71,16 +71,20 @@ Sub UpdateChipStyles()
         chipBg = m.chipBgs[filterId]
         chipLabel = m.chipLabels[filterId]
 
-        ' Slop toggle has its own visual treatment
+        ' Slop toggle cycles: free → all → only
         if filterId = "slop_free"
-            if slopFree
+            if slopMode = "free"
                 chipBg.color = "0x00342AFF"
                 chipLabel.color = "0x00D4AAFF"
                 chipLabel.text = "SLOP FREE"
+            else if slopMode = "only"
+                chipBg.color = "0x2D1A00FF"
+                chipLabel.color = "0xFF9500FF"
+                chipLabel.text = "SLOP ONLY"
             else
                 chipBg.color = "0x0D0D0DFF"
                 chipLabel.color = "0x00D4AA73"
-                chipLabel.text = "WITH SLOP"
+                chipLabel.text = "ALL"
             end if
             continue for
         end if

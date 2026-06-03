@@ -201,21 +201,25 @@ const MovieCard = forwardRef(({
     service = service.replace(/\s+(Amazon|Apple TV|Roku Premium)\s+Channel\s*$/i, '').trim() || service;
 
     const s = service.toLowerCase();
-    if (s.includes('netflix')) return { name: 'NETFLIX', color: '#E50914' };
-    if (s.includes('disney')) return { name: 'DISNEY+', color: '#113CCF' };
-    if (s.includes('max') || s.includes('hbo')) return { name: 'MAX', color: Colors.maxPurple };
-    if (s.includes('amazon') || s.includes('prime')) return { name: 'PRIME', color: '#00A8E1' };
-    if (s.includes('hulu')) return { name: 'HULU', color: '#1CE783' };
-    if (s.includes('peacock')) return { name: 'PEACOCK', color: '#000000' };
-    if (s.includes('mubi')) return { name: 'MUBI', color: '#DA2128' };
-    if (s.includes('shudder')) return { name: 'SHUDDER', color: '#E31B23' };
-    if (s.includes('criterion')) return { name: 'CRITERION', color: '#000000' };
-    if (s.includes('paramount')) return { name: 'PARAMOUNT+', color: '#0064FF' };
-    if (s.includes('apple')) return { name: 'APPLE TV+', color: '#000000' };
-    return { name: service.toUpperCase().slice(0, 8), color: '#666666' };
+    const frame = (name, color) => ({ name, color, isFrame: true });
+    if (s.includes('netflix')) return frame('NETFLIX', '#E50914');
+    if (s.includes('disney')) return frame('DISNEY+', '#113CCF');
+    if (s.includes('max') || s.includes('hbo')) return frame('MAX', Colors.maxPurple);
+    if (s.includes('amazon') || s.includes('prime')) return frame('PRIME', '#00A8E1');
+    if (s.includes('hulu')) return frame('HULU', '#1CE783');
+    if (s.includes('peacock')) return frame('PEACOCK', '#000000');
+    if (s.includes('mubi')) return frame('MUBI', '#DA2128');
+    if (s.includes('shudder')) return frame('SHUDDER', '#E31B23');
+    if (s.includes('criterion')) return frame('CRITERION', '#000000');
+    if (s.includes('paramount')) return frame('PARAMOUNT+', '#0064FF');
+    if (s.includes('apple')) return frame('APPLE TV+', '#000000');
+    return frame(service.toUpperCase().slice(0, 8), '#666666');
   };
 
   const streamingBadge = getStreamingBadge();
+  const isStaffPick = !!(movie.filters?.is_staff_pick || movie.featured);
+  // Light-background services need black text on the frame header
+  const frameTextColor = streamingBadge?.name && ['HULU', 'PRIME'].includes(streamingBadge.name) ? '#000' : '#fff';
 
   // Get director - can be in crew.director or movie.director
   const director = movie.crew?.director || movie.director;
@@ -268,66 +272,85 @@ const MovieCard = forwardRef(({
               zIndex: isFocused ? 1000 : 1,
               elevation: isFocused ? 10 : 0,
             },
+            isStaffPick && styles.scaleLayerStaffPick,
             isFocused && styles.scaleLayerFocused,
           ]}
         >
           {/* Clip container — overflow:hidden keeps image and overlays inside rounded corners */}
-          <View style={[styles.posterContainer, { width: cardWidth, height: cardHeight }]}>
-            {/* Poster image or placeholder */}
-            {hasPoster && !imageError ? (
-              <Image
-                source={{ uri: posterUrl }}
-                style={styles.poster}
-                resizeMode="cover"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <View style={styles.posterPlaceholder}>
-                <Text style={styles.placeholderText} numberOfLines={3}>
-                  {movie.display_title || movie.title}
-                </Text>
+          {streamingBadge?.isFrame ? (
+            /* === Gallery Label Frame (service-colored card) === */
+            <View style={[styles.posterContainer, { width: cardWidth, height: cardHeight, backgroundColor: streamingBadge.color, justifyContent: 'flex-start' }]}>
+              {/* 52px header strip: SERVICE NAME + NOW STREAMING */}
+              <View style={styles.streamingFrameHeader}>
+                <Text style={[styles.streamingFrameName, { color: frameTextColor }]}>{streamingBadge.name}</Text>
+                <Text style={[styles.streamingFrameSuper, { color: frameTextColor }]}>NOW STREAMING</Text>
               </View>
-            )}
+              {/* Poster fills remaining space */}
+              {hasPoster && !imageError ? (
+                <Image source={{ uri: posterUrl }} style={styles.streamingFramePoster} resizeMode="cover" onError={() => setImageError(true)} />
+              ) : (
+                <View style={[styles.posterPlaceholder, { flex: 1, height: undefined, borderRadius: 0 }]}>
+                  <Text style={styles.placeholderText} numberOfLines={3}>{movie.display_title || movie.title}</Text>
+                </View>
+              )}
+              {/* Overlays still apply */}
+              {(movie.filters?.is_restoration || movie.reissue_label) && (
+                <View style={[styles.restorationCardBadge, { top: 60 }]}>
+                  <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORED'}</Text>
+                </View>
+              )}
+              {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ STAFF PICK</Text></View>}
+              {movie.filters?.is_virtual_screening && !isStaffPick && movie.virtual_screening_info?.screening_name && (
+                <View style={styles.screeningRibbon}><Text style={styles.screeningRibbonText} numberOfLines={2}>{decodeHtml(movie.virtual_screening_info.screening_name)}</Text></View>
+              )}
+              {movie.filters?.is_virtual_screening && !isStaffPick && <View style={styles.screeningBorder} />}
+              {/* Score badges overlay */}
+              {(movie.rt_score || movie.imdb_rating) && (
+                <View style={styles.cardScoreOverlay}>
+                  {movie.rt_score && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeRt]}><Text style={styles.cardScoreBadgeText}>{movie.rt_score}</Text></View>}
+                  {movie.imdb_rating && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeImdb]}><Text style={[styles.cardScoreBadgeText, { color: '#000' }]}>{parseFloat(movie.imdb_rating).toFixed(1)}</Text></View>}
+                </View>
+              )}
+            </View>
+          ) : (
+            /* === Standard poster card === */
+            <View style={[styles.posterContainer, { width: cardWidth, height: cardHeight }]}>
+              {hasPoster && !imageError ? (
+                <Image source={{ uri: posterUrl }} style={styles.poster} resizeMode="cover" onError={() => setImageError(true)} />
+              ) : (
+                <View style={styles.posterPlaceholder}>
+                  <Text style={styles.placeholderText} numberOfLines={3}>{movie.display_title || movie.title}</Text>
+                </View>
+              )}
+              {/* Pre-order badge (streamingBadge without isFrame) */}
+              {streamingBadge && (
+                <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }, streamingBadge.subtext && { flexDirection: 'row', gap: 8 }]}>
+                  <Text style={styles.streamingBadgeText}>{streamingBadge.name}</Text>
+                  <Text style={styles.streamingBadgeSubtext}>{streamingBadge.subtext || 'NOW STREAMING'}</Text>
+                </View>
+              )}
+              {(movie.filters?.is_restoration || movie.reissue_label) && (
+                <View style={styles.restorationCardBadge}>
+                  <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORED'}</Text>
+                </View>
+              )}
+              {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ STAFF PICK</Text></View>}
+              {movie.filters?.is_virtual_screening && !isStaffPick && movie.virtual_screening_info?.screening_name && (
+                <View style={styles.screeningRibbon}><Text style={styles.screeningRibbonText} numberOfLines={2}>{decodeHtml(movie.virtual_screening_info.screening_name)}</Text></View>
+              )}
+              {movie.filters?.is_virtual_screening && !isStaffPick && <View style={styles.screeningBorder} />}
+              {/* Score badges overlay — bottom-left, matches desktop card */}
+              {(movie.rt_score || movie.imdb_rating) && (
+                <View style={styles.cardScoreOverlay}>
+                  {movie.rt_score && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeRt]}><Text style={styles.cardScoreBadgeText}>{movie.rt_score}</Text></View>}
+                  {movie.imdb_rating && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeImdb]}><Text style={[styles.cardScoreBadgeText, { color: '#000' }]}>{parseFloat(movie.imdb_rating).toFixed(1)}</Text></View>}
+                </View>
+              )}
+            </View>
+          )}
 
-            {/* Streaming service bar badge (full-width top bar) */}
-            {streamingBadge && (
-              <View style={[styles.streamingBadge, { backgroundColor: streamingBadge.color }, streamingBadge.subtext && { flexDirection: 'row', gap: 8 }]}>
-                <Text style={styles.streamingBadgeText}>{streamingBadge.name}</Text>
-                <Text style={styles.streamingBadgeSubtext}>{streamingBadge.subtext || 'NOW STREAMING'}</Text>
-              </View>
-            )}
-
-            {/* Restoration/reissue badge - top-left, matches desktop */}
-            {(movie.filters?.is_restoration || movie.reissue_label) && (
-              <View style={styles.restorationCardBadge}>
-                <Text style={styles.restorationCardBadgeText}>
-                  {movie.reissue_label?.toUpperCase() || 'RESTORED'}
-                </Text>
-              </View>
-            )}
-
-            {/* Staff Pick strip - bottom red banner */}
-            {(movie.filters?.is_staff_pick || movie.featured) && (
-              <View style={styles.featuredStrip}>
-                <Text style={styles.featuredStripText}>STAFF PICK</Text>
-              </View>
-            )}
-
-            {/* Virtual screening festival name ribbon */}
-            {movie.filters?.is_virtual_screening && !(movie.filters?.is_staff_pick || movie.featured) && movie.virtual_screening_info?.screening_name && (
-              <View style={styles.screeningRibbon}>
-                <Text style={styles.screeningRibbonText} numberOfLines={2}>
-                  {decodeHtml(movie.virtual_screening_info.screening_name)}
-                </Text>
-              </View>
-            )}
-
-            {/* Virtual screening gold border */}
-            {movie.filters?.is_virtual_screening && !(movie.filters?.is_staff_pick || movie.featured) && (
-              <View style={styles.screeningBorder} />
-            )}
-          </View>
-
+          {/* Staff pick permanent border overlay (outside clip container so it glows) */}
+          {isStaffPick && !isFocused && <View style={styles.staffPickBorder} />}
           {/* Double-border focus ring: black halo behind teal ring */}
           {isFocused && <View style={styles.focusBorderOuter} />}
           {isFocused && <View style={styles.focusBorder} />}
@@ -362,6 +385,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: FOCUS_STYLES.movieCard.shadowOpacity,
     shadowRadius: FOCUS_STYLES.movieCard.shadowRadius,
+  },
+  scaleLayerStaffPick: {
+    shadowColor: Colors.staffPick,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.55,
+    shadowRadius: 14,
   },
   posterContainer: {
     borderRadius: 12,
@@ -433,7 +462,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#E50914',
+    backgroundColor: Colors.staffPick,
     paddingVertical: Spacing.tvos.xs,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
@@ -495,7 +524,64 @@ const styles = StyleSheet.create({
   infoText: {
     color: Colors.primary,
     fontSize: 20,
+    fontWeight: '700',
     textAlign: 'center',
+  },
+  staffPickBorder: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: Colors.staffPick,
+  },
+  streamingFrameHeader: {
+    height: 52,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  streamingFrameName: {
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+    lineHeight: 17,
+  },
+  streamingFrameSuper: {
+    fontSize: 8,
+    fontWeight: '500',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    opacity: 0.75,
+    lineHeight: 10,
+    marginTop: 3,
+  },
+  streamingFramePoster: {
+    flex: 1,
+    width: '100%',
+  },
+  cardScoreOverlay: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    flexDirection: 'row',
+    gap: 4,
+  },
+  cardScoreBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 4,
+  },
+  cardScoreBadgeRt: {
+    backgroundColor: 'rgba(250,50,50,0.85)',
+  },
+  cardScoreBadgeImdb: {
+    backgroundColor: 'rgba(245,197,24,0.9)',
+  },
+  cardScoreBadgeText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#fff',
   },
 });
 

@@ -46,8 +46,8 @@ private val FocusCyan = Color(0xFF00FFCC)
 fun FilterChips(
     activeFilters: Set<FilterCategory>,
     onFilterToggled: (FilterCategory) -> Unit,
-    slopFree: Boolean = false,
-    onSlopFreeToggle: () -> Unit = {},
+    slopMode: String = "free",
+    onSlopModeToggle: () -> Unit = {},
     hideFest: Boolean = false,
     onHideFestToggle: () -> Unit = {},
     showPreorders: Boolean = false,
@@ -82,11 +82,12 @@ fun FilterChips(
         }
 
         item {
+            val slopLabel = when (slopMode) { "only" -> "SLOP ONLY"; "all" -> "ALL"; else -> "SLOP FREE" }
             MetaTogglePill(
-                isActive = slopFree,
-                activeLabel = "SLOP FREE",
-                inactiveLabel = "WITH SLOP",
-                onClick = onSlopFreeToggle
+                isActive = slopMode != "all",
+                activeLabel = slopLabel,
+                inactiveLabel = slopLabel,
+                onClick = onSlopModeToggle
             )
         }
 

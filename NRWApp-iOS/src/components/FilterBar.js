@@ -19,7 +19,10 @@ const FILTERS = [
   {id: 'restorations', label: 'Reissues'},
 ];
 
-export default function FilterBar({activeFilters, onFilterChange, slopFree, onSlopFreeChange, hideFest, onHideFestChange, showPreorders, onShowPreordersChange}) {
+const SLOP_STATES = ['free', 'all', 'only'];
+const SLOP_LABELS = {free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY'};
+
+export default function FilterBar({activeFilters, onFilterChange, slopMode, onSlopModeChange, hideFest, onHideFestChange, showPreorders, onShowPreordersChange}) {
   return (
     <View style={styles.container}>
       <ScrollView
@@ -36,11 +39,11 @@ export default function FilterBar({activeFilters, onFilterChange, slopFree, onSl
         ))}
         <View style={styles.divider} />
         <TouchableOpacity
-          style={[styles.filterButton, styles.slopButton, slopFree && styles.slopButtonActive]}
-          onPress={() => onSlopFreeChange(!slopFree)}
+          style={[styles.filterButton, styles.slopButton, slopMode !== 'all' && styles.slopButtonActive]}
+          onPress={() => onSlopModeChange(SLOP_STATES[(SLOP_STATES.indexOf(slopMode) + 1) % 3])}
           activeOpacity={0.7}>
-          <Text style={[styles.filterText, styles.slopText, slopFree && styles.slopTextActive]}>
-            {slopFree ? 'SLOP FREE' : 'WITH SLOP'}
+          <Text style={[styles.filterText, styles.slopText, slopMode !== 'all' && styles.slopTextActive]}>
+            {SLOP_LABELS[slopMode] || 'SLOP FREE'}
           </Text>
         </TouchableOpacity>
         <View style={styles.divider} />

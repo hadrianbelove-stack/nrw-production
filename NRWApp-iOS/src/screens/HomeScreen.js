@@ -45,8 +45,8 @@ export default function HomeScreen({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [activeFilters, setActiveFilters] = useState(new Set());
-  const [slopFree, setSlopFree] = useState(true);
-  const [hideFest, setHideFest] = useState(false);
+  const [slopMode, setSlopMode] = useState('free');
+  const [hideFest, setHideFest] = useState(true);
   const [showPreorders, setShowPreorders] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -57,13 +57,13 @@ export default function HomeScreen({navigation}) {
 
   // Apply filters and search
   useEffect(() => {
-    let result = filterMoviesMulti(movies, activeFilters, searchQuery, slopFree, hideFest, showPreorders);
+    let result = filterMoviesMulti(movies, activeFilters, searchQuery, slopMode, hideFest, showPreorders);
     if (searchQuery.trim()) {
       result = searchMovies(result, searchQuery);
     }
     result = sortByDate(result);
     setDisplayedMovies(result);
-  }, [movies, activeFilters, slopFree, hideFest, searchQuery]);
+  }, [movies, activeFilters, slopMode, hideFest, searchQuery]);
 
   // Build grid items with date dividers inserted
   const gridItems = useMemo(() => {
@@ -236,7 +236,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={[styles.container, {paddingBottom: insets.bottom}]}>
-      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopFree={slopFree} onSlopFreeChange={setSlopFree} hideFest={hideFest} onHideFestChange={setHideFest} showPreorders={showPreorders} onShowPreordersChange={setShowPreorders} />
+      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopMode={slopMode} onSlopModeChange={setSlopMode} hideFest={hideFest} onHideFestChange={setHideFest} showPreorders={showPreorders} onShowPreordersChange={setShowPreorders} />
 
       <FlatList
         data={gridItems}

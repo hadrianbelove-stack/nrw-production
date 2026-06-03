@@ -19,9 +19,9 @@ Sub Init()
     m.allMovies = []
     m.filteredMovies = []
     m.activeFilters = []
-    m.slopFree = true
+    m.slopMode = "free"
     m.showPreorders = false
-    m.hideFest = false
+    m.hideFest = true
     m.focusedArea = "grid"  ' "filter", "grid", or "detail"
 
     ' Set up observers
@@ -71,7 +71,7 @@ Sub onMoviesLoaded()
     end if
 
     ' Sync filter bar visual state before applying filters
-    m.filterBar.slopFree = m.slopFree
+    m.filterBar.slopMode = m.slopMode
     m.filterBar.hideFest = m.hideFest
 
     ' Apply initial filter
@@ -99,11 +99,19 @@ Sub ApplyFilters()
     ' Filter movies using multi-select OR logic
     movies = FilterMoviesMulti(m.allMovies, m.activeFilters)
 
-    ' Slop-free mode: hide slop-flagged films
-    if m.slopFree
+    ' Slop mode: free=hide slop, all=show all, only=show only slop
+    if m.slopMode = "free"
         filtered = []
         for each movie in movies
             if movie.is_slop <> true AND movie._is_slop_guess <> true
+                filtered.Push(movie)
+            end if
+        end for
+        movies = filtered
+    else if m.slopMode = "only"
+        filtered = []
+        for each movie in movies
+            if movie.is_slop = true OR movie._is_slop_guess = true
                 filtered.Push(movie)
             end if
         end for
@@ -188,10 +196,16 @@ End Sub
 Sub onFilterSelected()
     filterId = m.filterBar.selectedFilter
 
-    ' Slop toggle is separate from category filters
+    ' Slop toggle cycles: free → all → only → free
     if filterId = "slop_free"
-        m.slopFree = NOT m.slopFree
-        m.filterBar.slopFree = m.slopFree
+        if m.slopMode = "free"
+            m.slopMode = "all"
+        else if m.slopMode = "all"
+            m.slopMode = "only"
+        else
+            m.slopMode = "free"
+        end if
+        m.filterBar.slopMode = m.slopMode
         ApplyFilters()
         return
     end if

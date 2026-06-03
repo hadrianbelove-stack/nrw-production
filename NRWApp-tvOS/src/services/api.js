@@ -219,23 +219,24 @@ export function filterMovies(movies, filters = []) {
 export function searchMovies(movies, query) {
   if (!movies || !Array.isArray(movies) || !query) return movies;
 
-  const lowerQuery = query.toLowerCase().trim();
+  const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const nq = norm(query.trim());
 
   return movies.filter(movie => {
-    const title = (movie.title || '').toLowerCase();
-    const director = (movie.director || movie.crew?.director || '').toLowerCase();
-    const genres = (movie.genres || []).map(g => g.toLowerCase());
-    const country = (movie.country || '').toLowerCase();
-    const synopsis = (movie.capsule || movie.synopsis || '').toLowerCase();
+    const title = norm(movie.title || '');
+    const director = norm(movie.director || movie.crew?.director || '');
+    const genres = (movie.genres || []).map(g => norm(g));
+    const country = norm(movie.country || '');
+    const synopsis = norm(movie.capsule || movie.synopsis || '');
     const year = String(movie.year || '');
 
     return (
-      title.includes(lowerQuery) ||
-      director.includes(lowerQuery) ||
-      genres.some(g => g.includes(lowerQuery)) ||
-      country.includes(lowerQuery) ||
-      synopsis.includes(lowerQuery) ||
-      year.includes(lowerQuery)
+      title.includes(nq) ||
+      director.includes(nq) ||
+      genres.some(g => g.includes(nq)) ||
+      country.includes(nq) ||
+      synopsis.includes(nq) ||
+      year.includes(nq)
     );
   });
 }

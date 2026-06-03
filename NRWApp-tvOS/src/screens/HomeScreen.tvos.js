@@ -173,6 +173,62 @@ const MetaToggle = forwardRef(({ isActive, offLabel, onLabel, accessibilityLabel
   );
 });
 
+// 3-state Slop Toggle — cycles: SLOP FREE → ALL → SLOP ONLY (matches desktop 3-state)
+const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp }, ref) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const thumbAnim = useRef(new Animated.Value(slopMode === 'free' ? 0 : slopMode === 'all' ? 1 : 2)).current;
+
+  useEffect(() => {
+    const target = slopMode === 'free' ? 0 : slopMode === 'all' ? 1 : 2;
+    Animated.timing(thumbAnim, { toValue: target, duration: 220, useNativeDriver: true }).start();
+  }, [slopMode, thumbAnim]);
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.timing(scaleAnim, { toValue: 1.08, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+
+  const thumbTranslate = thumbAnim.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [0, 18, 36],
+  });
+
+  const LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
+  const labelColor = slopMode === 'only' ? '#ff9500' : slopMode === 'free' ? '#00d4aa' : 'rgba(0,212,170,0.45)';
+  const trackStyle = slopMode === 'free'
+    ? styles.metaToggleTrackActive
+    : slopMode === 'only'
+    ? { backgroundColor: '#ff9500', borderColor: '#ff9500' }
+    : null;
+
+  return (
+    <TouchableOpacity
+      ref={ref}
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      activeOpacity={1}
+      accessible={true}
+      accessibilityLabel={`Slop filter: ${LABELS[slopMode]}`}
+      accessibilityRole="button"
+      nextFocusUp={nextFocusUp}
+    >
+      <Animated.View style={[styles.metaToggleWrap, { transform: [{ scale: scaleAnim }] }]}>
+        <Text style={[styles.metaToggleLabel, { color: labelColor }]}>{LABELS[slopMode]}</Text>
+        <View style={[styles.metaToggleTrack, trackStyle, isFocused && styles.metaToggleTrackFocused]}>
+          <Animated.View style={[styles.metaToggleThumb, { transform: [{ translateX: thumbTranslate }] }]} />
+        </View>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+});
+
 // Date Card Component - non-focusable visual divider
 const DateCard = ({ dateParts, isBootstrap }) => {
   const isPreOrder = dateParts.dayName === 'PRE-' || dateParts.dayName === 'PRE-ORDER';
@@ -366,7 +422,7 @@ const HomeScreenTvOS = () => {
 
   // Local state - multi-select filters (Set of active filter IDs)
   const [activeFilters, setActiveFilters] = useState(new Set());
-  const [slopFree, setSlopFree] = useState(true);
+  const [slopMode, setSlopMode] = useState('free'); // 'free' | 'all' | 'only' — matches desktop 3-state
   const [hideFest, setHideFest] = useState(true); // default: hide fests (matches desktop default)
   const [showPreorders, setShowPreorders] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -439,9 +495,11 @@ const HomeScreenTvOS = () => {
   const displayMovies = useMemo(() => {
     let movies = filteredMovies;
 
-    // Slop-free mode: hide flagged films
-    if (slopFree) {
+    // Slop mode: free=hide slop, all=show all, only=show only slop (matches desktop 3-state)
+    if (slopMode === 'free') {
       movies = movies.filter(m => !m.is_slop && !m._is_slop_guess);
+    } else if (slopMode === 'only') {
+      movies = movies.filter(m => m.is_slop || m._is_slop_guess);
     }
 
     // Hide-fest mode: hide virtual screenings
@@ -454,8 +512,8 @@ const HomeScreenTvOS = () => {
       movies = movies.filter(m => !m._is_preorder);
     }
 
-    // If no filters selected, show all
-    if (activeFilters.size === 0) {
+    // If no filters selected OR search is active, show all (search bypasses category filters — matches desktop)
+    if (activeFilters.size === 0 || searchQuery) {
       return movies;
     }
 
@@ -497,7 +555,7 @@ const HomeScreenTvOS = () => {
       }
       return false;
     });
-  }, [filteredMovies, activeFilters, slopFree, hideFest, showPreorders, searchQuery]);
+  }, [filteredMovies, activeFilters, slopMode, hideFest, showPreorders, searchQuery]);
 
   // Build flat list data with date markers interspersed
   // Each date marker takes one grid cell (same size as movie card)
@@ -510,7 +568,17 @@ const HomeScreenTvOS = () => {
     const regularMovies = displayMovies.filter(m => !m._is_preorder && !m.filters?.is_virtual_screening);
 
     // Sort each bucket
-    const byDateDesc = (a, b) => (b.digital_date || '0000-00-00').localeCompare(a.digital_date || '0000-00-00');
+    // Sort by date desc, staff picks first within same date (matches desktop)
+    const byDateDesc = (a, b) => {
+      const da = a.digital_date || '0000-00-00';
+      const db = b.digital_date || '0000-00-00';
+      if (db !== da) return db.localeCompare(da);
+      const aStaff = a.filters?.is_staff_pick || a.featured;
+      const bStaff = b.filters?.is_staff_pick || b.featured;
+      if (aStaff && !bStaff) return -1;
+      if (!aStaff && bStaff) return 1;
+      return 0;
+    };
     // Fest: active (NOW) first by soonest expiry, then upcoming (FUTURE) ascending, then expired
     const today = new Date().toISOString().slice(0, 10);
     const festTier = m => {
@@ -861,13 +929,10 @@ const HomeScreenTvOS = () => {
         </View>
         {/* Toggle row — sits directly above movies, gets focus first on up-press */}
         <View style={styles.toggleRow}>
-          <MetaToggle
+          <SlopToggle
             ref={setFirstToggleRef}
-            isActive={slopFree}
-            offLabel="WITH SLOP"
-            onLabel="SLOP FREE"
-            accessibilityLabel={slopFree ? 'Slop Free active' : 'Showing all films'}
-            onPress={() => setSlopFree(v => !v)}
+            slopMode={slopMode}
+            onPress={() => setSlopMode(m => m === 'free' ? 'all' : m === 'all' ? 'only' : 'free')}
             nextFocusUp={headerNodeHandle}
           />
           <MetaToggle

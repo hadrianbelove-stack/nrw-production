@@ -12,11 +12,11 @@
     <!-- Active filters array (multi-select state) -->
     <field id="activeFilters" type="array" value="[]" onChange="onFilterChanged" />
 
-    <!-- Slop free toggle state -->
-    <field id="slopFree" type="boolean" value="false" onChange="onFilterChanged" />
+    <!-- Slop mode: "free" | "all" | "only" -->
+    <field id="slopMode" type="string" value="free" onChange="onFilterChanged" />
 
     <!-- Hide virtual screenings toggle state -->
-    <field id="hideFest" type="boolean" value="false" onChange="onFilterChanged" />
+    <field id="hideFest" type="boolean" value="true" onChange="onFilterChanged" />
 
     <!-- Show pre-orders toggle state -->
     <field id="showPreorders" type="boolean" value="false" onChange="onFilterChanged" />
@@ -115,18 +115,18 @@
 
       <!-- Slop Toggle -->
       <Group id="chip_slop_free">
-        <Rectangle id="chipBg_slop_free" width="120" height="36" color="0x0D0D0DFF" />
-        <Label id="chipLabel_slop_free" text="WITH SLOP" width="120" height="36"
+        <Rectangle id="chipBg_slop_free" width="120" height="36" color="0x00342AFF" />
+        <Label id="chipLabel_slop_free" text="SLOP FREE" width="120" height="36"
           horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0x59595959" />
+          font="font:SmallBoldSystemFont" color="0x00D4AAFF" />
       </Group>
 
       <!-- Fest Toggle -->
       <Group id="chip_hide_fest">
-        <Rectangle id="chipBg_hide_fest" width="110" height="36" color="0x0D0D0DFF" />
-        <Label id="chipLabel_hide_fest" text="WITH FEST" width="110" height="36"
+        <Rectangle id="chipBg_hide_fest" width="110" height="36" color="0x00342AFF" />
+        <Label id="chipLabel_hide_fest" text="NO FEST" width="110" height="36"
           horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0x59595959" />
+          font="font:SmallBoldSystemFont" color="0x00D4AAFF" />
       </Group>
 
       <!-- Pre-Orders Toggle -->

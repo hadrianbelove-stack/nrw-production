@@ -20,8 +20,8 @@ data class HomeUiState(
     val movies: List<Movie> = emptyList(),
     val filteredMovies: List<Movie> = emptyList(),
     val activeFilters: Set<FilterCategory> = emptySet(),
-    val slopFree: Boolean = true,
-    val hideFest: Boolean = false,
+    val slopMode: String = "free",
+    val hideFest: Boolean = true,
     val showPreorders: Boolean = false,
     val searchQuery: String = "",
     val playlistUrl: String? = null
@@ -90,10 +90,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Toggle slop-free mode
+     * Cycle slop mode: free → all → only → free (matches desktop 3-state)
      */
-    fun toggleSlopFree() {
-        _uiState.value = _uiState.value.copy(slopFree = !_uiState.value.slopFree)
+    fun cycleSlopMode() {
+        val next = when (_uiState.value.slopMode) {
+            "free" -> "all"
+            "all" -> "only"
+            else -> "free"
+        }
+        _uiState.value = _uiState.value.copy(slopMode = next)
         applyFilters()
     }
 
@@ -114,8 +119,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         val state = _uiState.value
         var filtered = repository.filterMoviesMulti(state.movies, state.activeFilters, state.searchQuery)
 
-        if (state.slopFree) {
+        if (state.slopMode == "free") {
             filtered = filtered.filter { !it.isSlop && !it.isSlopGuess }
+        } else if (state.slopMode == "only") {
+            filtered = filtered.filter { it.isSlop || it.isSlopGuess }
         }
 
         if (state.hideFest) {
