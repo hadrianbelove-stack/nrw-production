@@ -62,7 +62,7 @@ for m in data['movies']:
     dd = m.get('digital_date', '')
     if not (from_date < dd <= today):
         continue
-    cats = m.get('categories', {})
+    cats = m.get('filters', {})
     if cats.get('is_restoration'):
         continue
     title = m.get('title', '')
@@ -136,7 +136,7 @@ Reply with changes (e.g. "2: remove foreign; 4: add indie") or "looks good" to c
 
 For each movie, show **all active filters** — meaning everything a user could filter by on the site:
 
-- From `movie.categories`: Indie, Foreign, Documentary, Virtual Screening, Restoration (check `is_indie`, `is_foreign`, `is_documentary`, `is_virtual_screening`, `is_restoration`)
+- From `movie.filters`: Indie, Foreign, Documentary, Virtual Screening, Restoration (check `is_indie`, `is_foreign`, `is_documentary`, `is_virtual_screening`, `is_restoration`)
 - From `movie.genres`: Horror, Action, Comedy, Family, Thriller (check if genre name appears in the array)
 
 Show as human-readable names. If no filters are active, show "(none)". Staff Picks is handled in Stage 1 — omit it here.

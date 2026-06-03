@@ -436,15 +436,6 @@ class DisplayGenerator:
             # First, auto-categorize the movie
             categories = self.categorize_movie(movie, category_config, distributor_lookup)
 
-            # Check for manual category override from tracking data
-            # ('categories' here is the tracking DB format, not the data.json 'filters' field)
-            if movie_id in tracking_data and tracking_data[movie_id].get('categories'):
-                manual_categories = tracking_data[movie_id]['categories']
-                if manual_categories.get('manual_override'):
-                    stored_tier = manual_categories.get('tier') or manual_categories.get('manual_override')
-                    categories['is_indie'] = (stored_tier == 'indie')
-                    categories['manual_override'] = manual_categories['manual_override']
-                    categories['auto_categorized'] = False
 
             # Mark staff picks
             if movie_id in staff_picks:

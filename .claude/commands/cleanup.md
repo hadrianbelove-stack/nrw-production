@@ -42,7 +42,7 @@ Scan for these categories of maintenance issues:
 - Anything in `museum_legacy/` (archived on purpose)
 - Comments that explain non-obvious logic (those are valuable)
 - Intentional `print()` statements in pipeline code (the pipeline uses print for user-facing output with emojis by design — this is NOT debug code)
-- Backwards-compatibility fallbacks (e.g., `movie.featured || movie.categories?.is_staff_pick`) — these are intentional safety nets, not redundancy
+- Backwards-compatibility fallbacks (e.g., `movie.featured || movie.filters?.is_staff_pick`) — these are intentional safety nets, not redundancy
 
 ---
 
