@@ -51,6 +51,7 @@ import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import com.nrw.app.data.Movie
 import com.nrw.app.data.getDisplayDate
+import com.nrw.app.ui.components.CARD_WIDTH
 import com.nrw.app.ui.components.DateDividerCard
 import com.nrw.app.ui.components.FilterChips
 import com.nrw.app.ui.components.MovieCard
@@ -64,18 +65,6 @@ import com.nrw.app.ui.theme.TextSecondary
 
 // Trailers card temporarily disabled — set true to restore
 private const val SHOW_TRAILERS_CARD = false
-
-private val FILTER_DESCRIPTIONS = mapOf(
-    FilterCategory.STAFF_PICKS to Pair("Picks", "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations."),
-    FilterCategory.INDIE to Pair("Indie", "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home."),
-    FilterCategory.HORROR to Pair("Horror", "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter."),
-    FilterCategory.ACTION to Pair("Action", "High-octane, kinetic filmmaking. Action movies now available to watch at home."),
-    FilterCategory.COMEDY to Pair("Comedy", "Films that are actually funny. Comedies — broad and subtle — now streaming."),
-    FilterCategory.FAMILY to Pair("Family", "Films for all ages. Family movies now available to watch at home."),
-    FilterCategory.FOREIGN to Pair("Foreign", "Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they're streaming now."),
-    FilterCategory.DOCUMENTARY to Pair("Documentary", "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home."),
-    FilterCategory.RESTORATIONS to Pair("Reissues", "Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers.")
-)
 
 // Grid item can be either a movie, date divider, or trailers card
 sealed class GridItem {
@@ -142,14 +131,6 @@ fun HomeScreen(
                         showPreorders = uiState.showPreorders,
                         onShowPreordersToggle = { viewModel.toggleShowPreorders() }
                     )
-
-                    // Filter description — shown when exactly one filter is active
-                    if (uiState.activeFilters.size == 1) {
-                        val desc = FILTER_DESCRIPTIONS[uiState.activeFilters.first()]
-                        if (desc != null) {
-                            FilterDescription(title = desc.first, text = desc.second)
-                        }
-                    }
 
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -218,32 +199,6 @@ private fun createGridItems(movies: List<Movie>, playlistUrl: String?): List<Gri
     }
 
     return items
-}
-
-@Composable
-private fun FilterDescription(title: String, text: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
-        verticalAlignment = Alignment.Top
-    ) {
-        Text(
-            text = title.uppercase(),
-            color = Primary,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.ExtraBold,
-            letterSpacing = 2.sp
-        )
-        Text(
-            text = text,
-            color = TextMuted,
-            fontSize = 13.sp,
-            lineHeight = 20.sp,
-            modifier = Modifier.weight(1f)
-        )
-    }
 }
 
 @Composable
@@ -350,7 +305,7 @@ private fun MovieGridWithDates(
     }
 
     TvLazyVerticalGrid(
-        columns = TvGridCells.Fixed(5),
+        columns = TvGridCells.Adaptive(minSize = CARD_WIDTH + 6.dp),
         contentPadding = PaddingValues(horizontal = 32.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),

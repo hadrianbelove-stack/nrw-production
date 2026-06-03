@@ -29,53 +29,53 @@
       <Group id="posterGroup">
         <!-- Focus border (behind poster) -->
         <Rectangle id="focusBorder"
-          width="330"
-          height="499"
+          width="206"
+          height="312"
           color="0x00D4AAFF"
           visible="false"
-          translation="[-5, -5]" />
+          translation="[-3, -3]" />
 
         <!-- Staff pick border (behind poster, red) -->
         <Rectangle id="staffPickBorder"
-          width="330"
-          height="499"
+          width="206"
+          height="312"
           color="0xDC143CFF"
           visible="false"
-          translation="[-5, -5]" />
+          translation="[-3, -3]" />
 
         <!-- Virtual screening border (behind poster, gold) -->
         <Rectangle id="screeningBorder"
-          width="330"
-          height="499"
+          width="206"
+          height="312"
           color="0xFFD700FF"
           visible="false"
-          translation="[-5, -5]" />
+          translation="[-3, -3]" />
 
         <!-- Card background -->
         <Rectangle id="cardBackground"
-          width="320"
-          height="490"
+          width="200"
+          height="306"
           color="0x1A1A1AFF" />
 
         <!-- Movie poster -->
         <Poster id="poster"
-          width="320"
-          height="480"
+          width="200"
+          height="300"
           loadDisplayMode="scaleToZoom"
           loadingBitmapUri="pkg:/images/icons/placeholder.png"
           failedBitmapUri="pkg:/images/icons/placeholder.png" />
 
         <!-- Streaming service bar badge (full-width top bar) -->
         <Rectangle id="serviceBadgeBg"
-          width="320"
-          height="58"
+          width="200"
+          height="36"
           translation="[0, 0]"
           color="0xE50914FF"
           visible="false" />
         <Label id="serviceBadge"
-          width="320"
-          height="32"
-          translation="[0, 3]"
+          width="200"
+          height="20"
+          translation="[0, 2]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallBoldSystemFont"
@@ -83,9 +83,9 @@
           visible="false" />
         <Label id="serviceBadgeSubtext"
           text="NOW STREAMING"
-          width="320"
-          height="22"
-          translation="[0, 35]"
+          width="200"
+          height="14"
+          translation="[0, 22]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallSystemFont"
@@ -94,24 +94,24 @@
 
         <!-- Pre-order badge (top-right, replaces streaming badge) -->
         <Rectangle id="preOrderBadgeBg"
-          width="90"
-          height="51"
-          translation="[224, 6]"
+          width="56"
+          height="32"
+          translation="[140, 4]"
           color="0x7C3AEDFF"
           visible="false" />
         <Label id="preOrderBadgeLabel"
-          width="90"
-          height="29"
-          translation="[224, 6]"
+          width="56"
+          height="18"
+          translation="[140, 4]"
           horizAlign="center"
           vertAlign="bottom"
           font="font:SmallBoldSystemFont"
           color="0xFFFFFFFF"
           visible="false" />
         <Label id="preOrderBadgeDate"
-          width="90"
-          height="26"
-          translation="[224, 29]"
+          width="56"
+          height="16"
+          translation="[140, 18]"
           horizAlign="center"
           vertAlign="top"
           font="font:SmallSystemFont"
@@ -120,16 +120,16 @@
 
         <!-- Restoration badge (top-left) -->
         <Rectangle id="restorationBadgeBg"
-          width="102"
-          height="35"
-          translation="[6, 6]"
+          width="64"
+          height="22"
+          translation="[4, 4]"
           color="0xC8A951FF"
           visible="false" />
         <Label id="restorationBadgeLabel"
           text="RESTORED"
-          width="102"
-          height="35"
-          translation="[6, 6]"
+          width="64"
+          height="22"
+          translation="[4, 4]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallBoldSystemFont"
@@ -138,15 +138,15 @@
 
         <!-- Virtual screening top banner (full width, top of poster) -->
         <Rectangle id="screeningTopBannerBg"
-          width="320"
-          height="35"
+          width="200"
+          height="22"
           translation="[0, 0]"
           color="0xFFD700EB"
           visible="false" />
         <Label id="screeningTopBannerLabel"
           text="VIRTUAL SCREENING"
-          width="320"
-          height="35"
+          width="200"
+          height="22"
           translation="[0, 0]"
           horizAlign="center"
           vertAlign="center"
@@ -156,15 +156,15 @@
 
         <!-- Virtual screening festival name strip (bottom of poster) -->
         <Rectangle id="screeningFestivalBg"
-          width="320"
-          height="38"
-          translation="[0, 442]"
+          width="200"
+          height="24"
+          translation="[0, 276]"
           color="0xFFD700FF"
           visible="false" />
         <Label id="screeningFestivalLabel"
-          width="314"
-          height="38"
-          translation="[3, 442]"
+          width="196"
+          height="24"
+          translation="[2, 276]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallBoldSystemFont"
@@ -173,21 +173,21 @@
 
         <!-- Metacritic score badge (bottom, left of IMDb) -->
         <Rectangle id="mcBadgeBorder"
-          width="67"
-          height="38"
-          translation="[114, 437]"
+          width="42"
+          height="24"
+          translation="[71, 273]"
           color="0x7DDF648C"
           visible="false" />
         <Rectangle id="mcBadgeBg"
-          width="64"
-          height="35"
-          translation="[115, 438]"
+          width="40"
+          height="22"
+          translation="[72, 274]"
           color="0x7DDF6414"
           visible="false" />
         <Label id="mcBadge"
-          width="64"
-          height="35"
-          translation="[115, 438]"
+          width="40"
+          height="22"
+          translation="[72, 274]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallSystemFont"
@@ -196,21 +196,21 @@
 
         <!-- IMDb rating badge (bottom-right, left of RT) -->
         <Rectangle id="imdbBadgeBorder"
-          width="61"
-          height="38"
-          translation="[179, 437]"
+          width="38"
+          height="24"
+          translation="[115, 273]"
           color="0xF5C5188C"
           visible="false" />
         <Rectangle id="imdbBadgeBg"
-          width="58"
-          height="35"
-          translation="[180, 438]"
+          width="36"
+          height="22"
+          translation="[116, 274]"
           color="0xF5C51814"
           visible="false" />
         <Label id="imdbBadge"
-          width="58"
-          height="35"
-          translation="[180, 438]"
+          width="36"
+          height="22"
+          translation="[116, 274]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallSystemFont"
@@ -219,21 +219,21 @@
 
         <!-- RT score badge (bottom-right) -->
         <Rectangle id="rtBadgeBorder"
-          width="74"
-          height="38"
-          translation="[243, 437]"
+          width="46"
+          height="24"
+          translation="[151, 273]"
           color="0xFF6B6B8C"
           visible="false" />
         <Rectangle id="rtBadgeBg"
-          width="70"
-          height="35"
-          translation="[243, 438]"
+          width="44"
+          height="22"
+          translation="[152, 274]"
           color="0xFF6B6B14"
           visible="false" />
         <Label id="rtBadge"
-          width="70"
-          height="35"
-          translation="[243, 438]"
+          width="44"
+          height="22"
+          translation="[152, 274]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallSystemFont"
@@ -242,18 +242,18 @@
 
         <!-- Staff Pick strip (bottom) -->
         <Rectangle id="staffPickStrip"
-          width="320"
-          height="10"
-          translation="[0, 480]"
+          width="200"
+          height="6"
+          translation="[0, 300]"
           color="0xDC143CFF"
           visible="false" />
       </Group>
 
       <!-- Director name (below poster) -->
       <Label id="directorLabel"
-        width="320"
+        width="200"
         height="24"
-        translation="[0, 10]"
+        translation="[0, 6]"
         horizAlign="center"
         font="font:SmallSystemFont"
         color="0xBBBBBBFF"
@@ -265,48 +265,48 @@
     <!-- Date divider card (hidden by default, shown for date items) -->
     <Group id="dateDividerGroup" visible="false">
       <Rectangle id="dateDividerBg"
-        width="320"
-        height="480"
+        width="200"
+        height="300"
         color="0x0A0A0AFF" />
       <Rectangle id="dateDividerBar"
-        width="320"
-        height="38"
+        width="200"
+        height="24"
         color="0x00D4AAFF" />
       <Label id="dateDividerBarLabel"
-        width="314"
-        height="38"
-        translation="[6, 0]"
+        width="196"
+        height="24"
+        translation="[4, 0]"
         vertAlign="center"
         font="font:SmallBoldSystemFont"
         color="0x000000FF" />
       <Label id="dateDividerNumber"
-        width="320"
-        height="128"
-        translation="[13, 128]"
+        width="200"
+        height="80"
+        translation="[8, 80]"
         vertAlign="center"
         font="font:LargeBoldSystemFont"
         color="0xFFFFFFFF" />
       <Label id="dateDividerMonth"
-        width="320"
-        height="38"
-        translation="[13, 248]"
+        width="200"
+        height="24"
+        translation="[8, 155]"
         vertAlign="center"
         font="font:SmallSystemFont"
         color="0x888888FF" />
       <Label id="dateDividerChevron1"
-        text="›" width="38" height="64" translation="[13, 296]"
+        text="›" width="24" height="40" translation="[8, 185]"
         vertAlign="center" font="font:LargeBoldSystemFont" color="0x00D4AAE6" />
       <Label id="dateDividerChevron2"
-        text="›" width="38" height="64" translation="[45, 296]"
+        text="›" width="24" height="40" translation="[28, 185]"
         vertAlign="center" font="font:LargeBoldSystemFont" color="0x00D4AAB3" />
       <Label id="dateDividerChevron3"
-        text="›" width="38" height="64" translation="[77, 296]"
+        text="›" width="24" height="40" translation="[48, 185]"
         vertAlign="center" font="font:LargeBoldSystemFont" color="0x00D4AA80" />
       <Label id="dateDividerChevron4"
-        text="›" width="38" height="64" translation="[109, 296]"
+        text="›" width="24" height="40" translation="[68, 185]"
         vertAlign="center" font="font:LargeBoldSystemFont" color="0x00D4AA4D" />
       <Label id="dateDividerChevron5"
-        text="›" width="38" height="64" translation="[141, 296]"
+        text="›" width="24" height="40" translation="[88, 185]"
         vertAlign="center" font="font:LargeBoldSystemFont" color="0x00D4AA26" />
     </Group>
 

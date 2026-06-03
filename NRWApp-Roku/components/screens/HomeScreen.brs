@@ -10,9 +10,6 @@ Sub Init()
     m.titleLabel = m.top.FindNode("titleLabel")
     m.filterBar = m.top.FindNode("filterBar")
     m.movieGrid = m.top.FindNode("movieGrid")
-    m.filterDescGroup = m.top.FindNode("filterDescGroup")
-    m.filterDescTitle = m.top.FindNode("filterDescTitle")
-    m.filterDescText = m.top.FindNode("filterDescText")
     m.loadingGroup = m.top.FindNode("loadingGroup")
     m.errorGroup = m.top.FindNode("errorGroup")
     m.trailersButton = m.top.FindNode("trailersButton")
@@ -37,40 +34,6 @@ Sub Init()
 
     ' Set initial focus
     m.top.SetFocus(true)
-End Sub
-
-' ============================================================================
-' Filter Descriptions
-' ============================================================================
-Function GetFilterDescriptions() as Object
-    descs = {}
-    descs["staff-picks"] = { title: "PICKS", text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." }
-    descs["indie"]        = { title: "INDIE", text: "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home." }
-    descs["horror"]       = { title: "HORROR", text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." }
-    descs["action"]       = { title: "ACTION", text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." }
-    descs["comedy"]       = { title: "COMEDY", text: "Films that are actually funny. Comedies — broad and subtle — now streaming." }
-    descs["family"]       = { title: "FAMILY", text: "Films for all ages. Family movies now available to watch at home." }
-    descs["foreign"]      = { title: "FOREIGN", text: "Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they're streaming now." }
-    descs["documentary"]  = { title: "DOCS", text: "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home." }
-    descs["restorations"] = { title: "REISSUES", text: "Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers." }
-    return descs
-End Function
-
-Sub UpdateFilterDescription()
-    if m.activeFilters.Count() = 1
-        descs = GetFilterDescriptions()
-        filterId = m.activeFilters[0]
-        desc = descs[filterId]
-        if desc <> invalid
-            m.filterDescTitle.text = desc.title
-            m.filterDescText.text = desc.text
-            m.filterDescGroup.visible = true
-            m.movieGrid.translation = [60, 218]
-            return
-        end if
-    end if
-    m.filterDescGroup.visible = false
-    m.movieGrid.translation = [60, 155]
 End Sub
 
 ' ============================================================================
@@ -274,7 +237,6 @@ Sub onFilterSelected()
     ' Update filter bar visual state
     m.filterBar.activeFilters = m.activeFilters
 
-    UpdateFilterDescription()
     ApplyFilters()
 End Sub
 
@@ -411,7 +373,7 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
         if key = "up"
             ' Check if at top row
             focusedIndex = m.movieGrid.itemFocused
-            if focusedIndex < 5  ' First row
+            if focusedIndex < 8  ' First row
                 m.filterBar.SetFocus(true)
                 m.filterBar.hasFocus = true
                 m.focusedArea = "filter"
