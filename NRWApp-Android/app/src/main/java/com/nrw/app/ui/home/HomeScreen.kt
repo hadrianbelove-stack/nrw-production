@@ -51,7 +51,6 @@ import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import com.nrw.app.data.Movie
 import com.nrw.app.data.getDisplayDate
-import com.nrw.app.ui.components.CARD_WIDTH
 import com.nrw.app.ui.components.DateDividerCard
 import com.nrw.app.ui.components.FilterChips
 import com.nrw.app.ui.components.MovieCard
@@ -66,11 +65,49 @@ import com.nrw.app.ui.theme.TextSecondary
 // Trailers card temporarily disabled — set true to restore
 private const val SHOW_TRAILERS_CARD = false
 
+private data class FilterDesc(val title: String, val text: String)
+private val FILTER_DESCRIPTIONS = mapOf(
+    "staff-picks"  to FilterDesc("Picks", "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations."),
+    "indie"        to FilterDesc("Indie", "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home."),
+    "horror"       to FilterDesc("Horror", "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter."),
+    "action"       to FilterDesc("Action", "High-octane, kinetic filmmaking. Action movies now available to watch at home."),
+    "comedy"       to FilterDesc("Comedy", "Films that are actually funny. Comedies — broad and subtle — now streaming."),
+    "family"       to FilterDesc("Family", "Films for all ages. Family movies now available to watch at home."),
+    "foreign"      to FilterDesc("Foreign", "Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they're streaming now."),
+    "documentary"  to FilterDesc("Documentary", "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home."),
+    "restorations" to FilterDesc("Reissues", "Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers.")
+)
+
 // Grid item can be either a movie, date divider, or trailers card
 sealed class GridItem {
     data class MovieItem(val movie: Movie) : GridItem()
     data class DateItem(val date: String) : GridItem()
     object TrailersItem : GridItem()
+}
+
+@Composable
+private fun FilterDescription(title: String, text: String) {
+    androidx.compose.foundation.layout.Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title.uppercase(),
+            color = Primary,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 1.sp
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = text,
+            color = TextMuted,
+            fontSize = 11.sp,
+            maxLines = 2
+        )
+    }
 }
 
 /**
@@ -131,6 +168,14 @@ fun HomeScreen(
                         showPreorders = uiState.showPreorders,
                         onShowPreordersToggle = { viewModel.toggleShowPreorders() }
                     )
+
+                    // Show description for the single active filter
+                    if (uiState.activeFilters.size == 1) {
+                        val filterId = uiState.activeFilters.first().id
+                        FILTER_DESCRIPTIONS[filterId]?.let { desc ->
+                            FilterDescription(title = desc.title, text = desc.text)
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(6.dp))
 
@@ -305,7 +350,7 @@ private fun MovieGridWithDates(
     }
 
     TvLazyVerticalGrid(
-        columns = TvGridCells.Adaptive(minSize = CARD_WIDTH + 6.dp),
+        columns = TvGridCells.Fixed(5),
         contentPadding = PaddingValues(horizontal = 32.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),

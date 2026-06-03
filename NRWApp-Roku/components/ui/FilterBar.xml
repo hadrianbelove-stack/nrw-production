@@ -121,12 +121,12 @@
           font="font:SmallBoldSystemFont" color="0x00D4AAFF" />
       </Group>
 
-      <!-- Fest Toggle -->
+      <!-- Fest Toggle: dim = fests hidden (default), teal = fests shown -->
       <Group id="chip_hide_fest">
-        <Rectangle id="chipBg_hide_fest" width="110" height="36" color="0x00342AFF" />
+        <Rectangle id="chipBg_hide_fest" width="110" height="36" color="0x0D0D0DFF" />
         <Label id="chipLabel_hide_fest" text="NO FEST" width="110" height="36"
           horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0x00D4AAFF" />
+          font="font:SmallBoldSystemFont" color="0x00D4AA73" />
       </Group>
 
       <!-- Pre-Orders Toggle -->

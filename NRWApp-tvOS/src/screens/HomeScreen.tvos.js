@@ -194,18 +194,20 @@ const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp }, ref) => {
     Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
   }, [scaleAnim]);
 
+  // Thumb travels 0 → 38 → 76px, matching desktop CSS exactly (108px track, 24px thumb)
   const thumbTranslate = thumbAnim.interpolate({
     inputRange: [0, 1, 2],
-    outputRange: [0, 18, 36],
+    outputRange: [0, 38, 76],
   });
 
   const LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
   const labelColor = slopMode === 'only' ? '#ff9500' : slopMode === 'free' ? '#00d4aa' : 'rgba(0,212,170,0.45)';
   const trackStyle = slopMode === 'free'
-    ? styles.metaToggleTrackActive
+    ? { backgroundColor: '#00d4aa', borderColor: '#00d4aa' }
     : slopMode === 'only'
     ? { backgroundColor: '#ff9500', borderColor: '#ff9500' }
-    : null;
+    : { backgroundColor: 'rgba(0,212,170,0.1)', borderColor: '#00d4aa' };
+  const thumbColor = slopMode === 'all' ? '#00d4aa' : '#ffffff';
 
   return (
     <TouchableOpacity
@@ -221,8 +223,8 @@ const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp }, ref) => {
     >
       <Animated.View style={[styles.metaToggleWrap, { transform: [{ scale: scaleAnim }] }]}>
         <Text style={[styles.metaToggleLabel, { color: labelColor }]}>{LABELS[slopMode]}</Text>
-        <View style={[styles.metaToggleTrack, trackStyle, isFocused && styles.metaToggleTrackFocused]}>
-          <Animated.View style={[styles.metaToggleThumb, { transform: [{ translateX: thumbTranslate }] }]} />
+        <View style={[styles.slopToggleTrack, trackStyle, isFocused && styles.metaToggleTrackFocused]}>
+          <Animated.View style={[styles.slopToggleThumb, { backgroundColor: thumbColor, transform: [{ translateX: thumbTranslate }] }]} />
         </View>
       </Animated.View>
     </TouchableOpacity>
@@ -1114,6 +1116,27 @@ const styles = StyleSheet.create({
   },
   metaToggleLabelActive: {
     color: '#00d4aa',
+  },
+  // 3-state slop toggle track — matches desktop CSS exactly (108px × 32px, 24px thumb)
+  slopToggleTrack: {
+    width: 108,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#1a1a1a',
+    borderWidth: 1,
+    borderColor: 'rgba(0,212,170,0.45)',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  slopToggleThumb: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0,212,170,0.55)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
   },
   metaToggleTrack: {
     width: 80,

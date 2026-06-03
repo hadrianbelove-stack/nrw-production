@@ -83,19 +83,21 @@ fun FilterChips(
 
         item {
             val slopLabel = when (slopMode) { "only" -> "SLOP ONLY"; "all" -> "ALL"; else -> "SLOP FREE" }
+            val slopAccent = if (slopMode == "only") Color(0xFFFF9500) else SlopTeal
             MetaTogglePill(
                 isActive = slopMode != "all",
                 activeLabel = slopLabel,
                 inactiveLabel = slopLabel,
-                onClick = onSlopModeToggle
+                onClick = onSlopModeToggle,
+                accentColor = slopAccent
             )
         }
 
         item {
             MetaTogglePill(
-                isActive = hideFest,
-                activeLabel = "NO FEST",
-                inactiveLabel = "WITH FEST",
+                isActive = !hideFest,
+                activeLabel = "FESTS",
+                inactiveLabel = "NO FEST",
                 onClick = onHideFestToggle
             )
         }
@@ -120,17 +122,18 @@ private fun MetaTogglePill(
     isActive: Boolean,
     activeLabel: String,
     inactiveLabel: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    accentColor: Color = SlopTeal
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
-    val backgroundColor = if (isActive) SlopTeal.copy(alpha = 0.15f) else Color.Transparent
+    val backgroundColor = if (isActive) accentColor.copy(alpha = 0.15f) else Color.Transparent
     val borderColor = when {
-        isFocused -> SlopTeal
-        isActive -> SlopTeal
+        isFocused -> accentColor
+        isActive -> accentColor
         else -> SlopTealDim
     }
-    val textColor = if (isActive) SlopTeal else SlopTeal.copy(alpha = 0.45f)
+    val textColor = if (isActive) accentColor else SlopTeal.copy(alpha = 0.45f)
 
     Surface(
         onClick = onClick,
@@ -147,7 +150,7 @@ private fun MetaTogglePill(
                 shape = RoundedCornerShape(14.dp)
             ),
             focusedBorder = androidx.tv.material3.Border(
-                border = BorderStroke(2.dp, SlopTeal),
+                border = BorderStroke(2.dp, accentColor),
                 shape = RoundedCornerShape(14.dp)
             )
         ),

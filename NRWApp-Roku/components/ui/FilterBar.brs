@@ -89,16 +89,16 @@ Sub UpdateChipStyles()
             continue for
         end if
 
-        ' Fest toggle has its own visual treatment
+        ' Fest toggle: teal = fests shown (matches desktop), dim = fests hidden (default)
         if filterId = "hide_fest"
-            if hideFest
+            if hideFest = false
                 chipBg.color = "0x00342AFF"
                 chipLabel.color = "0x00D4AAFF"
-                chipLabel.text = "NO FEST"
+                chipLabel.text = "FESTS"
             else
                 chipBg.color = "0x0D0D0DFF"
                 chipLabel.color = "0x00D4AA73"
-                chipLabel.text = "WITH FEST"
+                chipLabel.text = "NO FEST"
             end if
             continue for
         end if

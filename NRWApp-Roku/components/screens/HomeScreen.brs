@@ -9,6 +9,9 @@ Sub Init()
     m.header = m.top.FindNode("header")
     m.titleLabel = m.top.FindNode("titleLabel")
     m.filterBar = m.top.FindNode("filterBar")
+    m.filterDescGroup = m.top.FindNode("filterDescGroup")
+    m.filterDescTitle = m.top.FindNode("filterDescTitle")
+    m.filterDescText = m.top.FindNode("filterDescText")
     m.movieGrid = m.top.FindNode("movieGrid")
     m.loadingGroup = m.top.FindNode("loadingGroup")
     m.errorGroup = m.top.FindNode("errorGroup")
@@ -237,6 +240,7 @@ Sub onFilterSelected()
     ' Update filter bar visual state
     m.filterBar.activeFilters = m.activeFilters
 
+    UpdateFilterDescription()
     ApplyFilters()
 End Sub
 
@@ -373,7 +377,7 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
         if key = "up"
             ' Check if at top row
             focusedIndex = m.movieGrid.itemFocused
-            if focusedIndex < 8  ' First row
+            if focusedIndex < 5  ' First row
                 m.filterBar.SetFocus(true)
                 m.filterBar.hasFocus = true
                 m.focusedArea = "filter"
@@ -408,5 +412,42 @@ Sub OnFocusChanged()
         else if m.focusedArea = "filter"
             m.filterBar.SetFocus(true)
         end if
+    end if
+End Sub
+
+' ============================================================================
+' Filter Description (shown when exactly 1 filter active)
+' ============================================================================
+Function GetFilterDescriptions() as Object
+    return {
+        staff_picks:   { title: "PICKS",       text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time." }
+        indie:         { title: "INDIE",        text: "The smaller films, the independents, the ones without a billboard campaign. Worth knowing about now that they're available to stream at home." }
+        horror:        { title: "HORROR",       text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." }
+        action:        { title: "ACTION",       text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." }
+        comedy:        { title: "COMEDY",       text: "Films that are actually funny. Comedies — broad and subtle — now streaming." }
+        family:        { title: "FAMILY",       text: "Films for all ages. Family movies now available to watch at home." }
+        foreign:       { title: "FOREIGN",      text: "Non-English language films from around the world. Subtitles and the fact that they're streaming now." }
+        documentary:   { title: "DOCUMENTARY",  text: "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home." }
+        restorations:  { title: "REISSUES",     text: "Classic and catalog titles with new digital life. Restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers." }
+    }
+End Function
+
+Sub UpdateFilterDescription()
+    if m.filterDescGroup = invalid
+        return
+    end if
+    if m.activeFilters.Count() = 1
+        descs = GetFilterDescriptions()
+        filterId = m.activeFilters[0]
+        if descs.DoesExist(filterId)
+            d = descs[filterId]
+            m.filterDescTitle.text = d.title
+            m.filterDescText.text = d.text
+            m.filterDescGroup.visible = true
+        else
+            m.filterDescGroup.visible = false
+        end if
+    else
+        m.filterDescGroup.visible = false
     end if
 End Sub

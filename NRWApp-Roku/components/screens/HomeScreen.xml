@@ -87,13 +87,27 @@
         translation="[0, 10]" />
     </LayoutGroup>
 
+    <!-- Filter description (shown when exactly 1 filter active) -->
+    <Group id="filterDescGroup" translation="[80, 148]" visible="false">
+      <Label id="filterDescTitle"
+        font="font:SmallBoldSystemFont"
+        color="0x00D4AAFF" />
+      <Label id="filterDescText"
+        width="1700"
+        translation="[0, 22]"
+        font="font:SmallSystemFont"
+        color="0x888888FF"
+        wrap="true"
+        maxLines="2" />
+    </Group>
+
     <!-- Movie grid -->
     <MarkupGrid id="movieGrid"
-      translation="[60, 150]"
+      translation="[60, 210]"
       visible="false"
       itemComponentName="MovieCard"
-      numColumns="8"
-      itemSize="[220, 360]"
+      numColumns="5"
+      itemSize="[344, 516]"
       itemSpacing="[20, 20]"
       drawFocusFeedback="false"
       vertFocusAnimationStyle="floatingFocus"
@@ -101,7 +115,7 @@
 
     <!-- Trailers button (first item in grid area) -->
     <Group id="trailersButton"
-      translation="[60, 150]"
+      translation="[60, 210]"
       visible="false">
       <Rectangle width="200" height="300" color="0x1A1A2EFF" />
       <Rectangle width="196" height="296" translation="[2, 2]" color="0x0A0A0AFF" />

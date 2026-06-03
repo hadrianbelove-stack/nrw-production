@@ -51,8 +51,8 @@ Sub Init()
     end for
 
     ' Store original dimensions for scaling
-    m.originalWidth = 200
-    m.originalHeight = 300
+    m.originalWidth = 320
+    m.originalHeight = 480
 End Sub
 
 ' ============================================================================
@@ -199,9 +199,9 @@ Sub onMovieChanged()
 
     ' Shift score badges up if festival strip is visible at bottom
     if m.screeningFestivalBg.visible
-        badgeY = 250
+        badgeY = 400
     else
-        badgeY = 274
+        badgeY = 438
     end if
     PositionScoreBadges(badgeY)
 End Sub
@@ -212,20 +212,20 @@ End Sub
 Sub PositionScoreBadges(baseY as Integer)
     ' Count visible badges and position right-to-left
     ' RT is rightmost, then IMDb, then MC
-    xPos = 152
+    xPos = 243
 
     if m.rtBadge.visible
         m.rtBadge.translation = [xPos, baseY]
         m.rtBadgeBg.translation = [xPos, baseY]
         m.rtBadgeBorder.translation = [xPos - 1, baseY - 1]
-        xPos = xPos - 40  ' 44 width - 4 overlap
+        xPos = xPos - 64  ' 70 width - 6 overlap
     end if
 
     if m.imdbBadge.visible
         m.imdbBadge.translation = [xPos, baseY]
         m.imdbBadgeBg.translation = [xPos, baseY]
         m.imdbBadgeBorder.translation = [xPos - 1, baseY - 1]
-        xPos = xPos - 40  ' 36 width + 4 gap
+        xPos = xPos - 64  ' 58 width + 6 gap
     end if
 
     if m.mcBadge.visible
@@ -265,10 +265,10 @@ Sub SetupServiceBadge(service as String)
         m.serviceBadgeSubtext.color = "0xFFFFFFBF"
     end if
 
-    ' Full-width bar — always 200px wide at top
-    m.serviceBadge.width = 200
-    m.serviceBadgeBg.width = 200
-    m.serviceBadge.translation = [0, 2]
+    ' Full-width bar — always 320px wide at top
+    m.serviceBadge.width = 320
+    m.serviceBadgeBg.width = 320
+    m.serviceBadge.translation = [0, 3]
     m.serviceBadgeBg.translation = [0, 0]
 End Sub
 
