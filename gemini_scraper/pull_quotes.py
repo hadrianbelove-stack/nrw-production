@@ -613,14 +613,14 @@ Best pull quote:"""
                     logger.info(f"Letterboxd reviews page returned {resp.status if resp else 'none'}: {reviews_url}")
                     browser.close()
                     return []
-                # Wait for reviews to appear, then scroll 3x to load lazy content
+                # Wait for reviews to appear, then scroll 6x to load lazy content
                 try:
                     page.wait_for_selector('article.production-viewing', timeout=5000)
                 except Exception:
                     pass
-                for _ in range(3):
+                for _ in range(6):
                     page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
-                    time.sleep(0.8)
+                    time.sleep(1.5)
 
                 # --- Step 3: Extract reviews via DOM ---
                 extracted = page.evaluate('''() => {
@@ -666,7 +666,7 @@ Best pull quote:"""
                     english_reviews.append(item)
 
                 # Build review dicts for batch quote extraction
-                capped_reviews = english_reviews[:12]  # Extract from top 12 to find 6 good quotes
+                capped_reviews = english_reviews[:20]  # Extract from top 20 to find up to 10 good quotes
                 review_dicts = []
                 for item in capped_reviews:
                     username = item['username']
@@ -699,8 +699,8 @@ Best pull quote:"""
                         'added_at': now
                     })
 
-                # Cap at 6 Letterboxd quotes
-                quotes = quotes[:6]
+                # Cap at 10 Letterboxd quotes
+                quotes = quotes[:10]
 
         except Exception as e:
             logger.warning(f"Error scraping Letterboxd reviews for {title}: {e}")

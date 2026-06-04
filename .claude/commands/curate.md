@@ -243,6 +243,9 @@ Only include cast members in cast_wiki (not director, historical figures, or eve
 
 Show pull quotes for this movie right after the capsule is resolved (picked, skipped, or not needed).
 
+**⚙ Configuration** *(change these to adjust output)*
+- Letterboxd quotes to show: **10** (max; show all if 10 or fewer)
+
 **1. Get the quotes — read from cache**
 
 The morning launchagent (`scripts/batch_pull_quotes.py`) scrapes pull quotes for all new arrivals before curation runs. Read from `cache/pull_quotes_combined.json` using the cache key `"{title}_{year}"`.
@@ -253,23 +256,15 @@ The morning launchagent (`scripts/batch_pull_quotes.py`) scrapes pull quotes for
 
 Do not re-scrape. The morning batch is the canonical source.
 
-**2. Rank by taste profile**
+**2. Present — critics first, Letterboxd after**
 
-Read `cache/taste_profile_pullquotes.json`. Rank all quotes from best match to worst. The profile consistently shows:
-- **Prefers**: specific vivid language, punchy fragments, wit, emotional precision
-- **Avoids**: vague generic praise ("brilliant", "stunning"), academic jargon, plot summary masquerading as criticism, quotes that repeat the movie title
-- Top critics and known outlets rank higher when quotes are otherwise equal
-- A short sharp fragment trimmed from a longer quote can outperform a full sentence
-
-**3. Present — grouped by outlet, full list**
-
-Show all usable quotes (up to ~12), grouped by outlet. Format exactly like this:
+Show **all** RT/critic quotes, then up to **10** Letterboxd quotes (the Configuration number — show all if 10 or fewer). No pre-filtering, no reordering, no ranking markers. Format exactly:
 
 ```
 [Film Title] PULL QUOTES
 
 **Outlet Name**
-1. *"Quote text here."* — Critic Name  ▶ (top pick)
+1. *"Quote text here."* — Critic Name
 
 **Another Outlet**
 2. *"Another quote."* — Critic Name
@@ -277,20 +272,19 @@ Show all usable quotes (up to ~12), grouped by outlet. Format exactly like this:
 
 **Letterboxd**
 4. *"Letterboxd quote."* — @username
+5. *"Another Letterboxd quote."* — @username
 
 Pick a number — paste a trim — or skip.
 ```
 
-- Group quotes from the same outlet together
-- Mark the top-ranked quote `▶` with a brief note (one phrase: "specific language", "punchy fragment", etc.)
-- All quote text in *italics*
-- Critic name after em-dash
-- No ✓/✗ on every quote — only the `▶` pick gets a note
+- Group RT/critic quotes by outlet; maintain cache order within each section
+- Letterboxd section always comes last
+- All quote text in *italics*, name after em-dash
 
-**4. Wait for user response**
+**3. Wait for user response**
 
 - Number → use that quote verbatim
-- Trimmed text → **that trimmed text IS the final version** (never revert to original)
+- Pasted text → **that text IS the final version** (never revert to original)
 - "skip" → move on
 
 **4b. Verify the review URL** (for each chosen quote that has a `review_url`)
