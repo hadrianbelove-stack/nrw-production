@@ -253,8 +253,6 @@ The morning launchagent (`scripts/batch_pull_quotes.py`) scrapes pull quotes for
 
 Do not re-scrape. The morning batch is the canonical source.
 
-**Filter noise before presenting**: drop any quotes from YouTube, generic news blurbs (Mashable "what's new this week" type), or press releases. Keep critics, publications, and Letterboxd.
-
 **2. Rank by taste profile**
 
 Read `cache/taste_profile_pullquotes.json`. Rank all quotes from best match to worst. The profile consistently shows:
@@ -295,11 +293,30 @@ Pick a number — paste a trim — or skip.
 - Trimmed text → **that trimmed text IS the final version** (never revert to original)
 - "skip" → move on
 
+**4b. Verify the review URL** (for each chosen quote that has a `review_url`)
+
+```bash
+cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
+import sys
+sys.path.insert(0, '.')
+from gemini_scraper.pull_quotes import verify_quote_url
+result = verify_quote_url('REVIEW_URL', 'MOVIE_TITLE', 'CRITIC_NAME')
+print(result)
+"
+```
+
+- `ok` → proceed silently
+- `bad_link` → show inline before saving: `⚠ Review link doesn't appear to be this movie/critic ([url]) — saving quote without URL. Say "keep link" to save it anyway.` Then save with `review_url: null` unless user says "keep link"
+- `error` → show: `⚠ Review link couldn't be loaded ([url]) — saving without URL.` Save with `review_url: null`
+- `no_url` → proceed silently
+
+Run this for each selected quote. If the user selected multiple quotes, verify each one.
+
 **5. Save**
 
 Two writes required — both must happen:
 - `cache/pull_quotes_combined.json`: find the quote entry (by critic + outlet), set `selected: true`, update `text` to the final version (original or trimmed). If no matching entry exists, create one.
-- `data.json` `pull_quotes` array: inject the selected quote as `{text, critic, outlet, review_url}` (include `review_url` if available in the cache entry)
+- `data.json` `pull_quotes` array: inject the selected quote as `{text, critic, outlet, review_url}` (include `review_url` if available and verified — null if verification failed)
 
 ### Step C — Commit (once per movie, after both steps)
 

@@ -1,17 +1,11 @@
 """
-Pull quote finder — Gemini discovers critic quotes, web search verifies them
-on actual review sites and attaches real URLs.
+Pull quote finder — scrapes RT and Metacritic review pages directly,
+plus Letterboxd popular reviews via Playwright.
 
 Pipeline:
-  1. Gemini + Google Search grounding discovers critic quotes (~92% real)
-  2. Gemini grounding (Google Search) finds each critic's actual review URL
-  3. Playwright visits the article and confirms the quote text appears
-  4. Verified quotes get the real review URL attached (clickable on site)
-  5. RT/MC scraping adds supplemental quotes with guaranteed URLs
-  6. Letterboxd quotes via Gemini with URL validation
-
-Only verified quotes are returned. Gemini-discovered quotes without a
-confirmed review URL are dropped to prevent hallucinations surfacing in curation.
+  1. RT scraping: intercepts RT's internal reviews API for clean critic quotes
+  2. MC scraping: loads Metacritic critic-reviews page via Playwright
+  3. Letterboxd: scrapes popular reviews page via stealth Playwright
 """
 
 import html as html_module
@@ -27,7 +21,7 @@ logger = logging.getLogger('gemini_scraper.pull_quotes')
 
 class GeminiPullQuoteFinder(GeminiFinderBase):
     """
-    Finds critic quotes (from RT + Metacritic) and Letterboxd reviews (via Gemini).
+    Scrapes critic quotes from RT and Metacritic, plus Letterboxd popular reviews.
 
     Usage:
         finder = GeminiPullQuoteFinder()
@@ -43,7 +37,7 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
         super().__init__(cache_file=cache_file)
 
     def _get_extra_stats(self) -> Dict[str, int]:
-        return {'quotes_found': 0, 'insufficient_quotes': 0, 'rt_scraped': 0, 'mc_scraped': 0}
+        return {'quotes_found': 0, 'rt_scraped': 0, 'mc_scraped': 0}
 
     def _scrape_rt_reviews(self, rt_url: str, expected_title: str = '') -> list:
         """Scrape critic quotes directly from the RT reviews page.
@@ -483,31 +477,6 @@ Best pull quote:"""
         return quotes
 
 
-    def _parse_quotes(self, text: str, source_type: str = 'critic') -> list:
-        """Parse quote lines from Gemini response text (used for Letterboxd quotes)."""
-        quotes = []
-        # Match: QUOTE: "text" -- Critic Name, Publication | URL: https://...
-        pattern = r'QUOTE:\s*["\u201c]([^"\u201d]+)["\u201d]\s*[-\u2014]{1,2}\s*([^,\n]+),\s*([^|\n]+?)(?:\s*\|\s*URL:\s*(https?://\S+))?$'
-        for match in re.finditer(pattern, text, re.MULTILINE):
-            quote_text = match.group(1).strip()
-            critic = match.group(2).strip()
-            outlet = match.group(3).strip()
-            review_url = (match.group(4) or '').strip()
-            # Skip if quote is too short or looks like an error
-            if len(quote_text) < 10:
-                continue
-            quotes.append({
-                'text': quote_text,
-                'critic': critic,
-                'outlet': outlet,
-                'source': source_type,
-                'review_url': review_url,
-                'selected': False,
-                'added_at': time.strftime('%Y-%m-%dT%H:%M:%S')
-            })
-        return quotes
-
-
     def _scrape_letterboxd_reviews(self, title: str, year: int, lb_url: str = None) -> list:
         """Scrape popular reviews from Letterboxd.
 
@@ -739,69 +708,6 @@ Best pull quote:"""
         logger.info(f"Scraped {len(quotes)} Letterboxd reviews for {title} ({year})")
         return quotes
 
-    def _gemini_critic_quotes(self, title: str, year: int, director: str = None, num_quotes: int = 8) -> list:
-        """Use Gemini with Google Search grounding to discover critic quotes.
-
-        Gemini is excellent at finding real quotes (~92% accuracy) but
-        hallucinates URLs. Quotes are returned without review_url —
-        web search verification adds real URLs later.
-        """
-        if not self._init_gemini():
-            return []
-
-        self.stats['gemini_attempts'] += 1
-
-        context = f'"{title}" ({year})'
-        if director:
-            context += f" directed by {director}"
-
-        prompt = f"""Find {num_quotes} notable professional critic quotes about the movie {context}.
-
-Requirements:
-- Only real, published reviews from professional critics
-- Include the critic's full name and the publication/outlet
-- Include the EXACT quote text as published
-- Focus on quotes that are vivid, memorable, and capture the film's essence
-- Mix positive and critical perspectives if they exist
-- If fewer than {num_quotes} notable quotes exist, return what you can find
-- If no notable quotes exist, respond with: NO_QUOTES
-
-What makes a GREAT critic pull quote:
-- Captures the essence of the film in one punchy sentence
-- Uses vivid, memorable language (not generic praise/criticism)
-- Evokes the FEELING of watching the film
-- Shorter is almost always better — one knockout sentence beats a meandering paragraph
-
-Format each as:
-QUOTE: "quote text" -- Critic Name, Publication
-
-Response:"""
-
-        try:
-            self._enforce_rate_limit()
-
-            def _fetch():
-                api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
-                response = self._generate(prompt, config=api_config)
-                return response.text.strip()
-
-            text = self._retry_with_backoff(_fetch)
-
-            if text and 'NO_QUOTES' not in text:
-                quotes = self._parse_quotes(text, source_type='gemini_critic')
-                # Clear any URLs Gemini provides — they're hallucinated
-                for q in quotes:
-                    q['review_url'] = ''
-                self.stats['gemini_successes'] += 1
-                logger.info(f"Gemini found {len(quotes)} critic quotes for {title} ({year})")
-                return quotes
-
-        except Exception as e:
-            logger.warning(f"Error fetching Gemini critic quotes for {title} ({year}): {e}")
-            self.stats['gemini_failures'] += 1
-
-        return []
-
     def _normalize_for_matching(self, text: str) -> str:
         """Normalize text for fuzzy quote matching on review pages."""
         text = text.lower()
@@ -827,172 +733,23 @@ Response:"""
             logger.debug(f"Failed to resolve grounding URL: {e}")
         return ''
 
-    def _match_url_to_outlet(self, url: str, outlet: str) -> bool:
-        """Check if a URL domain plausibly matches a publication outlet name."""
-        url_lower = url.lower()
-        outlet_lower = outlet.lower().replace('the ', '').strip()
-
-        # Direct domain fragments from outlet name
-        # "Hollywood Reporter" -> check for "hollywoodreporter" in URL
-        compressed = outlet_lower.replace(' ', '')
-        if compressed in url_lower:
-            return True
-
-        # Individual significant words (skip short/common ones)
-        for word in outlet_lower.split():
-            if len(word) > 4 and word in url_lower:
-                return True
-
-        return False
-
-    def _verify_quotes_via_web_search(self, quotes: list, title: str, year: int) -> list:
-        """Verify quotes using Gemini grounding to find review URLs, then Playwright to confirm.
-
-        For each quote without a review_url:
-        1. Makes a focused Gemini grounding call to find that critic's review
-        2. Extracts real source URLs from grounding metadata (Google Search results)
-        3. Resolves redirect URLs to get actual article URLs
-        4. Matches URLs to the outlet by domain
-        5. Visits with Playwright to confirm the quote text appears on the page
-
-        Quotes that can't be verified keep their text — they just won't
-        have a clickable link on the site.
-        """
-        to_verify = [q for q in quotes if not q.get('review_url') and q.get('outlet')]
-        if not to_verify:
-            return quotes
-
-        if not self._init_gemini():
-            logger.warning("Gemini not available for quote verification")
-            return quotes
-
-        verified_count = 0
-        logger.info(f"Web search verification: checking {len(to_verify)} quotes for {title} ({year})")
-
-        # --- Phase 1: Gemini grounding finds review URL for each quote ---
-        api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
-
-        for q in to_verify:
-            critic = q.get('critic', '').strip()
-            outlet = q.get('outlet', '').strip()
-
-            if not critic:
-                continue
-
-            if critic.lower() in ('', 'anonymous'):
-                prompt = f'Find the URL for the {outlet} review of "{title}" ({year}).'
-            else:
-                prompt = f'Find the URL for {critic}\'s {outlet} review of "{title}" ({year}).'
-
-            try:
-                self._enforce_rate_limit()
-                response = self._generate(prompt, config=api_config)
-
-                # Extract grounding source URLs (real Google Search results)
-                if response.candidates:
-                    gm = response.candidates[0].grounding_metadata
-                    if gm and gm.grounding_chunks:
-                        for chunk in gm.grounding_chunks:
-                            if chunk.web and chunk.web.uri:
-                                actual = self._resolve_grounding_url(chunk.web.uri)
-                                if actual and self._match_url_to_outlet(actual, outlet):
-                                    q['_candidate_url'] = actual
-                                    break
-
-            except Exception as e:
-                logger.debug(f"Grounding search failed for {critic}: {e}")
-
-        candidates = [q for q in to_verify if q.get('_candidate_url')]
-        logger.info(f"Grounding found candidate URLs for {len(candidates)}/{len(to_verify)} quotes")
-
-        if not candidates:
-            return quotes
-
-        # --- Phase 2: Playwright confirms quote text on each page ---
-        try:
-            from playwright.sync_api import sync_playwright
-
-            with sync_playwright() as p:
-                browser = p.chromium.launch(headless=True)
-                ctx = browser.new_context(
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-                               'AppleWebKit/537.36 (KHTML, like Gecko) '
-                               'Chrome/120.0.0.0 Safari/537.36'
-                )
-                page = ctx.new_page()
-
-                for q in candidates:
-                    url = q.pop('_candidate_url')
-                    text = q.get('text', '').strip()
-
-                    # Build text fragment for matching
-                    normalized = self._normalize_for_matching(text)
-                    words = normalized.split()
-                    if len(words) >= 8:
-                        mid = len(words) // 2
-                        fragment = ' '.join(words[max(0, mid - 3):mid + 3])
-                    elif len(words) >= 4:
-                        fragment = ' '.join(words[1:-1])
-                    else:
-                        fragment = normalized
-
-                    try:
-                        resp = page.goto(url, timeout=10000, wait_until='domcontentloaded')
-                        if not resp or resp.status >= 400:
-                            logger.debug(f"Page returned {resp.status if resp else 'none'}: {url}")
-                            continue
-                        time.sleep(0.5)
-                        page_text = self._normalize_for_matching(page.inner_text('body'))
-                        if fragment in page_text:
-                            q['review_url'] = url
-                            verified_count += 1
-                            logger.info(f"Verified: {q['critic']} ({q['outlet']}) -> {url}")
-                        else:
-                            # Try assigning the URL without text confirmation —
-                            # the grounding URL is from Google Search so it's real,
-                            # even if the page uses different formatting
-                            q['review_url'] = url
-                            verified_count += 1
-                            logger.info(f"Grounding match (text not confirmed): {q['critic']} ({q['outlet']}) -> {url}")
-                    except Exception as e:
-                        logger.debug(f"Playwright error for {url}: {e}")
-
-                browser.close()
-
-        except Exception as e:
-            logger.warning(f"Playwright verification error: {e}")
-
-        # Clean up any remaining _candidate_url keys
-        for q in to_verify:
-            q.pop('_candidate_url', None)
-
-        logger.info(f"Web search verification: {verified_count}/{len(to_verify)} verified")
-        return quotes
-
     def find_pull_quotes(
         self,
         title: str,
         year: int,
         director: str = None,
-        num_quotes: int = 8,
         rt_url: str = None,
         mc_url: str = None,
         deep_read: bool = False,
         lb_url: str = None
     ) -> list:
         """
-        Find pull quotes for a movie.
-
-        Primary: Gemini discovers critic quotes, web search verifies and attaches URLs.
-        Supplemental: RT/MC scraping for additional quotes with guaranteed URLs.
-        Deep read: Optionally visit full review articles and extract better quotes.
-        Letterboxd: Gemini with URL validation.
+        Find pull quotes for a movie by scraping RT, MC, and Letterboxd directly.
 
         Args:
             title: Movie title
             year: Release year
-            director: Optional director name for context
-            num_quotes: Number of quotes to request (default 8)
+            director: Optional director name (used for RT URL discovery if rt_url not provided)
             rt_url: Rotten Tomatoes URL (e.g. https://www.rottentomatoes.com/m/the_brutalist)
             mc_url: Metacritic URL (e.g. https://www.metacritic.com/movie/the-brutalist/)
             deep_read: If True, visit full review URLs and extract better quotes (slower)
@@ -1023,32 +780,22 @@ Response:"""
 
         all_quotes = []
 
-        # --- Step 1: Gemini discovers critic quotes ---
-        gemini_quotes = self._gemini_critic_quotes(title, year, director, num_quotes)
+        # --- Step 1: RT scraping ---
+        existing_critics = set()
 
-        # --- Step 2: Web search verifies and attaches real URLs ---
-        if gemini_quotes:
-            gemini_quotes = self._verify_quotes_via_web_search(gemini_quotes, title, year)
-        all_quotes.extend(gemini_quotes)
-
-        # --- Step 3: RT/MC scraping for supplemental quotes (already have URLs) ---
-        existing_critics = {q.get('critic', '').lower().strip() for q in all_quotes if q.get('critic')}
-
-        # If no RT URL from enrichment, try to discover it via Gemini
         if not rt_url:
             rt_url = self._find_rt_url_via_gemini(title, year, director)
 
         if rt_url:
             rt_quotes = self._scrape_rt_reviews(rt_url, expected_title=title)
-            rt_new = [q for q in rt_quotes
-                      if q.get('critic', '').lower().strip() not in existing_critics]
-            all_quotes.extend(rt_new)
-            existing_critics.update(q.get('critic', '').lower().strip() for q in rt_new)
+            all_quotes.extend(rt_quotes)
+            existing_critics.update(q.get('critic', '').lower().strip() for q in rt_quotes)
             if rt_quotes:
                 self.stats['rt_scraped'] += 1
         else:
-            logger.info(f"No RT URL for {title} ({year}), skipping RT supplement")
+            logger.info(f"No RT URL for {title} ({year}), skipping RT")
 
+        # --- Step 2: MC scraping ---
         if mc_url:
             mc_quotes = self._scrape_mc_reviews(mc_url)
             mc_new = [q for q in mc_quotes
@@ -1057,25 +804,20 @@ Response:"""
             if mc_quotes:
                 self.stats['mc_scraped'] += 1
         else:
-            logger.info(f"No MC URL for {title} ({year}), skipping MC supplement")
+            logger.info(f"No MC URL for {title} ({year}), skipping MC")
 
-        # --- Step 3b: Deep read full reviews for better quotes ---
+        # --- Step 3: Deep read full reviews for better quotes ---
         if deep_read:
             scraped_quotes = [q for q in all_quotes if q.get('source') in ('rt_critic', 'mc_critic')]
             if scraped_quotes:
                 all_quotes = self._deep_read_reviews(all_quotes, title, year)
 
-        # --- Step 4: Letterboxd quotes (uses pre-found URL if available, else Playwright finds it) ---
+        # --- Step 4: Letterboxd quotes ---
         lb_quotes = self._scrape_letterboxd_reviews(title, year, lb_url=lb_url)
         if lb_quotes:
             all_quotes.extend(lb_quotes)
             logger.info(f"Found {len(lb_quotes)} Letterboxd quotes for {title} ({year})")
 
-        # Drop unverified Gemini-discovered quotes — they may be hallucinated
-        all_quotes = [q for q in all_quotes
-                      if q.get('source') != 'gemini_critic' or q.get('review_url')]
-
-        # Cache results (even if empty, to avoid re-fetching)
         if all_quotes:
             self.stats['quotes_found'] += len(all_quotes)
 
@@ -1088,3 +830,70 @@ Response:"""
         self._save_cache()
 
         return all_quotes
+
+
+def verify_quote_url(url: str, movie_title: str, critic: str) -> str:
+    """Verify a review URL actually leads to a review of this movie by this critic.
+
+    Loads the page with Playwright and checks that both the movie title and
+    critic name appear somewhere on the page (headline, byline, meta — works
+    even on paywalled pages). Does not look for the quote text.
+
+    Returns:
+        "ok"      — title and critic both found on page
+        "bad_link" — page loaded but title or critic missing
+        "no_url"  — url is empty or None
+        "error"   — page failed to load (timeout, 4xx, 5xx)
+    """
+    if not url:
+        return "no_url"
+
+    # Normalize for loose matching
+    def _norm(s):
+        import re
+        s = s.lower()
+        s = re.sub(r'[^a-z0-9\s]', ' ', s)
+        return re.sub(r'\s+', ' ', s).strip()
+
+    # Strip Letterboxd @-prefix from critic name
+    critic_clean = critic.lstrip('@').strip()
+
+    # Build word sets — need significant words (>3 chars) to appear
+    title_words = [w for w in _norm(movie_title).split() if len(w) > 3]
+    critic_words = [w for w in _norm(critic_clean).split() if len(w) > 2]
+
+    try:
+        from playwright.sync_api import sync_playwright
+
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            ctx = browser.new_context(
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                           'AppleWebKit/537.36 (KHTML, like Gecko) '
+                           'Chrome/125.0.0.0 Safari/537.36'
+            )
+            page = ctx.new_page()
+            try:
+                resp = page.goto(url, timeout=12000, wait_until='domcontentloaded')
+                if not resp or resp.status >= 400:
+                    browser.close()
+                    return "error"
+                page_text = _norm(page.inner_text('body'))
+                browser.close()
+            except Exception:
+                try:
+                    browser.close()
+                except Exception:
+                    pass
+                return "error"
+
+        title_found = any(w in page_text for w in title_words)
+        critic_found = any(w in page_text for w in critic_words)
+
+        if title_found and critic_found:
+            return "ok"
+        return "bad_link"
+
+    except Exception as e:
+        logger.warning(f"verify_quote_url failed for {url}: {e}")
+        return "error"
