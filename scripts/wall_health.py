@@ -446,7 +446,7 @@ if not bare_movies and not recent_gaps:
 # _rt_scraper_failed: OMDb has an RT score but scraper couldn't find the RT link
 # _rt_score_conflict: OMDb and scraper both found a score but disagree by >5 points
 
-rt_failed  = [m for m in movies if m.get('_rt_scraper_failed')]
+rt_failed  = [m for m in movies if m.get('_rt_scraper_failed') and not m.get('links', {}).get('rt')]
 rt_conflict = [m for m in movies if m.get('_rt_score_conflict')]
 
 if rt_failed or rt_conflict:
