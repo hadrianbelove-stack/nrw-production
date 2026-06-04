@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-03T14:18:49.685279",
-  "duration_seconds": 3852.802854,
+  "timestamp": "2026-06-04T13:22:34.623318",
+  "duration_seconds": 5524.454493,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,65 +8,65 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 7.680501,
+      "duration_seconds": 10.124169,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-06-01 to 2026-06-03 (incremental mode, 22 intaked)\n\u2705 Movie intake complete: 22 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-05-04 to 2026-06-03\n   \ud83d\udccb Michael Jackson: The Verdict (3 eps)\n  "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-06-02 to 2026-06-04 (incremental mode, 36 intaked)\n\u2705 Movie intake complete: 36 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-05-05 to 2026-06-04\n   \ud83d\udccb The Summer you Kissed Me (5 eps)\n   \ud83d\udccb E"
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 390.766401,
+      "duration_seconds": 409.923623,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 172 festival slugs\nScanning 172 festivals for catalogs...\n  Progress: 75/172 slugs | 27 scanned | 664 films indexed\n  Progress: 100/172 slugs | 52 scanned | 1063 films indexed\n  Progress: 125/172 slugs | 77 scanned | 1466 films indexed\n  Progress: 150/172 slugs | 102 scanned | 1907 films indexed\n  Done: 124 festivals, 118 with films, 48 failed, 2296 total films\n  Active: 2296 | Expired: 0 | Unique: 170"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 172 festival slugs\nScanning 172 festivals for catalogs...\n  Progress: 75/172 slugs | 27 scanned | 706 films indexed\n  Progress: 100/172 slugs | 52 scanned | 1087 films indexed\n  Progress: 125/172 slugs | 77 scanned | 1448 films indexed\n  Progress: 150/172 slugs | 102 scanned | 1924 films indexed\n  Done: 124 festivals, 119 with films, 48 failed, 2249 total films\n  Active: 2249 | Expired: 0 | Unique: 169"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 2630.720495,
+      "duration_seconds": 3960.528854,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17525 total movies\n\ud83d\udd0d Raw tracking filter: 13798 movies\n\ud83d\udd0d Assigned tracking_movies list: 13798\n\ud83d\udd0d Found 13798 movies in tracking status\n  Priority queue (last 180 days): 639 movies\n  Older movies: 13159 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13798 movies for digital availability...\n\n  \ud83d\udeab Strange Journey: The Story of Rocky Horror \u2014 JW verification failed (justwatch_no_valid_of"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17567 total movies\n\ud83d\udd0d Raw tracking filter: 13835 movies\n\ud83d\udd0d Assigned tracking_movies list: 13835\n\ud83d\udd0d Found 13835 movies in tracking status\n  Priority queue (last 180 days): 649 movies\n  Older movies: 13186 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13835 movies for digital availability...\n\n   \u2705 Added A Man with Sole: The Impact of Kenneth Cole to site immediately (discovery-driven)\n"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 459.889474,
+      "duration_seconds": 933.714828,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 15 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u2713 Michael: Amazon found\n      \u2713 Michael: Fandango found\n      \u00b7 One Spoon of Cho"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 14 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Your Heart Will Be Broken: Amazon not found\n      \u00b7 Your Heart Will Be Broken:"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.589002,
+      "duration_seconds": 4.385095,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 818 trailers and 27 subtitle files in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  640\n  Stale cleaned:    0\n  Not in B2:        132\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 818 trailers and 27 subtitle files in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  640\n  Stale cleaned:    0\n  Not in B2:        133\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 155.73565,
+      "duration_seconds": 186.367689,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 276 of 772 wall movies (last 30 days)\n  \ud83c\udf93 One Spoon of Chocolate \u2014 pre-order graduated (now available)\n  \ud83c\udfac One Spoon of Chocolate \u2014 Director Wikipedia added (RZA)\n  \ud83c\udfac Erupcja \u2014 Director Wikipedia added (Pete Ohs)\n  + Seven Snipers \u2014 new services added\n  \ud83c\udf93 Seven Snipers \u2014 pre-order graduated (now available)\n  + Hacked: A Double Entendre of Rage Fueled Karma \u2014 new services added\n  + Wet Paper Bag \u2014 new services added\n  + Casa Grande \u2014"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 256 of 773 wall movies (last 30 days)\n  \ud83c\udfac Bunny!! \u2014 Director Wikipedia added (Tr\u1ea5n Th\u00e0nh)\n  \ud83c\udf93 Seven Snipers \u2014 pre-order graduated (now available)\n  + Premarital \u2014 new services added\n  + Little Man-Eater \u2014 new services added\n  + Amrum \u2014 new services added\n  + A Second Life \u2014 new services added\n  + Two Prosecutors \u2014 new services added\n  + Whisperings of the Moon \u2014 new services added\n  + Fight Club (4K Remaster) \u2014 new services added\n  "
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 192.626198,
+      "duration_seconds": 0.894715,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 15 movies missing trailers:\n  \u2022 Behind Bars - Shot in the Spotlight\n  \u2022 Maid Robot 2\n  \u2022 Whispers Next Door\n  \u2022 Who Killed These Women? (The Tinley Park 5)\n  \u2022 Screw Mickiewicz 3\n  \u2022 \u00a1Quba!\n  \u2022 Making of Lord of the Flies\n  \u2022 Contact in the Woods: The Dr. Johnathan Reed Story\n  \u2022 KillTonyMania\n  \u2022 The Crossbow Murders: The Killings That Shocked Britain.\n  \u2022 Bride or Die\n  \u2022 Song of the Samurai - Chapter: Youthful Days in Edo\n  \u2022 Clash of th"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 1 movies missing trailers:\n  \u2022 Prank Night\n  \u2713 Cache hit: Prank Night (2026)\n  \u25cb Prank Night \u2014 no trailer found (attempt 1/5)\n\u2705 Trailer gap fill: 0/1 movies got trailers\n\u2705 Trailer re-enrichment complete: 0 movies updated\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 13.172206,
+      "duration_seconds": 17.881415,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 67 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 33 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 68 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 34 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.4454,
+      "duration_seconds": 0.447577,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 4 movies (>90 days old) \u2192 data_archive.json\n   data.json: 768 movies | archive: 585 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 6 movies (>90 days old) \u2192 data_archive.json\n   data.json: 767 movies | archive: 594 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -77,26 +77,46 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 17525,
-    "tracking": 13793,
-    "available": 3352,
-    "data_movies": 768,
-    "movies_with_links": 744,
-    "movies_with_rt": 495,
-    "movies_with_wikipedia": 389,
-    "movies_with_trailers": 736
+    "total": 17567,
+    "tracking": 13830,
+    "available": 3357,
+    "data_movies": 767,
+    "movies_with_links": 743,
+    "movies_with_rt": 494,
+    "movies_with_wikipedia": 387,
+    "movies_with_trailers": 735
   },
   "enrichment_metrics": {
-    "timestamp": "2026-06-03T14:12:45.340375",
-    "movies_requested": 9,
-    "movies_enriched": 5,
-    "movies_deferred": 4,
+    "timestamp": "2026-06-04T13:19:03.976600",
+    "movies_requested": 14,
+    "movies_enriched": 7,
+    "movies_deferred": 7,
     "deferred_details": [
+      {
+        "title": "A Man with Sole: The Impact of Kenneth Cole",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-06-04",
+        "discovered_at": "2026-06-04T11:57:33.467370",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 2,
+        "tmdb_platforms": [
+          "Eventive"
+        ]
+      },
+      {
+        "title": "Real Couples",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-06-04",
+        "discovered_at": "2026-06-04T11:57:33.780355",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 2,
+        "tmdb_platforms": []
+      },
       {
         "title": "In the Grey",
         "reason": "jw_revert:justwatch_theatrical_pvod",
         "digital_date": "2026-06-02",
-        "discovered_at": "2026-06-03T13:21:19.349116",
+        "discovered_at": "2026-06-04T11:57:36.917674",
         "discovery_source": "tmdb_type4",
         "revert_count": 1,
         "tmdb_platforms": [
@@ -107,31 +127,40 @@
         "title": "Your Heart Will Be Broken",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-05-31",
-        "discovered_at": "2026-06-03T13:21:20.821830",
+        "discovered_at": "2026-06-04T11:57:39.978631",
         "discovery_source": "tmdb_type4",
-        "revert_count": 4,
+        "revert_count": 5,
         "tmdb_platforms": []
       },
       {
-        "title": "The Thing in the Fog",
+        "title": "Hold the Fort",
         "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-06-12",
-        "discovered_at": "2026-06-03T13:39:47.580916",
+        "digital_date": "2026-06-23",
+        "discovered_at": "2026-06-04T12:43:52.657947",
         "discovery_source": "tmdb_type4",
         "revert_count": 1,
         "tmdb_platforms": []
       },
       {
-        "title": "Michael",
+        "title": "Saccharine",
         "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-06-09",
-        "discovered_at": "2026-06-03T14:01:39.569000",
+        "digital_date": "2026-07-24",
+        "discovered_at": "2026-06-04T12:46:50.830847",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Hungry",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-06-23",
+        "discovered_at": "2026-06-04T13:03:29.101608",
         "discovery_source": "tmdb_type4",
         "revert_count": 1,
         "tmdb_platforms": []
       }
     ],
-    "enrichment_duration_seconds": 458.65,
+    "enrichment_duration_seconds": 932.58,
     "error_details": [],
     "total_errors": 0
   }
