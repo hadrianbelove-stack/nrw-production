@@ -650,7 +650,8 @@ trailer_hosting:
   enabled: true                      # Master toggle for trailer hosting pipeline
   bucket_url: "https://f004.backblazeb2.com/file/NRW-TRAILERS"  # Public URL base (change when CloudFlare is set up)
   max_hosted: 200                    # Only the 200 most recent movies get trailers; oldest rotate out
-  cookies_browser: safari            # Browser for yt-dlp cookies (chrome stopped working May 2026; safari works for manual runs)
+  cookies_file: cache/yt_cookies.txt  # Netscape-format cookie file — works from LaunchAgent (no sandbox restriction). Refresh with: yt-dlp --cookies-from-browser safari --cookies cache/yt_cookies.txt --skip-download [any YT URL]
+  # cookies_browser: safari           # Fallback: browser-based extraction works for manual runs but is blocked by macOS sandbox in LaunchAgent
   clean_local_after_upload: true     # Auto-delete local MP4 after confirmed B2 upload
   pipeline_integration: true         # Auto-host trailers for new movies during daily enrichment
   trailer_gap_batch_size: 30         # Max movies to retry per trailer gap fill run

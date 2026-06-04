@@ -299,7 +299,7 @@ def stamp_trailer_hosted_urls(dry_run=False):
     return stats
 
 
-def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, bucket_url, clean_after_upload=False, cookies_browser=None, rediscover_on_failure=True, original_language='en'):
+def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, bucket_url, clean_after_upload=False, cookies_browser=None, cookies_file=None, rediscover_on_failure=True, original_language='en'):
     """
     Download a trailer from YouTube and upload to B2.
     Returns (hosted_url, new_trailer_url, fail_reason, fail_detail).
@@ -322,7 +322,7 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
     }
 
     # Download
-    result = download_trailer(movie_dict, cookies_browser=cookies_browser)
+    result = download_trailer(movie_dict, cookies_browser=cookies_browser, cookies_file=cookies_file)
     status = result['status']
 
     if status == 'skipped_exists':
@@ -346,6 +346,7 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
                     movie_id, title, year, new_url, bucket, bucket_url,
                     clean_after_upload=clean_after_upload,
                     cookies_browser=cookies_browser,
+                    cookies_file=cookies_file,
                     rediscover_on_failure=False,  # Prevent recursion
                 )
                 if hosted_url:
@@ -383,7 +384,7 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
         return None, None, 'upload_failed', str(e)[:200]
 
 
-def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=None):
+def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=None, cookies_file=None):
     """
     Download and upload trailers for movies that have links.trailer but no links.trailer_hosted.
 
@@ -397,10 +398,13 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
     config = load_config()
     bucket_url = config.get('bucket_url', '')
     max_hosted = config.get('max_hosted', 200)
-    # Default to Chrome cookies for age-restricted content (overridable via CLI --cookies)
-    # Safari cookies are blocked by macOS sandboxing when run from LaunchAgent
-    if cookies_browser is None:
-        cookies_browser = config.get('cookies_browser', 'chrome')
+    # Prefer cookies file (works from LaunchAgent) over browser (blocked by macOS sandbox on daemons)
+    if cookies_file is None:
+        raw = config.get('cookies_file')
+        if raw:
+            cookies_file = raw if os.path.isabs(raw) else os.path.join(PROJECT_ROOT, raw)
+    if cookies_browser is None and not cookies_file:
+        cookies_browser = config.get('cookies_browser')
 
     # Load data.json
     with open(DATA_JSON, 'r') as f:
@@ -497,6 +501,7 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
             movie['trailer_url'], bucket, url_base,
             clean_after_upload=clean_after,
             cookies_browser=cookies_browser,
+            cookies_file=cookies_file,
             original_language=movie.get('original_language', 'en'),
         )
 

@@ -93,7 +93,7 @@ def clean_vtt(content):
     return content
 
 
-def download_trailer(movie, dry_run=False, cookies_browser=None):
+def download_trailer(movie, dry_run=False, cookies_browser=None, cookies_file=None):
     """
     Download a single trailer. Returns a result dict with status and details.
 
@@ -142,8 +142,11 @@ def download_trailer(movie, dry_run=False, cookies_browser=None):
             'subtitle': os.path.join(OUTPUT_DIR, f'{tmdb_id}.%(ext)s'),
         }
 
-    # Use browser cookies for age-restricted content
-    if cookies_browser:
+    # Use cookies for age-restricted content.
+    # Prefer a cookies file (works from LaunchAgent) over live browser extraction (blocked by macOS sandbox).
+    if cookies_file and os.path.exists(cookies_file):
+        ydl_opts['cookiefile'] = cookies_file
+    elif cookies_browser:
         ydl_opts['cookiesfrombrowser'] = (cookies_browser,)
 
     try:
