@@ -1,9 +1,31 @@
 {
-  "timestamp": "2026-05-28T00:41:56.910710",
-  "movies_attempted": 6,
-  "hosted": 6,
-  "failed": 0,
-  "skipped": 0,
-  "failure_details": [],
+  "timestamp": "2026-06-03T08:37:35.230192",
+  "movies_attempted": 4,
+  "hosted": 0,
+  "failed": 3,
+  "skipped": 1,
+  "failure_details": [
+    {
+      "title": "One Spoon of Chocolate",
+      "movie_id": "1290792",
+      "reason": "download:failed",
+      "detail": "ERROR: [Errno 1] Operation not permitted: '/Users/hadrianbelove/Library/Containers/com.apple.Safari/Data/Library/Cookies/Cookies.binarycookies'",
+      "trailer_url": "https://www.youtube.com/watch?v=a7jYT3VGjxA"
+    },
+    {
+      "title": "Life in a Beat",
+      "movie_id": "1462784",
+      "reason": "download:failed",
+      "detail": "ERROR: [Errno 1] Operation not permitted: '/Users/hadrianbelove/Library/Containers/com.apple.Safari/Data/Library/Cookies/Cookies.binarycookies'",
+      "trailer_url": "https://www.youtube.com/watch?v=74auGR9iExI"
+    },
+    {
+      "title": "Erupcja",
+      "movie_id": "1337592",
+      "reason": "download:failed",
+      "detail": "ERROR: [Errno 1] Operation not permitted: '/Users/hadrianbelove/Library/Containers/com.apple.Safari/Data/Library/Cookies/Cookies.binarycookies'",
+      "trailer_url": "https://www.youtube.com/watch?v=OiHk3tFSK84"
+    }
+  ],
   "yt_dlp_version": "2026.03.17"
 }

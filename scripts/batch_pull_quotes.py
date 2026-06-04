@@ -100,8 +100,14 @@ def main():
         logger.error("Could not load movies from data.json")
         return
 
-    # Sort by most recent digital_date
-    movies.sort(key=lambda m: m.get('digital_date', '') or '', reverse=True)
+    # Sort available movies first (digital_date <= today), then pre-orders after
+    # Prevents future-dated pre-orders from crowding out actual new arrivals
+    from datetime import date as _date
+    _today = str(_date.today())
+    movies.sort(key=lambda m: (
+        1 if (m.get('digital_date') or '') <= _today else 0,
+        m.get('digital_date', '') or ''
+    ), reverse=True)
 
     # Load existing combined cache
     combined = load_json(COMBINED_CACHE, {})

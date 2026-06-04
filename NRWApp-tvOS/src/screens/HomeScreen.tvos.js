@@ -117,7 +117,7 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) =>
 
 // Slop Toggle Button - TV remote focusable
 // iOS-style track+thumb toggle — matches the website design
-const MetaToggle = forwardRef(({ isActive, offLabel, onLabel, accessibilityLabel, onPress, nextFocusUp }, ref) => {
+const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, nextFocusUp }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const thumbAnim = useRef(new Animated.Value(isActive ? 1 : 0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -158,9 +158,6 @@ const MetaToggle = forwardRef(({ isActive, offLabel, onLabel, accessibilityLabel
       nextFocusUp={nextFocusUp}
     >
       <Animated.View style={[styles.metaToggleWrap, { transform: [{ scale: scaleAnim }] }]}>
-        <Text style={[styles.metaToggleLabel, isActive && styles.metaToggleLabelActive]}>
-          {isActive ? onLabel : offLabel}
-        </Text>
         <View style={[
           styles.metaToggleTrack,
           isActive && styles.metaToggleTrackActive,
@@ -168,6 +165,9 @@ const MetaToggle = forwardRef(({ isActive, offLabel, onLabel, accessibilityLabel
         ]}>
           <Animated.View style={[styles.metaToggleThumb, { transform: [{ translateX: thumbTranslate }] }]} />
         </View>
+        <Text style={[styles.metaToggleLabel, isActive && styles.metaToggleLabelActive]}>
+          {label}
+        </Text>
       </Animated.View>
     </TouchableOpacity>
   );
@@ -222,10 +222,10 @@ const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp }, ref) => {
       nextFocusUp={nextFocusUp}
     >
       <Animated.View style={[styles.metaToggleWrap, { transform: [{ scale: scaleAnim }] }]}>
-        <Text style={[styles.metaToggleLabel, { color: labelColor }]}>{LABELS[slopMode]}</Text>
         <View style={[styles.slopToggleTrack, trackStyle, isFocused && styles.metaToggleTrackFocused]}>
           <Animated.View style={[styles.slopToggleThumb, { backgroundColor: thumbColor, transform: [{ translateX: thumbTranslate }] }]} />
         </View>
+        <Text style={[styles.metaToggleLabel, { color: labelColor }]}>{LABELS[slopMode]}</Text>
       </Animated.View>
     </TouchableOpacity>
   );
@@ -510,8 +510,9 @@ const HomeScreenTvOS = () => {
     }
 
     // Pre-orders: only show when toggle is ON or search is active
+    // Virtual screenings are exempt — their visibility is controlled by hideFest, not showPreorders
     if (!showPreorders && !searchQuery) {
-      movies = movies.filter(m => !m._is_preorder);
+      movies = movies.filter(m => !m._is_preorder || m.filters?.is_virtual_screening);
     }
 
     // If no filters selected OR search is active, show all (search bypasses category filters — matches desktop)
@@ -939,16 +940,14 @@ const HomeScreenTvOS = () => {
           />
           <MetaToggle
             isActive={!hideFest}
-            offLabel="NO FEST"
-            onLabel="FESTS"
+            label="FESTS"
             accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
             onPress={() => setHideFest(v => !v)}
             nextFocusUp={headerNodeHandle}
           />
           <MetaToggle
             isActive={showPreorders}
-            offLabel="NO PRE-ORDERS"
-            onLabel="PRE-ORDERS"
+            label="PRE-ORDER"
             accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
             onPress={() => setShowPreorders(v => !v)}
             nextFocusUp={headerNodeHandle}

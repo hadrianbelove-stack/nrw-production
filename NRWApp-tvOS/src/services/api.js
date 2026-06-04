@@ -118,17 +118,23 @@ export function getMoviesByReleaseDate(movies) {
     grouped[date].push(movie);
   });
 
-  // Sort dates in descending order (most recent first)
-  // Handle "Unknown" specially - put at the end
+  // Past/today: newest first (descending). Future: soonest first (ascending).
+  // This puts currently-available content at top, then upcoming in calendar order.
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const sortedDates = Object.keys(grouped).sort((a, b) => {
     if (a === 'Unknown') return 1;
     if (b === 'Unknown') return -1;
     const dateA = new Date(a);
     const dateB = new Date(b);
-    // Handle invalid dates by putting them before "Unknown"
     if (isNaN(dateA.getTime())) return 1;
     if (isNaN(dateB.getTime())) return -1;
-    return dateB - dateA;
+    const aFuture = dateA > today;
+    const bFuture = dateB > today;
+    if (!aFuture && bFuture) return -1;  // past before future
+    if (aFuture && !bFuture) return 1;
+    if (aFuture && bFuture) return dateA - dateB;  // future: soonest first
+    return dateB - dateA;  // past: newest first
   });
 
   const sortedGrouped = {};
@@ -164,9 +170,6 @@ export function filterMovies(movies, filters = []) {
     // Must pass ANY selected filter (OR logic - cumulative)
     for (const filter of filterArray) {
       switch (filter) {
-        case 'studio':
-          if () return true;
-          break;
         case 'indie':
           if (movie.filters?.is_indie || movie.filters?.tier === 'indie') return true;
           break;
