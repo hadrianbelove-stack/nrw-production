@@ -17,6 +17,7 @@ import os
 import json
 import argparse
 import logging
+import concurrent.futures
 from datetime import datetime
 
 # Add project root to path
@@ -142,7 +143,7 @@ def main():
 
     # Initialize finder
     finder = GeminiPullQuoteFinder()
-    stats = {'processed': 0, 'with_quotes': 0, 'empty': 0, 'errors': 0}
+    stats = {'processed': 0, 'with_quotes': 0, 'empty': 0, 'errors': 0, 'timeouts': 0}
 
     for i, movie in enumerate(to_process, 1):
         title = movie['title']
@@ -160,7 +161,19 @@ def main():
         logger.info(f"[{i}/{len(to_process)}] {title} ({year})...")
 
         try:
-            quotes = finder.find_pull_quotes(title, year, director=director, rt_url=rt_url, mc_url=mc_url, lb_url=lb_url)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(
+                    finder.find_pull_quotes,
+                    title, year,
+                    director=director, rt_url=rt_url, mc_url=mc_url, lb_url=lb_url
+                )
+                try:
+                    quotes = future.result(timeout=120)
+                except concurrent.futures.TimeoutError:
+                    executor.shutdown(wait=False, cancel_futures=True)
+                    logger.warning(f"  → TIMED OUT after 120s — skipping {title} ({year}), flagged")
+                    stats['timeouts'] += 1
+                    continue
 
             if quotes:
                 # Write to combined cache in admin-compatible format
@@ -188,10 +201,11 @@ def main():
     save_json(COMBINED_CACHE, combined)
 
     logger.info(f"\n{'='*60}")
+    timeout_note = f", Timed out: {stats['timeouts']}" if stats['timeouts'] else ""
     logger.info(f"Done! Processed: {stats['processed']}, "
                 f"With quotes: {stats['with_quotes']}, "
                 f"Empty: {stats['empty']}, "
-                f"Errors: {stats['errors']}")
+                f"Errors: {stats['errors']}{timeout_note}")
     logger.info(f"Combined cache: {len(combined)} movies total")
     logger.info(f"{'='*60}\n")
 
