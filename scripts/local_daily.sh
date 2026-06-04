@@ -49,10 +49,18 @@ if [ "$STASHED" = true ]; then
     echo "  Restored local changes" >> "$LOG"
 fi
 
-# Step 2: Upload new trailers to B2 (download from YouTube + upload, no data.json writes)
+# Step 2a: Refresh YouTube cookies from Safari (Aqua session has keychain access)
+echo "Refreshing YouTube cookies..." >> "$LOG"
+/opt/homebrew/bin/yt-dlp --cookies-from-browser safari \
+    --cookies cache/yt_cookies.txt --skip-download \
+    'https://www.youtube.com/watch?v=dQw4w9WgXcQ' >> "$LOG" 2>&1 \
+    && echo "  Cookies refreshed" >> "$LOG" \
+    || echo "  Cookie refresh failed — will use existing file" >> "$LOG"
+
+# Step 2b: Upload new trailers to B2 (download from YouTube + upload, no data.json writes)
 echo "Hosting new trailers..." >> "$LOG"
 /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
-    /opt/homebrew/bin/python3.11 scripts/trailer_pipeline.py host >> "$LOG" 2> >(grep -v "Cookies.binarycookies" >> "$LOG")
+    /opt/homebrew/bin/python3.11 scripts/trailer_pipeline.py host >> "$LOG" 2>&1
 
 # Step 3: Stamp hosted trailer URLs into data.json and push to GitHub
 # This eliminates the ~19-hour gap where trailers show as YouTube fallbacks.
