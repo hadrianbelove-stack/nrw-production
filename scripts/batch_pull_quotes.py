@@ -113,6 +113,15 @@ def main():
     # Load existing combined cache
     combined = load_json(COMBINED_CACHE, {})
 
+    # When --force, bust all three internal caches so stale results don't shadow
+    # freshly scraped reviews (pull_quotes_cache, quote_extractions_cache, combined)
+    if args.force:
+        for cache_path in ['cache/pull_quotes_cache.json', 'cache/quote_extractions_cache.json']:
+            c = load_json(cache_path, {})
+            if c:
+                json.dump({}, open(cache_path, 'w'))
+                logger.info(f"--force: cleared {cache_path}")
+
     # Determine which movies to process
     limit = len(movies) if args.all else args.limit
     to_process = []
