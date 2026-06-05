@@ -11,7 +11,7 @@ Start the day. Read the overnight report, then curate new arrivals film by film.
 
 Read all of the following before presenting anything:
 
-1. `logs/launchagent.log` — last 150 lines
+1. `logs/launchagent.log` — last 150 lines. **Use `tail -150` via Bash** (the Read tool reads from the top; log files can be 30k+ lines so offset=0 will return stale entries from months ago)
 2. `metrics/run_diagnostics.json` — CI pipeline summary
 3. `metrics/discovery_run.json` — discovery results
 4. `metrics/enrichment_run.json` — enrichment results

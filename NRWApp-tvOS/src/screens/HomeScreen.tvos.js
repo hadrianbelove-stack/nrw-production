@@ -440,6 +440,8 @@ const HomeScreenTvOS = () => {
   const [toggleNodeHandle, setToggleNodeHandle] = useState(null);
   const [lastFilterNodeHandle, setLastFilterNodeHandle] = useState(null);
   const [lastToggleNodeHandle, setLastToggleNodeHandle] = useState(null);
+  // Ref to first rendered movie card — used by the boundary TVFocusGuideView for DOWN from filters
+  const [firstMovieRefState, setFirstMovieRefState] = useState(null);
 
   // Callback ref for first filter button
   const setFirstFilterRef = useCallback((ref) => {
@@ -525,6 +527,12 @@ const HomeScreenTvOS = () => {
       itemRefsMap.current.delete(index);
     }
   }, []);
+
+  // Reset first-movie ref when listData changes so the boundary guide doesn't hold a stale ref
+  // between filter changes (the new first movie will re-set it when it mounts).
+  useEffect(() => {
+    setFirstMovieRefState(null);
+  }, [listData]);
 
   // Full handle refresh after listData changes (initial load + filter changes).
   // Backstop that catches anything registerItemRef missed (e.g. refs set before InteractionManager fires).
@@ -861,7 +869,9 @@ const HomeScreenTvOS = () => {
         const refBelow = findMovieRef(index + NUM_COLUMNS, NUM_COLUMNS);
         // Use header as up-fallback when nothing above in column
         const upFallback = refAbove ?? headerRefObject.current;
-        const guideDests = [upFallback, refBelow].filter(Boolean);
+        // refBelow first: DOWN navigation picks it immediately (not currently focused).
+        // UP navigation skips refBelow (currently focused) and lands on upFallback.
+        const guideDests = [refBelow, upFallback].filter(Boolean);
         return (
           <TVFocusGuideView destinations={guideDests} style={styles.cardWrapper}>
             <DateCard dateParts={dateParts} isBootstrap={item.isBootstrap} />
@@ -932,8 +942,6 @@ const HomeScreenTvOS = () => {
 
       const rightNeighbor = listData[index + 1];
       const leftNeighbor = index > 0 ? listData[index - 1] : undefined;
-      const belowItem = listData[index + NUM_COLUMNS];
-      const aboveItem = index >= NUM_COLUMNS ? listData[index - NUM_COLUMNS] : undefined;
 
       // RIGHT: wrap at row end, or skip a date card in the next cell
       const nextFocusRight = isRowEnd
@@ -951,16 +959,22 @@ const HomeScreenTvOS = () => {
       // DOWN: always column-preserving (skips dates + unregistered handles); undefined if nothing below
       const nextFocusDown = findSameColumnBelow(index);
 
-      // UP: always explicit — column-preserving (skips dates), fall back to header when nothing above
+      // UP: first row — let tvOS spatial focus find the filter chips naturally (the boundary
+      // ListHeaderComponent TVFocusGuideView also intercepts). Deeper rows: column-preserving,
+      // fall back to header handle only when nothing is above in the same column.
       const nextFocusUp = isFirstRow
-        ? headerNodeHandle
+        ? undefined
         : (findSameColumnAbove(index) ?? headerNodeHandle);
+
+      // Track the first movie card's ref so the boundary guide below the header can target it.
+      const firstMovieIdx = listData.findIndex(i => i.type === 'movie');
+      const isFirstMovie = index === firstMovieIdx;
 
       // Movie card
       return (
         <View ref={(ref) => registerWrapperRef(index, ref)} style={styles.cardWrapper}>
           <MovieCard
-            ref={(ref) => registerItemRef(index, ref)}
+            ref={(ref) => { registerItemRef(index, ref); if (isFirstMovie) setFirstMovieRefState(ref); }}
             movie={item.movie}
             onSelect={() => handleMovieSelect(item.movie)}
             onLongPress={() => handleOpenFullscreen(item.movie)}
@@ -1114,6 +1128,14 @@ const HomeScreenTvOS = () => {
         );
       })()}
 
+      {/* DOWN boundary: intercepts focus falling downward from filter chips and redirects
+          to the first movie card via TVFocusGuideView (addUIBlock — reliable main-thread path).
+          Height 2 ensures the focus engine sees it; invisible to the user. */}
+      <TVFocusGuideView
+        destinations={firstMovieRefState ? [firstMovieRefState] : []}
+        style={styles.boundaryGuide}
+      />
+
       {/* Vertical scrolling grid - the wall */}
       <FlatList
         ref={flatListRef}
@@ -1125,10 +1147,19 @@ const HomeScreenTvOS = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         columnWrapperStyle={styles.row}
+        // removeClippedSubviews intentionally omitted — it destroys native view registrations
+        // used for focus navigation, causing nextFocusUp/Down handles to go stale off-screen.
         maxToRenderPerBatch={21}
         windowSize={5}
         initialNumToRender={21}
         getItemLayout={getItemLayout}
+        // UP boundary: when focus exits the top of the scroll view it crosses this 1px guide,
+        // which redirects to the filter chips. Insurance alongside natural spatial focus.
+        ListHeaderComponent={
+          headerRefObject.current
+            ? <TVFocusGuideView destinations={[headerRefObject.current]} style={styles.listHeaderGuide} />
+            : null
+        }
       />
 
       {/* Refresh indicator overlay */}
@@ -1318,6 +1349,17 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.4,
     shadowRadius: 3,
+  },
+  // Invisible 2px strip between header and FlatList — DOWN from filter chips lands here
+  // and TVFocusGuideView redirects to the first movie card.
+  boundaryGuide: {
+    height: 2,
+    marginHorizontal: 68,
+  },
+  // Invisible 1px strip at the top of the FlatList scroll content — UP from first-row
+  // movies exits the scroll view and this guide redirects back to the filter chips.
+  listHeaderGuide: {
+    height: 1,
   },
   listContent: {
     // Center the 5-column grid: (1920 - 5*344 - 4*16) / 2 = 68px
