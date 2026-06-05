@@ -157,7 +157,7 @@ Capsules and pull quotes are done together, movie by movie — not as separate p
 
 **Find candidates**: Stage 3 uses watermark logic, not the Stage 1/2 candidate list. Take the union of:
 - Movies needing a capsule: `digital_date` > capsule watermark (most recent `digital_date` among movies in `cache/approved_capsules.json`), not already in `cache/approved_capsules.json` by title, not a restoration
-- Movies needing pull quotes: `digital_date` > pull quote watermark (most recent `digital_date` among movies with a `pull_quotes` array in `data.json`), not already having `pull_quotes`, not a restoration
+- Movies needing pull quotes: `digital_date` > pull quote watermark (most recent `digital_date` among movies with a `pull_quotes` array in `data.json`), not already having a `pull_quotes` **key** (check key presence — an empty array `[]` means "reviewed and skipped", not "needs quotes"), not a restoration
 
 Merge into one list, deduplicated, sorted by `digital_date` descending. For each movie, track which work it needs: capsule, quotes, or both.
 
@@ -287,7 +287,7 @@ Pick a number — paste a trim — or skip.
 
 - Number → use that quote verbatim
 - Pasted text → **that text IS the final version** (never revert to original)
-- "skip" → move on
+- "skip" → write `pull_quotes: []` (empty array) to `data.json` for this movie, then commit: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] skipped APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`. An empty array signals "reviewed, nothing selected" and prevents this film from reappearing in the queue.
 
 **4b. Verify the review URL** (for each chosen quote that has a `review_url`)
 
@@ -321,7 +321,7 @@ After both capsule and pull quote are resolved for a movie:
 - If capsule only: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`
 - If pull quote only: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`
 - If both: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule + pull quote: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`
-- If both skipped: no commit needed, move to next movie
+- If pull quotes skipped (capsule also skipped or not needed): commit the empty `pull_quotes: []` written in Step B rule 3 above
 
 (`cache/*.json` files are gitignored — do not `git add` them.)
 
