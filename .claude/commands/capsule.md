@@ -43,7 +43,11 @@ Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER
 ---
 
 **FACTOID PRIMER**
-- [bullet: production fact, director quote, BTS detail, festival context, distribution story]
+- [8-12 bullets minimum — production facts, director quotes, BTS details, festival context,
+   distribution story, shooting conditions, budget, years-in-making, cast surprises,
+   cultural context, audience reactions, comparisons, awards. More is better — the editor
+   picks what to use. Every bullet should be SPECIFIC: a number, a name, a place, a date.
+   Vague bullets ("the film explores themes of identity") are useless.]
 - ...
 
 ---
