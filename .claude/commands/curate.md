@@ -287,7 +287,7 @@ Pick a number — paste a trim — or skip.
 
 - Number → use that quote verbatim
 - Pasted text → **that text IS the final version** (never revert to original)
-- "skip" → write `pull_quotes: []` (empty array) to `data.json` for this movie, then commit: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] skipped APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`. An empty array signals "reviewed, nothing selected" and prevents this film from reappearing in the queue.
+- "skip" → write `pull_quotes: []` (empty array) to `data.json` for this movie, then commit: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] skipped APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`. An empty array signals "reviewed, nothing selected" and prevents this film from reappearing in the queue. **Remember:** `pull_quotes: []` and no `pull_quotes` key are NOT the same. `[]` = the user reviewed this movie and rejected everything — do not re-queue it. No key = never been through the queue.
 
 **4b. Verify the review URL** (for each chosen quote that has a `review_url`)
 

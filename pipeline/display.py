@@ -232,7 +232,6 @@ class DisplayGenerator:
             'is_documentary': is_documentary,
             'auto_categorized': auto_categorized,
             'manual_override': manual_override,
-            '_tier': tier,  # Internal only — used by override logic, not written to data.json
         }
 
     def apply_admin_overrides(self, display_movies):
@@ -590,9 +589,6 @@ class DisplayGenerator:
                         categories['auto_categorized'] = False
             # Set 'featured' field for backwards compatibility (true or false)
             movie['featured'] = categories['is_staff_pick']
-
-            # Strip internal-only fields before writing to data.json
-            categories.pop('_tier', None)
 
             # Count for stats
             if categories.get('is_indie'):

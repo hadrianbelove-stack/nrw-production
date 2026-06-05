@@ -171,7 +171,7 @@ export function filterMovies(movies, filters = []) {
     for (const filter of filterArray) {
       switch (filter) {
         case 'indie':
-          if (movie.filters?.is_indie || movie.filters?.tier === 'indie') return true;
+          if (movie.filters?.is_indie) return true;
           break;
         case 'staff-picks': {
           const isStaffPick = movie.filters?.is_staff_pick || movie.featured === true;
