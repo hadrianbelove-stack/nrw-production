@@ -678,13 +678,13 @@ Best pull quote:"""
                         'review_url': review_url,
                     })
 
-                # Use GeminiQuoteExtractor for batched, verbatim-verified extraction
+                # Use LetterboxdGeminiQuoteExtractor for batched, verbatim-verified extraction
                 try:
-                    from gemini_scraper.quote_extractor import GeminiQuoteExtractor
-                    extractor = GeminiQuoteExtractor()
+                    from gemini_scraper.quote_extractor import LetterboxdGeminiQuoteExtractor
+                    extractor = LetterboxdGeminiQuoteExtractor()
                     review_dicts = extractor.extract_quotes(review_dicts, title=title, year=year)
                 except Exception as e:
-                    logger.warning(f"GeminiQuoteExtractor failed for {title}, using raw text: {e}")
+                    logger.warning(f"LetterboxdGeminiQuoteExtractor failed for {title}, using raw text: {e}")
 
                 for item in review_dicts:
                     # Use extracted pull_quote if available, otherwise full text

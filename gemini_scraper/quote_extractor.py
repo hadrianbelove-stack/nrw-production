@@ -14,7 +14,7 @@ from gemini_scraper.base import GeminiFinderBase
 logger = logging.getLogger('gemini_scraper.quote_extractor')
 
 
-class GeminiQuoteExtractor(GeminiFinderBase):
+class LetterboxdGeminiQuoteExtractor(GeminiFinderBase):
     """
     Extracts the punchiest pull-quote line from Letterboxd reviews.
 

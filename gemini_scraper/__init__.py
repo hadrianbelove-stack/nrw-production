@@ -12,7 +12,7 @@ from gemini_scraper.rotten_tomatoes import GeminiRTFinder, HybridRTFinder
 from gemini_scraper.wikipedia import GeminiWikipediaFinder
 from gemini_scraper.vod_date import GeminiVODDateFinder
 from gemini_scraper.pull_quotes import GeminiPullQuoteFinder
-from gemini_scraper.quote_extractor import GeminiQuoteExtractor
+from gemini_scraper.quote_extractor import LetterboxdGeminiQuoteExtractor
 from gemini_scraper.imdb import GeminiIMDbFinder
 from gemini_scraper.capsule import GeminiCapsuleWriter
 
@@ -25,7 +25,7 @@ __all__ = [
     'GeminiWikipediaFinder',
     'GeminiVODDateFinder',
     'GeminiPullQuoteFinder',
-    'GeminiQuoteExtractor',
+    'LetterboxdGeminiQuoteExtractor',
     'GeminiIMDbFinder',
     'GeminiCapsuleWriter',
 ]
