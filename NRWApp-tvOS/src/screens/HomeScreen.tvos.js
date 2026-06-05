@@ -59,7 +59,7 @@ const FILTER_DESCRIPTIONS = {
 };
 
 // Filter Button Component - forwardRef to allow focus navigation from grid
-const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) => {
+const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus, nextFocusDown, nextFocusUp, style }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -85,6 +85,7 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) =>
   return (
     <TouchableOpacity
       ref={ref}
+      style={[{ flex: 1 }, style]}
       onPress={onPress}
       onFocus={handleFocus}
       onBlur={handleBlur}
@@ -93,6 +94,8 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) =>
       accessibilityLabel={`Filter by ${filter.label}`}
       accessibilityRole="button"
       accessibilityState={{ selected: isActive }}
+      nextFocusDown={nextFocusDown}
+      nextFocusUp={nextFocusUp}
     >
       <Animated.View
         style={[
@@ -117,7 +120,7 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus }, ref) =>
 
 // Slop Toggle Button - TV remote focusable
 // iOS-style track+thumb toggle — matches the website design
-const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, nextFocusUp }, ref) => {
+const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, nextFocusUp, nextFocusDown }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const thumbAnim = useRef(new Animated.Value(isActive ? 1 : 0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -142,7 +145,7 @@ const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, n
 
   const thumbTranslate = thumbAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 36],
+    outputRange: [0, 30],
   });
 
   return (
@@ -156,6 +159,7 @@ const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, n
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
       nextFocusUp={nextFocusUp}
+      nextFocusDown={nextFocusDown}
     >
       <Animated.View style={[styles.metaToggleWrap, { transform: [{ scale: scaleAnim }] }]}>
         <View style={[
@@ -174,7 +178,7 @@ const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, n
 });
 
 // 3-state Slop Toggle — cycles: SLOP FREE → ALL → SLOP ONLY (matches desktop 3-state)
-const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp }, ref) => {
+const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp, nextFocusLeft, nextFocusDown }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const thumbAnim = useRef(new Animated.Value(slopMode === 'free' ? 0 : slopMode === 'all' ? 1 : 2)).current;
@@ -194,10 +198,10 @@ const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp }, ref) => {
     Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
   }, [scaleAnim]);
 
-  // Thumb travels 0 → 38 → 76px, matching desktop CSS exactly (108px track, 24px thumb)
+  // Thumb travels across 80px track with 16px thumb, 3px padding each side
   const thumbTranslate = thumbAnim.interpolate({
     inputRange: [0, 1, 2],
-    outputRange: [0, 38, 76],
+    outputRange: [0, 30, 60],
   });
 
   const LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
@@ -220,6 +224,8 @@ const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp }, ref) => {
       accessibilityLabel={`Slop filter: ${LABELS[slopMode]}`}
       accessibilityRole="button"
       nextFocusUp={nextFocusUp}
+      nextFocusLeft={nextFocusLeft}
+      nextFocusDown={nextFocusDown}
     >
       <Animated.View style={[styles.metaToggleWrap, { transform: [{ scale: scaleAnim }] }]}>
         <View style={[styles.slopToggleTrack, trackStyle, isFocused && styles.metaToggleTrackFocused]}>
@@ -394,6 +400,8 @@ const HomeScreenTvOS = () => {
   const initialFocusDone = useRef(false);  // Prevents hasTVPreferredFocus re-firing on listData changes
   const [headerNodeHandle, setHeaderNodeHandle] = useState(null);
   const [toggleNodeHandle, setToggleNodeHandle] = useState(null);
+  const [lastFilterNodeHandle, setLastFilterNodeHandle] = useState(null);
+  const [lastToggleNodeHandle, setLastToggleNodeHandle] = useState(null);
 
   // Callback ref for first filter button
   const setFirstFilterRef = useCallback((ref) => {
@@ -403,11 +411,27 @@ const HomeScreenTvOS = () => {
     }
   }, []);
 
+  // Callback ref for last filter button (Reissues) — slop toggle LEFT target
+  const setLastFilterRef = useCallback((ref) => {
+    if (ref) {
+      const handle = findNodeHandle(ref);
+      if (handle) setLastFilterNodeHandle(handle);
+    }
+  }, []);
+
   // Callback ref for slop toggle — this is what movie cards navigate UP to
   const setFirstToggleRef = useCallback((ref) => {
     if (ref) {
       const handle = findNodeHandle(ref);
       setToggleNodeHandle(handle);
+    }
+  }, []);
+
+  // Callback ref for last toggle (pre-order) — leftmost first-row poster LEFT target
+  const setLastToggleRef = useCallback((ref) => {
+    if (ref) {
+      const handle = findNodeHandle(ref);
+      if (handle) setLastToggleNodeHandle(handle);
     }
   }, []);
 
@@ -438,14 +462,44 @@ const HomeScreenTvOS = () => {
   const itemRefsMap = useRef(new Map());  // Map of index -> ref
   const [itemNodeHandles, setItemNodeHandles] = useState(new Map());  // Map of index -> node handle
 
-  // Register item ref for wrap-around navigation
+  // Register item ref for wrap-around navigation.
+  // Also updates itemNodeHandles immediately — bail-out prevents re-renders when handle unchanged.
   const registerItemRef = useCallback((index, ref) => {
     if (ref) {
       itemRefsMap.current.set(index, ref);
+      const handle = findNodeHandle(ref);
+      if (handle) {
+        setItemNodeHandles(prev => {
+          if (prev.get(index) === handle) return prev;
+          const next = new Map(prev);
+          next.set(index, handle);
+          return next;
+        });
+      }
     } else {
       itemRefsMap.current.delete(index);
     }
   }, []);
+
+  // Full handle refresh after listData changes (initial load + filter changes).
+  // Backstop that catches anything registerItemRef missed (e.g. refs set before InteractionManager fires).
+  useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(() => {
+      setItemNodeHandles(prev => {
+        const next = new Map(prev);
+        let changed = false;
+        itemRefsMap.current.forEach((ref, index) => {
+          const handle = findNodeHandle(ref);
+          if (handle && next.get(index) !== handle) {
+            next.set(index, handle);
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
+    });
+    return () => task.cancel();
+  }, [listData]);
 
   // Wrapper refs for z-index elevation on focus — imperative, avoids re-renders
   const wrapperRefsMap = useRef(new Map());
@@ -455,21 +509,6 @@ const HomeScreenTvOS = () => {
     if (ref) wrapperRefsMap.current.set(index, ref);
     else wrapperRefsMap.current.delete(index);
   }, []);
-
-  // Update node handles after layout is complete using InteractionManager
-  useEffect(() => {
-    const handle = InteractionManager.runAfterInteractions(() => {
-      const newHandles = new Map();
-      itemRefsMap.current.forEach((ref, index) => {
-        const nodeHandle = findNodeHandle(ref);
-        if (nodeHandle) {
-          newHandles.set(index, nodeHandle);
-        }
-      });
-      setItemNodeHandles(newHandles);
-    });
-    return () => handle.cancel();
-  }, [filteredMovies]);
 
   // Track screen view on mount
   useEffect(() => {
@@ -498,10 +537,19 @@ const HomeScreenTvOS = () => {
     let movies = filteredMovies;
 
     // Slop mode: free=hide slop, all=show all, only=show only slop (matches desktop 3-state)
+    // Fests and pre-orders are always exempt — if you turned them on, you want all of them
     if (slopMode === 'free') {
-      movies = movies.filter(m => !m.is_slop && !m._is_slop_guess);
+      movies = movies.filter(m =>
+        (!m.is_slop && !m._is_slop_guess) ||
+        (!hideFest && m.filters?.is_virtual_screening) ||
+        (showPreorders && m._is_preorder)
+      );
     } else if (slopMode === 'only') {
-      movies = movies.filter(m => m.is_slop || m._is_slop_guess);
+      movies = movies.filter(m =>
+        (m.is_slop || m._is_slop_guess) ||
+        (!hideFest && m.filters?.is_virtual_screening) ||
+        (showPreorders && m._is_preorder)
+      );
     }
 
     // Hide-fest mode: hide virtual screenings
@@ -728,9 +776,9 @@ const HomeScreenTvOS = () => {
   // Render item (date marker, trailers button, or movie card)
   const renderItem = useCallback(
     ({ item, index }) => {
-      // Items in first row should navigate up to slop toggle (then up again → filter chips)
+      // Items in first row should navigate up to filter chips (bottom header row)
       const isFirstRow = index < NUM_COLUMNS;
-      const focusUpTarget = isFirstRow ? toggleNodeHandle : undefined;
+      const focusUpTarget = isFirstRow ? headerNodeHandle : undefined;
 
       // NEW TRAILERS button
       if (item.type === 'trailers') {
@@ -799,10 +847,13 @@ const HomeScreenTvOS = () => {
         ? findNearestHandle(index + 1, 1)
         : (rightNeighbor && rightNeighbor.type === 'date' ? findNearestHandle(index + 2, 1) : undefined);
 
-      // LEFT: wrap at row start, or skip a date card in the previous cell
+      // LEFT: at row start → last filter chip (first poster row) or far right of previous poster row.
+      // Skip date cards in the previous cell; guard index-2 going negative (date at col 0, first row).
       const nextFocusLeft = isRowStart
-        ? (index > 0 ? findNearestHandle(index - 1, -1) : undefined)
-        : (leftNeighbor && leftNeighbor.type === 'date' ? findNearestHandle(index - 2, -1) : undefined);
+        ? (isFirstRow ? lastFilterNodeHandle : findNearestHandle(index - 1, -1))
+        : (leftNeighbor && leftNeighbor.type === 'date'
+            ? (index === 1 ? lastFilterNodeHandle : findNearestHandle(index - 2, -1))
+            : undefined);
 
       // DOWN: if date card is directly below, slide into that row at the nearest movie
       const nextFocusDown = (belowItem && belowItem.type === 'date')
@@ -810,9 +861,9 @@ const HomeScreenTvOS = () => {
         : undefined;
 
       // UP: if date card is directly above, slide into that row at the nearest movie;
-      //     fall back to toggle when the date card is in the first row (nothing above it)
+      //     fall back to filter chips when the date card is in the first row (nothing above it)
       const nextFocusUpVertical = (!isFirstRow && aboveItem && aboveItem.type === 'date')
-        ? (findNearestInRow(index - NUM_COLUMNS) || toggleNodeHandle)
+        ? (findNearestInRow(index - NUM_COLUMNS) || headerNodeHandle)
         : undefined;
 
       // Movie card
@@ -827,7 +878,7 @@ const HomeScreenTvOS = () => {
             onBlur={() => handleMovieBlur(index)}
             hasTVPreferredFocus={giveInitialFocus && index === (SHOW_TRAILERS_CARD ? 2 : 1)}
             testID={`movie-card-${index}`}
-            nextFocusUp={isFirstRow ? toggleNodeHandle : nextFocusUpVertical}
+            nextFocusUp={isFirstRow ? headerNodeHandle : nextFocusUpVertical}
             nextFocusDown={nextFocusDown}
             nextFocusLeft={nextFocusLeft}
             nextFocusRight={nextFocusRight}
@@ -835,7 +886,7 @@ const HomeScreenTvOS = () => {
         </View>
       );
     },
-    [formatDateParts, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, toggleNodeHandle, itemNodeHandles, listData, registerItemRef, registerWrapperRef, giveInitialFocus]
+    [formatDateParts, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, listData, registerItemRef, registerWrapperRef, giveInitialFocus]
   );
 
   // Key extractor
@@ -893,19 +944,46 @@ const HomeScreenTvOS = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header: two rows — top has title/filters/search, bottom has toggles (closest to movies) */}
+      {/* Header: top row = title + toggles; bottom row = filters + search */}
       <View style={styles.header}>
-        {/* Top row */}
+        {/* Top row: title left, toggles right */}
         <View style={styles.headerTopRow}>
           <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
+          <View style={styles.toggleRow}>
+            <SlopToggle
+              ref={setFirstToggleRef}
+              slopMode={slopMode}
+              onPress={() => setSlopMode(m => m === 'free' ? 'all' : m === 'all' ? 'only' : 'free')}
+              nextFocusDown={headerNodeHandle}
+            />
+            <MetaToggle
+              isActive={!hideFest}
+              label="FESTS"
+              accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
+              onPress={() => setHideFest(v => !v)}
+              nextFocusDown={headerNodeHandle}
+            />
+            <MetaToggle
+              ref={setLastToggleRef}
+              isActive={showPreorders}
+              label="PRE-ORDER"
+              accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
+              onPress={() => setShowPreorders(v => !v)}
+              nextFocusDown={headerNodeHandle}
+            />
+          </View>
+        </View>
+        {/* Bottom row: filter chips left, search right */}
+        <View style={styles.filterSearchRow}>
           <View style={styles.filterRow}>
-            {FILTERS.map((filter, index) => (
+            {FILTERS.map((filter, idx) => (
               <FilterButton
                 key={filter.id}
-                ref={index === 0 ? setFirstFilterRef : undefined}
+                ref={idx === 0 ? setFirstFilterRef : idx === FILTERS.length - 1 ? setLastFilterRef : undefined}
                 filter={filter}
                 isActive={activeFilters.has(filter.id)}
                 onPress={() => handleFilterChange(filter.id)}
+                nextFocusUp={toggleNodeHandle}
               />
             ))}
           </View>
@@ -929,29 +1007,6 @@ const HomeScreenTvOS = () => {
               </TouchableOpacity>
             )}
           </View>
-        </View>
-        {/* Toggle row — sits directly above movies, gets focus first on up-press */}
-        <View style={styles.toggleRow}>
-          <SlopToggle
-            ref={setFirstToggleRef}
-            slopMode={slopMode}
-            onPress={() => setSlopMode(m => m === 'free' ? 'all' : m === 'all' ? 'only' : 'free')}
-            nextFocusUp={headerNodeHandle}
-          />
-          <MetaToggle
-            isActive={!hideFest}
-            label="FESTS"
-            accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
-            onPress={() => setHideFest(v => !v)}
-            nextFocusUp={headerNodeHandle}
-          />
-          <MetaToggle
-            isActive={showPreorders}
-            label="PRE-ORDER"
-            accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
-            onPress={() => setShowPreorders(v => !v)}
-            nextFocusUp={headerNodeHandle}
-          />
         </View>
       </View>
 
@@ -1020,17 +1075,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   headerTitle: {
     color: Colors.textPrimary,
-    fontSize: 44,
+    fontSize: 58,
     fontWeight: '100',
-    letterSpacing: 8,
+    letterSpacing: 9,
   },
   filterRow: {
     flexDirection: 'row',
-    gap: 12,
+    flex: 1,
+    gap: 8,
+  },
+  filterSearchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: 4,
+    gap: 20,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -1066,12 +1128,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    flex: 1,
+    paddingVertical: 9,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.35)',
+    alignItems: 'center',
   },
   filterButtonActive: {
     backgroundColor: Colors.primary,
@@ -1083,7 +1146,7 @@ const styles = StyleSheet.create({
   },
   filterButtonText: {
     color: Colors.textPrimary,
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '500',
   },
   filterButtonTextActive: {
@@ -1099,38 +1162,37 @@ const styles = StyleSheet.create({
   },
   toggleRow: {
     flexDirection: 'row',
-    gap: 32,
-    paddingBottom: 4,
+    gap: 16,
+    alignItems: 'center',
   },
   metaToggleWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: 10,
   },
   metaToggleLabel: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '700',
-    letterSpacing: 1.5,
+    letterSpacing: 1.2,
     color: 'rgba(0,212,170,0.45)',
   },
   metaToggleLabelActive: {
     color: '#00d4aa',
   },
-  // 3-state slop toggle track — matches desktop CSS exactly (108px × 32px, 24px thumb)
   slopToggleTrack: {
-    width: 108,
-    height: 32,
-    borderRadius: 16,
+    width: 80,
+    height: 22,
+    borderRadius: 11,
     backgroundColor: '#1a1a1a',
     borderWidth: 1,
     borderColor: 'rgba(0,212,170,0.45)',
     justifyContent: 'center',
-    paddingHorizontal: 4,
+    paddingHorizontal: 3,
   },
   slopToggleThumb: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
     backgroundColor: 'rgba(0,212,170,0.55)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -1138,14 +1200,14 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   metaToggleTrack: {
-    width: 80,
-    height: 44,
-    borderRadius: 22,
+    width: 60,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: '#1a1a1a',
     borderWidth: 1,
     borderColor: 'rgba(0,212,170,0.3)',
     justifyContent: 'center',
-    paddingHorizontal: 5,
+    paddingHorizontal: 3,
   },
   metaToggleTrackActive: {
     backgroundColor: '#00d4aa',
@@ -1156,9 +1218,9 @@ const styles = StyleSheet.create({
     borderWidth: 2.5,
   },
   metaToggleThumb: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },

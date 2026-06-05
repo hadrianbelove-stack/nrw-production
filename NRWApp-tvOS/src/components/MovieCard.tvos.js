@@ -216,7 +216,8 @@ const MovieCard = forwardRef(({
     return frame(service.toUpperCase().slice(0, 8), '#666666');
   };
 
-  const streamingBadge = getStreamingBadge();
+  const isFest = !!movie.filters?.is_virtual_screening;
+  const streamingBadge = isFest ? null : getStreamingBadge();
   const isStaffPick = !!(movie.filters?.is_staff_pick || movie.featured);
   // Light-background services need black text on the frame header
   const frameTextColor = streamingBadge?.name && ['HULU', 'PRIME'].includes(streamingBadge.name) ? '#000' : '#fff';
@@ -277,7 +278,30 @@ const MovieCard = forwardRef(({
           ]}
         >
           {/* Clip container — overflow:hidden keeps image and overlays inside rounded corners */}
-          {streamingBadge?.isFrame ? (
+          {isFest ? (
+            /* === Festival Frame (gold header at top, no score badges) === */
+            <View style={[styles.posterContainer, { width: cardWidth, height: cardHeight, backgroundColor: Colors.screeningGold, justifyContent: 'flex-start' }]}>
+              {/* Gold header: festival name (year stripped, up to 2 lines) */}
+              <View style={styles.streamingFrameHeader}>
+                <Text style={styles.festFrameName} numberOfLines={2}>{decodeHtml((movie.virtual_screening_info?.screening_name || 'FESTIVAL').replace(/\b(19|20)\d{2}\b/g, '').replace(/\s+/g, ' ').trim())}</Text>
+              </View>
+              {/* Poster contained below header — no clipping */}
+              {hasPoster && !imageError ? (
+                <Image source={{ uri: posterUrl }} style={styles.streamingFramePoster} resizeMode="contain" onError={() => setImageError(true)} />
+              ) : (
+                <View style={[styles.posterPlaceholder, { flex: 1, height: undefined, borderRadius: 0 }]}>
+                  <Text style={styles.placeholderText} numberOfLines={3}>{movie.display_title || movie.title}</Text>
+                </View>
+              )}
+              {(movie.filters?.is_restoration || movie.reissue_label) && (
+                <View style={[styles.restorationCardBadge, { top: 60 }]}>
+                  <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORED'}</Text>
+                </View>
+              )}
+              {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ STAFF PICK</Text></View>}
+              <View style={styles.screeningBorder} />
+            </View>
+          ) : streamingBadge?.isFrame ? (
             /* === Gallery Label Frame (service-colored card) === */
             <View style={[styles.posterContainer, { width: cardWidth, height: cardHeight, backgroundColor: streamingBadge.color, justifyContent: 'flex-start' }]}>
               {/* 52px header strip: SERVICE NAME + NOW STREAMING */}
@@ -559,6 +583,15 @@ const styles = StyleSheet.create({
   streamingFramePoster: {
     flex: 1,
     width: '100%',
+  },
+  festFrameName: {
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    color: Colors.screeningGoldText,
+    lineHeight: 15,
+    textAlign: 'center',
   },
   cardScoreOverlay: {
     position: 'absolute',

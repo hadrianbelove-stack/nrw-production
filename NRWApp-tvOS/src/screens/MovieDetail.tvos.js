@@ -1131,7 +1131,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.tvos.lg,
   },
   synopsis: {
-    color: Colors.textSecondary,
+    color: Colors.textPrimary,
     fontSize: Typography.tvos.body,
     lineHeight: Typography.tvos.body * 1.5,
   },

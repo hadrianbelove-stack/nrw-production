@@ -748,7 +748,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   synopsis: {
-    color: Colors.textSecondary,
+    color: Colors.textPrimary,
     fontSize: Typography.body,
     lineHeight: 24,
   },
