@@ -574,7 +574,7 @@ const MovieDetailTvOS = () => {
   }, [fadeAnim]);
 
   // Handle TV remote events (disabled while trailer player is active)
-  // LEFT/RIGHT d-pad swipes navigate movies directly — no button press needed
+  // Both d-pad clicks (LEFT/RIGHT) and touchpad swipes (SWIPE_LEFT/SWIPE_RIGHT) cycle movies
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => {
       navigation.goBack();
@@ -588,6 +588,12 @@ const MovieDetailTvOS = () => {
       if (movieList.length > 1) navigatePrevious();
     },
     [TV_EVENTS.RIGHT]: () => {
+      if (movieList.length > 1) navigateNext();
+    },
+    [TV_EVENTS.SWIPE_LEFT]: () => {
+      if (movieList.length > 1) navigatePrevious();
+    },
+    [TV_EVENTS.SWIPE_RIGHT]: () => {
       if (movieList.length > 1) navigateNext();
     },
   });
@@ -713,7 +719,6 @@ const MovieDetailTvOS = () => {
               </Text>
               {(() => {
                 const hp = [];
-                if (formattedCountries) hp.push(formattedCountries);
                 if (movie.genres?.[0]) hp.push(movie.genres[0]);
                 if (movie.digital_date) {
                   let d = formatShortDate(movie.digital_date);
@@ -732,84 +737,87 @@ const MovieDetailTvOS = () => {
               </Text>
             )}
 
-            {/* 3. Meta block — Director, Cast, details line */}
-            {(movie.crew?.director || movie.director) && (
-              <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Director: </Text><Text style={styles.metadataCrewName}>{movie.crew?.director || movie.director}</Text></Text>
-            )}
-            {movie.crew?.cast?.length > 0 && (
-              <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Cast: </Text><Text style={styles.metadataCrewName}>{movie.crew.cast.slice(0, 3).join(', ')}</Text></Text>
-            )}
-            <View style={styles.metadataRow}>
-              {movie.year && (
-                <Text style={styles.metadataText}>{movie.year}</Text>
-              )}
-              {formattedRuntime && (
-                <>
-                  <Text style={styles.metadataDot}>•</Text>
-                  <Text style={styles.metadataText}>{formattedRuntime}</Text>
-                </>
-              )}
-              {(movie.distributor || movie.studio) && (
-                <>
-                  <Text style={styles.metadataDot}>•</Text>
-                  <Text style={styles.metadataText}>{movie.distributor || movie.studio}</Text>
-                </>
+            {/* 3 + 5. Meta block and scores side-by-side — scores float in the negative space right of director/cast */}
+            <View style={styles.metaAndScoresRow}>
+              {/* Left: Director, Cast, year/runtime, language */}
+              <View style={styles.metaLeft}>
+                {(movie.crew?.director || movie.director) && (
+                  <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Director: </Text><Text style={styles.metadataCrewName}>{movie.crew?.director || movie.director}</Text></Text>
+                )}
+                {movie.crew?.cast?.length > 0 && (
+                  <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Cast: </Text><Text style={styles.metadataCrewName}>{movie.crew.cast.slice(0, 3).join(', ')}</Text></Text>
+                )}
+                <View style={styles.metadataRow}>
+                  {movie.year && (
+                    <Text style={styles.metadataText}>{movie.year}</Text>
+                  )}
+                  {formattedRuntime && (
+                    <>
+                      <Text style={styles.metadataDot}>•</Text>
+                      <Text style={styles.metadataText}>{formattedRuntime}</Text>
+                    </>
+                  )}
+                  {(movie.distributor || movie.studio) && (
+                    <>
+                      <Text style={styles.metadataDot}>•</Text>
+                      <Text style={styles.metadataText}>{movie.distributor || movie.studio}</Text>
+                    </>
+                  )}
+                </View>
+                {movie.original_language && movie.original_language !== 'en' && (
+                  <View style={styles.creditRow}>
+                    <Text style={styles.creditLabel}>Language</Text>
+                    <Text style={styles.creditValue}>{movie.original_language.toUpperCase()}</Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Right: Score badges stacked vertically */}
+              {(rtScore || imdbScore || mcScore || lbScore) && (
+                <View style={styles.scoresColumn}>
+                  {rtScore && (
+                    <ScoreBadge
+                      logo={require('../../assets/logos/rt.png')}
+                      score={rtScore.label}
+                      color="#ff6b6b"
+                      borderColor="rgba(255,107,107,0.55)"
+                      bgColor="rgba(255,107,107,0.08)"
+                      accessibilityLabel={`Rotten Tomatoes ${rtScore.label}`}
+                    />
+                  )}
+                  {imdbScore && (
+                    <ScoreBadge
+                      logo={require('../../assets/logos/imdb.png')}
+                      score={imdbScore.label}
+                      color="#f5c518"
+                      borderColor="rgba(245,197,24,0.55)"
+                      bgColor="rgba(245,197,24,0.08)"
+                      accessibilityLabel={`IMDb rating ${imdbScore.label}`}
+                    />
+                  )}
+                  {mcScore && (
+                    <ScoreBadge
+                      logo={require('../../assets/logos/metacritic.png')}
+                      score={mcScore.label}
+                      color="#7ddf64"
+                      borderColor="rgba(125,223,100,0.55)"
+                      bgColor="rgba(125,223,100,0.08)"
+                      accessibilityLabel={`Metacritic score ${mcScore.label}`}
+                    />
+                  )}
+                  {lbScore && (
+                    <ScoreBadge
+                      logo={require('../../assets/logos/letterboxd.png')}
+                      score={lbScore.label}
+                      color="#00E054"
+                      borderColor="rgba(0,224,84,0.55)"
+                      bgColor="rgba(0,224,84,0.08)"
+                      accessibilityLabel={`Letterboxd rating ${lbScore.label}`}
+                    />
+                  )}
+                </View>
               )}
             </View>
-
-            {/* 4. Language (only if not English) */}
-            {movie.original_language && movie.original_language !== 'en' && (
-              <View style={styles.creditRow}>
-                <Text style={styles.creditLabel}>Language</Text>
-                <Text style={styles.creditValue}>{movie.original_language.toUpperCase()}</Text>
-              </View>
-            )}
-
-            {/* 5. Scores — compact inline badge pills (display-only, no Wiki) */}
-            {(rtScore || mcScore || imdbScore || lbScore) && (
-              <View style={badgeStyles.row}>
-                {rtScore && (
-                  <ScoreBadge
-                    logo={require('../../assets/logos/rt.png')}
-                    score={rtScore.label}
-                    color="#ff6b6b"
-                    borderColor="rgba(255,107,107,0.55)"
-                    bgColor="rgba(255,107,107,0.08)"
-                    accessibilityLabel={`Rotten Tomatoes ${rtScore.label}`}
-                  />
-                )}
-                {imdbScore && (
-                  <ScoreBadge
-                    logo={require('../../assets/logos/imdb.png')}
-                    score={imdbScore.label}
-                    color="#f5c518"
-                    borderColor="rgba(245,197,24,0.55)"
-                    bgColor="rgba(245,197,24,0.08)"
-                    accessibilityLabel={`IMDb rating ${imdbScore.label}`}
-                  />
-                )}
-                {mcScore && (
-                  <ScoreBadge
-                    logo={require('../../assets/logos/metacritic.png')}
-                    score={mcScore.label}
-                    color="#7ddf64"
-                    borderColor="rgba(125,223,100,0.55)"
-                    bgColor="rgba(125,223,100,0.08)"
-                    accessibilityLabel={`Metacritic score ${mcScore.label}`}
-                  />
-                )}
-                {lbScore && (
-                  <ScoreBadge
-                    logo={require('../../assets/logos/letterboxd.png')}
-                    score={lbScore.label}
-                    color="#00E054"
-                    borderColor="rgba(0,224,84,0.55)"
-                    bgColor="rgba(0,224,84,0.08)"
-                    accessibilityLabel={`Letterboxd rating ${lbScore.label}`}
-                  />
-                )}
-              </View>
-            )}
 
             {/* 6. Pull Quotes */}
             {movie.pull_quotes?.length > 0 && (
@@ -839,7 +847,14 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* 7b. Awards */}
+            {/* 7b. Country · Runtime · Year — shown below synopsis */}
+            {(formattedCountries || formattedRuntime || movie.year) && (
+              <Text style={styles.synopsisFooterMeta}>
+                {[formattedCountries, formattedRuntime, movie.year].filter(Boolean).join(' · ')}
+              </Text>
+            )}
+
+            {/* 7c. Awards */}
             {movie.awards && (
               <View style={styles.creditRow}>
                 <Text style={styles.creditLabel}>Awards</Text>
@@ -847,8 +862,12 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
+          </ScrollView>
+
+          {/* Fixed footer — always anchored at the same position regardless of content length */}
+          <View style={styles.detailsFooter}>
+
             {/* 8. Navigation + Trailer row: ‹ [TRAILER] › */}
-            {/* Arrows are visual-only — LEFT/RIGHT d-pad navigates via useTVEventHandler */}
             <View style={styles.navTrailerRow}>
               {movieList.length > 1 && (
                 <NavArrowIndicator direction="left" flash={arrowFlash === 'left'} />
@@ -946,7 +965,7 @@ const MovieDetailTvOS = () => {
               );
             })()}
 
-          </ScrollView>
+          </View>
         </View>
       </View>
 
@@ -1046,12 +1065,10 @@ const styles = StyleSheet.create({
   },
   detailsScrollContent: {
     padding: Spacing.tvos.md,
-    paddingBottom: Spacing.tvos.xl,
+    paddingBottom: Spacing.tvos.sm,
   },
   titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     borderBottomWidth: 2,
     borderBottomColor: 'rgba(0, 212, 170, 0.4)',
     paddingBottom: Spacing.tvos.sm,
@@ -1062,13 +1079,12 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.title,
     fontWeight: '700',
     lineHeight: Typography.tvos.title * 1.2,
-    flex: 1,
   },
   titleDate: {
     color: Colors.primary,
-    fontSize: Typography.tvos.title - 8,
-    fontWeight: '700',
-    marginLeft: Spacing.tvos.md,
+    fontSize: 22,
+    fontWeight: '600',
+    marginTop: 4,
   },
   screeningName: {
     backgroundColor: Colors.screeningGold,
@@ -1087,6 +1103,20 @@ const styles = StyleSheet.create({
     color: Colors.screeningGold,
     fontWeight: '700',
     fontStyle: 'italic',
+  },
+  metaAndScoresRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: Spacing.tvos.sm,
+  },
+  metaLeft: {
+    flex: 1,
+    marginRight: 12,
+  },
+  scoresColumn: {
+    flexDirection: 'column',
+    gap: 6,
+    alignItems: 'flex-end',
   },
   metadataRow: {
     flexDirection: 'row',
@@ -1135,11 +1165,23 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.body,
     lineHeight: Typography.tvos.body * 1.5,
   },
+  synopsisFooterMeta: {
+    color: Colors.textMuted,
+    fontSize: Typography.tvos.caption,
+    marginTop: 12,
+    letterSpacing: 0.5,
+  },
+  detailsFooter: {
+    paddingHorizontal: Spacing.tvos.md,
+    paddingBottom: Spacing.tvos.md,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
+  },
   navTrailerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginTop: Spacing.tvos.lg,
     marginBottom: 10,
   },
   streamRow: {

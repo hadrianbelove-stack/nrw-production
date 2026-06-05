@@ -26,22 +26,51 @@ import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
 import TrailerPlayer from '../components/TrailerPlayer';
 import {renderMarkdownSpans} from '../utils/markdown';
 
-const COUNTRY_SHORT_NAMES = {
-  'united states of america': 'USA', 'united states': 'USA', 'usa': 'USA',
-  'united kingdom': 'UK', 'great britain': 'UK',
-  'south korea': 'S. Korea', 'south africa': 'S. Africa',
-  'new zealand': 'N. Zealand', 'bosnia and herzegovina': 'Bosnia',
-  'saudi arabia': 'S. Arabia',
+const COUNTRY_ABBREV = {
+  'United States of America': 'USA', 'United States': 'USA', 'US': 'USA', 'USA': 'USA',
+  'United Kingdom': 'UK', 'Great Britain': 'UK', 'GB': 'UK',
+  'Germany': 'GER', 'DE': 'GER',
+  'France': 'FRA', 'FR': 'FRA',
+  'South Korea': 'KOR', 'KR': 'KOR',
+  'Netherlands': 'NED', 'NL': 'NED',
+  'Switzerland': 'SUI', 'CH': 'SUI',
+  'South Africa': 'RSA', 'ZA': 'RSA',
+  'Chile': 'CHL', 'CL': 'CHL',
+  'Japan': 'JPN', 'JP': 'JPN',
+  'Italy': 'ITA', 'IT': 'ITA',
+  'Spain': 'ESP', 'ES': 'ESP',
+  'Sweden': 'SWE', 'SE': 'SWE',
+  'Denmark': 'DEN', 'DK': 'DEN',
+  'Norway': 'NOR', 'NO': 'NOR',
+  'Poland': 'POL', 'PL': 'POL',
+  'Australia': 'AUS', 'AU': 'AUS',
+  'Canada': 'CAN', 'CA': 'CAN',
+  'Mexico': 'MEX', 'MX': 'MEX',
+  'Brazil': 'BRA', 'BR': 'BRA',
+  'Argentina': 'ARG', 'AR': 'ARG',
+  'Belgium': 'BEL', 'BE': 'BEL',
+  'Portugal': 'POR', 'PT': 'POR',
+  'Romania': 'ROM', 'RO': 'ROM',
+  'Hungary': 'HUN', 'HU': 'HUN',
+  'Czech Republic': 'CZE', 'CZ': 'CZE',
+  'Austria': 'AUT', 'AT': 'AUT',
+  'Ireland': 'IRL', 'IE': 'IRL',
+  'China': 'CHN', 'CN': 'CHN',
+  'Hong Kong': 'HKG', 'HK': 'HKG',
+  'Taiwan': 'TPE', 'TW': 'TPE',
+  'India': 'IND', 'IN': 'IND',
+  'Iran': 'IRI', 'IR': 'IRI',
+  'Israel': 'ISR', 'IL': 'ISR',
+  'Turkey': 'TUR', 'TR': 'TUR',
+  'Greece': 'GRE', 'GR': 'GRE',
+  'Finland': 'FIN', 'FI': 'FIN',
+  'New Zealand': 'NZL', 'NZ': 'NZL',
+  'Bosnia and Herzegovina': 'BIH', 'Saudi Arabia': 'KSA',
 };
 
 const formatCountry = (country) => {
   if (!country) return null;
-  const shortened = COUNTRY_SHORT_NAMES[country.toLowerCase()];
-  if (shortened) return shortened;
-  if (country !== country[0].toUpperCase() + country.slice(1).toLowerCase()) {
-    return country[0].toUpperCase() + country.slice(1).toLowerCase();
-  }
-  return country;
+  return COUNTRY_ABBREV[country] || country.slice(0, 3).toUpperCase();
 };
 
 const lbStars = (score) => {

@@ -6,6 +6,52 @@
 import { useState, useMemo } from 'react';
 import { getWatchLinks, getInfoLinks } from '../services/api';
 
+const COUNTRY_ABBREV = {
+  'United States of America': 'USA', 'US': 'USA',
+  'United Kingdom': 'UK', 'GB': 'UK',
+  'Germany': 'GER', 'DE': 'GER',
+  'France': 'FRA', 'FR': 'FRA',
+  'South Korea': 'KOR', 'KR': 'KOR',
+  'Netherlands': 'NED', 'NL': 'NED',
+  'Switzerland': 'SUI', 'CH': 'SUI',
+  'South Africa': 'RSA', 'ZA': 'RSA',
+  'Chile': 'CHL', 'CL': 'CHL',
+  'Japan': 'JPN', 'JP': 'JPN',
+  'Italy': 'ITA', 'IT': 'ITA',
+  'Spain': 'ESP', 'ES': 'ESP',
+  'Sweden': 'SWE', 'SE': 'SWE',
+  'Denmark': 'DEN', 'DK': 'DEN',
+  'Norway': 'NOR', 'NO': 'NOR',
+  'Poland': 'POL', 'PL': 'POL',
+  'Australia': 'AUS', 'AU': 'AUS',
+  'Canada': 'CAN', 'CA': 'CAN',
+  'Mexico': 'MEX', 'MX': 'MEX',
+  'Brazil': 'BRA', 'BR': 'BRA',
+  'Argentina': 'ARG', 'AR': 'ARG',
+  'Belgium': 'BEL', 'BE': 'BEL',
+  'Portugal': 'POR', 'PT': 'POR',
+  'Romania': 'ROM', 'RO': 'ROM',
+  'Hungary': 'HUN', 'HU': 'HUN',
+  'Czech Republic': 'CZE', 'CZ': 'CZE',
+  'Austria': 'AUT', 'AT': 'AUT',
+  'Ireland': 'IRL', 'IE': 'IRL',
+  'China': 'CHN', 'CN': 'CHN',
+  'Hong Kong': 'HKG', 'HK': 'HKG',
+  'Taiwan': 'TPE', 'TW': 'TPE',
+  'India': 'IND', 'IN': 'IND',
+  'Iran': 'IRI', 'IR': 'IRI',
+  'Israel': 'ISR', 'IL': 'ISR',
+  'Turkey': 'TUR', 'TR': 'TUR',
+  'Greece': 'GRE', 'GR': 'GRE',
+  'Finland': 'FIN', 'FI': 'FIN',
+  'Unknown': '—',
+};
+
+const abbreviateCountry = (name) => {
+  if (!name) return '';
+  return COUNTRY_ABBREV[name] || name.slice(0, 3).toUpperCase();
+};
+
 /**
  * Custom hook for Movie Detail state management
  * Shared between iOS and tvOS implementations
@@ -103,12 +149,13 @@ export function useMovieDetail(movie) {
     return { value: score, label };
   }, [movie]);
 
-  // Get formatted countries — prefer countries array, fall back to country string
+  // Get formatted countries — abbreviated per style guide (USA/UK exceptions, 3-letter for rest)
   const formattedCountries = useMemo(() => {
-    if (movie?.countries && Array.isArray(movie.countries) && movie.countries.length > 0) {
-      return movie.countries.join(', ');
-    }
-    return movie?.country || '';
+    const raw = (movie?.countries && Array.isArray(movie.countries) && movie.countries.length > 0)
+      ? movie.countries
+      : movie?.country ? [movie.country] : [];
+    if (raw.length === 0) return '';
+    return raw.map(abbreviateCountry).join(' / ');
   }, [movie]);
 
   // Get formatted language

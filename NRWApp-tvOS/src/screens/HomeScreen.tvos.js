@@ -17,6 +17,7 @@ import {
   Alert,
   findNodeHandle,
   InteractionManager,
+  TVFocusGuideView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useHomeScreen } from './useHomeScreen';
@@ -85,7 +86,7 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus, nextFocus
   return (
     <TouchableOpacity
       ref={ref}
-      style={[{ flex: 1 }, style]}
+      style={style}
       onPress={onPress}
       onFocus={handleFocus}
       onBlur={handleBlur}
@@ -145,7 +146,7 @@ const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, n
 
   const thumbTranslate = thumbAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 30],
+    outputRange: [0, 42],
   });
 
   return (
@@ -198,10 +199,10 @@ const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp, nextFocusLeft, 
     Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
   }, [scaleAnim]);
 
-  // Thumb travels across 80px track with 16px thumb, 3px padding each side
+  // Thumb travels across 108px track with 20px thumb, 4px padding each side
   const thumbTranslate = thumbAnim.interpolate({
     inputRange: [0, 1, 2],
-    outputRange: [0, 30, 60],
+    outputRange: [0, 40, 80],
   });
 
   const LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
@@ -286,6 +287,7 @@ const CARD_WIDTH = Dimensions.tvos.cardWidth;
 const CARD_HEIGHT = Dimensions.tvos.cardHeight;
 const CARD_GAP = 16;
 const SHOW_TRAILERS_CARD = false; // Trailers card temporarily disabled — set true to restore
+const PAGE_SIZE = 60; // Movies rendered per page; more load on demand
 
 // Trailers Card Component with focus animations
 const TrailersCard = ({ playlistUrl, nextFocusUp }) => {
@@ -394,11 +396,47 @@ const TrailersCard = ({ playlistUrl, nextFocusUp }) => {
   );
 };
 
+// Load More Card — appears at bottom of grid when more movies remain
+const LoadMoreCard = ({ remaining, onPress, nextFocusUp }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.timing(scaleAnim, { toValue: 1.05, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      activeOpacity={1}
+      accessible={true}
+      accessibilityLabel={`Load ${remaining} more movies`}
+      accessibilityRole="button"
+      nextFocusUp={nextFocusUp}
+    >
+      <Animated.View style={[styles.loadMoreCard, isFocused && styles.loadMoreCardFocused, { transform: [{ scale: scaleAnim }] }]}>
+        <Text style={styles.loadMoreArrow}>↓</Text>
+        <Text style={styles.loadMoreLabel}>MORE</Text>
+        <Text style={styles.loadMoreCount}>{remaining} films</Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
 const HomeScreenTvOS = () => {
   const navigation = useNavigation();
   const flatListRef = useRef(null);
   const initialFocusDone = useRef(false);  // Prevents hasTVPreferredFocus re-firing on listData changes
   const [headerNodeHandle, setHeaderNodeHandle] = useState(null);
+  const headerRefObject = useRef(null);
   const [toggleNodeHandle, setToggleNodeHandle] = useState(null);
   const [lastFilterNodeHandle, setLastFilterNodeHandle] = useState(null);
   const [lastToggleNodeHandle, setLastToggleNodeHandle] = useState(null);
@@ -406,6 +444,7 @@ const HomeScreenTvOS = () => {
   // Callback ref for first filter button
   const setFirstFilterRef = useCallback((ref) => {
     if (ref) {
+      headerRefObject.current = ref;
       const handle = findNodeHandle(ref);
       setHeaderNodeHandle(handle);
     }
@@ -453,6 +492,12 @@ const HomeScreenTvOS = () => {
   const [showPreorders, setShowPreorders] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  // Reset to first page whenever filters change
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [activeFilters, slopMode, hideFest, showPreorders, searchQuery]);
 
   // Fullscreen poster modal state
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
@@ -666,9 +711,12 @@ const HomeScreenTvOS = () => {
     }
 
     // 3. Regular movies with date dividers (optional trailers card before first date)
+    const hasMore = sortedRegular.length > visibleCount;
+    const paginatedRegular = sortedRegular.slice(0, visibleCount);
+
     let currentDate = null;
     let trailersPushed = false;
-    sortedRegular.forEach((movie, index) => {
+    paginatedRegular.forEach((movie, index) => {
       const movieDate = movie.digital_date || 'Unknown';
       if (movieDate !== currentDate) {
         currentDate = movieDate;
@@ -681,8 +729,12 @@ const HomeScreenTvOS = () => {
       items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie });
     });
 
+    if (hasMore) {
+      items.push({ type: 'load_more', id: 'load-more', remaining: sortedRegular.length - visibleCount });
+    }
+
     return items;
-  }, [displayMovies, latestPlaylistUrl]);
+  }, [displayMovies, latestPlaylistUrl, visibleCount]);
 
   // Handle movie selection - navigate to detail with analytics
   const handleMovieSelect = useCallback(
@@ -789,12 +841,49 @@ const HomeScreenTvOS = () => {
         );
       }
 
-      // Date marker
+      // Date marker — wrapped in TVFocusGuideView so the tvOS focus engine
+      // redirects focus THROUGH the non-focusable date cell to an adjacent movie.
       if (item.type === 'date') {
         const dateParts = formatDateParts(item.date);
+        // Find nearest movie ref above and below in same column
+        const findMovieRef = (startIdx, step) => {
+          let i = startIdx;
+          while (i >= 0 && i < listData.length) {
+            if (listData[i]?.type === 'movie') {
+              const r = itemRefsMap.current.get(i);
+              if (r) return r;
+            }
+            i += step;
+          }
+          return null;
+        };
+        const refAbove = findMovieRef(index - NUM_COLUMNS, -NUM_COLUMNS);
+        const refBelow = findMovieRef(index + NUM_COLUMNS, NUM_COLUMNS);
+        // Use header as up-fallback when nothing above in column
+        const upFallback = refAbove ?? headerRefObject.current;
+        const guideDests = [upFallback, refBelow].filter(Boolean);
+        return (
+          <TVFocusGuideView destinations={guideDests} style={styles.cardWrapper}>
+            <DateCard dateParts={dateParts} isBootstrap={item.isBootstrap} />
+          </TVFocusGuideView>
+        );
+      }
+
+      // Load more button
+      if (item.type === 'load_more') {
+        // Scan backward for the nearest registered movie card handle to use as UP target
+        let loadMoreUpHandle = headerNodeHandle;
+        for (let i = index - 1; i >= 0; i--) {
+          const h = itemNodeHandles.get(i);
+          if (h) { loadMoreUpHandle = h; break; }
+        }
         return (
           <View style={styles.cardWrapper}>
-            <DateCard dateParts={dateParts} isBootstrap={item.isBootstrap} />
+            <LoadMoreCard
+              remaining={item.remaining}
+              onPress={() => setVisibleCount(prev => prev + PAGE_SIZE)}
+              nextFocusUp={loadMoreUpHandle}
+            />
           </View>
         );
       }
@@ -815,24 +904,28 @@ const HomeScreenTvOS = () => {
         return undefined;
       };
 
-      // Find nearest focusable handle within the same row as pivotIndex,
-      // scanning outward in both directions from pivot — lands on the closest movie
-      const findNearestInRow = (pivotIndex) => {
-        const rowStart = Math.floor(pivotIndex / NUM_COLUMNS) * NUM_COLUMNS;
-        const rowEnd = Math.min(rowStart + NUM_COLUMNS - 1, listData.length - 1);
-        const pivotHandle = itemNodeHandles.get(pivotIndex);
-        if (pivotHandle) return pivotHandle;
-        for (let offset = 1; offset < NUM_COLUMNS; offset++) {
-          const right = pivotIndex + offset;
-          const left = pivotIndex - offset;
-          if (right <= rowEnd) {
-            const handle = itemNodeHandles.get(right);
+      // Scan strictly within the same column going up, skipping date cards and unregistered handles
+      const findSameColumnAbove = (idx) => {
+        let i = idx - NUM_COLUMNS;
+        while (i >= 0) {
+          if (listData[i]?.type !== 'date') {
+            const handle = itemNodeHandles.get(i);
             if (handle) return handle;
           }
-          if (left >= rowStart) {
-            const handle = itemNodeHandles.get(left);
+          i -= NUM_COLUMNS;
+        }
+        return undefined;
+      };
+
+      // Scan strictly within the same column going down, skipping date cards and unregistered handles
+      const findSameColumnBelow = (idx) => {
+        let i = idx + NUM_COLUMNS;
+        while (i < listData.length) {
+          if (listData[i]?.type !== 'date') {
+            const handle = itemNodeHandles.get(i);
             if (handle) return handle;
           }
+          i += NUM_COLUMNS;
         }
         return undefined;
       };
@@ -855,16 +948,13 @@ const HomeScreenTvOS = () => {
             ? (index === 1 ? lastFilterNodeHandle : findNearestHandle(index - 2, -1))
             : undefined);
 
-      // DOWN: if date card is directly below, slide into that row at the nearest movie
-      const nextFocusDown = (belowItem && belowItem.type === 'date')
-        ? findNearestInRow(index + NUM_COLUMNS)
-        : undefined;
+      // DOWN: always column-preserving (skips dates + unregistered handles); undefined if nothing below
+      const nextFocusDown = findSameColumnBelow(index);
 
-      // UP: if date card is directly above, slide into that row at the nearest movie;
-      //     fall back to filter chips when the date card is in the first row (nothing above it)
-      const nextFocusUpVertical = (!isFirstRow && aboveItem && aboveItem.type === 'date')
-        ? (findNearestInRow(index - NUM_COLUMNS) || headerNodeHandle)
-        : undefined;
+      // UP: always explicit — column-preserving (skips dates), fall back to header when nothing above
+      const nextFocusUp = isFirstRow
+        ? headerNodeHandle
+        : (findSameColumnAbove(index) ?? headerNodeHandle);
 
       // Movie card
       return (
@@ -878,7 +968,7 @@ const HomeScreenTvOS = () => {
             onBlur={() => handleMovieBlur(index)}
             hasTVPreferredFocus={giveInitialFocus && index === (SHOW_TRAILERS_CARD ? 2 : 1)}
             testID={`movie-card-${index}`}
-            nextFocusUp={isFirstRow ? headerNodeHandle : nextFocusUpVertical}
+            nextFocusUp={nextFocusUp}
             nextFocusDown={nextFocusDown}
             nextFocusLeft={nextFocusLeft}
             nextFocusRight={nextFocusRight}
@@ -984,6 +1074,7 @@ const HomeScreenTvOS = () => {
                 isActive={activeFilters.has(filter.id)}
                 onPress={() => handleFilterChange(filter.id)}
                 nextFocusUp={toggleNodeHandle}
+                style={{ flex: 1 }}
               />
             ))}
           </View>
@@ -1034,7 +1125,6 @@ const HomeScreenTvOS = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         columnWrapperStyle={styles.row}
-        removeClippedSubviews={true}
         maxToRenderPerBatch={21}
         windowSize={5}
         initialNumToRender={21}
@@ -1079,13 +1169,14 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: Colors.textPrimary,
-    fontSize: 58,
+    fontSize: 90,
     fontWeight: '100',
     letterSpacing: 9,
   },
   filterRow: {
     flexDirection: 'row',
     flex: 1,
+    alignItems: 'center',
     gap: 8,
   },
   filterSearchRow: {
@@ -1128,13 +1219,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   filterButton: {
-    flex: 1,
-    paddingVertical: 9,
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
     borderRadius: 22,
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.35)',
-    alignItems: 'center',
   },
   filterButtonActive: {
     backgroundColor: Colors.primary,
@@ -1162,16 +1254,16 @@ const styles = StyleSheet.create({
   },
   toggleRow: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 20,
     alignItems: 'center',
   },
   metaToggleWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 12,
   },
   metaToggleLabel: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '700',
     letterSpacing: 1.2,
     color: 'rgba(0,212,170,0.45)',
@@ -1180,19 +1272,19 @@ const styles = StyleSheet.create({
     color: '#00d4aa',
   },
   slopToggleTrack: {
-    width: 80,
-    height: 22,
-    borderRadius: 11,
+    width: 108,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: '#1a1a1a',
     borderWidth: 1,
     borderColor: 'rgba(0,212,170,0.45)',
     justifyContent: 'center',
-    paddingHorizontal: 3,
+    paddingHorizontal: 4,
   },
   slopToggleThumb: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     backgroundColor: 'rgba(0,212,170,0.55)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -1200,14 +1292,14 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   metaToggleTrack: {
-    width: 60,
-    height: 32,
-    borderRadius: 16,
+    width: 80,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: '#1a1a1a',
     borderWidth: 1,
     borderColor: 'rgba(0,212,170,0.3)',
     justifyContent: 'center',
-    paddingHorizontal: 3,
+    paddingHorizontal: 4,
   },
   metaToggleTrackActive: {
     backgroundColor: '#00d4aa',
@@ -1218,9 +1310,9 @@ const styles = StyleSheet.create({
     borderWidth: 2.5,
   },
   metaToggleThumb: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -1340,6 +1432,36 @@ const styles = StyleSheet.create({
     marginRight: CARD_GAP,
     overflow: 'visible',
     zIndex: 1,
+  },
+  loadMoreCard: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    borderRadius: 12,
+    backgroundColor: '#0a0a0a',
+    borderWidth: 2,
+    borderColor: 'rgba(0,212,170,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadMoreCardFocused: {
+    borderColor: Colors.primary,
+    borderWidth: 3,
+  },
+  loadMoreArrow: {
+    fontSize: 44,
+    color: Colors.primary,
+  },
+  loadMoreLabel: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+    letterSpacing: 3,
+    marginTop: 10,
+  },
+  loadMoreCount: {
+    fontSize: 16,
+    color: Colors.textMuted,
+    marginTop: 6,
   },
   refreshOverlay: {
     position: 'absolute',

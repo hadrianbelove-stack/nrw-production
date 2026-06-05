@@ -279,15 +279,17 @@ const MovieCard = forwardRef(({
         >
           {/* Clip container — overflow:hidden keeps image and overlays inside rounded corners */}
           {isFest ? (
-            /* === Festival Frame (gold header at top, no score badges) === */
-            <View style={[styles.posterContainer, { width: cardWidth, height: cardHeight, backgroundColor: Colors.screeningGold, justifyContent: 'flex-start' }]}>
-              {/* Gold header: festival name (year stripped, up to 2 lines) */}
-              <View style={styles.streamingFrameHeader}>
-                <Text style={styles.festFrameName} numberOfLines={2}>{decodeHtml((movie.virtual_screening_info?.screening_name || 'FESTIVAL').replace(/\b(19|20)\d{2}\b/g, '').replace(/\s+/g, ' ').trim())}</Text>
+            /* === Festival Frame — dark navy, gold text, framed poster === */
+            <View style={[styles.posterContainer, { width: cardWidth, height: cardHeight, backgroundColor: '#0d1117', justifyContent: 'flex-start' }]}>
+              {/* Dark header: festival name in gold, abbreviated */}
+              <View style={[styles.streamingFrameHeader, styles.festFrameHeader]}>
+                <Text style={styles.festFrameName} numberOfLines={2}>{decodeHtml((movie.virtual_screening_info?.screening_name || 'FESTIVAL').replace(/\b(19|20)\d{2}\b/g, '').replace(/\bInternational\b/gi, 'Intl.').replace(/\bFilm Festival\b/gi, 'Film Fest').replace(/\s+/g, ' ').trim())}</Text>
               </View>
-              {/* Poster contained below header — no clipping */}
+              {/* Poster framed inside with padding — dark navy shows as border on sides/bottom */}
               {hasPoster && !imageError ? (
-                <Image source={{ uri: posterUrl }} style={styles.streamingFramePoster} resizeMode="contain" onError={() => setImageError(true)} />
+                <View style={styles.festPosterWrap}>
+                  <Image source={{ uri: posterUrl }} style={styles.festPosterImg} resizeMode="contain" onError={() => setImageError(true)} />
+                </View>
               ) : (
                 <View style={[styles.posterPlaceholder, { flex: 1, height: undefined, borderRadius: 0 }]}>
                   <Text style={styles.placeholderText} numberOfLines={3}>{movie.display_title || movie.title}</Text>
@@ -299,7 +301,7 @@ const MovieCard = forwardRef(({
                 </View>
               )}
               {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ STAFF PICK</Text></View>}
-              <View style={styles.screeningBorder} />
+              <View style={[styles.screeningBorder, { borderColor: 'rgba(255,215,0,0.55)' }]} />
             </View>
           ) : streamingBadge?.isFrame ? (
             /* === Gallery Label Frame (service-colored card) === */
@@ -584,14 +586,26 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
+  festFrameHeader: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,215,0,0.25)',
+  },
   festFrameName: {
     fontSize: 13,
     fontWeight: '800',
     letterSpacing: 0.6,
     textTransform: 'uppercase',
-    color: Colors.screeningGoldText,
+    color: '#FFD700',
     lineHeight: 15,
     textAlign: 'center',
+  },
+  festPosterWrap: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+  },
+  festPosterImg: {
+    flex: 1,
   },
   cardScoreOverlay: {
     position: 'absolute',

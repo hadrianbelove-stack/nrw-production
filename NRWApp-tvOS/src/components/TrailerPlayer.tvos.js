@@ -9,7 +9,7 @@
  * are playable. See docs/features/TRAILER_HOSTING.md
  */
 
-import React, { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
 import Video from 'react-native-video';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
@@ -17,13 +17,40 @@ import { Colors } from '../constants/colors';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
+const SEEK_STEP = 15;
+
+const formatTime = (secs) => {
+  const s = Math.floor(secs || 0);
+  const m = Math.floor(s / 60);
+  return `${m}:${String(s % 60).padStart(2, '0')}`;
+};
+
 const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [paused, setPaused] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [seekHint, setSeekHint] = useState(null); // '+15s' | '-15s' | null
   const videoRef = useRef(null);
   const leftArrowOpacity = useRef(new Animated.Value(0.4)).current;
   const rightArrowOpacity = useRef(new Animated.Value(0.4)).current;
+  const seekBarOpacity = useRef(new Animated.Value(0)).current;
+  const seekHintTimeout = useRef(null);
+
+  // Show/hide seek bar when paused state changes
+  useEffect(() => {
+    Animated.timing(seekBarOpacity, {
+      toValue: paused ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [paused, seekBarOpacity]);
+
+  // Clear any pending seek-hint timer on unmount
+  useEffect(() => {
+    return () => { if (seekHintTimeout.current) clearTimeout(seekHintTimeout.current); };
+  }, []);
 
   const currentMovie = movieList[currentIndex];
   const trailerUrl = currentMovie?.links?.trailer_hosted || '';
@@ -90,12 +117,32 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     setTimeout(() => onClose(currentIndex), 400);
   }, [closing, currentIndex, onClose]);
 
-  // Handle TV remote events
+  const showSeekHint = useCallback((label) => {
+    setSeekHint(label);
+    if (seekHintTimeout.current) clearTimeout(seekHintTimeout.current);
+    seekHintTimeout.current = setTimeout(() => setSeekHint(null), 800);
+  }, []);
+
+  const seekBackward = useCallback(() => {
+    const newTime = Math.max(0, currentTime - SEEK_STEP);
+    videoRef.current?.seek(newTime);
+    setCurrentTime(newTime);
+    showSeekHint(`-${SEEK_STEP}s`);
+  }, [currentTime, showSeekHint]);
+
+  const seekForward = useCallback(() => {
+    const newTime = Math.min(duration || 999, currentTime + SEEK_STEP);
+    videoRef.current?.seek(newTime);
+    setCurrentTime(newTime);
+    showSeekHint(`+${SEEK_STEP}s`);
+  }, [currentTime, duration, showSeekHint]);
+
+  // Handle TV remote events — LEFT/RIGHT seek when paused, navigate when playing
   useTVEventHandler({
-    [TV_EVENTS.LEFT]: navigatePrevious,
-    [TV_EVENTS.RIGHT]: navigateNext,
-    [TV_EVENTS.SWIPE_LEFT]: navigatePrevious,
-    [TV_EVENTS.SWIPE_RIGHT]: navigateNext,
+    [TV_EVENTS.LEFT]: paused ? seekBackward : navigatePrevious,
+    [TV_EVENTS.RIGHT]: paused ? seekForward : navigateNext,
+    [TV_EVENTS.SWIPE_LEFT]: paused ? seekBackward : navigatePrevious,
+    [TV_EVENTS.SWIPE_RIGHT]: paused ? seekForward : navigateNext,
     [TV_EVENTS.MENU]: handleClose,
     [TV_EVENTS.PLAY_PAUSE]: togglePlayPause,
     [TV_EVENTS.SELECT]: togglePlayPause,
@@ -131,6 +178,8 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
           controls={false}
           playInBackground={false}
           playWhenInactive={false}
+          onLoad={({ duration: d }) => { setDuration(d); setCurrentTime(0); }}
+          onProgress={({ currentTime: t }) => { if (!paused) setCurrentTime(t); }}
           onEnd={handleClose}
           onError={handleClose}
         />
@@ -142,17 +191,38 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
         <Text style={styles.counter}>{currentTrailerNumber} / {trailerCount}</Text>
       </View>
 
-      {/* Navigation arrows */}
-      {findNextTrailerIndex(currentIndex, -1) >= 0 && (
+      {/* Navigation arrows — only visible when playing */}
+      {!paused && findNextTrailerIndex(currentIndex, -1) >= 0 && (
         <View style={styles.arrowLeft}>
           <Animated.Text style={[styles.arrowText, { opacity: leftArrowOpacity }]}>‹</Animated.Text>
         </View>
       )}
-      {findNextTrailerIndex(currentIndex, 1) >= 0 && (
+      {!paused && findNextTrailerIndex(currentIndex, 1) >= 0 && (
         <View style={styles.arrowRight}>
           <Animated.Text style={[styles.arrowText, { opacity: rightArrowOpacity }]}>›</Animated.Text>
         </View>
       )}
+
+      {/* Seek bar — fades in when paused */}
+      <Animated.View style={[styles.seekOverlay, { opacity: seekBarOpacity }]}>
+        <View style={styles.seekRow}>
+          <Text style={styles.seekHintLeft}>‹ -{SEEK_STEP}s</Text>
+          <View style={styles.seekBarWrap}>
+            <View style={styles.seekBarTrack}>
+              <View style={[styles.seekBarFill, { width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }]} />
+              <View style={[styles.seekBarThumb, { left: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }]} />
+            </View>
+            <View style={styles.seekTimeRow}>
+              <Text style={styles.seekTime}>{formatTime(currentTime)}</Text>
+              <Text style={styles.seekTime}>{formatTime(duration)}</Text>
+            </View>
+          </View>
+          <Text style={styles.seekHintRight}>+{SEEK_STEP}s ›</Text>
+        </View>
+        {seekHint && (
+          <Text style={styles.seekJumpLabel}>{seekHint}</Text>
+        )}
+      </Animated.View>
 
     </View>
   );
@@ -210,6 +280,78 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontSize: 80,
     fontWeight: '300',
+  },
+  seekOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingBottom: 60,
+    paddingHorizontal: 100,
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    alignItems: 'center',
+  },
+  seekRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    paddingTop: 30,
+  },
+  seekHintLeft: {
+    color: Colors.primary,
+    fontSize: 28,
+    fontWeight: '600',
+    width: 120,
+    textAlign: 'left',
+  },
+  seekHintRight: {
+    color: Colors.primary,
+    fontSize: 28,
+    fontWeight: '600',
+    width: 120,
+    textAlign: 'right',
+  },
+  seekBarWrap: {
+    flex: 1,
+    marginHorizontal: 20,
+  },
+  seekBarTrack: {
+    height: 6,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    borderRadius: 3,
+    position: 'relative',
+    overflow: 'visible',
+  },
+  seekBarFill: {
+    height: 6,
+    backgroundColor: Colors.primary,
+    borderRadius: 3,
+  },
+  seekBarThumb: {
+    position: 'absolute',
+    top: -7,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#ffffff',
+    marginLeft: -10,
+  },
+  seekTimeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  seekTime: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 22,
+    fontWeight: '500',
+  },
+  seekJumpLabel: {
+    color: Colors.primary,
+    fontSize: 36,
+    fontWeight: '700',
+    marginTop: 12,
+    letterSpacing: 1,
   },
 });
 
