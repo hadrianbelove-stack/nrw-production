@@ -14,7 +14,7 @@
   --screening-gold: #FFD700;
   --radius-pill: 25px;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --header-height: 100px;
+  --header-height: 96px;
 }
 
 html {
@@ -44,14 +44,19 @@ body {
 }
 .site-header h1 {
   font-weight: 100;
-  letter-spacing: 0.3em;
-  font-size: 0.75rem;
+  letter-spacing: 0.32em;
+  font-size: clamp(0.72rem, 3.6vw, 1.1rem);
   color: var(--accent);
   margin-bottom: 6px;
 }
 .header-controls {
   display: flex;
   flex-direction: column;
+  gap: 5px;
+}
+.toggle-row {
+  display: flex;
+  align-items: center;
   gap: 6px;
 }
 .filter-row {
@@ -118,9 +123,9 @@ body {
   display: inline-block;
 }
 .slop-track {
-  width: 96px;
-  height: 28px;
-  border-radius: 14px;
+  width: 44px;
+  height: 22px;
+  border-radius: 11px;
   background: #1a1a1a;
   border: 1px solid rgba(0,212,170,0.45);
   position: relative;
@@ -133,16 +138,16 @@ body {
 }
 .slop-thumb {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
   background: rgba(0,212,170,0.55);
   border-radius: 50%;
   transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
 }
 .slop-toggle-wrap.active .slop-thumb {
-  transform: translateX(64px);
+  transform: translateX(22px);
   background: #ffffff;
 }
 /* 3-state slop toggle */
@@ -160,7 +165,7 @@ body {
   border-color: #00d4aa;
 }
 #slop-free-toggle[data-state="all"] .slop-thumb {
-  transform: translateX(33px);
+  transform: translateX(11px);
   background: #00d4aa;
 }
 #slop-free-toggle[data-state="all"] #slop-state-label { color: #00d4aa; }
@@ -169,7 +174,7 @@ body {
   border-color: rgba(0,0,0,0.35);
 }
 #slop-free-toggle[data-state="only"] .slop-thumb {
-  transform: translateX(68px);
+  transform: translateX(22px);
   background: #ffffff;
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }

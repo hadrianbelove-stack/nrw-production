@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0a0a0a">
     <title>NRW - New Release Wall</title>
-    <link rel="stylesheet" href="mobile.css?v=71">
+    <link rel="stylesheet" href="mobile.css?v=72">
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="../favicon.png">
@@ -19,17 +19,7 @@
             <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
         </div>
         <div class="header-controls">
-            <div class="filter-row" id="filters">
-                <button class="filter-pill" data-filter="staff-picks">Picks</button>
-                <button class="filter-pill" data-filter="indie">Indie</button>
-                <button class="filter-pill" data-filter="horror">Horror</button>
-                <button class="filter-pill" data-filter="action">Action</button>
-                <button class="filter-pill" data-filter="comedy">Comedy</button>
-                <button class="filter-pill" data-filter="family">Family</button>
-                <button class="filter-pill" data-filter="foreign">Foreign</button>
-                <button class="filter-pill" data-filter="documentary">Docs</button>
-                <button class="filter-pill" data-filter="restorations">Reissues</button>
-                <div class="filter-pill-divider"></div>
+            <div class="toggle-row">
                 <div class="slop-toggle-wrap" id="slop-free-toggle" data-state="free">
                     <div class="slop-track">
                         <div class="slop-thumb"></div>
@@ -50,7 +40,17 @@
                     </div>
                     <span class="slop-label">PRE-ORDER</span>
                 </div>
-                <div class="filter-row-spacer"></div>
+            </div>
+            <div class="filter-row" id="filters">
+                <button class="filter-pill" data-filter="staff-picks">Picks</button>
+                <button class="filter-pill" data-filter="indie">Indie</button>
+                <button class="filter-pill" data-filter="horror">Horror</button>
+                <button class="filter-pill" data-filter="action">Action</button>
+                <button class="filter-pill" data-filter="comedy">Comedy</button>
+                <button class="filter-pill" data-filter="family">Family</button>
+                <button class="filter-pill" data-filter="foreign">Foreign</button>
+                <button class="filter-pill" data-filter="documentary">Docs</button>
+                <button class="filter-pill" data-filter="restorations">Reissues</button>
                 <div class="search-container">
                     <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
                     <button id="search-clear" class="search-clear" aria-label="Clear">&times;</button>
