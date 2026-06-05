@@ -264,11 +264,11 @@ Show **all** RT/critic quotes, then up to **10** Letterboxd quotes (the Configur
 [Film Title] PULL QUOTES
 
 **Outlet Name**
-1. *"Quote text here."* — Critic Name
+1. *"Quote text here."* — Critic Name, Outlet Name
 
 **Another Outlet**
-2. *"Another quote."* — Critic Name
-3. *"Third quote from same outlet."* — Critic Name
+2. *"Another quote."* — Critic Name, Another Outlet
+3. *"Third quote from same outlet."* — Critic Name, Another Outlet
 
 **Letterboxd**
 4. *"Letterboxd quote."* — @username
@@ -278,8 +278,10 @@ Pick a number — paste a trim — or skip.
 ```
 
 - Group RT/critic quotes by outlet; maintain cache order within each section
+- Each RT/critic quote line must show both critic name AND outlet: `— Critic Name, Outlet`
+- Letterboxd quotes: username only (`— @username`), no outlet suffix needed
 - Letterboxd section always comes last
-- All quote text in *italics*, name after em-dash
+- All quote text in *italics*
 
 **3. Wait for user response**
 
