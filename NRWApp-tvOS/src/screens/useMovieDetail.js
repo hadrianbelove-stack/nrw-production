@@ -7,8 +7,8 @@ import { useState, useMemo } from 'react';
 import { getWatchLinks, getInfoLinks } from '../services/api';
 
 const COUNTRY_ABBREV = {
-  'United States of America': 'USA', 'US': 'USA',
-  'United Kingdom': 'UK', 'GB': 'UK',
+  'United States of America': 'USA', 'United States': 'USA', 'US': 'USA', 'USA': 'USA',
+  'United Kingdom': 'UK', 'Great Britain': 'UK', 'GB': 'UK',
   'Germany': 'GER', 'DE': 'GER',
   'France': 'FRA', 'FR': 'FRA',
   'South Korea': 'KOR', 'KR': 'KOR',
@@ -44,6 +44,9 @@ const COUNTRY_ABBREV = {
   'Turkey': 'TUR', 'TR': 'TUR',
   'Greece': 'GRE', 'GR': 'GRE',
   'Finland': 'FIN', 'FI': 'FIN',
+  'New Zealand': 'NZL', 'NZ': 'NZL',
+  'Bosnia and Herzegovina': 'BIH',
+  'Saudi Arabia': 'KSA',
   'Unknown': '—',
 };
 

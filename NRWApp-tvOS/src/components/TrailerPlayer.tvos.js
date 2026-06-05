@@ -1,8 +1,8 @@
 /**
  * New Release Wall - tvOS Trailer Player
  * Fullscreen overlay for in-app trailer playback with prev/next navigation
- * Controls: LEFT/RIGHT or SWIPE = prev/next trailer, MENU = close,
- *           PLAY_PAUSE or SELECT = pause/resume
+ * Controls: LEFT/RIGHT or SWIPE = prev/next (playing) / scrub (paused), MENU = close,
+ *           PLAY_PAUSE or SELECT = pause / confirm scrub + resume
  *
  * Trailers are self-hosted MP4s on Backblaze B2 (trailer_hosted field), played
  * via react-native-video. tvOS does not support WebView, so only MP4 trailers
@@ -17,7 +17,7 @@ import { Colors } from '../constants/colors';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const SEEK_STEP = 15;
+const SEEK_STEP = 5; // Scrub step per d-pad press (seconds)
 
 const formatTime = (secs) => {
   const s = Math.floor(secs || 0);
@@ -31,12 +31,13 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
   const [closing, setClosing] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [seekHint, setSeekHint] = useState(null); // '+15s' | '-15s' | null
+  // scrubPosition: where the user has moved the timeline cursor while paused.
+  // null = not scrubbing. Committing (SELECT/PLAY_PAUSE while paused) seeks here and resumes.
+  const [scrubPosition, setScrubPosition] = useState(null);
   const videoRef = useRef(null);
   const leftArrowOpacity = useRef(new Animated.Value(0.4)).current;
   const rightArrowOpacity = useRef(new Animated.Value(0.4)).current;
   const seekBarOpacity = useRef(new Animated.Value(0)).current;
-  const seekHintTimeout = useRef(null);
 
   // Show/hide seek bar when paused state changes
   useEffect(() => {
@@ -47,10 +48,10 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     }).start();
   }, [paused, seekBarOpacity]);
 
-  // Clear any pending seek-hint timer on unmount
+  // Reset scrub state when the movie changes
   useEffect(() => {
-    return () => { if (seekHintTimeout.current) clearTimeout(seekHintTimeout.current); };
-  }, []);
+    setScrubPosition(null);
+  }, [currentIndex]);
 
   const currentMovie = movieList[currentIndex];
   const trailerUrl = currentMovie?.links?.trailer_hosted || '';
@@ -63,10 +64,25 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     }
   }, [trailerUrl]);
 
-  // Toggle play/pause
+  // Pause — initialise scrub cursor at current playhead
+  const handlePause = useCallback(() => {
+    setScrubPosition(currentTime);
+    setPaused(true);
+  }, [currentTime]);
+
+  // Resume — seek to wherever the scrub cursor ended up, then play
+  const handleResume = useCallback(() => {
+    if (scrubPosition !== null) {
+      videoRef.current?.seek(scrubPosition);
+      setCurrentTime(scrubPosition);
+      setScrubPosition(null);
+    }
+    setPaused(false);
+  }, [scrubPosition]);
+
   const togglePlayPause = useCallback(() => {
-    setPaused(p => !p);
-  }, []);
+    if (paused) { handleResume(); } else { handlePause(); }
+  }, [paused, handlePause, handleResume]);
 
   // Flash arrow animation for navigation feedback
   const flashArrow = useCallback((arrowAnim) => {
@@ -117,35 +133,26 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     setTimeout(() => onClose(currentIndex), 400);
   }, [closing, currentIndex, onClose]);
 
-  const showSeekHint = useCallback((label) => {
-    setSeekHint(label);
-    if (seekHintTimeout.current) clearTimeout(seekHintTimeout.current);
-    seekHintTimeout.current = setTimeout(() => setSeekHint(null), 800);
-  }, []);
+  // Scrub cursor movement — moves the timeline position without seeking the video
+  const scrubBackward = useCallback(() => {
+    setScrubPosition(prev => Math.max(0, (prev ?? currentTime) - SEEK_STEP));
+  }, [currentTime]);
 
-  const seekBackward = useCallback(() => {
-    const newTime = Math.max(0, currentTime - SEEK_STEP);
-    videoRef.current?.seek(newTime);
-    setCurrentTime(newTime);
-    showSeekHint(`-${SEEK_STEP}s`);
-  }, [currentTime, showSeekHint]);
+  const scrubForward = useCallback(() => {
+    setScrubPosition(prev => Math.min(duration || 999, (prev ?? currentTime) + SEEK_STEP));
+  }, [currentTime, duration]);
 
-  const seekForward = useCallback(() => {
-    const newTime = Math.min(duration || 999, currentTime + SEEK_STEP);
-    videoRef.current?.seek(newTime);
-    setCurrentTime(newTime);
-    showSeekHint(`+${SEEK_STEP}s`);
-  }, [currentTime, duration, showSeekHint]);
-
-  // Handle TV remote events — LEFT/RIGHT seek when paused, navigate when playing
+  // Handle TV remote events
+  // Playing:  LEFT/RIGHT navigate prev/next trailer
+  // Paused:   LEFT/RIGHT move scrub cursor; SELECT/PLAY_PAUSE commits position and resumes
   useTVEventHandler({
-    [TV_EVENTS.LEFT]: paused ? seekBackward : navigatePrevious,
-    [TV_EVENTS.RIGHT]: paused ? seekForward : navigateNext,
-    [TV_EVENTS.SWIPE_LEFT]: paused ? seekBackward : navigatePrevious,
-    [TV_EVENTS.SWIPE_RIGHT]: paused ? seekForward : navigateNext,
+    [TV_EVENTS.LEFT]: paused ? scrubBackward : navigatePrevious,
+    [TV_EVENTS.RIGHT]: paused ? scrubForward : navigateNext,
+    [TV_EVENTS.SWIPE_LEFT]: paused ? scrubBackward : navigatePrevious,
+    [TV_EVENTS.SWIPE_RIGHT]: paused ? scrubForward : navigateNext,
     [TV_EVENTS.MENU]: handleClose,
     [TV_EVENTS.PLAY_PAUSE]: togglePlayPause,
-    [TV_EVENTS.SELECT]: togglePlayPause,
+    [TV_EVENTS.SELECT]: paused ? handleResume : handlePause,
   });
 
   // Count trailers for the counter display
@@ -178,7 +185,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
           controls={false}
           playInBackground={false}
           playWhenInactive={false}
-          onLoad={({ duration: d }) => { setDuration(d); setCurrentTime(0); }}
+          onLoad={({ duration: d }) => { setDuration(d); setCurrentTime(0); setScrubPosition(null); }}
           onProgress={({ currentTime: t }) => { if (!paused) setCurrentTime(t); }}
           onEnd={handleClose}
           onError={handleClose}
@@ -203,26 +210,26 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
         </View>
       )}
 
-      {/* Seek bar — fades in when paused */}
-      <Animated.View style={[styles.seekOverlay, { opacity: seekBarOpacity }]}>
-        <View style={styles.seekRow}>
-          <Text style={styles.seekHintLeft}>‹ -{SEEK_STEP}s</Text>
-          <View style={styles.seekBarWrap}>
-            <View style={styles.seekBarTrack}>
-              <View style={[styles.seekBarFill, { width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }]} />
-              <View style={[styles.seekBarThumb, { left: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }]} />
+      {/* Seek bar — fades in when paused. Thumb tracks scrubPosition (not currentTime).
+          Press SELECT or PLAY_PAUSE to confirm and jump to that position. */}
+      {(() => {
+        const displayPos = scrubPosition ?? currentTime;
+        const pct = duration > 0 ? `${(displayPos / duration) * 100}%` : '0%';
+        return (
+          <Animated.View style={[styles.seekOverlay, { opacity: seekBarOpacity }]}>
+            <View style={styles.seekBarWrap}>
+              <View style={styles.seekBarTrack}>
+                <View style={[styles.seekBarFill, { width: pct }]} />
+                <View style={[styles.seekBarThumb, { left: pct }]} />
+              </View>
+              <View style={styles.seekTimeRow}>
+                <Text style={styles.seekTime}>{formatTime(displayPos)}</Text>
+                <Text style={styles.seekTime}>{formatTime(duration)}</Text>
+              </View>
             </View>
-            <View style={styles.seekTimeRow}>
-              <Text style={styles.seekTime}>{formatTime(currentTime)}</Text>
-              <Text style={styles.seekTime}>{formatTime(duration)}</Text>
-            </View>
-          </View>
-          <Text style={styles.seekHintRight}>+{SEEK_STEP}s ›</Text>
-        </View>
-        {seekHint && (
-          <Text style={styles.seekJumpLabel}>{seekHint}</Text>
-        )}
-      </Animated.View>
+          </Animated.View>
+        );
+      })()}
 
     </View>
   );
@@ -288,32 +295,11 @@ const styles = StyleSheet.create({
     right: 0,
     paddingBottom: 60,
     paddingHorizontal: 100,
-    backgroundColor: 'rgba(0,0,0,0.75)',
-    alignItems: 'center',
-  },
-  seekRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
     paddingTop: 30,
-  },
-  seekHintLeft: {
-    color: Colors.primary,
-    fontSize: 28,
-    fontWeight: '600',
-    width: 120,
-    textAlign: 'left',
-  },
-  seekHintRight: {
-    color: Colors.primary,
-    fontSize: 28,
-    fontWeight: '600',
-    width: 120,
-    textAlign: 'right',
+    backgroundColor: 'rgba(0,0,0,0.75)',
   },
   seekBarWrap: {
-    flex: 1,
-    marginHorizontal: 20,
+    width: '100%',
   },
   seekBarTrack: {
     height: 6,
@@ -345,13 +331,6 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.7)',
     fontSize: 22,
     fontWeight: '500',
-  },
-  seekJumpLabel: {
-    color: Colors.primary,
-    fontSize: 36,
-    fontWeight: '700',
-    marginTop: 12,
-    letterSpacing: 1,
   },
 });
 
