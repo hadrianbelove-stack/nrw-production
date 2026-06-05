@@ -631,8 +631,8 @@ Best pull quote:"""
 
                 now = time.strftime('%Y-%m-%dT%H:%M:%S')
 
-                # Filter non-English reviews — require at least 1 common English word
-                # (was 3, which was too aggressive and dropped short English reviews)
+                # Filter non-English reviews — require at least 3 common English words
+                # (1-word threshold let German/Spanish reviews through, e.g. German "was" matching English "was")
                 english_reviews = []
                 for item in extracted:
                     text = item.get('text', '')
@@ -640,7 +640,7 @@ Best pull quote:"""
                                      'but', 'not', 'you', 'film', 'movie', 'is', 'it', 'i', 'of',
                                      'to', 'in', 'are', 'be', 'at', 'as', 'its', 'on', 'by'}
                     words = set(text.lower().split()[:30])
-                    if not (words & english_words):
+                    if len(words & english_words) < 3:
                         continue
                     english_reviews.append(item)
 
