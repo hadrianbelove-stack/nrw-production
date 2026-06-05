@@ -121,6 +121,9 @@ class GeminiCapsuleWriter(GeminiFinderBase):
         if not bank:
             return ''
 
+        # Use only the 30 most recent — keeps training signal on current style
+        bank = sorted(bank, key=lambda x: x.get('approved_at', ''), reverse=True)[:30]
+
         lines = ['YOUR APPROVED CAPSULES (match this voice):']
         for entry in bank:
             title = entry.get('title', '?')
