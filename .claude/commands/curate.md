@@ -258,7 +258,7 @@ Do not re-scrape. The morning batch is the canonical source.
 
 **2. Present — critics first, Letterboxd after**
 
-Show **all** RT/critic quotes, then up to **10** Letterboxd quotes (the Configuration number — show all if 10 or fewer). No pre-filtering, no reordering, no ranking markers. Format exactly:
+Show **all** RT/critic quotes, then up to **10** Letterboxd quotes (the Configuration number — show all if 10 or fewer). No pre-filtering, no reordering, no ranking markers — this includes spoiler-protected reviews (show their scraped text verbatim, e.g. "This review may contain spoilers. I can handle the truth.") and non-English reviews. Format exactly:
 
 ```
 [Film Title] PULL QUOTES
