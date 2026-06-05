@@ -1,16 +1,25 @@
 {
-  "timestamp": "2026-06-04T13:19:03.976600",
-  "movies_requested": 14,
-  "movies_enriched": 7,
-  "movies_deferred": 7,
+  "timestamp": "2026-06-05T13:57:18.195259",
+  "movies_requested": 18,
+  "movies_enriched": 15,
+  "movies_deferred": 3,
   "deferred_details": [
+    {
+      "title": "Groundswell",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-05",
+      "discovered_at": "2026-05-10T05:09:57.256899",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
     {
       "title": "A Man with Sole: The Impact of Kenneth Cole",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-04T11:57:33.467370",
+      "discovered_at": "2026-06-05T12:13:28.501106",
       "discovery_source": "tmdb_type4",
-      "revert_count": 2,
+      "revert_count": 3,
       "tmdb_platforms": [
         "Eventive"
       ]
@@ -19,60 +28,13 @@
       "title": "Real Couples",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-04T11:57:33.780355",
+      "discovered_at": "2026-06-05T12:13:28.991524",
       "discovery_source": "tmdb_type4",
-      "revert_count": 2,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "In the Grey",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-06-02",
-      "discovered_at": "2026-06-04T11:57:36.917674",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
-    },
-    {
-      "title": "Your Heart Will Be Broken",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-05-31",
-      "discovered_at": "2026-06-04T11:57:39.978631",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 5,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Hold the Fort",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-23",
-      "discovered_at": "2026-06-04T12:43:52.657947",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Saccharine",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-07-24",
-      "discovered_at": "2026-06-04T12:46:50.830847",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Hungry",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-23",
-      "discovered_at": "2026-06-04T13:03:29.101608",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
+      "revert_count": 3,
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 932.58,
+  "enrichment_duration_seconds": 790.2,
   "error_details": [],
   "total_errors": 0
 }
