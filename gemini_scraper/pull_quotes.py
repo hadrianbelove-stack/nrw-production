@@ -124,29 +124,8 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
                     if quotes:
                         logger.info(f"RT API intercepted {len(quotes)} reviews")
 
-                # --- FALLBACK: text parser if API returned nothing ---
                 if not quotes:
-                    logger.warning(f"RT API intercept returned nothing for {reviews_url} — trying text parser")
-                    body = page.inner_text('body')
-                    lines = [l.strip() for l in body.split('\n') if l.strip()]
-                    for i in range(len(lines) - 1):
-                        line = lines[i]
-                        next_line = lines[i + 1]
-                        # Heuristic: long quote line followed by short outlet-name line
-                        if (len(line) > 40 and 15 < len(next_line) < 60 and
-                                next_line[0].isupper() and
-                                not next_line.endswith('.') and
-                                ' ' in next_line and
-                                not any(nav in next_line.lower() for nav in ['all critics', 'top critics', 'login', 'sign in'])):
-                            quotes.append({
-                                'text': line,
-                                'critic': '',
-                                'outlet': next_line,
-                                'source': 'rt_critic',
-                                'review_url': '',
-                                'selected': False,
-                                'added_at': time.strftime('%Y-%m-%dT%H:%M:%S')
-                            })
+                    logger.info(f"RT API intercept returned no reviews for {reviews_url} — no RT quotes for this film")
 
                 browser.close()
 
