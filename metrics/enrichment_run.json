@@ -1,25 +1,25 @@
 {
-  "timestamp": "2026-06-05T13:57:18.195259",
-  "movies_requested": 18,
-  "movies_enriched": 15,
+  "timestamp": "2026-06-06T12:27:52.938697",
+  "movies_requested": 12,
+  "movies_enriched": 9,
   "movies_deferred": 3,
   "deferred_details": [
     {
       "title": "Groundswell",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-05",
-      "discovered_at": "2026-05-10T05:09:57.256899",
+      "discovered_at": "2026-06-06T10:59:10.983105",
       "discovery_source": "tmdb_type4",
-      "revert_count": 1,
+      "revert_count": 2,
       "tmdb_platforms": []
     },
     {
       "title": "A Man with Sole: The Impact of Kenneth Cole",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-05T12:13:28.501106",
+      "discovered_at": "2026-06-06T10:59:13.293475",
       "discovery_source": "tmdb_type4",
-      "revert_count": 3,
+      "revert_count": 4,
       "tmdb_platforms": [
         "Eventive"
       ]
@@ -28,13 +28,13 @@
       "title": "Real Couples",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-05T12:13:28.991524",
+      "discovered_at": "2026-06-06T10:59:13.709364",
       "discovery_source": "tmdb_type4",
-      "revert_count": 3,
+      "revert_count": 4,
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 790.2,
+  "enrichment_duration_seconds": 537.01,
   "error_details": [],
   "total_errors": 0
 }
