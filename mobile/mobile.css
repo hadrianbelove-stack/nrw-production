@@ -272,7 +272,7 @@ body {
 /* ===== VIEW 1: GRID ===== */
 .wall-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   touch-action: pan-y;
   gap: 10px 8px;
   padding: 8px;
@@ -619,6 +619,9 @@ body {
   font-size: 0.75rem;
   font-weight: 700;
   margin-bottom: 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
 }
 .crew-label {
   color: var(--accent);
