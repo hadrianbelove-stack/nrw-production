@@ -262,6 +262,7 @@ body {
   inset: 0;
   padding-top: var(--header-height);
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   transition: opacity 0.2s ease;
 }
@@ -271,6 +272,7 @@ body {
 .wall-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  touch-action: pan-y;
   gap: 10px 8px;
   padding: 8px;
 }
