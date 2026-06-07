@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-06T12:31:37.641591",
-  "duration_seconds": 5945.604913,
+  "timestamp": "2026-06-07T12:52:12.293961",
+  "duration_seconds": 6245.004086,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,65 +8,65 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 10.105625,
+      "duration_seconds": 10.380861,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-06-04 to 2026-06-06 (incremental mode, 23 intaked)\n\u2705 Movie intake complete: 23 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-05-07 to 2026-06-06\n\n\ud83d\udcca Miniseries intake complete: 0 new series "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-06-05 to 2026-06-07 (incremental mode, 24 intaked)\n\u2705 Movie intake complete: 24 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-05-08 to 2026-06-07\n   \ud83d\udccb Tiger Island (2 eps)\n   \ud83d\udccb This Land (6 "
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 383.977431,
+      "duration_seconds": 404.974704,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 173 festival slugs\nScanning 173 festivals for catalogs...\n  Progress: 75/173 slugs | 27 scanned | 715 films indexed\n  Progress: 100/173 slugs | 52 scanned | 1117 films indexed\n  Progress: 125/173 slugs | 77 scanned | 1396 films indexed\n  Progress: 150/173 slugs | 102 scanned | 1956 films indexed\n  Done: 125 festivals, 120 with films, 48 failed, 2248 total films\n  Active: 2248 | Expired: 0 | Unique: 170"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 172 festival slugs\nScanning 172 festivals for catalogs...\n  Progress: 25/172 slugs | 25 scanned | 718 films indexed\n  Progress: 100/172 slugs | 52 scanned | 1185 films indexed\n  Progress: 125/172 slugs | 77 scanned | 1488 films indexed\n  Progress: 150/172 slugs | 102 scanned | 1976 films indexed\n  Done: 124 festivals, 119 with films, 48 failed, 2253 total films\n  Active: 2253 | Expired: 0 | Unique: 171"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 4789.083752,
+      "duration_seconds": 4857.733307,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17646 total movies\n\ud83d\udd0d Raw tracking filter: 13894 movies\n\ud83d\udd0d Assigned tracking_movies list: 13894\n\ud83d\udd0d Found 13894 movies in tracking status\n  Priority queue (last 180 days): 658 movies\n  Older movies: 13236 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13894 movies for digital availability...\n\n  \ud83d\udeab The Bhootnii \u2014 JW verification failed (justwatch_no_valid_offers), staying in tracking (at"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17674 total movies\n\ud83d\udd0d Raw tracking filter: 13914 movies\n\ud83d\udd0d Assigned tracking_movies list: 13914\n\ud83d\udd0d Found 13914 movies in tracking status\n  Priority queue (last 180 days): 659 movies\n  Older movies: 13255 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13914 movies for digital availability...\n\n   \u2705 Added Earth, Wind & Fire (To Be Celestial vs. That's the Weight of the World) to site imm"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 538.24984,
+      "duration_seconds": 745.78271,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 15 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Real Couples: Amazon not found\n      \u00b7 Real Couples: Fandango not found\n      "
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 24 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 The Voices of Our Mother: Amazon not found\n      \u00b7 The Voices of Our Mother: F"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 0.869118,
+      "duration_seconds": 1.158337,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 846 trailers and 35 subtitle files in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  668\n  Stale cleaned:    0\n  Not in B2:        108\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 854 trailers and 37 subtitle files in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  667\n  Stale cleaned:    0\n  Not in B2:        94\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 185.755124,
+      "duration_seconds": 209.682434,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 255 of 776 wall movies (last 30 days)\n  \ud83c\udfac The Passenger \u2014 Director Wikipedia added (Vadim Perelman)\n  \ud83c\udfac Jetlee \u2014 Director Wikipedia added (Ritesh Rana)\n  + Signal One \u2014 new services added\n  + Sattendru Maarudhu Vaanilai \u2014 new services added\n  + Chum \u2014 new services added\n  + One Spoon of Chocolate \u2014 new services added\n  + A Second Life \u2014 new services added\n  \ud83d\udcda Brazil '70: The Third Star \u2014 Wikipedia link added\n  + Two Prosecutors \u2014 ne"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 257 of 761 wall movies (last 30 days)\n  \ud83c\udfac Painting With Fire \u2014 Director Wikipedia added (Mark Jones)\n  \ud83c\udfac This Ordinary Thing \u2014 Director Wikipedia added (Nick Davis)\n  \ud83c\udfac The Witness \u2014 Director Wikipedia added (Rob Williams)\n  + Chum \u2014 new services added\n  + Seven Snipers \u2014 new services added\n  + Strange Journey: The Story of Rocky Horror \u2014 new services added\n  + Accidental Truth: Next - Beyond UFO Disclosure \u2014 new services added\n  + "
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 26.554189,
+      "duration_seconds": 0.705398,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 2 movies missing trailers:\n  \u2022 A Movie Trip\n  \u2022 Bombacha\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u2192 Searching YouTube: A Movie Trip Carlos Da"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 1 movies missing trailers:\n  \u2022 In Symbiosis\n  \u2713 Cache hit: In Symbiosis (2025)\n  \u25cb In Symbiosis \u2014 no trailer found (attempt 1/5)\n\u2705 Trailer gap fill: 0/1 movies got trailers\n\u2705 Trailer re-enrichment complete: 0 movies updated\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 10.366662,
+      "duration_seconds": 14.089168,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 69 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 35 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 72 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 38 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.454461,
+      "duration_seconds": 0.314128,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 10 movies (>90 days old) \u2192 data_archive.json\n   data.json: 766 movies | archive: 613 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -77,37 +77,46 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 17646,
-    "tracking": 13886,
-    "available": 3379,
-    "data_movies": 766,
-    "movies_with_links": 744,
-    "movies_with_rt": 493,
-    "movies_with_wikipedia": 392,
-    "movies_with_trailers": 735
+    "total": 17674,
+    "tracking": 13907,
+    "available": 3386,
+    "data_movies": 761,
+    "movies_with_links": 738,
+    "movies_with_rt": 490,
+    "movies_with_wikipedia": 386,
+    "movies_with_trailers": 729
   },
   "enrichment_metrics": {
-    "timestamp": "2026-06-06T12:27:52.938697",
-    "movies_requested": 12,
+    "timestamp": "2026-06-07T12:48:25.669894",
+    "movies_requested": 18,
     "movies_enriched": 9,
-    "movies_deferred": 3,
+    "movies_deferred": 9,
     "deferred_details": [
+      {
+        "title": "Earth, Wind & Fire (To Be Celestial vs. That's the Weight of the World)",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-06-07",
+        "discovered_at": "2026-06-07T11:15:05.767976",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 2,
+        "tmdb_platforms": []
+      },
       {
         "title": "Groundswell",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-05",
-        "discovered_at": "2026-06-06T10:59:10.983105",
+        "discovered_at": "2026-06-07T11:15:08.944289",
         "discovery_source": "tmdb_type4",
-        "revert_count": 2,
+        "revert_count": 3,
         "tmdb_platforms": []
       },
       {
         "title": "A Man with Sole: The Impact of Kenneth Cole",
         "reason": "jw_revert:justwatch_no_valid_offers",
         "digital_date": "2026-06-04",
-        "discovered_at": "2026-06-06T10:59:13.293475",
+        "discovered_at": "2026-06-07T11:15:10.762962",
         "discovery_source": "tmdb_type4",
-        "revert_count": 4,
+        "revert_count": 5,
         "tmdb_platforms": [
           "Eventive"
         ]
@@ -116,13 +125,60 @@
         "title": "Real Couples",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-04",
-        "discovered_at": "2026-06-06T10:59:13.709364",
+        "discovered_at": "2026-06-07T11:15:11.225483",
         "discovery_source": "tmdb_type4",
-        "revert_count": 4,
+        "revert_count": 5,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Jinsei",
+        "reason": "jw_revert:justwatch_theatrical_pvod",
+        "digital_date": "",
+        "discovered_at": "2026-06-07T12:13:11.024948",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 1,
+        "tmdb_platforms": [
+          "Fandango At Home"
+        ]
+      },
+      {
+        "title": "Power Ballad",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-06-26",
+        "discovered_at": "2026-06-07T12:22:43.249197",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Scary Movie",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-07-21",
+        "discovered_at": "2026-06-07T12:35:15.298663",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Masters of the Universe",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-07-21",
+        "discovered_at": "2026-06-07T12:35:16.473714",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "tmdb_platforms": []
+      },
+      {
+        "title": "The Voices of Our Mother",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-06-19",
+        "discovered_at": "2026-06-07T12:35:59.832303",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
         "tmdb_platforms": []
       }
     ],
-    "enrichment_duration_seconds": 537.01,
+    "enrichment_duration_seconds": 744.65,
     "error_details": [],
     "total_errors": 0
   }

@@ -1,25 +1,34 @@
 {
-  "timestamp": "2026-06-06T12:27:52.938697",
-  "movies_requested": 12,
+  "timestamp": "2026-06-07T12:48:25.669894",
+  "movies_requested": 18,
   "movies_enriched": 9,
-  "movies_deferred": 3,
+  "movies_deferred": 9,
   "deferred_details": [
+    {
+      "title": "Earth, Wind & Fire (To Be Celestial vs. That's the Weight of the World)",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-07",
+      "discovered_at": "2026-06-07T11:15:05.767976",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "tmdb_platforms": []
+    },
     {
       "title": "Groundswell",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-05",
-      "discovered_at": "2026-06-06T10:59:10.983105",
+      "discovered_at": "2026-06-07T11:15:08.944289",
       "discovery_source": "tmdb_type4",
-      "revert_count": 2,
+      "revert_count": 3,
       "tmdb_platforms": []
     },
     {
       "title": "A Man with Sole: The Impact of Kenneth Cole",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-06T10:59:13.293475",
+      "discovered_at": "2026-06-07T11:15:10.762962",
       "discovery_source": "tmdb_type4",
-      "revert_count": 4,
+      "revert_count": 5,
       "tmdb_platforms": [
         "Eventive"
       ]
@@ -28,13 +37,60 @@
       "title": "Real Couples",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-06T10:59:13.709364",
+      "discovered_at": "2026-06-07T11:15:11.225483",
       "discovery_source": "tmdb_type4",
-      "revert_count": 4,
+      "revert_count": 5,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Jinsei",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "",
+      "discovered_at": "2026-06-07T12:13:11.024948",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ]
+    },
+    {
+      "title": "Power Ballad",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-26",
+      "discovered_at": "2026-06-07T12:22:43.249197",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Scary Movie",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-07-21",
+      "discovered_at": "2026-06-07T12:35:15.298663",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Masters of the Universe",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-07-21",
+      "discovered_at": "2026-06-07T12:35:16.473714",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Voices of Our Mother",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-19",
+      "discovered_at": "2026-06-07T12:35:59.832303",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 537.01,
+  "enrichment_duration_seconds": 744.65,
   "error_details": [],
   "total_errors": 0
 }
