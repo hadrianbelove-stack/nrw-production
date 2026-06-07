@@ -464,7 +464,7 @@ const NRWMobile = {
         for (let i = this.displayedCount; i < end; i++) {
             const entry = this.gridEntries[i];
             if (entry.type === 'date') {
-                grid.appendChild(this.createDateDivider(entry.dateStr));
+                grid.appendChild(this.createDateRowHeader(entry.dateStr));
             } else {
                 grid.appendChild(this.createGridItem(entry.movie, entry.index));
             }
@@ -485,33 +485,25 @@ const NRWMobile = {
         this._gridObserver.observe(sentinel);
     },
 
-    createDateDivider(dateStr) {
-        const card = document.createElement('div');
-        card.className = 'date-divider-card';
+    createDateRowHeader(dateStr) {
+        const row = document.createElement('div');
+        row.className = 'date-row-header';
 
+        let label;
         if (dateStr === 'pre-order') {
-            card.innerHTML =
-                '<div class="date-bar"><div class="date-day">PRE-ORDER</div></div>' +
-                '<div class="date-body">' +
-                  '<div class="date-number" style="font-size:1.2rem">SOON</div>' +
-                  '<div class="date-chevrons"><span>\u203A</span><span>\u203A</span><span>\u203A</span><span>\u203A</span><span>\u203A</span></div>' +
-                '</div>';
-            return card;
+            label = 'Pre-Order';
+        } else {
+            const d = new Date(dateStr + 'T12:00:00');
+            const weekday = d.toLocaleDateString('en', { weekday: 'short' });
+            const day = d.getDate();
+            const month = d.toLocaleDateString('en', { month: 'short' });
+            label = weekday + ' \u00A0 ' + month + ' ' + day;
         }
 
-        const d = new Date(dateStr + 'T12:00:00');
-        const weekday = d.toLocaleDateString('en', { weekday: 'short' }).toUpperCase();
-        const day = d.getDate();
-        const month = d.toLocaleDateString('en', { month: 'short' }).toUpperCase();
-
-        card.innerHTML =
-            '<div class="date-bar"><div class="date-day">' + weekday + '</div></div>' +
-            '<div class="date-body">' +
-              '<div class="date-number">' + day + '</div>' +
-              '<div class="date-month">' + month + '</div>' +
-              '<div class="date-chevrons"><span>\u203A</span><span>\u203A</span><span>\u203A</span><span>\u203A</span><span>\u203A</span></div>' +
-            '</div>';
-        return card;
+        row.innerHTML =
+            '<span class="drh-date">' + label + '</span>' +
+            '<span class="drh-line"></span>';
+        return row;
     },
 
     createGridItem(movie, index) {

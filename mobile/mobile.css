@@ -344,66 +344,27 @@ body {
 }
 
 /* Date divider card */
-.date-divider-card {
-  aspect-ratio: 2/3;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-  border-radius: 0;
+/* Date row header — spans full grid width, replaces old card-style divider */
+.date-row-header {
+  grid-column: 1 / -1;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 0;
-  position: relative;
-  overflow: hidden;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0 0.2rem;
 }
-.date-bar {
-  width: 100%;
-  background: var(--accent);
-  padding: 4px 8px;
-  flex-shrink: 0;
+.drh-date {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
-.date-day {
-  font-size: 0.6rem;
-  color: #000;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-.date-body {
-  padding: 0 0 0 8px;
+.drh-line {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
+  height: 1px;
+  background: rgba(255,255,255,0.07);
 }
-.date-number {
-  font-size: 2.4rem;
-  font-weight: 800;
-  color: #fff;
-  line-height: 0.85;
-}
-.date-month {
-  font-size: 0.5rem;
-  color: var(--text-muted);
-  letter-spacing: 0.1em;
-}
-.date-chevrons {
-  display: flex;
-  gap: 0;
-  margin-top: 3px;
-  line-height: 1;
-}
-.date-chevrons span {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--accent);
-  line-height: 1;
-}
-.date-chevrons span:nth-child(1) { opacity: 0.9; }
-.date-chevrons span:nth-child(2) { opacity: 0.7; }
-.date-chevrons span:nth-child(3) { opacity: 0.5; }
-.date-chevrons span:nth-child(4) { opacity: 0.3; }
-.date-chevrons span:nth-child(5) { opacity: 0.15; }
 
 /* Pre-order badge */
 .grid-item-poster .preorder-badge {
