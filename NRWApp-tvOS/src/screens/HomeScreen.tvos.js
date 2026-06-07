@@ -849,33 +849,18 @@ const HomeScreenTvOS = () => {
         );
       }
 
-      // Date marker — wrapped in TVFocusGuideView so the tvOS focus engine
-      // redirects focus THROUGH the non-focusable date cell to an adjacent movie.
+      // Date marker — plain View, not TVFocusGuideView.
+      // TVFocusGuideView intercepts ALL directional focus (not just UP/DOWN), causing LEFT/RIGHT
+      // navigation that fails to skip the date cell to land on the wrong row.
+      // Navigation AROUND date cards is handled entirely by nextFocusUp/Down/Left/Right props
+      // on adjacent movie cards (findSameColumnAbove/Below and findNearestHandle already skip
+      // items of type 'date'). With removeClippedSubviews removed those handles stay valid.
       if (item.type === 'date') {
         const dateParts = formatDateParts(item.date);
-        // Find nearest movie ref above and below in same column
-        const findMovieRef = (startIdx, step) => {
-          let i = startIdx;
-          while (i >= 0 && i < listData.length) {
-            if (listData[i]?.type === 'movie') {
-              const r = itemRefsMap.current.get(i);
-              if (r) return r;
-            }
-            i += step;
-          }
-          return null;
-        };
-        const refAbove = findMovieRef(index - NUM_COLUMNS, -NUM_COLUMNS);
-        const refBelow = findMovieRef(index + NUM_COLUMNS, NUM_COLUMNS);
-        // Use header as up-fallback when nothing above in column
-        const upFallback = refAbove ?? headerRefObject.current;
-        // refBelow first: DOWN navigation picks it immediately (not currently focused).
-        // UP navigation skips refBelow (currently focused) and lands on upFallback.
-        const guideDests = [refBelow, upFallback].filter(Boolean);
         return (
-          <TVFocusGuideView destinations={guideDests} style={styles.cardWrapper}>
+          <View style={styles.cardWrapper}>
             <DateCard dateParts={dateParts} isBootstrap={item.isBootstrap} />
-          </TVFocusGuideView>
+          </View>
         );
       }
 

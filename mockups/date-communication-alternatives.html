@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Date Communication — NRW</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0a0a0a;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 1.5rem 1rem;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.page-header h1 {
+  font-size: 0.75rem;
+  font-weight: 100;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #bbb;
+  margin-bottom: 0.3rem;
+}
+.page-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+/* Section wrapper */
+.option {
+  margin-bottom: 3rem;
+}
+.option-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+.option-label em {
+  color: #00d4aa;
+  font-style: normal;
+}
+.option-desc {
+  font-size: 0.78rem;
+  color: #666;
+  margin-bottom: 0.9rem;
+  line-height: 1.5;
+}
+
+/* =====================
+   SHARED: movie grid
+   ===================== */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.55rem;
+}
+
+/* A realistic fake movie card */
+.card {
+  border-radius: 12px;
+  aspect-ratio: 2 / 3;
+  background: linear-gradient(160deg, #1e1e30 0%, #252535 100%);
+  border: 1px solid rgba(255,255,255,0.07);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-poster {
+  flex: 1;
+  background: linear-gradient(180deg, rgba(50,50,70,0.8) 0%, rgba(20,20,35,0.9) 100%);
+  position: relative;
+}
+
+/* Fake image texture */
+.card-poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 40% 30%, rgba(255,255,255,0.04) 0%, transparent 60%);
+}
+
+.card-caption {
+  padding: 0.35rem 0.4rem 0.4rem;
+  flex-shrink: 0;
+}
+.card-title {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #ddd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+}
+.card-meta {
+  font-size: 0.52rem;
+  color: #555;
+  margin-top: 0.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =====================
+   OPTION 1: Badge on first card
+   ===================== */
+.badge-first .card-poster .date-badge {
+  display: none;
+}
+.badge-first .card.is-first .card-poster .date-badge {
+  display: flex;
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(0,212,170,0.5);
+  border-radius: 4px;
+  padding: 0.2rem 0.35rem;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+  backdrop-filter: blur(4px);
+}
+.date-badge .db-day {
+  font-size: 0.42rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #00d4aa;
+  text-transform: uppercase;
+}
+.date-badge .db-num {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+.date-badge .db-mon {
+  font-size: 0.42rem;
+  color: #888;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* =====================
+   OPTION 2: Full-width text row (grid spanning)
+   ===================== */
+.grid-with-headers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.55rem;
+}
+.date-row-header {
+  grid-column: 1 / -1;
+  padding: 0.5rem 0 0.1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+.drh-date {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #bbb;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.drh-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+}
+
+/* =====================
+   OPTION 3: Date in caption
+   ===================== */
+.caption-date .card-meta .meta-date {
+  color: #00d4aa;
+  opacity: 0.7;
+}
+
+/* =====================
+   OPTION 4: Sticky scroll indicator
+   (simulated with a scrollable box)
+   ===================== */
+.scroll-demo-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.scroll-demo {
+  height: 340px;
+  overflow-y: scroll;
+  padding: 0.7rem;
+  background: #0a0a0a;
+  scrollbar-width: none;
+}
+.scroll-demo::-webkit-scrollbar { display: none; }
+
+.sticky-date-pill {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(0,212,170,0.4);
+  border-radius: 20px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #00d4aa;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity 0.2s;
+}
+
+.scroll-section {
+  margin-bottom: 1.2rem;
+}
+.scroll-section-label {
+  font-size: 0.52rem;
+  color: rgba(255,255,255,0.08);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  padding-left: 0.1rem;
+  /* Invisible — date info exists only in the pill */
+}
+
+/* =====================
+   OPTION 5: Ghost watermark
+   ===================== */
+.watermark-group {
+  position: relative;
+  margin-bottom: 1.2rem;
+}
+.watermark-num {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18vw;
+  font-weight: 900;
+  color: rgba(255,255,255,0.025);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>The New Release Wall</h1>
+  <h2>5 alternatives to the date divider card</h2>
+</div>
+
+<!-- ===================================================
+     OPTION 1: DATE BADGE ON FIRST CARD OF EACH GROUP
+     =================================================== -->
+<div class="option">
+  <div class="option-label"><em>01 &nbsp;—</em>&nbsp; Badge on first card</div>
+  <div class="option-desc">No divider card. The first movie of each date group gets a small overlay badge in its poster corner. Grid is 100% movies.</div>
+
+  <div class="movie-grid badge-first">
+
+    <!-- Group: Jun 5 -->
+    <div class="card is-first">
+      <div class="card-poster">
+        <div class="date-badge">
+          <span class="db-day">Fri</span>
+          <span class="db-num">5</span>
+          <span class="db-mon">Jun</span>
+        </div>
+      </div>
+      <div class="card-caption">
+        <div class="card-title">Strange Days</div>
+        <div class="card-meta">Bigelow · USA</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-poster"></div>
+      <div class="card-caption">
+        <div class="card-title">The Substance</div>
+        <div class="card-meta">Fargeat · FRA</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-poster"></div>
+      <div class="card-caption">
+        <div class="card-title">All We Imagine</div>
+        <div class="card-meta">Payal · IND</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-poster"></div>
+      <div class="card-caption">
+        <div class="card-title">Longlegs</div>
+        <div class="card-meta">Perkins · USA</div>
+      </div>
+    </div>
+
+    <!-- Group: Jun 3 -->
+    <div class="card is-first">
+      <div class="card-poster">
+        <div class="date-badge">
+          <span class="db-day">Tue</span>
+          <span class="db-num">3</span>
+          <span class="db-mon">Jun</span>
+        </div>
+      </div>
+      <div class="card-caption">
+        <div class="card-title">Nickel Boys</div>
+        <div class="card-meta">Edwards · USA</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-poster"></div>
+      <div class="card-caption">
+        <div class="card-title">Conclave</div>
+        <div class="card-meta">Berger · UK</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-poster"></div>
+      <div class="card-caption">
+        <div class="card-title">Hard Truths</div>
+        <div class="card-meta">Leigh · UK</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-poster"></div>
+      <div class="card-caption">
+        <div class="card-title">Flow</div>
+        <div class="card-meta">Zilbalodis · LVA</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================================================
+     OPTION 2: FULL-WIDTH TEXT ROW (grid-spanning header)
+     =================================================== -->
+<div class="option">
+  <div class="option-label"><em>02 &nbsp;—</em>&nbsp; Row header (no card slot)</div>
+  <div class="option-desc">A thin text row spans the full grid width before each date group. Takes almost no vertical space. Grid stays all movies.</div>
+
+  <div class="grid-with-headers">
+
+    <div class="date-row-header">
+      <span class="drh-date">Fri &nbsp; Jun 5</span>
+      <span class="drh-line"></span>
+    </div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Strange Days</div><div class="card-meta">Bigelow · USA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">The Substance</div><div class="card-meta">Fargeat · FRA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">All We Imagine</div><div class="card-meta">Payal · IND</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Longlegs</div><div class="card-meta">Perkins · USA</div></div></div>
+
+    <div class="date-row-header">
+      <span class="drh-date">Tue &nbsp; Jun 3</span>
+      <span class="drh-line"></span>
+    </div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Nickel Boys</div><div class="card-meta">Edwards · USA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Conclave</div><div class="card-meta">Berger · UK</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Hard Truths</div><div class="card-meta">Leigh · UK</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Flow</div><div class="card-meta">Zilbalodis · LVA</div></div></div>
+
+    <div class="date-row-header">
+      <span class="drh-date">Fri &nbsp; May 30</span>
+      <span class="drh-line"></span>
+    </div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">The Brutalist</div><div class="card-meta">Corbet · UK</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">A Real Pain</div><div class="card-meta">Eisenberg · USA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Emilia Pérez</div><div class="card-meta">Audiard · FRA</div></div></div>
+
+  </div>
+</div>
+
+<!-- ===================================================
+     OPTION 3: DATE IN CAPTION (below every card)
+     =================================================== -->
+<div class="option">
+  <div class="option-label"><em>03 &nbsp;—</em>&nbsp; Date in caption</div>
+  <div class="option-desc">No divider at all. Each card's caption includes its release date — same line as the metadata. Grid is pure posters.</div>
+
+  <div class="movie-grid caption-date">
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Strange Days</div><div class="card-meta"><span class="meta-date">Jun 5 ·</span> Bigelow · USA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">The Substance</div><div class="card-meta"><span class="meta-date">Jun 5 ·</span> Fargeat · FRA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">All We Imagine</div><div class="card-meta"><span class="meta-date">Jun 5 ·</span> Payal · IND</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Longlegs</div><div class="card-meta"><span class="meta-date">Jun 5 ·</span> Perkins · USA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Nickel Boys</div><div class="card-meta"><span class="meta-date">Jun 3 ·</span> Edwards · USA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Conclave</div><div class="card-meta"><span class="meta-date">Jun 3 ·</span> Berger · UK</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Hard Truths</div><div class="card-meta"><span class="meta-date">Jun 3 ·</span> Leigh · UK</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">The Brutalist</div><div class="card-meta"><span class="meta-date">May 30 ·</span> Corbet · UK</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">A Real Pain</div><div class="card-meta"><span class="meta-date">May 30 ·</span> Eisenberg · USA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Flow</div><div class="card-meta"><span class="meta-date">Jun 3 ·</span> Zilbalodis · LVA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Emilia Pérez</div><div class="card-meta"><span class="meta-date">May 30 ·</span> Audiard · FRA</div></div></div>
+    <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">I Saw the TV Glow</div><div class="card-meta"><span class="meta-date">May 30 ·</span> Schoenbrun · USA</div></div></div>
+  </div>
+</div>
+
+<!-- ===================================================
+     OPTION 4: STICKY SCROLL INDICATOR
+     =================================================== -->
+<div class="option">
+  <div class="option-label"><em>04 &nbsp;—</em>&nbsp; Sticky scroll indicator</div>
+  <div class="option-desc">No date in the grid at all. A small pill floats top-right and updates as you scroll through date groups. Scroll the demo below to see it work.</div>
+
+  <div class="scroll-demo-wrap">
+    <div class="sticky-date-pill" id="sticky-pill">Fri · Jun 5</div>
+    <div class="scroll-demo" id="scroll-demo">
+
+      <div class="scroll-section" data-date="Fri · Jun 5">
+        <div class="scroll-section-label">jun 5</div>
+        <div class="movie-grid">
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Strange Days</div><div class="card-meta">Bigelow · USA</div></div></div>
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">The Substance</div><div class="card-meta">Fargeat · FRA</div></div></div>
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">All We Imagine</div><div class="card-meta">Payal · IND</div></div></div>
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Longlegs</div><div class="card-meta">Perkins · USA</div></div></div>
+        </div>
+      </div>
+
+      <div class="scroll-section" data-date="Tue · Jun 3">
+        <div class="scroll-section-label">jun 3</div>
+        <div class="movie-grid">
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Nickel Boys</div><div class="card-meta">Edwards · USA</div></div></div>
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Conclave</div><div class="card-meta">Berger · UK</div></div></div>
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Hard Truths</div><div class="card-meta">Leigh · UK</div></div></div>
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Flow</div><div class="card-meta">Zilbalodis · LVA</div></div></div>
+        </div>
+      </div>
+
+      <div class="scroll-section" data-date="Fri · May 30">
+        <div class="scroll-section-label">may 30</div>
+        <div class="movie-grid">
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">The Brutalist</div><div class="card-meta">Corbet · UK</div></div></div>
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">A Real Pain</div><div class="card-meta">Eisenberg · USA</div></div></div>
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Emilia Pérez</div><div class="card-meta">Audiard · FRA</div></div></div>
+          <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">I Saw the TV Glow</div><div class="card-meta">Schoenbrun · USA</div></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================
+     OPTION 5: GHOST WATERMARK
+     =================================================== -->
+<div class="option">
+  <div class="option-label"><em>05 &nbsp;—</em>&nbsp; Ghost watermark</div>
+  <div class="option-desc">A huge faint date number sits behind each group as an ambient background element. Posters sit on top. No grid slot used.</div>
+
+  <div style="display: flex; flex-direction: column; gap: 1rem;">
+
+    <div class="watermark-group">
+      <div class="watermark-num">5</div>
+      <div class="movie-grid" style="position: relative; z-index: 1;">
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Strange Days</div><div class="card-meta">Jun 5 · Bigelow · USA</div></div></div>
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">The Substance</div><div class="card-meta">Jun 5 · Fargeat · FRA</div></div></div>
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">All We Imagine</div><div class="card-meta">Jun 5 · Payal · IND</div></div></div>
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Longlegs</div><div class="card-meta">Jun 5 · Perkins · USA</div></div></div>
+      </div>
+    </div>
+
+    <div class="watermark-group">
+      <div class="watermark-num">3</div>
+      <div class="movie-grid" style="position: relative; z-index: 1;">
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Nickel Boys</div><div class="card-meta">Jun 3 · Edwards · USA</div></div></div>
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Conclave</div><div class="card-meta">Jun 3 · Berger · UK</div></div></div>
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Hard Truths</div><div class="card-meta">Jun 3 · Leigh · UK</div></div></div>
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Flow</div><div class="card-meta">Jun 3 · Zilbalodis · LVA</div></div></div>
+      </div>
+    </div>
+
+    <div class="watermark-group">
+      <div class="watermark-num">30</div>
+      <div class="movie-grid" style="position: relative; z-index: 1;">
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">The Brutalist</div><div class="card-meta">May 30 · Corbet · UK</div></div></div>
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">A Real Pain</div><div class="card-meta">May 30 · Eisenberg · USA</div></div></div>
+        <div class="card"><div class="card-poster"></div><div class="card-caption"><div class="card-title">Emilia Pérez</div><div class="card-meta">May 30 · Audiard · FRA</div></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="height: 3rem;"></div>
+
+<script>
+// Option 4: sticky pill updates on scroll
+const demo = document.getElementById('scroll-demo');
+const pill = document.getElementById('sticky-pill');
+const sections = demo.querySelectorAll('.scroll-section');
+
+demo.addEventListener('scroll', () => {
+  const demoRect = demo.getBoundingClientRect();
+  let current = sections[0].dataset.date;
+  sections.forEach(sec => {
+    const rect = sec.getBoundingClientRect();
+    // Section is "active" once its top has scrolled past the demo top
+    if (rect.top <= demoRect.top + 20) {
+      current = sec.dataset.date;
+    }
+  });
+  pill.textContent = current;
+});
+</script>
+</body>
+</html>

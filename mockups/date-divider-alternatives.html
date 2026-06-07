@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Date Divider Explorations — NRW</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 1.5rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .page-header h1 {
+    font-size: 1.1rem;
+    font-weight: 100;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 0.4rem;
+  }
+
+  .page-header p {
+    font-size: 0.8rem;
+    color: #888;
+    letter-spacing: 0.05em;
+  }
+
+  /* Each option section */
+  .option {
+    margin-bottom: 2.5rem;
+  }
+
+  .option-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 0.75rem;
+  }
+
+  .option-label span {
+    color: #00d4aa;
+    margin-right: 0.4em;
+  }
+
+  /* The mini grid — 4 columns to show divider + 3 movie cards */
+  .mini-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+  }
+
+  /* Fake movie poster card */
+  .fake-card {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    background: linear-gradient(160deg, #1e1e2e 0%, #2a2a3e 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 0.7rem;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .fake-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(180deg, rgba(60,60,80,0.6) 0%, transparent 100%);
+  }
+
+  .fake-card-title {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .fake-card-year {
+    font-size: 0.5rem;
+    color: #555;
+    margin-top: 0.15rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* =============================
+     CURRENT DESIGN
+     ============================= */
+  .divider-current {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+
+  .divider-current .d-bar {
+    width: 100%;
+    background: #00d4aa;
+    padding: 5px 10px;
+    flex-shrink: 0;
+  }
+
+  .divider-current .d-day {
+    font-size: 0.65rem;
+    color: #000;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+
+  .divider-current .d-body {
+    padding: 0 0 0 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .divider-current .d-num {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 0.85;
+  }
+
+  .divider-current .d-month {
+    font-size: 0.58rem;
+    color: #888;
+    letter-spacing: 0.1em;
+    margin-top: 0.25rem;
+  }
+
+  .divider-current .d-chevrons {
+    display: flex;
+    gap: 0;
+    margin-top: 0.4rem;
+    line-height: 1;
+  }
+
+  .divider-current .d-chevrons span {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #00d4aa;
+    line-height: 1;
+  }
+
+  .divider-current .d-chevrons span:nth-child(1) { opacity: 0.9; }
+  .divider-current .d-chevrons span:nth-child(2) { opacity: 0.7; }
+  .divider-current .d-chevrons span:nth-child(3) { opacity: 0.5; }
+  .divider-current .d-chevrons span:nth-child(4) { opacity: 0.3; }
+  .divider-current .d-chevrons span:nth-child(5) { opacity: 0.15; }
+
+  /* =============================
+     OPTION 1 — INK STAMP
+     ============================= */
+  .divider-stamp {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .stamp-inner {
+    transform: rotate(-8deg);
+    text-align: center;
+    padding: 0.5rem 0.8rem;
+    border: 3px solid #00d4aa;
+    border-radius: 4px;
+    position: relative;
+  }
+
+  .stamp-inner::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border: 1px solid rgba(0,212,170,0.3);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .stamp-num {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #00d4aa;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    /* Distressed look via text-shadow */
+    text-shadow:
+      1px 1px 0 rgba(0,212,170,0.15),
+      -1px -1px 0 rgba(0,212,170,0.15),
+      2px 0 0 rgba(0,212,170,0.08);
+    opacity: 0.88;
+  }
+
+  .stamp-month {
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: #00d4aa;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.82;
+    text-shadow: 1px 0 0 rgba(0,212,170,0.2);
+  }
+
+  /* =============================
+     OPTION 2 — HORIZONTAL RULE BREAKER
+     (full-width row, not a card slot)
+     ============================= */
+  .option-2-demo {
+    /* Shows fake cards above, rule, fake cards below */
+  }
+
+  .mini-grid-half {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .hr-breaker {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    margin: 0.3rem 0;
+  }
+
+  .hr-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+  }
+
+  .hr-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #666;
+    white-space: nowrap;
+  }
+
+  .mini-grid-below {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+    margin-top: 0.3rem;
+  }
+
+  /* =============================
+     OPTION 3 — NEWSPAPER EAR
+     ============================= */
+  .divider-newspaper {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    background: #0d0d0d;
+    border: 1px solid rgba(255,255,255,0.12);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0.6rem;
+    position: relative;
+  }
+
+  /* Ruled lines texture */
+  .divider-newspaper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 11px,
+      rgba(255,255,255,0.04) 11px,
+      rgba(255,255,255,0.04) 12px
+    );
+    pointer-events: none;
+  }
+
+  .np-header {
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .np-label {
+    font-size: 0.45rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #aaa;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .np-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .np-num {
+    font-size: 3.2rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 0.85;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .np-month {
+    font-size: 0.65rem;
+    color: #888;
+    font-family: Georgia, 'Times New Roman', serif;
+    letter-spacing: 0.08em;
+    margin-top: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .np-day {
+    font-size: 0.55rem;
+    color: #555;
+    font-family: Georgia, 'Times New Roman', serif;
+    letter-spacing: 0.05em;
+    margin-top: 0.15rem;
+  }
+
+  /* =============================
+     OPTION 4 — CLAPPERBOARD
+     ============================= */
+  .divider-clapper {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #111;
+    position: relative;
+  }
+
+  /* Clap stick — top 28% with diagonal stripes */
+  .clapper-top {
+    height: 28%;
+    flex-shrink: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      #fff 0px,
+      #fff 8px,
+      #111 8px,
+      #111 16px
+    );
+    position: relative;
+  }
+
+  /* Hinge line */
+  .clapper-hinge {
+    height: 3px;
+    background: #000;
+    flex-shrink: 0;
+  }
+
+  /* Main board */
+  .clapper-body {
+    flex: 1;
+    background: #f5f5f0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0.6rem 0.7rem;
+  }
+
+  .clapper-date-label {
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: #555;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 0.1rem;
+  }
+
+  .clapper-date-num {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #111;
+    line-height: 0.9;
+    font-family: 'Courier New', monospace;
+  }
+
+  .clapper-date-sub {
+    font-size: 0.7rem;
+    color: #444;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.08em;
+    margin-top: 0.2rem;
+  }
+
+  /* Small lines at bottom of clapper */
+  .clapper-lines {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .clapper-line {
+    height: 1px;
+    background: #ccc;
+    width: 100%;
+  }
+
+  /* =============================
+     OPTION 5 — GLOWING NUMBER
+     ============================= */
+  .divider-glow {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .glow-num {
+    font-size: 5rem;
+    font-weight: 900;
+    color: #00d4aa;
+    line-height: 1;
+    text-shadow:
+      0 0 10px rgba(0,212,170,0.9),
+      0 0 20px rgba(0,212,170,0.7),
+      0 0 40px rgba(0,212,170,0.5),
+      0 0 60px rgba(0,212,170,0.3);
+    letter-spacing: -0.02em;
+  }
+
+  .glow-month {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(0,212,170,0.35);
+    margin-top: 0.4rem;
+  }
+
+  .glow-day {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.2);
+    margin-top: 0.2rem;
+    text-transform: uppercase;
+  }
+
+  /* =============================
+     OPTION 6 — FILM STRIP
+     ============================= */
+  .divider-filmstrip {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    background: #0a0a0a;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+  }
+
+  /* Left filmstrip edge */
+  .film-edge {
+    width: 22%;
+    background: #111;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 0.4rem 0;
+  }
+
+  .film-hole {
+    width: 8px;
+    height: 6px;
+    background: #0a0a0a;
+    border-radius: 1px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+  }
+
+  /* Right content */
+  .film-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.6rem 0.5rem;
+    border-left: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .film-date-num {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 0.85;
+  }
+
+  .film-date-month {
+    font-size: 0.65rem;
+    color: #00d4aa;
+    letter-spacing: 0.15em;
+    margin-top: 0.25rem;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .film-date-day {
+    font-size: 0.5rem;
+    color: #555;
+    letter-spacing: 0.1em;
+    margin-top: 0.15rem;
+    text-transform: uppercase;
+  }
+
+  /* =============================
+     OPTION 7 — TORN PAPER EDGE
+     ============================= */
+  .divider-torn {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    background: #f2ede8;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .torn-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.7rem;
+  }
+
+  .torn-day-label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+  }
+
+  .torn-num {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #111;
+    line-height: 0.85;
+  }
+
+  .torn-month {
+    font-size: 0.75rem;
+    color: #555;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+    font-weight: 600;
+  }
+
+  /* Torn bottom edge */
+  .torn-edge {
+    height: 20px;
+    position: relative;
+    flex-shrink: 0;
+    /* Jagged SVG clip path */
+    background: #f2ede8;
+    clip-path: polygon(
+      0% 0%, 4% 100%, 8% 30%, 12% 90%, 16% 20%, 20% 80%,
+      24% 10%, 28% 70%, 32% 5%, 36% 85%, 40% 15%, 44% 75%,
+      48% 0%, 52% 90%, 56% 20%, 60% 80%, 64% 5%, 68% 75%,
+      72% 10%, 76% 90%, 80% 20%, 84% 80%, 88% 10%, 92% 85%, 96% 0%, 100% 60%, 100% 0%
+    );
+  }
+
+  /* Black bottom below torn edge */
+  .torn-below {
+    height: 30px;
+    background: #0a0a0a;
+    flex-shrink: 0;
+  }
+
+  /* =============================
+     OPTION 8 — MINIMAL CORNER TAG
+     ============================= */
+  .divider-corner {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    background: #0a0a0a;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* Faint grid pattern for depth */
+  .divider-corner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .corner-tag {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: #00d4aa;
+    border-radius: 4px;
+    padding: 0.2rem 0.35rem;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  .corner-tag-num {
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: #000;
+    display: block;
+  }
+
+  .corner-tag-month {
+    font-size: 0.45rem;
+    font-weight: 700;
+    color: #000;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: block;
+  }
+
+  /* =============================
+     OPTION 9 — GRADIENT SLASH
+     ============================= */
+  .divider-slash {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    background: #0a0a0a;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slash-band {
+    position: absolute;
+    width: 200%;
+    height: 55%;
+    background: linear-gradient(90deg, transparent, #007a62, #00d4aa, #007a62, transparent);
+    transform: rotate(-20deg);
+    left: -50%;
+  }
+
+  .slash-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .slash-num {
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .slash-month {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.9);
+    text-transform: uppercase;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+
+  /* =============================
+     OPTION 10 — TICKER TAPE
+     ============================= */
+  .divider-ticker {
+    aspect-ratio: 2 / 3;
+    border-radius: 15px;
+    background: #f5f0e8;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Repeating ticker text scrolls across top */
+  .ticker-tape-top {
+    background: #111;
+    padding: 0.25rem 0;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .ticker-scroll {
+    font-size: 0.42rem;
+    font-family: 'Courier New', monospace;
+    color: #00d4aa;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    animation: scroll-left 10s linear infinite;
+  }
+
+  @keyframes scroll-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .ticker-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.6rem 0.7rem;
+  }
+
+  .ticker-sym {
+    font-size: 0.5rem;
+    font-family: 'Courier New', monospace;
+    color: #888;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.2rem;
+  }
+
+  .ticker-num {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #111;
+    line-height: 0.85;
+    font-family: 'Courier New', monospace;
+  }
+
+  .ticker-month {
+    font-size: 0.65rem;
+    color: #555;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.15em;
+    margin-top: 0.25rem;
+    text-transform: uppercase;
+  }
+
+  .ticker-meta {
+    font-size: 0.48rem;
+    color: #888;
+    font-family: 'Courier New', monospace;
+    margin-top: 0.4rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* Bottom ticker tape strip */
+  .ticker-tape-bottom {
+    background: #e8e2d8;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.42rem;
+    font-family: 'Courier New', monospace;
+    color: #888;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  /* =============================
+     CURRENT DESIGN LABEL NOTE
+     ============================= */
+  .current-badge {
+    display: inline-block;
+    background: rgba(0,212,170,0.1);
+    border: 1px solid rgba(0,212,170,0.3);
+    color: #00d4aa;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    padding: 0.15rem 0.4rem;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+
+  .option-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 2.5rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>The New Release Wall</h1>
+  <p>Date Divider Explorations &nbsp;·&nbsp; Current design shown first for reference</p>
+</div>
+
+<!-- CURRENT DESIGN -->
+<div class="option">
+  <div class="option-label"><span>—</span> Current Design <span class="current-badge">live</span></div>
+  <div class="mini-grid">
+    <div class="divider-current">
+      <div class="d-bar"><div class="d-day">FRI</div></div>
+      <div class="d-body">
+        <div class="d-num">5</div>
+        <div class="d-month">JUN</div>
+        <div class="d-chevrons">
+          <span>›</span><span>›</span><span>›</span><span>›</span><span>›</span>
+        </div>
+      </div>
+    </div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+  </div>
+</div>
+
+<div class="option-divider"></div>
+
+<!-- OPTION 1 — INK STAMP -->
+<div class="option">
+  <div class="option-label"><span>01</span> Ink Stamp</div>
+  <div class="mini-grid">
+    <div class="divider-stamp">
+      <div class="stamp-inner">
+        <div class="stamp-num">5</div>
+        <div class="stamp-month">Jun</div>
+      </div>
+    </div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+  </div>
+</div>
+
+<!-- OPTION 2 — HORIZONTAL RULE BREAKER -->
+<div class="option">
+  <div class="option-label"><span>02</span> Horizontal Rule Breaker</div>
+  <div class="option-2-demo">
+    <div class="mini-grid-half">
+      <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+      <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+      <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+      <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    </div>
+    <div class="hr-breaker">
+      <div class="hr-line"></div>
+      <div class="hr-label">Fri &nbsp;·&nbsp; Jun 5</div>
+      <div class="hr-line"></div>
+    </div>
+    <div class="mini-grid-below">
+      <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+      <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+      <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+      <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION 3 — NEWSPAPER EAR -->
+<div class="option">
+  <div class="option-label"><span>03</span> Newspaper Ear</div>
+  <div class="mini-grid">
+    <div class="divider-newspaper">
+      <div class="np-header">
+        <div class="np-label">New This Week</div>
+      </div>
+      <div class="np-body">
+        <div class="np-num">5</div>
+        <div class="np-month">June</div>
+        <div class="np-day">Friday</div>
+      </div>
+    </div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+  </div>
+</div>
+
+<!-- OPTION 4 — CLAPPERBOARD -->
+<div class="option">
+  <div class="option-label"><span>04</span> Clapperboard</div>
+  <div class="mini-grid">
+    <div class="divider-clapper">
+      <div class="clapper-top"></div>
+      <div class="clapper-hinge"></div>
+      <div class="clapper-body">
+        <div class="clapper-date-label">Date</div>
+        <div class="clapper-date-num">05</div>
+        <div class="clapper-date-sub">FRI JUN 2025</div>
+        <div class="clapper-lines" style="margin-top: 0.8rem;">
+          <div class="clapper-line"></div>
+          <div class="clapper-line"></div>
+          <div class="clapper-line"></div>
+        </div>
+      </div>
+    </div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+  </div>
+</div>
+
+<!-- OPTION 5 — GLOWING NUMBER -->
+<div class="option">
+  <div class="option-label"><span>05</span> Glowing Number</div>
+  <div class="mini-grid">
+    <div class="divider-glow">
+      <div class="glow-num">5</div>
+      <div class="glow-month">Jun</div>
+      <div class="glow-day">Friday</div>
+    </div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+  </div>
+</div>
+
+<!-- OPTION 6 — FILM STRIP -->
+<div class="option">
+  <div class="option-label"><span>06</span> Film Strip</div>
+  <div class="mini-grid">
+    <div class="divider-filmstrip">
+      <div class="film-edge">
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+        <div class="film-hole"></div>
+      </div>
+      <div class="film-content">
+        <div class="film-date-num">5</div>
+        <div class="film-date-month">Jun</div>
+        <div class="film-date-day">Friday</div>
+      </div>
+    </div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+  </div>
+</div>
+
+<!-- OPTION 7 — TORN PAPER EDGE -->
+<div class="option">
+  <div class="option-label"><span>07</span> Torn Paper Edge</div>
+  <div class="mini-grid">
+    <div class="divider-torn">
+      <div class="torn-content">
+        <div class="torn-day-label">Friday</div>
+        <div class="torn-num">5</div>
+        <div class="torn-month">June</div>
+      </div>
+      <div class="torn-edge"></div>
+      <div class="torn-below"></div>
+    </div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+  </div>
+</div>
+
+<!-- OPTION 8 — MINIMAL CORNER TAG -->
+<div class="option">
+  <div class="option-label"><span>08</span> Minimal Corner Tag</div>
+  <div class="mini-grid">
+    <div class="divider-corner">
+      <div class="corner-tag">
+        <span class="corner-tag-num">5</span>
+        <span class="corner-tag-month">Jun</span>
+      </div>
+    </div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+  </div>
+</div>
+
+<!-- OPTION 9 — GRADIENT SLASH -->
+<div class="option">
+  <div class="option-label"><span>09</span> Gradient Slash</div>
+  <div class="mini-grid">
+    <div class="divider-slash">
+      <div class="slash-band"></div>
+      <div class="slash-content">
+        <div class="slash-num">5</div>
+        <div class="slash-month">Jun</div>
+      </div>
+    </div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+  </div>
+</div>
+
+<!-- OPTION 10 — TICKER TAPE -->
+<div class="option">
+  <div class="option-label"><span>10</span> Ticker Tape</div>
+  <div class="mini-grid">
+    <div class="divider-ticker">
+      <div class="ticker-tape-top">
+        <div class="ticker-scroll">NRW · 06.05 · VOD · NEW · NRW · 06.05 · VOD · NEW · NRW · 06.05 · VOD · NEW · NRW · 06.05 · VOD · NEW · NRW · 06.05 · VOD · NEW · </div>
+      </div>
+      <div class="ticker-main">
+        <div class="ticker-sym">NRW · FRI</div>
+        <div class="ticker-num">05</div>
+        <div class="ticker-month">June</div>
+        <div class="ticker-meta">2025 · VOD · DIGITAL</div>
+      </div>
+      <div class="ticker-tape-bottom">NRW · NEW THIS WEEK · 06.05 · NOW STREAMING · DIGITAL RELEASE ·</div>
+    </div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2024</div></div>
+    <div class="fake-card"><div class="fake-card-title">Movie Title</div><div class="fake-card-year">2025</div></div>
+  </div>
+</div>
+
+<div style="height: 3rem;"></div>
+
+</body>
+</html>

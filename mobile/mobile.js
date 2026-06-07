@@ -1155,9 +1155,9 @@ const NRWMobile = {
             const absDx = Math.abs(dx);
             const absDy = Math.abs(dy);
 
-            // Tap → back to grid
+            // Tap → open detail sheet
             if (absDx < 15 && absDy < 15 && dt < 300) {
-                this.setView(0);
+                this.setView(2);
                 return;
             }
             if (dt > 500) return;
@@ -1189,7 +1189,7 @@ const NRWMobile = {
             mouseDown = false;
             const dx = e.clientX - mouseStartX;
             const dy = e.clientY - mouseStartY;
-            if (Math.abs(dx) < 10 && Math.abs(dy) < 10) { this.setView(0); return; }
+            if (Math.abs(dx) < 10 && Math.abs(dy) < 10) { this.setView(2); return; }
             if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
                 this.navigateMovie(dx < 0 ? 1 : -1);
             } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) {
@@ -1233,7 +1233,7 @@ const NRWMobile = {
                 // Tap on handle → back to grid
                 this.setView(0);
             } else if (dy > 100) {
-                // Drag dismiss → poster view
+                // Drag dismiss → back to poster
                 this.setView(1);
             }
             // else snap back (no action)
