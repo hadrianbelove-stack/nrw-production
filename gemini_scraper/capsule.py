@@ -946,8 +946,8 @@ Using the sources above AND Google Search, dig up everything interesting and use
 - Festival run: every significant festival, awards won or nominated, how it performed critically at premiere
 - Distribution: who acquired it, theatrical run details, how it's being released, any interesting release strategy
 - Cultural, historical, or social context the film engages with — what's the film in conversation with?
-- Comparisons to other films or filmmakers that would help orient an editor
 - Anything surprising, counterintuitive, or that a well-read cinephile would find genuinely interesting
+- COMPARABLES (required): One dedicated bullet identifying 2–3 specific films, TV shows, books, bands, or other cultural works this film resembles in tone, style, subject, or sensibility — and briefly why. Ground these in what critics or audiences have actually said where possible. Start this bullet with "COMPARABLES:"
 
 Output ONLY a bullet list using • characters. Write 10–15 bullets. This is a research dump — go long. Each bullet should be as detailed as the material warrants: 2–4 sentences is normal, more if needed. Do NOT truncate interesting information into a terse one-liner. If you have a direct quote, include it verbatim and in full with attribution. Prioritize specific, surprising, or non-obvious details over generic biography. Do not number the bullets. No headers, no sections — just the bullets.
 
