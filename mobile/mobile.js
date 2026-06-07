@@ -742,7 +742,7 @@ const NRWMobile = {
         const metaEl = document.getElementById('poster-meta');
         if (metaEl) {
             const line1 = dirName
-                ? '<div class="poster-meta-line"><span class="poster-meta-label">D:</span> ' + this.esc(dirName) + '</div>'
+                ? '<div class="poster-meta-line poster-meta-dir"><span class="poster-meta-label">D:</span> ' + this.esc(dirName) + '</div>'
                 : '';
             const line2Parts = [genre, country].filter(Boolean);
             const line2 = line2Parts.length
@@ -780,7 +780,7 @@ const NRWMobile = {
         let castLine = '';
         if (cast?.length) {
             const castWiki = movie.links?.cast_wiki || {};
-            const castParts = cast.slice(0, 3).map(name => {
+            const castParts = cast.slice(0, 2).map(name => {
                 const url = castWiki[name];
                 return url
                     ? '<a href="' + url + '" target="_blank" rel="noopener" class="crew-link">' + this.esc(name) + '</a>'
@@ -841,7 +841,6 @@ const NRWMobile = {
             (dirLine ? '<div class="sheet-crew">' + dirLine + '</div>' : '') +
             (castLine ? '<div class="sheet-crew">' + castLine + '</div>' : '') +
             (detailParts.length ? '<div class="sheet-meta"><span>' + detailParts.join(' \u00b7 ') + '</span></div>' : '') +
-            (movie.awards ? '<div class="sheet-meta" style="margin-top:2px"><span style="color:var(--text-muted);font-size:0.72rem">' + this.esc(movie.awards) + '</span></div>' : '') +
             (movie.box_office ? '<div class="sheet-meta" style="margin-top:2px"><span style="color:var(--text-muted);font-size:0.72rem">Box office: ' + this.esc(movie.box_office) + '</span></div>' : '') +
             scoresHtml +
             '</div></div>';
@@ -982,13 +981,16 @@ const NRWMobile = {
         const wl = movie.watch_links || {};
         const providers = movie.providers || {};
 
+        const EXCLUDED_STREAMING = ['spectrum on demand'];
+        const isExcluded = s => s && EXCLUDED_STREAMING.includes(s.toLowerCase());
+
         // watch_links.streaming can be array or single object
         let service = null, link = null;
         const streamingWl = wl.streaming;
         if (Array.isArray(streamingWl) && streamingWl.length > 0) {
-            service = streamingWl[0].service;
-            link = streamingWl[0].link;
-        } else if (streamingWl?.service) {
+            const pick = streamingWl.find(s => !isExcluded(s.service));
+            if (pick) { service = pick.service; link = pick.link; }
+        } else if (streamingWl?.service && !isExcluded(streamingWl.service)) {
             service = streamingWl.service;
             link = streamingWl.link;
         }
@@ -996,7 +998,9 @@ const NRWMobile = {
         if (!service && providers.streaming?.length > 0) {
             const screeningNames = NRWConfig.VOD_SERVICE_MAP.screening.matches;
             const realStreamers = providers.streaming.filter(p =>
-                !p.includes('with Ads') && !screeningNames.some(s => p.toLowerCase().includes(s))
+                !p.includes('with Ads') &&
+                !screeningNames.some(s => p.toLowerCase().includes(s)) &&
+                !isExcluded(p)
             );
             service = realStreamers[0] || null;
         }

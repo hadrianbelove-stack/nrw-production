@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Trailer Button — Red Variations</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --teal: #00d4aa;
+  --crimson: #dc143c;
+  --text-muted: #888;
+  --text-secondary: #bbb;
+}
+
+body {
+  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #fff;
+  padding: 20px 14px 80px;
+}
+
+h1 {
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-align: center;
+  color: #444;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+/* ===== BOTTOM SHEET CARD ===== */
+.sheet-card {
+  background: #111827;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.variant-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #444;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.variant-label span {
+  color: #666;
+  font-weight: 400;
+  font-family: monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0;
+}
+
+/* Header row — thumb + text */
+.sheet-header-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.sheet-thumb {
+  width: 62px;
+  height: 93px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #222;
+}
+.sheet-header-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.sheet-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #fff;
+}
+.crew-label { color: var(--teal); font-size: 0.75rem; font-weight: 600; }
+.crew-name  { color: #fff; font-size: 0.75rem; }
+.sheet-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 1px; }
+
+/* Scores */
+.sheet-scores {
+  display: flex;
+  gap: 6px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+.sheet-score {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,107,107,0.45);
+  background: rgba(255,107,107,0.07);
+}
+.sheet-score.imdb-score {
+  border-color: rgba(245,197,24,0.45);
+  background: rgba(245,197,24,0.07);
+}
+.sheet-score.meta-score {
+  border-color: rgba(125,223,100,0.45);
+  background: rgba(125,223,100,0.07);
+}
+.score-logo { height: 12px; width: auto; }
+.score-val { font-size: 0.75rem; font-weight: 700; color: #ff6b6b; }
+.score-val.imdb { color: #f5c518; }
+.score-val.meta { color: #7ddf64; }
+
+/* Watch links */
+.sheet-providers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+.provider-pill {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+}
+.provider-pill.streaming { border-color: rgba(0,212,170,0.4); background: rgba(0,212,170,0.08); color: var(--teal); }
+
+/* ===== TRAILER BUTTON BASE ===== */
+.trailer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+  transition: transform 0.1s;
+  border: none;
+}
+.trailer-btn:active { transform: scale(0.96); }
+
+/* ===== CURRENT ===== */
+.current .trailer-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--teal);
+  color: var(--teal);
+}
+
+/* ===== VARIANTS ===== */
+
+/* 1 — Solid Netflix Red */
+.v1 .trailer-btn {
+  background: #e50914;
+  color: #fff;
+}
+
+/* 2 — Solid Crimson */
+.v2 .trailer-btn {
+  background: #dc143c;
+  color: #fff;
+}
+
+/* 3 — Solid Movie Theater Red */
+.v3 .trailer-btn {
+  background: #c0392b;
+  color: #fff;
+}
+
+/* 4 — Red outline only (ghost) */
+.v4 .trailer-btn {
+  background: transparent;
+  border: 1.5px solid #e50914;
+  color: #e50914;
+}
+
+/* 5 — Red outline + subtle tint fill */
+.v5 .trailer-btn {
+  background: rgba(229,9,20,0.12);
+  border: 1.5px solid #e50914;
+  color: #ff4444;
+}
+
+/* 6 — Red outline + richer tint */
+.v6 .trailer-btn {
+  background: rgba(220,20,60,0.22);
+  border: 1.5px solid #dc143c;
+  color: #ff5577;
+}
+
+/* 7 — Solid Netflix Red + glow */
+.v7 .trailer-btn {
+  background: #e50914;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(229,9,20,0.45);
+}
+
+/* 8 — Dark fill + red border (current style, red) */
+.v8 .trailer-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid #e50914;
+  color: #e50914;
+}
+
+/* 9 — Red gradient */
+.v9 .trailer-btn {
+  background: linear-gradient(135deg, #e50914, #a00010);
+  color: #fff;
+}
+
+/* 10 — Vermillion solid */
+.v10 .trailer-btn {
+  background: #e34234;
+  color: #fff;
+}
+</style>
+</head>
+<body>
+
+<h1>Trailer Button — Red Options in Context</h1>
+
+<script>
+const movie = {
+  title: "Strange Journey: Rocky Horror",
+  poster: "https://image.tmdb.org/t/p/w500/dsmzcTYLKrHLeZZZXiLPN0uUuYH.jpg",
+  director: "Linus O'Brien",
+  cast: ["Richard O'Brien", "Susan Sarandon", "Tim Curry"],
+  year: 2025, runtime: "1h 30m",
+  country: "USA",
+  rt: "98%", imdb: "7.6", mc: "68"
+};
+
+const sheet = (varClass, label, hex) => `
+<div class="sheet-card ${varClass}">
+  <div class="variant-label">${label} <span>${hex}</span></div>
+  <div class="sheet-header-row">
+    <img class="sheet-thumb" src="${movie.poster}" alt="">
+    <div class="sheet-header-text">
+      <div class="sheet-title">${movie.title}</div>
+      <div><span class="crew-label">D:</span> <span class="crew-name">${movie.director}</span></div>
+      <div><span class="crew-label">Cast:</span> <span class="crew-name">${movie.cast.join(', ')}</span></div>
+      <div class="sheet-meta">${movie.country} · ${movie.year} · ${movie.runtime}</div>
+      <div class="sheet-scores">
+        <div class="sheet-score"><span class="score-val">${movie.rt}</span></div>
+        <div class="sheet-score imdb-score"><span class="score-val imdb">${movie.imdb}</span></div>
+        <div class="sheet-score meta-score"><span class="score-val meta">${movie.mc}</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="sheet-providers">
+    <div class="provider-pill streaming">MUBI</div>
+    <div class="provider-pill">Rent $4.99</div>
+    <div class="provider-pill">Buy $12.99</div>
+  </div>
+  <button class="trailer-btn">▶ Watch Trailer</button>
+</div>`;
+
+const variants = [
+  ['current', 'Current (teal — for reference)', 'rgba(255,255,255,0.08) + #00d4aa border'],
+  ['v1',  'Solid Netflix Red',        '#e50914'],
+  ['v2',  'Solid Crimson',            '#dc143c'],
+  ['v3',  'Solid Movie Theater Red',  '#c0392b'],
+  ['v4',  'Ghost — red outline only', 'transparent + #e50914 border'],
+  ['v5',  'Tinted — outline + fill',  'rgba(229,9,20,0.12) + #e50914 border'],
+  ['v6',  'Rich tint — outline+fill', 'rgba(220,20,60,0.22) + #dc143c border'],
+  ['v7',  'Netflix Red + glow',       '#e50914 + box-shadow glow'],
+  ['v8',  'Dark fill + red border',   'rgba(255,255,255,0.06) + #e50914 border'],
+  ['v9',  'Red gradient',             'linear-gradient #e50914 → #a00010'],
+  ['v10', 'Vermillion solid',         '#e34234'],
+];
+
+document.write(variants.map(([cls, lbl, hex]) => sheet(cls, lbl, hex)).join(''));
+</script>
+
+</body>
+</html>
