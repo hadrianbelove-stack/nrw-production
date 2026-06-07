@@ -727,23 +727,29 @@ const NRWMobile = {
         this.dom.posterCounter.textContent =
             (this.currentMovieIndex + 1) + ' / ' + this.filteredMovies.length;
 
-        // Score badges on poster
+        // Score badges on poster (RT only)
         let scores = '';
         if (movie.rt_score && movie.links?.rt) {
             scores += '<a href="' + movie.links.rt + '" target="_blank" rel="noopener" class="score-badge rt">' +
                 '<img class="score-logo" src="../assets/logos/rt.png" alt="RT"> ' + movie.rt_score + '</a>';
         }
-        if (movie.imdb_rating) {
-            const href = movie.links?.imdb || '#';
-            scores += '<a href="' + href + '" target="_blank" rel="noopener" class="score-badge imdb">' +
-                '<img class="score-logo" src="../assets/logos/imdb.png" alt="IMDb"> ' + movie.imdb_rating + '</a>';
-        }
-        if (movie.metacritic_score && movie.metacritic_score !== '0') {
-            const href = movie.links?.metacritic || '#';
-            scores += '<a href="' + href + '" target="_blank" rel="noopener" class="score-badge meta">' +
-                '<img class="score-logo" src="../assets/logos/metacritic.png" alt="MC"> ' + movie.metacritic_score + '</a>';
-        }
         this.dom.posterScores.innerHTML = scores;
+
+        // Info lines below poster
+        const dirName = movie.crew?.director || movie.director || '';
+        const genre = movie.genres?.[0] || '';
+        const country = NRWConfig.abbreviateCountry(movie.country) || movie.country || '';
+        const metaEl = document.getElementById('poster-meta');
+        if (metaEl) {
+            const line1 = dirName
+                ? '<div class="poster-meta-line"><span class="poster-meta-label">D:</span> ' + this.esc(dirName) + '</div>'
+                : '';
+            const line2Parts = [genre, country].filter(Boolean);
+            const line2 = line2Parts.length
+                ? '<div class="poster-meta-line poster-meta-sub">' + line2Parts.map(p => this.esc(p)).join(' · ') + '</div>'
+                : '';
+            metaEl.innerHTML = line1 + line2;
+        }
     },
 
     // ===== BOTTOM SHEET (View 2) =====
@@ -1149,9 +1155,9 @@ const NRWMobile = {
             const absDx = Math.abs(dx);
             const absDy = Math.abs(dy);
 
-            // Tap → open sheet
+            // Tap → back to grid
             if (absDx < 15 && absDy < 15 && dt < 300) {
-                this.setView(2);
+                this.setView(0);
                 return;
             }
             if (dt > 500) return;
@@ -1183,7 +1189,7 @@ const NRWMobile = {
             mouseDown = false;
             const dx = e.clientX - mouseStartX;
             const dy = e.clientY - mouseStartY;
-            if (Math.abs(dx) < 10 && Math.abs(dy) < 10) { this.setView(2); return; }
+            if (Math.abs(dx) < 10 && Math.abs(dy) < 10) { this.setView(0); return; }
             if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
                 this.navigateMovie(dx < 0 ? 1 : -1);
             } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) {
@@ -1222,14 +1228,15 @@ const NRWMobile = {
             const dy = e.changedTouches[0].clientY - dragStartY;
 
             sheet.style.transition = '';
-            if (dy > 100) {
-                // Dismiss
-                sheet.style.transform = '';
+            sheet.style.transform = '';
+            if (Math.abs(dy) < 10) {
+                // Tap on handle → back to grid
+                this.setView(0);
+            } else if (dy > 100) {
+                // Drag dismiss → poster view
                 this.setView(1);
-            } else {
-                // Snap back
-                sheet.style.transform = '';
             }
+            // else snap back (no action)
         });
 
         // Content overscroll-to-dismiss

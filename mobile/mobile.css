@@ -270,7 +270,7 @@ body {
 /* ===== VIEW 1: GRID ===== */
 .wall-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px 8px;
   padding: 8px;
 }
@@ -447,12 +447,30 @@ body {
 #poster-view.hidden { display: none; }
 .poster-full {
   position: relative;
-  width: 75%;
-  max-width: 340px;
+  width: 90%;
+  max-width: 420px;
   aspect-ratio: 2/3;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 12px 48px rgba(0,0,0,0.7);
+}
+.poster-meta {
+  margin-top: 14px;
+  text-align: center;
+  line-height: 1.5;
+}
+.poster-meta-line {
+  font-size: 0.82rem;
+  color: #fff;
+  letter-spacing: 0.01em;
+}
+.poster-meta-label {
+  color: var(--teal);
+  font-weight: 700;
+}
+.poster-meta-sub {
+  font-size: 0.75rem;
+  opacity: 0.75;
 }
 .poster-full img {
   width: 100%; height: 100%;
