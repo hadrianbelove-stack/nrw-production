@@ -791,7 +791,7 @@ const NRWMobile = {
 
         // Line 3 (gray): Country • Year • Runtime • Studio
         const detailParts = [];
-        if (movie.country) detailParts.push(this.esc(movie.country));
+        if (movie.country) detailParts.push(this.esc(NRWConfig.abbreviateCountry(movie.country) || movie.country));
         if (movie.year) detailParts.push(this.esc(movie.year));
         if (movie.runtime) detailParts.push(this.esc(this.formatRuntime(movie.runtime)));
         if (movie.studio) detailParts.push(this.esc(movie.studio));

@@ -592,9 +592,8 @@ body {
 .bottom-sheet {
   position: fixed;
   left: 0; right: 0;
+  top: var(--header-height);
   bottom: 0;
-  height: calc(100vh - var(--header-height));
-  max-height: calc(100vh - var(--header-height));
   background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0a 100%);
   border-radius: 18px 18px 0 0;
   z-index: 940;
