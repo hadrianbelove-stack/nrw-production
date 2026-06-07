@@ -526,9 +526,9 @@ const NRWMobile = {
             const header = document.createElement('div');
             header.style.cssText = 'flex-shrink:0;height:22px;display:flex;align-items:center;' +
                 'justify-content:center;padding:0 3px;overflow:hidden;';
-            header.innerHTML = '<span style="color:' + streamingSvc.textColor + ';font-size:0.33rem;' +
+            header.innerHTML = '<span style="color:' + streamingSvc.textColor + ';font-size:0.55rem;' +
                 'font-weight:800;letter-spacing:0.06em;white-space:nowrap;">' +
-                this.esc(streamingSvc.name.toUpperCase()) + ' · NOW STREAMING</span>';
+                this.esc(streamingSvc.name.toUpperCase()) + '</span>';
             posterWrap.appendChild(header);
             const imgWrap = document.createElement('div');
             imgWrap.style.cssText = 'flex:1;position:relative;overflow:hidden;';
