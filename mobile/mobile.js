@@ -1293,6 +1293,12 @@ const NRWMobile = {
             // Horizontal swipe in sheet → navigate movies
             if (dt < 600 && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
                 this.navigateMovie(dx < 0 ? 1 : -1);
+                return;
+            }
+
+            // Tap on empty content area → back to grid
+            if (dt < 300 && Math.abs(dx) < 15 && Math.abs(dy) < 15 && !e.target.closest('a, button')) {
+                this.setView(0);
             }
         });
     },
