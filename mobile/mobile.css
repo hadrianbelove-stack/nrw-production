@@ -743,10 +743,10 @@ body {
   gap: 8px;
   margin-top: 14px;
   padding: 10px 20px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid var(--accent);
+  background: linear-gradient(135deg, #e50914, #a00010);
+  border: none;
   border-radius: var(--radius-pill);
-  color: var(--accent);
+  color: #fff;
   font-size: 0.8rem;
   font-weight: 600;
   font-family: var(--font);
@@ -754,7 +754,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .trailer-btn:active {
-  background: rgba(0,212,170,0.15);
+  background: linear-gradient(135deg, #c0070f, #7a000b);
   transform: scale(0.97);
 }
 
