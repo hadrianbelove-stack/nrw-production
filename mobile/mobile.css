@@ -353,9 +353,9 @@ body {
   padding: 0.6rem 0 0.2rem;
 }
 .drh-date {
-  font-size: 0.68rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: var(--teal);
+  color: var(--accent);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -429,11 +429,11 @@ body {
   letter-spacing: 0.01em;
 }
 .poster-meta-label {
-  color: var(--teal);
+  color: var(--accent);
   font-weight: 700;
 }
 .poster-meta-dir {
-  color: var(--teal);
+  color: var(--accent);
 }
 .poster-meta-sub {
   font-size: 0.75rem;
@@ -875,7 +875,7 @@ body {
   line-height: 1.65;
   margin-bottom: 8px;
 }
-.sheet-synopsis a { color: var(--teal); }
+.sheet-synopsis a { color: var(--accent); }
 
 /* Pull quotes */
 .sheet-pq {
