@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-07T12:52:12.293961",
-  "duration_seconds": 6245.004086,
+  "timestamp": "2026-06-08T14:34:19.441077",
+  "duration_seconds": 5345.295474,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,65 +8,65 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 10.380861,
+      "duration_seconds": 8.79056,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-06-05 to 2026-06-07 (incremental mode, 24 intaked)\n\u2705 Movie intake complete: 24 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-05-08 to 2026-06-07\n   \ud83d\udccb Tiger Island (2 eps)\n   \ud83d\udccb This Land (6 "
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-06-06 to 2026-06-08 (incremental mode, 42 intaked)\n\u2705 Movie intake complete: 42 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-05-09 to 2026-06-08\n   \ud83d\udccb Brexit: A Very British Civil War (2 eps"
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 404.974704,
+      "duration_seconds": 411.782737,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 172 festival slugs\nScanning 172 festivals for catalogs...\n  Progress: 25/172 slugs | 25 scanned | 718 films indexed\n  Progress: 100/172 slugs | 52 scanned | 1185 films indexed\n  Progress: 125/172 slugs | 77 scanned | 1488 films indexed\n  Progress: 150/172 slugs | 102 scanned | 1976 films indexed\n  Done: 124 festivals, 119 with films, 48 failed, 2253 total films\n  Active: 2253 | Expired: 0 | Unique: 171"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 168 festival slugs\nScanning 168 festivals for catalogs...\n  Progress: 75/168 slugs | 27 scanned | 684 films indexed\n  Progress: 100/168 slugs | 52 scanned | 1090 films indexed\n  Progress: 125/168 slugs | 77 scanned | 1493 films indexed\n  Progress: 150/168 slugs | 102 scanned | 1923 films indexed\n  Done: 120 festivals, 115 with films, 48 failed, 2122 total films\n  Active: 2122 | Expired: 0 | Unique: 159"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 4857.733307,
+      "duration_seconds": 4007.576869,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17674 total movies\n\ud83d\udd0d Raw tracking filter: 13914 movies\n\ud83d\udd0d Assigned tracking_movies list: 13914\n\ud83d\udd0d Found 13914 movies in tracking status\n  Priority queue (last 180 days): 659 movies\n  Older movies: 13255 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13914 movies for digital availability...\n\n   \u2705 Added Earth, Wind & Fire (To Be Celestial vs. That's the Weight of the World) to site imm"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17717 total movies\n\ud83d\udd0d Raw tracking filter: 13950 movies\n\ud83d\udd0d Assigned tracking_movies list: 13950\n\ud83d\udd0d Found 13950 movies in tracking status\n  Priority queue (last 180 days): 663 movies\n  Older movies: 13287 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 13950 movies for digital availability...\n\n   \u2705 Added Supertramp: Crime of the Century in Concert at Hammersmith Odeon 1975 to site immed"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 745.78271,
+      "duration_seconds": 667.39609,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 24 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 The Voices of Our Mother: Amazon not found\n      \u00b7 The Voices of Our Mother: F"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 24 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Real Couples: Amazon not found\n      \u00b7 Real Couples: Fandango not found\n      "
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.158337,
+      "duration_seconds": 1.264504,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 854 trailers and 37 subtitle files in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  667\n  Stale cleaned:    0\n  Not in B2:        94\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 860 trailers and 38 subtitle files in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  673\n  Stale cleaned:    0\n  Not in B2:        96\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 209.682434,
+      "duration_seconds": 232.109175,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 257 of 761 wall movies (last 30 days)\n  \ud83c\udfac Painting With Fire \u2014 Director Wikipedia added (Mark Jones)\n  \ud83c\udfac This Ordinary Thing \u2014 Director Wikipedia added (Nick Davis)\n  \ud83c\udfac The Witness \u2014 Director Wikipedia added (Rob Williams)\n  + Chum \u2014 new services added\n  + Seven Snipers \u2014 new services added\n  + Strange Journey: The Story of Rocky Horror \u2014 new services added\n  + Accidental Truth: Next - Beyond UFO Disclosure \u2014 new services added\n  + "
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 253 of 769 wall movies (last 30 days)\n  \ud83c\udfac 29 \u2014 Director Wikipedia added (Rathna Kumar)\n  \ud83c\udfac Iron Maiden: Burning Ambition \u2014 Director Wikipedia added (Malcolm Venville)\n  \ud83c\udfac Wetiko \u2014 Director Wikipedia added (Kerry Mondragon)\n  \ud83c\udfac Night Shift for Cuties \u2014 Director Wikipedia added (Monica Vanesa Tedja)\n  \ud83c\udfac Cape Fear \u2014 Director Wikipedia added (Nick Antosca)\n  \ud83c\udfac Teach You a Lesson \u2014 Director Wikipedia added (Hong Jong-chan)\n  \ud83c\udfac Earth, Win"
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 0.705398,
+      "duration_seconds": 0.397667,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 1 movies missing trailers:\n  \u2022 In Symbiosis\n  \u2713 Cache hit: In Symbiosis (2025)\n  \u25cb In Symbiosis \u2014 no trailer found (attempt 1/5)\n\u2705 Trailer gap fill: 0/1 movies got trailers\n\u2705 Trailer re-enrichment complete: 0 movies updated\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\u2705 No trailer gaps eligible for retry\n\u2705 Trailer re-enrichment complete: 0 movies updated\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 14.089168,
+      "duration_seconds": 15.358721,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 72 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 38 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 72 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 34 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.314128,
+      "duration_seconds": 0.437462,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 5 movies (>90 days old) \u2192 data_archive.json\n   data.json: 764 movies | archive: 625 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -77,46 +77,37 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 17674,
-    "tracking": 13907,
-    "available": 3386,
-    "data_movies": 761,
-    "movies_with_links": 738,
-    "movies_with_rt": 490,
-    "movies_with_wikipedia": 386,
-    "movies_with_trailers": 729
+    "total": 17717,
+    "tracking": 13942,
+    "available": 3394,
+    "data_movies": 764,
+    "movies_with_links": 741,
+    "movies_with_rt": 492,
+    "movies_with_wikipedia": 390,
+    "movies_with_trailers": 733
   },
   "enrichment_metrics": {
-    "timestamp": "2026-06-07T12:48:25.669894",
-    "movies_requested": 18,
+    "timestamp": "2026-06-08T14:30:09.093611",
+    "movies_requested": 14,
     "movies_enriched": 9,
-    "movies_deferred": 9,
+    "movies_deferred": 5,
     "deferred_details": [
-      {
-        "title": "Earth, Wind & Fire (To Be Celestial vs. That's the Weight of the World)",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-06-07",
-        "discovered_at": "2026-06-07T11:15:05.767976",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 2,
-        "tmdb_platforms": []
-      },
       {
         "title": "Groundswell",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-05",
-        "discovered_at": "2026-06-07T11:15:08.944289",
+        "discovered_at": "2026-06-08T13:12:20.785386",
         "discovery_source": "tmdb_type4",
-        "revert_count": 3,
+        "revert_count": 4,
         "tmdb_platforms": []
       },
       {
         "title": "A Man with Sole: The Impact of Kenneth Cole",
         "reason": "jw_revert:justwatch_no_valid_offers",
         "digital_date": "2026-06-04",
-        "discovered_at": "2026-06-07T11:15:10.762962",
+        "discovered_at": "2026-06-08T13:12:22.771215",
         "discovery_source": "tmdb_type4",
-        "revert_count": 5,
+        "revert_count": 6,
         "tmdb_platforms": [
           "Eventive"
         ]
@@ -125,16 +116,16 @@
         "title": "Real Couples",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-04",
-        "discovered_at": "2026-06-07T11:15:11.225483",
+        "discovered_at": "2026-06-08T13:12:23.183496",
         "discovery_source": "tmdb_type4",
-        "revert_count": 5,
+        "revert_count": 6,
         "tmdb_platforms": []
       },
       {
-        "title": "Jinsei",
+        "title": "Carolina Caroline",
         "reason": "jw_revert:justwatch_theatrical_pvod",
         "digital_date": "",
-        "discovered_at": "2026-06-07T12:13:11.024948",
+        "discovered_at": "2026-06-08T13:17:21.715624",
         "discovery_source": "provider_availability_check",
         "revert_count": 1,
         "tmdb_platforms": [
@@ -142,43 +133,16 @@
         ]
       },
       {
-        "title": "Power Ballad",
+        "title": "The Withering",
         "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-06-26",
-        "discovered_at": "2026-06-07T12:22:43.249197",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 1,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Scary Movie",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-07-21",
-        "discovered_at": "2026-06-07T12:35:15.298663",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 1,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Masters of the Universe",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-07-21",
-        "discovered_at": "2026-06-07T12:35:16.473714",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 1,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "The Voices of Our Mother",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-06-19",
-        "discovered_at": "2026-06-07T12:35:59.832303",
+        "digital_date": "2026-07-28",
+        "discovered_at": "2026-06-08T14:18:54.730231",
         "discovery_source": "tmdb_type4",
         "revert_count": 1,
         "tmdb_platforms": []
       }
     ],
-    "enrichment_duration_seconds": 744.65,
+    "enrichment_duration_seconds": 666.15,
     "error_details": [],
     "total_errors": 0
   }

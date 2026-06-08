@@ -1,139 +1,19 @@
 {
-  "timestamp": "2026-06-07T11:15:02.648894",
+  "timestamp": "2026-06-08T13:12:14.707086",
   "operation": "eventive_scan_pipeline",
   "stats": {
-    "festivals_scanned": 124,
-    "festivals_with_films": 119,
+    "festivals_scanned": 120,
+    "festivals_with_films": 115,
     "festivals_failed": 48,
-    "total_films_indexed": 2253,
+    "total_films_indexed": 2122,
     "expired_filtered": 0,
-    "unique_active": 1711,
-    "tracking_matches": 104,
-    "wall_matches": 47,
-    "new_cached": 119,
+    "unique_active": 1595,
+    "tracking_matches": 89,
+    "wall_matches": 42,
+    "new_cached": 99,
     "skipped_undated": 32
   },
   "tracking_matches": [
-    {
-      "movie_id": "1526222",
-      "nrw_title": "There Are No Words",
-      "eventive_title": "There Are No Words",
-      "festival": "25th San Francisco Documentary Festival",
-      "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd36bf881f9dbaa5a17c",
-      "start": "2026-05-28T07:00:00.000Z",
-      "end": "2026-06-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1629372",
-      "nrw_title": "The Way We Move",
-      "eventive_title": "The Way We Move",
-      "festival": "25th San Francisco Documentary Festival",
-      "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd26bd48fa0d6a803238",
-      "start": "2026-05-28T07:00:00.000Z",
-      "end": "2026-06-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1631918",
-      "nrw_title": "Hunky Jesus",
-      "eventive_title": "Hunky Jesus",
-      "festival": "2026 Inside Out 2SLGBTQ+ Film Festival",
-      "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69dff2209c7c6e898d1668e8",
-      "start": "2026-05-25T16:00:00.000Z",
-      "end": "2026-06-08T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1297474",
-      "nrw_title": "Lunar Sway",
-      "eventive_title": "Lunar Sway",
-      "festival": "2026 Inside Out 2SLGBTQ+ Film Festival",
-      "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69dfb9e39062647e056c97f9",
-      "start": "2026-05-24T16:00:00.000Z",
-      "end": "2026-06-08T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1312997",
-      "nrw_title": "Out Laws",
-      "eventive_title": "Out Laws",
-      "festival": "2026 Inside Out 2SLGBTQ+ Film Festival",
-      "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69dfb9e39062647e056c97fb",
-      "start": "2026-05-31T16:00:00.000Z",
-      "end": "2026-06-08T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1532697",
-      "nrw_title": "The Road to Sydney",
-      "eventive_title": "The Road to Sydney",
-      "festival": "2026 Inside Out 2SLGBTQ+ Film Festival",
-      "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69dfb9e39062647e056c97ff",
-      "start": "2026-05-24T16:00:00.000Z",
-      "end": "2026-06-08T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1398460",
-      "nrw_title": "A Second Life",
-      "eventive_title": "A Second Life",
-      "festival": "2026 Inside Out 2SLGBTQ+ Film Festival",
-      "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69efc4136fff3ee369e3e3cd",
-      "start": "2026-05-30T16:00:00.000Z",
-      "end": "2026-06-08T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1205547",
-      "nrw_title": "Skiff",
-      "eventive_title": "SKIFF",
-      "festival": "2026 Inside Out 2SLGBTQ+ Film Festival",
-      "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69dfb9e39062647e056c97fd",
-      "start": "2026-05-31T16:00:00.000Z",
-      "end": "2026-06-08T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1557013",
-      "nrw_title": "What Will I Become?",
-      "eventive_title": "What Will I Become?",
-      "festival": "2026 Inside Out 2SLGBTQ+ Film Festival",
-      "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69dfb9e39062647e056c9803",
-      "start": "2026-05-31T16:00:00.000Z",
-      "end": "2026-06-08T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1535951",
-      "nrw_title": "Whisperings of the Moon",
-      "eventive_title": "Whisperings of the Moon",
-      "festival": "2026 Inside Out 2SLGBTQ+ Film Festival",
-      "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69dff2209c7c6e898d1668e4",
-      "start": "2026-05-25T16:00:00.000Z",
-      "end": "2026-06-08T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
     {
       "movie_id": "1568906",
       "nrw_title": "Ashes",
@@ -651,66 +531,6 @@
       "nrw_status": "tracking"
     },
     {
-      "movie_id": "1239140",
-      "nrw_title": "Random",
-      "eventive_title": "Random",
-      "festival": "La Femme Intl Film Festival 2026 Europe Budapest",
-      "link": "https://watch.eventive.org/lafemmeintfilmfesteurope2026/play/6a12957faf70623f0dc16350",
-      "start": "2026-06-04T00:01:00.000Z",
-      "end": "2026-06-07T23:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1657512",
-      "nrw_title": "Spain is not different",
-      "eventive_title": "Spain is not different",
-      "festival": "La Femme Intl Film Festival 2026 Europe Budapest",
-      "link": "https://watch.eventive.org/lafemmeintfilmfesteurope2026/play/6a12a19f145b4c0a581aaaff",
-      "start": "2026-06-04T00:01:00.000Z",
-      "end": "2026-06-07T23:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1612287",
-      "nrw_title": "A-Men to That",
-      "eventive_title": "Amen to That",
-      "festival": "La Femme Intl Film Festival 2026 Europe Budapest",
-      "link": "https://watch.eventive.org/lafemmeintfilmfesteurope2026/play/6a1219d60f03fa8687b58774",
-      "start": "2026-06-04T00:01:00.000Z",
-      "end": "2026-06-07T23:59:00.000Z",
-      "status": "active",
-      "match_tier": 2,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1176647",
-      "nrw_title": "Immortals",
-      "eventive_title": "Immortals",
-      "festival": "La Femme Intl Film Festival 2026 Europe Budapest",
-      "link": "https://watch.eventive.org/lafemmeintfilmfesteurope2026/play/6a121fa6d0b4e887e2923e42",
-      "start": "2026-06-04T00:01:00.000Z",
-      "end": "2026-06-07T23:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1474264",
-      "nrw_title": "We Are Two Abysses",
-      "eventive_title": "We are two abysses",
-      "festival": "La Femme Intl Film Festival 2026 Europe Budapest",
-      "link": "https://watch.eventive.org/lafemmeintfilmfesteurope2026/play/6a13bf5db7af44c277017969",
-      "start": "2026-06-04T00:01:00.000Z",
-      "end": "2026-06-07T23:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1425485",
       "nrw_title": "3670",
       "eventive_title": "3670",
@@ -864,7 +684,7 @@
       "end": "2026-07-30T14:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1502183",
@@ -876,7 +696,7 @@
       "end": "2026-07-30T14:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1649095",
@@ -888,7 +708,7 @@
       "end": "2026-07-30T14:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1492339",
@@ -1265,42 +1085,6 @@
   ],
   "wall_matches": [
     {
-      "movie_id": "1526222",
-      "nrw_title": "There Are No Words",
-      "eventive_title": "There Are No Words",
-      "festival": "25th San Francisco Documentary Festival",
-      "link": "https://watch.eventive.org/sfdocfest2026/play/69e4dd36bf881f9dbaa5a17c",
-      "start": "2026-05-28T07:00:00.000Z",
-      "end": "2026-06-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1398460",
-      "nrw_title": "A Second Life",
-      "eventive_title": "A Second Life",
-      "festival": "2026 Inside Out 2SLGBTQ+ Film Festival",
-      "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69efc4136fff3ee369e3e3cd",
-      "start": "2026-05-30T16:00:00.000Z",
-      "end": "2026-06-08T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1535951",
-      "nrw_title": "Whisperings of the Moon",
-      "eventive_title": "Whisperings of the Moon",
-      "festival": "2026 Inside Out 2SLGBTQ+ Film Festival",
-      "link": "https://watch.eventive.org/insideoutfilmfestival2026/play/69dff2209c7c6e898d1668e4",
-      "start": "2026-05-25T16:00:00.000Z",
-      "end": "2026-06-08T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1568906",
       "nrw_title": "Ashes",
       "eventive_title": "Ashes",
@@ -1625,66 +1409,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1239140",
-      "nrw_title": "Random",
-      "eventive_title": "Random",
-      "festival": "La Femme Intl Film Festival 2026 Europe Budapest",
-      "link": "https://watch.eventive.org/lafemmeintfilmfesteurope2026/play/6a12957faf70623f0dc16350",
-      "start": "2026-06-04T00:01:00.000Z",
-      "end": "2026-06-07T23:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1657512",
-      "nrw_title": "Spain is not different",
-      "eventive_title": "Spain is not different",
-      "festival": "La Femme Intl Film Festival 2026 Europe Budapest",
-      "link": "https://watch.eventive.org/lafemmeintfilmfesteurope2026/play/6a12a19f145b4c0a581aaaff",
-      "start": "2026-06-04T00:01:00.000Z",
-      "end": "2026-06-07T23:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1612287",
-      "nrw_title": "A-Men to That",
-      "eventive_title": "Amen to That",
-      "festival": "La Femme Intl Film Festival 2026 Europe Budapest",
-      "link": "https://watch.eventive.org/lafemmeintfilmfesteurope2026/play/6a1219d60f03fa8687b58774",
-      "start": "2026-06-04T00:01:00.000Z",
-      "end": "2026-06-07T23:59:00.000Z",
-      "status": "active",
-      "match_tier": 2,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1176647",
-      "nrw_title": "Immortals",
-      "eventive_title": "Immortals",
-      "festival": "La Femme Intl Film Festival 2026 Europe Budapest",
-      "link": "https://watch.eventive.org/lafemmeintfilmfesteurope2026/play/6a121fa6d0b4e887e2923e42",
-      "start": "2026-06-04T00:01:00.000Z",
-      "end": "2026-06-07T23:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1474264",
-      "nrw_title": "We Are Two Abysses",
-      "eventive_title": "We are two abysses",
-      "festival": "La Femme Intl Film Festival 2026 Europe Budapest",
-      "link": "https://watch.eventive.org/lafemmeintfilmfesteurope2026/play/6a13bf5db7af44c277017969",
-      "start": "2026-06-04T00:01:00.000Z",
-      "end": "2026-06-07T23:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1425485",
       "nrw_title": "3670",
       "eventive_title": "3670",
@@ -1800,6 +1524,42 @@
       "link": "https://watch.eventive.org/outfilmct2026/play/69f6a021d2679c7da818a90e",
       "start": "2026-06-21T04:00:00.000Z",
       "end": "2026-06-29T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1520541",
+      "nrw_title": "Dom",
+      "eventive_title": "Dom",
+      "festival": "Melbourne Documentary Film Festival Online",
+      "link": "https://watch.eventive.org/mdff/play/6a247c28e4a3cb4fd0a32bc0",
+      "start": "2026-07-01T00:00:00.000Z",
+      "end": "2026-07-30T14:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1502183",
+      "nrw_title": "In Symbiosis",
+      "eventive_title": "In Symbiosis",
+      "festival": "Melbourne Documentary Film Festival Online",
+      "link": "https://watch.eventive.org/mdff/play/6a241eec278791e4bd653cb7",
+      "start": "2026-07-01T00:00:00.000Z",
+      "end": "2026-07-30T14:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1649095",
+      "nrw_title": "Painting With Fire",
+      "eventive_title": "Painting With Fire",
+      "festival": "Melbourne Documentary Film Festival Online",
+      "link": "https://watch.eventive.org/mdff/play/6a2423f46c72bee72588221e",
+      "start": "2026-07-01T00:00:00.000Z",
+      "end": "2026-07-30T14:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
