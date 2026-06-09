@@ -1,25 +1,25 @@
 {
-  "timestamp": "2026-06-08T14:30:09.093611",
+  "timestamp": "2026-06-09T13:05:54.538519",
   "movies_requested": 14,
-  "movies_enriched": 9,
-  "movies_deferred": 5,
+  "movies_enriched": 10,
+  "movies_deferred": 4,
   "deferred_details": [
     {
-      "title": "Groundswell",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-05",
-      "discovered_at": "2026-06-08T13:12:20.785386",
+      "title": "Michael",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-06-09",
+      "discovered_at": "2026-06-09T12:04:44.059926",
       "discovery_source": "tmdb_type4",
-      "revert_count": 4,
+      "revert_count": 1,
       "tmdb_platforms": []
     },
     {
       "title": "A Man with Sole: The Impact of Kenneth Cole",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-08T13:12:22.771215",
+      "discovered_at": "2026-06-09T12:04:47.346096",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
+      "revert_count": 7,
       "tmdb_platforms": [
         "Eventive"
       ]
@@ -28,33 +28,22 @@
       "title": "Real Couples",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-08T13:12:23.183496",
+      "discovered_at": "2026-06-09T12:04:47.727192",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
+      "revert_count": 7,
       "tmdb_platforms": []
     },
     {
-      "title": "Carolina Caroline",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-06-08T13:17:21.715624",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "The Withering",
+      "title": "Karuppu",
       "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-07-28",
-      "discovered_at": "2026-06-08T14:18:54.730231",
+      "digital_date": "2026-06-12",
+      "discovered_at": "2026-06-09T12:51:31.181489",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 666.15,
+  "enrichment_duration_seconds": 729.34,
   "error_details": [],
   "total_errors": 0
 }
