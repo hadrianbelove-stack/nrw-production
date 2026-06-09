@@ -33937,7 +33937,7 @@
     },
     "1538565": {
       "title": "My Movie Starring Paul Dano",
-      "status": "available",
+      "status": "removed",
       "first_seen": "2025-11-10",
       "digital_date": "2026-05-06",
       "providers": {
@@ -33954,7 +33954,9 @@
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-05-06"
+      "enrichment_date": "2026-05-06",
+      "removed_date": "2026-06-09",
+      "removed_reason": "manual_removal"
     },
     "1509523": {
       "title": "Attenuation",
@@ -224173,7 +224175,7 @@
     "1367220": {
       "title": "Karuppu",
       "year": 2026,
-      "status": "tracking",
+      "status": "removed",
       "intake_date": "2026-05-15",
       "digital_date": "2026-06-12",
       "providers": {},
@@ -224182,9 +224184,9 @@
       "_discovery_source": "tmdb_type4",
       "_type4_pending": true,
       "_is_preorder": true,
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-06-09",
-      "_jw_revert_count": 1
+      "_jw_revert_count": 1,
+      "removed_date": "2026-06-09",
+      "removed_reason": "manual_removal"
     },
     "1320660": {
       "title": "Pati Patni Aur Woh Do",
