@@ -260,8 +260,10 @@ class RTScraperPlaywright(PlaywrightScraperBase):
             except Exception:
                 pass
 
-            # 3. CSS selectors (legacy layouts)
+            # 3. CSS selectors (current and legacy layouts)
             score_selectors = [
+                'media-scorecard rt-text.critics-score',  # current RT layout (2025+)
+                'rt-text.critics-score',                  # fallback without scorecard scope
                 '[slot="criticsScore"]',
                 'rt-text[slot="criticsScore"]',
                 '[data-testid="critic-score"] .percentage',
@@ -358,17 +360,17 @@ class RTScraperPlaywright(PlaywrightScraperBase):
         return candidates
 
     def _search_rt_directly(self, title, year):
-        """Search RT's own search page to find movie URL.
+        """Search RT's own search page to find movie or TV series URL.
 
         This is more reliable than Google search (which gets blocked) or
         URL construction (which guesses wrong slugs).
 
         Args:
-            title: Movie title
+            title: Movie/series title
             year: Release year
 
         Returns:
-            str: RT movie URL if found, None otherwise
+            str: RT URL if found, None otherwise
         """
         try:
             search_url = f"https://www.rottentomatoes.com/search?search={quote(title)}"
@@ -377,42 +379,52 @@ class RTScraperPlaywright(PlaywrightScraperBase):
             self.page.goto(search_url, wait_until='domcontentloaded', timeout=30000)
             time.sleep(2)
 
-            movie_links = self.page.query_selector_all('a[href*="/m/"]')
+            all_links = self.page.query_selector_all('a[href*="/m/"], a[href*="/tv/"]')
 
-            if not movie_links:
-                self._log(f"No movie links found in RT search for {title}", level='debug')
+            if not all_links:
+                self._log(f"No links found in RT search for {title}", level='debug')
                 return None
 
-            self._log(f"Found {len(movie_links)} movie links in RT search", level='debug')
+            self._log(f"Found {len(all_links)} movie/TV links in RT search", level='debug')
 
             candidates = []
+            seen_urls = set()
             _stop_words = {'the', 'a', 'an', 'of', 'in', 'on', 'at', 'to', 'and', 'or', 'is', 'it'}
             title_words = set(re.sub(r'[^a-z0-9\s]', '', title.lower()).split()) - _stop_words
             title_slug = re.sub(r'[^a-z0-9]', '', title.lower())
 
-            for link in movie_links:
+            for link in all_links:
                 href = link.get_attribute('href')
-                if href and '/m/' in href:
-                    if href.startswith('/m/'):
-                        full_url = f"https://www.rottentomatoes.com{href}"
-                    else:
-                        full_url = href
+                if not href:
+                    continue
 
+                if '/m/' in href:
+                    base = 'https://www.rottentomatoes.com' if href.startswith('/m/') else ''
+                    full_url = (base + href).split('?')[0]
                     slug = href.split('/m/')[-1].split('/')[0].split('?')[0]
-                    slug_normalized = re.sub(r'[^a-z0-9]', '', slug.lower())
+                elif '/tv/' in href:
+                    base = 'https://www.rottentomatoes.com' if href.startswith('/tv/') else ''
+                    full_url = (base + href).split('?')[0]
+                    # slug is the show name portion only (before /s01 etc.)
+                    slug = href.split('/tv/')[-1].split('/')[0]
+                else:
+                    continue
 
-                    if full_url in [c[0] for c in candidates]:
-                        continue
+                slug_normalized = re.sub(r'[^a-z0-9]', '', slug.lower())
 
-                    try:
-                        parent = link.evaluate('el => el.closest("search-page-media-row")?.textContent || ""')
-                    except:
-                        parent = ''
+                if full_url in seen_urls:
+                    continue
+                seen_urls.add(full_url)
 
-                    slug_words = set(slug.lower().replace('_', ' ').split()) - _stop_words
-                    word_matches = len(title_words & slug_words)
+                try:
+                    parent = link.evaluate('el => el.closest("search-page-media-row")?.textContent || ""')
+                except:
+                    parent = ''
 
-                    candidates.append((full_url, parent, word_matches, slug_normalized))
+                slug_words = set(slug.lower().replace('_', ' ').split()) - _stop_words
+                word_matches = len(title_words & slug_words)
+
+                candidates.append((full_url, parent, word_matches, slug_normalized))
 
             if not candidates:
                 return None

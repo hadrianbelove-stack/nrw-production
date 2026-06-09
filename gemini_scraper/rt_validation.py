@@ -44,9 +44,14 @@ def page_title_matches(page_title: str, expected_title: str) -> bool:
         return expected_words <= page_words
 
     # Guard: if expected is a strict subset of page (page has extra words),
-    # it's likely a different, longer-titled movie (e.g. "30 Minutes" vs "30 Minutes or Less")
+    # it's likely a different, longer-titled movie (e.g. "30 Minutes" vs "30 Minutes or Less").
+    # Exception: RT TV pages append subtitle-like words ("Limited Series", "Season 1", etc.)
+    # that don't indicate a different title.
     if overlap == expected_words and len(page_words) > len(expected_words):
-        return False
+        _subtitle_words = {'limited', 'series', 'season', 'miniseries', 'complete', 'collection'}
+        extra_words = page_words - expected_words
+        if not extra_words.issubset(_subtitle_words):
+            return False
 
     # For multi-word titles, require majority overlap (>= 50% of expected words)
     overlap_ratio = len(overlap) / len(expected_words)
@@ -101,8 +106,10 @@ def extract_score_from_loaded_page(playwright_scraper) -> Optional[str]:
     except Exception:
         pass
 
-    # 3. CSS selectors (legacy layouts)
+    # 3. CSS selectors (current and legacy layouts)
     score_selectors = [
+        'media-scorecard rt-text.critics-score',  # current RT layout (2025+)
+        'rt-text.critics-score',
         '[slot="criticsScore"]',
         'rt-text[slot="criticsScore"]',
         '[data-testid="critic-score"] .percentage',
