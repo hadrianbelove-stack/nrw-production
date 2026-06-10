@@ -19,7 +19,16 @@
           "fuboTV"
         ]
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Documentary+",
+            "link": "https://docplus.com",
+            "_needs_direct_link": true
+          }
+        ],
+        "vod": []
+      },
       "links": {
         "wikipedia": null,
         "trailer": "https://www.youtube.com/watch?v=Z2q8QX7Jc0k",
@@ -32,7 +41,7 @@
         "letterboxd": "https://letterboxd.com/film/a-man-with-sole-the-impact-of-kenneth-cole"
       },
       "bootstrap_date": false,
-      "manually_corrected": false,
+      "manually_corrected": true,
       "runtime": 98,
       "rt_score": "87%",
       "studio": "Dramatic Forces",
@@ -4447,7 +4456,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "capsule": "*Code of Misconduct* traces how a single text message from 2018 reopened a [criminal investigation](https://en.wikipedia.org/wiki/Hockey_Canada_sexual_assault_scandal) into five players from Canada's World Junior hockey team.\n\nWinner of the Earl A. Glick Emerging Canadian Filmmaker Award at Hot Docs."
     },
     {
       "id": "1455103",
