@@ -1,49 +1,10 @@
 {
-  "timestamp": "2026-06-09T13:05:54.538519",
-  "movies_requested": 14,
+  "timestamp": "2026-06-10T13:35:15.415269",
+  "movies_requested": 10,
   "movies_enriched": 10,
-  "movies_deferred": 4,
-  "deferred_details": [
-    {
-      "title": "Michael",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-06-09",
-      "discovered_at": "2026-06-09T12:04:44.059926",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "A Man with Sole: The Impact of Kenneth Cole",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-09T12:04:47.346096",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 7,
-      "tmdb_platforms": [
-        "Eventive"
-      ]
-    },
-    {
-      "title": "Real Couples",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-04",
-      "discovered_at": "2026-06-09T12:04:47.727192",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 7,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Karuppu",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-12",
-      "discovered_at": "2026-06-09T12:51:31.181489",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": []
-    }
-  ],
-  "enrichment_duration_seconds": 729.34,
+  "movies_deferred": 0,
+  "deferred_details": [],
+  "enrichment_duration_seconds": 669.99,
   "error_details": [],
   "total_errors": 0
 }
