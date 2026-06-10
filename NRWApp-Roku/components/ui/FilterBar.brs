@@ -8,7 +8,7 @@ Sub Init()
     m.focusIndicator = m.top.FindNode("focusIndicator")
 
     ' Filter chip IDs in order
-    m.filterIds = ["staff_picks", "indie", "horror", "action", "comedy", "family", "foreign", "documentary", "restorations", "slop_free", "hide_fest", "show_preorders"]
+    m.filterIds = ["staff_picks", "indie", "horror", "action", "comedy", "family", "thriller", "foreign", "documentary", "restorations", "slop_free", "hide_fest", "show_preorders"]
 
     ' Chip widths for focus indicator positioning
     m.chipWidths = {
@@ -18,6 +18,7 @@ Sub Init()
         action: 80
         comedy: 80
         family: 80
+        thriller: 80
         foreign: 80
         documentary: 60
         restorations: 90

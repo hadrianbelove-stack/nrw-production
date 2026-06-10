@@ -1,9 +1,9 @@
 ---
-description: Curate new arrivals — staff picks, sections, pull quotes, capsules
+description: Curate new arrivals — staff picks, sections, slop review, pull quotes, capsules
 allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 ---
 
-Curate movies added since last session. Runs 3 stages in order, each with a user prompt. Resumable — if interrupted, re-running picks up where you left off.
+Curate movies added since last session. Runs 4 stages in order, each with a user prompt. Resumable — if interrupted, re-running picks up where you left off.
 
 ## Before You Start — pull latest
 
@@ -31,6 +31,7 @@ Before starting, check for an existing session:
   "stages": {
     "staff_picks": "pending",
     "sections": "pending",
+    "slop_review": "pending",
     "per_movie": "pending"
   }
 }
@@ -38,9 +39,9 @@ Before starting, check for an existing session:
 
 Update the progress file after completing each stage (set to `completed`). Set a stage to `in_progress` when you begin it.
 
-## Candidate List (shared by Stages 1 and 2)
+## Candidate List (shared by Stages 1, 2, and 3)
 
-Run this script to build the candidate list. Both Stage 1 and Stage 2 operate on this exact output — do not re-derive it:
+Run this script to build the candidate list. Stages 1, 2, and 3 operate on this exact output — do not re-derive it:
 
 ```bash
 /usr/bin/python3 -c "
@@ -86,13 +87,13 @@ for i, (dd, mid, title, year, rt, mc, svc) in enumerate(candidates, 1):
 
 If the output shows 0 candidates, report "No new arrivals to curate since [from_date]" and stop.
 
-**Note**: Stage 3 (Per-Movie Curation) uses its own watermark-based candidate logic — see that stage for details.
+**Note**: Stage 4 (Per-Movie Curation) uses its own watermark-based candidate logic — see that stage for details.
 
 ---
 
 ## Stage 1: Staff Picks
 
-Show a numbered list of all candidates:
+Show a numbered list of all candidates, then recommend 2–4 picks with brief reasoning.
 
 ```
 STAFF PICKS — which movies are you vouching for?
@@ -102,10 +103,14 @@ STAFF PICKS — which movies are you vouching for?
  3. Title (Year) — RT: 92% | MC: 80 | Fandango At Home
  ...
 
+★ Recommended: 1 (strong RT/MC, wide availability), 3 (RT 92%, critical darling)
+
 Reply with numbers (e.g. "1, 7, 10") or "skip" to skip.
 ```
 
 For each movie row show: title, year, RT score (or `--`), Metacritic score (or `--`), and which services it has watch links for.
+
+**Recommendations**: After the list, add a `★ Recommended:` line with 2–4 suggested picks and a short reason for each (scores, notable director, awards, distributor quality signal, etc.). Base this only on data already in data.json — do not web search at this step. If nothing stands out, say so.
 
 **On user reply:**
 - Parse the numbers, map to movie IDs
@@ -147,15 +152,76 @@ Show as human-readable names. If no filters are active, show "(none)". Staff Pic
 - Commit + push any override file changes
 - Mark stage `completed` in progress file
 
-**Note**: All filters are auto-detected from TMDB data — genres (Comedy, Horror, Action), language (Foreign), and distributor rules (Indie, Studio, Documentary). To improve detection logic (e.g. add indie distributor rules), update the pipeline code — not this command.
+**Note**: All filters are auto-detected from TMDB data — genres (Comedy, Horror, Action, Thriller), language (Foreign), and distributor rules (Indie, Studio, Documentary). To improve detection logic (e.g. add indie distributor rules), update the pipeline code — not this command.
 
 ---
 
-## Stage 3: Per-Movie Curation (Capsule + Pull Quotes together)
+## Stage 3: Slop Review
+
+Show all candidates in a table so the user can confirm or correct the auto-classifier's slop determinations.
+
+Build the table by reading `movie.is_slop`, `movie._is_slop_guess`, and `movie._slop_reason` from `data.json` for each candidate. Show **all candidates** — not just the ones flagged as slop — so the user can catch false negatives (real movies misclassified as not-slop, or vice versa).
+
+```
+SLOP REVIEW — confirm or correct auto-classifications
+
+| # | Title (Year) | Slop? | Why |
+|---|--------------|-------|-----|
+| 1 | Title (Year) | ✅ Not slop | RT: 85, MC: 72 |
+| 2 | Title (Year) | 🗑 SLOP (auto) | score:3(no_wiki,no_rt,no_imdb) |
+| 3 | Title (Year) | 🗑 SLOP (auto) | score:5(no_wiki,no_rt) |
+| 4 | Title (Year) | ✅ Not slop | RT: --, no classifier signal |
+
+"auto" = classifier made the call. Reply with overrides (e.g. "2: not slop; 5: slop") or "looks good" to confirm all.
+```
+
+**Table column rules:**
+- `Slop?` column:
+  - `is_slop=True` + `_is_slop_guess=True` → `🗑 SLOP (auto)`
+  - `is_slop=True` + `_is_slop_guess=False` → `🗑 SLOP (manual)`
+  - `is_slop=False` → `✅ Not slop`
+- `Why` column: show `_slop_reason` if present; otherwise show RT/MC scores or "no classifier signal"
+
+**On user reply:**
+
+For each override the user specifies:
+
+1. **Update `data.json`** — set `is_slop` and clear `_is_slop_guess`:
+```bash
+cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
+import json, sys
+title, is_slop_val = sys.argv[1], sys.argv[2] == 'true'
+with open('data.json') as f:
+    data = json.load(f)
+for m in data.get('movies', []):
+    if m.get('title', '').lower() == title.lower():
+        m['is_slop'] = is_slop_val
+        m['_is_slop_guess'] = False
+        break
+with open('data.json', 'w') as f:
+    json.dump(data, f, indent=2, ensure_ascii=False)
+print('done')
+" "MOVIE_TITLE" "true_or_false"
+```
+
+2. **Update `scripts/slop_classifier.py` MANUAL_OVERRIDES** — add a durable entry so rebuilds don't revert it. Read the file, find the `MANUAL_OVERRIDES` dict (around line 22), and add `numeric_int_id: True/False,  # Title`. The numeric ID must be an integer (not a string) — read `movie.id` from data.json and cast to int.
+
+3. Commit + push after all overrides applied:
+```bash
+git add data.json scripts/slop_classifier.py && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Slop review APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
+```
+
+If "looks good" with no changes: mark stage `completed`, no commit needed.
+
+Mark stage `completed` in progress file.
+
+---
+
+## Stage 4: Per-Movie Curation (Capsule + Pull Quotes together)
 
 Capsules and pull quotes are done together, movie by movie — not as separate passes.
 
-**Find candidates**: Stage 3 uses watermark logic, not the Stage 1/2 candidate list. Take the union of:
+**Find candidates**: Stage 4 uses watermark logic, not the Stage 1/2/3 candidate list. Take the union of:
 - Movies needing a capsule: `digital_date` > capsule watermark (most recent `digital_date` among movies in `cache/approved_capsules.json`), not already in `cache/approved_capsules.json` by title, not a restoration
 - Movies needing pull quotes: `digital_date` > pull quote watermark (most recent `digital_date` among movies with a `pull_quotes` array in `data.json`), not already having a `pull_quotes` **key** (check key presence — an empty array `[]` means "reviewed and skipped", not "needs quotes"), not a restoration
 
@@ -331,10 +397,11 @@ After all movies processed, mark stage `completed` in progress file.
 
 ## Completion
 
-After all 3 stages, report a summary:
+After all 4 stages, report a summary:
 ```
 CURATION COMPLETE
 - Staff picks: N added (M total)
 - Sections: N overrides applied
+- Slop review: N overrides (N→slop, N→not slop)
 - Capsules: N written | Pull quotes: N selected
 ```

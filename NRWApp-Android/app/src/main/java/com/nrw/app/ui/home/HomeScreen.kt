@@ -73,6 +73,7 @@ private val FILTER_DESCRIPTIONS = mapOf(
     "action"       to FilterDesc("Action", "High-octane, kinetic filmmaking. Action movies now available to watch at home."),
     "comedy"       to FilterDesc("Comedy", "Films that are actually funny. Comedies — broad and subtle — now streaming."),
     "family"       to FilterDesc("Family", "Films for all ages. Family movies now available to watch at home."),
+    "thriller"     to FilterDesc("Thriller", "Suspense, dread, and unease. Thrillers now streaming — from psychological slow-burns to pulse-pounding crime."),
     "foreign"      to FilterDesc("Foreign", "Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they're streaming now."),
     "documentary"  to FilterDesc("Documentary", "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home."),
     "restorations" to FilterDesc("Reissues", "Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers.")

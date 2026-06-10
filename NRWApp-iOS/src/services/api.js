@@ -178,6 +178,10 @@ export function filterMovies(movies, filter = null) {
       return movies.filter(
         movie => !movie.hidden && (movie.genres || []).some(g => g.toLowerCase().includes('family')),
       );
+    case 'thriller':
+      return movies.filter(
+        movie => !movie.hidden && (movie.genres || []).some(g => g.toLowerCase().includes('thriller')),
+      );
     case 'hidden':
       return movies.filter(movie => movie.hidden === true);
     default:
@@ -242,6 +246,9 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopM
           break;
         case 'family':
           if ((movie.genres || []).some(g => g.toLowerCase().includes('family'))) return true;
+          break;
+        case 'thriller':
+          if ((movie.genres || []).some(g => g.toLowerCase().includes('thriller'))) return true;
           break;
       }
     }

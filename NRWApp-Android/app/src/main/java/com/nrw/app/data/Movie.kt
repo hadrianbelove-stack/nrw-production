@@ -296,6 +296,7 @@ enum class FilterCategory(val id: String, val displayName: String) {
     ACTION("action", "Action"),
     COMEDY("comedy", "Comedy"),
     FAMILY("family", "Family"),
+    THRILLER("thriller", "Thriller"),
     FOREIGN("foreign", "Foreign"),
     DOCUMENTARY("documentary", "Docs"),
     RESTORATIONS("restorations", "Reissues")

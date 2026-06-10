@@ -60,6 +60,10 @@ const NRW = {
         'family': {
             title: 'Family',
             text: 'Films for all ages. Family movies now available to watch at home.'
+        },
+        'thriller': {
+            title: 'Thriller',
+            text: 'Suspense, dread, and unease. Thrillers now streaming — from psychological slow-burns to pulse-pounding crime.'
         }
     },
 
@@ -374,6 +378,9 @@ const NRW = {
                             break;
                         case 'family':
                             if ((movie.genres || []).some(g => g.toLowerCase().includes('family'))) matchesAny = true;
+                            break;
+                        case 'thriller':
+                            if ((movie.genres || []).some(g => g.toLowerCase().includes('thriller'))) matchesAny = true;
                             break;
                     }
                     if (matchesAny) break;

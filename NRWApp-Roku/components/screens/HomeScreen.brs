@@ -426,6 +426,7 @@ Function GetFilterDescriptions() as Object
         action:        { title: "ACTION",       text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." }
         comedy:        { title: "COMEDY",       text: "Films that are actually funny. Comedies — broad and subtle — now streaming." }
         family:        { title: "FAMILY",       text: "Films for all ages. Family movies now available to watch at home." }
+        thriller:      { title: "THRILLER",     text: "Suspense, dread, and unease. Thrillers now streaming — from psychological slow-burns to pulse-pounding crime." }
         foreign:       { title: "FOREIGN",      text: "Non-English language films from around the world. Subtitles and the fact that they're streaming now." }
         documentary:   { title: "DOCUMENTARY",  text: "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home." }
         restorations:  { title: "REISSUES",     text: "Classic and catalog titles with new digital life. Restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers." }

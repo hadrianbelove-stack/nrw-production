@@ -162,6 +162,7 @@ class MovieRepository(private val context: Context) {
                     FilterCategory.ACTION -> movie.genres?.any { it.lowercase().contains("action") } == true
                     FilterCategory.COMEDY -> movie.genres?.any { it.lowercase().contains("comedy") } == true
                     FilterCategory.FAMILY -> movie.genres?.any { it.lowercase().contains("family") } == true
+                    FilterCategory.THRILLER -> movie.genres?.any { it.lowercase().contains("thriller") } == true
                 }
             }
         }

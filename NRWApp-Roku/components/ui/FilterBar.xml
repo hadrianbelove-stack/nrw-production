@@ -85,6 +85,14 @@
           font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
       </Group>
 
+      <!-- Thriller -->
+      <Group id="chip_thriller">
+        <Rectangle id="chipBg_thriller" width="80" height="36" color="0x333333FF" />
+        <Label id="chipLabel_thriller" text="Thriller" width="80" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
+      </Group>
+
       <!-- Foreign -->
       <Group id="chip_foreign">
         <Rectangle id="chipBg_foreign" width="80" height="36" color="0x333333FF" />

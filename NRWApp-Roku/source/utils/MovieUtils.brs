@@ -18,6 +18,7 @@ Function GetFilterCategories() as Object
         ACTION: "action"
         COMEDY: "comedy"
         FAMILY: "family"
+        THRILLER: "thriller"
     }
 End Function
 
@@ -34,6 +35,7 @@ Function GetFilterDisplayName(filter as String) as String
         action: "Action"
         comedy: "Comedy"
         family: "Family"
+        thriller: "Thriller"
     }
 
     if names.DoesExist(filter)
@@ -123,6 +125,12 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
                 if movie.genres <> invalid
                     for each g in movie.genres
                         if LCase(g).InStr("family") >= 0 then matched = true
+                    end for
+                end if
+            else if filter = categories.THRILLER
+                if movie.genres <> invalid
+                    for each g in movie.genres
+                        if LCase(g).InStr("thriller") >= 0 then matched = true
                     end for
                 end if
             end if
