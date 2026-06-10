@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-02T11:21:48.260319",
+  "timestamp": "2026-06-09T16:52:17.118405",
   "scrapers": {
     "rt_scraper": {
       "attempts": 1,
@@ -11,30 +11,32 @@
     },
     "mc_scraper": {
       "attempts": 1,
-      "successes": 0,
+      "successes": 1,
       "cache_hits": 0,
-      "success_rate": 0.0,
+      "success_rate": 100.0,
       "cache_hit_rate": 0.0,
       "error_types": {}
     },
     "lb_scraper": {
-      "attempts": 0,
-      "successes": 0,
-      "cache_hits": 1,
-      "success_rate": null,
-      "cache_hit_rate": null,
+      "attempts": 1,
+      "successes": 1,
+      "cache_hits": 0,
+      "success_rate": 100.0,
+      "cache_hit_rate": 0.0,
       "error_types": {}
     },
     "wikipedia_scraper": {
-      "wikidata_attempts": 0,
+      "wikidata_attempts": 1,
       "wikidata_successes": 0,
-      "success_rate": null,
-      "error_types": {}
+      "success_rate": 0.0,
+      "error_types": {
+        "not_found": 1
+      }
     },
     "trailer_scraper": {
-      "attempts": 1,
-      "successes": 1,
-      "success_rate": 100.0
+      "attempts": 0,
+      "successes": 0,
+      "success_rate": null
     },
     "streaming_scraper": {
       "attempts": 0,
@@ -44,15 +46,15 @@
       "success_rate": null
     },
     "vod_scraper": {
-      "attempts": 0,
+      "attempts": 3,
       "successes": 0,
       "failures": 0,
-      "success_rate": null
+      "success_rate": 0.0
     }
   },
   "validation": {
-    "passes": 0,
+    "passes": 1,
     "warnings": 0,
-    "pass_rate": null
+    "pass_rate": 100.0
   }
 }

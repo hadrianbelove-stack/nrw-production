@@ -68,15 +68,13 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
                 browser = p.chromium.launch(headless=True)
                 page = browser.new_page()
 
-                # Intercept RT's internal reviews API
-                api_payload = {}
+                # Intercept RT's internal reviews API — collect all paginated responses
+                api_responses = []
                 def handle_response(response):
                     if ('napi/rtcf/v1/movies' in response.url and
-                            '/reviews' in response.url and
-                            not api_payload):
+                            '/reviews' in response.url):
                         try:
-                            api_payload['data'] = response.json()
-                            api_payload['url'] = response.url
+                            api_responses.append(response.json())
                         except Exception:
                             pass
 
@@ -103,26 +101,41 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
                         browser.close()
                         return []
 
-                # --- PRIMARY: parse RT internal API response ---
-                if api_payload.get('data'):
-                    reviews = api_payload['data'].get('reviews', [])
-                    for r in reviews:
+                # Click "Load More" up to 4 times to paginate through all reviews
+                for _ in range(4):
+                    load_more = page.query_selector('rt-button[data-qa="load-more-btn"], button[data-qa="load-more-btn"]')
+                    if not load_more:
+                        break
+                    try:
+                        load_more.click()
+                        page.wait_for_timeout(2000)
+                    except Exception:
+                        break
+
+                # --- PRIMARY: parse all RT internal API responses ---
+                seen_critics = set()
+                for payload in api_responses:
+                    for r in payload.get('reviews', []):
                         quote_text = html_module.unescape(r.get('reviewQuote', '') or '').strip()
                         if not quote_text or len(quote_text) < 15:
                             continue
                         critic_obj = r.get('critic') or {}
                         pub_obj = r.get('publication') or {}
+                        critic_name = critic_obj.get('displayName', '')
+                        if critic_name in seen_critics:
+                            continue
+                        seen_critics.add(critic_name)
                         quotes.append({
                             'text': quote_text,
-                            'critic': critic_obj.get('displayName', ''),
+                            'critic': critic_name,
                             'outlet': pub_obj.get('name', ''),
                             'source': 'rt_critic',
                             'review_url': r.get('publicationReviewUrl', ''),
                             'selected': False,
                             'added_at': time.strftime('%Y-%m-%dT%H:%M:%S')
                         })
-                    if quotes:
-                        logger.info(f"RT API intercepted {len(quotes)} reviews")
+                if quotes:
+                    logger.info(f"RT API intercepted {len(quotes)} reviews across {len(api_responses)} response(s)")
 
                 if not quotes:
                     logger.info(f"RT API intercept returned no reviews for {reviews_url} — no RT quotes for this film")
