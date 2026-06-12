@@ -724,7 +724,7 @@ const HomeScreenTvOS = () => {
     if (sortedFest.length > 0) {
       items.push({ type: 'date', id: 'date-fest-top', date: 'SCREENING' });
       sortedFest.forEach((movie, index) => {
-        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `fest-${index}`, movie, mIdx: mIdx++ });
+        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `fest-${index}`, movie, mIdx: mIdx++, stripKey: 'SCREENING' });
       });
     }
 
@@ -732,7 +732,7 @@ const HomeScreenTvOS = () => {
     if (sortedPreorders.length > 0) {
       items.push({ type: 'date', id: 'date-preorder-top', date: 'PRE-ORDER' });
       sortedPreorders.forEach((movie, index) => {
-        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `preorder-${index}`, movie, mIdx: mIdx++ });
+        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `preorder-${index}`, movie, mIdx: mIdx++, stripKey: 'PRE-ORDER' });
       });
     }
 
@@ -752,7 +752,7 @@ const HomeScreenTvOS = () => {
         }
         items.push({ type: 'date', id: `date-${movieDate}-${index}`, date: movieDate, isBootstrap: !!movie.bootstrap_date });
       }
-      items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie, mIdx: mIdx++ });
+      items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie, mIdx: mIdx++, stripKey: movieDate });
     });
 
     if (hasMore) {
@@ -799,6 +799,25 @@ const HomeScreenTvOS = () => {
     return { rowsOfIdx, posByIdx };
   }, [rowData]);
 
+  // Heads-up date banner: always shows the focused row's date group.
+  // (Sticky banners collide with focus-driven scrolling on tvOS, so the date
+  // lives in a fixed banner above the grid instead.)
+  const stripKeyByIdx = useMemo(() => {
+    const arr = [];
+    for (const it of listData) {
+      if (it.type === 'movie') arr[it.mIdx] = it.stripKey;
+    }
+    return arr;
+  }, [listData]);
+  const [hudStrip, setHudStrip] = useState(null);
+  const hudStripRef = useRef(null);
+
+  useEffect(() => {
+    const first = stripKeyByIdx.find(k => k != null) ?? null;
+    hudStripRef.current = first;
+    setHudStrip(first);
+  }, [stripKeyByIdx]);
+
   // Handle movie selection - navigate to detail with analytics
   const handleMovieSelect = useCallback(
     (movie) => {
@@ -828,6 +847,11 @@ const HomeScreenTvOS = () => {
   // Handle movie focus — also elevates wrapper z-index so focus ring isn't clipped by right sibling
   const handleMovieFocus = useCallback((movie, index) => {
     trackMovieFocus(movie, 0, index);
+    const strip = stripKeyByIdx[index];
+    if (strip && strip !== hudStripRef.current) {
+      hudStripRef.current = strip;
+      setHudStrip(strip);
+    }
     if (prevFocusedWrapper.current) {
       prevFocusedWrapper.current.setNativeProps({ style: { zIndex: 1 } });
     }
@@ -836,7 +860,7 @@ const HomeScreenTvOS = () => {
       wrapper.setNativeProps({ style: { zIndex: 100 } });
       prevFocusedWrapper.current = wrapper;
     }
-  }, []);
+  }, [stripKeyByIdx]);
 
   const handleMovieBlur = useCallback((index) => {
     const wrapper = wrapperRefsMap.current.get(index);
@@ -1107,6 +1131,13 @@ const HomeScreenTvOS = () => {
           </View>
         );
       })()}
+
+      {/* Heads-up date banner — tracks the focused row's date group */}
+      {hudStrip != null && (
+        <View style={styles.hudWrap}>
+          <DateRowStrip stripKey={hudStrip} stripColor={dateStripColor} />
+        </View>
+      )}
 
       {/* DOWN boundary: intercepts focus falling downward from filter chips and redirects
           to the first movie card via TVFocusGuideView (addUIBlock — reliable main-thread path).
@@ -1408,6 +1439,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 4,
     borderColor: '#00ffcc',
+  },
+  hudWrap: {
+    paddingHorizontal: 68,
   },
   // Date row strip — full-width neon banner between date groups
   dateStripRow: {
