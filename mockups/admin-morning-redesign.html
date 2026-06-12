@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW Admin — Morning Desk (Redesign Mockup)</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(160deg, #0a0a0a 0%, #1a1a2e 100%);
+    min-height: 100vh; color: #fff; padding-bottom: 90px;
+  }
+
+  /* ---------- Header ---------- */
+  .hdr {
+    position: sticky; top:0; z-index:50;
+    background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    padding: 12px 16px; display:flex; align-items:center; gap:10px;
+  }
+  .hdr-title { font-size:1.05rem; font-weight:700; letter-spacing:0.02em; }
+  .hdr-date { font-size:0.75rem; color:#888; margin-top:1px; }
+  .chip-ok {
+    margin-left:auto; font-size:0.7rem; font-weight:700; color:#00d4aa;
+    border:1px solid rgba(0,212,170,0.45); background:rgba(0,212,170,0.1);
+    padding:4px 10px; border-radius:25px; white-space:nowrap;
+  }
+  .btn-save {
+    background:#00d4aa; color:#0a0a0a; font-weight:700; font-size:0.78rem;
+    border:none; padding:8px 14px; border-radius:25px; cursor:pointer;
+  }
+
+  /* ---------- Tabs ---------- */
+  .tabs {
+    position: fixed; bottom:0; left:0; right:0; z-index:60;
+    display:flex; background:rgba(10,10,10,0.95); backdrop-filter:blur(12px);
+    border-top:1px solid rgba(255,255,255,0.12);
+    padding: 8px 12px calc(10px + env(safe-area-inset-bottom)); gap:8px;
+  }
+  .tab {
+    flex:1; text-align:center; padding:10px 0 8px; border-radius:15px;
+    color:#888; font-size:0.78rem; font-weight:600; cursor:pointer; border:1px solid transparent;
+  }
+  .tab .t-ico { display:block; font-size:1.15rem; margin-bottom:2px; }
+  .tab.active { color:#00d4aa; background:rgba(0,212,170,0.1); border-color:rgba(0,212,170,0.35); }
+  .tab .t-badge {
+    display:inline-block; min-width:17px; padding:1px 5px; margin-left:4px;
+    background:#dc143c; color:#fff; border-radius:25px; font-size:0.62rem; font-weight:700;
+  }
+
+  .view { display:none; padding:14px 14px 20px; max-width:760px; margin:0 auto; }
+  .view.active { display:block; }
+  .sec-label {
+    font-size:0.68rem; font-weight:700; letter-spacing:0.12em; color:#888;
+    text-transform:uppercase; margin:18px 4px 8px;
+  }
+  .sec-label:first-child { margin-top:4px; }
+
+  /* ---------- Overnight strip ---------- */
+  .strip { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; }
+  .strip::-webkit-scrollbar { display:none; }
+  .stat {
+    flex:0 0 auto; min-width:118px; background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.12); border-radius:15px; padding:10px 12px;
+  }
+  .stat .s-num { font-size:1.35rem; font-weight:800; line-height:1.1; }
+  .stat .s-name { font-size:0.66rem; color:#888; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; margin-top:3px; }
+  .stat .s-sub { font-size:0.66rem; color:#bbb; margin-top:2px; }
+  .stat.tappable { cursor:pointer; }
+  .stat.warn { border-color:rgba(255,170,0,0.45); }
+  .stat.warn .s-num { color:#ffaa00; }
+  .s-num.teal { color:#00d4aa; }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12);
+    border-radius:15px; padding:12px 14px; margin-bottom:10px;
+  }
+  .concern-row { display:flex; gap:8px; font-size:0.8rem; color:#bbb; padding:5px 0; align-items:baseline; }
+  .concern-row .ico { flex:0 0 auto; }
+  .deferred-list { display:none; margin-top:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px; }
+  .deferred-list.open { display:block; }
+  .def-row { font-size:0.75rem; color:#bbb; padding:4px 0; display:flex; justify-content:space-between; gap:10px; }
+  .def-reason { color:#888; font-size:0.68rem; white-space:nowrap; }
+
+  /* ---------- Curation queue ---------- */
+  .progress-wrap { display:flex; align-items:center; gap:10px; margin:4px 4px 10px; }
+  .progress-bar { flex:1; height:6px; background:rgba(255,255,255,0.1); border-radius:25px; overflow:hidden; }
+  .progress-fill { height:100%; width:0%; background:#00d4aa; border-radius:25px; transition:width 0.35s ease; }
+  .progress-txt { font-size:0.72rem; color:#bbb; white-space:nowrap; font-weight:600; }
+
+  .mcard {
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12);
+    border-radius:15px; margin-bottom:10px; overflow:hidden;
+  }
+  .mcard.done-card { border-color:rgba(0,212,170,0.4); }
+  .mcard-main { display:flex; gap:12px; padding:11px 12px; cursor:pointer; }
+  .poster { width:54px; height:81px; border-radius:8px; object-fit:cover; flex:0 0 auto; background:#222; }
+  .m-info { flex:1; min-width:0; }
+  .m-title { font-weight:700; font-size:0.92rem; line-height:1.25; }
+  .m-meta { font-size:0.7rem; color:#888; margin-top:2px; }
+  .pills { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+  .pill {
+    font-size:0.62rem; font-weight:700; padding:2px 8px; border-radius:25px;
+    background:rgba(255,255,255,0.09); color:#bbb; border:1px solid rgba(255,255,255,0.14);
+  }
+  .pill.netflix { background:rgba(229,9,20,0.18); color:#ff6b71; border-color:rgba(229,9,20,0.4); }
+  .pill.amazon  { background:rgba(0,168,225,0.15); color:#5fc8ee; border-color:rgba(0,168,225,0.35); }
+  .pill.score   { background:rgba(255,255,255,0.05); color:#fff; }
+  .pill.flag    { background:rgba(255,68,68,0.12); color:#ff7a7a; border-color:rgba(255,68,68,0.4); }
+  .pill.okflag  { background:rgba(0,212,170,0.1); color:#00d4aa; border-color:rgba(0,212,170,0.3); }
+
+  /* checklist tracker */
+  .track { display:flex; gap:6px; margin-top:8px; }
+  .step {
+    flex:1; text-align:center; font-size:0.6rem; font-weight:700; color:#888;
+    padding:4px 0 3px; border-radius:8px; background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1); cursor:pointer; user-select:none;
+  }
+  .step.on { color:#0a0a0a; background:#00d4aa; border-color:#00d4aa; }
+
+  /* expanded panel */
+  .mcard-x { display:none; border-top:1px solid rgba(255,255,255,0.1); padding:12px; }
+  .mcard.open .mcard-x { display:block; }
+  .x-label { font-size:0.64rem; font-weight:700; letter-spacing:0.1em; color:#888; text-transform:uppercase; margin-bottom:6px; }
+  .x-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+  .xbtn {
+    font-size:0.7rem; font-weight:700; padding:7px 12px; border-radius:25px; cursor:pointer;
+    background:rgba(255,255,255,0.06); color:#bbb; border:1px solid rgba(255,255,255,0.18);
+  }
+  .xbtn.sel-real { background:rgba(0,212,170,0.15); color:#00d4aa; border-color:#00d4aa; }
+  .xbtn.sel-slop { background:rgba(255,68,68,0.15); color:#ff7a7a; border-color:#ff4444; }
+  .xbtn.cat-on { background:rgba(255,215,0,0.15); color:#ffd700; border-color:rgba(255,215,0,0.5); }
+  .xbtn.primary { background:#00d4aa; color:#0a0a0a; border-color:#00d4aa; }
+  .x-note { font-size:0.72rem; color:#888; margin:-6px 0 12px; }
+
+  /* slop review rows */
+  .slop-row { display:flex; align-items:center; gap:10px; padding:9px 12px; }
+  .slop-row .poster { width:38px; height:57px; }
+  .slop-row .m-title { font-size:0.82rem; }
+  .slop-acts { margin-left:auto; display:flex; gap:6px; flex:0 0 auto; }
+  .sbtn {
+    font-size:0.66rem; font-weight:700; padding:6px 10px; border-radius:25px; cursor:pointer; border:1px solid;
+  }
+  .sbtn.confirm { background:rgba(255,68,68,0.12); color:#ff7a7a; border-color:rgba(255,68,68,0.45); }
+  .sbtn.rescue { background:rgba(0,212,170,0.1); color:#00d4aa; border-color:rgba(0,212,170,0.4); }
+
+  /* ---------- Wall view ---------- */
+  .search {
+    width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15);
+    border-radius:25px; padding:10px 16px; color:#fff; font-size:0.9rem; outline:none; margin-bottom:10px;
+  }
+  .search::placeholder { color:#888; }
+  .fchips { display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; scrollbar-width:none; }
+  .fchips::-webkit-scrollbar { display:none; }
+  .fchip {
+    flex:0 0 auto; font-size:0.72rem; font-weight:600; color:#bbb; padding:6px 13px;
+    border-radius:25px; border:1px solid rgba(255,255,255,0.18); background:rgba(255,255,255,0.04); cursor:pointer;
+  }
+  .fchip.active { color:#00d4aa; border-color:#00d4aa; background:rgba(0,212,170,0.1); }
+  .fchip .cnt { color:#888; font-weight:400; margin-left:3px; }
+  .wrow {
+    display:flex; align-items:center; gap:10px; padding:8px 10px;
+    background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px; margin-bottom:6px; cursor:pointer;
+  }
+  .wrow .poster { width:34px; height:51px; border-radius:6px; }
+  .w-date { flex:0 0 40px; text-align:center; }
+  .w-date .wd-m { font-size:0.58rem; color:#888; text-transform:uppercase; letter-spacing:0.08em; }
+  .w-date .wd-d { font-size:1.05rem; font-weight:800; line-height:1; }
+  .w-main { flex:1; min-width:0; }
+  .w-title { font-size:0.83rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .w-sub { font-size:0.66rem; color:#888; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .w-scores { flex:0 0 auto; text-align:right; }
+  .w-rt { font-size:0.78rem; font-weight:700; color:#00d4aa; }
+  .w-rt.low { color:#ffaa00; }
+  .w-imdb { font-size:0.64rem; color:#888; margin-top:1px; }
+  .w-star { color:#ffd700; font-size:0.8rem; }
+  .w-slop { font-size:0.56rem; font-weight:800; color:#888; border:1px solid #555; padding:1px 5px; border-radius:6px; }
+  .wall-foot { text-align:center; color:#888; font-size:0.72rem; padding:14px 0 4px; }
+
+  /* ---------- Tools view ---------- */
+  .tools-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .tool {
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12);
+    border-radius:15px; padding:16px 14px; cursor:pointer;
+  }
+  .tool .t-emoji { font-size:1.4rem; }
+  .tool .t-name { font-weight:700; font-size:0.85rem; margin-top:8px; }
+  .tool .t-desc { font-size:0.68rem; color:#888; margin-top:3px; line-height:1.4; }
+
+  /* toast */
+  #toast {
+    position:fixed; left:50%; bottom:96px; transform:translateX(-50%) translateY(20px);
+    background:#00d4aa; color:#0a0a0a; font-size:0.78rem; font-weight:700;
+    padding:9px 18px; border-radius:25px; opacity:0; pointer-events:none;
+    transition:all 0.25s ease; z-index:99; white-space:nowrap;
+  }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .empty-q { text-align:center; color:#888; font-size:0.8rem; padding:18px 0; display:none; }
+
+  @media (min-width: 700px) {
+    .tabs { position:sticky; top:57px; bottom:auto; border-top:none; border-bottom:1px solid rgba(255,255,255,0.12); max-width:760px; margin:0 auto; background:transparent; backdrop-filter:none; }
+    body { padding-bottom:20px; }
+    .tab .t-ico { display:none; }
+    .tools-grid { grid-template-columns:1fr 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-title">NRW Admin</div>
+    <div class="hdr-date">Friday, June 12</div>
+  </div>
+  <span class="chip-ok">● Pipeline OK · 1:27 PM</span>
+  <button class="btn-save" onclick="toast('Would regenerate site data')">Save</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-view="today" onclick="switchTab(this)"><span class="t-ico">☀️</span>Today<span class="t-badge" id="queue-badge">7</span></div>
+  <div class="tab" data-view="wall" onclick="switchTab(this)"><span class="t-ico">🎬</span>Wall <span style="color:#666;font-weight:400;">754</span></div>
+  <div class="tab" data-view="tools" onclick="switchTab(this)"><span class="t-ico">🧰</span>Tools</div>
+</div>
+
+<!-- ================= TODAY ================= -->
+<div class="view active" id="view-today">
+
+  <div class="sec-label">Overnight</div>
+  <div class="strip">
+    <div class="stat"><div class="s-num">42</div><div class="s-name">Intake</div><div class="s-sub">new tracked</div></div>
+    <div class="stat"><div class="s-num teal">11</div><div class="s-name">Discovery</div><div class="s-sub">14,043 polled</div></div>
+    <div class="stat tappable warn" onclick="document.getElementById('deferred').classList.toggle('open')">
+      <div class="s-num">9<span style="font-size:0.8rem;color:#888;">/12</span></div><div class="s-name">Enriched</div><div class="s-sub">3 deferred ›</div>
+    </div>
+    <div class="stat"><div class="s-num">7<span style="font-size:0.8rem;color:#888;">/8</span></div><div class="s-name">Trailers</div><div class="s-sub">hosted · 8:10 AM</div></div>
+    <div class="stat"><div class="s-num teal">✓</div><div class="s-name">Stall check</div><div class="s-sub">transitions today</div></div>
+  </div>
+
+  <div class="card">
+    <div class="concern-row"><span class="ico">⚠️</span><span><b>2 films missing trailers</b> — Find Your Friends, I Am Frankelda</span></div>
+    <div class="concern-row"><span class="ico">⚠️</span><span><b>3 enrichment deferrals</b> — tap the Enriched card for details</span></div>
+    <div class="concern-row"><span class="ico">✅</span><span>Launchagent ran · git pull current · quote scrape covered all candidates</span></div>
+    <div class="deferred-list" id="deferred">
+      <div class="def-row"><span>The Thing in the Fog</span><span class="def-reason">JW no match · revert ×2</span></div>
+      <div class="def-row"><span>Blue Film</span><span class="def-reason">theatrical PVOD</span></div>
+      <div class="def-row"><span>Blades of the Guardians</span><span class="def-reason">JW no match</span></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Curate — 4 new arrivals</div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+    <div class="progress-txt" id="ptxt">0 of 4 done</div>
+  </div>
+
+  <div id="queue"></div>
+  <div class="empty-q" id="queue-empty">All caught up — every arrival curated. ✨</div>
+
+  <div class="sec-label">Slop review — 3 auto-flagged</div>
+  <div id="slop-queue"></div>
+  <div class="empty-q" id="slop-empty">Slop pile reviewed.</div>
+
+</div>
+
+<!-- ================= WALL ================= -->
+<div class="view" id="view-wall">
+  <input class="search" placeholder="Search 754 movies…" oninput="filterWall(this.value)">
+  <div class="fchips">
+    <div class="fchip active" data-f="all" onclick="wallChip(this)">All</div>
+    <div class="fchip" data-f="picks" onclick="wallChip(this)">★ Picks</div>
+    <div class="fchip" data-f="missing" onclick="wallChip(this)">Missing data <span class="cnt">38</span></div>
+    <div class="fchip" data-f="slop" onclick="wallChip(this)">Slop</div>
+    <div class="fchip" onclick="toast('Mockup — more filters in real build')">Restorations</div>
+  </div>
+  <div id="wall-list"></div>
+  <div class="wall-foot">Showing 22 of 754 · tap any row to open the same editor panel as Today cards</div>
+</div>
+
+<!-- ================= TOOLS ================= -->
+<div class="view" id="view-tools">
+  <div class="sec-label">Actions</div>
+  <div class="tools-grid">
+    <div class="tool" onclick="toast('Opens TMDB search modal')"><div class="t-emoji">➕</div><div class="t-name">Add Movie</div><div class="t-desc">Search TMDB, set date &amp; watch link</div></div>
+    <div class="tool" onclick="toast('Opens site in new tab')"><div class="t-emoji">👁️</div><div class="t-name">View Site</div><div class="t-desc">Open the live wall</div></div>
+    <div class="tool" onclick="toast('Opens playlist form')"><div class="t-emoji">▶️</div><div class="t-name">YouTube Playlist</div><div class="t-desc">Build playlist from date range</div></div>
+    <div class="tool" onclick="toast('Opens quotes page')"><div class="t-emoji">❝</div><div class="t-name">Pull Quotes</div><div class="t-desc">Full quote curation pages</div></div>
+    <div class="tool" onclick="toast('Shows full health report')"><div class="t-emoji">🩺</div><div class="t-name">Health Report</div><div class="t-desc">Last run details, errors, warnings</div></div>
+    <div class="tool" onclick="toast('Would regenerate site data')"><div class="t-emoji">🔄</div><div class="t-name">Save Changes</div><div class="t-desc">Regenerate data.json for the site</div></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ---- Real data from data.json (2026-06-12 arrivals) ----
+const ARRIVALS = [
+  {id:'1226834', title:'This Tempting Madness', year:2026, runtime:92, country:'USA', services:['Amazon'], rt:'82%', imdb:'7.8',
+   poster:'https://image.tmdb.org/t/p/w300/yxyWCKdUcfqgBUCrf1xIvghxJlu.jpg', trailer:true, wiki:true,
+   syn:'A young woman awakens from a coma grievously injured, memory fractured, her husband arrested…'},
+  {id:'1325614', title:'Badland Rising', year:2026, runtime:97, country:'AUS', services:['Amazon'], rt:'82%', imdb:'7.6',
+   poster:'https://image.tmdb.org/t/p/w300/zJ9cH08c1x1WNsVRR6v6FCK805w.jpg', trailer:true, wiki:false,
+   syn:'An ordinary bloke embarks on a 19-hour drive home, unaware of being pursued by two unhinged criminals…'},
+  {id:'1283636', title:'Find Your Friends', year:2025, runtime:89, country:'USA', services:['YouTube'], rt:null, imdb:null,
+   poster:'https://image.tmdb.org/t/p/w300/uN0psnESvA9X6TnmQHKG78YKe4e.jpg', trailer:false, wiki:true,
+   syn:'Amber and her four best girlfriends take a trip to escape the L.A. bubble and cut loose in Joshua Tree…'},
+  {id:'1119090', title:'I Am Frankelda', year:2025, runtime:114, country:'MEX', services:['Netflix'], rt:null, imdb:null,
+   poster:'https://image.tmdb.org/t/p/w300/hDzllxB1TQ7uUxVvjnGHirJJovt.jpg', trailer:false, wiki:true,
+   syn:'Frankelda, a frustrated young Mexican writer from the 19th century…'},
+];
+const SLOP = [
+  {id:'1691363', title:'Time of Death', services:['Amazon'], poster:'https://image.tmdb.org/t/p/w300/86NmEEtkQFvbWT28YtZyFVfv6mO.jpg'},
+  {id:'1699155', title:'Maternal Instinct', services:['Netflix'], poster:'https://image.tmdb.org/t/p/w300/sSY1K2wENhlpAEo2ASrtsezn0YH.jpg'},
+  {id:'1357544', title:'Bizarrofilia', services:['Amazon'], poster:'https://image.tmdb.org/t/p/w300/vT7nXdh8ak0A8uhZOf9a9dUzXyR.jpg'},
+];
+const WALL = [
+  ['Jun 12','This Tempting Madness','Amazon','82%','7.8','https://image.tmdb.org/t/p/w300/yxyWCKdUcfqgBUCrf1xIvghxJlu.jpg',false,false],
+  ['Jun 12','Badland Rising','Amazon','82%','7.6','https://image.tmdb.org/t/p/w300/zJ9cH08c1x1WNsVRR6v6FCK805w.jpg',false,false],
+  ['Jun 12','Find Your Friends','YouTube',null,null,'https://image.tmdb.org/t/p/w300/uN0psnESvA9X6TnmQHKG78YKe4e.jpg',false,false],
+  ['Jun 12','I Am Frankelda','Netflix',null,null,'https://image.tmdb.org/t/p/w300/hDzllxB1TQ7uUxVvjnGHirJJovt.jpg',false,false],
+  ['Jun 12','Time of Death','Amazon',null,null,'https://image.tmdb.org/t/p/w300/86NmEEtkQFvbWT28YtZyFVfv6mO.jpg',false,true],
+  ['Jun 12','Maternal Instinct','Netflix',null,null,'https://image.tmdb.org/t/p/w300/sSY1K2wENhlpAEo2ASrtsezn0YH.jpg',false,true],
+  ['Jun 12','Bizarrofilia','Amazon',null,'8.2','https://image.tmdb.org/t/p/w300/vT7nXdh8ak0A8uhZOf9a9dUzXyR.jpg',false,true],
+  ['Jun 11',"My Boyfriend's Wife Is Dead",'Hoopla',null,'5.4','https://image.tmdb.org/t/p/w300/80vJ5kBWfpThzsggWWU7LBVyJQ9.jpg',true,false],
+  ['Jun 11','Boy George & Culture Club','Apple TV','90%','7.3','https://image.tmdb.org/t/p/w300/dH32lHEdcEeKfperjPbx8U7SqyL.jpg',true,false],
+  ['Jun 11','Broken Land','Amazon',null,null,'https://image.tmdb.org/t/p/w300/3cYDmDWNWIjVMFbTlDQXjhydT6e.jpg',false,true],
+  ['Jun 10',"Vick & Tarstar's Scarecrow Factory",'Fawesome',null,'6.0','https://image.tmdb.org/t/p/w300/1ZTqjziGPWf25CO5mm14VYYSYUH.jpg',false,false],
+  ['Jun 10','Colors of Evil: Black','Netflix',null,null,'https://image.tmdb.org/t/p/w300/wIubCZKpnTiQmlC5DehgU1LNFip.jpg',false,true],
+  ['Jun 10','Thou Shall Not Commit Adultery','Lifetime',null,'6.2','https://image.tmdb.org/t/p/w300/v6fvzTRikUp9ry5OyoTmUIon5rh.jpg',false,false],
+  ['Jun 10','Bring Me the Horizon: L.I.V.E. in São Paulo','Amazon',null,'9.0','https://image.tmdb.org/t/p/w300/dHnCH7HoVE7MBwc2lvgbSM3jXg7.jpg',false,false],
+  ['Jun 10','Heads or Fails','myfilmfriend',null,'6.3','https://image.tmdb.org/t/p/w300/p03nyFzLERXEeE7MfBsCzBVb266.jpg',false,false],
+  ['Jun 10','Powwow People','Eventive',null,'6.3','https://image.tmdb.org/t/p/w300/klheiHrCGwNNooVvYTJCFYMzmrI.jpg',false,false],
+  ['Jun 10',"What's the Story, Wishbone?",'Amazon',null,'8.9','https://image.tmdb.org/t/p/w300/qlbeEWHs2np97vmvMAifjJYyLFP.jpg',false,false],
+  ['Jun 9','Norway: The Dark Horse','Netflix',null,'6.9','https://image.tmdb.org/t/p/w300/kZgzZsVgNruGRWKzTbAIfvvrvHJ.jpg',true,false],
+  ['Jun 9',"Let's Love",'Hoopla',null,null,'https://image.tmdb.org/t/p/w300/iQBNEmJxNUhrzmom9DRhyJTWyGn.jpg',false,false],
+  ['Jun 9','The Second Coming of John Cooper','Hoopla',null,null,'https://image.tmdb.org/t/p/w300/gMV5eCyaq6eSq32rQbhIvcxvpM4.jpg',false,true],
+  ['Jun 9','Summer House','Prime Video',null,'5.5','https://image.tmdb.org/t/p/w300/81xUChgVphBFehihIgbXbyneZXP.jpg',false,true],
+  ['Jun 9',"Her Husband's Double Life",'Fandango',null,'7.5','https://image.tmdb.org/t/p/w300/aoqxusBlbwShgKcfrlgUb9q6Rqo.jpg',false,false],
+];
+
+const STEPS = ['Slop call','Capsule','Quotes','Wiki'];
+const state = {}; // id -> {steps:[bool x4], done:bool}
+
+function svcClass(s){ s=s.toLowerCase(); if(s.includes('netflix'))return 'netflix'; if(s.includes('amazon')||s.includes('prime'))return 'amazon'; return ''; }
+
+function renderQueue(){
+  const q = document.getElementById('queue');
+  q.innerHTML = ARRIVALS.map(m => {
+    const st = state[m.id] || (state[m.id] = {steps:[false,false,false,false]});
+    const done = st.steps.every(Boolean);
+    const flags = [];
+    if(!m.trailer) flags.push('<span class="pill flag">⚠ no trailer</span>');
+    if(!m.wiki) flags.push('<span class="pill flag">no wiki</span>');
+    if(m.trailer) flags.push('<span class="pill okflag">trailer hosted</span>');
+    return `
+    <div class="mcard ${done?'done-card':''}" id="card-${m.id}">
+      <div class="mcard-main" onclick="this.parentNode.classList.toggle('open')">
+        <img class="poster" src="${m.poster}" alt="">
+        <div class="m-info">
+          <div class="m-title">${done?'✅ ':''}${m.title}</div>
+          <div class="m-meta">${m.year} · ${m.runtime} min · ${m.country}</div>
+          <div class="pills">
+            ${m.services.map(s=>`<span class="pill ${svcClass(s)}">${s}</span>`).join('')}
+            ${m.rt?`<span class="pill score">🍅 ${m.rt}</span>`:''}
+            ${m.imdb?`<span class="pill score">IMDb ${m.imdb}</span>`:''}
+            ${flags.join('')}
+          </div>
+          <div class="track">
+            ${STEPS.map((s,i)=>`<div class="step ${st.steps[i]?'on':''}" onclick="event.stopPropagation(); tick('${m.id}',${i})">${st.steps[i]?'✓ ':''}${s}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="mcard-x">
+        <div class="x-label">Slop call</div>
+        <div class="x-row">
+          <button class="xbtn ${st.steps[0]?'sel-real':''}" onclick="tick('${m.id}',0,true)">✓ Real movie</button>
+          <button class="xbtn" onclick="toSlop('${m.id}')">Slop</button>
+        </div>
+        <div class="x-label">Categories</div>
+        <div class="x-row">
+          ${['★ PICK','INDIE','FRGN','DOC','REST','VSCR'].map(c=>`<button class="xbtn" onclick="this.classList.toggle('cat-on')">${c}</button>`).join('')}
+        </div>
+        <div class="x-label">Synopsis</div>
+        <div class="x-note">${m.syn}</div>
+        <div class="x-row">
+          <button class="xbtn primary" onclick="toast('Opens capsule editor (3 variants from /morning)')">✎ Capsule</button>
+          <button class="xbtn" onclick="toast('Opens quote picker for this film')">❝ Quotes</button>
+          <button class="xbtn" onclick="toast('Opens full metadata editor')">Edit details</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  updateProgress();
+}
+
+function renderSlop(){
+  const q = document.getElementById('slop-queue');
+  q.innerHTML = SLOP.map(m=>`
+    <div class="mcard" id="slop-${m.id}">
+      <div class="slop-row">
+        <img class="poster" src="${m.poster}" alt="">
+        <div>
+          <div class="m-title">${m.title}</div>
+          <div class="m-meta">auto-flagged · ${m.services.join(', ')}</div>
+        </div>
+        <div class="slop-acts">
+          <button class="sbtn confirm" onclick="resolveSlop('${m.id}','Confirmed slop — stays hidden')">Confirm</button>
+          <button class="sbtn rescue" onclick="resolveSlop('${m.id}','Rescued — marked NOT slop')">Rescue</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function tick(id, i, forceOn){
+  const st = state[id];
+  st.steps[i] = forceOn ? true : !st.steps[i];
+  renderQueue();
+}
+function toSlop(id){
+  const i = ARRIVALS.findIndex(m=>m.id===id);
+  if(i>-1){ ARRIVALS.splice(i,1); delete state[id]; }
+  renderQueue(); toast('Moved to slop pile');
+  document.getElementById('queue-badge').textContent = ARRIVALS.length + SLOP.length;
+}
+function resolveSlop(id,msg){
+  const el = document.getElementById('slop-'+id);
+  el.style.transition='all 0.3s'; el.style.opacity='0'; el.style.transform='translateX(40px)';
+  setTimeout(()=>{ el.remove();
+    if(!document.querySelector('#slop-queue .mcard')) document.getElementById('slop-empty').style.display='block';
+  },300);
+  toast(msg);
+}
+function updateProgress(){
+  const ids = ARRIVALS.map(m=>m.id);
+  const done = ids.filter(id=>state[id] && state[id].steps.every(Boolean)).length;
+  document.getElementById('pfill').style.width = (ids.length? (done/ids.length*100):100)+'%';
+  document.getElementById('ptxt').textContent = `${done} of ${ids.length} done`;
+  document.getElementById('queue-empty').style.display = ids.length? 'none':'block';
+}
+
+function renderWall(){
+  document.getElementById('wall-list').innerHTML = WALL.map((r,i)=>{
+    const [date,title,svc,rt,imdb,poster,pick,slop] = r;
+    const [mo,da] = date.split(' ');
+    return `
+    <div class="wrow" data-title="${title.toLowerCase()}" data-pick="${pick}" data-slop="${slop}" data-missing="${!rt&&!imdb}"
+         onclick="toast('Opens editor panel — same as Today cards')">
+      <div class="w-date"><div class="wd-m">${mo}</div><div class="wd-d">${da}</div></div>
+      <img class="poster" src="${poster}" loading="lazy" alt="">
+      <div class="w-main">
+        <div class="w-title">${pick?'<span class="w-star">★</span> ':''}${title} ${slop?'<span class="w-slop">SLOP</span>':''}</div>
+        <div class="w-sub">${svc}</div>
+      </div>
+      <div class="w-scores">
+        <div class="w-rt ${rt&&parseInt(rt)<60?'low':''}">${rt||'—'}</div>
+        <div class="w-imdb">${imdb?('IMDb '+imdb):''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+let wallFilter='all', wallSearch='';
+function wallChip(el){
+  if(!el.dataset.f) return;
+  document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); wallFilter=el.dataset.f; applyWall();
+}
+function filterWall(v){ wallSearch=v.toLowerCase(); applyWall(); }
+function applyWall(){
+  document.querySelectorAll('.wrow').forEach(r=>{
+    let ok = r.dataset.title.includes(wallSearch);
+    if(wallFilter==='picks') ok = ok && r.dataset.pick==='true';
+    if(wallFilter==='slop') ok = ok && r.dataset.slop==='true';
+    if(wallFilter==='missing') ok = ok && r.dataset.missing==='true';
+    r.style.display = ok?'flex':'none';
+  });
+}
+
+function switchTab(el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+el.dataset.view).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+renderQueue(); renderSlop(); renderWall();
+</script>
+</body>
+</html>
