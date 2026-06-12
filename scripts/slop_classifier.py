@@ -46,6 +46,9 @@ MANUAL_OVERRIDES = {
     1541658: False,   # One Golden Summer (MAX doc)
     1620034: False,   # Marty, Life Is Short (Imagine Documentaries)
     1658982: False,   # The Roast of Kevin Hart
+    # TV-movie mill thrillers — confirmed slop by curator (June 2026)
+    1708839: True,    # Her Husband's Double Life
+    1409853: True,    # Neglected
     # Human-confirmed slop
     1686326: True,    # Emi Martínez: The Kid Who Stops Time
     934584:  True,    # Rich Flu (La fiebre de los ricos)

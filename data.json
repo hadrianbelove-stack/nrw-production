@@ -6408,7 +6408,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -6430,8 +6430,9 @@
       },
       "featured": false,
       "capsule": "Lifetime domestic thriller: a woman's world shatters when her husband is found critically injured with another woman claiming to be his wife.\n\nFrom **Roxanne Boisvert**, a prolific director known for over 45 TV movies.",
-      "is_slop": false,
-      "_slop_confidence": "weak"
+      "is_slop": true,
+      "_slop_confidence": "weak",
+      "_is_slop_guess": false
     },
     {
       "id": "1409853",
@@ -6530,7 +6531,7 @@
       "_quality_warnings": [
         "Service 'Apple TV' not in TMDB providers for this title (TMDB has: ['amazon video'])"
       ],
-      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score"
@@ -6550,8 +6551,9 @@
       "featured": false,
       "capsule": "Little action thriller directed by the guy who played Viper on *Full House*.\n\nA retiring detective's last case becomes personal when his son is buried alive.",
       "_watch_links_verified": "2026-06-12T13:25:17.816642",
-      "is_slop": false,
-      "_slop_confidence": "weak"
+      "is_slop": true,
+      "_slop_confidence": "weak",
+      "_is_slop_guess": false
     },
     {
       "id": "1657438",
