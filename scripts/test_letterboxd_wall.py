@@ -11,7 +11,7 @@ import time
 import yaml
 
 sys.path.insert(0, '.')
-from letterboxd_scraper import LetterboxdScraper
+from letterboxd_scraper import LetterboxdScoreScraper
 
 # Load config
 config = {}
@@ -28,7 +28,7 @@ with open('data.json', 'r') as f:
 movies = data.get('movies', [])
 print(f"Testing Letterboxd scraper on {len(movies)} movies\n")
 
-scraper = LetterboxdScraper(config=config)
+scraper = LetterboxdScoreScraper(config=config)
 
 found = 0
 not_found = 0

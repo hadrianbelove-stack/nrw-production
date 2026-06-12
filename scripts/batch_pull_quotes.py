@@ -2,7 +2,7 @@
 """
 Batch Pull Quotes Scraper
 
-Fetches pull quotes for current wall movies using GeminiPullQuoteFinder.
+Fetches pull quotes for current wall movies using PullQuoteFinder.
 Results are cached and written to pull_quotes_combined.json for admin curation.
 
 Usage:
@@ -23,7 +23,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import load_env
-from gemini_scraper import GeminiPullQuoteFinder
+from gemini_scraper import PullQuoteFinder
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ def save_json(filepath, data):
 
 
 def convert_to_combined_format(title, year, quotes):
-    """Convert GeminiPullQuoteFinder results to pull_quotes_combined.json format."""
+    """Convert PullQuoteFinder results to pull_quotes_combined.json format."""
     rt_quotes = []
     lb_quotes = []
 
@@ -162,7 +162,7 @@ def main():
     logger.info(f"{'='*60}\n")
 
     # Initialize finder
-    finder = GeminiPullQuoteFinder()
+    finder = PullQuoteFinder()
     stats = {'processed': 0, 'with_quotes': 0, 'empty': 0, 'errors': 0}
 
     for i, movie in enumerate(to_process, 1):

@@ -1331,8 +1331,8 @@ class DataGenerator:
             return False
 
         try:
-            from letterboxd_scraper import LetterboxdScraper
-            self.letterboxd_scraper = LetterboxdScraper(
+            from letterboxd_scraper import LetterboxdScoreScraper
+            self.letterboxd_scraper = LetterboxdScoreScraper(
                 cache_file='cache/letterboxd_score_cache.json',
                 config=self.config,
                 logger=self.logger

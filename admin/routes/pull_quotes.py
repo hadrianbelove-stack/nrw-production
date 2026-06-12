@@ -14,7 +14,7 @@ bp = Blueprint('pull_quotes', __name__)
 
 
 def _promote_gemini_cache(cache_key, gemini_cache, combined_cache):
-    """Convert GeminiPullQuoteFinder cache entry to combined format and add it."""
+    """Convert PullQuoteFinder cache entry to combined format and add it."""
     entry = gemini_cache.get(cache_key, {})
     quotes = entry.get('quotes', [])
     if not quotes:

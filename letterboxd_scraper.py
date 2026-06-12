@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-Letterboxd Scraper — HTTP-based scraper for Letterboxd average ratings.
+LetterboxdScoreScraper — HTTP-based scraper for Letterboxd average ratings.
+
+STAR RATINGS ONLY — this module does not touch reviews or quotes. For
+Letterboxd pull quotes see gemini_scraper/letterboxd_quotes.py
+(LetterboxdQuoteScraper).
 
 Fetches the film page HTML and extracts the aggregateRating from JSON-LD
 structured data. No browser required — pure HTTP requests.
@@ -17,7 +21,7 @@ from datetime import datetime
 import requests
 
 
-class LetterboxdScraper:
+class LetterboxdScoreScraper:
     """Finds Letterboxd scores via HTML page scraping + JSON-LD extraction."""
 
     LB_URL_BASE = 'https://letterboxd.com/film/'
@@ -261,7 +265,7 @@ class LetterboxdScraper:
     def _log(self, message, level='info'):
         """Log a message."""
         if self.logger:
-            getattr(self.logger, level, self.logger.info)(f"[LetterboxdScraper] {message}")
+            getattr(self.logger, level, self.logger.info)(f"[LetterboxdScoreScraper] {message}")
 
     def record_error(self, error_type):
         """Record an error by type for diagnostic breadcrumbs."""
@@ -293,3 +297,8 @@ class LetterboxdScraper:
     def close(self):
         """No-op for HTTP-based scraper (no browser to close)."""
         pass
+
+
+# Legacy alias — class renamed from LetterboxdScraper (June 2026) because it
+# only scrapes scores, never quotes or reviews.
+LetterboxdScraper = LetterboxdScoreScraper

@@ -4,14 +4,14 @@ Allow `python -m gemini_scraper` to run a quick diagnostic.
 Prints available finder classes and checks Gemini API key availability.
 """
 
-from gemini_scraper import GeminiYouTubeFinder, GeminiRTFinder, GeminiWikipediaFinder, GeminiVODDateFinder, GeminiPullQuoteFinder, LetterboxdGeminiQuoteExtractor, GeminiIMDbFinder, GeminiCapsuleWriter, HybridYouTubeFinder, HybridRTFinder
+from gemini_scraper import GeminiYouTubeFinder, GeminiRTFinder, GeminiWikipediaFinder, GeminiVODDateFinder, PullQuoteFinder, LetterboxdQuoteScraper, GeminiIMDbFinder, GeminiCapsuleWriter, HybridYouTubeFinder, HybridRTFinder
 from gemini_scraper.base import _get_gemini_api_key
 
 
 def main():
     finders = [
         GeminiYouTubeFinder, GeminiRTFinder, GeminiWikipediaFinder,
-        GeminiVODDateFinder, GeminiPullQuoteFinder, LetterboxdGeminiQuoteExtractor,
+        GeminiVODDateFinder, PullQuoteFinder, LetterboxdQuoteScraper,
         GeminiIMDbFinder, GeminiCapsuleWriter,
     ]
     hybrids = [HybridYouTubeFinder, HybridRTFinder]
