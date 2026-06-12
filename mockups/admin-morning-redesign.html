@@ -221,7 +221,33 @@
     .tabs { position:sticky; top:57px; bottom:auto; border-top:none; border-bottom:1px solid rgba(255,255,255,0.12); max-width:760px; margin:0 auto; background:transparent; backdrop-filter:none; }
     body { padding-bottom:20px; }
     .tab .t-ico { display:none; }
+    .tab { flex:0 0 auto; padding:10px 22px 8px; }
     .tools-grid { grid-template-columns:1fr 1fr 1fr; }
+  }
+
+  /* ---------- Desktop dashboard (primary use) ---------- */
+  @media (min-width: 980px) {
+    .view, .tabs { max-width:1180px; }
+    .view { padding:18px 24px 30px; }
+
+    /* Today: sticky report rail left, work queue right */
+    .today-grid { display:grid; grid-template-columns:330px minmax(0,1fr); gap:28px; align-items:start; }
+    .report-col { position:sticky; top:116px; }
+    .strip { display:grid; grid-template-columns:1fr 1fr; overflow:visible; }
+    .stat { min-width:0; }
+    .stat:first-child { grid-column:span 2; }
+
+    /* bigger cards & posters in the queue */
+    .mcard .poster { width:64px; height:96px; }
+    .m-title { font-size:1rem; }
+
+    /* expanded panel becomes 2x2 grid */
+    .mcard-x { display:grid; grid-template-columns:1fr 1fr; gap:2px 26px; }
+    .x-row { margin-bottom:8px; }
+
+    /* wall & tools stay readable width */
+    #view-wall, #view-tools { max-width:860px; }
+    .wrow .poster { width:40px; height:60px; }
   }
 </style>
 </head>
@@ -244,6 +270,8 @@
 
 <!-- ================= TODAY ================= -->
 <div class="view active" id="view-today">
+ <div class="today-grid">
+  <div class="report-col">
 
   <div class="sec-label">Overnight</div>
   <div class="strip">
@@ -267,6 +295,9 @@
     </div>
   </div>
 
+  </div><!-- /report-col -->
+  <div class="work-col">
+
   <div class="sec-label" id="queue-label">Curation queue</div>
   <div class="progress-wrap">
     <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
@@ -280,6 +311,8 @@
   <div id="slop-queue"></div>
   <div class="empty-q" id="slop-empty">Slop pile reviewed.</div>
 
+  </div><!-- /work-col -->
+ </div><!-- /today-grid -->
 </div>
 
 <!-- ================= WALL ================= -->
@@ -441,21 +474,30 @@ function cardHTML(m){
         </div>
       </div>
       <div class="mcard-x">
-        <div class="x-label">Slop call</div>
-        <div class="x-row">
-          <button class="xbtn ${st.steps[0]?'sel-real':''}" onclick="tick('${m.id}',0,true)">✓ Real movie</button>
-          <button class="xbtn" onclick="toSlop('${m.id}')">Slop</button>
+        <div class="x-group">
+          <div class="x-label">Slop call</div>
+          <div class="x-row">
+            <button class="xbtn ${st.steps[0]?'sel-real':''}" onclick="tick('${m.id}',0,true)">✓ Real movie</button>
+            <button class="xbtn" onclick="toSlop('${m.id}')">Slop</button>
+          </div>
         </div>
-        <div class="x-label">Categories</div>
-        <div class="x-row">
-          ${['★ PICK','INDIE','FRGN','DOC','REST','VSCR'].map(c=>`<button class="xbtn" onclick="this.classList.toggle('cat-on')">${c}</button>`).join('')}
+        <div class="x-group">
+          <div class="x-label">Categories</div>
+          <div class="x-row">
+            ${['★ PICK','INDIE','FRGN','DOC','REST','VSCR'].map(c=>`<button class="xbtn" onclick="this.classList.toggle('cat-on')">${c}</button>`).join('')}
+          </div>
         </div>
-        <div class="x-label">Synopsis</div>
-        <div class="x-note">${m.syn}</div>
-        <div class="x-row">
-          <button class="xbtn primary" onclick="toast('Opens capsule editor (3 variants from /morning)')">✎ Capsule</button>
-          <button class="xbtn" onclick="toast('Opens quote picker for this film')">❝ Quotes</button>
-          <button class="xbtn" onclick="toast('Opens full metadata editor')">Edit details</button>
+        <div class="x-group">
+          <div class="x-label">Synopsis</div>
+          <div class="x-note">${m.syn}</div>
+        </div>
+        <div class="x-group">
+          <div class="x-label">Curate</div>
+          <div class="x-row">
+            <button class="xbtn primary" onclick="toast('Opens capsule editor (3 variants from /morning)')">✎ Capsule</button>
+            <button class="xbtn" onclick="toast('Opens quote picker for this film')">❝ Quotes</button>
+            <button class="xbtn" onclick="toast('Opens full metadata editor')">Edit details</button>
+          </div>
         </div>
       </div>
     </div>`;
