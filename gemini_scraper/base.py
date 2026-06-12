@@ -176,9 +176,11 @@ class GeminiFinderBase:
         All finders should use this instead of calling
         self.client.models.generate_content() directly.
 
-        Note: HttpOptions(timeout=N) is intentionally omitted — it sets an
-        aggressive connect timeout that fails on systems with older SSL libs
-        (LibreSSL 2.8.3). The SDK's own default timeout is sufficient.
+        The client carries a 120s request timeout (set in _init_gemini).
+        Without it, a request Google never answers hangs forever — this froze
+        the launchagent for 3 days in June 2026. An earlier comment here
+        claimed HttpOptions(timeout=N) breaks LibreSSL 2.8.3; tested June 2026
+        on /usr/bin/python3 (LibreSSL 2.8.3): a generous timeout works fine.
         """
         if config is None:
             config = self.types.GenerateContentConfig()
@@ -204,7 +206,12 @@ class GeminiFinderBase:
             from google import genai
             from google.genai import types
 
-            self.client = genai.Client(api_key=api_key)
+            # 120000 ms = 120 seconds. Bounds every request so a silent hang
+            # can't freeze callers forever (see _generate docstring).
+            self.client = genai.Client(
+                api_key=api_key,
+                http_options=types.HttpOptions(timeout=120000),
+            )
             self.types = types
             self.grounding_tool = types.Tool(google_search=types.GoogleSearch())
             self.model_name = 'gemini-2.5-flash'

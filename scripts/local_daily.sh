@@ -88,8 +88,13 @@ CI_DATE=$(/usr/bin/python3 -c "import json; print(json.load(open('metrics/run_di
 TODAY=$(date +%Y-%m-%d)
 if [ "$CI_DATE" = "$TODAY" ]; then
     # Step 4: Scrape pull quotes for new movies (ready for morning curation)
+    # alarm(3600) hard-kills after 1 hour — same backstop as the trailer step.
+    # Without it, one hung scrape froze this script (and all runs behind it)
+    # for 3 days in June 2026.
     echo "Scraping pull quotes for new arrivals..." >> "$LOG"
-    /usr/bin/python3 scripts/batch_pull_quotes.py >> "$LOG" 2>&1
+    /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
+        /usr/bin/python3 scripts/batch_pull_quotes.py >> "$LOG" 2>&1 \
+        || echo "  WARNING: pull quotes exited non-zero (timeout or error)" >> "$LOG"
     echo "  Pull quotes done" >> "$LOG"
 
     touch "$SENTINEL"

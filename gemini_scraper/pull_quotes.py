@@ -151,70 +151,6 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
             logger.info(f"Scraped {len(quotes)} critic quotes from RT reviews page")
         return quotes
 
-    def _find_rt_url_via_gemini(self, title: str, year: int, director: str = None) -> str:
-        """Use Gemini web search grounding to find the RT movie URL.
-
-        Called when enrichment didn't find an RT URL. Searches for the /reviews
-        page (heavily indexed, easier to find) and strips the suffix to get the
-        base movie URL.
-
-        Returns base RT URL (e.g. https://www.rottentomatoes.com/m/miss_you_love_you)
-        or empty string if not found.
-        """
-        if not self._init_gemini():
-            return ''
-
-        context = f'"{title}" ({year})'
-        if director:
-            context += f' directed by {director}'
-
-        prompt = (
-            f'What is the Rotten Tomatoes URL for the movie {context}? '
-            f'Return only the URL in the format https://www.rottentomatoes.com/m/[slug] '
-            f'and nothing else.'
-        )
-
-        try:
-            self._enforce_rate_limit()
-
-            def _fetch():
-                api_config = self.types.GenerateContentConfig(tools=[self.grounding_tool])
-                response = self._generate(prompt, config=api_config)
-
-                # Check grounding sources first — more reliable than response text
-                if hasattr(response, 'candidates') and response.candidates:
-                    for candidate in response.candidates:
-                        gm = getattr(candidate, 'grounding_metadata', None)
-                        if gm and hasattr(gm, 'grounding_chunks'):
-                            for chunk in (gm.grounding_chunks or []):
-                                web = getattr(chunk, 'web', None)
-                                uri = getattr(web, 'uri', '') if web else ''
-                                if uri and 'rottentomatoes.com/m/' in uri:
-                                    return uri
-
-                # Fall back to extracting from response text
-                text = (response.text or '').strip()
-                matches = re.findall(
-                    r'https?://(?:www\.)?rottentomatoes\.com/m/[a-zA-Z0-9_/-]+',
-                    text
-                )
-                return matches[0] if matches else ''
-
-            raw_url = self._retry_with_backoff(_fetch)
-            if raw_url:
-                # Normalise: strip trailing /reviews suffix only (not mid-slug occurrences)
-                base_url = raw_url.rstrip('/')
-                if base_url.endswith('/reviews'):
-                    base_url = base_url[:-len('/reviews')]
-                if re.match(r'https?://(www\.)?rottentomatoes\.com/m/[a-zA-Z0-9_-]+$', base_url):
-                    logger.info(f"Gemini found RT URL for {title} ({year}): {base_url}")
-                    return base_url
-
-        except Exception as e:
-            logger.debug(f"Gemini RT URL search failed for {title} ({year}): {e}")
-
-        return ''
-
     def _scrape_mc_reviews(self, mc_url: str) -> list:
         """Scrape critic quotes from the Metacritic critic reviews page.
 
@@ -331,143 +267,6 @@ class GeminiPullQuoteFinder(GeminiFinderBase):
 
         logger.info(f"Scraped {len(quotes)} critic quotes from MC reviews page")
         return quotes
-
-    def _deep_read_reviews(self, quotes: list, title: str, year: int) -> list:
-        """Visit full review URLs and extract the best quote from each article.
-
-        For each quote that has a review_url, loads the full article with
-        Playwright, extracts the text, and asks Gemini to find the single
-        most vivid pull-quote-worthy sentence. Replaces the RT/MC blurb
-        with the deeper extraction. Falls back to the original blurb if
-        the page is paywalled, blocked, or empty.
-
-        Args:
-            quotes: List of quote dicts (must have 'review_url' populated)
-            title: Movie title (for Gemini context)
-            year: Release year
-
-        Returns:
-            Enhanced quote list with better text extracted from full reviews.
-        """
-        if not self._init_gemini():
-            logger.warning("Gemini not available for deep read")
-            return quotes
-
-        # Only process quotes that have review URLs
-        to_read = [q for q in quotes if q.get('review_url')]
-        if not to_read:
-            return quotes
-
-        # Limit to 10 reviews per movie to manage time/costs
-        to_read = to_read[:10]
-
-        logger.info(f"Deep reading {len(to_read)} reviews for {title} ({year})")
-
-        try:
-            from playwright.sync_api import sync_playwright
-
-            with sync_playwright() as p:
-                browser = p.chromium.launch(headless=True)
-                ctx = browser.new_context(
-                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-                               'AppleWebKit/537.36 (KHTML, like Gecko) '
-                               'Chrome/120.0.0.0 Safari/537.36'
-                )
-                page = ctx.new_page()
-
-                for q in to_read:
-                    url = q['review_url']
-                    critic = q.get('critic', '')
-                    outlet = q.get('outlet', '')
-                    original_text = q.get('text', '')
-
-                    try:
-                        resp = page.goto(url, timeout=12000, wait_until='domcontentloaded')
-                        if not resp or resp.status >= 400:
-                            logger.debug(f"Deep read: page {resp.status if resp else 'none'} for {url}")
-                            continue
-
-                        time.sleep(1)
-
-                        # Try article element first, fall back to body
-                        try:
-                            article_text = page.inner_text('article')
-                        except Exception:
-                            article_text = page.inner_text('body')
-
-                        # Skip if too short (paywall, blocked, etc.)
-                        if len(article_text) < 200:
-                            logger.debug(f"Deep read: article too short ({len(article_text)} chars) for {url}")
-                            continue
-
-                        # Truncate very long articles to avoid token limits
-                        if len(article_text) > 8000:
-                            article_text = article_text[:8000]
-
-                        # Ask Gemini to extract the best quote
-                        self._enforce_rate_limit()
-                        prompt = f"""From this review of the film "{title}" ({year}) by {critic} ({outlet}), extract the single best sentence for a pull quote.
-
-TASTE PREFERENCES (what makes a great pull quote):
-- Vivid, specific language over vague generic praise ("by turns swoony, funny, panicky and sad" > "a brilliant exploration of love")
-- Shorter is almost always better — one knockout sentence, not a paragraph
-- Punchy energy and emotion over academic jargon
-- Specific filmmaking observations over abstract critique
-- Evokes the FEELING of watching the film
-- OK to trim mid-sentence if a fragment is punchier than the whole
-
-RULES:
-- Return ONLY the exact quote text as it appears in the review (you may trim to a fragment)
-- One sentence maximum (or a short fragment)
-- If the review has no quotable sentences, respond with: NO_QUOTE
-
-Review text:
-{article_text}
-
-Best pull quote:"""
-
-                        response = self._generate(prompt)
-                        result = response.text.strip().strip('"').strip('\u201c\u201d')
-
-                        if result and 'NO_QUOTE' not in result and len(result) > 15:
-                            # Verify the extracted quote actually appears in the article
-                            normalized_result = self._normalize_for_matching(result)
-                            normalized_article = self._normalize_for_matching(article_text)
-
-                            # Check if at least a significant fragment appears
-                            words = normalized_result.split()
-                            if len(words) >= 6:
-                                # Check a middle fragment
-                                mid = len(words) // 2
-                                fragment = ' '.join(words[max(0, mid - 3):mid + 4])
-                                if fragment in normalized_article:
-                                    q['text'] = result
-                                    q['_deep_read'] = True
-                                    logger.info(f"Deep read: upgraded quote from {critic} ({outlet})")
-                                else:
-                                    logger.debug(f"Deep read: extracted quote not found in article for {critic}")
-                            elif normalized_result in normalized_article:
-                                q['text'] = result
-                                q['_deep_read'] = True
-                                logger.info(f"Deep read: upgraded short quote from {critic} ({outlet})")
-
-                    except Exception as e:
-                        logger.debug(f"Deep read error for {url}: {e}")
-
-                browser.close()
-
-        except Exception as e:
-            logger.warning(f"Deep read Playwright error: {e}")
-
-        upgraded = sum(1 for q in to_read if q.get('_deep_read'))
-        logger.info(f"Deep read: upgraded {upgraded}/{len(to_read)} quotes for {title} ({year})")
-
-        # Clean up internal flag
-        for q in quotes:
-            q.pop('_deep_read', None)
-
-        return quotes
-
 
     def _scrape_letterboxd_reviews(self, title: str, year: int, lb_url: str = None) -> list:
         """Scrape popular reviews from Letterboxd.
@@ -732,7 +531,6 @@ Best pull quote:"""
         director: str = None,
         rt_url: str = None,
         mc_url: str = None,
-        deep_read: bool = False,
         lb_url: str = None
     ) -> list:
         """
@@ -741,10 +539,9 @@ Best pull quote:"""
         Args:
             title: Movie title
             year: Release year
-            director: Optional director name (used for RT URL discovery if rt_url not provided)
+            director: Optional director name (kept for caller compatibility; unused)
             rt_url: Rotten Tomatoes URL (e.g. https://www.rottentomatoes.com/m/the_brutalist)
             mc_url: Metacritic URL (e.g. https://www.metacritic.com/movie/the-brutalist/)
-            deep_read: If True, visit full review URLs and extract better quotes (slower)
             lb_url: Pre-found Letterboxd URL (skips URL discovery if provided)
 
         Returns:
@@ -752,8 +549,8 @@ Best pull quote:"""
         """
         cache_key = f"{title}_{year}"
 
-        # Check cache (deep_read bypasses cache — it needs fresh article reads)
-        if not deep_read and cache_key in self.cache:
+        # Check cache
+        if cache_key in self.cache:
             cached_data = self.cache[cache_key]
             if isinstance(cached_data, dict):
                 scraped_at = cached_data.get('scraped_at', '')
@@ -773,10 +570,9 @@ Best pull quote:"""
         all_quotes = []
 
         # --- Step 1: RT scraping ---
+        # Only RT URLs verified by enrichment are used; Gemini URL guessing was
+        # removed (June 2026) — it returned wrong/dead URLs on indie films.
         existing_critics = set()
-
-        if not rt_url:
-            rt_url = self._find_rt_url_via_gemini(title, year, director)
 
         if rt_url:
             rt_quotes = self._scrape_rt_reviews(rt_url, expected_title=title)
@@ -798,13 +594,7 @@ Best pull quote:"""
         else:
             logger.info(f"No MC URL for {title} ({year}), skipping MC")
 
-        # --- Step 3: Deep read full reviews for better quotes ---
-        if deep_read:
-            scraped_quotes = [q for q in all_quotes if q.get('source') in ('rt_critic', 'mc_critic')]
-            if scraped_quotes:
-                all_quotes = self._deep_read_reviews(all_quotes, title, year)
-
-        # --- Step 4: Letterboxd quotes ---
+        # --- Step 3: Letterboxd quotes ---
         lb_quotes = self._scrape_letterboxd_reviews(title, year, lb_url=lb_url)
         if lb_quotes:
             all_quotes.extend(lb_quotes)

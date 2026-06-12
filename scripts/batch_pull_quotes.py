@@ -17,7 +17,6 @@ import os
 import json
 import argparse
 import logging
-import concurrent.futures
 from datetime import datetime
 
 # Add project root to path
@@ -134,9 +133,21 @@ def main():
 
         cache_key = f"{title}_{year}"
 
-        # Skip if already in combined cache (unless --force)
+        # Skip if already in combined cache (unless --force).
+        # Negative-cache entries (_no_quotes_tried, empty quotes) are retried
+        # after 14 days — reviews often appear weeks after release.
         if not args.force and cache_key in combined:
-            continue
+            entry = combined[cache_key]
+            tried = entry.get('_no_quotes_tried', '') if isinstance(entry, dict) else ''
+            if tried:
+                try:
+                    days_ago = (_date.today() - _date.fromisoformat(tried)).days
+                except ValueError:
+                    days_ago = 0
+                if days_ago < 14:
+                    continue
+            else:
+                continue
 
         to_process.append(m)
         if len(to_process) >= limit:
@@ -152,7 +163,7 @@ def main():
 
     # Initialize finder
     finder = GeminiPullQuoteFinder()
-    stats = {'processed': 0, 'with_quotes': 0, 'empty': 0, 'errors': 0, 'timeouts': 0}
+    stats = {'processed': 0, 'with_quotes': 0, 'empty': 0, 'errors': 0}
 
     for i, movie in enumerate(to_process, 1):
         title = movie['title']
@@ -170,19 +181,14 @@ def main():
         logger.info(f"[{i}/{len(to_process)}] {title} ({year})...")
 
         try:
-            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-                future = executor.submit(
-                    finder.find_pull_quotes,
-                    title, year,
-                    director=director, rt_url=rt_url, mc_url=mc_url, lb_url=lb_url
-                )
-                try:
-                    quotes = future.result(timeout=120)
-                except concurrent.futures.TimeoutError:
-                    executor.shutdown(wait=False, cancel_futures=True)
-                    logger.warning(f"  → TIMED OUT after 120s — skipping {title} ({year}), flagged")
-                    stats['timeouts'] += 1
-                    continue
+            # Direct call — no thread wrapper. Hang protection lives in two
+            # layers: every Gemini request has a 120s timeout (base.py) and
+            # all Playwright page loads have their own timeouts; local_daily.sh
+            # additionally hard-kills this script after 1 hour.
+            quotes = finder.find_pull_quotes(
+                title, year,
+                director=director, rt_url=rt_url, mc_url=mc_url, lb_url=lb_url
+            )
 
             if quotes:
                 # Write to combined cache in admin-compatible format
@@ -192,8 +198,19 @@ def main():
                 lb_count = sum(1 for q in quotes if q.get('source') == 'letterboxd')
                 logger.info(f"  → {len(quotes)} quotes (RT: {rt_count}, LB: {lb_count})")
             else:
+                # Negative cache: remember the attempt so this movie doesn't
+                # re-queue every night (retried after 14 days, see above)
+                combined[cache_key] = {
+                    'title': title,
+                    'year': year,
+                    'rt_quotes': [],
+                    'lb_quotes': [],
+                    'scraped_at': datetime.now().isoformat(),
+                    'scrape_method': 'gemini_pull_quote_finder',
+                    '_no_quotes_tried': str(_date.today()),
+                }
                 stats['empty'] += 1
-                logger.info(f"  → No quotes found")
+                logger.info(f"  → No quotes found (negative-cached for 14 days)")
 
             stats['processed'] += 1
 
@@ -210,11 +227,10 @@ def main():
     save_json(COMBINED_CACHE, combined)
 
     logger.info(f"\n{'='*60}")
-    timeout_note = f", Timed out: {stats['timeouts']}" if stats['timeouts'] else ""
     logger.info(f"Done! Processed: {stats['processed']}, "
                 f"With quotes: {stats['with_quotes']}, "
                 f"Empty: {stats['empty']}, "
-                f"Errors: {stats['errors']}{timeout_note}")
+                f"Errors: {stats['errors']}")
     logger.info(f"Combined cache: {len(combined)} movies total")
     logger.info(f"{'='*60}\n")
 

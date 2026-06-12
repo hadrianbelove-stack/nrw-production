@@ -54,7 +54,7 @@ The admin panel works as a QA tool today. It needs to become a **leisurely edito
 
 Current synopses are TMDB marketing copy — generic, missing context, sometimes empty. Need editorial descriptions that mention director's previous work, festival history, why the film matters.
 
-**What exists:** `gemini_scraper.py` already calls Gemini with Google Search grounding. Can extend with editorial prompt.
+**What exists:** the `gemini_scraper/` package (split from the old monolithic `gemini_scraper.py`, May 2026) already calls Gemini with Google Search grounding. Can extend with editorial prompt.
 
 **To build:**
 1. **Gemini editorial description generator** — uses movie metadata (director, cast, festival_info, RT score, synopsis) to write 2-3 sentence editorial description

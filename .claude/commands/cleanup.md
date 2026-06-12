@@ -194,7 +194,7 @@ Found 23 items across 6 files:
   assets/styles.css ...... 3 items
   mobile/mobile.css ...... 3 items
   rt_scraper_playwright.py 2 items
-  gemini_scraper.py ...... 2 items
+  gemini_scraper/base.py . 2 items
 
 Start with generator.py (heaviest)? Or pick a file.
 ```
