@@ -246,35 +246,21 @@ class RTScraperPlaywright(PlaywrightScraperBase):
             except Exception as e:
                 self._log(f"JSON-LD extraction error: {e}", level='debug')
 
-            # 2. media-scorecard (current RT layout since ~2025)
-            try:
-                scorecard = self.page.query_selector('media-scorecard')
-                if scorecard:
-                    text = (scorecard.text_content() or "").strip()
-                    score_match = re.search(r'(\d{1,3})%', text)
-                    if score_match:
-                        score = int(score_match.group(1))
-                        if 0 <= score <= 100:
-                            self._log(f"Found score via media-scorecard: {score}%", level='debug')
-                            return f"{score}%"
-            except Exception:
-                pass
-
-            # 3. CSS selectors (current and legacy layouts)
+            # 2. CSS selectors — ONLY elements scoped to THIS film's own scorecard.
+            # Unscoped selectors and whole-page text regexes are forbidden here:
+            # they match the "More Like This" carousel and returned OTHER movies'
+            # scores for films with no critic reviews (June 2026 fake-82/84%
+            # incident — films with zero critic reviews got "scored"). A film
+            # whose page has no critic score must return None, not a guess.
             score_selectors = [
                 'media-scorecard rt-text.critics-score',  # current RT layout (2025+)
-                'rt-text.critics-score',                  # fallback without scorecard scope
                 '[slot="criticsScore"]',
                 'rt-text[slot="criticsScore"]',
                 '[data-testid="critic-score"] .percentage',
                 '[data-testid="critics-score"] .percentage',
-                '[class*="criticsScore"]',
-                'score-board',
                 '.scoreboard__critic .percentage',
                 '.mop-ratings-wrap__percentage',
-                '.meter-value',
                 '.critic-score .percentage',
-                '[class*="percentage"]',
             ]
 
             for selector in score_selectors:
@@ -282,35 +268,13 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                     elements = self.page.query_selector_all(selector)
                     for element in elements:
                         text = (element.text_content() or "").strip()
-                        score_match = re.search(r'(\d+)%?', text)
-                        if score_match:
+                        score_match = re.search(r'(\d{1,3})\s*%', text)
+                        if score_match and 0 <= int(score_match.group(1)) <= 100:
                             self._log(f"Found score on RT page: {score_match.group(1)}% (selector: {selector})", level='debug')
                             return f"{score_match.group(1)}%"
                 except Exception as e:
                     self._log(f"Error with selector {selector}: {e}", level='debug')
                     continue
-
-            # 4. Text regex patterns (fallback)
-            try:
-                body_element = self.page.query_selector('body')
-                if body_element:
-                    page_text = body_element.text_content()
-                    score_patterns = [
-                        r'(\d+)%\s*Tomatometer',
-                        r'(\d+)%\s*(?:Critics|Critic)',
-                        r'(?:Fresh|Rotten)\s*(\d+)%',
-                        r'Tomatometer.*?(\d+)%',
-                    ]
-
-                    for pattern in score_patterns:
-                        match = re.search(pattern, page_text, re.IGNORECASE)
-                        if match:
-                            score = match.group(1)
-                            self._log(f"Found score in page text: {score}% (pattern: {pattern})", level='debug')
-                            return f"{score}%"
-
-            except Exception as e:
-                self._log(f"Error extracting score from page text: {e}", level='debug')
 
             self._log(f"No score found on RT page: {rt_url}", level='warning')
             return None
