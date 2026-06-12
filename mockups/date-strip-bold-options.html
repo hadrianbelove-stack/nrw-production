@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW Mockup — Bolder Date Markers</title>
+<style>
+:root {
+    --accent: #00d4aa;
+    --crimson: #dc143c;
+    --preorder: #7c3aed;
+    --fest: #f59e0b;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: #0a0a0a; color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; }
+body { background: linear-gradient(160deg, #0a0a0a 0%, #1a1a2e 100%);
+    min-height: 100vh; padding-bottom: 130px; }
+
+.m-header { padding: 12px; position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06); text-align: center; }
+.m-title { font-size: 0.95rem; font-weight: 100; letter-spacing: 0.28em; }
+.m-title b { font-weight: 700; color: var(--accent); }
+
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; padding: 8px; }
+.cell { aspect-ratio: 2/3; border-radius: 10px; overflow: hidden; background: #15151f; }
+.cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ============================================================
+   OPTION A — BANNER: full-width filled color bar
+   ============================================================ */
+body[data-style="A"] .strip {
+    grid-column: 1 / -1;
+    background: var(--sc, var(--accent));
+    color: #000;
+    border-radius: 8px;
+    padding: 7px 12px;
+    margin-top: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+body[data-style="A"] .strip .s-day { font-size: 0.95rem; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+body[data-style="A"] .strip .s-rest { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; }
+body[data-style="A"] .strip .s-num, body[data-style="A"] .strip .s-line { display: none; }
+
+/* ============================================================
+   OPTION B — EDITORIAL: big magazine-style type + baseline rule
+   ============================================================ */
+body[data-style="B"] .strip {
+    grid-column: 1 / -1;
+    margin-top: 12px;
+    border-bottom: 2px solid var(--sc, var(--accent));
+    padding-bottom: 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+body[data-style="B"] .strip .s-num {
+    font-size: 2.2rem; font-weight: 800; line-height: 1; color: #fff; letter-spacing: -0.02em;
+}
+body[data-style="B"] .strip .s-day {
+    font-size: 0.8rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--sc, var(--accent));
+}
+body[data-style="B"] .strip .s-rest {
+    font-size: 0.8rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #888;
+}
+body[data-style="B"] .strip .s-line { display: none; }
+body[data-style="B"] .strip.s-section .s-num { display: none; }
+body[data-style="B"] .strip.s-section .s-day { font-size: 1.3rem; letter-spacing: 0.14em; }
+
+/* ============================================================
+   OPTION C — CALENDAR CHIP: mini calendar page + hairline
+   ============================================================ */
+body[data-style="C"] .strip {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+body[data-style="C"] .strip .chip {
+    width: 52px; border-radius: 9px; overflow: hidden; text-align: center;
+    background: #15151f; border: 1px solid rgba(255,255,255,0.14);
+    flex-shrink: 0;
+}
+body[data-style="C"] .strip .chip-top {
+    background: var(--sc, var(--accent)); color: #000;
+    font-size: 0.5rem; font-weight: 900; letter-spacing: 0.1em; padding: 2px 0;
+    text-transform: uppercase;
+}
+body[data-style="C"] .strip .chip-num {
+    font-size: 1.25rem; font-weight: 800; padding: 2px 0 3px; line-height: 1.1;
+}
+body[data-style="C"] .strip .s-rest {
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--sc, var(--accent));
+}
+body[data-style="C"] .strip .s-line { flex: 1; height: 1px; background: color-mix(in srgb, var(--sc, var(--accent)) 35%, transparent); }
+body[data-style="C"] .strip .s-num, body[data-style="C"] .strip .s-day { display: none; }
+body[data-style="C"] .strip.s-section .chip { display: none; }
+
+/* ============================================================
+   OPTION D — STICKY GLOW: supercharged strip that pins on scroll
+   ============================================================ */
+body[data-style="D"] .strip {
+    grid-column: 1 / -1;
+    position: sticky;
+    top: 46px;            /* below the mock header */
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(10,10,12,0.88);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 8px;
+    border-left: 4px solid var(--sc, var(--accent));
+    box-shadow: 0 0 18px color-mix(in srgb, var(--sc, var(--accent)) 30%, transparent);
+}
+body[data-style="D"] .strip .s-day {
+    font-size: 0.95rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--sc, var(--accent));
+}
+body[data-style="D"] .strip .s-rest {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #fff;
+}
+body[data-style="D"] .strip .s-line { flex: 1; height: 1px; background: color-mix(in srgb, var(--sc, var(--accent)) 40%, transparent); }
+body[data-style="D"] .strip .s-num { display: none; }
+
+/* shared hidden bits */
+.strip .chip { display: none; }
+body[data-style="C"] .strip .chip { display: block; }
+
+/* ============ CONTROL BAR ============ */
+.ctrl-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(18,18,24,0.97); backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(255,255,255,0.14); padding: 10px 14px 24px; }
+.ctrl-tag { font-size: 0.5rem; font-weight: 800; letter-spacing: 0.18em; color: #888;
+    text-align: center; margin-bottom: 7px; }
+.seg { display: flex; background: #26262e; border-radius: 9px; padding: 3px; }
+.seg button { flex: 1; border: none; background: transparent; color: #bbb;
+    font-size: 0.62rem; font-weight: 700; padding: 9px 2px; border-radius: 7px;
+    -webkit-tap-highlight-color: transparent; }
+.seg button.on { background: var(--accent); color: #000; }
+.ctrl-desc { text-align: center; font-size: 0.6rem; color: #888; margin-top: 7px; min-height: 24px; padding: 0 10px; }
+</style>
+</head>
+<body data-style="A">
+
+<header class="m-header"><div class="m-title">NEW RELEASE <b>WALL</b></div></header>
+<div class="grid" id="grid"></div>
+
+<div class="ctrl-bar">
+    <div class="ctrl-tag">DATE MARKER — 4 OPTIONS</div>
+    <div class="seg" id="seg">
+        <button class="on" data-s="A">A · Banner</button>
+        <button data-s="B">B · Editorial</button>
+        <button data-s="C">C · Calendar</button>
+        <button data-s="D">D · Sticky</button>
+    </div>
+    <div class="ctrl-desc" id="desc"></div>
+</div>
+
+<script>
+const MOVIES = [
+ {d:"2026-06-11",p:"80vJ5kBWfpThzsggWWU7LBVyJQ9.jpg"},
+ {d:"2026-06-11",p:"dH32lHEdcEeKfperjPbx8U7SqyL.jpg"},
+ {d:"2026-06-11",p:"3cYDmDWNWIjVMFbTlDQXjhydT6e.jpg"},
+ {d:"2026-06-10",p:"wIubCZKpnTiQmlC5DehgU1LNFip.jpg"},
+ {d:"2026-06-10",p:"v6fvzTRikUp9ry5OyoTmUIon5rh.jpg"},
+ {d:"2026-06-10",p:"dHnCH7HoVE7MBwc2lvgbSM3jXg7.jpg"},
+ {d:"2026-06-10",p:"p03nyFzLERXEeE7MfBsCzBVb266.jpg"},
+ {d:"2026-06-10",p:"qlbeEWHs2np97vmvMAifjJYyLFP.jpg"},
+ {d:"2026-06-09",p:"kZgzZsVgNruGRWKzTbAIfvvrvHJ.jpg"},
+ {d:"2026-06-09",p:"iQBNEmJxNUhrzmom9DRhyJTWyGn.jpg"},
+ {d:"2026-06-09",p:"gMV5eCyaq6eSq32rQbhIvcxvpM4.jpg"},
+ {d:"2026-06-09",p:"81xUChgVphBFehihIgbXbyneZXP.jpg"},
+ {d:"2026-06-09",p:"aoqxusBlbwShgKcfrlgUb9q6Rqo.jpg"},
+ {d:"2026-06-09",p:"Awnun4US4M5x36qruNtaRA7G5uw.jpg"},
+ {d:"2026-06-09",p:"8N2VubStoAfrkqE0RtnhDcFTqhw.jpg"},
+ {d:"2026-06-09",p:"lHWo5q8WipfW8yLSpT8yAGz2mWp.jpg"},
+ {d:"2026-06-09",p:"zm0KAbOjlt9eR5y7vDiL2dEOwMl.jpg"},
+ {d:"2026-06-08",p:"aQZ4OxzaYTN7cRN7fALi9BhPucp.jpg"},
+ {d:"2026-06-08",p:"yZqhFJDenLfgF1VygOOCNmAdS1P.jpg"},
+ {d:"2026-06-08",p:"3zkUfnHzz5LraC6rOXybUABK93T.jpg"},
+ {d:"2026-06-07",p:"fx7NrOJJdsFS91uDJqoVc0vccwd.jpg"},
+ {d:"2026-06-07",p:"ihpFaQo5wRfzyTlq43qtYqZyvKZ.jpg"},
+ {d:"2026-06-07",p:"sda3XXtz6iXFlbvBmCNCWnqO1uB.jpg"},
+ {d:"2026-06-06",p:"wpmPcKbBfSuiUAxzhvMp679JdkW.jpg"},
+ {d:"2026-06-06",p:"dDd0xRF3z0D10votwIx0W4IqKEe.jpg"},
+ {d:"2026-06-06",p:"3vCdqenXoOdNFHgr16VOJwBCJwS.jpg"},
+];
+const FEST = [
+ {p:"klheiHrCGwNNooVvYTJCFYMzmrI.jpg"}, {p:"VbYDDEw7RPdATftVrAboA0iuP.jpg"}, {p:"kmEWAP6sda66Sm78lGs84PDjXGC.jpg"},
+];
+const PRE = [
+ {p:"dU46ROG7HoP7biPtntaMTjkGbU6.jpg"}, {p:"uN0psnESvA9X6TnmQHKG78YKe4e.jpg"}, {p:"hDzllxB1TQ7uUxVvjnGHirJJovt.jpg"},
+];
+const IMG = 'https://image.tmdb.org/t/p/w500/';
+
+const DESCS = {
+  A: 'Full-width filled bar in the strip color — impossible to miss, takes a poster-free row.',
+  B: 'Magazine-style: big date numeral + weekday, ruled baseline. Loud type, no box.',
+  C: 'Mini calendar-page chip (a nod to the old date cards) + colored hairline.',
+  D: 'Glowing strip that STICKS below the header while you scroll its day — always know where you are. Scroll to feel it.',
+};
+
+function stripHtml(kind, dateStr) {
+  // kind: 'date' | 'fest' | 'pre'
+  let color, day = '', num = '', rest = '', sectionClass = '';
+  if (kind === 'fest') { color = 'var(--fest)'; day = 'FEST'; rest = 'NOW SCREENING'; num = ''; sectionClass = ' s-section'; }
+  else if (kind === 'pre') { color = 'var(--preorder)'; day = 'PRE-ORDER'; rest = 'COMING SOON'; sectionClass = ' s-section'; }
+  else {
+    const d = new Date(dateStr + 'T12:00:00');
+    color = 'var(--accent)';
+    day = d.toLocaleDateString('en', {weekday: 'short'});
+    num = String(d.getDate());
+    rest = d.toLocaleDateString('en', {month: 'short'}) + ' ' + d.getDate();
+  }
+  return `<div class="strip${sectionClass}" style="--sc:${color}">
+    <div class="chip"><div class="chip-top">${day}</div><div class="chip-num">${num || '•'}</div></div>
+    <span class="s-num">${num}</span>
+    <span class="s-day">${day}</span>
+    <span class="s-rest">${rest}</span>
+    <span class="s-line"></span>
+  </div>`;
+}
+
+let html = '';
+html += stripHtml('fest');
+FEST.forEach(m => html += `<div class="cell"><img loading="lazy" src="${IMG + m.p}"></div>`);
+let last = '';
+MOVIES.forEach(m => {
+  if (m.d !== last) { html += stripHtml('date', m.d); last = m.d; }
+  html += `<div class="cell"><img loading="lazy" src="${IMG + m.p}"></div>`;
+});
+html += stripHtml('pre');
+PRE.forEach(m => html += `<div class="cell"><img loading="lazy" src="${IMG + m.p}"></div>`);
+document.getElementById('grid').innerHTML = html;
+
+const desc = document.getElementById('desc');
+desc.textContent = DESCS.A;
+document.getElementById('seg').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#seg button').forEach(x => x.classList.toggle('on', x === b));
+  document.body.dataset.style = b.dataset.s;
+  desc.textContent = DESCS[b.dataset.s];
+});
+</script>
+</body>
+</html>

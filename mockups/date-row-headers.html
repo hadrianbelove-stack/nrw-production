@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW Mockup — Date Row Strips</title>
+<style>
+:root {
+    --bg-dark: #0a0a0a;
+    --bg-mid: #1a1a2e;
+    --accent: #00d4aa;
+    --crimson: #dc143c;
+    --preorder: #7c3aed;
+    --fest-bar: #f59e0b;
+    --gold: #FFD700;
+    --text: #fff;
+    --text-2: #bbb;
+    --text-3: #888;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: var(--bg-dark); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; }
+body { background: linear-gradient(160deg, var(--bg-dark) 0%, var(--bg-mid) 100%);
+    min-height: 100vh; padding-bottom: 116px; }
+
+.sim { display: none; }
+.sim.active { display: block; }
+
+/* ============ MOBILE HEADER (replica) ============ */
+.m-header { padding: 10px 12px 8px; position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06); }
+.m-title { font-size: 0.95rem; font-weight: 100; letter-spacing: 0.28em; color: #fff;
+    text-align: center; margin-bottom: 8px; }
+.m-title b { font-weight: 700; color: var(--accent); }
+.toggle-row { display: flex; align-items: center; gap: 10px; overflow-x: auto;
+    padding: 2px 0 8px; scrollbar-width: none; }
+.toggle-row::-webkit-scrollbar { display: none; }
+.tg { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
+    -webkit-tap-highlight-color: transparent; flex-shrink: 0; }
+.tg-track { width: 38px; height: 20px; border-radius: 10px; background: #333;
+    border: 1px solid rgba(255,255,255,0.15); position: relative; transition: background 0.2s; }
+.tg-thumb { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+    border-radius: 50%; background: #999; transition: transform 0.2s, background 0.2s; }
+.tg.on .tg-thumb { transform: translateX(18px); background: #fff; }
+.tg-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; color: var(--text-3);
+    white-space: nowrap; transition: color 0.2s; }
+.tg.on .tg-label { color: var(--accent); }
+.tg.on .tg-track { background: var(--accent); }
+.tg.tg-hl.on .tg-track { background: var(--crimson); }
+.tg.tg-hl.on .tg-label { color: var(--crimson); }
+.tg-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
+.pill-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.pill-row::-webkit-scrollbar { display: none; }
+.pill { flex-shrink: 0; padding: 5px 12px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2);
+    background: transparent; color: var(--text-2); font-size: 0.68rem; font-weight: 600;
+    -webkit-tap-highlight-color: transparent; }
+.pill.on { background: var(--accent); border-color: var(--accent); color: #000; }
+.view-dots { display: flex; gap: 5px; align-items: center; margin-left: auto; padding: 0 4px; flex-shrink: 0; }
+.view-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.25); border: none; padding: 0; }
+.view-dot.active { background: var(--accent); }
+
+/* ============ DESKTOP HEADER (replica) ============ */
+.d-header { padding: 18px 14px 6px; text-align: center; }
+.d-title { font-weight: 100; letter-spacing: 0.3em; font-size: 1.15rem; color: #fff; }
+.d-title b { font-weight: 700; color: var(--accent); }
+.d-sub { font-size: 0.55rem; color: var(--text-3); letter-spacing: 0.2em; margin-top: 4px; }
+.d-controls { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px 4px; scrollbar-width: none; align-items: center; }
+.d-controls::-webkit-scrollbar { display: none; }
+
+/* ============ GRIDS ============ */
+.m-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; padding: 8px; }
+.d-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 8px; padding: 10px 12px; }
+
+/* ============ THE NEW DATE ROW STRIP (the actual change) ============ */
+.strip { grid-column: 1 / -1; display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.55rem 0 0.1rem; }
+.strip-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; white-space: nowrap; color: var(--strip-c, var(--accent)); }
+.strip-line { flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
+.strip.tinted .strip-line { background: color-mix(in srgb, var(--strip-c, var(--accent)) 28%, transparent); }
+.d-grid .strip-label { font-size: 0.68rem; }
+.empty-note { grid-column: 1 / -1; text-align: center; color: var(--text-3);
+    font-size: 0.75rem; padding: 30px 0; }
+
+/* ============ DESKTOP CARD (production replica, scaled) ============ */
+.mc { display: flex; flex-direction: column; }
+body.boxes .mc.is-staff { border: 2px solid var(--crimson); border-radius: 10px; padding: 4px;
+    background: rgba(220,20,60,0.05); box-shadow: 0 0 12px rgba(220,20,60,0.3); }
+body.boxes .mc.is-fest { border: 2px solid var(--gold); border-radius: 10px; padding: 4px;
+    background: rgba(255,215,0,0.05); box-shadow: 0 0 12px rgba(255,215,0,0.3); }
+.card-front { position: relative; border-radius: 8px; overflow: hidden; background: #15151f; }
+.card-front.svc-frame { padding: 0 4px 4px; }
+.svc-head { height: 26px; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; line-height: 1; }
+.svc-name { font-size: 8px; font-weight: 800; letter-spacing: 0.9px; text-transform: uppercase; }
+.svc-super { font-size: 4.5px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase;
+    opacity: 0.75; margin-top: 2.5px; }
+.po-bar { height: 26px; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; background: var(--preorder); color: #fff; line-height: 1.2; }
+.po-label { font-size: 5.5px; font-weight: 700; letter-spacing: 0.8px; }
+.po-date { font-size: 8px; font-weight: 600; }
+.card-front img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; border-radius: 4px; }
+.card-front.svc-frame img { border-radius: 0 0 4px 4px; }
+.scores { position: absolute; bottom: 7px; left: 7px; display: flex; gap: 2px; z-index: 5; }
+.sc { display: inline-flex; align-items: center; gap: 2px; padding: 2px 4px; border-radius: 4px;
+    font-size: 0.42rem; font-weight: 800; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
+.sc img { width: auto !important; height: 7px !important; aspect-ratio: auto !important;
+    border-radius: 0 !important; display: inline-block; }
+.sc.rt { color: #ff6b6b; }
+.sc.imdb { color: #f5c518; }
+.expand { position: absolute; bottom: 6px; right: 6px; width: 16px; height: 16px;
+    background: rgba(0,0,0,0.7); border-radius: 4px; color: #fff; font-size: 8px;
+    display: flex; align-items: center; justify-content: center; opacity: 0.7; }
+.minfo { margin-top: 0.3rem; display: flex; justify-content: center; width: 100%;
+    overflow: hidden; }
+.mmeta { white-space: nowrap; color: var(--accent); font-size: 0.5rem; font-weight: 700;
+    overflow: hidden; text-overflow: ellipsis; }
+.bbar { width: 100%; text-align: center; padding: 3px 4px; margin-top: 3px;
+    font-size: 0.4rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase;
+    border-radius: 0 0 8px 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.bbar.red { background: var(--crimson); color: #fff; }
+.bbar.gold { background: var(--gold); color: #000; }
+
+/* ============ MOBILE CARD (production replica) ============ */
+.gi { position: relative; }
+.gi-poster { position: relative; aspect-ratio: 2/3; border-radius: 8px; overflow: hidden;
+    background: #15151f; display: flex; flex-direction: column; }
+.gi-svc-head { flex-shrink: 0; height: 18px; display: flex; align-items: center;
+    justify-content: center; padding: 0 3px; overflow: hidden; }
+.gi-svc-head span { font-size: 0.48rem; font-weight: 800; letter-spacing: 0.06em; white-space: nowrap; }
+.gi-img { flex: 1; position: relative; overflow: hidden; }
+.gi-img img, .gi-poster > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+body.boxes .gi.is-fest .gi-poster { outline: 2px solid var(--gold); outline-offset: -2px; }
+body.boxes .gi.is-staff .gi-poster { outline: 2px solid var(--crimson); outline-offset: -2px; }
+.scr-banner { position: absolute; top: 0; left: 0; right: 0; background: rgba(255,215,0,0.92);
+    color: #000; font-size: 0.3rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; text-align: center; padding: 2px 4px; z-index: 2;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.hl-badge { position: absolute; top: 3px; right: 3px; background: var(--crimson); color: #fff;
+    font-size: 0.35rem; font-weight: 700; letter-spacing: 0.05em; padding: 1px 4px;
+    border-radius: 3px; z-index: 3; }
+.po-badge { background: var(--preorder); color: #fff; font-size: 0.3rem; font-weight: 700;
+    padding: 2px 3px; border-radius: 2px; line-height: 1; }
+.mini-scores { position: absolute; bottom: 3px; left: 3px; display: flex; gap: 2px; z-index: 3; }
+.ms-rt { background: #b81c20; color: #fff; font-size: 0.3rem; font-weight: 700;
+    padding: 2px 3px; border-radius: 2px; line-height: 1; }
+.ms-imdb { background: #f5c518; color: #000; font-size: 0.3rem; font-weight: 700;
+    padding: 2px 3px; border-radius: 2px; line-height: 1; }
+
+/* ============ MOCKUP CONTROL BAR ============ */
+.ctrl-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(18,18,24,0.97); backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(255,255,255,0.14); padding: 10px 14px 22px; }
+.ctrl-tag { font-size: 0.5rem; font-weight: 800; letter-spacing: 0.18em; color: var(--text-3);
+    text-align: center; margin-bottom: 7px; }
+.ctrl-rows { display: flex; gap: 8px; }
+.seg { flex: 1; display: flex; background: #26262e; border-radius: 9px; padding: 3px; }
+.seg button { flex: 1; border: none; background: transparent; color: var(--text-2);
+    font-size: 0.6rem; font-weight: 700; padding: 8px 2px; border-radius: 7px;
+    -webkit-tap-highlight-color: transparent; }
+.seg button.on { background: var(--accent); color: #000; }
+.seg.seg-scheme button.on { background: #fff; }
+.ctrl-hint { text-align: center; font-size: 0.55rem; color: #666; margin-top: 7px; }
+</style>
+</head>
+<body class="boxes">
+
+<!-- ============ MOBILE / iOS SIM ============ -->
+<div class="sim active" id="sim-mobile">
+    <header class="m-header">
+        <div class="m-title">NEW RELEASE <b>WALL</b></div>
+        <div class="toggle-row">
+            <div class="tg on" id="tg-slop"><div class="tg-track"><div class="tg-thumb"></div></div><span class="tg-label">SLOP FREE</span></div>
+            <div class="tg-divider"></div>
+            <div class="tg tg-hl" id="tg-hl"><div class="tg-track"><div class="tg-thumb"></div></div><span class="tg-label">HIGHLIGHTS</span></div>
+            <div class="tg-divider"></div>
+            <div class="tg on" id="tg-fest"><div class="tg-track"><div class="tg-thumb"></div></div><span class="tg-label">FESTS</span></div>
+            <div class="tg-divider"></div>
+            <div class="tg on" id="tg-pre"><div class="tg-track"><div class="tg-thumb"></div></div><span class="tg-label">PRE-ORDER</span></div>
+        </div>
+        <div class="pill-row" id="pills">
+            <button class="pill" data-g="indie">Indie</button>
+            <button class="pill" data-g="Horror">Horror</button>
+            <button class="pill" data-g="Action">Action</button>
+            <button class="pill" data-g="Comedy">Comedy</button>
+            <button class="pill" data-g="Family">Family</button>
+            <button class="pill" data-g="foreign">Foreign</button>
+            <button class="pill" data-g="Documentary">Docs</button>
+            <button class="pill" data-g="reissue">Reissues</button>
+            <div class="view-dots"><button class="view-dot active"></button><button class="view-dot"></button><button class="view-dot"></button></div>
+        </div>
+    </header>
+    <div class="m-grid" id="grid-mobile"></div>
+</div>
+
+<!-- ============ DESKTOP SIM ============ -->
+<div class="sim" id="sim-desktop">
+    <header class="d-header">
+        <div class="d-title">THE NEW RELEASE <b>WALL</b></div>
+        <div class="d-sub">SCALED DESKTOP PREVIEW — CARDS UNCHANGED, ONLY DATE MARKERS CHANGE</div>
+    </header>
+    <div class="d-controls" id="pills-d">
+        <div class="tg tg-hl" id="tg-hl-d"><div class="tg-track"><div class="tg-thumb"></div></div><span class="tg-label">HIGHLIGHTS</span></div>
+        <div class="tg-divider"></div>
+        <button class="pill" data-g="indie">Indie</button>
+        <button class="pill" data-g="Horror">Horror</button>
+        <button class="pill" data-g="Action">Action</button>
+        <button class="pill" data-g="Comedy">Comedy</button>
+        <button class="pill" data-g="Documentary">Docs</button>
+        <button class="pill" data-g="reissue">Reissues</button>
+    </div>
+    <div class="d-grid" id="grid-desktop"></div>
+</div>
+
+<!-- ============ MOCKUP CONTROLS ============ -->
+<div class="ctrl-bar">
+    <div class="ctrl-tag">MOCKUP CONTROLS</div>
+    <div class="ctrl-rows">
+        <div class="seg" id="seg-view">
+            <button class="on" data-v="mobile">Mobile / iOS</button>
+            <button data-v="desktop">Desktop</button>
+        </div>
+        <div class="seg seg-scheme" id="seg-scheme">
+            <button class="on" data-s="A">A · Sections</button>
+            <button data-s="B">B · Filters</button>
+        </div>
+        <div class="seg" id="seg-boxes">
+            <button class="on" data-b="on">Glow&nbsp;boxes</button>
+            <button data-b="off">No&nbsp;boxes</button>
+        </div>
+    </div>
+    <div class="ctrl-hint">Movie cards = current production design. Only the date markers changed (strips instead of poster-size cards).</div>
+</div>
+
+<script>
+const DATA = {"regular":[{"title":"My Boyfriend's Wife Is Dead","poster":"https://image.tmdb.org/t/p/w500/80vJ5kBWfpThzsggWWU7LBVyJQ9.jpg","date":"2026-06-11","genre":"Thriller","dir":"Bruno Hernández","ctry":"USA","rt":"82%","imdb":"5.4","svc":{"name":"Hoopla","color":"#FC4F08","text":"#fff"}},{"title":"Boy George & Culture Club","poster":"https://image.tmdb.org/t/p/w500/dH32lHEdcEeKfperjPbx8U7SqyL.jpg","date":"2026-06-11","genre":"Documentary","dir":"Alison Ellwood","ctry":"USA","rt":"90%","imdb":"7.3"},{"title":"Broken Land","poster":"https://image.tmdb.org/t/p/w500/3cYDmDWNWIjVMFbTlDQXjhydT6e.jpg","date":"2026-06-11","genre":"Drama","dir":"Joseph T. Walker","ctry":"USA"},{"title":"Colors of Evil: Black","poster":"https://image.tmdb.org/t/p/w500/wIubCZKpnTiQmlC5DehgU1LNFip.jpg","date":"2026-06-10","genre":"Crime","dir":"Adrian Panek","ctry":"POL","svc":{"name":"Netflix","color":"#E50914","text":"#fff"}},{"title":"Thou Shall Not Commit Adultery","poster":"https://image.tmdb.org/t/p/w500/v6fvzTRikUp9ry5OyoTmUIon5rh.jpg","date":"2026-06-10","genre":"Drama","dir":"Patricia Cuffie-Jones","ctry":"USA","rt":"84%","imdb":"6.2","svc":{"name":"Lifetime","color":"#444","text":"#fff"}},{"title":"Bring Me the Horizon: L.I.V.E.","poster":"https://image.tmdb.org/t/p/w500/dHnCH7HoVE7MBwc2lvgbSM3jXg7.jpg","date":"2026-06-10","genre":"Music","dir":"Oliver Sykes","ctry":"UK","imdb":"9.0"},{"title":"Heads or Fails (Aimer perdre)","poster":"https://image.tmdb.org/t/p/w500/p03nyFzLERXEeE7MfBsCzBVb266.jpg","date":"2026-06-10","genre":"Comedy","dir":"Lenny Guit","ctry":"BEL","rt":"84%","imdb":"6.3","svc":{"name":"MYFILMFRIEND","color":"#444","text":"#fff"}},{"title":"What's the Story, Wishbone?","poster":"https://image.tmdb.org/t/p/w500/qlbeEWHs2np97vmvMAifjJYyLFP.jpg","date":"2026-06-10","genre":"Documentary","dir":"Joey Stewart","ctry":"USA","rt":"84%","imdb":"8.9"},{"title":"Norway: The Dark Horse","poster":"https://image.tmdb.org/t/p/w500/kZgzZsVgNruGRWKzTbAIfvvrvHJ.jpg","date":"2026-06-09","genre":"Documentary","dir":"Unknown","ctry":"NOR","rt":"82%","imdb":"6.9","svc":{"name":"Netflix","color":"#E50914","text":"#fff"}},{"title":"Let's Love","poster":"https://image.tmdb.org/t/p/w500/iQBNEmJxNUhrzmom9DRhyJTWyGn.jpg","date":"2026-06-09","genre":"Romance","dir":"Jamie Adams","ctry":"UK","rt":"84%","svc":{"name":"Hoopla","color":"#FC4F08","text":"#fff"}},{"title":"The Second Coming of John Cooper","poster":"https://image.tmdb.org/t/p/w500/gMV5eCyaq6eSq32rQbhIvcxvpM4.jpg","date":"2026-06-09","genre":"Comedy","dir":"Kevin Kraft","ctry":"USA","svc":{"name":"Hoopla","color":"#FC4F08","text":"#fff"}},{"title":"Summer House (Yaz Evi)","poster":"https://image.tmdb.org/t/p/w500/81xUChgVphBFehihIgbXbyneZXP.jpg","date":"2026-06-09","genre":"Romance","dir":"Erdem Tepegöz","ctry":"TUR","imdb":"5.5","svc":{"name":"Prime Video","color":"#00A8E1","text":"#000"}},{"title":"Her Husband's Double Life","poster":"https://image.tmdb.org/t/p/w500/aoqxusBlbwShgKcfrlgUb9q6Rqo.jpg","date":"2026-06-09","genre":"","dir":"Roxanne Boisvert","ctry":"USA","imdb":"7.5"},{"title":"Neglected","poster":"https://image.tmdb.org/t/p/w500/Awnun4US4M5x36qruNtaRA7G5uw.jpg","date":"2026-06-09","genre":"Action","dir":"David Lipper","ctry":"USA","imdb":"5.4"},{"title":"Code of Misconduct","poster":"https://image.tmdb.org/t/p/w500/8N2VubStoAfrkqE0RtnhDcFTqhw.jpg","date":"2026-06-09","genre":"Documentary","dir":"Sébastien Trahan","ctry":"CAN","imdb":"8.1"},{"title":"Rumba Royale","poster":"https://image.tmdb.org/t/p/w500/lHWo5q8WipfW8yLSpT8yAGz2mWp.jpg","date":"2026-06-09","genre":"Drama","dir":"Hamed Mobasser","ctry":"CON","imdb":"8.4"},{"title":"La Scala: The Force of Destiny","poster":"https://image.tmdb.org/t/p/w500/kiKpFTnjPOkm928TdyvuX7ViSE3.jpg","date":"2026-06-09","genre":"Documentary","dir":"Anissa Bonnefont","ctry":"ITA"},{"title":"Michael","poster":"https://image.tmdb.org/t/p/w500/zm0KAbOjlt9eR5y7vDiL2dEOwMl.jpg","date":"2026-06-09","genre":"Music","dir":"Antoine Fuqua","ctry":"USA","rt":"39%","imdb":"7.7"},{"title":"Real Couples","poster":"https://image.tmdb.org/t/p/w500/oI33R83uOQ3MJf3vF0rH9O4LvLX.jpg","date":"2026-06-09","genre":"Comedy","dir":"Julian Berger","ctry":"USA","svc":{"name":"YouTube","color":"#FF0000","text":"#fff"}},{"title":"29","poster":"https://image.tmdb.org/t/p/w500/aQZ4OxzaYTN7cRN7fALi9BhPucp.jpg","date":"2026-06-08","genre":"Romance","dir":"Rathna Kumar","ctry":"IND","imdb":"7.8","svc":{"name":"Netflix","color":"#E50914","text":"#fff"}},{"title":"Iron Maiden: Burning Ambition","poster":"https://image.tmdb.org/t/p/w500/yZqhFJDenLfgF1VygOOCNmAdS1P.jpg","date":"2026-06-08","staff":true,"genre":"Documentary","dir":"Malcolm Venville","ctry":"USA","rt":"85%","imdb":"7.6"},{"title":"Wetiko","poster":"https://image.tmdb.org/t/p/w500/3zkUfnHzz5LraC6rOXybUABK93T.jpg","date":"2026-06-08","genre":"Adventure","dir":"Kerry Mondragon","ctry":"MEX","imdb":"5.3"},{"title":"This Ordinary Thing","poster":"https://image.tmdb.org/t/p/w500/fx7NrOJJdsFS91uDJqoVc0vccwd.jpg","date":"2026-06-07","genre":"Documentary","dir":"Nick Davis","ctry":"USA","svc":{"name":"Prime Video","color":"#00A8E1","text":"#000"}},{"title":"Earth, Wind & Fire","poster":"https://image.tmdb.org/t/p/w500/ihpFaQo5wRfzyTlq43qtYqZyvKZ.jpg","date":"2026-06-07","genre":"Documentary","dir":"Questlove","ctry":"USA","imdb":"8.1","svc":{"name":"Max","color":"#B537F2","text":"#fff"}},{"title":"Supertramp: Crime of the Century","poster":"https://image.tmdb.org/t/p/w500/sda3XXtz6iXFlbvBmCNCWnqO1uB.jpg","date":"2026-06-07","genre":"Music","dir":"Tony Smith","ctry":"UK"}],
+"staffExtra":[{"title":"Amrum","poster":"https://image.tmdb.org/t/p/w500/z87OLGYXojP3bJjp0EpbutpvGTy.jpg","date":"2026-06-01","staff":true,"genre":"Drama","dir":"Fatih Akin","ctry":"GER","rt":"98%","imdb":"7.2"},{"title":"The Golden Spurtle","poster":"https://image.tmdb.org/t/p/w500/3nsFrrmaUGyoiqAMRolkqPPWv01.jpg","date":"2026-05-29","staff":true,"genre":"Documentary","dir":"Constantine Costi","ctry":"AUS","imdb":"7.6"},{"title":"Kontinental '25","poster":"https://image.tmdb.org/t/p/w500/zilOI4BxPxKK3BbyJSHEdOTiTaJ.jpg","date":"2026-05-27","staff":true,"genre":"Comedy","dir":"Radu Jude","ctry":"ROM","imdb":"6.7"},{"title":"Miroirs No. 3","poster":"https://image.tmdb.org/t/p/w500/dNzLDieAVlX3So2Qs2XSAOUmvxM.jpg","date":"2026-05-19","staff":true,"genre":"Drama","dir":"Christian Petzold","ctry":"GER","rt":"95%","imdb":"6.6"},{"title":"Yalla Parkour (يلّا باركور)","poster":"https://image.tmdb.org/t/p/w500/eANxqeFoOn3u2kraxhY324VocO7.jpg","date":"2026-05-18","staff":true,"genre":"Documentary","dir":"Areeb Zuaiter","ctry":"SAU","rt":"82%","imdb":"7.5"}],
+"fest":[{"title":"Maintenance Artist","poster":"https://image.tmdb.org/t/p/w500/VbYDDEw7RPdATftVrAboA0iuP.jpg","date":"2026-05-26","festName":"Doxumentale","fest":true,"genre":"Documentary","dir":"Toby Perl Freilich","ctry":"USA","imdb":"7.4"},{"title":"Elie Wiesel: Soul on Fire","poster":"https://image.tmdb.org/t/p/w500/kmEWAP6sda66Sm78lGs84PDjXGC.jpg","date":"2026-04-13","festName":"Boulder Intl. Film Fest","fest":true,"genre":"Documentary","dir":"Oren Rudavsky","ctry":"USA","imdb":"8.4"},{"title":"We Are Two Abysses","poster":"https://image.tmdb.org/t/p/w500/qshlCDuBIkGaUXfvzKqPQ37kk3P.jpg","date":"2026-06-04","festName":"La Femme Intl Film Fest Europe","fest":true,"genre":"Documentary","dir":"Kopal Joshy","ctry":"POR"},{"title":"Spain is not different","poster":"https://image.tmdb.org/t/p/w500/hcgeuZ0evL33oIp7zExJyrhzLmf.jpg","date":"2026-06-04","festName":"La Femme Intl Film Fest Europe","fest":true,"genre":"Drama","dir":"Samuel Sebastián","ctry":"ESP"}],
+"pre":[{"title":"Two Prosecutors","poster":"https://image.tmdb.org/t/p/w500/dU46ROG7HoP7biPtntaMTjkGbU6.jpg","date":"2026-06-12","pre":true,"genre":"Drama","dir":"Sergei Loznitsa","ctry":"FRA","rt":"97%","imdb":"7.1"},{"title":"Find Your Friends","poster":"https://image.tmdb.org/t/p/w500/uN0psnESvA9X6TnmQHKG78YKe4e.jpg","date":"2026-06-16","pre":true,"genre":"Thriller","dir":"Izabel Pakzad","ctry":"USA"},{"title":"I Am Frankelda (Soy Frankelda)","poster":"https://image.tmdb.org/t/p/w500/hDzllxB1TQ7uUxVvjnGHirJJovt.jpg","date":"2026-06-16","pre":true,"genre":"Animation","dir":"Roy Ambriz","ctry":"MEX"},{"title":"Lakeview","poster":"https://image.tmdb.org/t/p/w500/pyEhZ2eSKWe12P5IWqOCAvWYra8.jpg","date":"2026-06-19","pre":true,"festName":"Gilbert Baker Film Fest 2026","fest":true,"genre":"Comedy","dir":"Tara Thorne","ctry":"USA","imdb":"7.1"}]};
+
+const FILTER_COLORS = {
+    'indie': '#00d4aa', 'Horror': '#ff5e57', 'Action': '#ff9500', 'Comedy': '#ffd32a',
+    'Family': '#2ed573', 'foreign': '#e84393', 'Documentary': '#4A90D9', 'reissue': '#C8A951'
+};
+
+const state = { view: 'mobile', scheme: 'A', hl: false, fest: true, pre: true, genre: null };
+
+function fmtStrip(d) {
+    const dt = new Date(d + 'T12:00:00');
+    return dt.toLocaleDateString('en', { weekday: 'short' }) + '   ' +
+           dt.toLocaleDateString('en', { month: 'short' }) + ' ' + dt.getDate();
+}
+function fmtShort(d) {
+    const dt = new Date(d + 'T12:00:00');
+    return dt.toLocaleDateString('en', { month: 'short' }) + ' ' + dt.getDate();
+}
+function matchesGenre(m, g) {
+    if (!g) return true;
+    if (g === 'indie' || g === 'reissue') return false;
+    if (g === 'foreign') return /\(/.test(m.title) || ['POL','TUR','GER','FRA','MEX','IND','BEL','ITA','POR','ESP','SAU','ROM','CON'].includes(m.ctry);
+    return (m.genre || '') === g;
+}
+function strip(label, color, tinted) {
+    return `<div class="strip${tinted ? ' tinted' : ''}" style="--strip-c:${color}">
+        <span class="strip-label">${label}</span><span class="strip-line"></span></div>`;
+}
+function scoresHtml(m, mini) {
+    if (!m.rt && !m.imdb) return '';
+    if (mini) {
+        return `<div class="mini-scores">${m.pre ? '<span class="po-badge">PRE-ORDER</span>' : ''}
+            ${m.rt ? `<span class="ms-rt">${m.rt}</span>` : ''}
+            ${m.imdb ? `<span class="ms-imdb">${m.imdb}</span>` : ''}</div>`;
+    }
+    return `<div class="scores">
+        ${m.rt ? `<span class="sc rt"><img src="../assets/logos/rt.png" alt="RT">${m.rt}</span>` : ''}
+        ${m.imdb ? `<span class="sc imdb"><img src="../assets/logos/imdb.png" alt="IMDb">${m.imdb}</span>` : ''}</div>`;
+}
+
+/* ---- DESKTOP CARD: faithful production replica ---- */
+function deskCard(m) {
+    const isStaff = !!m.staff, isFest = !!m.fest;
+    let front;
+    if (m.pre) {
+        front = `<div class="po-bar"><span class="po-label">PRE-ORDER</span><span class="po-date">${m.date ? fmtShort(m.date) : 'TBD'}</span></div>
+                 <img loading="lazy" src="${m.poster}" alt="">`;
+        front = `<div class="card-front svc-frame" style="background:var(--preorder)">${front}${scoresHtml(m)}<div class="expand">⛶</div></div>`;
+    } else if (m.svc) {
+        front = `<div class="card-front svc-frame" style="background:${m.svc.color};color:${m.svc.text}">
+            <div class="svc-head"><div class="svc-name">${m.svc.name}</div><div class="svc-super">NOW STREAMING</div></div>
+            <img loading="lazy" src="${m.poster}" alt="">${scoresHtml(m)}<div class="expand">⛶</div></div>`;
+    } else {
+        front = `<div class="card-front"><img loading="lazy" src="${m.poster}" alt="">${scoresHtml(m)}<div class="expand">⛶</div></div>`;
+    }
+    const bbar = isFest ? `<div class="bbar gold">${m.festName || '★ VIRTUAL SCREENING ★'}</div>`
+               : isStaff ? '<div class="bbar red">★ HIGHLIGHT ★</div>' : '';
+    return `<div class="mc${isStaff ? ' is-staff' : ''}${isFest ? ' is-fest' : ''}">${front}
+        <div class="minfo"><span class="mmeta">${m.dir}${m.genre ? ' · ' + m.genre : ''} · ${m.ctry}</span></div>${bbar}</div>`;
+}
+
+/* ---- MOBILE CARD: faithful production replica ---- */
+function mobCard(m) {
+    const isStaff = !!m.staff, isFest = !!m.fest;
+    const overlays =
+        (isFest ? `<span class="scr-banner">${m.festName || 'Virtual Screening'}</span>` : '') +
+        (isStaff ? '<span class="hl-badge">Highlight</span>' : '') +
+        scoresHtml(m, true) +
+        (!m.rt && !m.imdb && m.pre ? '<div class="mini-scores"><span class="po-badge">PRE-ORDER</span></div>' : '');
+    let inner;
+    if (m.svc) {
+        inner = `<div class="gi-poster" style="background:${m.svc.color}">
+            <div class="gi-svc-head"><span style="color:${m.svc.text}">${m.svc.name.toUpperCase()}</span></div>
+            <div class="gi-img"><img loading="lazy" src="${m.poster}" alt="">${overlays}</div></div>`;
+    } else {
+        inner = `<div class="gi-poster"><img loading="lazy" src="${m.poster}" alt="">${overlays}</div>`;
+    }
+    return `<div class="gi${isStaff ? ' is-staff' : ''}${isFest ? ' is-fest' : ''}">${inner}</div>`;
+}
+
+function render() {
+    const desktop = state.view === 'desktop';
+    const grid = document.getElementById(desktop ? 'grid-desktop' : 'grid-mobile');
+    const card = desktop ? deskCard : mobCard;
+    const dateColor = (state.scheme === 'B' && state.genre) ? FILTER_COLORS[state.genre]
+                    : (state.scheme === 'B' && state.hl) ? 'var(--crimson)'
+                    : 'var(--accent)';
+    let html = '';
+
+    if (state.hl) {
+        const picks = [...DATA.regular.filter(m => m.staff), ...DATA.staffExtra]
+            .filter(m => matchesGenre(m, state.genre));
+        html += strip('HIGHLIGHTS', 'var(--crimson)', true);
+        let last = '';
+        picks.forEach(m => {
+            if (m.date !== last) { html += strip(fmtStrip(m.date), dateColor, state.scheme === 'B'); last = m.date; }
+            html += card(m);
+        });
+        if (!picks.length) html += '<div class="empty-note">No highlights match this filter</div>';
+    } else {
+        if (state.fest && !state.genre) {
+            html += strip('FEST · NOW SCREENING', 'var(--fest-bar)', true);
+            DATA.fest.forEach(m => html += card(m));
+        }
+        const reg = DATA.regular.filter(m => matchesGenre(m, state.genre));
+        let last = '';
+        reg.forEach(m => {
+            if (m.date !== last) { html += strip(fmtStrip(m.date), dateColor, state.scheme === 'B' && !!state.genre); last = m.date; }
+            html += card(m);
+        });
+        if (!reg.length) html += '<div class="empty-note">Nothing on the wall for this filter (sample data)</div>';
+        if (state.pre && !state.genre) {
+            html += strip('PRE-ORDER', 'var(--preorder)', true);
+            DATA.pre.forEach(m => html += card(m));
+        }
+    }
+    grid.innerHTML = html;
+}
+
+/* ---- mockup controls ---- */
+document.getElementById('seg-view').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#seg-view button').forEach(x => x.classList.toggle('on', x === b));
+    state.view = b.dataset.v;
+    document.getElementById('sim-mobile').classList.toggle('active', state.view === 'mobile');
+    document.getElementById('sim-desktop').classList.toggle('active', state.view === 'desktop');
+    render(); window.scrollTo(0, 0);
+});
+document.getElementById('seg-scheme').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#seg-scheme button').forEach(x => x.classList.toggle('on', x === b));
+    state.scheme = b.dataset.s; render();
+});
+document.getElementById('seg-boxes').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#seg-boxes button').forEach(x => x.classList.toggle('on', x === b));
+    document.body.classList.toggle('boxes', b.dataset.b === 'on');
+});
+
+/* ---- in-sim controls ---- */
+function bindToggle(id, key) {
+    const el = document.getElementById(id); if (!el) return;
+    el.addEventListener('click', () => { state[key] = !state[key]; syncToggles(); render(); });
+}
+function syncToggles() {
+    [['tg-hl','hl'], ['tg-hl-d','hl'], ['tg-fest','fest'], ['tg-pre','pre']].forEach(([id, key]) => {
+        const el = document.getElementById(id); if (el) el.classList.toggle('on', state[key]);
+    });
+}
+bindToggle('tg-hl', 'hl'); bindToggle('tg-hl-d', 'hl');
+bindToggle('tg-fest', 'fest'); bindToggle('tg-pre', 'pre');
+document.getElementById('tg-slop').addEventListener('click', function () { this.classList.toggle('on'); });
+
+[['pills'], ['pills-d']].forEach(([id]) => {
+    document.getElementById(id).addEventListener('click', e => {
+        const p = e.target.closest('.pill'); if (!p) return;
+        const g = p.dataset.g;
+        state.genre = (state.genre === g) ? null : g;
+        document.querySelectorAll('.pill').forEach(x => x.classList.toggle('on', x.dataset.g === state.genre));
+        render();
+    });
+});
+
+syncToggles(); render();
+</script>
+</body>
+</html>
