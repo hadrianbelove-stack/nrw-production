@@ -53,6 +53,8 @@ fun FilterChips(
     onHideFestToggle: () -> Unit = {},
     showPreorders: Boolean = false,
     onShowPreordersToggle: () -> Unit = {},
+    showHighlightsOnly: Boolean = false,
+    onShowHighlightsToggle: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     TvLazyRow(
@@ -96,6 +98,16 @@ fun FilterChips(
 
         item {
             MetaTogglePill(
+                isActive = showHighlightsOnly,
+                activeLabel = "HIGHLIGHTS",
+                inactiveLabel = "HIGHLIGHTS",
+                onClick = onShowHighlightsToggle,
+                accentColor = HighlightCrimson
+            )
+        }
+
+        item {
+            MetaTogglePill(
                 isActive = !hideFest,
                 activeLabel = "FESTS",
                 inactiveLabel = "NO FEST",
@@ -116,6 +128,7 @@ fun FilterChips(
 
 private val SlopTeal = Color(0xFF00D4AA)
 private val SlopTealDim = Color(0x4D00D4AA)
+private val HighlightCrimson = Color(0xFFDC143C)
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -132,9 +145,9 @@ private fun MetaTogglePill(
     val borderColor = when {
         isFocused -> accentColor
         isActive -> accentColor
-        else -> SlopTealDim
+        else -> accentColor.copy(alpha = 0.3f)
     }
-    val textColor = if (isActive) accentColor else SlopTeal.copy(alpha = 0.45f)
+    val textColor = if (isActive) accentColor else accentColor.copy(alpha = 0.45f)
 
     Surface(
         onClick = onClick,

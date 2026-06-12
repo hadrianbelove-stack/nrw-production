@@ -101,7 +101,7 @@
         maxLines="2" />
     </Group>
 
-    <!-- Movie grid -->
+    <!-- Movie grid: date groups are sections; dividers render as full-width strips -->
     <MarkupGrid id="movieGrid"
       translation="[60, 210]"
       visible="false"
@@ -109,6 +109,11 @@
       numColumns="5"
       itemSize="[344, 516]"
       itemSpacing="[20, 20]"
+      sectionDividerFont="font:MediumBoldSystemFont"
+      sectionDividerTextColor="0x00D4AAFF"
+      sectionDividerHeight="72"
+      sectionDividerSpacing="14"
+      sectionDividerMinWidth="1780"
       drawFocusFeedback="false"
       vertFocusAnimationStyle="floatingFocus"
       wrap="false" />

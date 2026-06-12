@@ -263,53 +263,6 @@
 
     </LayoutGroup>
 
-    <!-- Date divider card (hidden by default, shown for date items) -->
-    <Group id="dateDividerGroup" visible="false">
-      <Rectangle id="dateDividerBg"
-        width="320"
-        height="480"
-        color="0x0A0A0AFF" />
-      <Rectangle id="dateDividerBar"
-        width="320"
-        height="38"
-        color="0x00D4AAFF" />
-      <Label id="dateDividerBarLabel"
-        width="314"
-        height="38"
-        translation="[6, 0]"
-        vertAlign="center"
-        font="font:SmallBoldSystemFont"
-        color="0x000000FF" />
-      <Label id="dateDividerNumber"
-        width="320"
-        height="128"
-        translation="[13, 128]"
-        vertAlign="center"
-        font="font:LargeBoldSystemFont"
-        color="0xFFFFFFFF" />
-      <Label id="dateDividerMonth"
-        width="320"
-        height="38"
-        translation="[13, 248]"
-        vertAlign="center"
-        font="font:SmallSystemFont"
-        color="0x888888FF" />
-      <Label id="dateDividerChevron1"
-        text="›" width="38" height="64" translation="[13, 296]"
-        vertAlign="center" font="font:LargeBoldSystemFont" color="0x00D4AAE6" />
-      <Label id="dateDividerChevron2"
-        text="›" width="38" height="64" translation="[45, 296]"
-        vertAlign="center" font="font:LargeBoldSystemFont" color="0x00D4AAB3" />
-      <Label id="dateDividerChevron3"
-        text="›" width="38" height="64" translation="[77, 296]"
-        vertAlign="center" font="font:LargeBoldSystemFont" color="0x00D4AA80" />
-      <Label id="dateDividerChevron4"
-        text="›" width="38" height="64" translation="[109, 296]"
-        vertAlign="center" font="font:LargeBoldSystemFont" color="0x00D4AA4D" />
-      <Label id="dateDividerChevron5"
-        text="›" width="38" height="64" translation="[141, 296]"
-        vertAlign="center" font="font:LargeBoldSystemFont" color="0x00D4AA26" />
-    </Group>
 
   </children>
 </component>

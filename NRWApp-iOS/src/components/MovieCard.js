@@ -118,21 +118,24 @@ const getStreamingBadge = (movie) => {
   return {name: service.toUpperCase().slice(0, 8), color: '#444'};
 };
 
-export default function MovieCard({movie, onPress, isFeatured = false}) {
+export default function MovieCard({movie, onPress, isFeatured = false, width}) {
   if (!movie) return null;
 
   const posterUrl = movie.poster_url || movie.poster;
   const director = movie.director || movie.crew?.director;
   const metaText = [director, movie.genres?.[0], movie.country && formatCountry(movie.country)].filter(Boolean).join(' · ');
   const streamingBadge = getStreamingBadge(movie);
+  // Optional width override (3-column grid passes a computed width)
+  const sizeOverride = width ? {width, height: width * 1.5} : null;
 
   return (
     <TouchableOpacity
-      style={styles.container}
+      style={[styles.container, width ? {width} : null]}
       onPress={() => onPress?.(movie)}
       activeOpacity={0.8}>
       <View style={[
         styles.posterContainer,
+        sizeOverride,
         streamingBadge && {backgroundColor: streamingBadge.color},
       ]}>
         {/* Gallery Label Frame header (replaces overlay bar) */}
@@ -161,7 +164,7 @@ export default function MovieCard({movie, onPress, isFeatured = false}) {
         {/* Featured badge */}
         {(isFeatured || movie.featured || movie.filters?.is_staff_pick) && (
           <View style={styles.featuredBadge}>
-            <Text style={styles.featuredText}>★ PICK</Text>
+            <Text style={styles.featuredText}>★ HIGHLIGHT</Text>
           </View>
         )}
 

@@ -154,7 +154,6 @@ class MovieRepository(private val context: Context) {
             activeFilters.any { filter ->
                 when (filter) {
                     FilterCategory.INDIE -> movie.filters?.isIndie == true
-                    FilterCategory.STAFF_PICKS -> movie.isStaffPick()
                     FilterCategory.FOREIGN -> movie.isForeign()
                     FilterCategory.RESTORATIONS -> movie.filters?.isRestoration == true
                     FilterCategory.DOCUMENTARY -> movie.filters?.isDocumentary == true

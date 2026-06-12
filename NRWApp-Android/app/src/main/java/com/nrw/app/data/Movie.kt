@@ -290,7 +290,6 @@ data class InfoOption(
  * Filter categories for the UI
  */
 enum class FilterCategory(val id: String, val displayName: String) {
-    STAFF_PICKS("staff-picks", "Picks"),
     INDIE("indie", "Indie"),
     HORROR("horror", "Horror"),
     ACTION("action", "Action"),

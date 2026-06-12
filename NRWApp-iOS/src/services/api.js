@@ -133,12 +133,6 @@ export function filterMovies(movies, filter = null) {
 
   switch (filter) {
     case 'featured':
-    case 'staff-picks':
-      return movies.filter(
-        movie =>
-          !movie.hidden &&
-          (movie.filters?.is_staff_pick || movie.featured === true),
-      );
     case 'indie':
       return movies.filter(
         movie => !movie.hidden && (movie.filters?.is_indie),
@@ -219,9 +213,6 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopM
 
     for (const filter of activeFilters) {
       switch (filter) {
-        case 'staff-picks':
-          if (movie.filters?.is_staff_pick || movie.featured === true) return true;
-          break;
         case 'indie':
           if (movie.filters?.is_indie) return true;
           break;
@@ -296,6 +287,12 @@ export function sortByDate(movies) {
     if (!a._is_preorder && b._is_preorder) return -1;
     if (a._is_preorder && b._is_preorder)
       return (a.digital_date || '').localeCompare(b.digital_date || '');
+
+    // Fest (virtual screening) movies group at the top, under the FEST strip
+    const aFest = !!a.filters?.is_virtual_screening;
+    const bFest = !!b.filters?.is_virtual_screening;
+    if (aFest && !bFest) return -1;
+    if (!aFest && bFest) return 1;
 
     // Virtual screenings: sort by tier (active → upcoming → expired)
     const screeningTier = m => {

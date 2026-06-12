@@ -316,7 +316,7 @@ fun MovieCard(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "STAFF PICK",
+                            text = "HIGHLIGHT",
                             color = TextPrimary,
                             fontSize = 7.sp,
                             fontWeight = FontWeight.ExtraBold,
@@ -527,85 +527,62 @@ private fun ImdbBadge(
 }
 
 /**
- * Date divider card — mobile design: teal bar + day/number/month + cascading chevrons
+ * Date row strip — full-width neon banner between date groups
+ * (bright top/bottom borders, colored day + white date, centered)
  */
 @Composable
-fun DateDividerCard(
+fun DateRowHeader(
     dateString: String,
+    stripColor: Color = Primary,
+    tinted: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    val isPreOrder = dateString == "PRE-ORDER"
-    val parts = if (isPreOrder) emptyList() else dateString.split("-")
-    val month = if (isPreOrder) "" else parts.getOrNull(1)?.toIntOrNull()?.let { getMonthName(it) } ?: ""
-    val day = if (isPreOrder) "SOON" else parts.getOrNull(2)?.trimStart('0') ?: ""
-    val dayOfWeek = if (isPreOrder) "PRE-ORDER" else getDayOfWeek(dateString)
-    val barColor = if (isPreOrder) Color(0xFF7C3AED) else Primary
-    val accentColor = if (isPreOrder) Color(0xFF7C3AED) else Primary
-    val chevronOpacities = listOf(0.9f, 0.7f, 0.5f, 0.3f, 0.15f)
+    val day: String
+    var rest = ""
+    val color: Color
+    when (dateString) {
+        "PRE-ORDER" -> { day = "PRE-ORDER"; rest = "COMING SOON"; color = Color(0xFF7C3AED) }
+        "FEST" -> { day = "FEST"; rest = "NOW SCREENING"; color = Color(0xFFF59E0B) }
+        "HIGHLIGHTS" -> { day = "HIGHLIGHTS"; color = Color(0xFFDC143C) }
+        else -> {
+            val parts = dateString.split("-")
+            val month = parts.getOrNull(1)?.toIntOrNull()?.let { getMonthName(it) } ?: ""
+            val dayNum = parts.getOrNull(2)?.trimStart('0') ?: ""
+            day = getDayOfWeek(dateString).take(3)
+            rest = "$month $dayNum"
+            color = stripColor
+        }
+    }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(POSTER_ASPECT_RATIO)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFF0A0A0A))
-    ) {
-        // Top bar
-        Box(
+    Column(modifier = modifier.fillMaxWidth().padding(top = 8.dp, bottom = 2.dp)) {
+        Box(Modifier.fillMaxWidth().height(2.dp).background(color))
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(barColor)
-                .padding(horizontal = 6.dp, vertical = 3.dp)
+                .background(Color(0xF508080C))
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = dayOfWeek,
-                color = Color.Black,
-                fontSize = 7.sp,
-                fontWeight = FontWeight.ExtraBold,
-                letterSpacing = 0.5.sp
-            )
-        }
-
-        // Body
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 6.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            // Day number
             Text(
                 text = day,
-                color = if (isPreOrder) accentColor else Color.White,
-                fontSize = if (isPreOrder) 18.sp else 36.sp,
-                fontWeight = FontWeight.ExtraBold,
-                lineHeight = if (isPreOrder) 20.sp else 36.sp
+                color = color,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Black,
+                letterSpacing = 4.sp
             )
-
-            // Month
-            if (month.isNotEmpty()) {
+            if (rest.isNotEmpty()) {
+                Spacer(modifier = Modifier.width(14.dp))
                 Text(
-                    text = month,
-                    color = Color(0xFF888888),
-                    fontSize = 7.sp,
-                    letterSpacing = 1.sp,
-                    modifier = Modifier.padding(top = 2.dp)
+                    text = rest,
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Light,
+                    letterSpacing = 4.sp
                 )
             }
-
-            // Cascading chevrons
-            Row(modifier = Modifier.padding(top = 3.dp)) {
-                chevronOpacities.forEach { opacity ->
-                    Text(
-                        text = "\u203A",
-                        color = accentColor.copy(alpha = opacity),
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        lineHeight = 22.sp
-                    )
-                }
-            }
         }
+        Box(Modifier.fillMaxWidth().height(2.dp).background(color))
     }
 }
 

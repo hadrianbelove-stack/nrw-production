@@ -17,7 +17,7 @@ import {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import MovieCard from '../components/MovieCard';
-import DateDividerCard from '../components/DateDividerCard';
+import DateRowHeader from '../components/DateRowHeader';
 import FilterBar from '../components/FilterBar';
 import {Colors, Typography, Spacing, Dimensions} from '../constants/colors';
 import {
@@ -33,7 +33,7 @@ import {trackFilterChange, trackSearch} from '../services/analytics';
 const screenWidth = RNDimensions.get('window').width;
 
 const FILTER_DESCRIPTIONS = {
-  'staff-picks': { title: 'Picks', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
+  'staff-picks': { title: 'Highlights', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
   'indie':       { title: 'Indie', text: "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home." },
   'horror':      { title: 'Horror', text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." },
   'action':      { title: 'Action', text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." },
@@ -44,9 +44,23 @@ const FILTER_DESCRIPTIONS = {
   'documentary': { title: 'Documentary', text: "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home." },
   'restorations':{ title: 'Reissues', text: "Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers." },
 };
-const numColumns = 2;
+// 3-column grid matching mobile web
+const numColumns = 3;
 const cardMargin = Spacing.cardGap;
-const cardWidth = (screenWidth - Spacing.screenPadding * 2 - cardMargin) / numColumns;
+const cardWidth = (screenWidth - Spacing.screenPadding * 2 - cardMargin * (numColumns - 1)) / numColumns;
+
+// Date strips adopt the active filter's color when exactly one filter is on
+const STRIP_COLORS = {
+  'indie': '#00d4aa',
+  'horror': '#ff5e57',
+  'action': '#ff9500',
+  'comedy': '#ffd32a',
+  'family': '#2ed573',
+  'thriller': '#d63031',
+  'foreign': '#e84393',
+  'documentary': '#4A90D9',
+  'restorations': '#C8A951',
+};
 
 export default function HomeScreen({navigation}) {
   const insets = useSafeAreaInsets();
@@ -61,6 +75,7 @@ export default function HomeScreen({navigation}) {
   const [slopMode, setSlopMode] = useState('free');
   const [hideFest, setHideFest] = useState(true);
   const [showPreorders, setShowPreorders] = useState(false);
+  const [showHighlightsOnly, setShowHighlightsOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Initial load
@@ -71,36 +86,76 @@ export default function HomeScreen({navigation}) {
   // Apply filters and search
   useEffect(() => {
     let result = filterMoviesMulti(movies, activeFilters, searchQuery, slopMode, hideFest, showPreorders);
+    if (showHighlightsOnly) {
+      result = result.filter(m => m.filters?.is_staff_pick || m.featured);
+    }
     if (searchQuery.trim()) {
       result = searchMovies(result, searchQuery);
     }
     result = sortByDate(result);
     setDisplayedMovies(result);
-  }, [movies, activeFilters, slopMode, hideFest, searchQuery, showPreorders]);
+  }, [movies, activeFilters, slopMode, hideFest, searchQuery, showPreorders, showHighlightsOnly]);
 
-  // Build grid items with date dividers inserted
-  const gridItems = useMemo(() => {
-    if (searchQuery.trim()) return displayedMovies; // no dividers during search
-    const items = [];
+  // Build grid rows: full-width date strips + rows of 3 posters (matches mobile web)
+  const gridRows = useMemo(() => {
+    const rows = [];
+    let group = [];
+    const flushGroup = () => {
+      for (let i = 0; i < group.length; i += numColumns) {
+        const chunk = group.slice(i, i + numColumns);
+        rows.push({_type: 'row', _key: 'row-' + rows.length, movies: chunk});
+      }
+      group = [];
+    };
+
+    if (searchQuery.trim()) {
+      // No strips during search
+      group = displayedMovies.slice();
+      flushGroup();
+      return rows;
+    }
+
+    if (showHighlightsOnly && displayedMovies.length > 0) {
+      rows.push({_type: 'strip', _key: 'strip-highlights', dateString: 'highlights'});
+    }
+
     const today = new Date().toISOString().split('T')[0];
-    let lastDate = null;
-    let addedPreOrder = false;
-
+    let lastStrip = null;
     for (const movie of displayedMovies) {
       const date = movie.digital_date || movie.premiere_date || '';
-      const isPreOrder = movie._is_preorder || date > today;
-
-      if (isPreOrder && !addedPreOrder) {
-        items.push({_type: 'date-divider', _key: 'div-preorder', dateString: 'pre-order'});
-        addedPreOrder = true;
-      } else if (!isPreOrder && date && date !== lastDate) {
-        items.push({_type: 'date-divider', _key: 'div-' + date, dateString: date});
-        lastDate = date;
+      let stripKey;
+      if (movie._is_preorder || (!movie.filters?.is_virtual_screening && date > today)) {
+        stripKey = 'pre-order';
+      } else if (movie.filters?.is_virtual_screening) {
+        stripKey = 'fest';
+      } else {
+        stripKey = date || 'unknown';
       }
-      items.push(movie);
+      if (stripKey !== lastStrip) {
+        flushGroup();
+        if (stripKey !== 'unknown') {
+          rows.push({_type: 'strip', _key: 'strip-' + stripKey, dateString: stripKey});
+        }
+        lastStrip = stripKey;
+      }
+      group.push(movie);
     }
-    return items;
-  }, [displayedMovies, searchQuery]);
+    flushGroup();
+    return rows;
+  }, [displayedMovies, searchQuery, showHighlightsOnly]);
+
+  // Strip color: single active filter recolors date strips; HIGHLIGHTS mode goes crimson
+  const singleFilter = activeFilters.size === 1 ? Array.from(activeFilters)[0] : null;
+  const dateStripColor = showHighlightsOnly
+    ? '#dc143c'
+    : (singleFilter && STRIP_COLORS[singleFilter]) || Colors.primary;
+
+  // Strip rows stick below the list header while their day scrolls
+  // (+1 offsets for the ListHeaderComponent, which occupies sticky index 0)
+  const stickyIndices = useMemo(
+    () => gridRows.reduce((acc, r, i) => (r._type === 'strip' ? (acc.push(i + 1), acc) : acc), []),
+    [gridRows],
+  );
 
   const loadMovies = async () => {
     try {
@@ -151,34 +206,41 @@ export default function HomeScreen({navigation}) {
     }
   }, []);
 
+  // Grid tap opens the poster close-up (View 1), matching mobile web
   const handleMoviePress = useCallback(
     movie => {
-      // Find movie index in displayed list for navigation support
-      const currentIndex = displayedMovies.findIndex(m => m.id === movie.id);
-      navigation.navigate('MovieDetail', {
-        movie,
-        movieList: displayedMovies,
-        currentIndex: currentIndex >= 0 ? currentIndex : 0,
+      const currentIndex = displayedMovies.findIndex(m => String(m.id) === String(movie.id));
+      navigation.navigate('PosterView', {
+        movies: displayedMovies,
+        index: currentIndex >= 0 ? currentIndex : 0,
       });
     },
     [navigation, displayedMovies],
   );
 
-  const renderGridItem = ({item}) => {
-    if (item._type === 'date-divider') {
+  const renderRow = ({item}) => {
+    if (item._type === 'strip') {
       return (
-        <View style={styles.cardWrapper}>
-          <DateDividerCard dateString={item.dateString} />
-        </View>
+        <DateRowHeader
+          dateString={item.dateString}
+          stripColor={dateStripColor}
+        />
       );
     }
     return (
-      <View style={styles.cardWrapper}>
-        <MovieCard
-          movie={item}
-          onPress={handleMoviePress}
-          isFeatured={item.featured || item.filters?.is_staff_pick}
-        />
+      <View style={styles.gridRow}>
+        {item.movies.map(movie => (
+          <MovieCard
+            key={String(movie.id)}
+            movie={movie}
+            width={cardWidth}
+            onPress={handleMoviePress}
+            isFeatured={movie.featured || movie.filters?.is_staff_pick}
+          />
+        ))}
+        {Array.from({length: numColumns - item.movies.length}).map((_, i) => (
+          <View key={'pad-' + i} style={{width: cardWidth}} />
+        ))}
       </View>
     );
   };
@@ -247,13 +309,15 @@ export default function HomeScreen({navigation}) {
     );
   }
 
-  const activeFilterDesc = activeFilters.size === 1
+  const activeFilterDesc = showHighlightsOnly
+    ? FILTER_DESCRIPTIONS['staff-picks']
+    : activeFilters.size === 1
     ? FILTER_DESCRIPTIONS[Array.from(activeFilters)[0]]
     : null;
 
   return (
     <View style={[styles.container, {paddingBottom: insets.bottom}]}>
-      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopMode={slopMode} onSlopModeChange={setSlopMode} hideFest={hideFest} onHideFestChange={setHideFest} showPreorders={showPreorders} onShowPreordersChange={setShowPreorders} />
+      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopMode={slopMode} onSlopModeChange={setSlopMode} hideFest={hideFest} onHideFestChange={setHideFest} showPreorders={showPreorders} onShowPreordersChange={setShowPreorders} showHighlightsOnly={showHighlightsOnly} onShowHighlightsChange={setShowHighlightsOnly} />
 
       {activeFilterDesc && (
         <View style={styles.filterDescRow}>
@@ -263,12 +327,11 @@ export default function HomeScreen({navigation}) {
       )}
 
       <FlatList
-        data={gridItems}
-        renderItem={renderGridItem}
-        keyExtractor={item => item._key || String(item.id)}
-        numColumns={numColumns}
+        data={gridRows}
+        renderItem={renderRow}
+        keyExtractor={item => item._key}
+        stickyHeaderIndices={stickyIndices}
         contentContainerStyle={styles.listContent}
-        columnWrapperStyle={styles.row}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -386,12 +449,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.screenPadding,
     paddingBottom: Spacing.xl,
   },
-  row: {
+  gridRow: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  cardWrapper: {
-    width: cardWidth,
-    marginBottom: Spacing.md,
   },
   emptyContainer: {
     padding: Spacing.xl,

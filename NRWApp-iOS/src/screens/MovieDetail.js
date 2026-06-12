@@ -283,7 +283,7 @@ export default function MovieDetail({route}) {
           {/* Staff Pick badge */}
           {(movie.featured || movie.filters?.is_staff_pick) && (
             <View style={styles.staffPickBadge}>
-              <Text style={styles.staffPickText}>STAFF PICK</Text>
+              <Text style={styles.staffPickText}>HIGHLIGHT</Text>
             </View>
           )}
           {/* Restoration badge */}

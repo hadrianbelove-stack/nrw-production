@@ -21,6 +21,9 @@
     <!-- Show pre-orders toggle state -->
     <field id="showPreorders" type="boolean" value="false" onChange="onFilterChanged" />
 
+    <!-- Highlights-only toggle state -->
+    <field id="showHighlights" type="boolean" value="false" onChange="onFilterChanged" />
+
     <!-- Focus -->
     <field id="hasFocus" type="boolean" value="false" onChange="onFocusChanged" />
     <field id="focusedIndex" type="integer" value="0" />
@@ -36,14 +39,6 @@
       layoutDirection="horiz"
       itemSpacings="[12]"
       translation="[60, 0]">
-
-      <!-- Picks -->
-      <Group id="chip_staff_picks">
-        <Rectangle id="chipBg_staff_picks" width="70" height="36" color="0x333333FF" />
-        <Label id="chipLabel_staff_picks" text="Picks" width="70" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
 
       <!-- Indie -->
       <Group id="chip_indie">
@@ -127,6 +122,14 @@
         <Label id="chipLabel_slop_free" text="SLOP FREE" width="120" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0x00D4AAFF" />
+      </Group>
+
+      <!-- Highlights Toggle: crimson when active -->
+      <Group id="chip_show_highlights">
+        <Rectangle id="chipBg_show_highlights" width="120" height="36" color="0x0D0D0DFF" />
+        <Label id="chipLabel_show_highlights" text="HIGHLIGHTS" width="120" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0xDC143C73" />
       </Group>
 
       <!-- Fest Toggle: dim = fests hidden (default), teal = fests shown -->

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.nrw.app.data.FilterCategory
 import com.nrw.app.data.Movie
 import com.nrw.app.data.MovieRepository
+import com.nrw.app.data.isStaffPick
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +24,7 @@ data class HomeUiState(
     val slopMode: String = "free",
     val hideFest: Boolean = true,
     val showPreorders: Boolean = false,
+    val showHighlightsOnly: Boolean = false,
     val searchQuery: String = "",
     val playlistUrl: String? = null
 )
@@ -112,12 +114,21 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         applyFilters()
     }
 
+    fun toggleShowHighlights() {
+        _uiState.value = _uiState.value.copy(showHighlightsOnly = !_uiState.value.showHighlightsOnly)
+        applyFilters()
+    }
+
     /**
      * Apply filters and search to movies
      */
     private fun applyFilters() {
         val state = _uiState.value
         var filtered = repository.filterMoviesMulti(state.movies, state.activeFilters, state.searchQuery)
+
+        if (state.showHighlightsOnly) {
+            filtered = filtered.filter { it.isStaffPick() }
+        }
 
         if (state.slopMode == "free") {
             filtered = filtered.filter { !it.isSlop && !it.isSlopGuess }

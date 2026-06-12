@@ -13,6 +13,7 @@ const NRW = {
     slopMode: 'free',          // 'free' = hide slop, 'all' = show all, 'only' = show only slop
     showFest: false,           // When true, show virtual screening movies
     showPreorders: false,      // When true, show pre-order movies at the top
+    showHighlightsOnly: false, // When true, show only staff picks (HIGHLIGHTS toggle)
     searchQuery: '',     // Current search query
     displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
     loadIncrement: CONFIG.moviesPerPage,   // How many to add when clicking "More"
@@ -30,7 +31,7 @@ const NRW = {
             text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
         },
         'staff-picks': {
-            title: 'Picks',
+            title: 'Highlights',
             text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
         },
         'foreign': {
@@ -65,6 +66,19 @@ const NRW = {
             title: 'Thriller',
             text: 'Suspense, dread, and unease. Thrillers now streaming — from psychological slow-burns to pulse-pounding crime.'
         }
+    },
+
+    // Date strips adopt the active filter's color when exactly one filter is on
+    STRIP_COLORS: {
+        'indie': '#00d4aa',
+        'horror': '#ff5e57',
+        'action': '#ff9500',
+        'comedy': '#ffd32a',
+        'family': '#2ed573',
+        'thriller': '#d63031',
+        'foreign': '#e84393',
+        'documentary': '#4A90D9',
+        'restorations': '#C8A951'
     },
 
     resolveService: NRWConfig.resolveService,
@@ -220,6 +234,20 @@ const NRW = {
             });
         }
 
+        // Highlights toggle — show only staff picks
+        const highlightsToggle = document.getElementById('highlights-toggle');
+        if (highlightsToggle) {
+            highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
+            highlightsToggle.addEventListener('click', () => {
+                this.showHighlightsOnly = !this.showHighlightsOnly;
+                highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
+                this.displayedCount = this.loadIncrement;
+                this.updateFilterDescription();
+                this.applyFilter();
+                this.renderWallWithMore();
+            });
+        }
+
         // Fest (virtual screenings) toggle
         const festToggle = document.getElementById('fest-toggle');
         if (festToggle) {
@@ -253,7 +281,12 @@ const NRW = {
         if (!el) return;
 
         const filters = Array.from(this.activeFilters);
-        if (filters.length === 1 && this.FILTER_DESCRIPTIONS[filters[0]]) {
+        if (this.showHighlightsOnly) {
+            const desc = this.FILTER_DESCRIPTIONS['staff-picks'];
+            document.getElementById('filter-description-title').textContent = desc.title;
+            document.getElementById('filter-description-text').textContent = desc.text;
+            el.classList.add('active');
+        } else if (filters.length === 1 && this.FILTER_DESCRIPTIONS[filters[0]]) {
             const desc = this.FILTER_DESCRIPTIONS[filters[0]];
             document.getElementById('filter-description-title').textContent = desc.title;
             document.getElementById('filter-description-text').textContent = desc.text;
@@ -335,6 +368,9 @@ const NRW = {
             if (this.slopMode === 'free' && isSlop) return false;
             if (this.slopMode === 'only' && !isSlop) return false;
 
+            // Highlights mode: only staff picks
+            if (this.showHighlightsOnly && !(movie.filters?.is_staff_pick || movie.featured)) return false;
+
             // Fest mode: hide virtual screenings unless toggle is ON
             if (!this.showFest && movie.filters?.is_virtual_screening) return false;
 
@@ -351,9 +387,6 @@ const NRW = {
                     switch (filter) {
                         case 'indie':
                             if (movie.filters?.is_indie) matchesAny = true;
-                            break;
-                        case 'staff-picks':
-                            if (movie.filters?.is_staff_pick || movie.featured) matchesAny = true;
                             break;
                         case 'foreign': {
                             const isForeign = movie.filters?.is_foreign ??
@@ -508,35 +541,34 @@ const NRW = {
         let preorderSectionStarted = false;
         const SHOW_TRAILERS_CARD = false; // Trailers card temporarily disabled — set true to restore
 
+        // Date strips: single active filter recolors them; HIGHLIGHTS mode goes crimson
+        const singleFilter = this.activeFilters.size === 1 ? [...this.activeFilters][0] : null;
+        const filterColor = singleFilter ? this.STRIP_COLORS[singleFilter] : null;
+        const dateStripColor = this.showHighlightsOnly ? '#dc143c' : (filterColor || 'var(--accent-primary)');
+        const stripHtml = (day, rest, color, extraClass = '', titleAttr = '') =>
+            `<div class="date-row-header${extraClass}" style="--strip-c:${color}"${titleAttr}><span class="drh-day">${day}</span>${rest ? `<span class="drh-rest">${rest}</span>` : ''}</div>`;
+
+        if (this.showHighlightsOnly) {
+            html += stripHtml('HIGHLIGHTS', '', '#dc143c');
+        }
+
         orderedMovies.forEach(movie => {
             const date = (movie.digital_date || '').substring(0, 10);
             const isFest = !movie._is_preorder && movie.filters?.is_virtual_screening;
 
-            // Fest movies: show section header once, no date dividers
+            // Fest movies: section strip once, no date strips
             if (isFest) {
                 if (!festSectionStarted) {
                     festSectionStarted = true;
-                    html += `<div class="date-divider-card">
-                        <div class="date-bar date-bar-fest"><div class="date-day">FEST</div></div>
-                        <div class="date-body">
-                            <div class="date-number date-number-fest">NOW</div>
-                            <div class="date-chevrons date-chevrons-fest"><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span></div>
-                        </div>
-                    </div>`;
+                    html += stripHtml('FEST', 'NOW SCREENING', '#f59e0b');
                 }
-            // Pre-order movies: show section header once, no date dividers
+            // Pre-order movies: section strip once, no date strips
             } else if (movie._is_preorder) {
                 if (!preorderSectionStarted) {
                     preorderSectionStarted = true;
-                    html += `<div class="date-divider-card">
-                        <div class="date-bar date-bar-preorder"><div class="date-day">PRE-ORDER</div></div>
-                        <div class="date-body">
-                            <div class="date-number date-number-preorder">SOON</div>
-                            <div class="date-chevrons date-chevrons-preorder"><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span></div>
-                        </div>
-                    </div>`;
+                    html += stripHtml('PRE-ORDER', 'COMING SOON', '#7c3aed');
                 }
-            // Regular movies: date divider when date changes
+            // Regular movies: date strip when date changes
             } else if (date !== lastDate) {
                 // Add NEW TRAILERS button before the first date marker
                 if (isFirstDate && SHOW_TRAILERS_CARD) {
@@ -559,19 +591,15 @@ const NRW = {
 
                 const d = new Date(date + 'T12:00:00');
 
-                // Check if this is a bootstrap date for visual indicator
+                // Bootstrap dates are approximate — mark with ~ and tooltip
                 const isBootstrapDate = movie.bootstrap_date;
                 const datePrefix = isBootstrapDate ? '~' : '';
-                const dateTitle = isBootstrapDate ? 'Approximate date - may have been available earlier' : '';
+                const dateTitle = isBootstrapDate ? ' title="Approximate date - may have been available earlier"' : '';
+                const dayLabel = d.toLocaleDateString('en', {weekday: 'short'});
+                const restLabel = `${datePrefix}${d.toLocaleDateString('en', {month: 'short'})} ${d.getDate()}`;
 
-                html += `<div class="date-divider-card${isBootstrapDate ? ' date-approximate' : ''}" ${dateTitle ? `title="${dateTitle}"` : ''}>
-                    <div class="date-bar"><div class="date-day">${d.toLocaleDateString('en', {weekday: 'short'}).toUpperCase()}</div></div>
-                    <div class="date-body">
-                        <div class="date-number">${datePrefix}${d.getDate()}</div>
-                        <div class="date-month">${d.toLocaleDateString('en', {month: 'short'}).toUpperCase()}</div>
-                        <div class="date-chevrons"><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span><span>&#8250;</span></div>
-                    </div>
-                </div>`;
+                html += stripHtml(dayLabel, restLabel, dateStripColor,
+                    isBootstrapDate ? ' date-approximate' : '', dateTitle);
 
                 lastDate = date;
             }
@@ -645,7 +673,7 @@ const NRW = {
             const badgeBar = isScreening
                 ? `<div class="badge-bar gold">${festivalName || '\u2605 VIRTUAL SCREENING \u2605'}</div>`
                 : isStaffPick
-                ? '<div class="badge-bar red">\u2605 STAFF PICK \u2605</div>'
+                ? '<div class="badge-bar red">\u2605 HIGHLIGHT \u2605</div>'
                 : '';
 
             // Score badges for card front (bottom-left overlay)

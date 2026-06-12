@@ -8,11 +8,10 @@ Sub Init()
     m.focusIndicator = m.top.FindNode("focusIndicator")
 
     ' Filter chip IDs in order
-    m.filterIds = ["staff_picks", "indie", "horror", "action", "comedy", "family", "thriller", "foreign", "documentary", "restorations", "slop_free", "hide_fest", "show_preorders"]
+    m.filterIds = ["indie", "horror", "action", "comedy", "family", "thriller", "foreign", "documentary", "restorations", "slop_free", "show_highlights", "hide_fest", "show_preorders"]
 
     ' Chip widths for focus indicator positioning
     m.chipWidths = {
-        staff_picks: 70
         indie: 60
         horror: 80
         action: 80
@@ -23,6 +22,7 @@ Sub Init()
         documentary: 60
         restorations: 90
         slop_free: 120
+        show_highlights: 120
         hide_fest: 110
         show_preorders: 130
     }
@@ -67,6 +67,7 @@ Sub UpdateChipStyles()
     slopMode = m.top.slopMode
     hideFest = m.top.hideFest
     showPreorders = m.top.showPreorders
+    showHighlights = m.top.showHighlights
 
     for each filterId in m.filterIds
         chipBg = m.chipBgs[filterId]
@@ -86,6 +87,18 @@ Sub UpdateChipStyles()
                 chipBg.color = "0x0D0D0DFF"
                 chipLabel.color = "0x00D4AA73"
                 chipLabel.text = "ALL"
+            end if
+            continue for
+        end if
+
+        ' Highlights toggle: crimson when active
+        if filterId = "show_highlights"
+            if showHighlights
+                chipBg.color = "0x2D040EFF"
+                chipLabel.color = "0xDC143CFF"
+            else
+                chipBg.color = "0x0D0D0DFF"
+                chipLabel.color = "0xDC143C73"
             end if
             continue for
         end if

@@ -35,7 +35,6 @@ import { setSharedMovieList } from './sharedMovieList';
 
 // Filter options - matches web categories
 const FILTERS = [
-  { id: 'staff-picks', label: 'Picks' },
   { id: 'indie', label: 'Indie' },
   { id: 'horror', label: 'Horror' },
   { id: 'action', label: 'Action' },
@@ -48,8 +47,21 @@ const FILTERS = [
 ];
 
 // Filter descriptions — shown below filter row when a single filter is active (matches web)
+// Date strips adopt the active filter's color when exactly one filter is on
+const STRIP_COLORS = {
+  'indie': '#00d4aa',
+  'horror': '#ff5e57',
+  'action': '#ff9500',
+  'comedy': '#ffd32a',
+  'family': '#2ed573',
+  'thriller': '#d63031',
+  'foreign': '#e84393',
+  'documentary': '#4A90D9',
+  'restorations': '#C8A951',
+};
+
 const FILTER_DESCRIPTIONS = {
-  'staff-picks': { title: 'Picks', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
+  'staff-picks': { title: 'Highlights', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
   'indie':       { title: 'Indie', text: "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home." },
   'horror':      { title: 'Horror', text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." },
   'action':      { title: 'Action', text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." },
@@ -123,7 +135,7 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus, nextFocus
 
 // Slop Toggle Button - TV remote focusable
 // iOS-style track+thumb toggle — matches the website design
-const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, nextFocusUp, nextFocusDown }, ref) => {
+const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, nextFocusUp, nextFocusDown, accentColor }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const thumbAnim = useRef(new Animated.Value(isActive ? 1 : 0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -168,11 +180,12 @@ const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, n
         <View style={[
           styles.metaToggleTrack,
           isActive && styles.metaToggleTrackActive,
+          isActive && accentColor && { backgroundColor: accentColor, borderColor: accentColor },
           isFocused && styles.metaToggleTrackFocused,
         ]}>
           <Animated.View style={[styles.metaToggleThumb, { transform: [{ translateX: thumbTranslate }] }]} />
         </View>
-        <Text style={[styles.metaToggleLabel, isActive && styles.metaToggleLabelActive]}>
+        <Text style={[styles.metaToggleLabel, isActive && styles.metaToggleLabelActive, isActive && accentColor && { color: accentColor }]}>
           {label}
         </Text>
       </Animated.View>
@@ -240,45 +253,36 @@ const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp, nextFocusLeft, 
   );
 });
 
-// Date Card Component - non-focusable visual divider
-const DateCard = ({ dateParts, isBootstrap }) => {
-  const isPreOrder = dateParts.dayName === 'PRE-' || dateParts.dayName === 'PRE-ORDER';
-  const isFest = dateParts.dayName === 'FEST';
-  const barColor = isPreOrder ? '#7c3aed' : isFest ? '#b45309' : Colors.primary;
-  const accentColor = isPreOrder ? '#7c3aed' : isFest ? '#f59e0b' : Colors.primary;
+// Date Row Strip — full-width, non-focusable neon banner between date groups
+// (glowing top/bottom borders, colored day + white date, centered)
+const DateRowStrip = ({ stripKey, stripColor }) => {
+  let day, rest = '', color;
+  if (stripKey === 'PRE-ORDER') {
+    day = 'PRE-ORDER'; rest = 'COMING SOON'; color = '#7c3aed';
+  } else if (stripKey === 'SCREENING') {
+    day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
+  } else if (stripKey === 'HIGHLIGHTS') {
+    day = 'HIGHLIGHTS'; color = '#dc143c';
+  } else {
+    const d = new Date(stripKey + 'T12:00:00');
+    if (isNaN(d.getTime())) {
+      day = 'DATE TBD';
+    } else {
+      day = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+      rest = `${d.toLocaleDateString('en-US', { month: 'short' })} ${d.getDate()}`.toUpperCase();
+    }
+    color = stripColor || Colors.primary;
+  }
 
   return (
     <View
       accessible={false}
       focusable={false}
       isTVSelectable={false}
+      style={[styles.dateStripRow, { borderColor: color, shadowColor: color }]}
     >
-      <View style={[styles.dateCard, isBootstrap && styles.dateCardApproximate]}>
-        {/* Top bar */}
-        <View style={[styles.dateBar, { backgroundColor: barColor }]}>
-          <Text style={styles.dateBarText}>
-            {isPreOrder ? 'PRE-ORDER' : isFest ? 'FEST' : dateParts.dayName}
-          </Text>
-        </View>
-
-        {/* Body */}
-        <View style={styles.dateBody}>
-          <Text style={[styles.dateNumber, { color: (isPreOrder || isFest) ? accentColor : '#fff', fontStyle: isBootstrap ? 'italic' : 'normal' }]}>
-            {isPreOrder ? 'SOON' : isFest ? 'NOW' : (isBootstrap ? '~' : '') + dateParts.day}
-          </Text>
-          {!isPreOrder && !isFest && dateParts.month ? (
-            <Text style={styles.dateMonth}>{dateParts.month}</Text>
-          ) : null}
-          {/* Cascading chevrons — 5 levels matching desktop */}
-          <View style={styles.dateChevrons}>
-            {[0.9, 0.7, 0.5, 0.3, 0.15].map((opacity, i) => (
-              <Text key={i} style={[styles.dateChevron, {color: accentColor, opacity}]}>
-                {'›'}
-              </Text>
-            ))}
-          </View>
-        </View>
-      </View>
+      <Text style={[styles.dateStripDay, { color, textShadowColor: color }]}>{day}</Text>
+      {rest ? <Text style={styles.dateStripRest}>{rest}</Text> : null}
     </View>
   );
 };
@@ -494,6 +498,7 @@ const HomeScreenTvOS = () => {
   const [slopMode, setSlopMode] = useState('free'); // 'free' | 'all' | 'only' — matches desktop 3-state
   const [hideFest, setHideFest] = useState(true); // default: hide fests (matches desktop default)
   const [showPreorders, setShowPreorders] = useState(false);
+  const [showHighlightsOnly, setShowHighlightsOnly] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -501,7 +506,7 @@ const HomeScreenTvOS = () => {
   // Reset to first page whenever filters change
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [activeFilters, slopMode, hideFest, showPreorders, searchQuery]);
+  }, [activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly, searchQuery]);
 
   // Fullscreen poster modal state
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
@@ -618,6 +623,11 @@ const HomeScreenTvOS = () => {
       movies = movies.filter(m => !m._is_preorder || m.filters?.is_virtual_screening);
     }
 
+    // Highlights mode: only staff picks
+    if (showHighlightsOnly) {
+      movies = movies.filter(m => m.filters?.is_staff_pick || m.featured);
+    }
+
     // If no filters selected OR search is active, show all (search bypasses category filters — matches desktop)
     if (activeFilters.size === 0 || searchQuery) {
       return movies;
@@ -629,9 +639,6 @@ const HomeScreenTvOS = () => {
         switch (filter) {
           case 'indie':
             if (movie.filters?.is_indie) return true;
-            break;
-          case 'staff-picks':
-            if (movie.filters?.is_staff_pick || movie.featured) return true;
             break;
           case 'foreign': {
             const isForeign = movie.filters?.is_foreign ??
@@ -664,7 +671,7 @@ const HomeScreenTvOS = () => {
       }
       return false;
     });
-  }, [filteredMovies, activeFilters, slopMode, hideFest, showPreorders, searchQuery]);
+  }, [filteredMovies, activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly, searchQuery]);
 
   // Build flat list data with date markers interspersed
   // Each date marker takes one grid cell (same size as movie card)
@@ -706,24 +713,30 @@ const HomeScreenTvOS = () => {
     const sortedRegular = [...regularMovies].sort(byDateDesc);
 
     const items = [];
+    let mIdx = 0;  // global movie ordinal — drives focus refs and row/col math
 
-    // 1. FEST section at top (amber card)
+    // 0. HIGHLIGHTS strip at the top when the toggle is on
+    if (showHighlightsOnly) {
+      items.push({ type: 'date', id: 'date-highlights-top', date: 'HIGHLIGHTS' });
+    }
+
+    // 1. FEST section at top (amber strip)
     if (sortedFest.length > 0) {
       items.push({ type: 'date', id: 'date-fest-top', date: 'SCREENING' });
       sortedFest.forEach((movie, index) => {
-        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `fest-${index}`, movie });
+        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `fest-${index}`, movie, mIdx: mIdx++ });
       });
     }
 
-    // 2. PRE-ORDERS section (purple card)
+    // 2. PRE-ORDERS section (purple strip)
     if (sortedPreorders.length > 0) {
       items.push({ type: 'date', id: 'date-preorder-top', date: 'PRE-ORDER' });
       sortedPreorders.forEach((movie, index) => {
-        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `preorder-${index}`, movie });
+        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `preorder-${index}`, movie, mIdx: mIdx++ });
       });
     }
 
-    // 3. Regular movies with date dividers (optional trailers card before first date)
+    // 3. Regular movies with date strips (optional trailers card before first date)
     const hasMore = sortedRegular.length > visibleCount;
     const paginatedRegular = sortedRegular.slice(0, visibleCount);
 
@@ -739,7 +752,7 @@ const HomeScreenTvOS = () => {
         }
         items.push({ type: 'date', id: `date-${movieDate}-${index}`, date: movieDate, isBootstrap: !!movie.bootstrap_date });
       }
-      items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie });
+      items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie, mIdx: mIdx++ });
     });
 
     if (hasMore) {
@@ -747,7 +760,44 @@ const HomeScreenTvOS = () => {
     }
 
     return items;
-  }, [displayMovies, latestPlaylistUrl, visibleCount]);
+  }, [displayMovies, latestPlaylistUrl, visibleCount, showHighlightsOnly]);
+
+  // Group the flat list into rows: strips/trailers/load-more are full-width rows,
+  // movies chunk into rows of NUM_COLUMNS. Focus math works on (row, col) of movie rows.
+  const rowData = useMemo(() => {
+    const rows = [];
+    let movieRow = [];
+    const flushRow = () => {
+      if (movieRow.length > 0) {
+        rows.push({ type: 'movieRow', id: 'mrow-' + movieRow[0].mIdx, items: movieRow });
+        movieRow = [];
+      }
+    };
+    for (const item of listData) {
+      if (item.type === 'movie') {
+        movieRow.push(item);
+        if (movieRow.length === NUM_COLUMNS) flushRow();
+      } else {
+        flushRow();
+        rows.push(item);
+      }
+    }
+    flushRow();
+    return rows;
+  }, [listData]);
+
+  // mIdx -> { movieRowOrdinal, col }, plus the mIdx grid of movie rows for neighbor lookup
+  const movieGrid = useMemo(() => {
+    const rowsOfIdx = [];
+    const posByIdx = new Map();
+    for (const row of rowData) {
+      if (row.type !== 'movieRow') continue;
+      const idxRow = row.items.map(it => it.mIdx);
+      idxRow.forEach((mi, col) => posByIdx.set(mi, { row: rowsOfIdx.length, col }));
+      rowsOfIdx.push(idxRow);
+    }
+    return { rowsOfIdx, posByIdx };
+  }, [rowData]);
 
   // Handle movie selection - navigate to detail with analytics
   const handleMovieSelect = useCallback(
@@ -811,72 +861,50 @@ const HomeScreenTvOS = () => {
   }, [refreshMovies]);
 
 
-  // Format date for display (matches web date divider style)
-  const formatDateParts = useCallback((dateString) => {
-    if (!dateString || dateString === 'Unknown') {
-      return { day: '?', dayName: '', month: 'Unknown' };
-    }
-    if (dateString === 'PRE-ORDER') {
-      return { dayName: 'PRE-', day: 'ORDER', month: '' };
-    }
-    if (dateString === 'SCREENING') {
-      return { dayName: 'FEST', day: 'NOW', month: '' };
-    }
-    try {
-      const date = new Date(dateString + 'T12:00:00'); // Noon to avoid timezone issues
-      return {
-        dayName: date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
-        day: date.getDate().toString(),
-        month: date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
-      };
-    } catch {
-      return { day: '?', dayName: '', month: dateString };
-    }
-  }, []);
-
   // Only fire hasTVPreferredFocus on first data load — prevents re-triggering on filter changes
   const giveInitialFocus = !initialFocusDone.current;
   if (giveInitialFocus) initialFocusDone.current = true;
 
-  // Render item (date marker, trailers button, or movie card)
-  const renderItem = useCallback(
-    ({ item, index }) => {
-      // Items in first row should navigate up to filter chips (bottom header row)
-      const isFirstRow = index < NUM_COLUMNS;
-      const focusUpTarget = isFirstRow ? headerNodeHandle : undefined;
+  // Date strips adopt the single active filter's color; HIGHLIGHTS mode goes crimson
+  const singleFilter = activeFilters.size === 1 ? Array.from(activeFilters)[0] : null;
+  const dateStripColor = showHighlightsOnly
+    ? '#dc143c'
+    : (singleFilter && STRIP_COLORS[singleFilter]) || Colors.primary;
 
-      // NEW TRAILERS button
+  // Strip rows pin to the top of the grid while their day scrolls
+  // (+1 offsets for the ListHeaderComponent focus guide at sticky index 0)
+  const stickyIndices = useMemo(
+    () => rowData.reduce((acc, r, i) => (r.type === 'date' ? (acc.push(i + 1), acc) : acc), []),
+    [rowData],
+  );
+
+  // Render row (date strip, trailers, load-more, or a row of movie cards)
+  const renderRow = useCallback(
+    ({ item }) => {
+      // Full-width date strip — non-focusable; the focus engine never sees it
+      if (item.type === 'date') {
+        return (
+          <DateRowStrip
+            stripKey={item.date}
+            stripColor={dateStripColor}
+          />
+        );
+      }
+
+      // NEW TRAILERS button (own row)
       if (item.type === 'trailers') {
         return (
           <View style={styles.cardWrapper}>
-            <TrailersCard playlistUrl={item.playlistUrl} nextFocusUp={focusUpTarget} />
+            <TrailersCard playlistUrl={item.playlistUrl} nextFocusUp={headerNodeHandle} />
           </View>
         );
       }
 
-      // Date marker — plain View, not TVFocusGuideView.
-      // TVFocusGuideView intercepts ALL directional focus (not just UP/DOWN), causing LEFT/RIGHT
-      // navigation that fails to skip the date cell to land on the wrong row.
-      // Navigation AROUND date cards is handled entirely by nextFocusUp/Down/Left/Right props
-      // on adjacent movie cards (findSameColumnAbove/Below and findNearestHandle already skip
-      // items of type 'date'). With removeClippedSubviews removed those handles stay valid.
-      if (item.type === 'date') {
-        const dateParts = formatDateParts(item.date);
-        return (
-          <View style={styles.cardWrapper}>
-            <DateCard dateParts={dateParts} isBootstrap={item.isBootstrap} />
-          </View>
-        );
-      }
-
-      // Load more button
+      // Load more button (own row)
       if (item.type === 'load_more') {
-        // Scan backward for the nearest registered movie card handle to use as UP target
-        let loadMoreUpHandle = headerNodeHandle;
-        for (let i = index - 1; i >= 0; i--) {
-          const h = itemNodeHandles.get(i);
-          if (h) { loadMoreUpHandle = h; break; }
-        }
+        // UP from load-more goes to the last rendered movie card
+        const lastRow = movieGrid.rowsOfIdx[movieGrid.rowsOfIdx.length - 1];
+        const loadMoreUpHandle = lastRow ? itemNodeHandles.get(lastRow[0]) : headerNodeHandle;
         return (
           <View style={styles.cardWrapper}>
             <LoadMoreCard
@@ -888,114 +916,74 @@ const HomeScreenTvOS = () => {
         );
       }
 
-      // Calculate wrap-around navigation for grid
-      // At row end (rightmost column), RIGHT should go to next row's first item
-      // At row start (leftmost column), LEFT should go to previous row's last item
-      const columnIndex = index % NUM_COLUMNS;
-      const isRowEnd = columnIndex === NUM_COLUMNS - 1;
-      const isRowStart = columnIndex === 0;
-
-      // Scan linearly for nearest focusable handle (skips date cards which have no handle)
-      const findNearestHandle = (start, step) => {
-        for (let i = start; i >= 0 && i < listData.length; i += step) {
-          const handle = itemNodeHandles.get(i);
-          if (handle) return handle;
-        }
-        return undefined;
-      };
-
-      // Scan strictly within the same column going up, skipping date cards and unregistered handles
-      const findSameColumnAbove = (idx) => {
-        let i = idx - NUM_COLUMNS;
-        while (i >= 0) {
-          if (listData[i]?.type !== 'date') {
-            const handle = itemNodeHandles.get(i);
-            if (handle) return handle;
-          }
-          i -= NUM_COLUMNS;
-        }
-        return undefined;
-      };
-
-      // Scan strictly within the same column going down, skipping date cards and unregistered handles
-      const findSameColumnBelow = (idx) => {
-        let i = idx + NUM_COLUMNS;
-        while (i < listData.length) {
-          if (listData[i]?.type !== 'date') {
-            const handle = itemNodeHandles.get(i);
-            if (handle) return handle;
-          }
-          i += NUM_COLUMNS;
-        }
-        return undefined;
-      };
-
-      const rightNeighbor = listData[index + 1];
-      const leftNeighbor = index > 0 ? listData[index - 1] : undefined;
-
-      // RIGHT: wrap at row end, or skip a date card in the next cell
-      const nextFocusRight = isRowEnd
-        ? findNearestHandle(index + 1, 1)
-        : (rightNeighbor && rightNeighbor.type === 'date' ? findNearestHandle(index + 2, 1) : undefined);
-
-      // LEFT: at row start → last filter chip (first poster row) or far right of previous poster row.
-      // Skip date cards in the previous cell; guard index-2 going negative (date at col 0, first row).
-      const nextFocusLeft = isRowStart
-        ? (isFirstRow ? lastFilterNodeHandle : findNearestHandle(index - 1, -1))
-        : (leftNeighbor && leftNeighbor.type === 'date'
-            ? (index === 1 ? lastFilterNodeHandle : findNearestHandle(index - 2, -1))
-            : undefined);
-
-      // DOWN: always column-preserving (skips dates + unregistered handles); undefined if nothing below
-      const nextFocusDown = findSameColumnBelow(index);
-
-      // UP: first row — let tvOS spatial focus find the filter chips naturally (the boundary
-      // ListHeaderComponent TVFocusGuideView also intercepts). Deeper rows: column-preserving,
-      // fall back to header handle only when nothing is above in the same column.
-      const nextFocusUp = isFirstRow
-        ? undefined
-        : (findSameColumnAbove(index) ?? headerNodeHandle);
-
-      // Track the first movie card's ref so the boundary guide below the header can target it.
-      const firstMovieIdx = listData.findIndex(i => i.type === 'movie');
-      const isFirstMovie = index === firstMovieIdx;
-
-      // Movie card
+      // Row of movie cards — focus neighbors derived from (row, col) in movieGrid
       return (
-        <View ref={(ref) => registerWrapperRef(index, ref)} style={styles.cardWrapper}>
-          <MovieCard
-            ref={(ref) => { registerItemRef(index, ref); if (isFirstMovie) setFirstMovieRefState(ref); }}
-            movie={item.movie}
-            onSelect={() => handleMovieSelect(item.movie)}
-            onLongPress={() => handleOpenFullscreen(item.movie)}
-            onFocus={() => handleMovieFocus(item.movie, index)}
-            onBlur={() => handleMovieBlur(index)}
-            hasTVPreferredFocus={giveInitialFocus && index === (SHOW_TRAILERS_CARD ? 2 : 1)}
-            testID={`movie-card-${index}`}
-            nextFocusUp={nextFocusUp}
-            nextFocusDown={nextFocusDown}
-            nextFocusLeft={nextFocusLeft}
-            nextFocusRight={nextFocusRight}
-          />
+        <View style={styles.movieRow}>
+          {item.items.map(({ movie, mIdx, id }) => {
+            const pos = movieGrid.posByIdx.get(mIdx) || { row: 0, col: 0 };
+            const { rowsOfIdx } = movieGrid;
+            const rowIdx = pos.row;
+            const colIdx = pos.col;
+            const thisRow = rowsOfIdx[rowIdx] || [];
+            const prevRow = rowsOfIdx[rowIdx - 1];
+            const nextRow = rowsOfIdx[rowIdx + 1];
+            const isFirstMovieRow = rowIdx === 0;
+            const isRowEnd = colIdx === thisRow.length - 1;
+            const isRowStart = colIdx === 0;
+
+            // RIGHT at row end wraps to the next row's first card
+            const nextFocusRight = isRowEnd && nextRow
+              ? itemNodeHandles.get(nextRow[0])
+              : undefined;
+
+            // LEFT at row start: first row goes to the last filter chip; deeper rows wrap
+            // to the previous row's last card
+            const nextFocusLeft = isRowStart
+              ? (isFirstMovieRow
+                  ? lastFilterNodeHandle
+                  : (prevRow ? itemNodeHandles.get(prevRow[prevRow.length - 1]) : undefined))
+              : undefined;
+
+            // UP: column-preserving into the previous row (clamped to its width);
+            // first row lets spatial focus find the header naturally
+            const nextFocusUp = isFirstMovieRow
+              ? undefined
+              : (prevRow ? itemNodeHandles.get(prevRow[Math.min(colIdx, prevRow.length - 1)]) : headerNodeHandle);
+
+            // DOWN: column-preserving into the next row (clamped)
+            const nextFocusDown = nextRow
+              ? itemNodeHandles.get(nextRow[Math.min(colIdx, nextRow.length - 1)])
+              : undefined;
+
+            const isFirstMovie = mIdx === 0;
+
+            return (
+              <View key={id} ref={(ref) => registerWrapperRef(mIdx, ref)} style={styles.cardWrapper}>
+                <MovieCard
+                  ref={(ref) => { registerItemRef(mIdx, ref); if (isFirstMovie) setFirstMovieRefState(ref); }}
+                  movie={movie}
+                  onSelect={() => handleMovieSelect(movie)}
+                  onLongPress={() => handleOpenFullscreen(movie)}
+                  onFocus={() => handleMovieFocus(movie, mIdx)}
+                  onBlur={() => handleMovieBlur(mIdx)}
+                  hasTVPreferredFocus={giveInitialFocus && isFirstMovie}
+                  testID={`movie-card-${mIdx}`}
+                  nextFocusUp={nextFocusUp}
+                  nextFocusDown={nextFocusDown}
+                  nextFocusLeft={nextFocusLeft}
+                  nextFocusRight={nextFocusRight}
+                />
+              </View>
+            );
+          })}
         </View>
       );
     },
-    [formatDateParts, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, listData, registerItemRef, registerWrapperRef, giveInitialFocus]
+    [movieGrid, dateStripColor, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, registerItemRef, registerWrapperRef, giveInitialFocus]
   );
 
   // Key extractor
   const keyExtractor = useCallback((item) => item.id, []);
-
-  // Get item layout for optimized scrolling (vertical grid)
-  const getItemLayout = useCallback((data, index) => {
-    const rowHeight = CARD_HEIGHT + CARD_GAP;
-    const rowIndex = Math.floor(index / NUM_COLUMNS);
-    return {
-      length: rowHeight,
-      offset: rowIndex * rowHeight,
-      index,
-    };
-  }, []);
 
   // Render loading state
   if (isLoading && listData.length === 0) {
@@ -1048,6 +1036,14 @@ const HomeScreenTvOS = () => {
               ref={setFirstToggleRef}
               slopMode={slopMode}
               onPress={() => setSlopMode(m => m === 'free' ? 'all' : m === 'all' ? 'only' : 'free')}
+              nextFocusDown={headerNodeHandle}
+            />
+            <MetaToggle
+              isActive={showHighlightsOnly}
+              label="HIGHLIGHTS"
+              accentColor="#dc143c"
+              accessibilityLabel={showHighlightsOnly ? 'Showing highlights only' : 'Showing all movies'}
+              onPress={() => setShowHighlightsOnly(v => !v)}
               nextFocusDown={headerNodeHandle}
             />
             <MetaToggle
@@ -1105,9 +1101,9 @@ const HomeScreenTvOS = () => {
         </View>
       </View>
 
-      {/* Filter description — shown when exactly one filter is active (matches web) */}
-      {activeFilters.size === 1 && (() => {
-        const filterId = Array.from(activeFilters)[0];
+      {/* Filter description — highlights toggle or exactly one active filter (matches web) */}
+      {(showHighlightsOnly || activeFilters.size === 1) && (() => {
+        const filterId = showHighlightsOnly ? 'staff-picks' : Array.from(activeFilters)[0];
         const desc = FILTER_DESCRIPTIONS[filterId];
         if (!desc) return null;
         return (
@@ -1129,20 +1125,18 @@ const HomeScreenTvOS = () => {
       {/* Vertical scrolling grid - the wall */}
       <FlatList
         ref={flatListRef}
-        data={listData}
-        renderItem={renderItem}
+        data={rowData}
+        renderItem={renderRow}
         keyExtractor={keyExtractor}
-        numColumns={NUM_COLUMNS}
+        stickyHeaderIndices={stickyIndices}
         extraData={itemNodeHandles}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
-        columnWrapperStyle={styles.row}
         // removeClippedSubviews intentionally omitted — it destroys native view registrations
         // used for focus navigation, causing nextFocusUp/Down handles to go stale off-screen.
-        maxToRenderPerBatch={21}
+        maxToRenderPerBatch={8}
         windowSize={5}
-        initialNumToRender={21}
-        getItemLayout={getItemLayout}
+        initialNumToRender={8}
         // UP boundary: when focus exits the top of the scroll view it crosses this 1px guide,
         // which redirects to the filter chips. Insurance alongside natural spatial focus.
         ListHeaderComponent={
@@ -1364,6 +1358,13 @@ const styles = StyleSheet.create({
     overflow: 'visible',
     zIndex: 1,
   },
+  movieRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginBottom: CARD_GAP,
+    overflow: 'visible',
+    zIndex: 1,
+  },
   // THIS WEEK'S TRAILERS button - same size as movie cards
   trailersCard: {
     width: CARD_WIDTH,
@@ -1415,50 +1416,38 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: '#00ffcc',
   },
-  // Date card - same size as movie cards
-  dateCard: {
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
-    borderRadius: 12,
-    backgroundColor: '#0a0a0a',
-    overflow: 'hidden',
-  },
-  dateCardApproximate: {
-    opacity: 0.8,
-  },
-  dateBar: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-  },
-  dateBarText: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#000',
-    letterSpacing: 0.5,
-  },
-  dateBody: {
-    flex: 1,
-    paddingLeft: 10,
-    justifyContent: 'center',
-  },
-  dateNumber: {
-    fontSize: 64,
-    fontWeight: '800',
-    lineHeight: 64,
-  },
-  dateMonth: {
-    fontSize: 14,
-    color: '#888',
-    letterSpacing: 2,
-    marginTop: 4,
-  },
-  dateChevrons: {
+  // Date row strip — full-width neon banner between date groups
+  dateStripRow: {
     flexDirection: 'row',
-    marginTop: 14,
+    justifyContent: 'center',
+    alignItems: 'baseline',
+    gap: 18,
+    backgroundColor: 'rgba(8,8,12,0.96)',
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderRadius: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginTop: 10,
+    marginBottom: 6,
+    shadowOpacity: 0.55,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 0 },
   },
-  dateChevron: {
-    fontSize: 80,
-    lineHeight: 80,
+  dateStripDay: {
+    fontSize: 30,
+    fontWeight: '900',
+    letterSpacing: 8,
+    textTransform: 'uppercase',
+    textShadowRadius: 12,
+    textShadowOffset: { width: 0, height: 0 },
+  },
+  dateStripRest: {
+    fontSize: 30,
+    fontWeight: '300',
+    letterSpacing: 8,
+    color: '#fff',
+    textTransform: 'uppercase',
   },
   cardWrapper: {
     marginRight: CARD_GAP,

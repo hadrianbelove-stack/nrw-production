@@ -10,6 +10,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {StatusBar} from 'react-native';
 
 import HomeScreen from './src/screens/HomeScreen';
+import PosterView from './src/screens/PosterView';
 import MovieDetail from './src/screens/MovieDetail';
 import {Colors} from './src/constants/colors';
 
@@ -55,10 +56,16 @@ export default function App() {
             }}
           />
           <Stack.Screen
+            name="PosterView"
+            component={PosterView}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
             name="MovieDetail"
             component={MovieDetail}
             options={({route}) => ({
               title: route.params?.movie?.title || 'Movie Details',
+              presentation: 'modal',
             })}
           />
         </Stack.Navigator>

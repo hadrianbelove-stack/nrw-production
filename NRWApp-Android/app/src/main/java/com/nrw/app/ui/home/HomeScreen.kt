@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.tv.foundation.lazy.grid.TvGridCells
+import androidx.tv.foundation.lazy.grid.TvGridItemSpan
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,7 +52,7 @@ import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import com.nrw.app.data.Movie
 import com.nrw.app.data.getDisplayDate
-import com.nrw.app.ui.components.DateDividerCard
+import com.nrw.app.ui.components.DateRowHeader
 import com.nrw.app.ui.components.FilterChips
 import com.nrw.app.ui.components.MovieCard
 import com.nrw.app.ui.components.TrailersCard
@@ -67,7 +68,7 @@ private const val SHOW_TRAILERS_CARD = false
 
 private data class FilterDesc(val title: String, val text: String)
 private val FILTER_DESCRIPTIONS = mapOf(
-    "staff-picks"  to FilterDesc("Picks", "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations."),
+    "staff-picks"  to FilterDesc("Highlights", "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations."),
     "indie"        to FilterDesc("Indie", "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home."),
     "horror"       to FilterDesc("Horror", "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter."),
     "action"       to FilterDesc("Action", "High-octane, kinetic filmmaking. Action movies now available to watch at home."),
@@ -79,7 +80,21 @@ private val FILTER_DESCRIPTIONS = mapOf(
     "restorations" to FilterDesc("Reissues", "Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers.")
 )
 
-// Grid item can be either a movie, date divider, or trailers card
+// Date strips adopt the active filter's color when exactly one filter is on
+private val STRIP_COLORS = mapOf(
+    "indie" to Color(0xFF00D4AA),
+    "horror" to Color(0xFFFF5E57),
+    "action" to Color(0xFFFF9500),
+    "comedy" to Color(0xFFFFD32A),
+    "family" to Color(0xFF2ED573),
+    "thriller" to Color(0xFFD63031),
+    "foreign" to Color(0xFFE84393),
+    "documentary" to Color(0xFF4A90D9),
+    "restorations" to Color(0xFFC8A951)
+)
+private val HighlightCrimson = Color(0xFFDC143C)
+
+// Grid item can be either a movie, date strip, or trailers card
 sealed class GridItem {
     data class MovieItem(val movie: Movie) : GridItem()
     data class DateItem(val date: String) : GridItem()
@@ -124,10 +139,19 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // Create grid items with trailers card and date dividers
-    val gridItems = remember(uiState.filteredMovies, uiState.playlistUrl) {
-        createGridItems(uiState.filteredMovies, uiState.playlistUrl)
+    // Create grid items with trailers card and date strips
+    val gridItems = remember(uiState.filteredMovies, uiState.playlistUrl, uiState.showHighlightsOnly) {
+        createGridItems(uiState.filteredMovies, uiState.playlistUrl, uiState.showHighlightsOnly)
     }
+
+    // Date strips adopt the single active filter's color; HIGHLIGHTS mode goes crimson
+    val singleFilterId = if (uiState.activeFilters.size == 1) uiState.activeFilters.first().id else null
+    val dateStripColor = when {
+        uiState.showHighlightsOnly -> HighlightCrimson
+        singleFilterId != null -> STRIP_COLORS[singleFilterId] ?: Primary
+        else -> Primary
+    }
+    val dateStripTinted = uiState.showHighlightsOnly || (singleFilterId != null && STRIP_COLORS.containsKey(singleFilterId))
 
     Box(
         modifier = Modifier
@@ -167,11 +191,17 @@ fun HomeScreen(
                         hideFest = uiState.hideFest,
                         onHideFestToggle = { viewModel.toggleHideFest() },
                         showPreorders = uiState.showPreorders,
-                        onShowPreordersToggle = { viewModel.toggleShowPreorders() }
+                        onShowPreordersToggle = { viewModel.toggleShowPreorders() },
+                        showHighlightsOnly = uiState.showHighlightsOnly,
+                        onShowHighlightsToggle = { viewModel.toggleShowHighlights() }
                     )
 
-                    // Show description for the single active filter
-                    if (uiState.activeFilters.size == 1) {
+                    // Show description for the highlights toggle or the single active filter
+                    if (uiState.showHighlightsOnly) {
+                        FILTER_DESCRIPTIONS["staff-picks"]?.let { desc ->
+                            FilterDescription(title = desc.title, text = desc.text)
+                        }
+                    } else if (uiState.activeFilters.size == 1) {
                         val filterId = uiState.activeFilters.first().id
                         FILTER_DESCRIPTIONS[filterId]?.let { desc ->
                             FilterDescription(title = desc.title, text = desc.text)
@@ -187,6 +217,8 @@ fun HomeScreen(
                         MovieGridWithDates(
                             gridItems = gridItems,
                             playlistUrl = uiState.playlistUrl,
+                            dateStripColor = dateStripColor,
+                            dateStripTinted = dateStripTinted,
                             onMovieClick = onMovieClick,
                             onTrailersClick = {
                                 uiState.playlistUrl?.let { url ->
@@ -207,16 +239,30 @@ fun HomeScreen(
 }
 
 /**
- * Create grid items with trailers card and date dividers inserted
+ * Create grid items with trailers card and date strips inserted
  */
-private fun createGridItems(movies: List<Movie>, playlistUrl: String?): List<GridItem> {
+private fun createGridItems(movies: List<Movie>, playlistUrl: String?, showHighlightsOnly: Boolean = false): List<GridItem> {
     val items = mutableListOf<GridItem>()
     var currentDate: String? = null
     var addedTrailers = false
 
-    // Separate pre-orders from regular movies
-    val regularMovies = movies.filter { !it.isPreorder }
+    // Separate fest movies and pre-orders from regular movies
+    val festMovies = movies.filter { !it.isPreorder && it.filters?.isVirtualScreening == true }
+    val regularMovies = movies.filter { !it.isPreorder && it.filters?.isVirtualScreening != true }
     val preorderMovies = movies.filter { it.isPreorder }.sortedBy { it.digitalDate ?: "" }
+
+    // HIGHLIGHTS strip at the top when the toggle is on
+    if (showHighlightsOnly && movies.isNotEmpty()) {
+        items.add(GridItem.DateItem("HIGHLIGHTS"))
+    }
+
+    // FEST section at the top
+    if (festMovies.isNotEmpty()) {
+        items.add(GridItem.DateItem("FEST"))
+        for (movie in festMovies) {
+            items.add(GridItem.MovieItem(movie))
+        }
+    }
 
     // Sort regular movies by date (newest first)
     val sortedMovies = regularMovies.sortedByDescending { it.getDisplayDate() ?: "0000-00-00" }
@@ -334,6 +380,8 @@ private fun SearchBar(
 private fun MovieGridWithDates(
     gridItems: List<GridItem>,
     playlistUrl: String?,
+    dateStripColor: Color = Primary,
+    dateStripTinted: Boolean = false,
     onMovieClick: (Movie) -> Unit,
     onTrailersClick: () -> Unit
 ) {
@@ -365,6 +413,12 @@ private fun MovieGridWithDates(
                     is GridItem.DateItem -> "date_${item.date}"
                     is GridItem.TrailersItem -> "trailers"
                 }
+            },
+            span = { item ->
+                when (item) {
+                    is GridItem.DateItem -> TvGridItemSpan(maxLineSpan)
+                    else -> TvGridItemSpan(1)
+                }
             }
         ) { item ->
             when (item) {
@@ -375,7 +429,11 @@ private fun MovieGridWithDates(
                     )
                 }
                 is GridItem.DateItem -> {
-                    DateDividerCard(dateString = item.date)
+                    DateRowHeader(
+                        dateString = item.date,
+                        stripColor = dateStripColor,
+                        tinted = dateStripTinted
+                    )
                 }
                 is GridItem.MovieItem -> {
                     MovieCard(

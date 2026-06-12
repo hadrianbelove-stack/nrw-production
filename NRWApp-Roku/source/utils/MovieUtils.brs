@@ -9,7 +9,6 @@
 Function GetFilterCategories() as Object
     return {
         INDIE: "indie"
-        STAFF_PICKS: "staff_picks"
         FOREIGN: "foreign"
         RESTORATIONS: "restorations"
         DOCUMENTARY: "documentary"
@@ -26,7 +25,6 @@ End Function
 Function GetFilterDisplayName(filter as String) as String
     names = {
         indie: "Indie"
-        staff_picks: "Picks"
         foreign: "Foreign"
         restorations: "Reissues"
         documentary: "Docs"
@@ -87,8 +85,6 @@ Function FilterMoviesMulti(movies as Object, activeFilters as Object) as Object
                 if movie.filters <> invalid AND (movie.filters.is_indie = true)
                     matched = true
                 end if
-            else if filter = categories.STAFF_PICKS
-                matched = IsStaffPick(movie)
             else if filter = categories.FOREIGN
                 matched = IsForeign(movie)
             else if filter = categories.RESTORATIONS
@@ -153,11 +149,15 @@ End Function
 Function GroupMoviesByDate(movies as Object) as Object
     groups = CreateObject("roAssociativeArray")
     preorderMovies = []
+    festMovies = []
 
     for each movie in movies
         ' Separate pre-orders into their own group
         if movie._is_preorder <> invalid AND movie._is_preorder = true
             preorderMovies.Push(movie)
+        ' Fest (virtual screening) movies group under the FEST section at the top
+        else if movie.filters <> invalid AND movie.filters.is_virtual_screening = true
+            festMovies.Push(movie)
         else
             dateStr = GetDisplayDate(movie)
             if dateStr = invalid OR dateStr = ""
@@ -191,6 +191,12 @@ Function GroupMoviesByDate(movies as Object) as Object
 
     ' Get sorted date keys (descending)
     sortedDates = SortDatesDescending(groups.Keys())
+
+    ' FEST section goes at the very top
+    if festMovies.Count() > 0
+        groups["FEST"] = festMovies
+        sortedDates.Unshift("FEST")
+    end if
 
     ' Append pre-orders section at the end (sorted by date ascending, nearest first)
     if preorderMovies.Count() > 0

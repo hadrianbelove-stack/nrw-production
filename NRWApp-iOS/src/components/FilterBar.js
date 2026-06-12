@@ -8,7 +8,6 @@ import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native
 import {Colors, Typography, Spacing} from '../constants/colors';
 
 const FILTERS = [
-  {id: 'staff-picks', label: 'Picks'},
   {id: 'indie', label: 'Indie'},
   {id: 'horror', label: 'Horror'},
   {id: 'action', label: 'Action'},
@@ -23,7 +22,7 @@ const FILTERS = [
 const SLOP_STATES = ['free', 'all', 'only'];
 const SLOP_LABELS = {free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY'};
 
-export default function FilterBar({activeFilters, onFilterChange, slopMode, onSlopModeChange, hideFest, onHideFestChange, showPreorders, onShowPreordersChange}) {
+export default function FilterBar({activeFilters, onFilterChange, slopMode, onSlopModeChange, hideFest, onHideFestChange, showPreorders, onShowPreordersChange, showHighlightsOnly, onShowHighlightsChange}) {
   return (
     <View style={styles.container}>
       <ScrollView
@@ -45,6 +44,15 @@ export default function FilterBar({activeFilters, onFilterChange, slopMode, onSl
           activeOpacity={0.7}>
           <Text style={[styles.filterText, styles.slopText, slopMode !== 'all' && styles.slopTextActive, slopMode === 'only' && styles.slopTextOnly]}>
             {SLOP_LABELS[slopMode] || 'SLOP FREE'}
+          </Text>
+        </TouchableOpacity>
+        <View style={styles.divider} />
+        <TouchableOpacity
+          style={[styles.filterButton, styles.highlightsButton, showHighlightsOnly && styles.highlightsButtonActive]}
+          onPress={() => onShowHighlightsChange(!showHighlightsOnly)}
+          activeOpacity={0.7}>
+          <Text style={[styles.filterText, styles.highlightsText, showHighlightsOnly && styles.highlightsTextActive]}>
+            HIGHLIGHTS
           </Text>
         </TouchableOpacity>
         <View style={styles.divider} />
@@ -149,5 +157,22 @@ const styles = StyleSheet.create({
   },
   slopTextOnly: {
     color: '#ff9500',
+  },
+  highlightsButton: {
+    borderColor: 'rgba(220,20,60,0.3)',
+    backgroundColor: 'transparent',
+  },
+  highlightsButtonActive: {
+    backgroundColor: 'rgba(220,20,60,0.15)',
+    borderColor: '#dc143c',
+  },
+  highlightsText: {
+    color: 'rgba(220,20,60,0.45)',
+    fontWeight: '600',
+    fontSize: Typography.caption,
+    letterSpacing: 0.5,
+  },
+  highlightsTextActive: {
+    color: '#dc143c',
   },
 });

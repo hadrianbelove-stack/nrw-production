@@ -179,6 +179,13 @@ body {
   background: #ffffff;
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
+/* HIGHLIGHTS toggle — crimson identity */
+.toggle-highlights .slop-label { color: rgba(220,20,60,0.75); }
+.toggle-highlights .slop-track { border-color: rgba(220,20,60,0.45); }
+.toggle-highlights .slop-thumb { background: rgba(220,20,60,0.55); }
+.toggle-highlights.active .slop-label { color: #dc143c; }
+.toggle-highlights.active .slop-track { background: #dc143c; border-color: rgba(0,0,0,0.35); }
+.toggle-highlights.active .slop-thumb { background: #ffffff; }
 .search-container {
   flex: 1;
   position: relative;
@@ -347,23 +354,38 @@ body {
 /* Date row header — spans full grid width, replaces old card-style divider */
 .date-row-header {
   grid-column: 1 / -1;
+  position: sticky;
+  top: var(--header-height, 0px);
+  z-index: 30;
   display: flex;
-  align-items: center;
+  justify-content: center;
+  align-items: baseline;
   gap: 0.6rem;
-  padding: 0.6rem 0 0.2rem;
+  background: rgba(8, 8, 12, 0.94);
+  border-top: 2px solid var(--strip-c, var(--accent));
+  border-bottom: 2px solid var(--strip-c, var(--accent));
+  border-radius: 4px;
+  padding: 8px 10px;
+  box-shadow: 0 0 22px color-mix(in srgb, var(--strip-c, var(--accent)) 55%, transparent),
+              inset 0 0 14px color-mix(in srgb, var(--strip-c, var(--accent)) 22%, transparent);
 }
-.drh-date {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: 0.12em;
+.drh-day {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--strip-c, var(--accent));
+  letter-spacing: 0.28em;
   text-transform: uppercase;
   white-space: nowrap;
+  text-shadow: 0 0 8px var(--strip-c, var(--accent)),
+               0 0 18px color-mix(in srgb, var(--strip-c, var(--accent)) 60%, transparent);
 }
-.drh-line {
-  flex: 1;
-  height: 1px;
-  background: rgba(255,255,255,0.07);
+.drh-rest {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* Pre-order badge */

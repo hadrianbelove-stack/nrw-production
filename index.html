@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall</title>
-    <link rel="stylesheet" href="assets/styles.css?v=78">
+    <link rel="stylesheet" href="assets/styles.css?v=80">
 </head>
 <body>
     <header>
@@ -15,6 +15,12 @@
                     <div class="slop-thumb"></div>
                 </div>
                 <span class="slop-label" id="slop-state-label">SLOP FREE</span>
+            </div>
+            <div class="slop-toggle-wrap toggle-highlights" id="highlights-toggle">
+                <div class="slop-track">
+                    <div class="slop-thumb"></div>
+                </div>
+                <span class="slop-label">HIGHLIGHTS</span>
             </div>
             <div class="slop-toggle-wrap" id="fest-toggle">
                 <div class="slop-track">
@@ -30,7 +36,6 @@
             </div>
         </div>
         <div class="filters">
-            <button class="filter-btn" data-filter="staff-picks">Picks</button>
             <button class="filter-btn" data-filter="indie">Indie</button>
             <button class="filter-btn" data-filter="horror">Horror</button>
             <button class="filter-btn" data-filter="action">Action</button>
@@ -70,7 +75,7 @@
                     <div class="lightbox-title-area">
                         <div class="lightbox-title-row">
                             <h2 class="lightbox-title" id="lightbox-title"></h2>
-                            <span class="staff-pick-badge" id="lightbox-staff-pick" style="display:none;">STAFF PICK</span>
+                            <span class="staff-pick-badge" id="lightbox-staff-pick" style="display:none;">HIGHLIGHT</span>
                         </div>
                         <div class="lightbox-title-sub">
                             <span class="lightbox-reissue-pill" id="lightbox-reissue-label" style="display:none;"></span>

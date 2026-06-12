@@ -16,6 +16,7 @@ const NRWMobile = {
     slopMode: 'free',
     hideFest: true,
     showPreorders: false,
+    showHighlightsOnly: false,
     searchQuery: '',
     currentView: 0,
     currentMovieIndex: 0,
@@ -58,7 +59,7 @@ const NRWMobile = {
             text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
         },
         'staff-picks': {
-            title: 'Picks',
+            title: 'Highlights',
             text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
         },
         'foreign': {
@@ -97,6 +98,19 @@ const NRWMobile = {
             title: 'Thriller',
             text: 'Suspense, dread, and unease. Thrillers now streaming — from psychological slow-burns to pulse-pounding crime.'
         }
+    },
+
+    // Date strips adopt the active filter's color when exactly one filter is on
+    STRIP_COLORS: {
+        'indie': '#00d4aa',
+        'horror': '#ff5e57',
+        'action': '#ff9500',
+        'comedy': '#ffd32a',
+        'family': '#2ed573',
+        'thriller': '#d63031',
+        'foreign': '#e84393',
+        'documentary': '#4A90D9',
+        'restorations': '#C8A951'
     },
 
     // DOM references (populated in init)
@@ -168,6 +182,12 @@ const NRWMobile = {
             if (a._is_preorder && b._is_preorder)
                 return (a.digital_date || '').localeCompare(b.digital_date || '');
 
+            // Fest (virtual screening) movies group at the top, under the FEST strip
+            const aFest = !!a.filters?.is_virtual_screening;
+            const bFest = !!b.filters?.is_virtual_screening;
+            if (aFest && !bFest) return -1;
+            if (!aFest && bFest) return 1;
+
             // Virtual screenings: sort by tier (active → upcoming → expired)
             const screeningTier = m => {
                 if (!m.filters?.is_virtual_screening) return -1;
@@ -236,6 +256,21 @@ const NRWMobile = {
             });
         }
 
+        // Highlights toggle — show only staff picks
+        const highlightsToggle = document.getElementById('highlights-toggle');
+        if (highlightsToggle) {
+            highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
+            highlightsToggle.addEventListener('click', () => {
+                this.showHighlightsOnly = !this.showHighlightsOnly;
+                highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
+                this.applyFilter();
+                this.updateFilterDesc();
+                this.buildGrid();
+                this.setView(0);
+                this.dom.gridView.scrollTop = 0;
+            });
+        }
+
         // Fest (virtual screenings) toggle
         const festToggle = document.getElementById('fest-toggle');
         if (festToggle) {
@@ -269,9 +304,9 @@ const NRWMobile = {
         const desc = this.dom.filterDesc;
         if (!desc) return;
 
-        // Only show when exactly one filter is active
-        if (this.activeFilters.size === 1) {
-            const key = [...this.activeFilters][0];
+        // Highlights toggle shows its description; otherwise only when exactly one filter is active
+        if (this.showHighlightsOnly || this.activeFilters.size === 1) {
+            const key = this.showHighlightsOnly ? 'staff-picks' : [...this.activeFilters][0];
             const info = this.FILTER_DESCRIPTIONS[key];
             if (info) {
                 desc.innerHTML = '<div class="filter-desc-inner">' + this.esc(info.text) + '</div>';
@@ -345,6 +380,10 @@ const NRWMobile = {
             if (this.slopMode === 'free' && isSlop) return false;
             if (this.slopMode === 'only' && !isSlop) return false;
 
+            // Highlights mode: only staff picks
+            if (this.showHighlightsOnly &&
+                !(movie.filters?.is_staff_pick || movie.featured || this.staffPicks.includes(String(movie.id)))) return false;
+
             // Hide-fest mode: hide virtual screenings
             if (this.hideFest && movie.filters?.is_virtual_screening) return false;
 
@@ -358,9 +397,6 @@ const NRWMobile = {
                     switch (filter) {
                         case 'indie':
                             if (movie.filters?.is_indie) matchesAny = true;
-                            break;
-                        case 'staff-picks':
-                            if (movie.filters?.is_staff_pick || movie.featured || this.staffPicks.includes(String(movie.id))) matchesAny = true;
                             break;
                         case 'foreign':
                             if (movie.filters?.is_foreign ||
@@ -418,16 +454,26 @@ const NRWMobile = {
     buildGrid() {
         this.savedScrollTop = 0;
 
-        // Pre-compute grid entries (date dividers + movie items)
+        // Pre-compute grid entries (date strips + movie items)
         this.gridEntries = [];
         let lastDate = '';
         let preorderStarted = false;
+        let festStarted = false;
+
+        if (this.showHighlightsOnly && this.filteredMovies.length > 0) {
+            this.gridEntries.push({ type: 'date', dateStr: 'highlights' });
+        }
 
         this.filteredMovies.forEach((movie, i) => {
             if (movie._is_preorder) {
                 if (!preorderStarted) {
                     preorderStarted = true;
                     this.gridEntries.push({ type: 'date', dateStr: 'pre-order' });
+                }
+            } else if (movie.filters?.is_virtual_screening) {
+                if (!festStarted) {
+                    festStarted = true;
+                    this.gridEntries.push({ type: 'date', dateStr: 'fest' });
                 }
             } else {
                 const date = movie.digital_date.substring(0, 10);
@@ -496,20 +542,30 @@ const NRWMobile = {
         const row = document.createElement('div');
         row.className = 'date-row-header';
 
-        let label;
+        // Neon sticky banner: colored day + white rest; color follows section / active filter
+        let day, rest = '', color = '';
         if (dateStr === 'pre-order') {
-            label = 'Pre-Order';
+            day = 'PRE-ORDER'; rest = 'COMING SOON'; color = '#7c3aed';
+        } else if (dateStr === 'fest') {
+            day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
+        } else if (dateStr === 'highlights') {
+            day = 'HIGHLIGHTS'; color = '#dc143c';
         } else {
             const d = new Date(dateStr + 'T12:00:00');
-            const weekday = d.toLocaleDateString('en', { weekday: 'short' });
-            const day = d.getDate();
-            const month = d.toLocaleDateString('en', { month: 'short' });
-            label = weekday + ' \u00A0 ' + month + ' ' + day;
+            day = d.toLocaleDateString('en', { weekday: 'short' });
+            rest = d.toLocaleDateString('en', { month: 'short' }) + ' ' + d.getDate();
+            const singleFilter = this.activeFilters.size === 1 ? [...this.activeFilters][0] : null;
+            if (this.showHighlightsOnly) {
+                color = '#dc143c';
+            } else if (singleFilter && this.STRIP_COLORS[singleFilter]) {
+                color = this.STRIP_COLORS[singleFilter];
+            }
         }
 
+        if (color) row.style.setProperty('--strip-c', color);
         row.innerHTML =
-            '<span class="drh-date">' + label + '</span>' +
-            '<span class="drh-line"></span>';
+            '<span class="drh-day">' + day + '</span>' +
+            (rest ? '<span class="drh-rest">' + rest + '</span>' : '');
         return row;
     },
 
@@ -575,7 +631,7 @@ const NRWMobile = {
         if (isStaffPick) {
             const badge = document.createElement('span');
             badge.className = 'staff-pick-badge';
-            badge.textContent = 'Staff Pick';
+            badge.textContent = 'Highlight';
             badgeTarget.appendChild(badge);
         }
         if (movie._is_preorder) {
@@ -835,7 +891,7 @@ const NRWMobile = {
             this.esc(movie.title || '') + '" onerror="this.style.display=\'none\'">' +
             '<div class="sheet-header-text">' +
             '<div class="sheet-title">' + this.esc(movie.display_title || movie.title || 'Untitled') +
-            (isStaffPick ? ' <span style="color:var(--crimson);font-size:0.7rem">\u2605 STAFF PICK</span>' : '') +
+            (isStaffPick ? ' <span style="color:var(--crimson);font-size:0.7rem">\u2605 HIGHLIGHT</span>' : '') +
             '</div>' +
             (dirLine ? '<div class="sheet-crew">' + dirLine + '</div>' : '') +
             (castLine ? '<div class="sheet-crew">' + castLine + '</div>' : '') +

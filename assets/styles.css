@@ -193,6 +193,14 @@ header h1 {
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
 
+/* HIGHLIGHTS toggle — crimson identity */
+.toggle-highlights .slop-label { color: rgba(220,20,60,0.75); }
+.toggle-highlights .slop-track { border-color: rgba(220,20,60,0.45); }
+.toggle-highlights .slop-thumb { background: rgba(220,20,60,0.55); }
+.toggle-highlights.active .slop-label { color: #dc143c; }
+.toggle-highlights.active .slop-track { background: #dc143c; border-color: rgba(0,0,0,0.35); }
+.toggle-highlights.active .slop-thumb { background: #ffffff; }
+
 /* Search input */
 .search-container {
     position: relative;
@@ -310,101 +318,44 @@ header h1 {
     color: #000;
 }
 
-/* Inline date divider cards - same size as movie cards */
-.date-divider-card {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 2 / 3;
-    background: #0a0a0a;
-    border-radius: 15px;
+/* Date row strips — neon sticky banners between date groups.
+   Sticks to the viewport top while its day scrolls; color follows --strip-c. */
+.date-row-header {
+    grid-column: 1 / -1;
+    position: sticky;
+    top: 0;
+    z-index: 30;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    overflow: hidden;
-}
-
-.date-bar {
-    width: 100%;
-    background: var(--accent-primary);
-    padding: 5px 10px;
-    flex-shrink: 0;
-}
-
-.date-bar-preorder {
-    background: #7c3aed;
-}
-
-.date-bar-fest {
-    background: #b45309;
-}
-
-.date-day {
-    font-size: 0.72rem;
-    color: #000;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-}
-
-.date-body {
-    padding: 0 0 0 10px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
     justify-content: center;
-    width: 100%;
+    align-items: baseline;
+    gap: 0.8rem;
+    background: rgba(8, 8, 12, 0.94);
+    border-top: 2px solid var(--strip-c, var(--accent-primary));
+    border-bottom: 2px solid var(--strip-c, var(--accent-primary));
+    border-radius: 4px;
+    padding: 10px 12px;
+    box-shadow: 0 0 28px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 55%, transparent),
+                inset 0 0 18px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 22%, transparent);
 }
 
-.date-number {
-    font-size: 3.2rem;
-    font-weight: 800;
+.drh-day {
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--strip-c, var(--accent-primary));
+    text-shadow: 0 0 10px var(--strip-c, var(--accent-primary)),
+                 0 0 22px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 60%, transparent);
+}
+
+.drh-rest {
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    white-space: nowrap;
     color: #fff;
-    line-height: 0.85;
-}
-
-.date-number-preorder {
-    font-size: 1.4rem;
-    color: #7c3aed;
-}
-
-.date-number-fest {
-    font-size: 1.4rem;
-    color: #f59e0b;
-}
-
-.date-month {
-    font-size: 0.6rem;
-    color: #888;
-    letter-spacing: 0.1em;
-    margin-top: 0.2rem;
-}
-
-.date-chevrons {
-    display: flex;
-    gap: 0;
-    margin-top: 0.3rem;
-    line-height: 1;
-}
-
-.date-chevrons span {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: var(--accent-primary);
-    line-height: 1;
-}
-
-.date-chevrons span:nth-child(1) { opacity: 0.9; }
-.date-chevrons span:nth-child(2) { opacity: 0.7; }
-.date-chevrons span:nth-child(3) { opacity: 0.5; }
-.date-chevrons span:nth-child(4) { opacity: 0.3; }
-.date-chevrons span:nth-child(5) { opacity: 0.15; }
-
-.date-chevrons-preorder span {
-    color: #7c3aed;
-}
-
-.date-chevrons-fest span {
-    color: #f59e0b;
 }
 
 /* NEW TRAILERS card - same size as movie cards */
@@ -917,7 +868,6 @@ header h1 {
     }
 
     .movie-card,
-    .date-divider-card,
     .trailers-card {
         width: 160px;
         height: 240px;
@@ -928,12 +878,8 @@ header h1 {
         font-size: 0.75rem;
     }
 
-    .date-number {
-        font-size: 2.5rem;
-    }
-
-    .date-day, .date-month {
-        font-size: 0.8rem;
+    .drh-day, .drh-rest {
+        font-size: 0.95rem;
     }
 
     .trailers-text {

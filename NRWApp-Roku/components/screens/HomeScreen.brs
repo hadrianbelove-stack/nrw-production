@@ -25,6 +25,7 @@ Sub Init()
     m.slopMode = "free"
     m.showPreorders = false
     m.hideFest = true
+    m.showHighlightsOnly = false
     m.focusedArea = "grid"  ' "filter", "grid", or "detail"
 
     ' Set up observers
@@ -76,6 +77,7 @@ Sub onMoviesLoaded()
     ' Sync filter bar visual state before applying filters
     m.filterBar.slopMode = m.slopMode
     m.filterBar.hideFest = m.hideFest
+    m.filterBar.showHighlights = m.showHighlightsOnly
 
     ' Apply initial filter
     ApplyFilters()
@@ -148,40 +150,78 @@ Sub ApplyFilters()
         movies = filtered
     end if
 
-    m.filteredMovies = movies
+    ' Highlights mode: only staff picks
+    if m.showHighlightsOnly
+        filtered = []
+        for each movie in movies
+            if IsStaffPick(movie)
+                filtered.Push(movie)
+            end if
+        end for
+        movies = filtered
+    end if
 
-    ' Group by date
-    grouped = GroupMoviesByDate(m.filteredMovies)
+    ' Group by date (FEST section first, then dates, PRE-ORDER last)
+    grouped = GroupMoviesByDate(movies)
+
+    ' Flatten back in display order so grid item indices map 1:1 onto m.filteredMovies
+    flattened = []
+    for each dateStr in grouped.dates
+        for each movie in grouped.groups[dateStr]
+            flattened.Push(movie)
+        end for
+    end for
+    m.filteredMovies = flattened
+
+    ' Date strips adopt the single active filter's color (HIGHLIGHTS mode goes crimson)
+    UpdateSectionDividerColor()
 
     ' Build content for grid
     BuildGridContent(grouped)
 End Sub
 
 ' ============================================================================
-' Build Grid Content
+' Section Divider Color (strip color follows active filter / highlights mode)
+' ============================================================================
+Sub UpdateSectionDividerColor()
+    stripColors = {
+        indie: "0x00D4AAFF"
+        horror: "0xFF5E57FF"
+        action: "0xFF9500FF"
+        comedy: "0xFFD32AFF"
+        family: "0x2ED573FF"
+        thriller: "0xD63031FF"
+        foreign: "0xE84393FF"
+        documentary: "0x4A90D9FF"
+        restorations: "0xC8A951FF"
+    }
+    color = "0x00D4AAFF"  ' default teal
+    if m.showHighlightsOnly
+        color = "0xDC143CFF"  ' crimson
+    else if m.activeFilters.Count() = 1 AND stripColors.DoesExist(m.activeFilters[0])
+        color = stripColors[m.activeFilters[0]]
+    end if
+    m.movieGrid.sectionDividerTextColor = color
+End Sub
+
+' ============================================================================
+' Build Grid Content — date groups become native MarkupGrid sections, whose
+' dividers render as full-width strips (label + line) instead of poster cells
 ' ============================================================================
 Sub BuildGridContent(groupedData as Object)
     content = CreateObject("roSGNode", "ContentNode")
 
-    ' Add movies to content with date divider cards
     for each dateStr in groupedData.dates
-        movies = groupedData.groups[dateStr]
+        section = content.CreateChild("ContentNode")
+        section.contentType = "SECTION"
+        section.title = FormatSectionTitle(dateStr)
 
-        ' Insert date divider card
-        divider = content.CreateChild("ContentNode")
-        divider.AddFields({
-            movie: {
-                _type: "date-divider"
-                dateString: dateStr
-            }
-        })
-
-        for each movie in movies
+        for each movie in groupedData.groups[dateStr]
             cardTitle = movie.title
             if movie.display_title <> invalid AND movie.display_title <> ""
                 cardTitle = movie.display_title
             end if
-            item = content.CreateChild("ContentNode")
+            item = section.CreateChild("ContentNode")
             item.AddFields({
                 movie: movie
                 title: cardTitle
@@ -192,6 +232,25 @@ Sub BuildGridContent(groupedData as Object)
 
     m.movieGrid.content = content
 End Sub
+
+' ============================================================================
+' Section Title (strip label): "WED · JUN 10", "FEST · NOW SCREENING", etc.
+' ============================================================================
+Function FormatSectionTitle(dateStr as String) as String
+    if dateStr = "PRE-ORDER"
+        return "PRE-ORDER"
+    else if dateStr = "FEST"
+        return "FEST · NOW SCREENING"
+    else if dateStr = "Unknown"
+        return "DATE TBD"
+    end if
+
+    days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+    dt = CreateObject("roDateTime")
+    dt.FromISO8601String(dateStr)
+    weekday = days[dt.GetDayOfWeek()]
+    return weekday + "  ·  " + UCase(FormatShortDate(dateStr))
+End Function
 
 ' ============================================================================
 ' Filter Selected Callback
@@ -225,6 +284,15 @@ Sub onFilterSelected()
     if filterId = "show_preorders"
         m.showPreorders = NOT m.showPreorders
         m.filterBar.showPreorders = m.showPreorders
+        ApplyFilters()
+        return
+    end if
+
+    ' Highlights toggle is separate from category filters
+    if filterId = "show_highlights"
+        m.showHighlightsOnly = NOT m.showHighlightsOnly
+        m.filterBar.showHighlights = m.showHighlightsOnly
+        UpdateFilterDescription()
         ApplyFilters()
         return
     end if
@@ -420,7 +488,7 @@ End Sub
 ' ============================================================================
 Function GetFilterDescriptions() as Object
     return {
-        staff_picks:   { title: "PICKS",       text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time." }
+        highlights:    { title: "HIGHLIGHTS",  text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time." }
         indie:         { title: "INDIE",        text: "The smaller films, the independents, the ones without a billboard campaign. Worth knowing about now that they're available to stream at home." }
         horror:        { title: "HORROR",       text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." }
         action:        { title: "ACTION",       text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." }
@@ -437,7 +505,13 @@ Sub UpdateFilterDescription()
     if m.filterDescGroup = invalid
         return
     end if
-    if m.activeFilters.Count() = 1
+    if m.showHighlightsOnly
+        descs = GetFilterDescriptions()
+        d = descs["highlights"]
+        m.filterDescTitle.text = d.title
+        m.filterDescText.text = d.text
+        m.filterDescGroup.visible = true
+    else if m.activeFilters.Count() = 1
         descs = GetFilterDescriptions()
         filterId = m.activeFilters[0]
         if descs.DoesExist(filterId)
