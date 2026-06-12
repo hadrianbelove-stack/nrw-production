@@ -31,7 +31,7 @@ const NRW = {
             text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
         },
         'staff-picks': {
-            title: 'Highlights',
+            title: 'Selects',
             text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
         },
         'foreign': {
@@ -559,7 +559,7 @@ const NRW = {
             `<div class="date-row-header${extraClass}" style="--strip-c:${color}"${titleAttr}><span class="drh-day">${day}</span>${rest ? `<span class="drh-rest">${rest}</span>` : ''}</div>`;
 
         if (this.showHighlightsOnly) {
-            html += stripHtml('HIGHLIGHTS', '', '#dc143c');
+            html += stripHtml('SELECTS', '', '#dc143c');
         }
 
         orderedMovies.forEach(movie => {
@@ -683,7 +683,7 @@ const NRW = {
             const badgeBar = isScreening
                 ? `<div class="badge-bar gold">${festivalName || '\u2605 VIRTUAL SCREENING \u2605'}</div>`
                 : isStaffPick
-                ? '<div class="badge-bar red">\u2605 HIGHLIGHT \u2605</div>'
+                ? '<div class="badge-bar red">\u2605 SELECT \u2605</div>'
                 : '';
 
             // Score badges for card front (bottom-left overlay)

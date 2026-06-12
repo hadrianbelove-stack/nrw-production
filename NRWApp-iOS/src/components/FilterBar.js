@@ -48,11 +48,11 @@ export default function FilterBar({activeFilters, onFilterChange, slopMode, onSl
         </TouchableOpacity>
         <View style={styles.divider} />
         <TouchableOpacity
-          style={[styles.filterButton, styles.highlightsButton, showHighlightsOnly && styles.highlightsButtonActive]}
+          style={[styles.filterButton, styles.slopButton, showHighlightsOnly && styles.slopButtonActive]}
           onPress={() => onShowHighlightsChange(!showHighlightsOnly)}
           activeOpacity={0.7}>
-          <Text style={[styles.filterText, styles.highlightsText, showHighlightsOnly && styles.highlightsTextActive]}>
-            HIGHLIGHTS
+          <Text style={[styles.filterText, styles.slopText, showHighlightsOnly && styles.slopTextActive]}>
+            SELECTS
           </Text>
         </TouchableOpacity>
         <View style={styles.divider} />
@@ -157,22 +157,5 @@ const styles = StyleSheet.create({
   },
   slopTextOnly: {
     color: '#ff9500',
-  },
-  highlightsButton: {
-    borderColor: 'rgba(220,20,60,0.3)',
-    backgroundColor: 'transparent',
-  },
-  highlightsButtonActive: {
-    backgroundColor: 'rgba(220,20,60,0.15)',
-    borderColor: '#dc143c',
-  },
-  highlightsText: {
-    color: 'rgba(220,20,60,0.45)',
-    fontWeight: '600',
-    fontSize: Typography.caption,
-    letterSpacing: 0.5,
-  },
-  highlightsTextActive: {
-    color: '#dc143c',
   },
 });

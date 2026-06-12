@@ -196,14 +196,6 @@ header h1 {
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
 
-/* HIGHLIGHTS toggle — crimson identity */
-.toggle-highlights .slop-label { color: rgba(220,20,60,0.75); }
-.toggle-highlights .slop-track { border-color: rgba(220,20,60,0.45); }
-.toggle-highlights .slop-thumb { background: rgba(220,20,60,0.55); }
-.toggle-highlights.active .slop-label { color: #dc143c; }
-.toggle-highlights.active .slop-track { background: #dc143c; border-color: rgba(0,0,0,0.35); }
-.toggle-highlights.active .slop-thumb { background: #ffffff; }
-
 /* Search input */
 .search-container {
     position: relative;

@@ -22,7 +22,7 @@ Sub Init()
         documentary: 60
         restorations: 90
         slop_free: 120
-        show_highlights: 120
+        show_highlights: 110
         hide_fest: 110
         show_preorders: 130
     }
@@ -91,14 +91,14 @@ Sub UpdateChipStyles()
             continue for
         end if
 
-        ' Highlights toggle: crimson when active
+        ' Selects toggle: teal when active (matches the other toggles)
         if filterId = "show_highlights"
             if showHighlights
-                chipBg.color = "0x2D040EFF"
-                chipLabel.color = "0xDC143CFF"
+                chipBg.color = "0x00342AFF"
+                chipLabel.color = "0x00D4AAFF"
             else
                 chipBg.color = "0x0D0D0DFF"
-                chipLabel.color = "0xDC143C73"
+                chipLabel.color = "0x00D4AA73"
             end if
             continue for
         end if

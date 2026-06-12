@@ -99,10 +99,9 @@ fun FilterChips(
         item {
             MetaTogglePill(
                 isActive = showHighlightsOnly,
-                activeLabel = "HIGHLIGHTS",
-                inactiveLabel = "HIGHLIGHTS",
-                onClick = onShowHighlightsToggle,
-                accentColor = HighlightCrimson
+                activeLabel = "SELECTS",
+                inactiveLabel = "SELECTS",
+                onClick = onShowHighlightsToggle
             )
         }
 
@@ -128,7 +127,6 @@ fun FilterChips(
 
 private val SlopTeal = Color(0xFF00D4AA)
 private val SlopTealDim = Color(0x4D00D4AA)
-private val HighlightCrimson = Color(0xFFDC143C)
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable

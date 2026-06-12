@@ -164,7 +164,7 @@ export default function MovieCard({movie, onPress, isFeatured = false, width}) {
         {/* Featured badge */}
         {(isFeatured || movie.featured || movie.filters?.is_staff_pick) && (
           <View style={styles.featuredBadge}>
-            <Text style={styles.featuredText}>★ HIGHLIGHT</Text>
+            <Text style={styles.featuredText}>★ SELECT</Text>
           </View>
         )}
 

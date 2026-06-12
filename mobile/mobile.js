@@ -59,7 +59,7 @@ const NRWMobile = {
             text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
         },
         'staff-picks': {
-            title: 'Highlights',
+            title: 'Selects',
             text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
         },
         'foreign': {
@@ -549,7 +549,7 @@ const NRWMobile = {
         } else if (dateStr === 'fest') {
             day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
         } else if (dateStr === 'highlights') {
-            day = 'HIGHLIGHTS'; color = '#dc143c';
+            day = 'SELECTS'; color = '#dc143c';
         } else {
             const d = new Date(dateStr + 'T12:00:00');
             day = d.toLocaleDateString('en', { weekday: 'short' });
@@ -631,7 +631,7 @@ const NRWMobile = {
         if (isStaffPick) {
             const badge = document.createElement('span');
             badge.className = 'staff-pick-badge';
-            badge.textContent = 'Highlight';
+            badge.textContent = 'Select';
             badgeTarget.appendChild(badge);
         }
         if (movie._is_preorder) {
@@ -891,7 +891,7 @@ const NRWMobile = {
             this.esc(movie.title || '') + '" onerror="this.style.display=\'none\'">' +
             '<div class="sheet-header-text">' +
             '<div class="sheet-title">' + this.esc(movie.display_title || movie.title || 'Untitled') +
-            (isStaffPick ? ' <span style="color:var(--crimson);font-size:0.7rem">\u2605 HIGHLIGHT</span>' : '') +
+            (isStaffPick ? ' <span style="color:var(--crimson);font-size:0.7rem">\u2605 SELECT</span>' : '') +
             '</div>' +
             (dirLine ? '<div class="sheet-crew">' + dirLine + '</div>' : '') +
             (castLine ? '<div class="sheet-crew">' + castLine + '</div>' : '') +

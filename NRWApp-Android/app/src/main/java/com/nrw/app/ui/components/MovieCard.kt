@@ -316,7 +316,7 @@ fun MovieCard(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "HIGHLIGHT",
+                            text = "SELECT",
                             color = TextPrimary,
                             fontSize = 7.sp,
                             fontWeight = FontWeight.ExtraBold,
@@ -543,7 +543,7 @@ fun DateRowHeader(
     when (dateString) {
         "PRE-ORDER" -> { day = "PRE-ORDER"; rest = "COMING SOON"; color = Color(0xFF7C3AED) }
         "FEST" -> { day = "FEST"; rest = "NOW SCREENING"; color = Color(0xFFF59E0B) }
-        "HIGHLIGHTS" -> { day = "HIGHLIGHTS"; color = Color(0xFFDC143C) }
+        "HIGHLIGHTS" -> { day = "SELECTS"; color = Color(0xFFDC143C) }
         else -> {
             val parts = dateString.split("-")
             val month = parts.getOrNull(1)?.toIntOrNull()?.let { getMonthName(it) } ?: ""

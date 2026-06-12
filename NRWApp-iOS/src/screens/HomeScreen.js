@@ -33,7 +33,7 @@ import {trackFilterChange, trackSearch} from '../services/analytics';
 const screenWidth = RNDimensions.get('window').width;
 
 const FILTER_DESCRIPTIONS = {
-  'staff-picks': { title: 'Highlights', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
+  'staff-picks': { title: 'Selects', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
   'indie':       { title: 'Indie', text: "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home." },
   'horror':      { title: 'Horror', text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." },
   'action':      { title: 'Action', text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." },

@@ -61,7 +61,7 @@ const STRIP_COLORS = {
 };
 
 const FILTER_DESCRIPTIONS = {
-  'staff-picks': { title: 'Highlights', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
+  'staff-picks': { title: 'Selects', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
   'indie':       { title: 'Indie', text: "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home." },
   'horror':      { title: 'Horror', text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." },
   'action':      { title: 'Action', text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." },
@@ -262,7 +262,7 @@ const DateRowStrip = ({ stripKey, stripColor }) => {
   } else if (stripKey === 'SCREENING') {
     day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
   } else if (stripKey === 'HIGHLIGHTS') {
-    day = 'HIGHLIGHTS'; color = '#dc143c';
+    day = 'SELECTS'; color = '#dc143c';
   } else {
     const d = new Date(stripKey + 'T12:00:00');
     if (isNaN(d.getTime())) {
@@ -1058,9 +1058,8 @@ const HomeScreenTvOS = () => {
             />
             <MetaToggle
               isActive={showHighlightsOnly}
-              label="HIGHLIGHTS"
-              accentColor="#dc143c"
-              accessibilityLabel={showHighlightsOnly ? 'Showing highlights only' : 'Showing all movies'}
+              label="SELECTS"
+              accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
               onPress={() => setShowHighlightsOnly(v => !v)}
               nextFocusDown={headerNodeHandle}
             />

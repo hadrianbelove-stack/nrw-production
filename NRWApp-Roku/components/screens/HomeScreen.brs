@@ -557,7 +557,7 @@ End Sub
 ' ============================================================================
 Function GetFilterDescriptions() as Object
     return {
-        highlights:    { title: "HIGHLIGHTS",  text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time." }
+        highlights:    { title: "SELECTS",  text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time." }
         indie:         { title: "INDIE",        text: "The smaller films, the independents, the ones without a billboard campaign. Worth knowing about now that they're available to stream at home." }
         horror:        { title: "HORROR",       text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." }
         action:        { title: "ACTION",       text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." }

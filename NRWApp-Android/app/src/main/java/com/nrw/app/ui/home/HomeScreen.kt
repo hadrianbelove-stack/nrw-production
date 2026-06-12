@@ -68,7 +68,7 @@ private const val SHOW_TRAILERS_CARD = false
 
 private data class FilterDesc(val title: String, val text: String)
 private val FILTER_DESCRIPTIONS = mapOf(
-    "staff-picks"  to FilterDesc("Highlights", "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations."),
+    "staff-picks"  to FilterDesc("Selects", "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations."),
     "indie"        to FilterDesc("Indie", "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home."),
     "horror"       to FilterDesc("Horror", "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter."),
     "action"       to FilterDesc("Action", "High-octane, kinetic filmmaking. Action movies now available to watch at home."),

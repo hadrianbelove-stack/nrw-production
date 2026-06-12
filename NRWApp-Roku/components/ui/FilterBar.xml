@@ -124,12 +124,12 @@
           font="font:SmallBoldSystemFont" color="0x00D4AAFF" />
       </Group>
 
-      <!-- Highlights Toggle: crimson when active -->
+      <!-- Selects Toggle -->
       <Group id="chip_show_highlights">
-        <Rectangle id="chipBg_show_highlights" width="120" height="36" color="0x0D0D0DFF" />
-        <Label id="chipLabel_show_highlights" text="HIGHLIGHTS" width="120" height="36"
+        <Rectangle id="chipBg_show_highlights" width="110" height="36" color="0x0D0D0DFF" />
+        <Label id="chipLabel_show_highlights" text="SELECTS" width="110" height="36"
           horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xDC143C73" />
+          font="font:SmallBoldSystemFont" color="0x00D4AA73" />
       </Group>
 
       <!-- Fest Toggle: dim = fests hidden (default), teal = fests shown -->
