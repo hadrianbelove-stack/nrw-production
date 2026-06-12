@@ -261,6 +261,16 @@ const NRW = {
             });
         }
 
+        // Sticky header: expose its height so date strips pin just beneath it
+        const updateHeaderOffset = () => {
+            const headerEl = document.querySelector('header');
+            if (headerEl) {
+                document.documentElement.style.setProperty('--header-height', headerEl.offsetHeight + 'px');
+            }
+        };
+        updateHeaderOffset();
+        window.addEventListener('resize', updateHeaderOffset);
+
         // Pre-order toggle
         const preorderToggle = document.getElementById('preorder-toggle');
         if (preorderToggle) {
