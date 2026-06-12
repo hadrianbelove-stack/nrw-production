@@ -304,9 +304,10 @@ const NRWMobile = {
         const desc = this.dom.filterDesc;
         if (!desc) return;
 
-        // Highlights toggle shows its description; otherwise only when exactly one filter is active
-        if (this.showHighlightsOnly || this.activeFilters.size === 1) {
-            const key = this.showHighlightsOnly ? 'staff-picks' : [...this.activeFilters][0];
+        // Selects description renders in the river (below its banner) — the
+        // fixed bar is only for single category filters
+        if (!this.showHighlightsOnly && this.activeFilters.size === 1) {
+            const key = [...this.activeFilters][0];
             const info = this.FILTER_DESCRIPTIONS[key];
             if (info) {
                 desc.innerHTML = '<div class="filter-desc-inner">' + this.esc(info.text) + '</div>';
@@ -377,6 +378,10 @@ const NRWMobile = {
         this.filteredMovies = this.allMovies.filter(movie => {
             // Toggles are view modes — an active search bypasses ALL of them
             if (!this.searchQuery) {
+                // Pre-order mode is an exclusive view: show ONLY pre-orders, and they
+                // bypass slop/category filters (an explicit "show me upcoming" request).
+                if (this.showPreorders) return !!movie._is_preorder;
+
                 // Slop mode filter
                 const isSlop = movie.is_slop || movie._is_slop_guess;
                 if (this.slopMode === 'free' && isSlop) return false;
@@ -465,6 +470,11 @@ const NRWMobile = {
 
         if (this.showHighlightsOnly && this.filteredMovies.length > 0) {
             this.gridEntries.push({ type: 'date', dateStr: 'highlights' });
+            // Description lives in the river, below the banner — scrolls away naturally
+            this.gridEntries.push({ type: 'desc', key: 'staff-picks' });
+        }
+        if (this.slopMode === 'only' && this.filteredMovies.length > 0) {
+            this.gridEntries.push({ type: 'date', dateStr: 'slop' });
         }
 
         this.filteredMovies.forEach((movie, i) => {
@@ -521,6 +531,8 @@ const NRWMobile = {
             const entry = this.gridEntries[i];
             if (entry.type === 'date') {
                 grid.appendChild(this.createDateRowHeader(entry.dateStr));
+            } else if (entry.type === 'desc') {
+                grid.appendChild(this.createDescRow(entry.key));
             } else {
                 grid.appendChild(this.createGridItem(entry.movie, entry.index));
             }
@@ -552,7 +564,9 @@ const NRWMobile = {
         } else if (dateStr === 'fest') {
             day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
         } else if (dateStr === 'highlights') {
-            day = 'SELECTS'; color = '#dc143c';
+            day = 'SELECTS'; rest = 'OUR PICKS'; color = '#dc143c';
+        } else if (dateStr === 'slop') {
+            day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#888888';  // style guide: The Slop Pile
         } else {
             const d = new Date(dateStr + 'T12:00:00');
             day = d.toLocaleDateString('en', { weekday: 'short' });
@@ -569,6 +583,14 @@ const NRWMobile = {
         row.innerHTML =
             '<span class="drh-day">' + day + '</span>' +
             (rest ? '<span class="drh-rest">' + rest + '</span>' : '');
+        return row;
+    },
+
+    createDescRow(key) {
+        const row = document.createElement('div');
+        row.className = 'grid-desc-row';
+        const info = this.FILTER_DESCRIPTIONS[key];
+        row.textContent = info ? info.text : '';
         return row;
     },
 

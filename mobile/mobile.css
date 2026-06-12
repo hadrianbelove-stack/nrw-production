@@ -967,3 +967,12 @@ body {
   70% { opacity: 1; }
   100% { opacity: 0; transform: translateY(-50%) scale(0.9); }
 }
+
+/* In-river filter description (below SELECTS banner; scrolls away) */
+.grid-desc-row {
+  grid-column: 1 / -1;
+  padding: 10px 16px 6px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #999;
+}
