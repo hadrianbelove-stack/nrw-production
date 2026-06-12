@@ -91,12 +91,12 @@ If the output shows 0 candidates, report "No new arrivals to curate since [from_
 
 ---
 
-## Stage 1: Staff Picks
+## Stage 1: Selects (formerly "Staff Picks" — file is still admin/staff_picks.json)
 
 Show a numbered list of all candidates, then recommend 2–4 picks with brief reasoning.
 
 ```
-STAFF PICKS — which movies are you vouching for?
+SELECTS — which movies are you vouching for?
 
  1. Title (Year) — RT: 85% | MC: 72 | Amazon, Apple TV
  2. Title (Year) — RT: -- | MC: -- | Netflix
@@ -144,7 +144,7 @@ For each movie, show **all active filters** — meaning everything a user could 
 - From `movie.filters`: Indie, Foreign, Documentary, Virtual Screening, Restoration (check `is_indie`, `is_foreign`, `is_documentary`, `is_virtual_screening`, `is_restoration`)
 - From `movie.genres`: Horror, Action, Comedy, Family, Thriller (check if genre name appears in the array)
 
-Show as human-readable names. If no filters are active, show "(none)". Staff Picks is handled in Stage 1 — omit it here.
+Show as human-readable names. If no filters are active, show "(none)". Selects is handled in Stage 1 — omit it here.
 
 **On user reply:**
 - For studio/indie overrides: read `admin/category_overrides.json`, add entries, write back
@@ -165,22 +165,26 @@ Build the table by reading `movie.is_slop`, `movie._is_slop_guess`, and `movie._
 ```
 SLOP REVIEW — confirm or correct auto-classifications
 
-| # | Title (Year) | Slop? | Why |
-|---|--------------|-------|-----|
-| 1 | Title (Year) | ✅ Not slop | RT: 85, MC: 72 |
-| 2 | Title (Year) | 🗑 SLOP (auto) | score:3(no_wiki,no_rt,no_imdb) |
-| 3 | Title (Year) | 🗑 SLOP (auto) | score:5(no_wiki,no_rt) |
-| 4 | Title (Year) | ✅ Not slop | RT: --, no classifier signal |
+| # | Title (Year) | Slop? | RT | IMDb | Links | On site? | Why |
+|---|--------------|-------|----|------|-------|----------|-----|
+| 1 | [Title (Year)](imdb-url) | ✅ Not slop | 85% | 7.2 | [RT](url) · [LB](url) | visible | score:1(good_imdb) |
+| 2 | [Title (Year)](imdb-url) | 🗑 SLOP (auto) | -- | -- | [LB](url) | HIDDEN | score:5(no_wiki,no_rt) |
 
 "auto" = classifier made the call. Reply with overrides (e.g. "2: not slop; 5: slop") or "looks good" to confirm all.
 ```
 
 **Table column rules:**
+- `Title` — hyperlink to the movie's IMDb page (`movie.links.imdb`); plain text if absent
 - `Slop?` column:
   - `is_slop=True` + `_is_slop_guess=True` → `🗑 SLOP (auto)`
   - `is_slop=True` + `_is_slop_guess=False` → `🗑 SLOP (manual)`
   - `is_slop=False` → `✅ Not slop`
+- `RT` / `IMDb` — `movie.rt_score` and `movie.imdb_rating` (`--` if absent)
+- `Links` — clickable [RT](movie.links.rt) and [LB](movie.links.letterboxd) when present, so the user can identity-check each film
+- `On site?` — the site's default slop-free mode hides any movie with `is_slop` OR `_is_slop_guess` (assets/app.js). Show `HIDDEN` for those, `visible` otherwise. This tells the user what their verdict will change.
 - `Why` column: show `_slop_reason` if present; otherwise show RT/MC scores or "no classifier signal"
+
+**Flag contradictions** below the table: any HIDDEN movie that is also a Select, or has an approved capsule, or has selected pull quotes — these are films the user invested in that visitors can't see.
 
 **On user reply:**
 
