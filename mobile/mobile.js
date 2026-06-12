@@ -375,17 +375,20 @@ const NRWMobile = {
         const filters = this.activeFilters;
 
         this.filteredMovies = this.allMovies.filter(movie => {
-            // Slop mode filter
-            const isSlop = movie.is_slop || movie._is_slop_guess;
-            if (this.slopMode === 'free' && isSlop) return false;
-            if (this.slopMode === 'only' && !isSlop) return false;
+            // Toggles are view modes — an active search bypasses ALL of them
+            if (!this.searchQuery) {
+                // Slop mode filter
+                const isSlop = movie.is_slop || movie._is_slop_guess;
+                if (this.slopMode === 'free' && isSlop) return false;
+                if (this.slopMode === 'only' && !isSlop) return false;
 
-            // Highlights mode: only staff picks
-            if (this.showHighlightsOnly &&
-                !(movie.filters?.is_staff_pick || movie.featured || this.staffPicks.includes(String(movie.id)))) return false;
+                // Highlights mode: only staff picks
+                if (this.showHighlightsOnly &&
+                    !(movie.filters?.is_staff_pick || movie.featured || this.staffPicks.includes(String(movie.id)))) return false;
 
-            // Hide-fest mode: hide virtual screenings
-            if (this.hideFest && movie.filters?.is_virtual_screening) return false;
+                // Hide-fest mode: hide virtual screenings
+                if (this.hideFest && movie.filters?.is_virtual_screening) return false;
+            }
 
             // Pre-orders only appear when toggle is ON or search is active
             if (movie._is_preorder && !this.showPreorders && !this.searchQuery) return false;

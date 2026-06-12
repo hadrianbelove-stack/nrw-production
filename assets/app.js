@@ -270,6 +270,11 @@ const NRW = {
         };
         updateHeaderOffset();
         window.addEventListener('resize', updateHeaderOffset);
+        // Re-measure once web fonts finish loading — they can change the header's
+        // height a beat after first paint, leaving the date strips docked a few px off.
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(updateHeaderOffset);
+        }
 
         // Pre-order toggle
         const preorderToggle = document.getElementById('preorder-toggle');
@@ -373,16 +378,20 @@ const NRW = {
         const query = this.searchQuery;
 
         this.filteredMovies = this.allMovies.filter(movie => {
-            // Slop mode filter
-            const isSlop = movie.is_slop || movie._is_slop_guess;
-            if (this.slopMode === 'free' && isSlop) return false;
-            if (this.slopMode === 'only' && !isSlop) return false;
+            // Toggles are view modes — an active search bypasses ALL of them
+            // (consistent with the category-filter bypass below)
+            if (!query) {
+                // Slop mode filter
+                const isSlop = movie.is_slop || movie._is_slop_guess;
+                if (this.slopMode === 'free' && isSlop) return false;
+                if (this.slopMode === 'only' && !isSlop) return false;
 
-            // Highlights mode: only staff picks
-            if (this.showHighlightsOnly && !(movie.filters?.is_staff_pick || movie.featured)) return false;
+                // Highlights mode: only staff picks
+                if (this.showHighlightsOnly && !(movie.filters?.is_staff_pick || movie.featured)) return false;
 
-            // Fest mode: hide virtual screenings unless toggle is ON
-            if (!this.showFest && movie.filters?.is_virtual_screening) return false;
+                // Fest mode: hide virtual screenings unless toggle is ON
+                if (!this.showFest && movie.filters?.is_virtual_screening) return false;
+            }
 
             // Pre-orders only appear when the pre-order toggle is ON or search is active
             if (movie._is_preorder && !this.showPreorders && !query) return false;

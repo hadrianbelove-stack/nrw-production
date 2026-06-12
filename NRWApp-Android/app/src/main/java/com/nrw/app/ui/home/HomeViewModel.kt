@@ -126,18 +126,21 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         val state = _uiState.value
         var filtered = repository.filterMoviesMulti(state.movies, state.activeFilters, state.searchQuery)
 
-        if (state.showHighlightsOnly) {
-            filtered = filtered.filter { it.isStaffPick() }
-        }
+        // Toggles are view modes — an active search bypasses them all
+        if (state.searchQuery.isBlank()) {
+            if (state.showHighlightsOnly) {
+                filtered = filtered.filter { it.isStaffPick() }
+            }
 
-        if (state.slopMode == "free") {
-            filtered = filtered.filter { !it.isSlop && !it.isSlopGuess }
-        } else if (state.slopMode == "only") {
-            filtered = filtered.filter { it.isSlop || it.isSlopGuess }
-        }
+            if (state.slopMode == "free") {
+                filtered = filtered.filter { !it.isSlop && !it.isSlopGuess }
+            } else if (state.slopMode == "only") {
+                filtered = filtered.filter { it.isSlop || it.isSlopGuess }
+            }
 
-        if (state.hideFest) {
-            filtered = filtered.filter { it.filters?.isVirtualScreening != true }
+            if (state.hideFest) {
+                filtered = filtered.filter { it.filters?.isVirtualScreening != true }
+            }
         }
 
         if (!state.showPreorders && state.searchQuery.isBlank()) {

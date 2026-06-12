@@ -123,15 +123,13 @@ export function useHomeScreen() {
     setLastFocusedPosition(null);
   }, []);
 
-  // Filtered movies
+  // Filtered movies — an active search runs over ALL movies (filters are
+  // view modes; search bypasses them, matching the other NRW devices)
   const filteredMovies = useMemo(() => {
-    let result = filterMovies(movies, activeFilter);
-
     if (searchQuery.trim()) {
-      result = searchMovies(result, searchQuery);
+      return searchMovies(movies, searchQuery);
     }
-
-    return result;
+    return filterMovies(movies, activeFilter);
   }, [movies, activeFilter, searchQuery]);
 
   // Movies grouped by release date (for tvOS shelves)

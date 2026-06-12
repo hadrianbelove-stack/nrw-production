@@ -190,15 +190,18 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopM
   if (!movies || !Array.isArray(movies)) return [];
   // Exclude reverted movies (failed JustWatch verification, no watch links)
   movies = movies.filter(m => m._enrichment_status !== 'reverted');
-  // Slop mode: free = hide slop, all = show everything, only = show only slop
-  if (slopMode === 'free') {
-    movies = movies.filter(m => !m.is_slop && !m._is_slop_guess);
-  } else if (slopMode === 'only') {
-    movies = movies.filter(m => m.is_slop || m._is_slop_guess);
-  }
-  // Hide-fest mode: hide virtual screenings
-  if (hideFest) {
-    movies = movies.filter(m => !m.filters?.is_virtual_screening);
+  // Toggles are view modes — an active search bypasses them all
+  if (!searchQuery) {
+    // Slop mode: free = hide slop, all = show everything, only = show only slop
+    if (slopMode === 'free') {
+      movies = movies.filter(m => !m.is_slop && !m._is_slop_guess);
+    } else if (slopMode === 'only') {
+      movies = movies.filter(m => m.is_slop || m._is_slop_guess);
+    }
+    // Hide-fest mode: hide virtual screenings
+    if (hideFest) {
+      movies = movies.filter(m => !m.filters?.is_virtual_screening);
+    }
   }
   // Pre-orders only appear when toggle is ON or search is active
   if (!showPreorders && !searchQuery) {
