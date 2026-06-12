@@ -165,10 +165,10 @@ Build the table by reading `movie.is_slop`, `movie._is_slop_guess`, and `movie._
 ```
 SLOP REVIEW — confirm or correct auto-classifications
 
-| # | Title (Year) | Slop? | RT | IMDb | Links | On site? | Why |
-|---|--------------|-------|----|------|-------|----------|-----|
-| 1 | [Title (Year)](imdb-url) | ✅ Not slop | 85% | 7.2 | [RT](url) · [LB](url) | visible | score:1(good_imdb) |
-| 2 | [Title (Year)](imdb-url) | 🗑 SLOP (auto) | -- | -- | [LB](url) | HIDDEN | score:5(no_wiki,no_rt) |
+| # | Title (Year) | Slop? | RT | IMDb | Links | Why |
+|---|--------------|-------|----|------|-------|-----|
+| 1 | [Title (Year)](imdb-url) | ✅ Not slop | 85% | 7.2 | [RT](url) · [LB](url) | score:1(good_imdb) |
+| 2 | [Title (Year)](imdb-url) | 🗑 SLOP (auto) | -- | -- | [LB](url) | score:5(no_wiki,no_rt) |
 
 "auto" = classifier made the call. Reply with overrides (e.g. "2: not slop; 5: slop") or "looks good" to confirm all.
 ```
@@ -181,10 +181,9 @@ SLOP REVIEW — confirm or correct auto-classifications
   - `is_slop=False` → `✅ Not slop`
 - `RT` / `IMDb` — `movie.rt_score` and `movie.imdb_rating` (`--` if absent)
 - `Links` — clickable [RT](movie.links.rt) and [LB](movie.links.letterboxd) when present, so the user can identity-check each film
-- `On site?` — the site's default slop-free mode hides any movie with `is_slop` OR `_is_slop_guess` (assets/app.js). Show `HIDDEN` for those, `visible` otherwise. This tells the user what their verdict will change.
 - `Why` column: show `_slop_reason` if present; otherwise show RT/MC scores or "no classifier signal"
 
-**Flag contradictions** below the table: any HIDDEN movie that is also a Select, or has an approved capsule, or has selected pull quotes — these are films the user invested in that visitors can't see.
+**Flag contradictions** below the table: any slop-flagged movie that is also a Select, or has an approved capsule, or has selected pull quotes — films the user invested in but the default slop-free view filters out. (All movies are on the site regardless of slop flag — the toggle is a view mode, never removal.)
 
 **On user reply:**
 
