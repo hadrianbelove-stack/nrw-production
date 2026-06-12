@@ -871,12 +871,6 @@ const HomeScreenTvOS = () => {
     ? '#dc143c'
     : (singleFilter && STRIP_COLORS[singleFilter]) || Colors.primary;
 
-  // Strip rows pin to the top of the grid while their day scrolls
-  // (+1 offsets for the ListHeaderComponent focus guide at sticky index 0)
-  const stickyIndices = useMemo(
-    () => rowData.reduce((acc, r, i) => (r.type === 'date' ? (acc.push(i + 1), acc) : acc), []),
-    [rowData],
-  );
 
   // Render row (date strip, trailers, load-more, or a row of movie cards)
   const renderRow = useCallback(
@@ -1128,7 +1122,6 @@ const HomeScreenTvOS = () => {
         data={rowData}
         renderItem={renderRow}
         keyExtractor={keyExtractor}
-        stickyHeaderIndices={stickyIndices}
         extraData={itemNodeHandles}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}

@@ -13,6 +13,11 @@ Sub Init()
     m.filterDescTitle = m.top.FindNode("filterDescTitle")
     m.filterDescText = m.top.FindNode("filterDescText")
     m.movieGrid = m.top.FindNode("movieGrid")
+    m.dateHud = m.top.FindNode("dateHud")
+    m.dateHudTop = m.top.FindNode("dateHudTop")
+    m.dateHudBottom = m.top.FindNode("dateHudBottom")
+    m.dateHudDay = m.top.FindNode("dateHudDay")
+    m.dateHudRest = m.top.FindNode("dateHudRest")
     m.loadingGroup = m.top.FindNode("loadingGroup")
     m.errorGroup = m.top.FindNode("errorGroup")
     m.trailersButton = m.top.FindNode("trailersButton")
@@ -26,6 +31,8 @@ Sub Init()
     m.showPreorders = false
     m.hideFest = true
     m.showHighlightsOnly = false
+    m.itemStrips = []
+    m.dateStripColor = "0x00D4AAFF"
     m.focusedArea = "grid"  ' "filter", "grid", or "detail"
 
     ' Set up observers
@@ -164,20 +171,27 @@ Sub ApplyFilters()
     ' Group by date (FEST section first, then dates, PRE-ORDER last)
     grouped = GroupMoviesByDate(movies)
 
-    ' Flatten back in display order so grid item indices map 1:1 onto m.filteredMovies
+    ' Flatten back in display order so grid item indices map 1:1 onto m.filteredMovies.
+    ' itemStrips records each item's date group for the heads-up banner.
     flattened = []
+    itemStrips = []
     for each dateStr in grouped.dates
         for each movie in grouped.groups[dateStr]
             flattened.Push(movie)
+            itemStrips.Push(dateStr)
         end for
     end for
     m.filteredMovies = flattened
+    m.itemStrips = itemStrips
 
     ' Date strips adopt the single active filter's color (HIGHLIGHTS mode goes crimson)
     UpdateSectionDividerColor()
 
     ' Build content for grid
     BuildGridContent(grouped)
+
+    ' Sync the heads-up banner to the focused (or first) item
+    UpdateDateHud(m.movieGrid.itemFocused)
 End Sub
 
 ' ============================================================================
@@ -201,7 +215,61 @@ Sub UpdateSectionDividerColor()
     else if m.activeFilters.Count() = 1 AND stripColors.DoesExist(m.activeFilters[0])
         color = stripColors[m.activeFilters[0]]
     end if
+    m.dateStripColor = color
     m.movieGrid.sectionDividerTextColor = color
+End Sub
+
+' ============================================================================
+' Heads-up Date Banner — neon bar above the grid that always shows the date
+' group of the focused row (Roku's answer to the web's sticky banners)
+' ============================================================================
+Sub UpdateDateHud(index as Integer)
+    if m.dateHud = invalid then return
+    if m.itemStrips = invalid OR m.itemStrips.Count() = 0 OR m.filteredMovies.Count() = 0
+        m.dateHud.visible = false
+        return
+    end if
+    if index < 0 then index = 0
+    if index >= m.itemStrips.Count() then index = m.itemStrips.Count() - 1
+    key = m.itemStrips[index]
+
+    day = ""
+    rest = ""
+    color = m.dateStripColor
+    if key = "FEST"
+        day = "FEST"
+        rest = "NOW SCREENING"
+        color = "0xF59E0BFF"
+    else if key = "PRE-ORDER"
+        day = "PRE-ORDER"
+        rest = "COMING SOON"
+        color = "0x7C3AEDFF"
+    else if key = "Unknown"
+        day = "DATE TBD"
+    else
+        days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+        dt = CreateObject("roDateTime")
+        dt.FromISO8601String(key)
+        day = days[dt.GetDayOfWeek()]
+        rest = UCase(FormatShortDate(key))
+    end if
+    if m.showHighlightsOnly then color = "0xDC143CFF"
+
+    m.dateHudDay.text = day
+    m.dateHudRest.text = rest
+    if rest = ""
+        m.dateHudDay.width = 1780
+        m.dateHudDay.horizAlign = "center"
+        m.dateHudRest.visible = false
+    else
+        m.dateHudDay.width = 876
+        m.dateHudDay.horizAlign = "right"
+        m.dateHudRest.visible = true
+    end if
+    m.dateHudDay.color = color
+    m.dateHudTop.color = color
+    m.dateHudBottom.color = color
+    m.dateHud.visible = true
 End Sub
 
 ' ============================================================================
@@ -345,7 +413,7 @@ End Sub
 ' Movie Focused Callback
 ' ============================================================================
 Sub onMovieFocused()
-    ' Could add analytics or prefetching here
+    UpdateDateHud(m.movieGrid.itemFocused)
 End Sub
 
 ' ============================================================================
@@ -399,6 +467,7 @@ Sub ShowLoading(show as Boolean)
     if show
         m.movieGrid.visible = false
         m.trailersButton.visible = false
+        if m.dateHud <> invalid then m.dateHud.visible = false
     end if
 End Sub
 

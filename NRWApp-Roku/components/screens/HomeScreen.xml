@@ -101,9 +101,22 @@
         maxLines="2" />
     </Group>
 
+    <!-- Heads-up date banner: neon bar that tracks the focused row's date group -->
+    <Group id="dateHud" translation="[60, 210]" visible="false">
+      <Rectangle id="dateHudTop" width="1780" height="3" color="0x00D4AAFF" />
+      <Rectangle id="dateHudBg" width="1780" height="58" translation="[0, 3]" color="0x08080CF5" />
+      <Label id="dateHudDay" width="876" height="58" translation="[0, 3]"
+        horizAlign="right" vertAlign="center"
+        font="font:MediumBoldSystemFont" color="0x00D4AAFF" />
+      <Label id="dateHudRest" width="876" height="58" translation="[904, 3]"
+        horizAlign="left" vertAlign="center"
+        font="font:MediumSystemFont" color="0xFFFFFFFF" />
+      <Rectangle id="dateHudBottom" width="1780" height="3" translation="[0, 61]" color="0x00D4AAFF" />
+    </Group>
+
     <!-- Movie grid: date groups are sections; dividers render as full-width strips -->
     <MarkupGrid id="movieGrid"
-      translation="[60, 210]"
+      translation="[60, 290]"
       visible="false"
       itemComponentName="MovieCard"
       numColumns="5"
