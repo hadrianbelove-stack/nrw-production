@@ -120,6 +120,22 @@
   }
   .step.on { color:#0a0a0a; background:#00d4aa; border-color:#00d4aa; }
 
+  /* day group headers */
+  .day-hdr {
+    display:flex; align-items:baseline; gap:8px; cursor:pointer; user-select:none;
+    padding:10px 6px 6px; margin-top:4px;
+  }
+  .day-hdr .dh-chev { color:#888; font-size:0.75rem; }
+  .day-hdr .dh-name { font-weight:800; font-size:0.85rem; letter-spacing:0.02em; }
+  .day-hdr .dh-date { font-size:0.7rem; color:#888; }
+  .day-hdr .dh-count {
+    margin-left:auto; font-size:0.66rem; font-weight:700; color:#bbb;
+    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.14);
+    padding:2px 9px; border-radius:25px;
+  }
+  .day-hdr.day-done .dh-name { color:#00d4aa; }
+  .day-hdr.day-done .dh-count { color:#00d4aa; border-color:rgba(0,212,170,0.4); background:rgba(0,212,170,0.08); }
+
   /* expanded panel */
   .mcard-x { display:none; border-top:1px solid rgba(255,255,255,0.1); padding:12px; }
   .mcard.open .mcard-x { display:block; }
@@ -251,16 +267,16 @@
     </div>
   </div>
 
-  <div class="sec-label">Curate — 4 new arrivals</div>
+  <div class="sec-label" id="queue-label">Curation queue</div>
   <div class="progress-wrap">
     <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
-    <div class="progress-txt" id="ptxt">0 of 4 done</div>
+    <div class="progress-txt" id="ptxt"></div>
   </div>
 
   <div id="queue"></div>
   <div class="empty-q" id="queue-empty">All caught up — every arrival curated. ✨</div>
 
-  <div class="sec-label">Slop review — 3 auto-flagged</div>
+  <div class="sec-label" id="slop-label">Slop review</div>
   <div id="slop-queue"></div>
   <div class="empty-q" id="slop-empty">Slop pile reviewed.</div>
 
@@ -296,26 +312,74 @@
 <div id="toast"></div>
 
 <script>
-// ---- Real data from data.json (2026-06-12 arrivals) ----
+// ---- Real data from data.json: every uncurated arrival Jun 8–12 (no capsule yet) ----
 const ARRIVALS = [
-  {id:'1226834', title:'This Tempting Madness', year:2026, runtime:92, country:'USA', services:['Amazon'], rt:'82%', imdb:'7.8',
+  {id:'1226834', d:'Jun 12', title:'This Tempting Madness', year:2026, runtime:92, country:'USA', services:['Amazon'], rt:'82%', imdb:'7.8',
    poster:'https://image.tmdb.org/t/p/w300/yxyWCKdUcfqgBUCrf1xIvghxJlu.jpg', trailer:true, wiki:true,
    syn:'A young woman awakens from a coma grievously injured, memory fractured, her husband arrested…'},
-  {id:'1325614', title:'Badland Rising', year:2026, runtime:97, country:'AUS', services:['Amazon'], rt:'82%', imdb:'7.6',
+  {id:'1325614', d:'Jun 12', title:'Badland Rising', year:2026, runtime:97, country:'AUS', services:['Amazon'], rt:'82%', imdb:'7.6',
    poster:'https://image.tmdb.org/t/p/w300/zJ9cH08c1x1WNsVRR6v6FCK805w.jpg', trailer:true, wiki:false,
    syn:'An ordinary bloke embarks on a 19-hour drive home, unaware of being pursued by two unhinged criminals…'},
-  {id:'1283636', title:'Find Your Friends', year:2025, runtime:89, country:'USA', services:['YouTube'], rt:null, imdb:null,
+  {id:'1283636', d:'Jun 12', title:'Find Your Friends', year:2025, runtime:89, country:'USA', services:['YouTube'], rt:null, imdb:null,
    poster:'https://image.tmdb.org/t/p/w300/uN0psnESvA9X6TnmQHKG78YKe4e.jpg', trailer:false, wiki:true,
    syn:'Amber and her four best girlfriends take a trip to escape the L.A. bubble and cut loose in Joshua Tree…'},
-  {id:'1119090', title:'I Am Frankelda', year:2025, runtime:114, country:'MEX', services:['Netflix'], rt:null, imdb:null,
+  {id:'1119090', d:'Jun 12', title:'I Am Frankelda', year:2025, runtime:114, country:'MEX', services:['Netflix'], rt:null, imdb:null,
    poster:'https://image.tmdb.org/t/p/w300/hDzllxB1TQ7uUxVvjnGHirJJovt.jpg', trailer:false, wiki:true,
    syn:'Frankelda, a frustrated young Mexican writer from the 19th century…'},
+  {id:'1490884', d:'Jun 11', title:"My Boyfriend's Wife Is Dead", year:2026, runtime:null, country:'USA', services:['Hoopla','Amazon','Fandango'], rt:null, imdb:'5.4', pick:true,
+   poster:'https://image.tmdb.org/t/p/w300/80vJ5kBWfpThzsggWWU7LBVyJQ9.jpg', trailer:true, wiki:false,
+   syn:'After a tough divorce, Lena enters into a throuple with glamorous couple Iris and Dean. But when Iris is murdered, all eyes are on Lena…'},
+  {id:'1463188', d:'Jun 11', title:'Boy George & Culture Club', year:2026, runtime:96, country:'USA', services:['Apple TV','Amazon'], rt:'90%', imdb:'7.3', pick:true,
+   poster:'https://image.tmdb.org/t/p/w300/dH32lHEdcEeKfperjPbx8U7SqyL.jpg', trailer:true, wiki:false,
+   syn:'Set against the backdrop of 1980s Britain, four young men formed a multi-racial band that conquered the world…'},
+  {id:'1701450', d:'Jun 10', title:"Vick & Tarstar's Scarecrow Factory", year:2025, runtime:91, country:'USA', services:['Fawesome'], rt:null, imdb:'6.0',
+   poster:'https://image.tmdb.org/t/p/w300/1ZTqjziGPWf25CO5mm14VYYSYUH.jpg', trailer:true, wiki:false,
+   syn:'Vick and Tarstar are shooting their latest horror movie trash epic, Scarecrowed, with a cast and crew of punks…'},
+  {id:'1709198', d:'Jun 10', title:'Thou Shall Not Commit Adultery', year:2026, runtime:90, country:'USA', services:['Lifetime','Amazon'], rt:null, imdb:'6.2',
+   poster:'https://image.tmdb.org/t/p/w300/v6fvzTRikUp9ry5OyoTmUIon5rh.jpg', trailer:true, wiki:false,
+   syn:'When Cassie, a Christian feminist icon and bestselling author, is blackmailed with videos of her affair…'},
+  {id:'1621113', d:'Jun 10', title:'Bring Me the Horizon: L.I.V.E. in São Paulo', year:2026, runtime:114, country:'UK', services:['Amazon','Fandango'], rt:null, imdb:'9.0',
+   poster:'https://image.tmdb.org/t/p/w300/dHnCH7HoVE7MBwc2lvgbSM3jXg7.jpg', trailer:true, wiki:true,
+   syn:"BRIT-winning band Bring Me The Horizon's biggest headline show to date, shot at São Paulo's Allianz Parque Stadium…"},
+  {id:'1233354', d:'Jun 10', title:'Heads or Fails', year:2025, runtime:86, country:'BEL', services:['myfilmfriend','Fandango'], rt:null, imdb:'6.3',
+   poster:'https://image.tmdb.org/t/p/w300/p03nyFzLERXEeE7MfBsCzBVb266.jpg', trailer:true, wiki:false,
+   syn:'Armande Pigeon, a queen of shenanigans in Brussels, struggles to make ends meet because she can’t stop gambling…'},
+  {id:'1249271', d:'Jun 10', title:'Powwow People', year:2025, runtime:88, country:'USA', services:['Eventive'], rt:null, imdb:'6.3',
+   poster:'https://image.tmdb.org/t/p/w300/klheiHrCGwNNooVvYTJCFYMzmrI.jpg', trailer:true, wiki:false,
+   syn:'A portrait of a powwow and its participants.'},
+  {id:'1585745', d:'Jun 10', title:"What's the Story, Wishbone?", year:2026, runtime:89, country:'USA', services:['Amazon','Apple TV'], rt:null, imdb:'8.9',
+   poster:'https://image.tmdb.org/t/p/w300/qlbeEWHs2np97vmvMAifjJYyLFP.jpg', trailer:true, wiki:false,
+   syn:'A behind-the-scenes journey into the creation and lasting legacy of Wishbone, the Emmy-winning PBS series…'},
+  {id:'tv_322426', d:'Jun 9', title:'Norway: The Dark Horse', year:2026, runtime:null, country:'NOR', services:['Netflix'], rt:null, imdb:'6.9', pick:true,
+   poster:'https://image.tmdb.org/t/p/w300/kZgzZsVgNruGRWKzTbAIfvvrvHJ.jpg', trailer:true, wiki:false,
+   syn:"After 26 years of tournament drought, Norway's 2026 World Cup hopes were next to nil. But what followed rekindled belief."},
+  {id:'1360708', d:'Jun 9', title:"Let's Love", year:2026, runtime:90, country:'UK', services:['Hoopla','Amazon','Apple TV'], rt:null, imdb:null,
+   poster:'https://image.tmdb.org/t/p/w300/iQBNEmJxNUhrzmom9DRhyJTWyGn.jpg', trailer:true, wiki:true,
+   syn:'A director, actor, screenwriter and actress reunite for the 10th anniversary of their one-hit wonder film…'},
+  {id:'1455103', d:'Jun 9', title:'Rumba Royale', year:2025, runtime:null, country:'COD', services:['Amazon'], rt:null, imdb:'8.4',
+   poster:'https://image.tmdb.org/t/p/w300/lHWo5q8WipfW8yLSpT8yAGz2mWp.jpg', trailer:true, wiki:true,
+   syn:'An historical thriller set in the Democratic Republic of Congo.'},
+  {id:'936075', d:'Jun 9', title:'Michael', year:2026, runtime:128, country:'USA', services:['Amazon','Apple TV','Fandango'], rt:'39%', imdb:'7.7',
+   poster:'https://image.tmdb.org/t/p/w300/zm0KAbOjlt9eR5y7vDiL2dEOwMl.jpg', trailer:true, wiki:true,
+   syn:'The story of Michael Jackson, one of the most influential artists the world has ever known, and his life beyond the music…'},
+  {id:'1510769', d:'Jun 8', title:'29', year:2026, runtime:149, country:'IND', services:['Netflix'], rt:null, imdb:'7.8',
+   poster:'https://image.tmdb.org/t/p/w300/aQZ4OxzaYTN7cRN7fALi9BhPucp.jpg', trailer:true, wiki:true,
+   syn:'A quirky 29-year-old named Sathya embarks on an unexpected journey of laughter, unlikely friendships, and self-discovery…'},
+  {id:'1642859', d:'Jun 8', title:'Iron Maiden: Burning Ambition', year:2026, runtime:105, country:'USA', services:['Amazon','Apple TV'], rt:'85%', imdb:'7.6', pick:true,
+   poster:'https://image.tmdb.org/t/p/w300/yZqhFJDenLfgF1VygOOCNmAdS1P.jpg', trailer:true, wiki:false,
+   syn:'With unprecedented access to the official archives and intimate recollections from the band, current and past…'},
 ];
+// Auto-flagged slop guesses awaiting confirm/rescue (real _is_slop_guess records, Jun 8–12)
 const SLOP = [
-  {id:'1691363', title:'Time of Death', services:['Amazon'], poster:'https://image.tmdb.org/t/p/w300/86NmEEtkQFvbWT28YtZyFVfv6mO.jpg'},
-  {id:'1699155', title:'Maternal Instinct', services:['Netflix'], poster:'https://image.tmdb.org/t/p/w300/sSY1K2wENhlpAEo2ASrtsezn0YH.jpg'},
-  {id:'1357544', title:'Bizarrofilia', services:['Amazon'], poster:'https://image.tmdb.org/t/p/w300/vT7nXdh8ak0A8uhZOf9a9dUzXyR.jpg'},
+  {id:'1691363', d:'Jun 12', title:'Time of Death', services:['Amazon'], poster:'https://image.tmdb.org/t/p/w300/86NmEEtkQFvbWT28YtZyFVfv6mO.jpg'},
+  {id:'1699155', d:'Jun 12', title:'Maternal Instinct', services:['Netflix'], poster:'https://image.tmdb.org/t/p/w300/sSY1K2wENhlpAEo2ASrtsezn0YH.jpg'},
+  {id:'1357544', d:'Jun 12', title:'Bizarrofilia', services:['Amazon'], poster:'https://image.tmdb.org/t/p/w300/vT7nXdh8ak0A8uhZOf9a9dUzXyR.jpg'},
+  {id:'1560681', d:'Jun 10', title:'Colors of Evil: Black', services:['Netflix'], poster:'https://image.tmdb.org/t/p/w300/wIubCZKpnTiQmlC5DehgU1LNFip.jpg'},
+  {id:'1563190', d:'Jun 9', title:'La Scala: The Force of Destiny', services:['Amazon'], poster:'https://image.tmdb.org/t/p/w300/kiKpFTnjPOkm928TdyvuX7ViSE3.jpg'},
+  {id:'1477377', d:'Jun 9', title:'Real Couples', services:['YouTube'], poster:'https://image.tmdb.org/t/p/w300/oI33R83uOQ3MJf3vF0rH9O4LvLX.jpg'},
+  {id:'1034985', d:'Jun 8', title:'Wetiko', services:['Amazon'], poster:'https://image.tmdb.org/t/p/w300/3zkUfnHzz5LraC6rOXybUABK93T.jpg'},
 ];
+const DAY_NAMES = {'Jun 12':'Today','Jun 11':'Thursday','Jun 10':'Wednesday','Jun 9':'Tuesday','Jun 8':'Monday'};
 const WALL = [
   ['Jun 12','This Tempting Madness','Amazon','82%','7.8','https://image.tmdb.org/t/p/w300/yxyWCKdUcfqgBUCrf1xIvghxJlu.jpg',false,false],
   ['Jun 12','Badland Rising','Amazon','82%','7.6','https://image.tmdb.org/t/p/w300/zJ9cH08c1x1WNsVRR6v6FCK805w.jpg',false,false],
@@ -346,9 +410,12 @@ const state = {}; // id -> {steps:[bool x4], done:bool}
 
 function svcClass(s){ s=s.toLowerCase(); if(s.includes('netflix'))return 'netflix'; if(s.includes('amazon')||s.includes('prime'))return 'amazon'; return ''; }
 
-function renderQueue(){
-  const q = document.getElementById('queue');
-  q.innerHTML = ARRIVALS.map(m => {
+const dayClosed = {}; // day -> collapsed?
+function toggleDay(day){
+  dayClosed[day] = !dayClosed[day];
+  renderQueue();
+}
+function cardHTML(m){
     const st = state[m.id] || (state[m.id] = {steps:[false,false,false,false]});
     const done = st.steps.every(Boolean);
     const flags = [];
@@ -360,8 +427,8 @@ function renderQueue(){
       <div class="mcard-main" onclick="this.parentNode.classList.toggle('open')">
         <img class="poster" src="${m.poster}" alt="">
         <div class="m-info">
-          <div class="m-title">${done?'✅ ':''}${m.title}</div>
-          <div class="m-meta">${m.year} · ${m.runtime} min · ${m.country}</div>
+          <div class="m-title">${done?'✅ ':''}${m.pick?'<span class="w-star">★</span> ':''}${m.title}</div>
+          <div class="m-meta">${m.year} · ${m.runtime?m.runtime+' min · ':''}${m.country}</div>
           <div class="pills">
             ${m.services.map(s=>`<span class="pill ${svcClass(s)}">${s}</span>`).join('')}
             ${m.rt?`<span class="pill score">🍅 ${m.rt}</span>`:''}
@@ -392,6 +459,24 @@ function renderQueue(){
         </div>
       </div>
     </div>`;
+}
+
+function renderQueue(){
+  const days = [...new Set(ARRIVALS.map(m=>m.d))];
+  const q = document.getElementById('queue');
+  q.innerHTML = days.map(day=>{
+    const films = ARRIVALS.filter(m=>m.d===day);
+    const doneCt = films.filter(m=>state[m.id] && state[m.id].steps.every(Boolean)).length;
+    const allDone = doneCt===films.length;
+    const closed = dayClosed[day];
+    return `
+    <div class="day-hdr ${allDone?'day-done':''}" onclick="toggleDay('${day}')">
+      <span class="dh-chev">${closed?'▸':'▾'}</span>
+      <span class="dh-name">${DAY_NAMES[day]||day}</span>
+      <span class="dh-date">${day===DAY_NAMES[day]?'':day}</span>
+      <span class="dh-count">${allDone?'✓ done':doneCt+' / '+films.length}</span>
+    </div>
+    ${closed?'':films.map(cardHTML).join('')}`;
   }).join('');
   updateProgress();
 }
@@ -404,7 +489,7 @@ function renderSlop(){
         <img class="poster" src="${m.poster}" alt="">
         <div>
           <div class="m-title">${m.title}</div>
-          <div class="m-meta">auto-flagged · ${m.services.join(', ')}</div>
+          <div class="m-meta">${m.d} · auto-flagged · ${m.services.join(', ')}</div>
         </div>
         <div class="slop-acts">
           <button class="sbtn confirm" onclick="resolveSlop('${m.id}','Confirmed slop — stays hidden')">Confirm</button>
@@ -423,21 +508,28 @@ function toSlop(id){
   const i = ARRIVALS.findIndex(m=>m.id===id);
   if(i>-1){ ARRIVALS.splice(i,1); delete state[id]; }
   renderQueue(); toast('Moved to slop pile');
-  document.getElementById('queue-badge').textContent = ARRIVALS.length + SLOP.length;
 }
 function resolveSlop(id,msg){
   const el = document.getElementById('slop-'+id);
   el.style.transition='all 0.3s'; el.style.opacity='0'; el.style.transform='translateX(40px)';
+  const i = SLOP.findIndex(m=>m.id===id);
+  if(i>-1) SLOP.splice(i,1);
   setTimeout(()=>{ el.remove();
-    if(!document.querySelector('#slop-queue .mcard')) document.getElementById('slop-empty').style.display='block';
+    if(!SLOP.length) document.getElementById('slop-empty').style.display='block';
   },300);
+  updateProgress();
   toast(msg);
 }
 function updateProgress(){
   const ids = ARRIVALS.map(m=>m.id);
   const done = ids.filter(id=>state[id] && state[id].steps.every(Boolean)).length;
+  const days = new Set(ARRIVALS.map(m=>m.d)).size;
   document.getElementById('pfill').style.width = (ids.length? (done/ids.length*100):100)+'%';
   document.getElementById('ptxt').textContent = `${done} of ${ids.length} done`;
+  document.getElementById('queue-label').textContent =
+    `Curation queue — ${ids.length} films · backlog since Jun 8`;
+  document.getElementById('slop-label').textContent = `Slop review — ${SLOP.length} auto-flagged`;
+  document.getElementById('queue-badge').textContent = (ids.length - done) + SLOP.length;
   document.getElementById('queue-empty').style.display = ids.length? 'none':'block';
 }
 
