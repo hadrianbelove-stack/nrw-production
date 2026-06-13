@@ -49,6 +49,7 @@ MANUAL_OVERRIDES = {
     1249271: False,   # Powwow People (6 RT critic reviews, real doc)
     1265340: False,   # The Second Coming of John Cooper (curator call)
     1556616: False,   # Summer House (curator call)
+    1477377: False,   # Real Couples (curator Select)
     # TV-movie mill thrillers — confirmed slop by curator (June 2026)
     1708839: True,    # Her Husband's Double Life
     1409853: True,    # Neglected
