@@ -1839,7 +1839,7 @@
       "filters": {
         "is_indie": false,
         "is_foreign": false,
-        "is_staff_pick": true,
+        "is_staff_pick": false,
         "is_restoration": false,
         "is_virtual_screening": false,
         "is_series": false,
@@ -1847,7 +1847,7 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": true,
+      "featured": false,
       "is_slop": true,
       "_slop_confidence": "weak",
       "_is_slop_guess": true
@@ -7281,9 +7281,8 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "is_slop": true,
-      "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "is_slop": false,
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -7386,9 +7385,8 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "is_slop": true,
-      "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "is_slop": false,
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
