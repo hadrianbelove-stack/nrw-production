@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW Admin — Morning Desk</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/today.css') }}?v=1">
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-title">NRW Admin</div>
+    <div class="hdr-date">{{ overnight.time and 'Pipeline finished ' + overnight.time or '' }}</div>
+  </div>
+  {% if health_status %}
+  <span class="chip-ok {{ 'chip-warn' if health_status.has_issues else '' }}">
+    {{ health_status.status_emoji }} {{ health_status.status_text }}
+  </span>
+  {% endif %}
+  <button class="btn-save {{ 'pending' if pending_changes else '' }}" id="save-btn" onclick="saveChanges()">
+    Save Changes{% if pending_changes %} •{% endif %}
+  </button>
+</div>
+
+<div class="tabs">
+  <div class="tab active">☀️ Today
+    <span class="t-badge" id="queue-badge">{{ (queue_total - done_count) + slop_review|length }}</span>
+  </div>
+  <a class="tab" href="/wall">🎬 Wall <span class="t-count">{{ wall_count }}</span></a>
+  <div class="tab" id="tools-tab" onclick="toggleTools()">🧰 Tools</div>
+</div>
+
+<div class="view">
+
+  <!-- Tools drawer (hidden until tab tapped) -->
+  <div id="tools-panel" class="tools-grid" style="display:none;">
+    <div class="tool" onclick="saveChanges()"><div class="t-emoji">🔄</div><div class="t-name">Save Changes</div><div class="t-desc">Regenerate data.json &amp; push live</div></div>
+    <a class="tool" href="/site/" target="_blank"><div class="t-emoji">👁️</div><div class="t-name">View Site</div><div class="t-desc">Open the live wall</div></a>
+    <a class="tool" href="/wall"><div class="t-emoji">📋</div><div class="t-name">Classic Table</div><div class="t-desc">Full spreadsheet — add movie, links, ordering</div></a>
+  </div>
+
+  <!-- Overnight report band -->
+  <div class="report-col">
+    <div class="sec-label">Overnight</div>
+    <div class="strip">
+      <div class="stat {{ 'warn' if not overnight.success }}">
+        <div class="s-num {{ 'teal' if overnight.success }}">{{ '✓' if overnight.success else '✗' }}</div>
+        <div class="s-name">Pipeline</div>
+        <div class="s-sub">{{ overnight.minutes ~ ' min · ' if overnight.minutes }}{{ overnight.time }}</div>
+      </div>
+      <div class="stat">
+        <div class="s-num">{{ overnight.intaked if overnight.intaked is not none else '—' }}</div>
+        <div class="s-name">Intake</div><div class="s-sub">new tracked</div>
+      </div>
+      <div class="stat">
+        <div class="s-num teal">{{ overnight.transitions if overnight.transitions is not none else '—' }}</div>
+        <div class="s-name">Discovery</div>
+        <div class="s-sub">{{ '{:,}'.format(overnight.polled) if overnight.polled else '—' }} polled</div>
+      </div>
+      <div class="stat tappable {{ 'warn' if overnight.deferred }}" onclick="document.getElementById('deferred').classList.toggle('open')">
+        <div class="s-num">{{ overnight.enriched if overnight.enriched is not none else '—' }}<span class="s-frac">/{{ overnight.requested if overnight.requested is not none else '—' }}</span></div>
+        <div class="s-name">Enriched</div>
+        <div class="s-sub">{{ overnight.deferred }} deferred ›</div>
+      </div>
+      <div class="stat {{ 'warn' if overnight.trailers_failed }}">
+        <div class="s-num">{{ overnight.trailers_hosted if overnight.trailers_hosted is not none else '—' }}<span class="s-frac">/{{ overnight.trailers_attempted if overnight.trailers_attempted is not none else '—' }}</span></div>
+        <div class="s-name">Trailers</div>
+        <div class="s-sub">hosted{{ ' · ' ~ overnight.trailer_time if overnight.trailer_time }}</div>
+      </div>
+    </div>
+    <div class="card">
+      {% for c in concerns %}
+      <div class="concern-row"><span class="ico">⚠️</span><span>{{ c }}</span></div>
+      {% else %}
+      <div class="concern-row"><span class="ico">✅</span><span>No concerns.</span></div>
+      {% endfor %}
+      {% if overnight.deferred_details %}
+      <div class="deferred-list" id="deferred">
+        {% for d in overnight.deferred_details %}
+        <div class="def-row"><span>{{ d.title }}</span><span class="def-reason">{{ d.reason }}{{ ' · revert ×' ~ d.revert_count if d.revert_count and d.revert_count > 1 }}</span></div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="work-col">
+
+  <div class="sec-label">Curation queue — {{ queue_total }} films · last {{ window_days }} days</div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="pfill" style="width:{{ (done_count / queue_total * 100) if queue_total else 100 }}%"></div></div>
+    <div class="progress-txt" id="ptxt">{{ done_count }} of {{ queue_total }} done</div>
+  </div>
+
+  {% macro cat_btn(film, type, label, on) %}
+  <button class="xbtn cat {{ 'cat-on' if on }}" data-type="{{ type }}" data-on="{{ '1' if on else '0' }}"
+          onclick="setCategory('{{ film.id }}', this)">{{ label }}</button>
+  {% endmacro %}
+
+  <div id="queue">
+  {% for g in day_groups %}
+    <div class="day-hdr {{ 'day-done' if g.done == g.films|length }}" data-day="{{ g.date }}" onclick="toggleDay(this)">
+      <span class="dh-chev">{{ '▸' if g.done == g.films|length else '▾' }}</span>
+      <span class="dh-name">{{ g.label }}</span>
+      <span class="dh-date">{{ g.date|short_date }}</span>
+      <span class="dh-count" data-done="{{ g.done }}" data-total="{{ g.films|length }}">{{ '✓ done' if g.done == g.films|length else g.done ~ ' / ' ~ g.films|length }}</span>
+    </div>
+    <div class="day-films {{ 'closed' if g.done == g.films|length }}" data-day="{{ g.date }}">
+    {% for f in g.films %}
+      <div class="mcard {{ 'done-card' if f.capsule_done }}" id="card-{{ f.id }}" data-date="{{ f.date }}">
+        <div class="mcard-main" onclick="this.parentNode.classList.toggle('open')">
+          {% if f.poster %}<img class="poster" src="{{ f.poster }}" loading="lazy" alt="">{% else %}<div class="poster no-poster">?</div>{% endif %}
+          <div class="m-info">
+            <div class="m-title">{% if f.capsule_done %}✅ {% endif %}{% if f.is_pick %}<span class="w-star">★</span> {% endif %}{{ f.title }}</div>
+            <div class="m-meta">{{ f.year }}{{ ' · ' ~ f.runtime ~ ' min' if f.runtime }}{{ ' · ' ~ f.country|country_code if f.country }}</div>
+            <div class="pills">
+              {% for s in f.services[:4] %}<span class="pill svc-{{ s|lower|replace(' ','')|replace('+','') }}">{{ s }}</span>{% endfor %}
+              {% if f.rt %}<span class="pill score">🍅 {{ f.rt }}</span>{% endif %}
+              {% if f.imdb %}<span class="pill score">IMDb {{ f.imdb }}</span>{% endif %}
+              {% if not f.trailer_hosted and not f.trailer_yt %}<span class="pill flag">⚠ no trailer</span>{% endif %}
+              {% if f.no_links %}<span class="pill flag">⚠ no links</span>{% endif %}
+              {% if f.plex_only %}<span class="pill flag">plex only</span>{% endif %}
+            </div>
+            <div class="track">
+              <div class="step {{ 'on' if f.capsule_done }}" data-step="capsule">{{ '✓ ' if f.capsule_done }}Capsule</div>
+              <div class="step {{ 'on' if f.quotes_done }}" data-step="quotes">{{ '✓ ' if f.quotes_done }}Quotes{{ ' (' ~ f.quotes_selected ~ ')' if f.quotes_selected }}</div>
+              <div class="step {{ 'on' if f.wiki }}" data-step="wiki">{{ '✓ ' if f.wiki }}Wiki</div>
+            </div>
+          </div>
+        </div>
+        <div class="mcard-x">
+          <div class="x-group">
+            <div class="x-label">Slop Call</div>
+            <div class="x-row radio-group" data-group="slopcall">
+              <button class="xbtn sel-real">✓ Real movie</button>
+              <button class="xbtn" onclick="markSlop('{{ f.id }}')">Slop</button>
+            </div>
+          </div>
+          <div class="x-group">
+            <div class="x-label">Film Category</div>
+            <div class="x-row radio-group" data-group="category" id="cats-{{ f.id }}">
+              {{ cat_btn(f, 'featured', '★ PICK', f.is_pick) }}
+              {{ cat_btn(f, 'indie', 'INDIE', f.cats.indie) }}
+              {{ cat_btn(f, 'foreign', 'FRGN', f.cats.foreign) }}
+              {{ cat_btn(f, 'documentary', 'DOC', f.cats.documentary) }}
+              {{ cat_btn(f, 'restoration', 'REST', f.cats.restoration) }}
+              {{ cat_btn(f, 'virtual_screening', 'VSCR', f.cats.virtual_screening) }}
+            </div>
+          </div>
+          <div class="x-group">
+            <div class="x-label">Tmdb Synopsis</div>
+            <div class="x-note">{{ f.synopsis or '—' }}</div>
+          </div>
+          <div class="x-group">
+            <div class="x-label">Curate Film</div>
+            <div class="x-row">
+              <button class="xbtn primary" onclick="openCapsule('{{ f.id }}')">✎ Capsule</button>
+              <button class="xbtn" onclick="openQuotes('{{ f.id }}')">❝ Quotes</button>
+              <a class="xbtn" href="/pull-quotes/{{ f.id }}" target="_blank">Quotes page</a>
+              <a class="xbtn" href="/wall" title="Full editor on the classic table">Classic editor</a>
+            </div>
+          </div>
+        </div>
+        <script type="application/json" class="film-data">{{ {'id': f.id, 'title': f.title, 'capsule': f.capsule}|tojson }}</script>
+      </div>
+    {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-q">All caught up — every arrival curated. ✨</div>
+  {% endfor %}
+  </div>
+
+  <div class="sec-label">Slop review — <span id="slop-count">{{ slop_review|length }}</span> auto-flagged</div>
+  <div id="slop-queue">
+  {% for f in slop_review %}
+    <div class="mcard" id="slop-{{ f.id }}">
+      <div class="slop-row">
+        {% if f.poster %}<img class="poster" src="{{ f.poster }}" loading="lazy" alt="">{% else %}<div class="poster no-poster">?</div>{% endif %}
+        <div>
+          <div class="m-title">{{ f.title }}</div>
+          <div class="m-meta">{{ f.date|short_date }} · guessed {{ 'slop' if f.slop_guess else 'not slop' }} · {{ f.services[:3]|join(', ') or 'no links' }}</div>
+        </div>
+        <div class="slop-acts">
+          <button class="sbtn confirm" onclick="resolveSlop('{{ f.id }}', true)">Confirm slop</button>
+          <button class="sbtn rescue" onclick="resolveSlop('{{ f.id }}', false)">Rescue</button>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-q" style="display:block;">Slop pile reviewed.</div>
+  {% endfor %}
+  </div>
+
+  </div><!-- /work-col -->
+</div>
+
+<!-- Capsule modal -->
+<div class="modal-wrap" id="capsule-modal" style="display:none;">
+  <div class="modal-bg" onclick="closeModal('capsule-modal')"></div>
+  <div class="modal">
+    <div class="modal-hdr">
+      <span id="capsule-title">Capsule</span>
+      <button class="close-x" onclick="closeModal('capsule-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="capsule-body">
+      <div class="x-label">Capsule Text</div>
+      <textarea id="capsule-text" rows="6" placeholder="Pick a variant below or write here…"></textarea>
+      <div class="modal-acts">
+        <button class="xbtn primary" id="capsule-approve-btn" onclick="approveCapsule()">Approve &amp; publish</button>
+        <button class="xbtn" id="capsule-gen-btn" onclick="generateCapsule(false)">Generate 3 variants</button>
+        <button class="xbtn subtle" onclick="generateCapsule(true)" title="Ignore cache, regenerate from scratch">Regenerate fresh</button>
+      </div>
+      <div class="gen-status" id="capsule-status"></div>
+      <div id="capsule-variants"></div>
+      <div id="capsule-primer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Quotes modal -->
+<div class="modal-wrap" id="quotes-modal" style="display:none;">
+  <div class="modal-bg" onclick="closeModal('quotes-modal')"></div>
+  <div class="modal">
+    <div class="modal-hdr">
+      <span id="quotes-title">Pull Quotes</span>
+      <button class="close-x" onclick="closeModal('quotes-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="gen-status" id="quotes-status"></div>
+      <div id="quotes-list"></div>
+      <div class="quote-add">
+        <input id="quote-add-text" placeholder="Add a quote manually…">
+        <input id="quote-add-critic" placeholder="Critic / outlet">
+        <button class="xbtn" onclick="addQuote()">+ Add</button>
+      </div>
+      <div class="modal-note">Tap a quote to select/deselect it. ✎ to trim — edits save to the quote cache (source of truth). Selected quotes go live on Save Changes.</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="{{ url_for('static', filename='js/today.js') }}?v=1"></script>
+</body>
+</html>

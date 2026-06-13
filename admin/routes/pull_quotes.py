@@ -268,6 +268,45 @@ def add_pull_quote():
     return jsonify({'success': True, 'index': index})
 
 
+@bp.route('/pull-quotes/edit', methods=['POST'])
+def edit_pull_quote():
+    """Edit (trim/rewrite) a pull quote's text in the cache.
+
+    The cache is the source of truth — display generation reads selected
+    quotes from here, so the edited text must land in the cache, not just
+    data.json.
+    """
+    data = request.json
+    cache_key = data.get('cache_key')
+    source = data.get('source')  # 'rt_quotes' or 'lb_quotes'
+    index = data.get('index')
+    text = (data.get('text') or '').strip()
+
+    if not cache_key or source not in ('rt_quotes', 'lb_quotes') or index is None:
+        return jsonify({'success': False, 'error': 'Missing or invalid parameters'})
+    if not text:
+        return jsonify({'success': False, 'error': 'Quote text cannot be empty'})
+
+    quotes_cache = load_json(PULL_QUOTES_CACHE, {})
+    if cache_key not in quotes_cache:
+        return jsonify({'success': False, 'error': 'Movie not found in cache'})
+
+    quotes = quotes_cache[cache_key].get(source, [])
+    if index < 0 or index >= len(quotes):
+        return jsonify({'success': False, 'error': 'Quote index out of range'})
+
+    quote = quotes[index]
+    if quote.get('text') != text:
+        if not quote.get('original_text'):
+            quote['original_text'] = quote.get('text', '')
+        quote['text'] = text
+        quote['verbatim'] = False
+        quote['edited_at'] = datetime.now().isoformat()
+        safe_write_json(PULL_QUOTES_CACHE, quotes_cache)
+
+    return jsonify({'success': True, 'text': text})
+
+
 @bp.route('/pull-quotes/eye-test-save', methods=['POST'])
 def save_eye_test():
     """Save an eye test A/B comparison result to taste profile."""

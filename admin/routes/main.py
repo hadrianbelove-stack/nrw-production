@@ -14,9 +14,9 @@ from admin.health import load_health_status
 bp = Blueprint('main', __name__)
 
 
-@bp.route('/')
+@bp.route('/wall')
 def index() -> str:
-    """Main admin panel page.
+    """Classic full-table admin page (the Morning Desk dashboard is now '/').
 
     Displays all movies in a grid with filtering, search, and inline editing.
     Shows statistics (total, featured, missing data counts).

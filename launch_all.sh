@@ -62,9 +62,22 @@ if [ -f "$ADMIN_TMPL" ]; then
     fi
 fi
 
-# Launch admin in background
-echo "🚀 Starting admin panel..."
-ADMIN_PORT=$ADMIN_PORT python3 admin.py &
+# Launch admin in background.
+# Resolve a Python that actually has Flask — Homebrew's bare `python3` can
+# point at a freshly-upgraded version with no packages installed.
+PYBIN=""
+for cand in /opt/homebrew/bin/python3.11 /usr/bin/python3 python3; do
+    if command -v "$cand" >/dev/null 2>&1 && "$cand" -c 'import flask' >/dev/null 2>&1; then
+        PYBIN="$cand"
+        break
+    fi
+done
+if [ -z "$PYBIN" ]; then
+    echo "❌ No python3 with Flask found — admin cannot start"
+    PYBIN=python3
+fi
+echo "🚀 Starting admin panel ($PYBIN)..."
+ADMIN_PORT=$ADMIN_PORT "$PYBIN" admin.py &
 ADMIN_PID=$!
 
 # Setup cleanup with graceful shutdown
