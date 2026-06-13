@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(data.json)",
+      "Edit(data_archive.json)",
+      "Write(data.json)",
+      "Write(data_archive.json)",
+      "Edit(/Users/hadrianbelove/Downloads/nrw-production/data.json)",
+      "Edit(/Users/hadrianbelove/Downloads/nrw-production/data_archive.json)",
+      "Write(/Users/hadrianbelove/Downloads/nrw-production/data.json)",
+      "Write(/Users/hadrianbelove/Downloads/nrw-production/data_archive.json)"
+    ],
+    "ask": [
+      "Bash(rm -rf:*)",
+      "Bash(rm -fr:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git checkout --ours:*)",
+      "Bash(git checkout --theirs:*)",
+      "Bash(git clean -f:*)",
+      "Bash(git clean -d:*)",
+      "Bash(sudo:*)"
+    ]
+  }
+}
