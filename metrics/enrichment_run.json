@@ -1,51 +1,20 @@
 {
-  "timestamp": "2026-06-12T13:24:30.541994",
-  "movies_requested": 12,
-  "movies_enriched": 9,
-  "movies_deferred": 3,
+  "timestamp": "2026-06-13T12:37:13.683659",
+  "movies_requested": 14,
+  "movies_enriched": 13,
+  "movies_deferred": 1,
   "deferred_details": [
     {
       "title": "The Thing in the Fog",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-12",
-      "discovered_at": "2026-06-12T12:23:38.237632",
+      "discovered_at": "2026-06-13T11:19:22.650609",
       "discovery_source": "tmdb_type4",
-      "revert_count": 2,
+      "revert_count": 3,
       "tmdb_platforms": []
-    },
-    {
-      "title": "Blue Film",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-06-12T12:58:29.527386",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
-    },
-    {
-      "title": "Blades of the Guardians: Wind Rises in the Desert",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-30",
-      "discovered_at": "2026-06-12T13:03:17.325254",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Kraken",
-      "reason": "zero_watch_links",
-      "digital_date": "2026-06-12",
-      "discovered_at": "2026-05-14T12:02:37.640421",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ]
     }
   ],
-  "enrichment_duration_seconds": 658.71,
+  "enrichment_duration_seconds": 720.61,
   "error_details": [],
   "total_errors": 0
 }
