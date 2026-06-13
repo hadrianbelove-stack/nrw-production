@@ -197,10 +197,14 @@ const NRW = {
                 const filter = btn.dataset.filter;
                 if (!filter) return;
 
-                if (this.activeFilters.has(filter)) {
-                    this.activeFilters.delete(filter);
-                    btn.classList.remove('active');
-                } else {
+                // One exclusive group: picking a genre clears every other view
+                // (other genres + the toggles + slop). Re-clicking the active
+                // genre returns to the default wall.
+                const wasActive = this.activeFilters.has(filter);
+                this.setExclusiveView('genre');
+                this.activeFilters.clear();
+                document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active'));
+                if (!wasActive) {
                     this.activeFilters.add(filter);
                     btn.classList.add('active');
                 }
@@ -213,22 +217,19 @@ const NRW = {
             });
         });
 
-        // Slop toggle (3-state: free / all / only)
+        // Slop toggle (3-state: free / all / only) — part of the exclusive view group
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
             const SLOP_STATES = ['free', 'all', 'only'];
-            const SLOP_LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
-            const updateSlopToggle = () => {
-                slopToggle.dataset.state = this.slopMode;
-                const label = document.getElementById('slop-state-label');
-                if (label) label.textContent = SLOP_LABELS[this.slopMode];
-            };
-            updateSlopToggle();
+            this.syncSlopToggle();
             slopToggle.addEventListener('click', () => {
                 const idx = SLOP_STATES.indexOf(this.slopMode);
                 this.slopMode = SLOP_STATES[(idx + 1) % 3];
-                updateSlopToggle();
+                this.setExclusiveView('slop');  // clear genres + other toggles
+                this.syncSlopToggle();
+                this.gridClearSelection();
                 this.displayedCount = this.loadIncrement;
+                this.updateFilterDescription();
                 this.applyFilter();
                 this.renderWallWithMore();
             });
@@ -241,15 +242,7 @@ const NRW = {
             highlightsToggle.addEventListener('click', () => {
                 this.showHighlightsOnly = !this.showHighlightsOnly;
                 highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
-                if (this.showHighlightsOnly) {
-                    // View toggles are mutually exclusive — turning one on turns the others off
-                    this.showFest = false;
-                    this.showPreorders = false;
-                    const ft = document.getElementById('fest-toggle');
-                    if (ft) ft.classList.remove('active');
-                    const pt = document.getElementById('preorder-toggle');
-                    if (pt) pt.classList.remove('active');
-                }
+                if (this.showHighlightsOnly) this.setExclusiveView('selects');
                 this.displayedCount = this.loadIncrement;
                 this.updateFilterDescription();
                 this.applyFilter();
@@ -264,15 +257,7 @@ const NRW = {
             festToggle.addEventListener('click', () => {
                 this.showFest = !this.showFest;
                 festToggle.classList.toggle('active', this.showFest);
-                if (this.showFest) {
-                    // View toggles are mutually exclusive — turning one on turns the others off
-                    this.showHighlightsOnly = false;
-                    this.showPreorders = false;
-                    const ht = document.getElementById('highlights-toggle');
-                    if (ht) ht.classList.remove('active');
-                    const pt = document.getElementById('preorder-toggle');
-                    if (pt) pt.classList.remove('active');
-                }
+                if (this.showFest) this.setExclusiveView('fests');
                 this.displayedCount = this.loadIncrement;
                 this.updateFilterDescription();
                 this.applyFilter();
@@ -302,21 +287,38 @@ const NRW = {
             preorderToggle.addEventListener('click', () => {
                 this.showPreorders = !this.showPreorders;
                 preorderToggle.classList.toggle('active', this.showPreorders);
-                if (this.showPreorders) {
-                    // View toggles are mutually exclusive — turning one on turns the others off
-                    this.showHighlightsOnly = false;
-                    this.showFest = false;
-                    const ht = document.getElementById('highlights-toggle');
-                    if (ht) ht.classList.remove('active');
-                    const ft = document.getElementById('fest-toggle');
-                    if (ft) ft.classList.remove('active');
-                }
+                if (this.showPreorders) this.setExclusiveView('preorders');
                 this.displayedCount = this.loadIncrement;
                 this.updateFilterDescription();
                 this.applyFilter();
                 this.renderWallWithMore();
             });
         }
+    },
+
+    // The whole filter bar is ONE exclusive group: the nine genre chips plus
+    // the Selects / Fests / Pre-Orders / Slop views. Selecting any one clears
+    // all the others (state flags + button highlights). `winner` names the view
+    // being turned on so it isn't cleared; pass a non-matching value to reset all.
+    setExclusiveView(winner) {
+        if (winner !== 'genre') {
+            this.activeFilters.clear();
+            document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active'));
+        }
+        if (winner !== 'selects')   { this.showHighlightsOnly = false; document.getElementById('highlights-toggle')?.classList.remove('active'); }
+        if (winner !== 'fests')     { this.showFest = false;           document.getElementById('fest-toggle')?.classList.remove('active'); }
+        if (winner !== 'preorders') { this.showPreorders = false;      document.getElementById('preorder-toggle')?.classList.remove('active'); }
+        if (winner !== 'slop')      { this.slopMode = 'free';          this.syncSlopToggle(); }
+    },
+
+    // Sync the 3-state slop toggle's data-state + label to this.slopMode.
+    syncSlopToggle() {
+        const toggle = document.getElementById('slop-free-toggle');
+        if (!toggle) return;
+        toggle.dataset.state = this.slopMode;
+        const label = document.getElementById('slop-state-label');
+        const SLOP_LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
+        if (label) label.textContent = SLOP_LABELS[this.slopMode];
     },
 
     // Show/hide filter description based on active filters
@@ -402,96 +404,61 @@ const NRW = {
         });
     },
 
+    // True if a movie carries a given genre/category tag. Genre views show
+    // EVERY film with the tag — slop and fests included — so this is tag-only,
+    // with no slop/fest gating.
+    movieMatchesGenre(movie, filter) {
+        switch (filter) {
+            case 'indie':        return !!movie.filters?.is_indie;
+            case 'foreign':      return !!(movie.filters?.is_foreign ??
+                                     (movie.original_language && movie.original_language !== 'en'));
+            case 'restorations': return !!movie.filters?.is_restoration;
+            case 'documentary':  return !!movie.filters?.is_documentary;
+            case 'horror':
+            case 'action':
+            case 'comedy':
+            case 'family':
+            case 'thriller':     return (movie.genres || []).some(g => g.toLowerCase().includes(filter));
+            default:             return false;
+        }
+    },
+
+    matchesSearch(movie, query) {
+        const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+        const nq = norm(query);
+        return norm(movie.title || '').includes(nq) ||
+               norm(movie.crew?.director || '').includes(nq) ||
+               norm(movie.capsule || movie.synopsis || '').includes(nq) ||
+               norm((movie.genres || []).join(' ')).includes(nq) ||
+               norm(movie.country || '').includes(nq) ||
+               String(movie.year || '').includes(query);
+    },
+
     applyFilter() {
-        const filters = this.activeFilters;
         const query = this.searchQuery;
+        const activeGenre = this.activeFilters.size ? [...this.activeFilters][0] : null;
 
         this.filteredMovies = this.allMovies.filter(movie => {
-            // Toggles are view modes — an active search bypasses ALL of them
-            // (consistent with the category-filter bypass below)
-            if (!query) {
-                // Pre-order mode is an exclusive view: show ONLY pre-orders, and they
-                // bypass slop/category filters (an explicit "show me upcoming" request).
-                if (this.showPreorders) return !!movie._is_preorder;
+            // Search bypasses all view modes
+            if (query) return this.matchesSearch(movie, query);
 
-                // Slop mode filter
-                const isSlop = movie.is_slop || movie._is_slop_guess;
-                if (this.slopMode === 'free' && isSlop) return false;
-                if (this.slopMode === 'only' && !isSlop) return false;
+            // The filter bar is one exclusive group; at most one view is active.
+            // Each view is a pure tag view (slop + fests included where they match).
 
-                // Highlights mode: only staff picks
-                if (this.showHighlightsOnly && !(movie.filters?.is_staff_pick || movie.featured)) return false;
+            // Pre-orders: their own view; every other view hides upcoming titles
+            if (this.showPreorders) return !!movie._is_preorder;
+            if (movie._is_preorder) return false;
 
-                // Fest mode: hide virtual screenings unless toggle is ON
-                if (!this.showFest && movie.filters?.is_virtual_screening) return false;
-            }
+            if (this.showHighlightsOnly) return !!(movie.filters?.is_staff_pick || movie.featured);
+            if (this.showFest) return !!movie.filters?.is_virtual_screening;
+            if (this.slopMode === 'only') return !!(movie.is_slop || movie._is_slop_guess);
 
-            // Pre-orders only appear when the pre-order toggle is ON or search is active
-            if (movie._is_preorder && !this.showPreorders && !query) return false;
+            // Genre view — every film with that tag, slop + fests included
+            if (activeGenre) return this.movieMatchesGenre(movie, activeGenre);
 
-            // If no filters selected OR search is active, show all (search bypasses category filters)
-            if (filters.size === 0 || query) {
-                // No category filter - show all
-            } else {
-                // Must pass ANY selected filter (OR logic - cumulative)
-                let matchesAny = false;
-                for (const filter of filters) {
-                    switch (filter) {
-                        case 'indie':
-                            if (movie.filters?.is_indie) matchesAny = true;
-                            break;
-                        case 'foreign': {
-                            const isForeign = movie.filters?.is_foreign ??
-                                (movie.original_language && movie.original_language !== 'en');
-                            if (isForeign) matchesAny = true;
-                            break;
-                        }
-                        case 'restorations':
-                            if (movie.filters?.is_restoration) matchesAny = true;
-                            break;
-                        case 'documentary':
-                            if (movie.filters?.is_documentary) matchesAny = true;
-                            break;
-                        case 'horror':
-                            if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) matchesAny = true;
-                            break;
-                        case 'action':
-                            if ((movie.genres || []).some(g => g.toLowerCase().includes('action'))) matchesAny = true;
-                            break;
-                        case 'comedy':
-                            if ((movie.genres || []).some(g => g.toLowerCase().includes('comedy'))) matchesAny = true;
-                            break;
-                        case 'family':
-                            if ((movie.genres || []).some(g => g.toLowerCase().includes('family'))) matchesAny = true;
-                            break;
-                        case 'thriller':
-                            if ((movie.genres || []).some(g => g.toLowerCase().includes('thriller'))) matchesAny = true;
-                            break;
-                    }
-                    if (matchesAny) break;
-                }
-                if (!matchesAny) return false;
-            }
-
-            // Then apply search filter if query exists
-            if (query) {
-                const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-                const nq = norm(query);
-                const title = norm(movie.title || '');
-                const director = norm(movie.crew?.director || '');
-                const synopsis = norm(movie.capsule || movie.synopsis || '');
-                const genres = norm((movie.genres || []).join(' '));
-                const country = norm(movie.country || '');
-                const year = String(movie.year || '');
-
-                return title.includes(nq) ||
-                       director.includes(nq) ||
-                       synopsis.includes(nq) ||
-                       genres.includes(nq) ||
-                       country.includes(nq) ||
-                       year.includes(query);
-            }
-
+            // Default wall: hide slop (unless slop toggle is on 'all'), hide fests
+            if (this.slopMode === 'free' && (movie.is_slop || movie._is_slop_guess)) return false;
+            if (movie.filters?.is_virtual_screening) return false;
             return true;
         });
     },
