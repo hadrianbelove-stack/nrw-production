@@ -604,7 +604,7 @@ const NRW = {
             `<div class="date-row-header${extraClass}" style="--strip-c:${color}"${titleAttr}><span class="drh-day">${day}</span>${rest ? `<span class="drh-rest">${rest}</span>` : ''}</div>`;
 
         if (this.showHighlightsOnly) {
-            html += stripHtml('SELECTS', '', '#dc143c');
+            html += stripHtml('SELECTS', 'OUR PICKS', '#dc143c');
         }
         if (this.slopMode === 'only') {
             html += stripHtml('SLOP', 'THE CONTENT RIVER', '#ff9500');
@@ -626,8 +626,11 @@ const NRW = {
                     preorderSectionStarted = true;
                     html += stripHtml('PRE-ORDER', 'COMING SOON', '#7c3aed');
                 }
-            // Regular movies: date strip when date changes
-            } else if (date !== lastDate) {
+            // Regular movies: date strip when date changes.
+            // SELECTS is a single curated section (like FEST / PRE-ORDER) — suppress
+            // per-date strips so it shows one "SELECTS · OUR PICKS" header, not a
+            // redundant stack of date banners around it.
+            } else if (date !== lastDate && !this.showHighlightsOnly) {
                 // Add NEW TRAILERS button before the first date marker
                 if (isFirstDate && SHOW_TRAILERS_CARD) {
                     const now = new Date();

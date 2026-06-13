@@ -168,8 +168,9 @@ Sub ApplyFilters()
         movies = filtered
     end if
 
-    ' Group by date (FEST section first, then dates, PRE-ORDER last)
-    grouped = GroupMoviesByDate(movies)
+    ' Group by date (FEST section first, then dates, PRE-ORDER last).
+    ' In SELECTS mode, all regular picks collapse into one HIGHLIGHTS section.
+    grouped = GroupMoviesByDate(movies, m.showHighlightsOnly)
 
     ' Flatten back in display order so grid item indices map 1:1 onto m.filteredMovies.
     ' itemStrips records each item's date group for the heads-up banner.
@@ -248,6 +249,10 @@ Sub UpdateDateHud(index as Integer)
         day = "PRE-ORDER"
         rest = "COMING SOON"
         color = "0x7C3AEDFF"
+    else if key = "HIGHLIGHTS"
+        day = "SELECTS"
+        rest = "OUR PICKS"
+        color = "0xDC143CFF"
     else if key = "Unknown"
         day = "DATE TBD"
     else
@@ -313,6 +318,8 @@ Function FormatSectionTitle(dateStr as String) as String
         return "PRE-ORDER"
     else if dateStr = "FEST"
         return "FEST · NOW SCREENING"
+    else if dateStr = "HIGHLIGHTS"
+        return "SELECTS  ·  OUR PICKS"
     else if dateStr = "Unknown"
         return "DATE TBD"
     end if

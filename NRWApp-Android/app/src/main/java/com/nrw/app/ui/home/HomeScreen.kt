@@ -275,9 +275,11 @@ private fun createGridItems(movies: List<Movie>, playlistUrl: String?, showHighl
     // Sort regular movies by date (newest first)
     val sortedMovies = regularMovies.sortedByDescending { it.getDisplayDate() ?: "0000-00-00" }
 
+    // SELECTS is a single curated section (like FEST / PRE-ORDER): the one
+    // "SELECTS · OUR PICKS" strip above covers all picks — suppress per-date dividers.
     for (movie in sortedMovies) {
         val movieDate = movie.getDisplayDate()
-        if (movieDate != null && movieDate != currentDate) {
+        if (!showHighlightsOnly && movieDate != null && movieDate != currentDate) {
             // Add trailers card before first date divider
             if (!addedTrailers && SHOW_TRAILERS_CARD) {
                 items.add(GridItem.TrailersItem)

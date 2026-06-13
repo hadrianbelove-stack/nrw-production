@@ -517,7 +517,10 @@ const NRWMobile = {
                     festStarted = true;
                     this.gridEntries.push({ type: 'date', dateStr: 'fest' });
                 }
-            } else {
+            } else if (!this.showHighlightsOnly) {
+                // SELECTS is a single curated section (like FEST / PRE-ORDER) —
+                // suppress per-date strips so it shows one "SELECTS · OUR PICKS"
+                // header, not redundant date banners around it.
                 const date = movie.digital_date.substring(0, 10);
                 if (date !== lastDate) {
                     this.gridEntries.push({ type: 'date', dateStr: date });

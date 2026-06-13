@@ -123,7 +123,9 @@ export default function HomeScreen({navigation}) {
     }
 
     const today = new Date().toISOString().split('T')[0];
-    let lastStrip = null;
+    // SELECTS is a single curated section (like FEST / PRE-ORDER): all regular
+    // picks group under the one "SELECTS · OUR PICKS" strip — no per-date strips.
+    let lastStrip = showHighlightsOnly ? 'highlights' : null;
     for (const movie of displayedMovies) {
       const date = movie.digital_date || movie.premiere_date || '';
       let stripKey;
@@ -131,6 +133,8 @@ export default function HomeScreen({navigation}) {
         stripKey = 'pre-order';
       } else if (movie.filters?.is_virtual_screening) {
         stripKey = 'fest';
+      } else if (showHighlightsOnly) {
+        stripKey = 'highlights';
       } else {
         stripKey = date || 'unknown';
       }

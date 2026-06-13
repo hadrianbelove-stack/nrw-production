@@ -262,7 +262,7 @@ const DateRowStrip = ({ stripKey, stripColor }) => {
   } else if (stripKey === 'SCREENING') {
     day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
   } else if (stripKey === 'HIGHLIGHTS') {
-    day = 'SELECTS'; color = '#dc143c';
+    day = 'SELECTS'; rest = 'OUR PICKS'; color = '#dc143c';
   } else if (stripKey === 'SLOP') {
     day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#ff9500';
   } else {
@@ -763,11 +763,14 @@ const HomeScreenTvOS = () => {
     const hasMore = sortedRegular.length > visibleCount;
     const paginatedRegular = sortedRegular.slice(0, visibleCount);
 
+    // SELECTS is a single curated section (like FEST / PRE-ORDER): one
+    // "SELECTS · OUR PICKS" strip at the top, no per-date strips. Movies carry
+    // stripKey 'HIGHLIGHTS' so the focus HUD shows the section, not a date.
     let currentDate = null;
     let trailersPushed = false;
     paginatedRegular.forEach((movie, index) => {
       const movieDate = movie.digital_date || 'Unknown';
-      if (movieDate !== currentDate) {
+      if (!showHighlightsOnly && movieDate !== currentDate) {
         currentDate = movieDate;
         if (!trailersPushed && SHOW_TRAILERS_CARD) {
           items.push({ type: 'trailers', id: 'new-trailers-button', playlistUrl: latestPlaylistUrl });
@@ -775,7 +778,7 @@ const HomeScreenTvOS = () => {
         }
         items.push({ type: 'date', id: `date-${movieDate}-${index}`, date: movieDate, isBootstrap: !!movie.bootstrap_date });
       }
-      items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie, mIdx: mIdx++, stripKey: movieDate });
+      items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie, mIdx: mIdx++, stripKey: showHighlightsOnly ? 'HIGHLIGHTS' : movieDate });
     });
 
     if (hasMore) {
@@ -834,12 +837,15 @@ const HomeScreenTvOS = () => {
   }, [listData]);
   const [hudStrip, setHudStrip] = useState(null);
   const hudStripRef = useRef(null);
+  // First group's strip key — the HUD is suppressed while focus is in this
+  // group, because its in-grid strip is already visible at the top of the
+  // river (showing both doubles the header).
+  const firstStrip = useMemo(() => stripKeyByIdx.find(k => k != null) ?? null, [stripKeyByIdx]);
 
   useEffect(() => {
-    const first = stripKeyByIdx.find(k => k != null) ?? null;
-    hudStripRef.current = first;
-    setHudStrip(first);
-  }, [stripKeyByIdx]);
+    hudStripRef.current = firstStrip;
+    setHudStrip(firstStrip);
+  }, [firstStrip]);
 
   // Handle movie selection - navigate to detail with analytics
   const handleMovieSelect = useCallback(
@@ -1162,8 +1168,10 @@ const HomeScreenTvOS = () => {
         );
       })()}
 
-      {/* Heads-up date banner — tracks the focused row's date group */}
-      {hudStrip != null && (
+      {/* Heads-up date banner — tracks the focused row's date group.
+          Hidden while focus is in the first group: its in-grid strip is
+          already at the top of the river, so showing both doubles the header. */}
+      {hudStrip != null && hudStrip !== firstStrip && (
         <View style={styles.hudWrap}>
           <DateRowStrip stripKey={hudStrip} stripColor={dateStripColor} />
         </View>

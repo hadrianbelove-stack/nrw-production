@@ -146,7 +146,7 @@ End Function
 ' Group Movies by Date
 ' Ported from MovieRepository.groupMoviesByDate()
 ' ============================================================================
-Function GroupMoviesByDate(movies as Object) as Object
+Function GroupMoviesByDate(movies as Object, highlightsMode = false as Boolean) as Object
     groups = CreateObject("roAssociativeArray")
     preorderMovies = []
     festMovies = []
@@ -159,9 +159,15 @@ Function GroupMoviesByDate(movies as Object) as Object
         else if movie.filters <> invalid AND movie.filters.is_virtual_screening = true
             festMovies.Push(movie)
         else
-            dateStr = GetDisplayDate(movie)
-            if dateStr = invalid OR dateStr = ""
-                dateStr = "Unknown"
+            ' SELECTS is a single curated section (like FEST / PRE-ORDER): all
+            ' regular picks group under one "SELECTS · OUR PICKS" strip, no dates.
+            if highlightsMode
+                dateStr = "HIGHLIGHTS"
+            else
+                dateStr = GetDisplayDate(movie)
+                if dateStr = invalid OR dateStr = ""
+                    dateStr = "Unknown"
+                end if
             end if
 
             if NOT groups.DoesExist(dateStr)

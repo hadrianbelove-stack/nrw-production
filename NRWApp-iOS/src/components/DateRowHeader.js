@@ -11,7 +11,7 @@ import {Colors} from '../constants/colors';
 const SECTION_STRIPS = {
   'pre-order': {day: 'PRE-ORDER', rest: 'COMING SOON', color: '#7c3aed'},
   'fest': {day: 'FEST', rest: 'NOW SCREENING', color: '#f59e0b'},
-  'highlights': {day: 'SELECTS', rest: '', color: '#dc143c'},
+  'highlights': {day: 'SELECTS', rest: 'OUR PICKS', color: '#dc143c'},
   'slop': {day: 'SLOP', rest: 'THE CONTENT RIVER', color: '#ff9500'},
 };
 
