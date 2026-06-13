@@ -133,32 +133,21 @@ function removeCard(el) {
   }, 300);
 }
 
-// ---------- category radio (one on at a time) ----------
+// ---------- category tags (independent — a film can have several) ----------
 
 async function setCategory(movieId, btn) {
-  const group = btn.closest('.radio-group');
-  const buttons = Array.from(group.querySelectorAll('.xbtn.cat'));
-  buttons.forEach((b) => (b.disabled = true));
   const wasOn = btn.dataset.on === '1';
+  btn.disabled = true;
   try {
-    // Turn off whatever else is on (radio behavior)
-    for (const other of buttons) {
-      if (other !== btn && other.dataset.on === '1') {
-        await api('/toggle-status', { movie_id: movieId, status_type: other.dataset.type, value: false });
-        other.dataset.on = '0';
-        other.classList.remove('cat-on');
-      }
-    }
-    // Toggle the clicked one (clicking the active one clears it)
     await api('/toggle-status', { movie_id: movieId, status_type: btn.dataset.type, value: !wasOn });
     btn.dataset.on = wasOn ? '0' : '1';
     btn.classList.toggle('cat-on', !wasOn);
     markPendingSave();
-    toast('Category updated');
+    toast(wasOn ? 'Tag removed' : 'Tag added');
   } catch (e) {
     toast(e.message, true);
   } finally {
-    buttons.forEach((b) => (b.disabled = false));
+    btn.disabled = false;
   }
 }
 

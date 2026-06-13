@@ -132,14 +132,14 @@
         <div class="mcard-x">
           <div class="x-group">
             <div class="x-label">Slop Call</div>
-            <div class="x-row radio-group" data-group="slopcall">
+            <div class="x-row">
               <button class="xbtn sel-real">✓ Real movie</button>
               <button class="xbtn" onclick="markSlop('{{ f.id }}')">Slop</button>
             </div>
           </div>
           <div class="x-group">
-            <div class="x-label">Film Category</div>
-            <div class="x-row radio-group" data-group="category" id="cats-{{ f.id }}">
+            <div class="x-label">Film Tags</div>
+            <div class="x-row tag-group" id="cats-{{ f.id }}">
               {{ cat_btn(f, 'featured', '★ PICK', f.is_pick) }}
               {{ cat_btn(f, 'indie', 'INDIE', f.cats.indie) }}
               {{ cat_btn(f, 'foreign', 'FRGN', f.cats.foreign) }}
