@@ -842,7 +842,7 @@ const NRW = {
                 loading.style.display = 'none'; error.style.display = '';
                 if (this.isTrailerReel) setTimeout(() => this.trailerNav(1), 1500);
             }, { once: true });
-            video.addEventListener('ended', () => { if (this.isTrailerReel) this.trailerNav(1); }, { once: true });
+            video.addEventListener('ended', () => this.trailerNav(1), { once: true });
         } else {
             const videoId = this.extractYouTubeId(url);
             if (!videoId) {
@@ -930,6 +930,14 @@ const NRW = {
             modal.querySelector('#trailer-nav-next').addEventListener('click', () => this.trailerNav(1));
 
             // Escape handled by setupLightboxKeyboardHandler (capture phase)
+        }
+
+        // Ensure a navigable list exists even when the trailer was opened straight
+        // from the grid (not via the lightbox), so auto-advance + arrows work.
+        if (!this.isTrailerReel && (!this.lightboxMovies || this.lightboxMovies.length === 0)) {
+            this.lightboxMovies = [...this.filteredMovies]
+                .sort((a, b) => new Date(b.digital_date) - new Date(a.digital_date))
+                .slice(0, this.displayedCount);
         }
 
         // Determine which movie this trailer belongs to

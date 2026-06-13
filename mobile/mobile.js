@@ -1473,6 +1473,22 @@ const NRWMobile = {
         // Double-tap left/right on video to seek ±10 seconds
         const video = overlay.querySelector('video');
         if (video) {
+            // Auto-advance: when this trailer ends, roll to the next movie's hosted
+            // trailer (continuous reel). Only MP4s play in this overlay.
+            video.addEventListener('ended', () => {
+                const isMp4 = (m) => {
+                    const u = m.links?.trailer_hosted;
+                    if (!u) return false;
+                    try { return new URL(u).pathname.endsWith('.mp4'); }
+                    catch { return u.endsWith('.mp4'); }
+                };
+                const reel = this.filteredMovies.filter(isMp4);
+                if (reel.length < 2) return;
+                const cur = reel.findIndex(m => String(m.id) === String(movie.id));
+                const next = reel[(cur + 1) % reel.length];
+                if (next && String(next.id) !== String(movie.id)) this.showTrailer(next.id);
+            });
+
             let lastTap = 0, lastSide = null;
             video.addEventListener('touchend', (e) => {
                 e.stopPropagation();
