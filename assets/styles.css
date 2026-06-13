@@ -13,6 +13,10 @@
     --screening-glow: rgba(255, 215, 0, 0.3);
     --screening-subtle: rgba(255, 215, 0, 0.05);
 
+    /* Sticky-header height — JS (updateHeaderOffset) overwrites with the exact
+       measured value; this default just prevents banner overlap before JS runs. */
+    --header-height: 160px;
+
     /* Service colors — single source of truth for badges + buttons */
     --svc-netflix: #E50914;
     --svc-disney: #113CCF;
@@ -325,7 +329,7 @@ header h1 {
 .date-row-header {
     grid-column: 1 / -1;
     position: sticky;
-    top: var(--header-height, 0px);
+    top: var(--header-height, 160px);
     z-index: 30;
     display: flex;
     justify-content: center;

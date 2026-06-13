@@ -865,7 +865,7 @@ const HomeScreenTvOS = () => {
   const handleOpenFullscreen = useCallback((movie) => {
     // Find index of this movie in displayMovies
     const index = displayMovies.findIndex(m =>
-      (m.id || m.tmdb_id) === (movie.id || movie.tmdb_id)
+      String(m.id || m.tmdb_id) === String(movie.id || movie.tmdb_id)
     );
     if (index !== -1) {
       setFullscreenIndex(index);
