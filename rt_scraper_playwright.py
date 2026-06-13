@@ -213,10 +213,11 @@ class RTScraperPlaywright(PlaywrightScraperBase):
     def _extract_score_from_rt_page(self, rt_url):
         """Navigate to RT page and extract the actual score.
 
-        Extraction waterfall:
+        Extraction waterfall (both paths read ONLY this film's own score —
+        never whole-page text, which matched the "More Like This" carousel):
         1. JSON-LD structured data (most reliable — deterministic)
-        2. CSS selectors (deterministic)
-        3. Text regex patterns (deterministic fallback)
+        2. CSS selectors scoped to the film's scorecard (deterministic)
+        A page with no critic score returns None, never a guessed value.
 
         Args:
             rt_url: The Rotten Tomatoes URL to scrape
