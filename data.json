@@ -1948,7 +1948,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "wikipedia",
@@ -1977,9 +1977,8 @@
         "manual_override": null
       },
       "featured": false,
-      "is_slop": true,
-      "_slop_confidence": "weak",
-      "_is_slop_guess": true
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1360708",

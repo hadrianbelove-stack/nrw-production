@@ -46,6 +46,7 @@ MANUAL_OVERRIDES = {
     1541658: False,   # One Golden Summer (MAX doc)
     1620034: False,   # Marty, Life Is Short (Imagine Documentaries)
     1658982: False,   # The Roast of Kevin Hart
+    1249271: False,   # Powwow People (6 RT critic reviews, real doc)
     # TV-movie mill thrillers — confirmed slop by curator (June 2026)
     1708839: True,    # Her Husband's Double Life
     1409853: True,    # Neglected
