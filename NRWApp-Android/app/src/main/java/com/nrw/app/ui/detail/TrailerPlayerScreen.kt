@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.nrw.app.data.Movie
@@ -115,7 +116,16 @@ fun TrailerPlayerOverlay(
         if (youtubeId != null) {
             YouTubeEmbed(videoId = youtubeId, key = currentIndex)
         } else {
-            Mp4Player(url = trailerUrl, key = currentIndex)
+            Mp4Player(
+                url = trailerUrl,
+                key = currentIndex,
+                // When a trailer finishes, roll to the next one (continuous reel);
+                // close the player only if this was the last remaining trailer.
+                onEnded = {
+                    val next = findNextTrailerIndex(movieList, currentIndex, 1)
+                    if (next >= 0) currentIndex = next else onClose(currentIndex)
+                }
+            )
         }
 
         // Title overlay
@@ -169,7 +179,7 @@ fun TrailerPlayerOverlay(
  * ExoPlayer-based MP4 video player
  */
 @Composable
-private fun Mp4Player(url: String, key: Int) {
+private fun Mp4Player(url: String, key: Int, onEnded: () -> Unit) {
     val context = LocalContext.current
     val exoPlayer = remember(key) {
         ExoPlayer.Builder(context).build().apply {
@@ -180,7 +190,16 @@ private fun Mp4Player(url: String, key: Int) {
     }
 
     DisposableEffect(key) {
-        onDispose { exoPlayer.release() }
+        val listener = object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_ENDED) onEnded()
+            }
+        }
+        exoPlayer.addListener(listener)
+        onDispose {
+            exoPlayer.removeListener(listener)
+            exoPlayer.release()
+        }
     }
 
     AndroidView(

@@ -29,7 +29,12 @@ End Sub
 ' ============================================================================
 Sub onVideoStateChanged()
     state = m.videoPlayer.state
-    if state = "finished" OR state = "error"
+    if state = "finished"
+        ' Auto-advance to the next trailer (continuous reel). The parent
+        ' (DetailScreen) observes navigateDirection and loads the next trailer,
+        ' or closes the player if this was the only one.
+        m.top.navigateDirection = 1
+    else if state = "error"
         ClosePlayer()
     end if
 End Sub

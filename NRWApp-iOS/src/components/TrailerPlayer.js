@@ -125,7 +125,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
           resizeMode="contain"
           paused={paused}
           controls={true}
-          onEnd={() => onClose(currentIndex)}
+          onEnd={() => { if (hasNext) navigateNext(); else onClose(currentIndex); }}
           onError={() => onClose(currentIndex)}
         />
       ) : youtubeId ? (

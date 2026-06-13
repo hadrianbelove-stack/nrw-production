@@ -55,7 +55,21 @@ const SERVICE_WEB_URLS = {
  */
 export async function openURL(url, service = null) {
   try {
-    // First, try to open the provided content URL directly
+    // Prefer an app-scheme deep link when we know the service's format. Opening
+    // the bare https URL makes some tvOS apps (e.g. Netflix) land on their home
+    // screen instead of the specific title. Try the deep link directly —
+    // canOpenURL is unreliable on tvOS — then fall through to the cascade below.
+    const deepLink = buildServiceDeepLink(url, service);
+    if (deepLink) {
+      try {
+        await Linking.openURL(deepLink);
+        return { success: true, usedAppScheme: true };
+      } catch (e) {
+        // Deep link failed (app not installed?) — fall through to URL/scheme/web.
+      }
+    }
+
+    // Try to open the provided content URL directly
     // This preserves content-specific deep links (e.g., YouTube video URLs)
     if (url) {
       const canOpenUrl = await Linking.canOpenURL(url);
@@ -91,6 +105,22 @@ export async function openURL(url, service = null) {
     console.error('[Links] Error opening URL:', error);
     return { success: false, error: error.message };
   }
+}
+
+/**
+ * Build an app-scheme deep link from a content URL for services that support
+ * scheme-swapping. Netflix's tvOS app deep-links to a title via
+ * nflx://www.netflix.com/title/<id> — the web URL with the scheme replaced.
+ * Returns null when no known transform applies (caller uses the normal cascade).
+ * @param {string} url - The content URL (e.g. https://www.netflix.com/title/123)
+ * @param {string} service - Service identifier
+ */
+function buildServiceDeepLink(url, service) {
+  if (!url) return null;
+  if (service === 'netflix') {
+    return url.replace(/^https?:\/\//i, 'nflx://');
+  }
+  return null;
 }
 
 /**

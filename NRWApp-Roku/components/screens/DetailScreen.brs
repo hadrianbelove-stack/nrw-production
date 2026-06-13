@@ -601,6 +601,9 @@ Sub onTrailerNavigate()
         movie = m.movies[nextIdx]
         trailerUrl = GetTrailerUrl(movie)
         m.trailerPlayer.videoUrl = trailerUrl
+        ' Reset so the next navigation (a keypress, or a finished-trailer
+        ' auto-advance setting navigateDirection=1) reliably re-fires this observer.
+        m.trailerPlayer.navigateDirection = 0
     else
         ' No more trailers — close the player
         m.trailerPlayer.visible = false

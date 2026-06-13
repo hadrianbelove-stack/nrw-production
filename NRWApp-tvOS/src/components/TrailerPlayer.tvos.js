@@ -133,6 +133,18 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     setTimeout(() => onClose(currentIndex), 400);
   }, [closing, currentIndex, onClose]);
 
+  // When a trailer finishes, roll to the next trailer (continuous reel).
+  // Only the last remaining trailer closes the player.
+  const handleTrailerEnd = useCallback(() => {
+    const nextIdx = findNextTrailerIndex(currentIndex, 1);
+    if (nextIdx >= 0) {
+      setPaused(false);
+      setCurrentIndex(nextIdx);
+    } else {
+      handleClose();
+    }
+  }, [currentIndex, findNextTrailerIndex, handleClose]);
+
   // Scrub cursor movement — moves the timeline position without seeking the video
   const scrubBackward = useCallback(() => {
     setScrubPosition(prev => Math.max(0, (prev ?? currentTime) - SEEK_STEP));
@@ -187,7 +199,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
           playWhenInactive={false}
           onLoad={({ duration: d }) => { setDuration(d); setCurrentTime(0); setScrubPosition(null); }}
           onProgress={({ currentTime: t }) => { if (!paused) setCurrentTime(t); }}
-          onEnd={handleClose}
+          onEnd={handleTrailerEnd}
           onError={handleClose}
         />
       )}
