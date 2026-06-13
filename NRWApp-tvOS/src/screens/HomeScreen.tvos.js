@@ -263,6 +263,8 @@ const DateRowStrip = ({ stripKey, stripColor }) => {
     day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
   } else if (stripKey === 'HIGHLIGHTS') {
     day = 'SELECTS'; color = '#dc143c';
+  } else if (stripKey === 'SLOP') {
+    day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#ff9500';
   } else {
     const d = new Date(stripKey + 'T12:00:00');
     if (isNaN(d.getTime())) {
@@ -499,6 +501,23 @@ const HomeScreenTvOS = () => {
   const [hideFest, setHideFest] = useState(true); // default: hide fests (matches desktop default)
   const [showPreorders, setShowPreorders] = useState(false);
   const [showHighlightsOnly, setShowHighlightsOnly] = useState(false);
+
+  // View toggles are mutually exclusive — turning one on turns the others off
+  const toggleShowHighlights = useCallback(() => {
+    const next = !showHighlightsOnly;
+    setShowHighlightsOnly(next);
+    if (next) { setHideFest(true); setShowPreorders(false); }
+  }, [showHighlightsOnly]);
+  const toggleHideFest = useCallback(() => {
+    const next = !hideFest;
+    setHideFest(next);
+    if (!next) { setShowHighlightsOnly(false); setShowPreorders(false); }
+  }, [hideFest]);
+  const toggleShowPreorders = useCallback(() => {
+    const next = !showPreorders;
+    setShowPreorders(next);
+    if (next) { setShowHighlightsOnly(false); setHideFest(true); }
+  }, [showPreorders]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -719,6 +738,10 @@ const HomeScreenTvOS = () => {
     if (showHighlightsOnly) {
       items.push({ type: 'date', id: 'date-highlights-top', date: 'HIGHLIGHTS' });
     }
+    // SLOP strip at the top when slop-only mode is on
+    if (slopMode === 'only') {
+      items.push({ type: 'date', id: 'date-slop-top', date: 'SLOP' });
+    }
 
     // 1. FEST section at top (amber strip)
     if (sortedFest.length > 0) {
@@ -760,7 +783,7 @@ const HomeScreenTvOS = () => {
     }
 
     return items;
-  }, [displayMovies, latestPlaylistUrl, visibleCount, showHighlightsOnly]);
+  }, [displayMovies, latestPlaylistUrl, visibleCount, showHighlightsOnly, slopMode]);
 
   // Group the flat list into rows: strips/trailers/load-more are full-width rows,
   // movies chunk into rows of NUM_COLUMNS. Focus math works on (row, col) of movie rows.
@@ -889,10 +912,15 @@ const HomeScreenTvOS = () => {
   const giveInitialFocus = !initialFocusDone.current;
   if (giveInitialFocus) initialFocusDone.current = true;
 
-  // Date strips adopt the single active filter's color; HIGHLIGHTS mode goes crimson
+  // Date strips adopt the active view toggle's color (SELECTS crimson, FESTS amber,
+  // SLOP ONLY orange); otherwise a single active category filter; otherwise teal
   const singleFilter = activeFilters.size === 1 ? Array.from(activeFilters)[0] : null;
   const dateStripColor = showHighlightsOnly
     ? '#dc143c'
+    : !hideFest
+    ? '#f59e0b'
+    : slopMode === 'only'
+    ? '#ff9500'
     : (singleFilter && STRIP_COLORS[singleFilter]) || Colors.primary;
 
 
@@ -1059,23 +1087,26 @@ const HomeScreenTvOS = () => {
             <MetaToggle
               isActive={showHighlightsOnly}
               label="SELECTS"
+              accentColor="#dc143c"
               accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
-              onPress={() => setShowHighlightsOnly(v => !v)}
+              onPress={toggleShowHighlights}
               nextFocusDown={headerNodeHandle}
             />
             <MetaToggle
               isActive={!hideFest}
               label="FESTS"
+              accentColor="#f59e0b"
               accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
-              onPress={() => setHideFest(v => !v)}
+              onPress={toggleHideFest}
               nextFocusDown={headerNodeHandle}
             />
             <MetaToggle
               ref={setLastToggleRef}
               isActive={showPreorders}
               label="PRE-ORDER"
+              accentColor="#7c3aed"
               accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
-              onPress={() => setShowPreorders(v => !v)}
+              onPress={toggleShowPreorders}
               nextFocusDown={headerNodeHandle}
             />
           </View>

@@ -212,6 +212,10 @@ Sub UpdateSectionDividerColor()
     color = "0x00D4AAFF"  ' default teal
     if m.showHighlightsOnly
         color = "0xDC143CFF"  ' crimson
+    else if m.hideFest = false
+        color = "0xF59E0BFF"  ' fest amber
+    else if m.slopMode = "only"
+        color = "0xFF9500FF"  ' slop orange
     else if m.activeFilters.Count() = 1 AND stripColors.DoesExist(m.activeFilters[0])
         color = stripColors[m.activeFilters[0]]
     end if
@@ -341,9 +345,17 @@ Sub onFilterSelected()
     end if
 
     ' Fest toggle is separate from category filters
+    ' View toggles are mutually exclusive — turning one on turns the others off
     if filterId = "hide_fest"
         m.hideFest = NOT m.hideFest
+        if m.hideFest = false
+            m.showHighlightsOnly = false
+            m.showPreorders = false
+            m.filterBar.showHighlights = false
+            m.filterBar.showPreorders = false
+        end if
         m.filterBar.hideFest = m.hideFest
+        UpdateFilterDescription()
         ApplyFilters()
         return
     end if
@@ -351,7 +363,14 @@ Sub onFilterSelected()
     ' Pre-orders toggle is separate from category filters
     if filterId = "show_preorders"
         m.showPreorders = NOT m.showPreorders
+        if m.showPreorders
+            m.showHighlightsOnly = false
+            m.hideFest = true
+            m.filterBar.showHighlights = false
+            m.filterBar.hideFest = true
+        end if
         m.filterBar.showPreorders = m.showPreorders
+        UpdateFilterDescription()
         ApplyFilters()
         return
     end if
@@ -359,6 +378,12 @@ Sub onFilterSelected()
     ' Highlights toggle is separate from category filters
     if filterId = "show_highlights"
         m.showHighlightsOnly = NOT m.showHighlightsOnly
+        if m.showHighlightsOnly
+            m.hideFest = true
+            m.showPreorders = false
+            m.filterBar.hideFest = true
+            m.filterBar.showPreorders = false
+        end if
         m.filterBar.showHighlights = m.showHighlightsOnly
         UpdateFilterDescription()
         ApplyFilters()

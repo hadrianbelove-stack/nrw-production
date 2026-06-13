@@ -104,18 +104,36 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         applyFilters()
     }
 
+    // View toggles (Fests / Pre-Orders / Selects) are mutually exclusive —
+    // turning one on turns the others off
+
     fun toggleHideFest() {
-        _uiState.value = _uiState.value.copy(hideFest = !_uiState.value.hideFest)
+        val showingFests = _uiState.value.hideFest  // about to flip
+        _uiState.value = if (showingFests) {
+            _uiState.value.copy(hideFest = false, showPreorders = false, showHighlightsOnly = false)
+        } else {
+            _uiState.value.copy(hideFest = true)
+        }
         applyFilters()
     }
 
     fun toggleShowPreorders() {
-        _uiState.value = _uiState.value.copy(showPreorders = !_uiState.value.showPreorders)
+        val turningOn = !_uiState.value.showPreorders
+        _uiState.value = if (turningOn) {
+            _uiState.value.copy(showPreorders = true, hideFest = true, showHighlightsOnly = false)
+        } else {
+            _uiState.value.copy(showPreorders = false)
+        }
         applyFilters()
     }
 
     fun toggleShowHighlights() {
-        _uiState.value = _uiState.value.copy(showHighlightsOnly = !_uiState.value.showHighlightsOnly)
+        val turningOn = !_uiState.value.showHighlightsOnly
+        _uiState.value = if (turningOn) {
+            _uiState.value.copy(showHighlightsOnly = true, hideFest = true, showPreorders = false)
+        } else {
+            _uiState.value.copy(showHighlightsOnly = false)
+        }
         applyFilters()
     }
 

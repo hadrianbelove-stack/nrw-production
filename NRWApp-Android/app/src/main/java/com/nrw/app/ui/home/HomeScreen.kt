@@ -140,18 +140,22 @@ fun HomeScreen(
     val context = LocalContext.current
 
     // Create grid items with trailers card and date strips
-    val gridItems = remember(uiState.filteredMovies, uiState.playlistUrl, uiState.showHighlightsOnly) {
-        createGridItems(uiState.filteredMovies, uiState.playlistUrl, uiState.showHighlightsOnly)
+    val gridItems = remember(uiState.filteredMovies, uiState.playlistUrl, uiState.showHighlightsOnly, uiState.slopMode) {
+        createGridItems(uiState.filteredMovies, uiState.playlistUrl, uiState.showHighlightsOnly, uiState.slopMode)
     }
 
-    // Date strips adopt the single active filter's color; HIGHLIGHTS mode goes crimson
+    // Date strips adopt the active view toggle's color (SELECTS crimson, FESTS amber,
+    // SLOP ONLY orange); otherwise a single active category filter; otherwise teal
     val singleFilterId = if (uiState.activeFilters.size == 1) uiState.activeFilters.first().id else null
     val dateStripColor = when {
         uiState.showHighlightsOnly -> HighlightCrimson
+        !uiState.hideFest -> Color(0xFFF59E0B)
+        uiState.slopMode == "only" -> Color(0xFFFF9500)
         singleFilterId != null -> STRIP_COLORS[singleFilterId] ?: Primary
         else -> Primary
     }
-    val dateStripTinted = uiState.showHighlightsOnly || (singleFilterId != null && STRIP_COLORS.containsKey(singleFilterId))
+    val dateStripTinted = uiState.showHighlightsOnly || !uiState.hideFest || uiState.slopMode == "only" ||
+        (singleFilterId != null && STRIP_COLORS.containsKey(singleFilterId))
 
     Box(
         modifier = Modifier
@@ -241,7 +245,7 @@ fun HomeScreen(
 /**
  * Create grid items with trailers card and date strips inserted
  */
-private fun createGridItems(movies: List<Movie>, playlistUrl: String?, showHighlightsOnly: Boolean = false): List<GridItem> {
+private fun createGridItems(movies: List<Movie>, playlistUrl: String?, showHighlightsOnly: Boolean = false, slopMode: String = "free"): List<GridItem> {
     val items = mutableListOf<GridItem>()
     var currentDate: String? = null
     var addedTrailers = false
@@ -254,6 +258,10 @@ private fun createGridItems(movies: List<Movie>, playlistUrl: String?, showHighl
     // HIGHLIGHTS strip at the top when the toggle is on
     if (showHighlightsOnly && movies.isNotEmpty()) {
         items.add(GridItem.DateItem("HIGHLIGHTS"))
+    }
+    // SLOP strip at the top when slop-only mode is on
+    if (slopMode == "only" && movies.isNotEmpty()) {
+        items.add(GridItem.DateItem("SLOP"))
     }
 
     // FEST section at the top

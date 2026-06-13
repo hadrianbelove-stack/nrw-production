@@ -263,6 +263,15 @@ const NRWMobile = {
             highlightsToggle.addEventListener('click', () => {
                 this.showHighlightsOnly = !this.showHighlightsOnly;
                 highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
+                if (this.showHighlightsOnly) {
+                    // View toggles are mutually exclusive — turning one on turns the others off
+                    this.hideFest = true;
+                    this.showPreorders = false;
+                    const ft = document.getElementById('fest-toggle');
+                    if (ft) ft.classList.remove('active');
+                    const pt = document.getElementById('preorder-toggle');
+                    if (pt) pt.classList.remove('active');
+                }
                 this.applyFilter();
                 this.updateFilterDesc();
                 this.buildGrid();
@@ -278,6 +287,16 @@ const NRWMobile = {
             festToggle.addEventListener('click', () => {
                 this.hideFest = !this.hideFest;
                 festToggle.classList.toggle('active', !this.hideFest);
+                if (!this.hideFest) {
+                    // View toggles are mutually exclusive — turning one on turns the others off
+                    this.showHighlightsOnly = false;
+                    this.showPreorders = false;
+                    const ht = document.getElementById('highlights-toggle');
+                    if (ht) ht.classList.remove('active');
+                    const pt = document.getElementById('preorder-toggle');
+                    if (pt) pt.classList.remove('active');
+                }
+                this.updateFilterDesc();
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);
@@ -292,6 +311,16 @@ const NRWMobile = {
             preorderToggle.addEventListener('click', () => {
                 this.showPreorders = !this.showPreorders;
                 preorderToggle.classList.toggle('active', this.showPreorders);
+                if (this.showPreorders) {
+                    // View toggles are mutually exclusive — turning one on turns the others off
+                    this.showHighlightsOnly = false;
+                    this.hideFest = true;
+                    const ht = document.getElementById('highlights-toggle');
+                    if (ht) ht.classList.remove('active');
+                    const ft = document.getElementById('fest-toggle');
+                    if (ft) ft.classList.remove('active');
+                }
+                this.updateFilterDesc();
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);
@@ -566,7 +595,7 @@ const NRWMobile = {
         } else if (dateStr === 'highlights') {
             day = 'SELECTS'; rest = 'OUR PICKS'; color = '#dc143c';
         } else if (dateStr === 'slop') {
-            day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#888888';  // style guide: The Slop Pile
+            day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#ff9500';  // matches SLOP ONLY toggle orange
         } else {
             const d = new Date(dateStr + 'T12:00:00');
             day = d.toLocaleDateString('en', { weekday: 'short' });
@@ -574,6 +603,10 @@ const NRWMobile = {
             const singleFilter = this.activeFilters.size === 1 ? [...this.activeFilters][0] : null;
             if (this.showHighlightsOnly) {
                 color = '#dc143c';
+            } else if (!this.hideFest) {
+                color = '#f59e0b';
+            } else if (this.slopMode === 'only') {
+                color = '#ff9500';
             } else if (singleFilter && this.STRIP_COLORS[singleFilter]) {
                 color = this.STRIP_COLORS[singleFilter];
             }

@@ -195,6 +195,13 @@ header h1 {
     background: #ffffff;
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
+/* View toggles show their identity color when active (matches banners + date strips) */
+#highlights-toggle.active .slop-track { background: #dc143c; }
+#highlights-toggle.active .slop-label { color: #dc143c; }
+#fest-toggle.active .slop-track { background: #f59e0b; }
+#fest-toggle.active .slop-label { color: #f59e0b; }
+#preorder-toggle.active .slop-track { background: #7c3aed; }
+#preorder-toggle.active .slop-label { color: #7c3aed; }
 
 /* Search input */
 .search-container {

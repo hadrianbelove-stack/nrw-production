@@ -91,11 +91,11 @@ Sub UpdateChipStyles()
             continue for
         end if
 
-        ' Selects toggle: teal when active (matches the other toggles)
+        ' Selects toggle: crimson identity color when active (matches banner + strips)
         if filterId = "show_highlights"
             if showHighlights
-                chipBg.color = "0x00342AFF"
-                chipLabel.color = "0x00D4AAFF"
+                chipBg.color = "0x2D040CFF"
+                chipLabel.color = "0xDC143CFF"
             else
                 chipBg.color = "0x0D0D0DFF"
                 chipLabel.color = "0x00D4AA73"
@@ -103,11 +103,11 @@ Sub UpdateChipStyles()
             continue for
         end if
 
-        ' Fest toggle: teal = fests shown (matches desktop), dim = fests hidden (default)
+        ' Fest toggle: amber identity color when active (matches banner + strips)
         if filterId = "hide_fest"
             if hideFest = false
-                chipBg.color = "0x00342AFF"
-                chipLabel.color = "0x00D4AAFF"
+                chipBg.color = "0x2D1D02FF"
+                chipLabel.color = "0xF59E0BFF"
                 chipLabel.text = "FESTS"
             else
                 chipBg.color = "0x0D0D0DFF"
@@ -117,11 +117,11 @@ Sub UpdateChipStyles()
             continue for
         end if
 
-        ' Pre-orders toggle has its own visual treatment
+        ' Pre-orders toggle: purple identity color when active (matches banner + strips)
         if filterId = "show_preorders"
             if showPreorders
-                chipBg.color = "0x00342AFF"
-                chipLabel.color = "0x00D4AAFF"
+                chipBg.color = "0x190C2FFF"
+                chipLabel.color = "0x7C3AEDFF"
                 chipLabel.text = "PRE-ORDERS"
             else
                 chipBg.color = "0x0D0D0DFF"

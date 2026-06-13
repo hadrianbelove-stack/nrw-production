@@ -48,28 +48,28 @@ export default function FilterBar({activeFilters, onFilterChange, slopMode, onSl
         </TouchableOpacity>
         <View style={styles.divider} />
         <TouchableOpacity
-          style={[styles.filterButton, styles.slopButton, showHighlightsOnly && styles.slopButtonActive]}
+          style={[styles.filterButton, styles.slopButton, showHighlightsOnly && styles.selectsButtonActive]}
           onPress={() => onShowHighlightsChange(!showHighlightsOnly)}
           activeOpacity={0.7}>
-          <Text style={[styles.filterText, styles.slopText, showHighlightsOnly && styles.slopTextActive]}>
+          <Text style={[styles.filterText, styles.slopText, showHighlightsOnly && styles.selectsTextActive]}>
             SELECTS
           </Text>
         </TouchableOpacity>
         <View style={styles.divider} />
         <TouchableOpacity
-          style={[styles.filterButton, styles.slopButton, !hideFest && styles.slopButtonActive]}
+          style={[styles.filterButton, styles.slopButton, !hideFest && styles.festButtonActive]}
           onPress={() => onHideFestChange(!hideFest)}
           activeOpacity={0.7}>
-          <Text style={[styles.filterText, styles.slopText, !hideFest && styles.slopTextActive]}>
+          <Text style={[styles.filterText, styles.slopText, !hideFest && styles.festTextActive]}>
             {hideFest ? 'NO FEST' : 'FESTS'}
           </Text>
         </TouchableOpacity>
         <View style={styles.divider} />
         <TouchableOpacity
-          style={[styles.filterButton, styles.slopButton, showPreorders && styles.slopButtonActive]}
+          style={[styles.filterButton, styles.slopButton, showPreorders && styles.preorderButtonActive]}
           onPress={() => onShowPreordersChange(!showPreorders)}
           activeOpacity={0.7}>
-          <Text style={[styles.filterText, styles.slopText, showPreorders && styles.slopTextActive]}>
+          <Text style={[styles.filterText, styles.slopText, showPreorders && styles.preorderTextActive]}>
             {showPreorders ? 'PRE-ORDERS' : 'NO PRE-ORDERS'}
           </Text>
         </TouchableOpacity>
@@ -157,5 +157,27 @@ const styles = StyleSheet.create({
   },
   slopTextOnly: {
     color: '#ff9500',
+  },
+  /* View toggles show their identity color when active (matches banners + date strips) */
+  selectsButtonActive: {
+    backgroundColor: 'rgba(220,20,60,0.15)',
+    borderColor: '#dc143c',
+  },
+  selectsTextActive: {
+    color: '#dc143c',
+  },
+  festButtonActive: {
+    backgroundColor: 'rgba(245,158,11,0.15)',
+    borderColor: '#f59e0b',
+  },
+  festTextActive: {
+    color: '#f59e0b',
+  },
+  preorderButtonActive: {
+    backgroundColor: 'rgba(124,58,237,0.15)',
+    borderColor: '#7c3aed',
+  },
+  preorderTextActive: {
+    color: '#7c3aed',
   },
 });

@@ -241,6 +241,15 @@ const NRW = {
             highlightsToggle.addEventListener('click', () => {
                 this.showHighlightsOnly = !this.showHighlightsOnly;
                 highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
+                if (this.showHighlightsOnly) {
+                    // View toggles are mutually exclusive — turning one on turns the others off
+                    this.showFest = false;
+                    this.showPreorders = false;
+                    const ft = document.getElementById('fest-toggle');
+                    if (ft) ft.classList.remove('active');
+                    const pt = document.getElementById('preorder-toggle');
+                    if (pt) pt.classList.remove('active');
+                }
                 this.displayedCount = this.loadIncrement;
                 this.updateFilterDescription();
                 this.applyFilter();
@@ -255,7 +264,17 @@ const NRW = {
             festToggle.addEventListener('click', () => {
                 this.showFest = !this.showFest;
                 festToggle.classList.toggle('active', this.showFest);
+                if (this.showFest) {
+                    // View toggles are mutually exclusive — turning one on turns the others off
+                    this.showHighlightsOnly = false;
+                    this.showPreorders = false;
+                    const ht = document.getElementById('highlights-toggle');
+                    if (ht) ht.classList.remove('active');
+                    const pt = document.getElementById('preorder-toggle');
+                    if (pt) pt.classList.remove('active');
+                }
                 this.displayedCount = this.loadIncrement;
+                this.updateFilterDescription();
                 this.applyFilter();
                 this.renderWallWithMore();
             });
@@ -283,7 +302,17 @@ const NRW = {
             preorderToggle.addEventListener('click', () => {
                 this.showPreorders = !this.showPreorders;
                 preorderToggle.classList.toggle('active', this.showPreorders);
+                if (this.showPreorders) {
+                    // View toggles are mutually exclusive — turning one on turns the others off
+                    this.showHighlightsOnly = false;
+                    this.showFest = false;
+                    const ht = document.getElementById('highlights-toggle');
+                    if (ht) ht.classList.remove('active');
+                    const ft = document.getElementById('fest-toggle');
+                    if (ft) ft.classList.remove('active');
+                }
                 this.displayedCount = this.loadIncrement;
+                this.updateFilterDescription();
                 this.applyFilter();
                 this.renderWallWithMore();
             });
@@ -381,6 +410,10 @@ const NRW = {
             // Toggles are view modes — an active search bypasses ALL of them
             // (consistent with the category-filter bypass below)
             if (!query) {
+                // Pre-order mode is an exclusive view: show ONLY pre-orders, and they
+                // bypass slop/category filters (an explicit "show me upcoming" request).
+                if (this.showPreorders) return !!movie._is_preorder;
+
                 // Slop mode filter
                 const isSlop = movie.is_slop || movie._is_slop_guess;
                 if (this.slopMode === 'free' && isSlop) return false;
@@ -563,12 +596,18 @@ const NRW = {
         // Date strips: single active filter recolors them; HIGHLIGHTS mode goes crimson
         const singleFilter = this.activeFilters.size === 1 ? [...this.activeFilters][0] : null;
         const filterColor = singleFilter ? this.STRIP_COLORS[singleFilter] : null;
-        const dateStripColor = this.showHighlightsOnly ? '#dc143c' : (filterColor || 'var(--accent-primary)');
+        const dateStripColor = this.showHighlightsOnly ? '#dc143c'
+            : this.showFest ? '#f59e0b'
+            : this.slopMode === 'only' ? '#ff9500'
+            : (filterColor || 'var(--accent-primary)');
         const stripHtml = (day, rest, color, extraClass = '', titleAttr = '') =>
             `<div class="date-row-header${extraClass}" style="--strip-c:${color}"${titleAttr}><span class="drh-day">${day}</span>${rest ? `<span class="drh-rest">${rest}</span>` : ''}</div>`;
 
         if (this.showHighlightsOnly) {
             html += stripHtml('SELECTS', '', '#dc143c');
+        }
+        if (this.slopMode === 'only') {
+            html += stripHtml('SLOP', 'THE CONTENT RIVER', '#ff9500');
         }
 
         orderedMovies.forEach(movie => {

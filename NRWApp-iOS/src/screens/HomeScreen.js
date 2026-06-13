@@ -118,6 +118,9 @@ export default function HomeScreen({navigation}) {
     if (showHighlightsOnly && displayedMovies.length > 0) {
       rows.push({_type: 'strip', _key: 'strip-highlights', dateString: 'highlights'});
     }
+    if (slopMode === 'only' && displayedMovies.length > 0) {
+      rows.push({_type: 'strip', _key: 'strip-slop', dateString: 'slop'});
+    }
 
     const today = new Date().toISOString().split('T')[0];
     let lastStrip = null;
@@ -142,12 +145,17 @@ export default function HomeScreen({navigation}) {
     }
     flushGroup();
     return rows;
-  }, [displayedMovies, searchQuery, showHighlightsOnly]);
+  }, [displayedMovies, searchQuery, showHighlightsOnly, slopMode]);
 
-  // Strip color: single active filter recolors date strips; HIGHLIGHTS mode goes crimson
+  // Strip color: active view toggle recolors date strips (SELECTS crimson, FESTS amber,
+  // SLOP ONLY orange); otherwise a single active category filter; otherwise teal
   const singleFilter = activeFilters.size === 1 ? Array.from(activeFilters)[0] : null;
   const dateStripColor = showHighlightsOnly
     ? '#dc143c'
+    : !hideFest
+    ? '#f59e0b'
+    : slopMode === 'only'
+    ? '#ff9500'
     : (singleFilter && STRIP_COLORS[singleFilter]) || Colors.primary;
 
   // Strip rows stick below the list header while their day scrolls
@@ -197,6 +205,31 @@ export default function HomeScreen({navigation}) {
       trackFilterChange(filterId);
       return newFilters;
     });
+  }, []);
+
+  // View toggles are mutually exclusive — turning one on turns the others off
+  const handleShowHighlightsChange = useCallback(value => {
+    setShowHighlightsOnly(value);
+    if (value) {
+      setHideFest(true);
+      setShowPreorders(false);
+    }
+  }, []);
+
+  const handleHideFestChange = useCallback(value => {
+    setHideFest(value);
+    if (!value) {
+      setShowHighlightsOnly(false);
+      setShowPreorders(false);
+    }
+  }, []);
+
+  const handleShowPreordersChange = useCallback(value => {
+    setShowPreorders(value);
+    if (value) {
+      setShowHighlightsOnly(false);
+      setHideFest(true);
+    }
   }, []);
 
   const handleSearch = useCallback(query => {
@@ -317,7 +350,7 @@ export default function HomeScreen({navigation}) {
 
   return (
     <View style={[styles.container, {paddingBottom: insets.bottom}]}>
-      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopMode={slopMode} onSlopModeChange={setSlopMode} hideFest={hideFest} onHideFestChange={setHideFest} showPreorders={showPreorders} onShowPreordersChange={setShowPreorders} showHighlightsOnly={showHighlightsOnly} onShowHighlightsChange={setShowHighlightsOnly} />
+      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopMode={slopMode} onSlopModeChange={setSlopMode} hideFest={hideFest} onHideFestChange={handleHideFestChange} showPreorders={showPreorders} onShowPreordersChange={handleShowPreordersChange} showHighlightsOnly={showHighlightsOnly} onShowHighlightsChange={handleShowHighlightsChange} />
 
       {activeFilterDesc && (
         <View style={styles.filterDescRow}>

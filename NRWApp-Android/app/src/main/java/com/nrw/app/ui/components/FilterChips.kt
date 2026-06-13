@@ -97,11 +97,13 @@ fun FilterChips(
         }
 
         item {
+            // Identity color when active (matches banners + date strips)
             MetaTogglePill(
                 isActive = showHighlightsOnly,
                 activeLabel = "SELECTS",
                 inactiveLabel = "SELECTS",
-                onClick = onShowHighlightsToggle
+                onClick = onShowHighlightsToggle,
+                accentColor = if (showHighlightsOnly) Color(0xFFDC143C) else SlopTeal
             )
         }
 
@@ -110,7 +112,8 @@ fun FilterChips(
                 isActive = !hideFest,
                 activeLabel = "FESTS",
                 inactiveLabel = "NO FEST",
-                onClick = onHideFestToggle
+                onClick = onHideFestToggle,
+                accentColor = if (!hideFest) Color(0xFFF59E0B) else SlopTeal
             )
         }
 
@@ -119,7 +122,8 @@ fun FilterChips(
                 isActive = showPreorders,
                 activeLabel = "PRE-ORDERS",
                 inactiveLabel = "NO PRE-ORDERS",
-                onClick = onShowPreordersToggle
+                onClick = onShowPreordersToggle,
+                accentColor = if (showPreorders) Color(0xFF7C3AED) else SlopTeal
             )
         }
     }
