@@ -104,38 +104,21 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         applyFilters()
     }
 
-    // View toggles (Fests / Pre-Orders / Selects) are mutually exclusive —
-    // turning one on turns the others off
-
-    fun toggleHideFest() {
-        val showingFests = _uiState.value.hideFest  // about to flip
-        _uiState.value = if (showingFests) {
-            _uiState.value.copy(hideFest = false, showPreorders = false, showHighlightsOnly = false)
-        } else {
-            _uiState.value.copy(hideFest = true)
-        }
+    // View toggles (Selects / Fests / Pre-Orders) are mutually exclusive: at most
+    // one is active. Each public toggle maps to its winning view, or "none" when
+    // toggled off. (hideFest is inverted — fests are shown only for "fests".)
+    private fun showExclusiveView(view: String) {
+        _uiState.value = _uiState.value.copy(
+            showHighlightsOnly = view == "selects",
+            hideFest = view != "fests",
+            showPreorders = view == "preorders",
+        )
         applyFilters()
     }
 
-    fun toggleShowPreorders() {
-        val turningOn = !_uiState.value.showPreorders
-        _uiState.value = if (turningOn) {
-            _uiState.value.copy(showPreorders = true, hideFest = true, showHighlightsOnly = false)
-        } else {
-            _uiState.value.copy(showPreorders = false)
-        }
-        applyFilters()
-    }
-
-    fun toggleShowHighlights() {
-        val turningOn = !_uiState.value.showHighlightsOnly
-        _uiState.value = if (turningOn) {
-            _uiState.value.copy(showHighlightsOnly = true, hideFest = true, showPreorders = false)
-        } else {
-            _uiState.value.copy(showHighlightsOnly = false)
-        }
-        applyFilters()
-    }
+    fun toggleHideFest() = showExclusiveView(if (_uiState.value.hideFest) "fests" else "none")
+    fun toggleShowPreorders() = showExclusiveView(if (_uiState.value.showPreorders) "none" else "preorders")
+    fun toggleShowHighlights() = showExclusiveView(if (_uiState.value.showHighlightsOnly) "none" else "selects")
 
     /**
      * Apply filters and search to movies

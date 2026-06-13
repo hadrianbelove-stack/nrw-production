@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Release Wall - Admin Panel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=158">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}?v=162">
 </head>
 <body>
     <!-- Health Status Banner -->
@@ -35,6 +35,7 @@
             </div>
         </div>
         <div class="header-actions">
+            <a href="/" class="action-btn btn-large" style="background:#00d4aa; color:#0a0a0a; text-decoration:none; display:inline-block;">☀️ Morning Desk</a>
             <button onclick="viewSite()" class="action-btn btn-large" style="background: #17a2b8;">View Site</button>
             <button onclick="regenerateData()" class="action-btn btn-large" id="regenerate-btn">Save Changes</button>
             <span id="regenerate-status" class="status-text"></span>
@@ -444,6 +445,6 @@
         <img id="img-preview" src="">
     </div>
 
-    <script src="{{ url_for('static', filename='js/admin.js') }}?v=158"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}?v=162"></script>
 </body>
 </html>

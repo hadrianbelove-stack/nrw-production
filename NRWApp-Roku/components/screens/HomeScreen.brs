@@ -332,6 +332,23 @@ Function FormatSectionTitle(dateStr as String) as String
 End Function
 
 ' ============================================================================
+' Exclusive View Selector
+' View toggles (Selects / Fests / Pre-Orders) are mutually exclusive: at most one
+' is active. winner is "selects", "fests", "preorders", or "none".
+' (hideFest is inverted — fests are shown only for "fests".)
+' ============================================================================
+Sub SetExclusiveView(winner as String)
+    m.showHighlightsOnly = (winner = "selects")
+    m.hideFest = (winner <> "fests")
+    m.showPreorders = (winner = "preorders")
+    m.filterBar.showHighlights = m.showHighlightsOnly
+    m.filterBar.hideFest = m.hideFest
+    m.filterBar.showPreorders = m.showPreorders
+    UpdateFilterDescription()
+    ApplyFilters()
+End Sub
+
+' ============================================================================
 ' Filter Selected Callback
 ' ============================================================================
 Sub onFilterSelected()
@@ -351,49 +368,32 @@ Sub onFilterSelected()
         return
     end if
 
-    ' Fest toggle is separate from category filters
-    ' View toggles are mutually exclusive — turning one on turns the others off
+    ' View toggles (Selects / Fests / Pre-Orders) are mutually exclusive — each
+    ' tap either makes its view the winner or, if already on, returns to "none".
     if filterId = "hide_fest"
-        m.hideFest = NOT m.hideFest
-        if m.hideFest = false
-            m.showHighlightsOnly = false
-            m.showPreorders = false
-            m.filterBar.showHighlights = false
-            m.filterBar.showPreorders = false
+        if m.hideFest
+            SetExclusiveView("fests")
+        else
+            SetExclusiveView("none")
         end if
-        m.filterBar.hideFest = m.hideFest
-        UpdateFilterDescription()
-        ApplyFilters()
         return
     end if
 
-    ' Pre-orders toggle is separate from category filters
     if filterId = "show_preorders"
-        m.showPreorders = NOT m.showPreorders
         if m.showPreorders
-            m.showHighlightsOnly = false
-            m.hideFest = true
-            m.filterBar.showHighlights = false
-            m.filterBar.hideFest = true
+            SetExclusiveView("none")
+        else
+            SetExclusiveView("preorders")
         end if
-        m.filterBar.showPreorders = m.showPreorders
-        UpdateFilterDescription()
-        ApplyFilters()
         return
     end if
 
-    ' Highlights toggle is separate from category filters
     if filterId = "show_highlights"
-        m.showHighlightsOnly = NOT m.showHighlightsOnly
         if m.showHighlightsOnly
-            m.hideFest = true
-            m.showPreorders = false
-            m.filterBar.hideFest = true
-            m.filterBar.showPreorders = false
+            SetExclusiveView("none")
+        else
+            SetExclusiveView("selects")
         end if
-        m.filterBar.showHighlights = m.showHighlightsOnly
-        UpdateFilterDescription()
-        ApplyFilters()
         return
     end if
 

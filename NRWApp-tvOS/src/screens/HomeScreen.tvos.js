@@ -502,22 +502,17 @@ const HomeScreenTvOS = () => {
   const [showPreorders, setShowPreorders] = useState(false);
   const [showHighlightsOnly, setShowHighlightsOnly] = useState(false);
 
-  // View toggles are mutually exclusive — turning one on turns the others off
-  const toggleShowHighlights = useCallback(() => {
-    const next = !showHighlightsOnly;
-    setShowHighlightsOnly(next);
-    if (next) { setHideFest(true); setShowPreorders(false); }
-  }, [showHighlightsOnly]);
-  const toggleHideFest = useCallback(() => {
-    const next = !hideFest;
-    setHideFest(next);
-    if (!next) { setShowHighlightsOnly(false); setShowPreorders(false); }
-  }, [hideFest]);
-  const toggleShowPreorders = useCallback(() => {
-    const next = !showPreorders;
-    setShowPreorders(next);
-    if (next) { setShowHighlightsOnly(false); setHideFest(true); }
-  }, [showPreorders]);
+  // View toggles (Selects / Fests / Pre-Orders) are mutually exclusive: at most
+  // one is active. Each toggle maps to the single winning view, or 'none' when
+  // toggled off. (hideFest is inverted — fests are shown only when view==='fests'.)
+  const showExclusiveView = useCallback(view => {
+    setShowHighlightsOnly(view === 'selects');
+    setHideFest(view !== 'fests');
+    setShowPreorders(view === 'preorders');
+  }, []);
+  const toggleShowHighlights = useCallback(() => showExclusiveView(showHighlightsOnly ? 'none' : 'selects'), [showHighlightsOnly, showExclusiveView]);
+  const toggleHideFest = useCallback(() => showExclusiveView(hideFest ? 'fests' : 'none'), [hideFest, showExclusiveView]);
+  const toggleShowPreorders = useCallback(() => showExclusiveView(showPreorders ? 'none' : 'preorders'), [showPreorders, showExclusiveView]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);

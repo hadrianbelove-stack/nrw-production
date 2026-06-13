@@ -263,15 +263,7 @@ const NRWMobile = {
             highlightsToggle.addEventListener('click', () => {
                 this.showHighlightsOnly = !this.showHighlightsOnly;
                 highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
-                if (this.showHighlightsOnly) {
-                    // View toggles are mutually exclusive — turning one on turns the others off
-                    this.hideFest = true;
-                    this.showPreorders = false;
-                    const ft = document.getElementById('fest-toggle');
-                    if (ft) ft.classList.remove('active');
-                    const pt = document.getElementById('preorder-toggle');
-                    if (pt) pt.classList.remove('active');
-                }
+                if (this.showHighlightsOnly) this.setExclusiveView('selects');
                 this.applyFilter();
                 this.updateFilterDesc();
                 this.buildGrid();
@@ -287,15 +279,7 @@ const NRWMobile = {
             festToggle.addEventListener('click', () => {
                 this.hideFest = !this.hideFest;
                 festToggle.classList.toggle('active', !this.hideFest);
-                if (!this.hideFest) {
-                    // View toggles are mutually exclusive — turning one on turns the others off
-                    this.showHighlightsOnly = false;
-                    this.showPreorders = false;
-                    const ht = document.getElementById('highlights-toggle');
-                    if (ht) ht.classList.remove('active');
-                    const pt = document.getElementById('preorder-toggle');
-                    if (pt) pt.classList.remove('active');
-                }
+                if (!this.hideFest) this.setExclusiveView('fests');
                 this.updateFilterDesc();
                 this.applyFilter();
                 this.buildGrid();
@@ -311,21 +295,27 @@ const NRWMobile = {
             preorderToggle.addEventListener('click', () => {
                 this.showPreorders = !this.showPreorders;
                 preorderToggle.classList.toggle('active', this.showPreorders);
-                if (this.showPreorders) {
-                    // View toggles are mutually exclusive — turning one on turns the others off
-                    this.showHighlightsOnly = false;
-                    this.hideFest = true;
-                    const ht = document.getElementById('highlights-toggle');
-                    if (ht) ht.classList.remove('active');
-                    const ft = document.getElementById('fest-toggle');
-                    if (ft) ft.classList.remove('active');
-                }
+                if (this.showPreorders) this.setExclusiveView('preorders');
                 this.updateFilterDesc();
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);
                 this.dom.gridView.scrollTop = 0;
             });
+        }
+    },
+
+    // View toggles (Selects / Fests / Pre-Orders) are mutually exclusive.
+    // The caller turns its own toggle on; this clears the other two —
+    // both the state flag and the button highlight.
+    setExclusiveView(winner) {
+        const others = {
+            selects:   () => { this.showHighlightsOnly = false; document.getElementById('highlights-toggle')?.classList.remove('active'); },
+            fests:     () => { this.hideFest = true;            document.getElementById('fest-toggle')?.classList.remove('active'); },
+            preorders: () => { this.showPreorders = false;      document.getElementById('preorder-toggle')?.classList.remove('active'); },
+        };
+        for (const name in others) {
+            if (name !== winner) others[name]();
         }
     },
 

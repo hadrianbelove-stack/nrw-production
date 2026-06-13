@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW Mockup — Sticky + Bold Date Strips</title>
+<style>
+:root {
+    --accent: #00d4aa;
+    --crimson: #dc143c;
+    --preorder: #7c3aed;
+    --fest: #f59e0b;
+    --slop: #888;
+    --hdr-h: 44px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: #0a0a0a; color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased; }
+body { background: linear-gradient(160deg, #0a0a0a 0%, #1a1a2e 100%);
+    min-height: 100vh; padding-bottom: 210px; }
+
+.m-header { height: var(--hdr-h); display: flex; align-items: center; justify-content: center;
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06); }
+.m-title { font-size: 0.95rem; font-weight: 100; letter-spacing: 0.28em; }
+.m-title b { font-weight: 700; color: var(--accent); }
+
+#wall { padding-top: 4px; }
+/* Each date group is its own container so a pinned strip gets PUSHED OFF
+   by the next group's strip (real section-header behavior) */
+.group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; padding: 0 8px 10px; }
+.cell { aspect-ratio: 2/3; border-radius: 10px; overflow: hidden; background: #15151f; }
+.cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Filtered-mode wrapper: the mode's section strip is sticky for the WHOLE mode,
+   date strips pin in a second tier just below it */
+.modewrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 8px; padding: 0 8px 10px; }
+.modewrap .group { grid-column: 1 / -1; padding: 0; }
+
+/* Filter description — normal flow, scrolls away under the pinned strips (never overlaps) */
+.mode-desc { grid-column: 1 / -1; color: #888; font-size: 0.68rem; line-height: 1.5;
+    padding: 0 2px 4px; }
+
+.strip { grid-column: 1 / -1; }
+
+/* ============ STICKY BEHAVIOR (toggle — applies to every design) ============ */
+body[data-sticky="on"] .strip {
+    position: sticky;
+    top: calc(var(--hdr-h) + 4px);
+    z-index: 20;
+}
+/* mode section strip pins above; date strips inside a mode pin one tier lower */
+body[data-sticky="on"] .modewrap > .strip.sec { z-index: 25; }
+body[data-sticky="on"] .modewrap .group .strip {
+    top: calc(var(--hdr-h) + 4px + var(--sec-h, 32px));
+}
+/* designs without their own box get a dark backdrop so posters can't bleed through */
+body[data-sticky="on"][data-style="B"] .strip,
+body[data-sticky="on"][data-style="C"] .strip {
+    background: rgba(10,10,14,0.92);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding-left: 10px; padding-right: 10px;
+}
+
+/* second-tier offsets per design (section strip heights differ) */
+body[data-style="A"] { --sec-h: 30px; }
+body[data-style="B"] { --sec-h: 44px; }
+body[data-style="C"] { --sec-h: 42px; }
+body[data-style="D"] { --sec-h: 36px; }
+body[data-style="E"] { --sec-h: 34px; }
+
+/* ============================================================
+   OPTION A — BANNER: full-width filled color bar
+   ============================================================ */
+body[data-style="A"] .strip {
+    background: var(--sc, var(--accent));
+    color: #000;
+    border-radius: 8px;
+    padding: 7px 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+body[data-style="A"] .strip .s-day { font-size: 0.95rem; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+body[data-style="A"] .strip .s-rest { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; }
+body[data-style="A"] .strip .s-num, body[data-style="A"] .strip .s-line { display: none; }
+
+/* ============================================================
+   OPTION B — EDITORIAL: big magazine-style numeral + baseline rule
+   ============================================================ */
+body[data-style="B"] .strip {
+    border-bottom: 2px solid var(--sc, var(--accent));
+    padding-top: 4px; padding-bottom: 4px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+body[data-style="B"] .strip .s-num {
+    font-size: 2.2rem; font-weight: 800; line-height: 1; color: #fff; letter-spacing: -0.02em;
+}
+body[data-style="B"] .strip .s-day {
+    font-size: 0.8rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--sc, var(--accent));
+}
+body[data-style="B"] .strip .s-rest {
+    font-size: 0.8rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #888;
+}
+body[data-style="B"] .strip .s-line { display: none; }
+body[data-style="B"] .strip.s-section .s-num { display: none; }
+body[data-style="B"] .strip.s-section .s-day { font-size: 1.3rem; letter-spacing: 0.14em; }
+
+/* ============================================================
+   OPTION C — CALENDAR CHIP: mini calendar page + colored hairline
+   ============================================================ */
+body[data-style="C"] .strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 3px; padding-bottom: 3px;
+}
+body[data-style="C"] .strip .chip {
+    display: block;
+    width: 52px; border-radius: 9px; overflow: hidden; text-align: center;
+    background: #15151f; border: 1px solid rgba(255,255,255,0.14);
+    flex-shrink: 0;
+}
+body[data-style="C"] .strip .chip-top {
+    background: var(--sc, var(--accent)); color: #000;
+    font-size: 0.5rem; font-weight: 900; letter-spacing: 0.1em; padding: 2px 0;
+    text-transform: uppercase;
+}
+body[data-style="C"] .strip .chip-num {
+    font-size: 1.25rem; font-weight: 800; padding: 2px 0 3px; line-height: 1.1;
+}
+body[data-style="C"] .strip .s-rest {
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--sc, var(--accent));
+}
+body[data-style="C"] .strip .s-line { flex: 1; height: 1px; background: color-mix(in srgb, var(--sc, var(--accent)) 35%, transparent); }
+body[data-style="C"] .strip .s-num, body[data-style="C"] .strip .s-day { display: none; }
+body[data-style="C"] .strip.s-section .chip { display: none; }
+body[data-style="C"] .strip.s-section .s-day {
+    display: inline; font-size: 0.9rem; font-weight: 900; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--sc, var(--accent));
+}
+
+/* ============================================================
+   OPTION D — GLOW BAR: dark strip, neon left edge + soft glow
+   ============================================================ */
+body[data-style="D"] .strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(10,10,12,0.88);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 8px 12px;
+    border-left: 4px solid var(--sc, var(--accent));
+    box-shadow: 0 0 18px color-mix(in srgb, var(--sc, var(--accent)) 30%, transparent);
+}
+body[data-style="D"] .strip .s-day {
+    font-size: 0.95rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--sc, var(--accent));
+}
+body[data-style="D"] .strip .s-rest {
+    font-size: 0.95rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #fff;
+}
+body[data-style="D"] .strip .s-line { flex: 1; height: 1px; background: color-mix(in srgb, var(--sc, var(--accent)) 40%, transparent); }
+body[data-style="D"] .strip .s-num { display: none; }
+
+/* ============================================================
+   OPTION E — PILL: centered chapter-marker pill
+   ============================================================ */
+body[data-style="E"] .strip {
+    width: fit-content;
+    justify-self: center;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    background: #0d0d14;
+    border: 2px solid var(--sc, var(--accent));
+    border-radius: 999px;
+    padding: 6px 18px;
+    margin-top: 2px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.55);
+}
+body[data-style="E"] .strip .s-day {
+    font-size: 0.85rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--sc, var(--accent));
+}
+body[data-style="E"] .strip .s-rest {
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #fff;
+}
+body[data-style="E"] .strip .s-num, body[data-style="E"] .strip .s-line { display: none; }
+
+/* shared hidden bits */
+.strip .chip { display: none; }
+
+/* ============ CONTROL BAR ============ */
+.ctrl-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(18,18,24,0.97); backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(255,255,255,0.14); padding: 10px 14px 24px; }
+.ctrl-tag { font-size: 0.5rem; font-weight: 800; letter-spacing: 0.18em; color: #888;
+    text-align: center; margin-bottom: 7px; }
+.seg { display: flex; background: #26262e; border-radius: 9px; padding: 3px; margin-top: 6px; }
+.seg:first-of-type { margin-top: 0; }
+.seg button { flex: 1; border: none; background: transparent; color: #bbb;
+    font-size: 0.6rem; font-weight: 700; padding: 9px 2px; border-radius: 7px;
+    -webkit-tap-highlight-color: transparent; }
+.seg button.on { background: var(--accent); color: #000; }
+.seg.seg-sticky button.on { background: #dc143c; color: #fff; }
+.seg.seg-mode button.on { background: #fff; color: #000; }
+.ctrl-desc { text-align: center; font-size: 0.6rem; color: #888; margin-top: 7px; min-height: 24px; padding: 0 10px; }
+</style>
+</head>
+<body data-style="A" data-sticky="on" data-mode="all">
+
+<header class="m-header"><div class="m-title">NEW RELEASE <b>WALL</b></div></header>
+<div id="wall"></div>
+
+<div class="ctrl-bar">
+    <div class="ctrl-tag">DATE STRIP — DESIGN × STICKY × FILTER MODE</div>
+    <div class="seg" id="seg">
+        <button class="on" data-s="A">A · Banner</button>
+        <button data-s="B">B · Editorial</button>
+        <button data-s="C">C · Calendar</button>
+        <button data-s="D">D · Glow</button>
+        <button data-s="E">E · Pill</button>
+    </div>
+    <div class="seg seg-mode" id="segMode">
+        <button class="on" data-m="all">ALL</button>
+        <button data-m="selects">SELECTS</button>
+        <button data-m="fest">FEST</button>
+        <button data-m="pre">PRE-ORDER</button>
+        <button data-m="slop">SLOP</button>
+    </div>
+    <div class="seg seg-sticky" id="segSticky">
+        <button class="on" data-k="on">STICKY ON — date pins at top</button>
+        <button data-k="off">STICKY OFF — scrolls away</button>
+    </div>
+    <div class="ctrl-desc" id="desc"></div>
+</div>
+
+<script>
+const IMG = 'https://image.tmdb.org/t/p/w500/';
+
+// Regular wall — dates DESCENDING (newest first)
+const REG = [
+ {d:"2026-06-11",p:"80vJ5kBWfpThzsggWWU7LBVyJQ9.jpg"},
+ {d:"2026-06-11",p:"dH32lHEdcEeKfperjPbx8U7SqyL.jpg"},
+ {d:"2026-06-11",p:"3cYDmDWNWIjVMFbTlDQXjhydT6e.jpg"},
+ {d:"2026-06-10",p:"wIubCZKpnTiQmlC5DehgU1LNFip.jpg"},
+ {d:"2026-06-10",p:"v6fvzTRikUp9ry5OyoTmUIon5rh.jpg"},
+ {d:"2026-06-10",p:"dHnCH7HoVE7MBwc2lvgbSM3jXg7.jpg"},
+ {d:"2026-06-10",p:"p03nyFzLERXEeE7MfBsCzBVb266.jpg"},
+ {d:"2026-06-10",p:"qlbeEWHs2np97vmvMAifjJYyLFP.jpg"},
+ {d:"2026-06-09",p:"kZgzZsVgNruGRWKzTbAIfvvrvHJ.jpg"},
+ {d:"2026-06-09",p:"iQBNEmJxNUhrzmom9DRhyJTWyGn.jpg"},
+ {d:"2026-06-09",p:"gMV5eCyaq6eSq32rQbhIvcxvpM4.jpg"},
+ {d:"2026-06-09",p:"81xUChgVphBFehihIgbXbyneZXP.jpg"},
+ {d:"2026-06-09",p:"aoqxusBlbwShgKcfrlgUb9q6Rqo.jpg"},
+ {d:"2026-06-09",p:"Awnun4US4M5x36qruNtaRA7G5uw.jpg"},
+ {d:"2026-06-09",p:"8N2VubStoAfrkqE0RtnhDcFTqhw.jpg"},
+ {d:"2026-06-09",p:"lHWo5q8WipfW8yLSpT8yAGz2mWp.jpg"},
+ {d:"2026-06-09",p:"zm0KAbOjlt9eR5y7vDiL2dEOwMl.jpg"},
+ {d:"2026-06-08",p:"aQZ4OxzaYTN7cRN7fALi9BhPucp.jpg"},
+ {d:"2026-06-08",p:"yZqhFJDenLfgF1VygOOCNmAdS1P.jpg"},
+ {d:"2026-06-08",p:"3zkUfnHzz5LraC6rOXybUABK93T.jpg"},
+ {d:"2026-06-07",p:"fx7NrOJJdsFS91uDJqoVc0vccwd.jpg"},
+ {d:"2026-06-07",p:"ihpFaQo5wRfzyTlq43qtYqZyvKZ.jpg"},
+ {d:"2026-06-07",p:"sda3XXtz6iXFlbvBmCNCWnqO1uB.jpg"},
+ {d:"2026-06-06",p:"wpmPcKbBfSuiUAxzhvMp679JdkW.jpg"},
+ {d:"2026-06-06",p:"dDd0xRF3z0D10votwIx0W4IqKEe.jpg"},
+ {d:"2026-06-06",p:"3vCdqenXoOdNFHgr16VOJwBCJwS.jpg"},
+];
+// Selects (staff picks) — descending like the regular wall
+const STAFF = [
+ {d:"2026-06-08",p:"yZqhFJDenLfgF1VygOOCNmAdS1P.jpg"},
+ {d:"2026-06-01",p:"z87OLGYXojP3bJjp0EpbutpvGTy.jpg"},
+ {d:"2026-05-29",p:"3nsFrrmaUGyoiqAMRolkqPPWv01.jpg"},
+ {d:"2026-05-27",p:"zilOI4BxPxKK3BbyJSHEdOTiTaJ.jpg"},
+ {d:"2026-05-19",p:"dNzLDieAVlX3So2Qs2XSAOUmvxM.jpg"},
+ {d:"2026-05-18",p:"eANxqeFoOn3u2kraxhY324VocO7.jpg"},
+];
+// Fest screenings — dates ASCEND into the future (when each window closes)
+const FESTM = [
+ {d:"2026-06-13",p:"klheiHrCGwNNooVvYTJCFYMzmrI.jpg"},
+ {d:"2026-06-13",p:"qshlCDuBIkGaUXfvzKqPQ37kk3P.jpg"},
+ {d:"2026-06-15",p:"VbYDDEw7RPdATftVrAboA0iuP.jpg"},
+ {d:"2026-06-15",p:"hcgeuZ0evL33oIp7zExJyrhzLmf.jpg"},
+ {d:"2026-06-18",p:"kmEWAP6sda66Sm78lGs84PDjXGC.jpg"},
+];
+// Pre-orders — dates ASCEND into the future (release day)
+const PREM = [
+ {d:"2026-06-12",p:"dU46ROG7HoP7biPtntaMTjkGbU6.jpg"},
+ {d:"2026-06-16",p:"uN0psnESvA9X6TnmQHKG78YKe4e.jpg"},
+ {d:"2026-06-16",p:"hDzllxB1TQ7uUxVvjnGHirJJovt.jpg"},
+ {d:"2026-06-19",p:"pyEhZ2eSKWe12P5IWqOCAvWYra8.jpg"},
+];
+// Slop pile — descending, same behavior as Selects
+const SLOPM = [
+ {d:"2026-06-11",p:"3cYDmDWNWIjVMFbTlDQXjhydT6e.jpg"},
+ {d:"2026-06-09",p:"aoqxusBlbwShgKcfrlgUb9q6Rqo.jpg"},
+ {d:"2026-06-09",p:"Awnun4US4M5x36qruNtaRA7G5uw.jpg"},
+ {d:"2026-06-09",p:"oI33R83uOQ3MJf3vF0rH9O4LvLX.jpg"},
+ {d:"2026-06-09",p:"81xUChgVphBFehihIgbXbyneZXP.jpg"},
+ {d:"2026-06-08",p:"3zkUfnHzz5LraC6rOXybUABK93T.jpg"},
+];
+
+// Per-mode: color drives EVERY strip in that mode, not just the section header
+const MODES = {
+  selects: { color: 'var(--crimson)', day: 'SELECTS', rest: 'OUR PICKS', list: STAFF,
+             desc: 'Hand-picked favorites — the movies we think are actually worth your time.' },
+  fest:    { color: 'var(--fest)', day: 'FEST', rest: 'NOW SCREENING', list: FESTM,
+             desc: 'Virtual festival screenings you can watch from home. Dates below show when each screening window CLOSES — soonest first.' },
+  pre:     { color: 'var(--preorder)', day: 'PRE-ORDER', rest: 'COMING SOON', list: PREM,
+             desc: 'Reserve now, watch on release day. Dates below show when each title unlocks — soonest first.' },
+  slop:    { color: 'var(--slop)', day: 'THE SLOP PILE', rest: 'AT YOUR OWN RISK', list: SLOPM,
+             desc: 'Everything we filtered out of the main wall: mockbusters, cash-grabs, content.' },
+};
+
+const DESCS = {
+  A: 'Full-width filled bar in the strip color — impossible to miss, doubles as its own sticky backdrop.',
+  B: 'Magazine-style: big date numeral + weekday, ruled baseline. Gets a dark blur backdrop when pinned.',
+  C: 'Mini calendar-page chip (a nod to the old date cards) + colored hairline.',
+  D: 'Dark glass strip with a neon left edge and soft glow.',
+  E: 'Centered chapter-marker pill — floats over the wall like a scrubber label.',
+};
+const STICKY_NOTE = ' Pinned date stays put; the NEXT date rides up from the bottom (breadcrumb), then pushes it off.';
+
+function dateStrip(dateStr, color) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const day = d.toLocaleDateString('en', {weekday: 'short'});
+  const num = String(d.getDate());
+  const rest = d.toLocaleDateString('en', {month: 'short'}) + ' ' + num;
+  return `<div class="strip" style="--sc:${color}">
+    <div class="chip"><div class="chip-top">${day}</div><div class="chip-num">${num}</div></div>
+    <span class="s-num">${num}</span>
+    <span class="s-day">${day}</span>
+    <span class="s-rest">${rest}</span>
+    <span class="s-line"></span>
+  </div>`;
+}
+function sectionStrip(day, rest, color, extraClass) {
+  return `<div class="strip s-section${extraClass ? ' ' + extraClass : ''}" style="--sc:${color}">
+    <span class="s-num"></span>
+    <span class="s-day">${day}</span>
+    <span class="s-rest">${rest}</span>
+    <span class="s-line"></span>
+  </div>`;
+}
+const cells = movies => movies.map(m => `<div class="cell"><img loading="lazy" src="${IMG + m.p}"></div>`).join('');
+
+function dateGroups(movies, color) {
+  const byDate = new Map();
+  movies.forEach(m => {
+    if (!byDate.has(m.d)) byDate.set(m.d, []);
+    byDate.get(m.d).push(m);
+  });
+  let html = '';
+  byDate.forEach((ms, d) => {
+    html += `<section class="group">${dateStrip(d, color)}${cells(ms)}</section>`;
+  });
+  return html;
+}
+
+function render() {
+  const mode = document.body.dataset.mode;
+  const wall = document.getElementById('wall');
+  if (mode === 'all') {
+    // Full wall: fest section (amber), dated wall (teal), pre-order section (purple)
+    wall.innerHTML =
+      `<section class="group">${sectionStrip('FEST', 'NOW SCREENING', 'var(--fest)')}${cells(FESTM)}</section>` +
+      dateGroups(REG, 'var(--accent)') +
+      `<section class="group">${sectionStrip('PRE-ORDER', 'COMING SOON', 'var(--preorder)')}${cells(PREM)}</section>`;
+  } else {
+    const m = MODES[mode];
+    // Section strip pins for the whole mode; description scrolls away beneath it
+    wall.innerHTML = `<div class="modewrap">
+      ${sectionStrip(m.day, m.rest, m.color, 'sec')}
+      <div class="mode-desc">${m.desc}</div>
+      ${dateGroups(m.list, m.color)}
+    </div>`;
+  }
+}
+
+const desc = document.getElementById('desc');
+function updateDesc() {
+  const s = document.body.dataset.style;
+  desc.textContent = DESCS[s] + (document.body.dataset.sticky === 'on' ? STICKY_NOTE : '');
+}
+
+function bindSeg(id, attr) {
+  document.getElementById(id).addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#' + id + ' button').forEach(x => x.classList.toggle('on', x === b));
+    document.body.dataset[attr] = b.dataset.s || b.dataset.m || b.dataset.k;
+    if (attr === 'mode') { render(); window.scrollTo(0, 0); }
+    updateDesc();
+  });
+}
+bindSeg('seg', 'style');
+bindSeg('segMode', 'mode');
+bindSeg('segSticky', 'sticky');
+
+render();
+updateDesc();
+</script>
+</body>
+</html>

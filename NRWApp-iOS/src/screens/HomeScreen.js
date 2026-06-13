@@ -211,30 +211,18 @@ export default function HomeScreen({navigation}) {
     });
   }, []);
 
-  // View toggles are mutually exclusive — turning one on turns the others off
-  const handleShowHighlightsChange = useCallback(value => {
-    setShowHighlightsOnly(value);
-    if (value) {
-      setHideFest(true);
-      setShowPreorders(false);
-    }
+  // View toggles (Selects / Fests / Pre-Orders) are mutually exclusive: at most
+  // one is active. Each handler maps to the single winning view, or 'none' when
+  // toggled off. (hideFest is inverted — fests are shown only when view==='fests'.)
+  const showExclusiveView = useCallback(view => {
+    setShowHighlightsOnly(view === 'selects');
+    setHideFest(view !== 'fests');
+    setShowPreorders(view === 'preorders');
   }, []);
 
-  const handleHideFestChange = useCallback(value => {
-    setHideFest(value);
-    if (!value) {
-      setShowHighlightsOnly(false);
-      setShowPreorders(false);
-    }
-  }, []);
-
-  const handleShowPreordersChange = useCallback(value => {
-    setShowPreorders(value);
-    if (value) {
-      setShowHighlightsOnly(false);
-      setHideFest(true);
-    }
-  }, []);
+  const handleShowHighlightsChange = useCallback(v => showExclusiveView(v ? 'selects' : 'none'), [showExclusiveView]);
+  const handleHideFestChange = useCallback(v => showExclusiveView(v ? 'none' : 'fests'), [showExclusiveView]);
+  const handleShowPreordersChange = useCallback(v => showExclusiveView(v ? 'preorders' : 'none'), [showExclusiveView]);
 
   const handleSearch = useCallback(query => {
     setSearchQuery(query);
