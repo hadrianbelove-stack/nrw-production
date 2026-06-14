@@ -59,25 +59,35 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    padding: 1.5rem 1rem 1rem;
-    text-align: center;
+    padding: 1.5rem 1.5rem 1.1rem;
+    text-align: left;
     border-bottom: 1px solid #333;
     background: rgba(8, 8, 12, 0.88);
     backdrop-filter: blur(12px);
 }
 
+/* Layout G: title + filters on the left, a boxed "View" control module right */
 .title-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-bottom: 0.5rem;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 0;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    min-width: 0;
 }
 
 header h1 {
     font-weight: 100;
-    letter-spacing: 0.3em;
-    font-size: 2.5rem;
+    letter-spacing: 0.22em;
+    font-size: 2.2rem;
+    line-height: 1.05;
     background: linear-gradient(45deg, #fff, var(--accent-primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -85,12 +95,40 @@ header h1 {
     margin-bottom: 0;
 }
 
+/* Boxed control module — the four view toggles, 2×2 */
+.view-module {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    padding: 14px 20px 16px;
+}
+.view-module-head {
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 12px;
+}
+.toggle-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 13px 28px;
+}
+
+/* Narrow screens: drop the module below the title block */
+@media (max-width: 900px) {
+    .title-row { flex-direction: column; align-items: stretch; gap: 1.1rem; }
+    .view-module { align-self: flex-start; }
+}
+
 .filters {
     display: flex;
-    justify-content: center;
-    gap: 0.75rem;
+    justify-content: flex-start;
+    gap: 0.6rem;
     flex-wrap: wrap;
-    margin-top: 0.5rem;
+    margin-top: 0;
 }
 
 .filter-btn {
