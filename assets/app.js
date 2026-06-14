@@ -567,7 +567,7 @@ const NRW = {
             `<div class="date-row-header${extraClass}" style="--strip-c:${color}"${titleAttr}><span class="drh-day">${day}</span>${rest ? `<span class="drh-rest">${rest}</span>` : ''}</div>`;
 
         if (this.showHighlightsOnly) {
-            html += stripHtml('SELECTS', 'OUR PICKS', '#dc143c');
+            html += stripHtml('SELECTS', 'NOTABLE RELEASES', '#dc143c');
         }
         if (this.slopMode === 'only') {
             html += stripHtml('SLOP', 'THE CONTENT RIVER', '#ff9500');
@@ -581,7 +581,7 @@ const NRW = {
             if (isFest) {
                 if (!festSectionStarted) {
                     festSectionStarted = true;
-                    html += stripHtml('FEST', 'NOW SCREENING', '#f59e0b');
+                    html += stripHtml('VIRTUAL SCREENINGS', 'FESTS', '#f59e0b');
                 }
             // Pre-order movies: section strip once, no date strips
             } else if (movie._is_preorder) {
