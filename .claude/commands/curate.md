@@ -230,9 +230,23 @@ Capsules and pull quotes are done together, movie by movie — not as separate p
 
 Merge into one list, deduplicated, sorted by `digital_date` descending. For each movie, track which work it needs: capsule, quotes, or both.
 
+**Build a stable numbered queue.** Assign each candidate a fixed index `#1 … #N` in this sorted order and persist it to `cache/curation_stage4_queue.json` (list of `{n, id, title, year, digital_date, needs, status}` where `status` starts as `pending`). The numbers must stay stable for the whole session even as items get completed or the watermark moves. If that file already exists for the current `session_start`, **reuse it** (resume) rather than renumbering.
+
+Print the full queue once before starting, as a numbered checklist with the total:
+
+```
+STAGE 4 — 35 movies to curate
+  #1  The Jealous Bride (2026)     — capsule+quotes
+  #2  Double Happiness (2026)      — capsule+quotes
+  ...
+  #35 Wetiko (2025)                — quotes
+```
+
 If no candidates for either: report through-dates and mark stage `completed`.
 
-**For each movie, in order:**
+**For each movie, in order — always lead with its queue position:**
+
+Every time you present a movie (capsule variants *and* pull quotes), title the section **`#N of TOTAL — Title (Year)`** so the user always sees where they are. The user may redirect at any point — "go to #5", "jump to #5", "skip to Kraken" — in which case continue from that index. Update each movie's `status` in the queue file (`done` / `skipped`) as you finish it; on resume, start at the first index still `pending`.
 
 ### Step A — Capsule (if needed)
 
