@@ -327,12 +327,8 @@ const NRW = {
         if (!el) return;
 
         const filters = Array.from(this.activeFilters);
-        if (this.showHighlightsOnly) {
-            const desc = this.FILTER_DESCRIPTIONS['staff-picks'];
-            document.getElementById('filter-description-title').textContent = desc.title;
-            document.getElementById('filter-description-text').textContent = desc.text;
-            el.classList.add('active');
-        } else if (filters.length === 1 && this.FILTER_DESCRIPTIONS[filters[0]]) {
+        // Selects shows no description blurb (the toggle label says enough).
+        if (filters.length === 1 && this.FILTER_DESCRIPTIONS[filters[0]]) {
             const desc = this.FILTER_DESCRIPTIONS[filters[0]];
             document.getElementById('filter-description-title').textContent = desc.title;
             document.getElementById('filter-description-text').textContent = desc.text;
