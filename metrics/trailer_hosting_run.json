@@ -1,24 +1,17 @@
 {
-  "timestamp": "2026-06-09T16:44:56.583320",
-  "movies_attempted": 2,
-  "hosted": 0,
-  "failed": 2,
-  "skipped": 0,
+  "timestamp": "2026-06-13T06:00:14.301842",
+  "movies_attempted": 11,
+  "hosted": 9,
+  "failed": 1,
+  "skipped": 1,
   "failure_details": [
     {
-      "title": "Tomader Golpo 2",
-      "movie_id": "1700333",
+      "title": "The Jealous Bride",
+      "movie_id": "1711071",
       "reason": "download:failed",
       "detail": "File not created after download",
-      "trailer_url": "https://www.youtube.com/watch?v=1dgZ9O0Py8c"
-    },
-    {
-      "title": "Summer of '94",
-      "movie_id": "1629367",
-      "reason": "download:failed",
-      "detail": "File not created after download",
-      "trailer_url": "https://www.youtube.com/watch?v=cVU6XOrX754"
+      "trailer_url": "https://www.youtube.com/watch?v=KD53m7e7KT8"
     }
   ],
-  "yt_dlp_version": "2025.10.14"
+  "yt_dlp_version": "2026.03.17"
 }
