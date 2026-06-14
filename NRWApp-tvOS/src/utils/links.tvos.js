@@ -79,14 +79,17 @@ export async function openURL(url, service = null) {
       }
     }
 
-    // If content URL fails and service specified, try generic app scheme
+    // No title deep link worked — fall back to opening the app at its home
+    // screen (e.g. Amazon/Max, which have no tvOS title deep link at all).
+    // Try openURL directly: canOpenURL needs the scheme whitelisted in
+    // LSApplicationQueriesSchemes (most service schemes aren't), but openURL
+    // launches the installed app regardless of the whitelist.
     if (service && SERVICE_SCHEMES[service]) {
-      const appScheme = SERVICE_SCHEMES[service];
-      const canOpenApp = await Linking.canOpenURL(appScheme);
-
-      if (canOpenApp) {
-        await Linking.openURL(appScheme);
+      try {
+        await Linking.openURL(SERVICE_SCHEMES[service]);
         return { success: true, usedAppScheme: true };
+      } catch (e) {
+        // App not installed — fall through to web.
       }
     }
 
@@ -118,7 +121,13 @@ export async function openURL(url, service = null) {
 function buildServiceDeepLink(url, service) {
   if (!url) return null;
   if (service === 'netflix') {
+    // https://www.netflix.com/title/<id> -> nflx://www.netflix.com/title/<id>
     return url.replace(/^https?:\/\//i, 'nflx://');
+  }
+  if (service === 'hulu') {
+    // Hulu's tvOS app deep-links via hulu://watch/<id> and hulu://series/<id>.
+    const m = url.match(/hulu\.com\/(watch|series)\/([^/?#]+)/i);
+    if (m) return `hulu://${m[1]}/${m[2]}`;
   }
   return null;
 }
