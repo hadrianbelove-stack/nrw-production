@@ -1,20 +1,75 @@
 {
-  "timestamp": "2026-06-13T12:37:13.683659",
-  "movies_requested": 14,
-  "movies_enriched": 13,
-  "movies_deferred": 1,
+  "timestamp": "2026-06-14T12:48:59.371028",
+  "movies_requested": 6,
+  "movies_enriched": 0,
+  "movies_deferred": 6,
   "deferred_details": [
     {
       "title": "The Thing in the Fog",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-12",
-      "discovered_at": "2026-06-13T11:19:22.650609",
+      "discovered_at": "2026-06-14T11:35:24.569041",
       "discovery_source": "tmdb_type4",
-      "revert_count": 3,
+      "revert_count": 4,
       "tmdb_platforms": []
+    },
+    {
+      "title": "The Terror: Devil in Silver",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-07",
+      "discovered_at": "2026-06-14T11:36:01.964913",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "tmdb_platforms": [
+        "AMC Plus Apple TV Channel ",
+        "AMC+ Amazon Channel",
+        "AMC+",
+        "Philo",
+        "Spectrum On Demand"
+      ]
+    },
+    {
+      "title": "Mark",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-14",
+      "discovered_at": "2026-06-14T12:13:01.084942",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "tmdb_platforms": [
+        "Hulu"
+      ]
+    },
+    {
+      "title": "Two Prosecutors",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-05-26",
+      "discovered_at": "2026-05-08T01:19:24.916487",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Busboys",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-16",
+      "discovered_at": "2026-06-14T12:36:23.846000",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Dridam",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-14",
+      "discovered_at": "2026-06-14T12:39:04.886651",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "tmdb_platforms": [
+        "Hulu"
+      ]
     }
   ],
-  "enrichment_duration_seconds": 720.61,
+  "enrichment_duration_seconds": 306.58,
   "error_details": [],
   "total_errors": 0
 }
