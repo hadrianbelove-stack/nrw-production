@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW Header Layouts — Round 2</title>
+<style>
+  :root { --accent:#00d4aa; --crimson:#dc143c; --amber:#f59e0b; --purple:#7c3aed; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#08080c; color:#fff; padding:30px 20px 80px; }
+  .page-title { text-align:center; color:#888; font-size:0.85rem; letter-spacing:0.2em; text-transform:uppercase; }
+  .page-sub { text-align:center; color:#666; font-size:0.8rem; margin:4px 0 30px; }
+
+  .variant { max-width:1400px; margin:0 auto 26px; }
+  .variant-label { display:flex; align-items:baseline; gap:12px; margin:0 0 8px 4px; }
+  .vl-num { font-size:0.75rem; font-weight:800; color:#08080c; background:var(--accent); border-radius:20px; padding:3px 11px; }
+  .vl-name { font-size:1rem; font-weight:700; }
+  .vl-note { font-size:0.8rem; color:#888; }
+
+  .header { background:linear-gradient(160deg,#0a0a0a 0%,#14141f 100%); border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:22px 28px; }
+
+  h1 { font-weight:300; letter-spacing:0.14em; white-space:nowrap; background:linear-gradient(90deg,#00d4aa,#7fffe6); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  h1.big { font-size:2rem; line-height:1.05; }
+  h1.med { font-size:1.55rem; }
+  h1.two-line { white-space:normal; }
+
+  /* genre pills (shared) */
+  .pill { padding:0.38rem 0.85rem; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#fff; border-radius:25px; font-size:0.8rem; cursor:pointer; white-space:nowrap; transition:.2s; }
+  .pill:hover { background:var(--accent); border-color:var(--accent); color:#08080c; }
+  .pills { display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
+  .search { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); border-radius:25px; padding:0.4rem 0.95rem; color:#fff; font-size:0.8rem; outline:none; min-width:150px; }
+  .search::placeholder { color:#777; }
+
+  .left { flex:1; min-width:0; }
+  .toprow { display:flex; gap:30px; align-items:flex-start; justify-content:space-between; }
+
+  /* ===== F: slider toggles, 2x2 ===== */
+  .grid2 { display:grid; grid-template-columns:auto auto; gap:10px 22px; flex-shrink:0; }
+  .tog { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; }
+  .tog .track { width:44px; height:24px; border-radius:13px; background:#1a1a1a; border:1px solid rgba(0,212,170,0.45); position:relative; flex-shrink:0; transition:.25s; }
+  .tog .thumb { position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:rgba(0,212,170,0.55); transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s; }
+  .tog .lbl { font-size:0.66rem; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:rgba(0,212,170,0.7); white-space:nowrap; }
+  .tog.on .track { background:var(--accent); border-color:rgba(0,0,0,.35); }
+  .tog.on .thumb { transform:translateX(20px); background:#fff; }
+  .tog.on .lbl { color:var(--accent); }
+  .tog.selects.on .track{background:var(--crimson);} .tog.selects.on .lbl{color:var(--crimson);}
+  .tog.fests.on .track{background:var(--amber);} .tog.fests.on .lbl{color:var(--amber);}
+  .tog.pre.on .track{background:var(--purple);} .tog.pre.on .lbl{color:var(--purple);}
+  .filters-line { display:flex; align-items:center; gap:7px; margin-top:18px; }
+
+  /* ===== G: boxed control module ===== */
+  .module { flex-shrink:0; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.14); border-radius:14px; padding:12px 16px 14px; }
+  .module .mhead { font-size:0.6rem; font-weight:800; letter-spacing:0.18em; color:#777; text-transform:uppercase; margin-bottom:10px; }
+
+  /* ===== H: identity color pills (no slider) ===== */
+  .tpill { padding:0.42rem 1rem; border-radius:25px; font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; border:1.5px solid; background:transparent; white-space:nowrap; transition:.2s; text-align:center; }
+  .tpill.slop   { color:var(--accent);  border-color:var(--accent); }
+  .tpill.selects{ color:var(--crimson); border-color:var(--crimson); }
+  .tpill.fests  { color:var(--amber);   border-color:var(--amber); }
+  .tpill.pre    { color:var(--purple);  border-color:var(--purple); }
+  .tpill.slop.on   { background:var(--accent);  color:#08080c; }
+  .tpill.selects.on{ background:var(--crimson); color:#fff; }
+  .tpill.fests.on  { background:var(--amber);   color:#08080c; }
+  .tpill.pre.on    { background:var(--purple);  color:#fff; }
+  .grid2.pillgrid { gap:8px; }
+
+  /* ===== I: icon tiles ===== */
+  .tile { width:108px; padding:11px 8px 9px; border-radius:13px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.14); text-align:center; cursor:pointer; transition:.2s; }
+  .tile .ic { font-size:1.2rem; display:block; margin-bottom:4px; filter:grayscale(0.4); opacity:.85; }
+  .tile .tl { font-size:0.62rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#aaa; }
+  .tile.slop.on   { border-color:var(--accent);  box-shadow:0 0 14px rgba(0,212,170,.35); background:rgba(0,212,170,.12); }
+  .tile.selects.on{ border-color:var(--crimson); box-shadow:0 0 14px rgba(220,20,60,.3); background:rgba(220,20,60,.12); }
+  .tile.fests.on  { border-color:var(--amber);   box-shadow:0 0 14px rgba(245,158,11,.3); background:rgba(245,158,11,.12); }
+  .tile.pre.on    { border-color:var(--purple);  box-shadow:0 0 14px rgba(124,58,237,.3); background:rgba(124,58,237,.12); }
+  .tile.on .tl { color:#fff; } .tile.on .ic { filter:none; opacity:1; }
+
+  /* ===== J: minimal underline tabs, 2x2 ===== */
+  .tab { font-size:0.74rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#888; cursor:pointer; padding:5px 4px 7px; border-bottom:2px solid transparent; white-space:nowrap; transition:.2s; }
+  .tab:hover { color:#ccc; }
+  .tab.slop.on{ color:var(--accent);  border-color:var(--accent); }
+  .tab.selects.on{ color:var(--crimson); border-color:var(--crimson); }
+  .tab.fests.on{ color:var(--amber); border-color:var(--amber); }
+  .tab.pre.on{ color:var(--purple); border-color:var(--purple); }
+  .grid2.tabgrid { gap:4px 26px; }
+</style>
+</head>
+<body>
+  <div class="page-title">NRW · Header Layouts — Round 2</div>
+  <div class="page-sub">All four view toggles 2×2 on the right; five different visual treatments. Click toggles to preview.</div>
+
+  <!-- F -->
+  <div class="variant">
+    <div class="variant-label"><span class="vl-num">F</span><span class="vl-name">Sliders, 2×2 right</span><span class="vl-note">your idea, classic toggle style</span></div>
+    <div class="header">
+      <div class="toprow">
+        <div class="left">
+          <h1 class="med">THE NEW RELEASE WALL</h1>
+          <div class="filters-line"><div class="pills" data-pills></div><input class="search" placeholder="Search…"></div>
+        </div>
+        <div class="grid2" data-tg="slider"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- G -->
+  <div class="variant">
+    <div class="variant-label"><span class="vl-num">G</span><span class="vl-name">Boxed control module</span><span class="vl-note">toggles grouped in a labelled panel</span></div>
+    <div class="header">
+      <div class="toprow">
+        <div class="left">
+          <h1 class="big two-line">THE NEW<br>RELEASE WALL</h1>
+          <div class="filters-line"><div class="pills" data-pills></div></div>
+        </div>
+        <div class="module">
+          <div class="mhead">View</div>
+          <div class="grid2" data-tg="slider"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- H -->
+  <div class="variant">
+    <div class="variant-label"><span class="vl-num">H</span><span class="vl-name">Identity-color pills</span><span class="vl-note">toggles as colored pills — unifies with filters, reads as 'pick one'</span></div>
+    <div class="header">
+      <div class="toprow">
+        <div class="left">
+          <h1 class="med">THE NEW RELEASE WALL</h1>
+          <div class="filters-line"><div class="pills" data-pills></div><input class="search" placeholder="Search…"></div>
+        </div>
+        <div class="grid2 pillgrid" data-tg="pill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- I -->
+  <div class="variant">
+    <div class="variant-label"><span class="vl-num">I</span><span class="vl-name">Icon tiles</span><span class="vl-note">app-style tiles that glow in their color when active</span></div>
+    <div class="header">
+      <div class="toprow">
+        <div class="left">
+          <h1 class="med">THE NEW RELEASE WALL</h1>
+          <div class="filters-line"><div class="pills" data-pills></div><input class="search" placeholder="Search…"></div>
+        </div>
+        <div class="grid2" data-tg="tile"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- J -->
+  <div class="variant">
+    <div class="variant-label"><span class="vl-num">J</span><span class="vl-name">Minimal underline tabs</span><span class="vl-note">editorial / understated, 2×2</span></div>
+    <div class="header">
+      <div class="toprow">
+        <div class="left">
+          <h1 class="med">THE NEW RELEASE WALL</h1>
+          <div class="filters-line"><div class="pills" data-pills></div><input class="search" placeholder="Search…"></div>
+        </div>
+        <div class="grid2 tabgrid" data-tg="tab"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const TOGGLES = [
+    { key:'slop',    label:'Slop Free', up:'SLOP FREE', ic:'🟢', on:true },
+    { key:'selects', label:'Selects',   up:'SELECTS',   ic:'★',  on:false },
+    { key:'fests',   label:'Fests',     up:'FESTS',     ic:'🎬', on:false },
+    { key:'pre',     label:'Pre-Order', up:'PRE-ORDER', ic:'⏳', on:false },
+  ];
+  const FILTERS = ['Indie','Horror','Action','Comedy','Family','Thriller','Foreign','Docs','Reissues'];
+
+  const render = {
+    slider:t => `<div class="tog ${t.key} ${t.on?'on':''}"><div class="track"><div class="thumb"></div></div><span class="lbl">${t.up}</span></div>`,
+    pill:  t => `<div class="tpill ${t.key} ${t.on?'on':''}">${t.up}</div>`,
+    tile:  t => `<div class="tile ${t.key} ${t.on?'on':''}"><span class="ic">${t.ic}</span><span class="tl">${t.label}</span></div>`,
+    tab:   t => `<div class="tab ${t.key} ${t.on?'on':''}">${t.up}</div>`,
+  };
+  document.querySelectorAll('[data-tg]').forEach(el => {
+    const kind = el.dataset.tg;
+    el.innerHTML = TOGGLES.map(render[kind]).join('');
+  });
+  document.querySelectorAll('[data-pills]').forEach(el => {
+    el.innerHTML = FILTERS.map(f => `<span class="pill">${f}</span>`).join('');
+  });
+  // single-select preview within each toggle group
+  document.querySelectorAll('[data-tg]').forEach(group => {
+    group.addEventListener('click', e => {
+      const item = e.target.closest('.tog,.tpill,.tile,.tab'); if (!item) return;
+      const wasOn = item.classList.contains('on');
+      group.querySelectorAll('.on').forEach(x => x.classList.remove('on'));
+      if (!wasOn) item.classList.add('on');
+    });
+  });
+</script>
+</body>
+</html>
