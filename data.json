@@ -916,7 +916,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": true,
+      "_is_slop_guess": false
     },
     {
       "id": "1465786",
@@ -1126,9 +1128,10 @@
         "manual_override": null
       },
       "featured": false,
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak",
-      "_watch_links_verified": "2026-06-13T12:37:24.804768"
+      "_watch_links_verified": "2026-06-13T12:37:24.804768",
+      "_is_slop_guess": false
     },
     {
       "id": "1325614",

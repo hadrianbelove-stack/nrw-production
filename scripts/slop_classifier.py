@@ -53,6 +53,8 @@ MANUAL_OVERRIDES = {
     # TV-movie mill thrillers — confirmed slop by curator (June 2026)
     1708839: True,    # Her Husband's Double Life
     1409853: True,    # Neglected
+    1110034: True,    # Kraken (curator call)
+    1226834: True,    # This Tempting Madness (curator call)
     # Human-confirmed slop
     1686326: True,    # Emi Martínez: The Kid Who Stops Time
     934584:  True,    # Rich Flu (La fiebre de los ricos)
