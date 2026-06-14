@@ -119,7 +119,7 @@ class LetterboxdQuoteScraper(GeminiFinderBase):
 
                     # If slug didn't work, try Gemini grounding
                     if not lb_url:
-                        browser.close()
+                        gemini_url = None
                         try:
                             self._enforce_rate_limit()
                             prompt = f'What is the Letterboxd URL for the film "{title}" ({year})? Return only the URL.'
@@ -129,7 +129,7 @@ class LetterboxdQuoteScraper(GeminiFinderBase):
 
                             url_match = re.search(r'https://letterboxd\.com/film/[a-z0-9-]+/?', text)
                             if url_match:
-                                lb_url = url_match.group(0).rstrip('/')
+                                gemini_url = url_match.group(0).rstrip('/')
                             elif response.candidates:
                                 gm = response.candidates[0].grounding_metadata
                                 if gm and gm.grounding_chunks:
@@ -137,12 +137,26 @@ class LetterboxdQuoteScraper(GeminiFinderBase):
                                         if chunk.web and chunk.web.uri and 'letterboxd.com/film/' in chunk.web.uri:
                                             resolved = self._resolve_grounding_url(chunk.web.uri)
                                             if resolved and 'letterboxd.com/film/' in resolved:
-                                                lb_url = resolved.rstrip('/')
+                                                gemini_url = resolved.rstrip('/')
                                                 break
                         except Exception as e:
                             logger.debug(f"Gemini couldn't find Letterboxd URL for {title}: {e}")
-                    else:
-                        browser.close()
+
+                        # Verify Gemini's URL actually points at this film before trusting
+                        # it. Gemini hallucinates an unrelated film for obscure/foreign
+                        # titles (returned a Bix Beiderbecke doc for Japanese "Chloe et Emma").
+                        if gemini_url:
+                            try:
+                                resp = page.goto(gemini_url, timeout=15000, wait_until='domcontentloaded')
+                                page_title = page.title() if resp and resp.status == 200 else ''
+                                if f'({year})' in page_title or f'({year - 1})' in page_title:
+                                    lb_url = gemini_url
+                                    logger.info(f"Found Letterboxd page via Gemini at {lb_url}")
+                                else:
+                                    logger.info(f"Rejected Gemini Letterboxd URL for {title} ({year}) — wrong film/year: {gemini_url} [{page_title!r}]")
+                            except Exception as e:
+                                logger.debug(f"Could not verify Gemini Letterboxd URL {gemini_url}: {e}")
+                    browser.close()
 
             except Exception as e:
                 logger.warning(f"Error finding Letterboxd URL for {title}: {e}")
