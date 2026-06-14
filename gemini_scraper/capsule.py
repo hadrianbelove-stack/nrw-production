@@ -675,23 +675,23 @@ class GeminiCapsuleWriter(GeminiFinderBase):
         return '\n'.join(lines)
 
     # Variant angles — each gives Gemini a different entry point into the material
+    # Three punchy entry points — none leads with a director bio (the editor
+    # just wants three options to choose from, all premise-forward).
     VARIANT_ANGLES = [
-        (
-            "ANGLE: Lead with the FILMMAKER. Your first sentence must be about the "
-            "director — their track record, style, key previous films, or notable "
-            "collaborators. Do NOT open with the film's title or premise. Do NOT "
-            "open with 'directorial debut' or 'feature debut' — if it's a debut, "
-            "mention it briefly mid-sentence at most."
-        ),
         (
             "ANGLE: Lead with the PREMISE & GENRE. Your first sentence must describe "
             "what kind of movie this is and what it's about — tone, genre, setup. "
-            "Do NOT open with the director's name or bio."
+            "Do NOT open with the director's name or a filmmaker bio."
         ),
         (
             "ANGLE: Lead with a CONCRETE DETAIL — a production fact, a festival moment, "
             "a number, a quote, an anecdote, the cultural context. Something specific "
-            "and surprising. Do NOT open with the director's name or the film's premise."
+            "and surprising. Do NOT open with a filmmaker bio or a plain plot summary."
+        ),
+        (
+            "ANGLE: Lead with RECEPTION or the CULTURAL MOMENT — what critics or "
+            "audiences are actually responding to, or the moment/movement the film "
+            "captures. Do NOT open with the director's name or a filmmaker bio."
         ),
     ]
 

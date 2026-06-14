@@ -34,11 +34,11 @@ Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER
 *directed by [Director] | [Genres, up to 2] | [Runtime] min | [Country] | [Platform(s)]*
 [Keywords up to 6, space-separated with · — then badges: [SLOP] if is_slop=true, [VIRTUAL SCREENING] if is_virtual_screening=true, [PREORDER] if digital_date is in the future — omit this line entirely if no keywords and no badges apply]
 
-**1.** [capsule text] _(XX words — hook)_
+**1.** [capsule text] _(XX words — premise)_
 
-**2.** [capsule text] _(XX words — filmmaker)_
+**2.** [capsule text] _(XX words — detail)_
 
-**3.** [capsule text] _(XX words — critical)_
+**3.** [capsule text] _(XX words — reception)_
 
 ---
 
@@ -57,7 +57,7 @@ Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER
 2. ...
 ```
 
-Each variant takes a different approach: one anchored in premise/hook, one in filmmaker/production context, one in critical reception. Label the approach after the word count as shown above.
+Each variant takes a different approach: one anchored in premise/genre, one in a concrete detail (production fact, festival moment, quote), one in reception/cultural moment. None should open with a director bio. Label the approach after the word count as shown above.
 
 Then ask: "Pick 1, 2, or 3 — paste a rewrite — or skip."
 
