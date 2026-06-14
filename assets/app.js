@@ -553,48 +553,37 @@ const NRW = {
         let html = '';
         let lastDate = '';
         let isFirstDate = true;
-        let festSectionStarted = false;
-        let preorderSectionStarted = false;
         const SHOW_TRAILERS_CARD = false; // Trailers card temporarily disabled — set true to restore
 
-        // Date strips: single active filter recolors them; HIGHLIGHTS mode goes crimson
+        // Date strips: single active filter recolors them; each view has its own color
         const singleFilter = this.activeFilters.size === 1 ? [...this.activeFilters][0] : null;
         const filterColor = singleFilter ? this.STRIP_COLORS[singleFilter] : null;
         const dateStripColor = this.showHighlightsOnly ? '#dc143c'
             : this.showFest ? '#f59e0b'
+            : this.showPreorders ? '#7c3aed'
             : this.slopMode === 'only' ? '#ff9500'
             : (filterColor || 'var(--accent-primary)');
         const stripHtml = (day, rest, color, extraClass = '', titleAttr = '') =>
             `<div class="date-row-header${extraClass}" style="--strip-c:${color}"${titleAttr}><span class="drh-day">${day}</span>${rest ? `<span class="drh-rest">${rest}</span>` : ''}</div>`;
 
+        // View section banner at the very top — one per active view (exclusive).
+        // Then every film flows through the normal date strips below, so each view
+        // still shows the films grouped by date (the way SLOP already does).
         if (this.showHighlightsOnly) {
             html += stripHtml('SELECTS', 'NOTABLE RELEASES', '#dc143c');
-        }
-        if (this.slopMode === 'only') {
+        } else if (this.slopMode === 'only') {
             html += stripHtml('SLOP', 'THE CONTENT RIVER', '#ff9500');
+        } else if (this.showFest) {
+            html += stripHtml('VIRTUAL SCREENINGS', 'FESTS', '#f59e0b');
+        } else if (this.showPreorders) {
+            html += stripHtml('PRE-ORDER', 'COMING SOON', '#7c3aed');
         }
 
         orderedMovies.forEach(movie => {
             const date = (movie.digital_date || '').substring(0, 10);
-            const isFest = !movie._is_preorder && movie.filters?.is_virtual_screening;
 
-            // Fest movies: section strip once, no date strips
-            if (isFest) {
-                if (!festSectionStarted) {
-                    festSectionStarted = true;
-                    html += stripHtml('VIRTUAL SCREENINGS', 'FESTS', '#f59e0b');
-                }
-            // Pre-order movies: section strip once, no date strips
-            } else if (movie._is_preorder) {
-                if (!preorderSectionStarted) {
-                    preorderSectionStarted = true;
-                    html += stripHtml('PRE-ORDER', 'COMING SOON', '#7c3aed');
-                }
-            // Regular movies: date strip when date changes.
-            // SELECTS is a single curated section (like FEST / PRE-ORDER) — suppress
-            // per-date strips so it shows one "SELECTS · OUR PICKS" header, not a
-            // redundant stack of date banners around it.
-            } else if (date !== lastDate && !this.showHighlightsOnly) {
+            // Date strip whenever the date changes — every view groups by date
+            if (date !== lastDate) {
                 // Add NEW TRAILERS button before the first date marker
                 if (isFirstDate && SHOW_TRAILERS_CARD) {
                     const now = new Date();
@@ -615,20 +604,22 @@ const NRW = {
                 }
 
                 const d = new Date(date + 'T12:00:00');
-
-                // Bootstrap dates are approximate — mark with ~ and tooltip
-                const isBootstrapDate = movie.bootstrap_date;
-                const datePrefix = isBootstrapDate ? '~' : '';
-                const dateTitle = isBootstrapDate ? ' title="Approximate date - may have been available earlier"' : '';
-                const dayLabel = d.toLocaleDateString('en', {weekday: 'short'});
-                const restLabel = `${datePrefix}${d.toLocaleDateString('en', {month: 'short'})} ${d.getDate()}`;
-
-                html += stripHtml(dayLabel, restLabel, dateStripColor,
-                    isBootstrapDate ? ' date-approximate' : '', dateTitle);
+                if (date && !isNaN(d.getTime())) {
+                    // Bootstrap dates are approximate — mark with ~ and tooltip
+                    const isBootstrapDate = movie.bootstrap_date;
+                    const datePrefix = isBootstrapDate ? '~' : '';
+                    const dateTitle = isBootstrapDate ? ' title="Approximate date - may have been available earlier"' : '';
+                    const dayLabel = d.toLocaleDateString('en', {weekday: 'short'});
+                    const restLabel = `${datePrefix}${d.toLocaleDateString('en', {month: 'short'})} ${d.getDate()}`;
+                    html += stripHtml(dayLabel, restLabel, dateStripColor,
+                        isBootstrapDate ? ' date-approximate' : '', dateTitle);
+                } else {
+                    html += stripHtml('DATE TBD', '', dateStripColor);
+                }
 
                 lastDate = date;
             }
-            
+
             // Movie card
             const title = movie.title || 'Untitled';
             const year = movie.year || new Date(movie.digital_date).getFullYear();
