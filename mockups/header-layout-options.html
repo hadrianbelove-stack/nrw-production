@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW Header Layout Options</title>
+<style>
+  :root {
+    --accent: #00d4aa;
+    --crimson: #dc143c;
+    --amber: #f59e0b;
+    --purple: #7c3aed;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #08080c; color:#fff; padding:30px 20px 80px;
+  }
+  .page-title { text-align:center; color:#888; font-size:0.85rem; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:4px; }
+  .page-sub { text-align:center; color:#666; font-size:0.8rem; margin-bottom:30px; }
+
+  .variant { max-width:1400px; margin:0 auto 26px; }
+  .variant-label {
+    display:flex; align-items:baseline; gap:12px; margin:0 0 8px 4px;
+  }
+  .variant-label .vl-num {
+    font-size:0.75rem; font-weight:800; color:#08080c; background:var(--accent);
+    border-radius:20px; padding:3px 10px; letter-spacing:0.05em;
+  }
+  .variant-label .vl-name { font-size:1rem; font-weight:700; }
+  .variant-label .vl-note { font-size:0.8rem; color:#888; }
+
+  .header {
+    background: linear-gradient(160deg, #0a0a0a 0%, #14141f 100%);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:14px; padding:20px 26px; overflow:hidden;
+  }
+
+  /* Title */
+  h1 {
+    font-weight:300; letter-spacing:0.14em; white-space:nowrap;
+    background: linear-gradient(90deg,#00d4aa,#7fffe6);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  h1.big { font-size:2.1rem; }
+  h1.med { font-size:1.6rem; }
+  h1.sm  { font-size:1.3rem; }
+  h1.two-line { white-space:normal; line-height:1.05; }
+
+  /* Toggle (track + thumb + label) */
+  .tog { display:flex; align-items:center; gap:9px; cursor:pointer; user-select:none; flex-shrink:0; }
+  .tog .track {
+    width:50px; height:26px; border-radius:14px; background:#1a1a1a;
+    border:1px solid rgba(0,212,170,0.45); position:relative; flex-shrink:0; transition:.25s;
+  }
+  .tog .thumb {
+    position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%;
+    background:rgba(0,212,170,0.55); transition:transform .25s cubic-bezier(.4,0,.2,1), background .25s;
+  }
+  .tog .lbl { font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(0,212,170,0.7); white-space:nowrap; }
+  .tog.on .track { background:var(--accent); border-color:rgba(0,0,0,.35); }
+  .tog.on .thumb { transform:translateX(24px); background:#fff; }
+  .tog.on .lbl { color:var(--accent); }
+  /* identity colors when on */
+  .tog.slop.on .track { background:var(--accent); }
+  .tog.selects.on .track { background:var(--crimson); } .tog.selects.on .lbl { color:var(--crimson); }
+  .tog.fests.on .track { background:var(--amber); } .tog.fests.on .lbl { color:var(--amber); }
+  .tog.pre.on .track { background:var(--purple); } .tog.pre.on .lbl { color:var(--purple); }
+
+  /* Filter pills */
+  .pill {
+    padding:0.4rem 0.9rem; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);
+    color:#fff; border-radius:25px; font-size:0.82rem; cursor:pointer; white-space:nowrap; transition:.2s;
+  }
+  .pill:hover { background:var(--accent); border-color:var(--accent); color:#08080c; }
+  .search {
+    flex:1; min-width:160px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18);
+    border-radius:25px; padding:0.45rem 1rem; color:#fff; font-size:0.82rem; outline:none;
+  }
+  .search::placeholder { color:#777; }
+
+  .toggles { display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+  .pills { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+
+  /* ---- Layout A: toggles top-right, filters under title (user idea) ---- */
+  .la .row1 { display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom:16px; }
+  .la .row2 { display:flex; align-items:center; gap:8px; }
+
+  /* ---- Layout B: one dense row, title | filters | toggles ---- */
+  .lb .row { display:flex; align-items:center; gap:20px; }
+  .lb h1 { flex-shrink:0; }
+  .lb .pills { flex:1; justify-content:center; }
+
+  /* ---- Layout C: title left, two right-aligned rows (toggles over filters) ---- */
+  .lc .wrap { display:flex; align-items:center; gap:30px; }
+  .lc h1 { flex-shrink:0; }
+  .lc .right { flex:1; display:flex; flex-direction:column; gap:14px; align-items:flex-end; }
+
+  /* ---- Layout D: two clean rows — title+toggles, then filters+search ---- */
+  .ld .row1 { display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom:16px; }
+  .ld .row2 { display:flex; align-items:center; gap:8px; }
+  .ld .row2 .search { max-width:280px; margin-left:auto; }
+
+  /* ---- Layout E: segmented toggle group on right ---- */
+  .le .row1 { display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom:16px; }
+  .le .seg { display:flex; border:1px solid rgba(255,255,255,0.16); border-radius:25px; overflow:hidden; }
+  .le .seg .segbtn {
+    padding:0.5rem 1.1rem; font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    color:#999; cursor:pointer; border-right:1px solid rgba(255,255,255,0.12); white-space:nowrap; transition:.2s;
+  }
+  .le .seg .segbtn:last-child { border-right:none; }
+  .le .seg .segbtn.on-slop { background:var(--accent); color:#08080c; }
+  .le .seg .segbtn:hover { background:rgba(255,255,255,0.07); color:#fff; }
+  .le .row2 { display:flex; align-items:center; gap:8px; }
+</style>
+</head>
+<body>
+  <div class="page-title">NRW · Header Layout Options</div>
+  <div class="page-sub">Same toggles + filters, five arrangements. Toggles are clickable to preview on/identity colors.</div>
+
+  <!-- ============ A ============ -->
+  <div class="variant la">
+    <div class="variant-label"><span class="vl-num">A</span><span class="vl-name">Toggles top-right · filters under title</span><span class="vl-note">your idea — clear two-tier split</span></div>
+    <div class="header">
+      <div class="row1">
+        <h1 class="med">THE NEW RELEASE WALL</h1>
+        <div class="toggles" data-tg></div>
+      </div>
+      <div class="row2">
+        <div class="pills" data-pills></div>
+        <input class="search" placeholder="Search title, director, genre…">
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ B ============ -->
+  <div class="variant lb">
+    <div class="variant-label"><span class="vl-num">B</span><span class="vl-name">Single dense row</span><span class="vl-note">title · filters · toggles — most compact</span></div>
+    <div class="header">
+      <div class="row">
+        <h1 class="sm">THE NEW RELEASE WALL</h1>
+        <div class="pills" data-pills></div>
+        <div class="toggles" data-tg></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ C ============ -->
+  <div class="variant lc">
+    <div class="variant-label"><span class="vl-num">C</span><span class="vl-name">Big title left · stacked controls right</span><span class="vl-note">toggles over filters, both right-aligned</span></div>
+    <div class="header">
+      <div class="wrap">
+        <h1 class="big two-line">THE NEW<br>RELEASE WALL</h1>
+        <div class="right">
+          <div class="toggles" data-tg></div>
+          <div class="pills" data-pills></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ D ============ -->
+  <div class="variant ld">
+    <div class="variant-label"><span class="vl-num">D</span><span class="vl-name">Two clean rows · search pinned right</span><span class="vl-note">title+toggles, then filters with search far right</span></div>
+    <div class="header">
+      <div class="row1">
+        <h1 class="med">THE NEW RELEASE WALL</h1>
+        <div class="toggles" data-tg></div>
+      </div>
+      <div class="row2">
+        <div class="pills" data-pills></div>
+        <input class="search" placeholder="Search…">
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ E ============ -->
+  <div class="variant le">
+    <div class="variant-label"><span class="vl-num">E</span><span class="vl-name">Segmented view-switch · filters below</span><span class="vl-note">toggles as one connected control (one active at a time)</span></div>
+    <div class="header">
+      <div class="row1">
+        <h1 class="med">THE NEW RELEASE WALL</h1>
+        <div class="seg">
+          <div class="segbtn on-slop">Slop Free</div>
+          <div class="segbtn">Selects</div>
+          <div class="segbtn">Fests</div>
+          <div class="segbtn">Pre-Order</div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="pills" data-pills></div>
+        <input class="search" placeholder="Search title, director, genre…">
+      </div>
+    </div>
+  </div>
+
+<script>
+  const TOGGLES = [
+    { cls:'slop on',  label:'SLOP FREE' },
+    { cls:'selects',  label:'SELECTS' },
+    { cls:'fests',    label:'FESTS' },
+    { cls:'pre',      label:'PRE-ORDER' },
+  ];
+  const FILTERS = ['Indie','Horror','Action','Comedy','Family','Thriller','Foreign','Docs','Reissues'];
+
+  function toggleHTML(t) {
+    return `<div class="tog ${t.cls}"><div class="track"><div class="thumb"></div></div><span class="lbl">${t.label}</span></div>`;
+  }
+  document.querySelectorAll('[data-tg]').forEach(el => {
+    el.innerHTML = TOGGLES.map(toggleHTML).join('');
+  });
+  document.querySelectorAll('[data-pills]').forEach(el => {
+    el.innerHTML = FILTERS.map(f => `<span class="pill">${f}</span>`).join('');
+  });
+  // Make toggles clickable to preview on/off (single-select within a header)
+  document.querySelectorAll('.toggles').forEach(group => {
+    group.addEventListener('click', e => {
+      const tog = e.target.closest('.tog');
+      if (!tog) return;
+      const wasOn = tog.classList.contains('on');
+      group.querySelectorAll('.tog').forEach(t => t.classList.remove('on'));
+      if (!wasOn) tog.classList.add('on');
+    });
+  });
+  // Segmented control preview
+  document.querySelectorAll('.seg').forEach(seg => {
+    seg.addEventListener('click', e => {
+      const b = e.target.closest('.segbtn'); if (!b) return;
+      seg.querySelectorAll('.segbtn').forEach(x => x.classList.remove('on-slop'));
+      b.classList.add('on-slop');
+    });
+  });
+</script>
+</body>
+</html>
