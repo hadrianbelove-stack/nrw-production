@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-14T12:53:03.175024",
-  "duration_seconds": 5063.467388,
+  "timestamp": "2026-06-15T16:11:33.225038",
+  "duration_seconds": 3559.525787,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,65 +8,65 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 9.145662,
+      "duration_seconds": 6.663979,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-06-12 to 2026-06-14 (incremental mode, 17 intaked)\n\u2705 Movie intake complete: 17 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-05-15 to 2026-06-14\n   \ud83d\udccb WM 1994 - Elf Helden, ein Albtraum (4 e"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-06-13 to 2026-06-15 (incremental mode, 12 intaked)\n\u2705 Movie intake complete: 12 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-05-16 to 2026-06-15\n\n\ud83d\udcca Miniseries intake complete: 0 new series "
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 392.312718,
+      "duration_seconds": 373.369541,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 167 festival slugs\nScanning 167 festivals for catalogs...\n  Progress: 75/167 slugs | 27 scanned | 723 films indexed\n  Progress: 100/167 slugs | 52 scanned | 1196 films indexed\n  Progress: 125/167 slugs | 77 scanned | 1448 films indexed\n  Progress: 150/167 slugs | 102 scanned | 1988 films indexed\n  Done: 119 festivals, 114 with films, 48 failed, 2104 total films\n  Active: 2104 | Expired: 0 | Unique: 159"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 166 festival slugs\nScanning 166 festivals for catalogs...\n  Progress: 75/166 slugs | 27 scanned | 621 films indexed\n  Progress: 100/166 slugs | 52 scanned | 1176 films indexed\n  Progress: 125/166 slugs | 77 scanned | 1433 films indexed\n  Progress: 150/166 slugs | 102 scanned | 1897 films indexed\n  Done: 118 festivals, 113 with films, 48 failed, 2069 total films\n  Active: 2069 | Expired: 0 | Unique: 156"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 4110.986123,
+      "duration_seconds": 2629.715663,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17890 total movies\n\ud83d\udd0d Raw tracking filter: 14070 movies\n\ud83d\udd0d Assigned tracking_movies list: 14070\n\ud83d\udd0d Found 14070 movies in tracking status\n  Priority queue (last 180 days): 678 movies\n  Older movies: 13392 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 14070 movies for digital availability...\n\n   \u2705 Added The Thing in the Fog to site immediately (discovery-driven)\n  \ud83d\udcc5 La cosa en la niebl"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 17902 total movies\n\ud83d\udd0d Raw tracking filter: 14082 movies\n\ud83d\udd0d Assigned tracking_movies list: 14082\n\ud83d\udd0d Found 14082 movies in tracking status\n  Priority queue (last 180 days): 693 movies\n  Older movies: 13389 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 14082 movies for digital availability...\n\n  \ud83d\udeab Pretty Crazy \u2014 JW verification failed (justwatch_no_match), staying in tracking (attempt #"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 307.421733,
+      "duration_seconds": 334.412282,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 18 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Busboys: Amazon not found\n      \u2713 Busboys: Fandango found\n      \u00b7 The Thing in"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 18 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u2713 Two Prosecutors: Amazon found\n      \u2713 Two Prosecutors: Fandango found\n      \u00b7 "
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.490989,
+      "duration_seconds": 1.5993,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 905 trailers and 50 subtitle files in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  679\n  Stale cleaned:    0\n  Not in B2:        76\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 905 trailers and 50 subtitle files in B2 bucket\nSaved data.json: 1 stamped, 0 stale cleaned, 1 subs stamped\n\nStamp results:\n  Stamped:          1\n  Already had URL:  674\n  Stale cleaned:    0\n  Not in B2:        74\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 204.933361,
+      "duration_seconds": 196.965727,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 250 of 755 wall movies (last 30 days)\n  + The Jealous Bride \u2014 new services added\n  \ud83d\udcda Tomader Golpo 2 \u2014 Wikipedia link added\n\n  \ud83d\udcca Gap fill results (204s, 250 movies):\n     Watch links updated: 1\n     Wikipedia filled: 1\n     Pre-orders graduated: 0\n\u2705 Gap fill complete: 1 watch links updated, 1 Wikipedia filled, 0 pre-orders graduated\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 239 of 749 wall movies (last 30 days)\n  + Two Prosecutors \u2014 new services added\n  \ud83c\udfac Two Prosecutors \u2014 Director Wikipedia added (Sergei Loznitsa)\n  \ud83d\udcda Whisperings of the Moon \u2014 Wikipedia link added\n\n  \ud83d\udcca Gap fill results (196s, 239 movies):\n     Watch links updated: 1\n     Wikipedia filled: 1\n     Director Wikipedia filled: 1\n     Pre-orders graduated: 0\n\u2705 Gap fill complete: 1 watch links updated, 1 Wikipedia filled, 0 pre-orders gradua"
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 16.808174,
+      "duration_seconds": 0.354917,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 1 movies missing trailers:\n  \u2022 In Symbiosis\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n  \u2192 Searching YouTube: In Symbiosis Helena Berndl 2025 off"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\u2705 No trailer gaps eligible for retry\n\u2705 Trailer re-enrichment complete: 0 movies updated\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 19.786282,
+      "duration_seconds": 15.823827,
       "error": null,
       "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 75 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 36 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.412698,
+      "duration_seconds": 0.448133,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 7 movies (>90 days old) \u2192 data_archive.json\n   data.json: 748 movies | archive: 684 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 6 movies (>90 days old) \u2192 data_archive.json\n   data.json: 743 movies | archive: 695 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -77,35 +77,35 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 17890,
-    "tracking": 14070,
+    "total": 17902,
+    "tracking": 14082,
     "available": 3436,
-    "data_movies": 748,
-    "movies_with_links": 726,
-    "movies_with_rt": 480,
+    "data_movies": 743,
+    "movies_with_links": 721,
+    "movies_with_rt": 479,
     "movies_with_wikipedia": 371,
-    "movies_with_trailers": 722
+    "movies_with_trailers": 717
   },
   "enrichment_metrics": {
-    "timestamp": "2026-06-14T12:48:59.371028",
-    "movies_requested": 6,
-    "movies_enriched": 0,
-    "movies_deferred": 6,
+    "timestamp": "2026-06-15T16:07:57.441965",
+    "movies_requested": 9,
+    "movies_enriched": 1,
+    "movies_deferred": 8,
     "deferred_details": [
       {
         "title": "The Thing in the Fog",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-12",
-        "discovered_at": "2026-06-14T11:35:24.569041",
+        "discovered_at": "2026-06-15T15:18:40.037299",
         "discovery_source": "tmdb_type4",
-        "revert_count": 4,
+        "revert_count": 5,
         "tmdb_platforms": []
       },
       {
         "title": "The Terror: Devil in Silver",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-05-07",
-        "discovered_at": "2026-06-14T11:36:01.964913",
+        "discovered_at": "2026-06-15T15:19:04.131233",
         "discovery_source": "provider_availability_check",
         "revert_count": 1,
         "tmdb_platforms": [
@@ -117,47 +117,74 @@
         ]
       },
       {
-        "title": "Mark",
+        "title": "Mockbuster",
         "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-06-14",
-        "discovered_at": "2026-06-14T12:13:01.084942",
+        "digital_date": "2026-06-15",
+        "discovered_at": "2026-06-15T15:32:05.778464",
         "discovery_source": "provider_availability_check",
         "revert_count": 1,
         "tmdb_platforms": [
-          "Hulu"
+          "Fandango At Home"
         ]
       },
       {
-        "title": "Two Prosecutors",
+        "title": "The Last One for the Road",
         "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-05-26",
-        "discovered_at": "2026-05-08T01:19:24.916487",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 1,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Busboys",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-06-16",
-        "discovered_at": "2026-06-14T12:36:23.846000",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 1,
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Dridam",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-06-14",
-        "discovered_at": "2026-06-14T12:39:04.886651",
+        "digital_date": "2026-06-15",
+        "discovered_at": "2026-06-15T15:46:19.114017",
         "discovery_source": "provider_availability_check",
         "revert_count": 1,
         "tmdb_platforms": [
-          "Hulu"
+          "Amazon Video"
+        ]
+      },
+      {
+        "title": "Blue Film",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-06-12",
+        "discovered_at": "2026-06-15T15:49:03.918640",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 2,
+        "tmdb_platforms": [
+          "Amazon Video"
+        ]
+      },
+      {
+        "title": "Disclosure Day",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-06-15",
+        "discovered_at": "2026-06-15T16:02:01.154232",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 1,
+        "tmdb_platforms": [
+          "Fandango At Home"
+        ]
+      },
+      {
+        "title": "Stop! That! Train!",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-06-15",
+        "discovered_at": "2026-06-15T16:02:10.630215",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 1,
+        "tmdb_platforms": [
+          "Fandango At Home"
+        ]
+      },
+      {
+        "title": "Veerabhadrudu",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-06-15",
+        "discovered_at": "2026-06-15T16:02:16.548540",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 1,
+        "tmdb_platforms": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
         ]
       }
     ],
-    "enrichment_duration_seconds": 306.58,
+    "enrichment_duration_seconds": 333.28,
     "error_details": [],
     "total_errors": 0
   }
