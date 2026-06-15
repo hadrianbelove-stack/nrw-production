@@ -1047,7 +1047,9 @@ class MovieEnricher:
                               or existing_movies[movie_index].get('_added_manually'))
                 _has_override = str(movie_id) in self.host.watch_links_overrides
                 _is_virtual_screening = (movie_data.get('_virtual_screening')
-                                         or existing_movies[movie_index].get('_virtual_screening'))
+                                         or existing_movies[movie_index].get('_virtual_screening')
+                                         or movie_data.get('filters', {}).get('is_virtual_screening')
+                                         or existing_movies[movie_index].get('filters', {}).get('is_virtual_screening'))
                 _jw_verified = False
                 _revert_reason = 'justwatch_error'
                 try:
