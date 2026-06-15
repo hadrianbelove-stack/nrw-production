@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW — Section Header vs Date Divider</title>
+<style>
+  :root { --slop:#ff9500; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:linear-gradient(160deg,#0a0a0a,#14141f); color:#fff; padding:30px 24px 80px; }
+  .page-title { text-align:center; color:#888; font-size:0.85rem; letter-spacing:0.2em; text-transform:uppercase; }
+  .page-sub { text-align:center; color:#666; font-size:0.82rem; margin:4px 0 30px; }
+
+  .variant { max-width:1200px; margin:0 auto 40px; }
+  .variant-label { display:flex; align-items:baseline; gap:12px; margin:0 0 12px 2px; }
+  .vl-num { font-size:0.75rem; font-weight:800; color:#0a0a0a; background:var(--slop); border-radius:20px; padding:3px 11px; }
+  .vl-name { font-size:1rem; font-weight:700; }
+  .vl-note { font-size:0.8rem; color:#888; }
+
+  /* ---- the date divider (current neon bar) — used as the SUBORDINATE element everywhere ---- */
+  .date-div {
+    display:flex; justify-content:center; align-items:baseline; gap:0.8rem;
+    background:rgba(8,8,12,0.94);
+    border-top:2px solid var(--c,#00d4aa); border-bottom:2px solid var(--c,#00d4aa); border-radius:4px;
+    padding:10px 12px; margin:14px 0 12px;
+    box-shadow:0 0 22px color-mix(in srgb, var(--c,#00d4aa) 40%, transparent);
+  }
+  .date-div .d-day { font-size:1.1rem; font-weight:900; letter-spacing:0.3em; color:var(--c); text-shadow:0 0 10px var(--c); }
+  .date-div .d-rest { font-size:1.1rem; font-weight:500; letter-spacing:0.3em; color:#fff; }
+
+  /* poster row placeholder */
+  .cards { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+  .card { aspect-ratio:2/3; background:linear-gradient(160deg,#1c1c28,#262636); border-radius:10px; border:1px solid rgba(255,255,255,0.06); }
+
+  /* ============ CURRENT (reference) ============ */
+  .cur .sec {
+    display:flex; justify-content:center; align-items:baseline; gap:0.8rem;
+    background:rgba(8,8,12,0.94); border-top:2px solid var(--slop); border-bottom:2px solid var(--slop); border-radius:4px;
+    padding:10px 12px; margin-bottom:12px;
+    box-shadow:0 0 22px color-mix(in srgb, var(--slop) 40%, transparent);
+  }
+  .cur .sec .s-day { font-size:1.1rem; font-weight:900; letter-spacing:0.3em; color:var(--slop); text-shadow:0 0 10px var(--slop); }
+  .cur .sec .s-rest { font-size:1.1rem; font-weight:500; letter-spacing:0.3em; color:#fff; }
+
+  /* ============ A: double-size neon bar ============ */
+  .a .sec {
+    display:flex; justify-content:center; align-items:baseline; gap:1rem;
+    background:rgba(8,8,12,0.96); border-top:3px solid var(--slop); border-bottom:3px solid var(--slop); border-radius:6px;
+    padding:22px 16px; margin-bottom:6px;
+    box-shadow:0 0 40px color-mix(in srgb, var(--slop) 50%, transparent), inset 0 0 26px color-mix(in srgb, var(--slop) 16%, transparent);
+  }
+  .a .sec .s-day { font-size:2.4rem; font-weight:900; letter-spacing:0.28em; color:var(--slop); text-shadow:0 0 16px var(--slop); }
+  .a .sec .s-rest { font-size:1.5rem; font-weight:400; letter-spacing:0.3em; color:#fff; }
+
+  /* ============ B: solid filled slab ============ */
+  .b .sec {
+    background:var(--slop); border-radius:8px; padding:20px 24px; margin-bottom:6px; text-align:center;
+    box-shadow:0 0 36px color-mix(in srgb, var(--slop) 45%, transparent);
+  }
+  .b .sec .s-day { font-size:2.2rem; font-weight:900; letter-spacing:0.22em; color:#0a0a0a; display:block; }
+  .b .sec .s-rest { font-size:0.95rem; font-weight:700; letter-spacing:0.35em; color:rgba(10,10,10,0.7); text-transform:uppercase; }
+
+  /* ============ C: editorial heading, left-aligned, underline rule ============ */
+  .c .sec { margin:0 4px 4px; padding-bottom:12px; border-bottom:3px solid var(--slop); }
+  .c .sec .s-day { font-size:2.9rem; font-weight:800; letter-spacing:0.04em; color:var(--slop); display:block; line-height:1; }
+  .c .sec .s-rest { font-size:1.05rem; font-weight:500; letter-spacing:0.16em; color:#aaa; text-transform:uppercase; margin-top:8px; display:block; }
+
+  /* ============ D: centered stacked, big name over caption ============ */
+  .d .sec { text-align:center; margin-bottom:4px; padding:14px 0 6px; }
+  .d .sec .s-day { font-size:3rem; font-weight:900; letter-spacing:0.3em; color:var(--slop); display:block; line-height:1; text-shadow:0 0 22px color-mix(in srgb,var(--slop) 55%, transparent); }
+  .d .sec .s-rest { font-size:0.85rem; font-weight:700; letter-spacing:0.45em; color:#888; text-transform:uppercase; display:block; margin-top:12px; }
+
+  /* ============ E: thick side-accent block ============ */
+  .e .sec {
+    display:flex; flex-direction:column; justify-content:center;
+    border-left:8px solid var(--slop); background:linear-gradient(90deg, color-mix(in srgb,var(--slop) 14%, transparent), transparent 60%);
+    padding:16px 0 16px 22px; margin-bottom:6px; border-radius:0 8px 8px 0;
+  }
+  .e .sec .s-day { font-size:2.3rem; font-weight:900; letter-spacing:0.12em; color:var(--slop); line-height:1; }
+  .e .sec .s-rest { font-size:0.9rem; font-weight:700; letter-spacing:0.3em; color:#999; text-transform:uppercase; margin-top:8px; }
+</style>
+</head>
+<body>
+  <div class="page-title">NRW · Section Header vs Date Divider</div>
+  <div class="page-sub">Make the view banner (SLOP / FESTS / SELECTS / PRE-ORDER) read as a big section header, with the small date dividers clearly below it. Example uses SLOP.</div>
+
+  <!-- CURRENT -->
+  <div class="variant cur">
+    <div class="variant-label"><span class="vl-num">0</span><span class="vl-name">Current</span><span class="vl-note">section header = same bar as the date dividers (the problem)</span></div>
+    <div class="sec"><span class="s-day">SLOP</span><span class="s-rest">THE CONTENT RIVER</span></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">SAT</span><span class="d-rest">JUN 14</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">FRI</span><span class="d-rest">JUN 13</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+  </div>
+
+  <!-- A -->
+  <div class="variant a">
+    <div class="variant-label"><span class="vl-num">A</span><span class="vl-name">Double-size neon bar</span><span class="vl-note">same look, ~2× — your idea, minimal change</span></div>
+    <div class="sec"><span class="s-day">SLOP</span><span class="s-rest">THE CONTENT RIVER</span></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">SAT</span><span class="d-rest">JUN 14</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">FRI</span><span class="d-rest">JUN 13</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+  </div>
+
+  <!-- B -->
+  <div class="variant b">
+    <div class="variant-label"><span class="vl-num">B</span><span class="vl-name">Solid filled slab</span><span class="vl-note">filled identity color — strongest separation</span></div>
+    <div class="sec"><span class="s-day">SLOP</span><span class="s-rest">The Content River</span></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">SAT</span><span class="d-rest">JUN 14</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">FRI</span><span class="d-rest">JUN 13</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+  </div>
+
+  <!-- C -->
+  <div class="variant c">
+    <div class="variant-label"><span class="vl-num">C</span><span class="vl-name">Editorial heading + underline</span><span class="vl-note">left-aligned, no box — magazine feel</span></div>
+    <div class="sec"><span class="s-day">SLOP</span><span class="s-rest">The Content River</span></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">SAT</span><span class="d-rest">JUN 14</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">FRI</span><span class="d-rest">JUN 13</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+  </div>
+
+  <!-- D -->
+  <div class="variant d">
+    <div class="variant-label"><span class="vl-num">D</span><span class="vl-name">Centered, big name over caption</span><span class="vl-note">no box, lots of air — most editorial</span></div>
+    <div class="sec"><span class="s-day">SLOP</span><span class="s-rest">The Content River</span></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">SAT</span><span class="d-rest">JUN 14</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">FRI</span><span class="d-rest">JUN 13</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+  </div>
+
+  <!-- E -->
+  <div class="variant e">
+    <div class="variant-label"><span class="vl-num">E</span><span class="vl-name">Thick side-accent block</span><span class="vl-note">left bar + gradient — bold but compact</span></div>
+    <div class="sec"><span class="s-day">SLOP</span><span class="s-rest">The Content River</span></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">SAT</span><span class="d-rest">JUN 14</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+    <div class="date-div" style="--c:#ff9500"><span class="d-day">FRI</span><span class="d-rest">JUN 13</span></div>
+    <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div></div>
+  </div>
+
+</body>
+</html>
