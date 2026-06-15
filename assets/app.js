@@ -570,13 +570,13 @@ const NRW = {
         // Then every film flows through the normal date strips below, so each view
         // still shows the films grouped by date (the way SLOP already does).
         if (this.showHighlightsOnly) {
-            html += stripHtml('SELECTS', 'NOTABLE RELEASES', '#dc143c');
+            html += stripHtml('SELECTS', 'NOTABLE RELEASES', '#dc143c', ' section-banner');
         } else if (this.slopMode === 'only') {
-            html += stripHtml('SLOP', 'THE CONTENT RIVER', '#ff9500');
+            html += stripHtml('SLOP', 'THE CONTENT RIVER', '#ff9500', ' section-banner');
         } else if (this.showFest) {
-            html += stripHtml('VIRTUAL SCREENINGS', 'FESTS', '#f59e0b');
+            html += stripHtml('VIRTUAL SCREENINGS', 'FESTS', '#f59e0b', ' section-banner');
         } else if (this.showPreorders) {
-            html += stripHtml('PRE-ORDER', 'COMING SOON', '#7c3aed');
+            html += stripHtml('PRE-ORDER', 'COMING SOON', '#7c3aed', ' section-banner');
         }
 
         orderedMovies.forEach(movie => {

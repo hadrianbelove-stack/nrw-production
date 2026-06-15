@@ -66,28 +66,50 @@ header {
     backdrop-filter: blur(12px);
 }
 
-/* Layout G: title + filters on the left, a boxed "View" control module right */
+/* Layout G: title + filters on the left, a boxed "View" control module right.
+   title-row wraps — when the window narrows past the point where both fit, the
+   View box drops to its own line below instead of colliding with the search. */
 .title-row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 2rem;
+    gap: 1.2rem 1rem;
     margin-bottom: 0;
 }
 
 .header-left {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.9rem;
+    align-items: stretch;
+    gap: 1.1rem;
     min-width: 0;
+    /* basis ≈ wordmark + a usable search; when this + the View box can't both
+       fit, the View box wraps to its own line instead of crushing the search */
+    flex: 1 1 720px;
 }
+
+/* Top line of the left block: wordmark + a flexible search bar beside it */
+.hl-top {
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+    width: 100%;
+}
+.hl-top .search-container {
+    flex: 1 1 200px;
+    min-width: 0;
+    margin-left: 0;
+}
+.hl-top #search-input { width: 100%; }
 
 header h1 {
     font-weight: 100;
-    letter-spacing: 0.22em;
-    font-size: 2.2rem;
-    line-height: 1.05;
+    letter-spacing: 0.24em;
+    font-size: 2.9rem;
+    line-height: 1.0;
+    white-space: nowrap;
+    flex-shrink: 0;
     background: linear-gradient(45deg, #fff, var(--accent-primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -117,29 +139,31 @@ header h1 {
     gap: 13px 28px;
 }
 
-/* Narrow screens: drop the module below the title block */
-@media (max-width: 900px) {
-    .title-row { flex-direction: column; align-items: stretch; gap: 1.1rem; }
-    .view-module { align-self: flex-start; }
+/* Small screens: let the wordmark wrap and shrink so it never overflows */
+@media (max-width: 760px) {
+    header h1 { font-size: 2rem; white-space: normal; }
+    .hl-top { flex-wrap: wrap; }
 }
 
 .filters {
-    display: flex;
-    justify-content: flex-start;
-    gap: 0.6rem;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.7rem;
     margin-top: 0;
+    width: 100%;
 }
 
 .filter-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.62rem 0.6rem;
     background: rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.2);
     color: white;
     cursor: pointer;
     border-radius: 25px;
     transition: all 0.3s ease;
-    font-size: 0.9rem;
+    font-size: 1.02rem;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .filter-btn:focus-visible {
@@ -400,6 +424,25 @@ header h1 {
     text-transform: uppercase;
     white-space: nowrap;
     color: #fff;
+}
+
+/* Section banner (SLOP / SELECTS / FESTS / PRE-ORDER) — ~2× the date dividers
+   so the "which view am I in" header reads as a major heading, not a date row. */
+.date-row-header.section-banner {
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-radius: 6px;
+    padding: 22px 16px;
+    box-shadow: 0 0 40px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 50%, transparent),
+                inset 0 0 26px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 16%, transparent);
+}
+.date-row-header.section-banner .drh-day {
+    font-size: 2.4rem;
+    letter-spacing: 0.28em;
+}
+.date-row-header.section-banner .drh-rest {
+    font-size: 1.5rem;
+    font-weight: 400;
 }
 
 /* NEW TRAILERS card - same size as movie cards */
