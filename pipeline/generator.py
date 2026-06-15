@@ -1869,6 +1869,10 @@ class DataGenerator:
         """Delegate to DisplayGenerator."""
         return self._display.inject_selected_pull_quotes(movies_list)
 
+    def _inject_approved_capsules(self, movies_list):
+        """Delegate to DisplayGenerator."""
+        return self._display.inject_approved_capsules(movies_list)
+
     def _apply_cached_watch_links(self, movies_list):
         """Delegate to DisplayGenerator."""
         return self._display.apply_cached_watch_links(movies_list)
@@ -1924,6 +1928,9 @@ class DataGenerator:
 
         # Inject selected pull quotes from cache into movie data
         self._inject_selected_pull_quotes(all_movies)
+
+        # Restore approved capsules from the bank for movies missing one
+        self._inject_approved_capsules(all_movies)
 
         # Apply cached watch links to movies with empty watch_links
         self._apply_cached_watch_links(all_movies)

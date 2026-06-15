@@ -81,6 +81,48 @@ class DisplayGenerator:
         if injected:
             print(f"\U0001f4ac Injected pull quotes for {injected} movies")
 
+    def inject_approved_capsules(self, movies_list):
+        """Restore approved capsules from the bank for movies missing one.
+
+        Capsules are written to data.json at approve-time, but a movie can fall
+        off the wall (reverted to tracking, archived) and later re-transition
+        with an empty capsule field. The approved bank persists the text, so
+        re-inject it by title+year. Fills ONLY when the movie has no capsule —
+        never overwrites a live capsule and never deletes anything (unlike pull
+        quotes, plenty of movies have capsules that predate the bank).
+        """
+        bank_path = 'cache/approved_capsules.json'
+        if not os.path.exists(bank_path):
+            return
+        try:
+            with open(bank_path, 'r') as f:
+                bank = json.load(f)
+        except Exception as e:
+            self.ctx.logger.warning(f"Capsule injection: Error loading bank: {e}")
+            return
+
+        # Lookup by (title.lower(), str(year)); later (newer) bank entries win
+        by_key = {}
+        for entry in (bank if isinstance(bank, list) else []):
+            title = (entry.get('title') or '').lower()
+            year = str(entry.get('year', ''))
+            capsule = entry.get('capsule', '')
+            if title and capsule:
+                by_key[(title, year)] = capsule
+
+        injected = 0
+        for movie in movies_list:
+            if movie.get('capsule'):
+                continue  # never overwrite a live capsule
+            key = ((movie.get('title') or '').lower(), str(movie.get('year', '')))
+            capsule = by_key.get(key)
+            if capsule:
+                movie['capsule'] = capsule
+                injected += 1
+
+        if injected:
+            print(f"\U0001f4dd Restored capsules from bank for {injected} movies")
+
     def apply_cached_watch_links(self, movies_list):
         """Apply cached watch links to movies with empty watch_links.
 
