@@ -391,6 +391,19 @@ body {
   white-space: nowrap;
 }
 
+/* Section banner (SLOP / SELECTS / FESTS / PRE-ORDER) — ~2x the date dividers */
+.date-row-header.section-banner {
+  flex-wrap: wrap;
+  border-top-width: 3px;
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  padding: 16px 12px;
+  box-shadow: 0 0 30px color-mix(in srgb, var(--strip-c, var(--accent)) 55%, transparent),
+              inset 0 0 18px color-mix(in srgb, var(--strip-c, var(--accent)) 18%, transparent);
+}
+.date-row-header.section-banner .drh-day { font-size: 1.7rem; }
+.date-row-header.section-banner .drh-rest { font-size: 1rem; font-weight: 400; white-space: normal; }
+
 /* Pre-order badge */
 .grid-item-poster .preorder-badge {
   position: absolute;

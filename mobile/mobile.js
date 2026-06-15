@@ -577,7 +577,9 @@ const NRWMobile = {
 
     createDateRowHeader(dateStr) {
         const row = document.createElement('div');
-        row.className = 'date-row-header';
+        // Section banners (the view header) render ~2x the date dividers
+        const SECTION_TYPES = ['pre-order', 'fest', 'highlights', 'slop'];
+        row.className = 'date-row-header' + (SECTION_TYPES.includes(dateStr) ? ' section-banner' : '');
 
         // Neon sticky banner: colored day + white rest; color follows section / active filter
         let day, rest = '', color = '';
