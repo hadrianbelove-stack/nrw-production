@@ -33,7 +33,8 @@
   .pad { padding: 3cqw 3.2cqw 0; height: 100%; display: flex; flex-direction: column; }
 
   /* ---- shared pieces ---- */
-  .title { font-size: 3.4cqw; font-weight: 200; letter-spacing: 0.45cqw; white-space: nowrap; }
+  /* matches the app: Colors.textPrimary #fff, ultra-thin weight 100, letterSpacing ~0.1em */
+  .title { font-size: 4.8cqw; font-weight: 100; letter-spacing: 0.48cqw; white-space: nowrap; color: #ffffff; }
   .row { display: flex; align-items: center; gap: 1.4cqw; }
 
   .chips { display: flex; gap: 1.1cqw; }
@@ -120,14 +121,14 @@
 </head>
 <body>
 
-<div class="intro">Two whole-page tvOS layouts with the SLOP / SELECTS / FESTS / PRE-ORDER toggles moved down to sit <b>directly above the poster wall</b>. Everything is sized to fill the wide screen. (Resting states shown; SLOP is the 3-state control.)</div>
+<div class="intro">Whole-page tvOS layout (Toolbar). The SLOP / SELECTS / FESTS / PRE-ORDER controls sit <b>directly above the poster wall</b>. SELECTS / FESTS / PRE-ORDER are on/off toggles; SLOP is a 3-state control (FREE / ALL / ONLY). Title is the app's thin white; search fills the row.</div>
 
-<div class="pageCaption">Layout A — Toolbar <span>· title + search top, chips, then a full-width row of separate accent pills above the wall</span></div>
+<div class="pageCaption">Toolbar <span>· big thin title + full-width search, chips, then toggles above the wall</span></div>
 <div class="tv">
   <div class="pad">
-    <div class="row" style="justify-content:space-between; margin-bottom:1.8cqw;">
+    <div class="row" style="margin-bottom:1.8cqw;">
       <div class="title">THE NEW RELEASE WALL</div>
-      <div class="search" style="width:26cqw;"><span class="mag">⌕</span><span>Search…</span></div>
+      <div class="search" style="flex:1;"><span class="mag">⌕</span><span>Search…</span></div>
     </div>
     <div class="chips" style="margin-bottom:1.8cqw;" id="chipsA"></div>
     <div class="toggleBar">
@@ -137,30 +138,6 @@
       <div class="tg pre"><span class="knob"></span><span class="lbl">PRE-ORDER</span></div>
     </div>
     <div class="wall" id="wallA"></div>
-    <div class="fade"></div>
-  </div>
-</div>
-
-<div class="pageCaption">Layout B — Inline rail <span>· title alone, chips, then one full-width bar: segmented toggles on the left, search on the right, right above the wall</span></div>
-<div class="tv">
-  <div class="pad">
-    <div class="row" style="margin-bottom:1.8cqw;">
-      <div class="title">THE NEW RELEASE WALL</div>
-    </div>
-    <div class="chips" style="margin-bottom:1.8cqw;" id="chipsB"></div>
-    <div class="row" style="gap:1.4cqw;">
-      <span class="segCap">SLOP</span>
-      <div class="seg3">
-        <span class="opt act">FREE</span><span class="opt">ALL</span><span class="opt">ONLY</span>
-      </div>
-      <div class="seg" style="flex:1.7;">
-        <div class="s selects act">SELECTS</div>
-        <div class="s fests">FESTS</div>
-        <div class="s pre">PRE-ORDER</div>
-      </div>
-      <div class="search" style="width:22cqw;"><span class="mag">⌕</span><span>Search…</span></div>
-    </div>
-    <div class="wall" id="wallB"></div>
     <div class="fade"></div>
   </div>
 </div>
@@ -344,9 +321,7 @@ function wall(el){
   el.innerHTML=html;
 }
 chipRow(document.getElementById('chipsA'));
-chipRow(document.getElementById('chipsB'));
 wall(document.getElementById('wallA'));
-wall(document.getElementById('wallB'));
 </script>
 </body>
 </html>
