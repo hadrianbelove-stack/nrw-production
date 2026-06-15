@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>tvOS — 2×2 View module placements</title>
+<title>tvOS — toggles lower-left, two-row filters</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background:#050507; color:#fff; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; padding:18px 14px 60px; }
@@ -21,18 +21,20 @@
     background:linear-gradient(45deg,#fff,#00d4aa); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
   .row { display:flex; align-items:center; gap:1.6cqw; }
 
-  .chips { display:flex; gap:1.1cqw; }
-  .chip { flex:1; text-align:center; background:#16161c; border:1px solid #2c2c33; border-radius:2.2cqw;
-    color:#e9e9ee; font-size:1.4cqw; padding:1cqw 0.6cqw; white-space:nowrap; }
+  /* Filter chips — two rows, sized to fill the block beside the module */
+  .chips2 { display:flex; flex-direction:column; gap:1.1cqw; }
+  .chipRow { display:flex; gap:1.1cqw; flex:1; }
+  .chip { flex:1; display:flex; align-items:center; justify-content:center; text-align:center;
+    background:#16161c; border:1px solid #2c2c33; border-radius:2cqw; color:#e9e9ee;
+    font-size:1.65cqw; padding:0 1cqw; white-space:nowrap; }
 
   .search { display:flex; align-items:center; gap:0.8cqw; background:#111116; border:1px solid #2c2c33;
     border-radius:2.2cqw; padding:1cqw 1.6cqw; color:#777; font-size:1.4cqw; }
   .search .mag { font-size:1.6cqw; }
 
-  /* Boxed 2×2 View module (matches desktop .view-module) */
+  /* Boxed 2×2 View module (matches desktop, "View" head removed) */
   .view-module { flex-shrink:0; background:rgba(255,255,255,0.04); border:0.12cqw solid rgba(255,255,255,0.16);
-    border-radius:1.4cqw; padding:1.05cqw 1.6cqw 1.25cqw; }
-  .view-module-head { font-size:0.78cqw; font-weight:800; letter-spacing:0.2em; text-transform:uppercase; color:#888; margin-bottom:0.85cqw; }
+    border-radius:1.4cqw; padding:1.3cqw 1.7cqw; display:flex; align-items:center; }
   .toggle-grid { display:grid; grid-template-columns:auto auto; gap:0.95cqw 2.2cqw; }
 
   .slop-toggle-wrap { display:flex; align-items:center; gap:0.7cqw; cursor:pointer; user-select:none; }
@@ -41,7 +43,6 @@
   .slop-track { width:6.2cqw; height:1.9cqw; border-radius:1cqw; background:#1a1a1a; border:0.1cqw solid rgba(0,212,170,0.45); position:relative; flex-shrink:0; transition:background .25s,border-color .25s; }
   .slop-thumb { position:absolute; top:0.25cqw; left:0.25cqw; width:1.4cqw; height:1.4cqw; border-radius:50%; background:rgba(0,212,170,0.55); transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s; }
 
-  /* View on/off toggles */
   .view-toggle.active .slop-thumb { transform:translateX(4.3cqw); background:#fff; }
   .view-toggle.selects.active .slop-track { background:#dc143c; border-color:rgba(0,0,0,.35); }
   .view-toggle.selects.active .slop-label { color:#dc143c; }
@@ -50,7 +51,6 @@
   .view-toggle.pre.active     .slop-track { background:#7c3aed; border-color:rgba(0,0,0,.35); }
   .view-toggle.pre.active     .slop-label { color:#b794f6; }
 
-  /* SLOP 3-state switch (free / all / only) */
   .slop-toggle[data-state="free"] .slop-track { background:#00d4aa; border-color:rgba(0,0,0,.35); }
   .slop-toggle[data-state="free"] .slop-thumb { transform:translateX(0); background:#fff; }
   .slop-toggle[data-state="free"] .slop-label { color:#00d4aa; }
@@ -79,51 +79,21 @@
 </head>
 <body>
 
-<div class="intro">Same look as the desktop — the boxed 2×2 <b>View</b> module (switch toggles, no captions), gradient wordmark — just reorganized. Three placements to compare. SLOP is the 3-state switch; the rest are on/off; one-at-a-time exclusivity is live (tap to feel it).</div>
+<div class="intro">Layout A — 2×2 View module in the lower-left (no "View" label), genre filters as two full rows sized to fill the space beside it. Gradient wordmark, real switch toggles, SLOP 3-state, one-at-a-time exclusivity (tap to feel it).</div>
 
-<!-- A: module lower-left -->
-<div class="pageCaption">A — View module lower-left <span>· title + search top; module bottom-left, chips fill right</span></div>
+<div class="pageCaption">Lower-left module + two-row filters</div>
 <div class="tv" data-frame>
   <div class="pad">
     <div class="row" style="margin-bottom:1.6cqw;">
       <div class="title">THE NEW RELEASE WALL</div>
       <div class="search" style="flex:1;"><span class="mag">⌕</span><span>Search…</span></div>
     </div>
-    <div class="row" style="align-items:center; margin-bottom:1.2cqw;">
+    <div class="row" style="align-items:stretch; margin-bottom:1.2cqw;">
       <div class="MODULE"></div>
-      <div class="chips" style="flex:1;"></div>
-    </div>
-    <div class="wall"></div><div class="fade"></div>
-  </div>
-</div>
-
-<!-- B: module lower-right -->
-<div class="pageCaption">B — View module lower-right <span>· title + search top; chips fill left, module bottom-right</span></div>
-<div class="tv" data-frame>
-  <div class="pad">
-    <div class="row" style="margin-bottom:1.6cqw;">
-      <div class="title">THE NEW RELEASE WALL</div>
-      <div class="search" style="flex:1;"><span class="mag">⌕</span><span>Search…</span></div>
-    </div>
-    <div class="row" style="align-items:center; margin-bottom:1.2cqw;">
-      <div class="chips" style="flex:1;"></div>
-      <div class="MODULE"></div>
-    </div>
-    <div class="wall"></div><div class="fade"></div>
-  </div>
-</div>
-
-<!-- C: module top-right (desktop-style) -->
-<div class="pageCaption">C — View module top-right (desktop-style) <span>· title + module top; chips + search bottom</span></div>
-<div class="tv" data-frame>
-  <div class="pad">
-    <div class="row" style="align-items:flex-start; margin-bottom:1.6cqw;">
-      <div class="title" style="flex:1;">THE NEW RELEASE WALL</div>
-      <div class="MODULE"></div>
-    </div>
-    <div class="row" style="margin-bottom:1.2cqw;">
-      <div class="chips" style="flex:1;"></div>
-      <div class="search" style="flex:0 0 26cqw;"><span class="mag">⌕</span><span>Search…</span></div>
+      <div class="chips2" style="flex:1;">
+        <div class="chipRow"></div>
+        <div class="chipRow"></div>
+      </div>
     </div>
     <div class="wall"></div><div class="fade"></div>
   </div>
@@ -159,7 +129,6 @@ function wallHtml(){ const byDate={}; MOVIES.forEach(m=>{(byDate[m.date]=byDate[
 
 const MODULE_HTML = `
   <div class="view-module">
-    <div class="view-module-head">View</div>
     <div class="toggle-grid">
       <div class="slop-toggle-wrap slop-toggle" data-state="free"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">SLOP FREE</span></div>
       <div class="slop-toggle-wrap view-toggle selects"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">SELECTS</span></div>
@@ -170,7 +139,9 @@ const MODULE_HTML = `
 
 document.querySelectorAll('.tv').forEach(tv => {
   tv.querySelectorAll('.MODULE').forEach(el => el.outerHTML = MODULE_HTML);
-  tv.querySelector('.chips').innerHTML = FILTERS.map(f=>`<div class="chip">${f}</div>`).join('');
+  const chipRows = tv.querySelectorAll('.chipRow');
+  chipRows[0].innerHTML = FILTERS.slice(0,5).map(f=>`<div class="chip">${f}</div>`).join('');
+  chipRows[1].innerHTML = FILTERS.slice(5).map(f=>`<div class="chip">${f}</div>`).join('');
   tv.querySelector('.wall').innerHTML = wallHtml();
 
   const slop = tv.querySelector('.slop-toggle');
