@@ -276,15 +276,18 @@ const DateRowStrip = ({ stripKey, stripColor }) => {
     color = stripColor || Colors.primary;
   }
 
+  // Section banners (the active view) render ~2x the per-date strips
+  const isSection = ['PRE-ORDER', 'SCREENING', 'HIGHLIGHTS', 'SLOP'].includes(stripKey);
+
   return (
     <View
       accessible={false}
       focusable={false}
       isTVSelectable={false}
-      style={[styles.dateStripRow, { borderColor: color, shadowColor: color }]}
+      style={[styles.dateStripRow, isSection && styles.dateStripRowSection, { borderColor: color, shadowColor: color }]}
     >
-      <Text style={[styles.dateStripDay, { color, textShadowColor: color }]}>{day}</Text>
-      {rest ? <Text style={styles.dateStripRest}>{rest}</Text> : null}
+      <Text style={[styles.dateStripDay, isSection && styles.dateStripDaySection, { color, textShadowColor: color }]}>{day}</Text>
+      {rest ? <Text style={[styles.dateStripRest, isSection && styles.dateStripRestSection]}>{rest}</Text> : null}
     </View>
   );
 };
@@ -509,10 +512,22 @@ const HomeScreenTvOS = () => {
     setShowHighlightsOnly(view === 'selects');
     setHideFest(view !== 'fests');
     setShowPreorders(view === 'preorders');
+    setSlopMode('free'); // slop is part of the same exclusive group (matches desktop)
   }, []);
   const toggleShowHighlights = useCallback(() => showExclusiveView(showHighlightsOnly ? 'none' : 'selects'), [showHighlightsOnly, showExclusiveView]);
   const toggleHideFest = useCallback(() => showExclusiveView(hideFest ? 'fests' : 'none'), [hideFest, showExclusiveView]);
   const toggleShowPreorders = useCallback(() => showExclusiveView(showPreorders ? 'none' : 'preorders'), [showPreorders, showExclusiveView]);
+  // Slop toggle cycles free → all → only → free. Entering a non-free state clears
+  // the Selects/Fests/Pre-Orders views so only one thing is ever active (matches desktop).
+  const cycleSlopMode = useCallback(() => {
+    const next = slopMode === 'free' ? 'all' : slopMode === 'all' ? 'only' : 'free';
+    setSlopMode(next);
+    if (next !== 'free') {
+      setShowHighlightsOnly(false);
+      setHideFest(true);
+      setShowPreorders(false);
+    }
+  }, [slopMode]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -631,10 +646,11 @@ const HomeScreenTvOS = () => {
       movies = movies.filter(m => !m.filters?.is_virtual_screening);
     }
 
-    // Pre-orders: only show when toggle is ON or search is active
-    // Virtual screenings are exempt — their visibility is controlled by hideFest, not showPreorders
+    // Pre-orders only show in the Pre-Order view (or search). Hide them everywhere
+    // else — including ones also flagged as screenings — so they never bleed into
+    // the Fests view (matches desktop).
     if (!showPreorders && !searchQuery) {
-      movies = movies.filter(m => !m._is_preorder || m.filters?.is_virtual_screening);
+      movies = movies.filter(m => !m._is_preorder);
     }
 
     // Highlights mode: only staff picks
@@ -738,19 +754,38 @@ const HomeScreenTvOS = () => {
       items.push({ type: 'date', id: 'date-slop-top', date: 'SLOP' });
     }
 
-    // 1. FEST section at top (amber strip)
+    // 1. FEST section — active screenings under a "NOW SCREENING" banner, then
+    //    upcoming ones grouped by date so they flow into the future (matches site).
     if (sortedFest.length > 0) {
       items.push({ type: 'date', id: 'date-fest-top', date: 'SCREENING' });
+      let festDate = null;
       sortedFest.forEach((movie, index) => {
-        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `fest-${index}`, movie, mIdx: mIdx++, stripKey: 'SCREENING' });
+        const isActive = movie.virtual_screening_info?.status === 'active';
+        if (isActive) {
+          items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `fest-${index}`, movie, mIdx: mIdx++, stripKey: 'SCREENING' });
+        } else {
+          const d = movie.digital_date || 'Unknown';
+          if (d !== festDate) {
+            festDate = d;
+            items.push({ type: 'date', id: `date-fest-${d}-${index}`, date: d });
+          }
+          items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `fest-${index}`, movie, mIdx: mIdx++, stripKey: d });
+        }
       });
     }
 
-    // 2. PRE-ORDERS section (purple strip)
+    // 2. PRE-ORDERS section — a "PRE-ORDER" banner, then upcoming releases grouped
+    //    by date (ascending) so each future drop date gets its own strip (matches site).
     if (sortedPreorders.length > 0) {
       items.push({ type: 'date', id: 'date-preorder-top', date: 'PRE-ORDER' });
+      let poDate = null;
       sortedPreorders.forEach((movie, index) => {
-        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `preorder-${index}`, movie, mIdx: mIdx++, stripKey: 'PRE-ORDER' });
+        const d = movie.digital_date || 'Unknown';
+        if (d !== poDate) {
+          poDate = d;
+          items.push({ type: 'date', id: `date-po-${d}-${index}`, date: d });
+        }
+        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `preorder-${index}`, movie, mIdx: mIdx++, stripKey: d });
       });
     }
 
@@ -831,15 +866,30 @@ const HomeScreenTvOS = () => {
     return arr;
   }, [listData]);
   const [hudStrip, setHudStrip] = useState(null);
+  const [hudVisible, setHudVisible] = useState(false);
   const hudStripRef = useRef(null);
-  // First group's strip key — the HUD is suppressed while focus is in this
-  // group, because its in-grid strip is already visible at the top of the
-  // river (showing both doubles the header).
+  // First group's strip key — used to seed the HUD.
   const firstStrip = useMemo(() => stripKeyByIdx.find(k => k != null) ?? null, [stripKeyByIdx]);
+
+  // First movie ordinal (mIdx) of each consecutive strip group. Lets us tell
+  // whether the focused card is still in the group's first row — if so, the
+  // in-grid date strip is on screen and the heads-up banner must stay hidden so
+  // the same date never shows twice.
+  const groupFirstIdx = useMemo(() => {
+    const arr = [];
+    let curKey = null, first = 0;
+    for (let i = 0; i < stripKeyByIdx.length; i++) {
+      if (stripKeyByIdx[i] == null) continue;
+      if (stripKeyByIdx[i] !== curKey) { curKey = stripKeyByIdx[i]; first = i; }
+      arr[i] = first;
+    }
+    return arr;
+  }, [stripKeyByIdx]);
 
   useEffect(() => {
     hudStripRef.current = firstStrip;
     setHudStrip(firstStrip);
+    setHudVisible(false);
   }, [firstStrip]);
 
   // Handle movie selection - navigate to detail with analytics
@@ -876,6 +926,11 @@ const HomeScreenTvOS = () => {
       hudStripRef.current = strip;
       setHudStrip(strip);
     }
+    // Reveal the heads-up banner only once focus has moved past the group's first
+    // row — by then the in-grid date strip has scrolled off the top, so the banner
+    // replaces it instead of doubling it.
+    const firstOfGroup = groupFirstIdx[index] ?? index;
+    setHudVisible((index - firstOfGroup) >= NUM_COLUMNS);
     if (prevFocusedWrapper.current) {
       prevFocusedWrapper.current.setNativeProps({ style: { zIndex: 1 } });
     }
@@ -884,7 +939,7 @@ const HomeScreenTvOS = () => {
       wrapper.setNativeProps({ style: { zIndex: 100 } });
       prevFocusedWrapper.current = wrapper;
     }
-  }, [stripKeyByIdx]);
+  }, [stripKeyByIdx, groupFirstIdx]);
 
   const handleMovieBlur = useCallback((index) => {
     const wrapper = wrapperRefsMap.current.get(index);
@@ -918,6 +973,8 @@ const HomeScreenTvOS = () => {
   const singleFilter = activeFilters.size === 1 ? Array.from(activeFilters)[0] : null;
   const dateStripColor = showHighlightsOnly
     ? '#dc143c'
+    : showPreorders
+    ? '#7c3aed'
     : !hideFest
     ? '#f59e0b'
     : slopMode === 'only'
@@ -1082,7 +1139,7 @@ const HomeScreenTvOS = () => {
             <SlopToggle
               ref={setFirstToggleRef}
               slopMode={slopMode}
-              onPress={() => setSlopMode(m => m === 'free' ? 'all' : m === 'all' ? 'only' : 'free')}
+              onPress={cycleSlopMode}
               nextFocusDown={headerNodeHandle}
             />
             <MetaToggle
@@ -1150,9 +1207,10 @@ const HomeScreenTvOS = () => {
         </View>
       </View>
 
-      {/* Filter description — highlights toggle or exactly one active filter (matches web) */}
-      {(showHighlightsOnly || activeFilters.size === 1) && (() => {
-        const filterId = showHighlightsOnly ? 'staff-picks' : Array.from(activeFilters)[0];
+      {/* Filter description — only for exactly one active genre filter (matches web;
+          the Selects / Slop / Fests / Pre-Order views show no description blurb). */}
+      {activeFilters.size === 1 && (() => {
+        const filterId = Array.from(activeFilters)[0];
         const desc = FILTER_DESCRIPTIONS[filterId];
         if (!desc) return null;
         return (
@@ -1166,7 +1224,7 @@ const HomeScreenTvOS = () => {
       {/* Heads-up date banner — tracks the focused row's date group.
           Hidden while focus is in the first group: its in-grid strip is
           already at the top of the river, so showing both doubles the header. */}
-      {hudStrip != null && hudStrip !== firstStrip && (
+      {hudStrip != null && hudVisible && (
         <View style={styles.hudWrap}>
           <DateRowStrip stripKey={hudStrip} stripColor={dateStripColor} />
         </View>
@@ -1509,6 +1567,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     textTransform: 'uppercase',
   },
+  // Section banner (SLOP / SELECTS / FESTS / PRE-ORDER) — ~2x the date strips
+  dateStripRowSection: {
+    borderTopWidth: 3,
+    borderBottomWidth: 3,
+    paddingVertical: 24,
+    shadowOpacity: 0.7,
+    shadowRadius: 30,
+  },
+  dateStripDaySection: { fontSize: 54 },
+  dateStripRestSection: { fontSize: 34, fontWeight: '400' },
   cardWrapper: {
     marginRight: CARD_GAP,
     overflow: 'visible',

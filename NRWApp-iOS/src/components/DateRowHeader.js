@@ -28,10 +28,12 @@ export default function DateRowHeader({dateString, stripColor}) {
     color = stripColor || Colors.primary;
   }
 
+  const isSection = !!section;
+
   return (
-    <View style={[styles.row, {borderColor: color, shadowColor: color}]}>
-      <Text style={[styles.day, {color, textShadowColor: color}]}>{day}</Text>
-      {rest ? <Text style={styles.rest}>{rest}</Text> : null}
+    <View style={[styles.row, isSection && styles.rowSection, {borderColor: color, shadowColor: color}]}>
+      <Text style={[styles.day, isSection && styles.daySection, {color, textShadowColor: color}]}>{day}</Text>
+      {rest ? <Text style={[styles.rest, isSection && styles.restSection]}>{rest}</Text> : null}
     </View>
   );
 }
@@ -68,4 +70,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     textTransform: 'uppercase',
   },
+  // Section banner (SLOP / SELECTS / FESTS / PRE-ORDER) — ~2x the date dividers
+  rowSection: {
+    borderTopWidth: 3,
+    borderBottomWidth: 3,
+    borderRadius: 6,
+    paddingVertical: 18,
+    shadowOpacity: 0.7,
+    shadowRadius: 20,
+  },
+  daySection: {fontSize: 30},
+  restSection: {fontSize: 18, fontWeight: '400'},
 });

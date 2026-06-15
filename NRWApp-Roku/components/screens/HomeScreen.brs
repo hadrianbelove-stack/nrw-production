@@ -275,6 +275,18 @@ Sub UpdateDateHud(index as Integer)
         m.dateHudDay.horizAlign = "right"
         m.dateHudRest.visible = true
     end if
+    ' Section banners (the active view) use the largest system font so they read
+    ' bigger than the per-date dividers. (The in-grid MarkupGrid dividers share one
+    ' uniform style on Roku, so the focus HUD carries the size distinction.)
+    isSection = (key = "FEST" OR key = "PRE-ORDER" OR key = "HIGHLIGHTS")
+    if isSection
+        m.dateHudDay.font = "font:LargeBoldSystemFont"
+        m.dateHudRest.font = "font:LargeSystemFont"
+    else
+        m.dateHudDay.font = "font:MediumBoldSystemFont"
+        m.dateHudRest.font = "font:MediumSystemFont"
+    end if
+
     m.dateHudDay.color = color
     m.dateHudTop.color = color
     m.dateHudBottom.color = color

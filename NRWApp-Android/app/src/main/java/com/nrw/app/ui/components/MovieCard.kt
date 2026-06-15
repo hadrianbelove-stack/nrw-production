@@ -555,20 +555,23 @@ fun DateRowHeader(
         }
     }
 
+    // Section banner (SLOP / SELECTS / FESTS / PRE-ORDER) renders ~2x the date dividers
+    val isSection = dateString in listOf("PRE-ORDER", "FEST", "HIGHLIGHTS", "SLOP")
+    val barHeight = if (isSection) 3.dp else 2.dp
     Column(modifier = modifier.fillMaxWidth().padding(top = 8.dp, bottom = 2.dp)) {
-        Box(Modifier.fillMaxWidth().height(2.dp).background(color))
+        Box(Modifier.fillMaxWidth().height(barHeight).background(color))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xF508080C))
-                .padding(vertical = 8.dp),
+                .padding(vertical = if (isSection) 18.dp else 8.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = day,
                 color = color,
-                fontSize = 16.sp,
+                fontSize = if (isSection) 32.sp else 16.sp,
                 fontWeight = FontWeight.Black,
                 letterSpacing = 4.sp
             )
@@ -577,13 +580,13 @@ fun DateRowHeader(
                 Text(
                     text = rest,
                     color = Color.White,
-                    fontSize = 16.sp,
+                    fontSize = if (isSection) 20.sp else 16.sp,
                     fontWeight = FontWeight.Light,
                     letterSpacing = 4.sp
                 )
             }
         }
-        Box(Modifier.fillMaxWidth().height(2.dp).background(color))
+        Box(Modifier.fillMaxWidth().height(barHeight).background(color))
     }
 }
 
