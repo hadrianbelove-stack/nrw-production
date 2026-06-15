@@ -1,57 +1,7 @@
 {
-  "generated_at": "2026-06-15T13:12:13.319521",
-  "count": 759,
+  "generated_at": "2026-06-15T13:57:33.071982",
+  "count": 758,
   "movies": [
-    {
-      "id": "1291659",
-      "title": "The Wizard of the Kremlin",
-      "digital_date": "2026-06-15",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "In the chaos of post-Soviet Russia, rising KGB officer Vladimir Putin joins forces with master manipulator Vadim Baranov to reshape life behind the Iron Curtain, using violence and deception to change the world forever.",
-      "genres": [
-        "Drama"
-      ],
-      "runtime": 136,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [
-          "Amazon Video"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
-      },
-      "watch_links": {},
-      "pre_order_links": [],
-      "_enrichment_status": "pending",
-      "_discovered_at": "2026-06-15T13:12:13.319498",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/85EYON4oXVYTPdMuW5q5ELQLU88.jpg",
-      "studio": "Curiosa Films",
-      "budget": 0,
-      "country": "France",
-      "original_language": "fr",
-      "original_title": "Le Mage du Kremlin",
-      "display_title": "The Wizard of the Kremlin (Le Mage du Kremlin)",
-      "crew": {
-        "director": "Olivier Assayas",
-        "cast": [
-          "Paul Dano",
-          "Jude Law",
-          "Alicia Vikander",
-          "Tom Sturridge",
-          "Will Keen"
-        ]
-      },
-      "_discovery_source": "provider_availability_check"
-    },
     {
       "id": "1385773",
       "title": "Among Neighbors",
@@ -3888,20 +3838,18 @@
       "keywords": []
     },
     {
-      "id": "1318413",
-      "title": "Pressure",
+      "id": "1291659",
+      "title": "The Wizard of the Kremlin",
       "digital_date": "2026-06-15",
       "bootstrap_date": false,
       "manually_corrected": false,
-      "synopsis": "In the tense 72 hours before D-Day, and the fate of the free world hanging in the balance, General Dwight D. Eisenhower and Captain James Stagg face an impossible choice—launch the largest and most dangerous seaborne invasion in history or risk losing the war altogether.",
+      "synopsis": "In the chaos of post-Soviet Russia, rising KGB officer Vladimir Putin joins forces with master manipulator Vadim Baranov to reshape life behind the Iron Curtain, using violence and deception to change the world forever.",
       "genres": [
-        "Thriller",
-        "History",
-        "War"
+        "Drama"
       ],
-      "runtime": 100,
+      "runtime": 136,
       "year": 2026,
-      "rt_score": null,
+      "rt_score": "45%",
       "providers": {
         "rent": [
           "Amazon Video"
@@ -3910,38 +3858,96 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/The_Wizard_of_the_Kremlin_(film)",
+        "trailer": "https://www.youtube.com/watch?v=B5iSUmP4I6E",
+        "rt": "https://www.rottentomatoes.com/m/the_wizard_of_the_kremlin",
+        "justwatch": "https://www.justwatch.com/us/movie/the-wizard-of-the-kremlin",
+        "cast_wiki": {
+          "Paul Dano": "https://en.wikipedia.org/wiki/Paul_Dano",
+          "Jude Law": "https://en.wikipedia.org/wiki/Jude_Law",
+          "Alicia Vikander": "https://en.wikipedia.org/wiki/Alicia_Vikander"
+        },
+        "metacritic": "https://www.metacritic.com/movie/the-wizard-of-the-kremlin/",
+        "imdb": "https://www.imdb.com/title/tt32386654/",
+        "letterboxd": "https://letterboxd.com/film/the-wizard-of-the-kremlin"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.1a14a39b-d2ca-46a5-8170-d3529a240a86&tag=nrw04-20",
+            "rent_price": "$9.99",
+            "price": "$9.99"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
-      "_discovered_at": "2026-06-15T12:01:54.938918",
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-06-15T13:12:13.319498",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/9RkDrI8V8QJBjhtyRX7y6Qow3aq.jpg",
-      "studio": "Working Title Films",
-      "budget": 80000000,
-      "country": "United Kingdom",
-      "original_language": "en",
-      "original_title": "Pressure",
-      "display_title": "Pressure",
+      "poster": "https://image.tmdb.org/t/p/w500/85EYON4oXVYTPdMuW5q5ELQLU88.jpg",
+      "studio": "Curiosa Films",
+      "budget": 0,
+      "country": "France",
+      "original_language": "fr",
+      "original_title": "Le Mage du Kremlin",
+      "display_title": "The Wizard of the Kremlin (Le Mage du Kremlin)",
       "crew": {
-        "director": "Anthony Maras",
+        "director": "Olivier Assayas",
         "cast": [
-          "Andrew Scott",
-          "Brendan Fraser",
-          "Kerry Condon",
-          "Chris Messina",
-          "Damian Lewis"
+          "Paul Dano",
+          "Jude Law",
+          "Alicia Vikander",
+          "Tom Sturridge",
+          "Will Keen"
         ]
       },
       "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "6.1",
+      "letterboxd_score": "2.7",
+      "keywords": [
+        "new york city",
+        "london, england",
+        "based on novel or book",
+        "capitalism",
+        "soviet union",
+        "stockholm, sweden",
+        "historical fiction",
+        "period drama",
+        "rise to power",
+        "moscow, russia",
+        "literary adaptation",
+        "vladimir putin",
+        "political figure",
+        "1990s",
+        "russia",
+        "2000s",
+        "russian federation",
+        "2010s",
+        "complicity",
+        "collapse of soviet union",
+        "fictionalized history",
+        "political drama",
+        "olympics",
+        "black comedy"
+      ],
+      "wikidata_distributors": [
+        "ADS Service"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "metacritic_score": "54",
+      "awards": "2 nominations total",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_slop_reason": "score:0()",
+      "status": "available",
       "reissue_label": null,
       "filters": {
         "is_indie": false,
-        "is_foreign": false,
+        "is_foreign": true,
         "is_staff_pick": false,
         "is_restoration": false,
         "is_virtual_screening": false,
@@ -3973,13 +3979,25 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Queerpanorama",
+        "trailer": "https://www.youtube.com/watch?v=KQ1JNFP5RNE",
+        "rt": "https://www.rottentomatoes.com/m/queerpanorama",
+        "justwatch": "https://www.justwatch.com/us/movie/queerpanorama",
+        "imdb": "https://www.imdb.com/title/tt35453155/",
+        "letterboxd": "https://letterboxd.com/film/queerpanorama"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.822c8c45-9b07-4cf1-9127-cf2dc0c4d6d2&tag=nrw04-20",
+            "rent_price": "$4.99",
+            "price": "$4.99"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-06-15T12:01:52.918852",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -4013,7 +4031,30 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "6.9",
+      "letterboxd_score": "3.6",
+      "keywords": [
+        "cruising",
+        "melancholy",
+        "male homosexuality",
+        "hong kong",
+        "black and white",
+        "lgbt",
+        "gay erotica",
+        "festival chéries chéris"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "metacritic_score"
+      ]
     },
     {
       "id": "1331349",
@@ -4029,7 +4070,7 @@
       ],
       "runtime": 115,
       "year": 2025,
-      "rt_score": null,
+      "rt_score": "82%",
       "providers": {
         "rent": [
           "Amazon Video"
@@ -4038,13 +4079,31 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Two_Pianos",
+        "trailer": "https://www.youtube.com/watch?v=pNpKg-Oq-fI",
+        "rt": "https://www.rottentomatoes.com/m/two_pianos",
+        "justwatch": "https://www.justwatch.com/us/movie/two-pianos",
+        "cast_wiki": {
+          "François Civil": "https://en.wikipedia.org/wiki/Fran%C3%A7ois_Civil",
+          "Nadia Tereszkiewicz": "https://en.wikipedia.org/wiki/Nadia_Tereszkiewicz",
+          "Charlotte Rampling": "https://en.wikipedia.org/wiki/Charlotte_Rampling"
+        },
+        "metacritic": "https://www.metacritic.com/movie/two-pianos/",
+        "imdb": "https://www.imdb.com/title/tt33518607/",
+        "letterboxd": "https://letterboxd.com/film/two-pianos"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.59f1655c-d347-48ba-82b6-f66c01367534&tag=nrw04-20",
+            "rent_price": "$5.99",
+            "price": "$5.99"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-06-15T12:01:51.661619",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -4078,7 +4137,22 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "5.6",
+      "letterboxd_score": "2.6",
+      "keywords": [],
+      "wikidata_distributors": [
+        "Le Pacte"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "metacritic_score": "67",
+      "awards": "1 win & 1 nomination total",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_slop_reason": "score:1(low_imdb)",
+      "status": "available"
     },
     {
       "id": "1713571",
@@ -4307,6 +4381,368 @@
       "display_title": "The Last One for the Road"
     },
     {
+      "id": "1497325",
+      "title": "Mockbuster",
+      "year": 2025,
+      "poster": "https://image.tmdb.org/t/p/w500/wcjyHnvWtohsGrZHcNTEBwO2ooY.jpg",
+      "genres": [
+        "Documentary"
+      ],
+      "synopsis": "A struggling filmmaker’s opportunity collides with chaos and compromise when Sharknado’s notorious studio, The Asylum, invites him to direct a \"mockbuster.\" With six days, a micro budget, and mounting pressure, Mockbuster is a comedic, behind-the-scenes documentary exploring the balance between low-budget filmmaking and creative ambition.",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Mockbuster/4973290",
+            "buy_price": "$9.99",
+            "price": "$9.99"
+          }
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Mockbuster_(film)",
+        "trailer": "https://www.youtube.com/watch?v=L0aYbpPm3r0",
+        "rt": "https://www.rottentomatoes.com/m/mockbuster",
+        "justwatch": "https://www.justwatch.com/us/movie/mockbuster",
+        "cast_wiki": {
+          "David Michael Latt": "https://en.wikipedia.org/wiki/The_Asylum",
+          "Michelle Bauer": "https://en.wikipedia.org/wiki/Michelle_Bauer"
+        },
+        "metacritic": "https://www.metacritic.com/movie/mockbuster/",
+        "imdb": "https://www.imdb.com/title/tt32377397/",
+        "letterboxd": "https://letterboxd.com/film/mockbuster"
+      },
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "runtime": 90,
+      "rt_score": null,
+      "studio": "The Asylum",
+      "budget": 0,
+      "country": "Australia",
+      "original_language": null,
+      "original_title": "Mockbuster",
+      "crew": {
+        "director": "Anthony Frith",
+        "cast": [
+          "Brendan Petrizzo",
+          "David Michael Latt",
+          "Michelle Bauer",
+          "Bix Krieger",
+          "Paul Bales"
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_minimal_entry": true,
+      "_added_manually": true,
+      "_discovered_at": "2026-06-15T18:54:50.118248",
+      "_discovery_source": "manual_add",
+      "_tmdb_fetch_failed": false,
+      "categories": {
+        "tier": null,
+        "is_studio": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "8.9",
+      "letterboxd_score": null,
+      "keywords": [],
+      "_trailer_source": "cache",
+      "metacritic_score": null,
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "slop_studio:the asylum",
+      "status": "available",
+      "_enrichment_gaps": [
+        "watch_links",
+        "rt_score",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": null,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "display_title": "Mockbuster",
+      "_digital_date_source": "detection",
+      "digital_date": "2026-06-15"
+    },
+    {
+      "id": "1275779",
+      "title": "Disclosure Day",
+      "year": 2026,
+      "poster": "https://image.tmdb.org/t/p/w500/3o5YPjDGDTcTDL5ftDA9NwN9dLd.jpg",
+      "genres": [
+        "Action",
+        "Science Fiction",
+        "Thriller"
+      ],
+      "synopsis": "If you found out we weren’t alone, if someone showed you, proved it to you, would that frighten you?",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Disclosure-Day/5006763",
+            "buy_price": "$29.99",
+            "price": "$29.99"
+          }
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Disclosure_Day",
+        "trailer": "https://www.youtube.com/watch?v=SCYT8vb2siQ",
+        "rt": "https://www.rottentomatoes.com/m/disclosure_day",
+        "justwatch": "https://www.justwatch.com/us/movie/the-dish-2026-1",
+        "cast_wiki": {
+          "Emily Blunt": "https://en.wikipedia.org/wiki/Emily_Blunt",
+          "Josh O'Connor": "https://en.wikipedia.org/wiki/Josh_O%27Connor",
+          "Colin Firth": "https://en.wikipedia.org/wiki/Colin_Firth"
+        },
+        "metacritic": "https://www.metacritic.com/movie/disclosure-day/",
+        "imdb": "https://www.imdb.com/title/tt15047880/",
+        "letterboxd": "https://letterboxd.com/film/disclosure-day"
+      },
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "runtime": 145,
+      "rt_score": "81%",
+      "studio": "Universal Pictures",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": null,
+      "original_title": "Disclosure Day",
+      "crew": {
+        "director": "Steven Spielberg",
+        "cast": [
+          "Emily Blunt",
+          "Josh O'Connor",
+          "Colin Firth",
+          "Colman Domingo",
+          "Eve Hewson"
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_minimal_entry": true,
+      "_added_manually": true,
+      "_discovered_at": "2026-06-15T18:56:42.666603",
+      "_discovery_source": "manual_add",
+      "_tmdb_fetch_failed": false,
+      "categories": {
+        "tier": null,
+        "is_studio": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "7.0",
+      "letterboxd_score": "3.3",
+      "keywords": [
+        "race against time",
+        "alien",
+        "alien invasion",
+        "meteorologist",
+        "government secrets",
+        "wonder",
+        "conspiracy thriller",
+        "joyous",
+        "exhilarated",
+        "hopeful",
+        "suspense mystery"
+      ],
+      "wikidata_distributors": [
+        "Universal Pictures",
+        "UIP-Dunafilm"
+      ],
+      "_trailer_source": "cache",
+      "metacritic_score": "74",
+      "awards": "3 nominations total",
+      "_needs_review": false,
+      "is_slop": false,
+      "_slop_reason": "prestige_studio:universal pictures",
+      "status": "available",
+      "_enrichment_gaps": [
+        "watch_links"
+      ],
+      "reissue_label": null,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": null,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "display_title": "Disclosure Day",
+      "_digital_date_source": "detection",
+      "digital_date": "2026-06-15"
+    },
+    {
+      "id": "1541560",
+      "title": "Stop! That! Train!",
+      "year": 2026,
+      "poster": "https://image.tmdb.org/t/p/w500/w90dGS6D2lVO4aO5rdQ8QECrUGY.jpg",
+      "genres": [
+        "Action",
+        "Comedy"
+      ],
+      "synopsis": "Best friends and train stewardesses Tess and DeeDee trade their dreary shifts on the Stank Rail for the glitzy Glamazonian Express. However, when a catastrophic Stormaganza threatens to crash the high-speed train into Los Angeles, the duo in coach must join forces with the snobby first-class attendants and President Gagwell to save the day.",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Stop-That-Train-/4980282",
+            "buy_price": "$19.99",
+            "price": "$19.99"
+          }
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Stop!_That!_Train!",
+        "trailer": "https://www.youtube.com/watch?v=yx2YuoAnwlQ",
+        "rt": "https://www.rottentomatoes.com/m/stop_that_train",
+        "justwatch": "https://www.justwatch.com/us/movie/stop-that-train",
+        "cast_wiki": {
+          "RuPaul": "https://en.wikipedia.org/wiki/RuPaul",
+          "Jujubee": "https://en.wikipedia.org/wiki/Jujubee",
+          "Ginger Minj": "https://en.wikipedia.org/wiki/Ginger_Minj"
+        },
+        "metacritic": "https://www.metacritic.com/movie/stop-that-train/",
+        "imdb": "https://www.imdb.com/title/tt38128726/",
+        "letterboxd": "https://letterboxd.com/film/stop-that-train"
+      },
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "runtime": 92,
+      "rt_score": "84%",
+      "studio": "World of Wonder",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": null,
+      "original_title": "Stop! That! Train!",
+      "crew": {
+        "director": "Adam Shankman",
+        "cast": [
+          "RuPaul",
+          "Jujubee",
+          "Ginger Minj",
+          "Brooke Lynn Hytes",
+          "Marcia Marcia Marcia"
+        ]
+      },
+      "_enrichment_status": "completed",
+      "_minimal_entry": true,
+      "_added_manually": true,
+      "_discovered_at": "2026-06-15T18:57:24.925773",
+      "_discovery_source": "manual_add",
+      "_tmdb_fetch_failed": false,
+      "categories": {
+        "tier": null,
+        "is_studio": false,
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "6.4",
+      "letterboxd_score": "3.2",
+      "keywords": [
+        "drag queen",
+        "stewardess",
+        "female friendship",
+        "train",
+        "campy",
+        "lgbt",
+        "runaway train",
+        "disaster movie",
+        "black lgbt",
+        "action comedy",
+        "best friends",
+        "gay interest"
+      ],
+      "_trailer_source": "cache",
+      "metacritic_score": "62",
+      "awards": "1 nomination total",
+      "_needs_review": false,
+      "_slop_reason": "score:0()",
+      "status": "available",
+      "_enrichment_gaps": [
+        "watch_links"
+      ],
+      "reissue_label": null,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": null,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "display_title": "Stop! That! Train!",
+      "_digital_date_source": "detection",
+      "digital_date": "2026-06-15"
+    },
+    {
       "id": "1501018",
       "title": "A Family of Bastards",
       "digital_date": "2026-06-14",
@@ -4331,11 +4767,21 @@
       "links": {
         "wikipedia": null,
         "trailer": null,
-        "rt": null
+        "rt": "https://www.rottentomatoes.com/m/a_family_of_bastards",
+        "justwatch": "https://www.justwatch.com/us/movie/une-famille-de-batards",
+        "imdb": "https://www.imdb.com/title/tt36963493/",
+        "letterboxd": "https://letterboxd.com/film/a-family-of-bastards"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Amazon Prime Video",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.54d27d24-3c22-4cfb-81e3-8bf224ca0f0d"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-06-15T12:02:07.563464",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -4369,7 +4815,26 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [],
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "is_slop": true,
+      "_is_slop_guess": true,
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ]
     },
     {
       "id": "1511549",
@@ -4395,11 +4860,25 @@
       "links": {
         "wikipedia": null,
         "trailer": null,
-        "rt": null
+        "rt": "https://www.rottentomatoes.com/m/still_sexy",
+        "justwatch": "https://www.justwatch.com/us/movie/ancora-piu-sexy",
+        "cast_wiki": {
+          "Diana Del Bufalo": "https://en.wikipedia.org/wiki/Diana_Del_Bufalo",
+          "Valentina Nappi": "https://en.wikipedia.org/wiki/Valentina_Nappi"
+        },
+        "imdb": "https://www.imdb.com/title/tt36956284/",
+        "letterboxd": "https://letterboxd.com/film/still-sexy"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Amazon Prime Video",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.6b3ee304-4712-4062-8a63-04bc2080316f"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-06-15T12:02:06.274775",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -4433,7 +4912,28 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "4.1",
+      "letterboxd_score": null,
+      "keywords": [],
+      "wikidata_distributors": [
+        "Amazon Prime Video"
+      ],
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "is_slop": true,
+      "_is_slop_guess": true,
+      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "wikipedia",
+        "metacritic_score",
+        "letterboxd_score"
+      ]
     },
     {
       "id": "912378",
@@ -4457,13 +4957,28 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Dridam",
+        "trailer": "https://www.youtube.com/watch?v=AiFCD2aSnlc",
+        "rt": "https://www.rottentomatoes.com/m/dridam",
+        "justwatch": "https://www.justwatch.com/us/movie/dridam",
+        "cast_wiki": {
+          "Shane Nigam": "https://en.wikipedia.org/wiki/Shane_Nigam",
+          "Krishna Prabha": "https://en.wikipedia.org/wiki/Krishna_Praba",
+          "Shobi Thilakan": "https://en.wikipedia.org/wiki/Shobi_Thilakan"
+        },
+        "imdb": "https://www.imdb.com/title/tt35518410/",
+        "letterboxd": "https://letterboxd.com/film/dridam"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Hulu",
+            "link": "https://www.hulu.com/watch/242cbd84-2359-41c0-b565-c3344e58e882"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-06-15T12:02:05.110597",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -4497,7 +5012,23 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "7.5",
+      "letterboxd_score": "3.0",
+      "keywords": [
+        "investigation"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "metacritic_score"
+      ]
     },
     {
       "id": "1639356",
@@ -4521,12 +5052,26 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=E5UgDI2oZZg",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/sidosa",
+        "cast_wiki": {
+          "Eduardo Casanova": "https://en.wikipedia.org/wiki/Eduardo_Casanova",
+          "Ana Belén": "https://en.wikipedia.org/wiki/Ana_Bel%C3%A9n"
+        },
+        "imdb": "https://www.imdb.com/title/tt39841972/",
+        "letterboxd": "https://letterboxd.com/film/sidosa"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "YouTube",
+            "link": "https://tv.youtube.com/browse/UCNhLPhxViOuvyFPXYdaNcaA"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-06-15T12:02:03.998979",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -4559,7 +5104,34 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "3.5",
+      "letterboxd_score": "3.5",
+      "keywords": [
+        "aids",
+        "hiv",
+        "loving",
+        "lgbt rights",
+        "public figure",
+        "fight against aids"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "detection",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Title matches original foreign title (language: es): 'Sidosa'"
+      ],
+      "is_slop": true,
+      "_is_slop_guess": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score"
+      ]
     },
     {
       "id": "1662231",
@@ -4584,12 +5156,21 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "trailer": "https://www.youtube.com/watch?v=cuNfOdk_4Fk",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/jean-louis-aubert",
+        "letterboxd": "https://letterboxd.com/film/jean-louis-aubert-50-ans-avec-vous"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "YouTube",
+            "link": "https://tv.youtube.com/browse/UCidhd1Rfht7ASl9lPSYAM9g"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-06-15T12:02:02.617715",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -4623,7 +5204,38 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [
+        "concert",
+        "pop",
+        "portrait",
+        "archive footage",
+        "live music",
+        "rock",
+        "music live",
+        "french singer"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "detection",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Title matches original foreign title (language: fr): 'Jean-Louis Aubert - 50 ans avec vous'"
+      ],
+      "is_slop": true,
+      "_is_slop_guess": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ]
     },
     {
       "id": "1400756",
@@ -4637,7 +5249,7 @@
       ],
       "runtime": 101,
       "year": 2026,
-      "rt_score": null,
+      "rt_score": "92%",
       "providers": {
         "rent": [
           "Amazon Video"
@@ -4646,13 +5258,27 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Mad_Bills_to_Pay_(or_Destiny,_dile_que_no_soy_malo)",
+        "trailer": "https://www.youtube.com/watch?v=H7oz4ixPiSI",
+        "rt": "https://www.rottentomatoes.com/m/mad_bills_to_pay_or_destiny_dile_que_no_soy_malo",
+        "justwatch": "https://www.justwatch.com/us/movie/mad-bills-to-pay-or-destiny-dile-que-no-soy-malo",
+        "metacritic": "https://www.metacritic.com/movie/mad-bills-to-pay-or-destiny-dile-que-no-soy-malo/",
+        "imdb": "https://www.imdb.com/title/tt33562917/",
+        "letterboxd": "https://letterboxd.com/film/mad-bills-to-pay-or-destiny-dile-que-no-soy"
       },
-      "watch_links": {},
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.9c390f19-d60b-40d7-8cef-dc8c40c4fbb0&tag=nrw04-20",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-06-15T12:01:59.432286",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -4685,7 +5311,18 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "6.9",
+      "letterboxd_score": "3.6",
+      "keywords": [],
+      "_trailer_source": "tmdb_official",
+      "metacritic_score": "80",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_slop_reason": "score:-1(good_imdb)",
+      "status": "available"
     },
     {
       "id": "1510339",
@@ -4709,13 +5346,27 @@
         ]
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Mark_(2025_film)",
+        "trailer": "https://www.youtube.com/watch?v=V6kydRh1osk",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/mark",
+        "cast_wiki": {
+          "Sudeepa": "https://en.wikipedia.org/wiki/Sudeepa",
+          "Naveen Chandra": "https://en.wikipedia.org/wiki/Naveen_Chandra"
+        },
+        "imdb": "https://www.imdb.com/title/tt28961625/",
+        "letterboxd": "https://letterboxd.com/film/mark-2025"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Hulu",
+            "link": "https://www.hulu.com/watch/8a53951a-aa23-49f3-a653-81878ad3d221"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-06-15T12:01:57.233593",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -4749,7 +5400,21 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "5.2",
+      "letterboxd_score": "2.8",
+      "keywords": [],
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "metacritic_score"
+      ]
     },
     {
       "id": "1711071",
@@ -5179,13 +5844,43 @@
         "streaming": []
       },
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/Crosspoint_(film)",
+        "trailer": "https://www.youtube.com/watch?v=wh-glEPW52M",
+        "rt": "https://www.rottentomatoes.com/m/crosspoint",
+        "justwatch": "https://www.justwatch.com/us/movie/crosspoint",
+        "cast_wiki": {
+          "Carlo Aquino": "https://en.wikipedia.org/wiki/Carlo_Aquino",
+          "Takehiro Hira": "https://en.wikipedia.org/wiki/Takehiro_Hira"
+        },
+        "imdb": "https://www.imdb.com/title/tt31455353/",
+        "letterboxd": "https://letterboxd.com/film/crosspoint"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Hoopla",
+            "link": "https://www.hoopladigital.com/title/19801389?utm_source=justwatch"
+          }
+        ],
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.4e53a0ec-4632-4df6-be02-81e09d17f6c6&tag=nrw04-20",
+            "rent_price": "$4.99",
+            "buy_price": "$6.99",
+            "price": "$4.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Crosspoint/4920048",
+            "rent_price": "$4.99",
+            "buy_price": "$6.99",
+            "price": "$4.99"
+          }
+        ]
+      },
       "pre_order_links": [],
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_discovered_at": "2026-06-15T12:02:12.841784",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
@@ -5219,7 +5914,24 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-15",
+      "imdb_rating": "6.7",
+      "letterboxd_score": "3.0",
+      "keywords": [],
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Title matches original foreign title (language: tl): 'Crosspoint'"
+      ],
+      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "metacritic_score"
+      ]
     },
     {
       "id": "1477431",
@@ -6484,16 +7196,7 @@
         ],
         "streaming": []
       },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.1ac79551-b729-4f21-8953-d5c9d512ea5f&tag=nrw04-20",
-            "buy_price": "$15.99",
-            "price": "$15.99"
-          }
-        ]
-      },
+      "watch_links": {},
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Blue_Film_(2025_film)",
         "trailer": "https://www.youtube.com/watch?v=I8L0KUUoRiM",
@@ -6543,7 +7246,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-06-15",
       "imdb_rating": "7.1",
       "letterboxd_score": "3.5",
@@ -6559,10 +7262,8 @@
       "wikidata_distributors": [
         "Obscured Releasing"
       ],
-      "_trailer_source": "gemini_playwright",
+      "_trailer_source": "cache",
       "metacritic_score": "86",
-      "digital_date": "2026-06-12",
-      "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
       "_slop_reason": "score:-1(good_imdb)",
       "status": "available",
@@ -6582,7 +7283,19 @@
         "manual_override": null
       },
       "display_title": "Blue Film",
-      "_buyonly_verified": true
+      "_buyonly_verified": true,
+      "_is_preorder": true,
+      "_buyonly_preorder": true,
+      "pre_order_links": [
+        {
+          "service": "Amazon Video",
+          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.1ac79551-b729-4f21-8953-d5c9d512ea5f&tag=nrw04-20",
+          "buy_price": "$15.99",
+          "price": "$15.99"
+        }
+      ],
+      "digital_date": "2026-06-12",
+      "_digital_date_source": "tmdb_type4"
     },
     {
       "id": "tv_312493",
@@ -9259,8 +9972,7 @@
       },
       "featured": false,
       "is_slop": false,
-      "_slop_confidence": "weak",
-      "pull_quotes": []
+      "_slop_confidence": "weak"
     },
     {
       "id": "1642859",
@@ -9380,7 +10092,21 @@
       },
       "featured": true,
       "_watch_links_verified": "2026-06-12T13:25:21.587620",
-      "_slop_confidence": "strong"
+      "_slop_confidence": "strong",
+      "pull_quotes": [
+        {
+          "text": "Overflowing, boundless energy soon fizzles out.",
+          "critic": "Rubén Romero Santos",
+          "outlet": "Cinemanía (Spain)",
+          "review_url": "https://www.20minutos.es/cinemania/criticas/critica-iron-maiden-burning-ambition-ningun-secreto-entre-bambalinas_6970539_0.html"
+        },
+        {
+          "text": "There’s not much here to convert nonbelievers, but the affection is palpable.",
+          "critic": "Ed Potton",
+          "outlet": "The Times (UK)",
+          "review_url": null
+        }
+      ]
     },
     {
       "id": "1034985",
@@ -19869,28 +20595,7 @@
         "trailer_hosted_subs": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1257406.en.vtt",
         "director_wiki": "https://en.wikipedia.org/wiki/Sergei_Loznitsa"
       },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.bdaf23dd-19f1-4e1e-b828-54429520b880&tag=nrw04-20",
-            "buy_price": "$19.99",
-            "price": "$19.99"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/two-prosecutors/umc.cmc.5p2yp4x71jmoz8qtsju5pvaf2?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1895413666",
-            "buy_price": "$19.99",
-            "price": "$19.99"
-          },
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Two-Prosecutors/4941354",
-            "buy_price": "$24.99",
-            "price": "$24.99"
-          }
-        ]
-      },
+      "watch_links": {},
       "pre_order_links": [
         {
           "service": "Amazon Video",
@@ -19934,11 +20639,11 @@
       },
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_enrichment_attempts": 1,
+      "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-06-15",
       "_buyonly_preorder": true,
       "imdb_rating": "7.1",
-      "letterboxd_score": "3.5",
+      "letterboxd_score": "3.4",
       "keywords": [
         "based on novel or book",
         "based on true story",
@@ -19951,10 +20656,8 @@
         "soviet union history",
         "ussr"
       ],
-      "_trailer_source": "gemini_playwright",
-      "metacritic_score": "85",
-      "digital_date": "2026-05-26",
-      "_digital_date_source": "tmdb_type4",
+      "_trailer_source": "cache",
+      "metacritic_score": "84",
       "_needs_review": false,
       "status": "available",
       "_enrichment_gaps": [
@@ -19973,7 +20676,11 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-06-15T16:08:00.338040"
+      "_watch_links_verified": "2026-06-15T16:08:00.338040",
+      "awards": "1 win & 6 nominations total",
+      "_rt_scraper_failed": true,
+      "digital_date": "2026-05-26",
+      "_digital_date_source": "tmdb_type4"
     },
     {
       "id": "1595149",
@@ -77150,398 +77857,6 @@
         "manual_override": null
       },
       "keywords": []
-    },
-    {
-      "id": "1497325",
-      "title": "Mockbuster",
-      "year": 2025,
-      "poster": "https://image.tmdb.org/t/p/w500/wcjyHnvWtohsGrZHcNTEBwO2ooY.jpg",
-      "genres": [
-        "Documentary"
-      ],
-      "synopsis": "A struggling filmmaker’s opportunity collides with chaos and compromise when Sharknado’s notorious studio, The Asylum, invites him to direct a \"mockbuster.\" With six days, a micro budget, and mounting pressure, Mockbuster is a comedic, behind-the-scenes documentary exploring the balance between low-budget filmmaking and creative ambition.",
-      "providers": {
-        "rent": [],
-        "buy": [
-          "Fandango At Home"
-        ],
-        "streaming": []
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Mockbuster/4973290",
-            "buy_price": "$9.99",
-            "price": "$9.99"
-          }
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Mockbuster_(film)",
-        "trailer": "https://www.youtube.com/watch?v=L0aYbpPm3r0",
-        "rt": "https://www.rottentomatoes.com/m/mockbuster",
-        "justwatch": "https://www.justwatch.com/us/movie/mockbuster",
-        "cast_wiki": {
-          "David Michael Latt": "https://en.wikipedia.org/wiki/The_Asylum",
-          "Michelle Bauer": "https://en.wikipedia.org/wiki/Michelle_Bauer"
-        },
-        "metacritic": "https://www.metacritic.com/movie/mockbuster/",
-        "imdb": "https://www.imdb.com/title/tt32377397/",
-        "letterboxd": "https://letterboxd.com/film/mockbuster"
-      },
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "runtime": 90,
-      "rt_score": null,
-      "studio": "The Asylum",
-      "budget": 0,
-      "country": "Australia",
-      "original_language": null,
-      "original_title": "Mockbuster",
-      "crew": {
-        "director": "Anthony Frith",
-        "cast": [
-          "Brendan Petrizzo",
-          "David Michael Latt",
-          "Michelle Bauer",
-          "Bix Krieger",
-          "Paul Bales"
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_minimal_entry": true,
-      "_added_manually": true,
-      "_discovered_at": "2026-06-15T18:54:50.118248",
-      "_discovery_source": "manual_add",
-      "_tmdb_fetch_failed": false,
-      "categories": {
-        "tier": null,
-        "is_studio": false,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "_enrichment_attempts": 2,
-      "_last_enrichment_attempt": "2026-06-15",
-      "_is_preorder": true,
-      "_buyonly_preorder": true,
-      "pre_order_links": [
-        {
-          "service": "Fandango At Home",
-          "link": "https://athome.fandango.com/content/browse/details/Mockbuster/4973290",
-          "buy_price": "$9.99",
-          "price": "$9.99"
-        }
-      ],
-      "imdb_rating": "8.9",
-      "letterboxd_score": null,
-      "keywords": [],
-      "_trailer_source": "cache",
-      "metacritic_score": null,
-      "_needs_review": false,
-      "is_slop": true,
-      "_slop_reason": "slop_studio:the asylum",
-      "status": "available",
-      "_enrichment_gaps": [
-        "watch_links",
-        "rt_score",
-        "metacritic_score",
-        "letterboxd_score"
-      ],
-      "reissue_label": null,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": null,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": true,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "display_title": "Mockbuster",
-      "_digital_date_source": "detection",
-      "digital_date": "2026-06-15"
-    },
-    {
-      "id": "1275779",
-      "title": "Disclosure Day",
-      "year": 2026,
-      "poster": "https://image.tmdb.org/t/p/w500/3o5YPjDGDTcTDL5ftDA9NwN9dLd.jpg",
-      "genres": [
-        "Action",
-        "Science Fiction",
-        "Thriller"
-      ],
-      "synopsis": "If you found out we weren’t alone, if someone showed you, proved it to you, would that frighten you?",
-      "providers": {
-        "rent": [],
-        "buy": [
-          "Fandango At Home"
-        ],
-        "streaming": []
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Disclosure-Day/5006763",
-            "buy_price": "$29.99",
-            "price": "$29.99"
-          }
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Disclosure_Day",
-        "trailer": "https://www.youtube.com/watch?v=SCYT8vb2siQ",
-        "rt": "https://www.rottentomatoes.com/m/disclosure_day",
-        "justwatch": "https://www.justwatch.com/us/movie/the-dish-2026-1",
-        "cast_wiki": {
-          "Emily Blunt": "https://en.wikipedia.org/wiki/Emily_Blunt",
-          "Josh O'Connor": "https://en.wikipedia.org/wiki/Josh_O%27Connor",
-          "Colin Firth": "https://en.wikipedia.org/wiki/Colin_Firth"
-        },
-        "metacritic": "https://www.metacritic.com/movie/disclosure-day/",
-        "imdb": "https://www.imdb.com/title/tt15047880/",
-        "letterboxd": "https://letterboxd.com/film/disclosure-day"
-      },
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "runtime": 145,
-      "rt_score": "81%",
-      "studio": "Universal Pictures",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": null,
-      "original_title": "Disclosure Day",
-      "crew": {
-        "director": "Steven Spielberg",
-        "cast": [
-          "Emily Blunt",
-          "Josh O'Connor",
-          "Colin Firth",
-          "Colman Domingo",
-          "Eve Hewson"
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_minimal_entry": true,
-      "_added_manually": true,
-      "_discovered_at": "2026-06-15T18:56:42.666603",
-      "_discovery_source": "manual_add",
-      "_tmdb_fetch_failed": false,
-      "categories": {
-        "tier": null,
-        "is_studio": false,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "_enrichment_attempts": 2,
-      "_last_enrichment_attempt": "2026-06-15",
-      "_is_preorder": true,
-      "_buyonly_preorder": true,
-      "pre_order_links": [
-        {
-          "service": "Fandango At Home",
-          "link": "https://athome.fandango.com/content/browse/details/Disclosure-Day/5006763",
-          "buy_price": "$29.99",
-          "price": "$29.99"
-        }
-      ],
-      "imdb_rating": "7.0",
-      "letterboxd_score": "3.3",
-      "keywords": [
-        "race against time",
-        "alien",
-        "alien invasion",
-        "meteorologist",
-        "government secrets",
-        "wonder",
-        "conspiracy thriller",
-        "joyous",
-        "exhilarated",
-        "hopeful",
-        "suspense mystery"
-      ],
-      "wikidata_distributors": [
-        "Universal Pictures",
-        "UIP-Dunafilm"
-      ],
-      "_trailer_source": "cache",
-      "metacritic_score": "74",
-      "awards": "3 nominations total",
-      "_needs_review": false,
-      "is_slop": false,
-      "_slop_reason": "prestige_studio:universal pictures",
-      "status": "available",
-      "_enrichment_gaps": [
-        "watch_links"
-      ],
-      "reissue_label": null,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": null,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "display_title": "Disclosure Day",
-      "_digital_date_source": "detection",
-      "digital_date": "2026-06-15"
-    },
-    {
-      "id": "1541560",
-      "title": "Stop! That! Train!",
-      "year": 2026,
-      "poster": "https://image.tmdb.org/t/p/w500/w90dGS6D2lVO4aO5rdQ8QECrUGY.jpg",
-      "genres": [
-        "Action",
-        "Comedy"
-      ],
-      "synopsis": "Best friends and train stewardesses Tess and DeeDee trade their dreary shifts on the Stank Rail for the glitzy Glamazonian Express. However, when a catastrophic Stormaganza threatens to crash the high-speed train into Los Angeles, the duo in coach must join forces with the snobby first-class attendants and President Gagwell to save the day.",
-      "providers": {
-        "rent": [],
-        "buy": [
-          "Fandango At Home"
-        ],
-        "streaming": []
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Stop-That-Train-/4980282",
-            "buy_price": "$19.99",
-            "price": "$19.99"
-          }
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Stop!_That!_Train!",
-        "trailer": "https://www.youtube.com/watch?v=yx2YuoAnwlQ",
-        "rt": "https://www.rottentomatoes.com/m/stop_that_train",
-        "justwatch": "https://www.justwatch.com/us/movie/stop-that-train",
-        "cast_wiki": {
-          "RuPaul": "https://en.wikipedia.org/wiki/RuPaul",
-          "Jujubee": "https://en.wikipedia.org/wiki/Jujubee",
-          "Ginger Minj": "https://en.wikipedia.org/wiki/Ginger_Minj"
-        },
-        "metacritic": "https://www.metacritic.com/movie/stop-that-train/",
-        "imdb": "https://www.imdb.com/title/tt38128726/",
-        "letterboxd": "https://letterboxd.com/film/stop-that-train"
-      },
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "runtime": 92,
-      "rt_score": "84%",
-      "studio": "World of Wonder",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": null,
-      "original_title": "Stop! That! Train!",
-      "crew": {
-        "director": "Adam Shankman",
-        "cast": [
-          "RuPaul",
-          "Jujubee",
-          "Ginger Minj",
-          "Brooke Lynn Hytes",
-          "Marcia Marcia Marcia"
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_minimal_entry": true,
-      "_added_manually": true,
-      "_discovered_at": "2026-06-15T18:57:24.925773",
-      "_discovery_source": "manual_add",
-      "_tmdb_fetch_failed": false,
-      "categories": {
-        "tier": null,
-        "is_studio": false,
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "_enrichment_attempts": 2,
-      "_last_enrichment_attempt": "2026-06-15",
-      "_is_preorder": true,
-      "_buyonly_preorder": true,
-      "pre_order_links": [
-        {
-          "service": "Fandango At Home",
-          "link": "https://athome.fandango.com/content/browse/details/Stop-That-Train-/4980282",
-          "buy_price": "$19.99",
-          "price": "$19.99"
-        }
-      ],
-      "imdb_rating": "6.4",
-      "letterboxd_score": "3.2",
-      "keywords": [
-        "drag queen",
-        "stewardess",
-        "female friendship",
-        "train",
-        "campy",
-        "lgbt",
-        "runaway train",
-        "disaster movie",
-        "black lgbt",
-        "action comedy",
-        "best friends",
-        "gay interest"
-      ],
-      "_trailer_source": "cache",
-      "metacritic_score": "62",
-      "awards": "1 nomination total",
-      "_needs_review": false,
-      "_slop_reason": "score:0()",
-      "status": "available",
-      "_enrichment_gaps": [
-        "watch_links"
-      ],
-      "reissue_label": null,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": null,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "display_title": "Stop! That! Train!",
-      "_digital_date_source": "detection",
-      "digital_date": "2026-06-15"
     }
   ],
   "staff_picks": [
