@@ -52,6 +52,18 @@ Run this script — reads exact field paths, no guessing:
 import json
 from datetime import date, timedelta
 
+def svc_names(val):
+    # watch_links entries may be a list of dicts, a single dict (legacy
+    # single-object form), or plain strings — normalize to service names.
+    items = val if isinstance(val, list) else ([val] if val else [])
+    out = []
+    for s in items:
+        if isinstance(s, dict):
+            out.append(s.get('service', '?'))
+        elif isinstance(s, str):
+            out.append(s)
+    return out
+
 data = json.load(open('data.json'))
 today = str(date.today())
 
@@ -73,8 +85,8 @@ else:
         title = m.get('title', '?')
         year = m.get('year', '?')
         rt = m.get('rt_score') or '--'
-        streaming = [s['service'] for s in m.get('watch_links', {}).get('streaming', [])]
-        vod = [v['service'] for v in m.get('watch_links', {}).get('vod', [])]
+        streaming = svc_names(m.get('watch_links', {}).get('streaming'))
+        vod = svc_names(m.get('watch_links', {}).get('vod'))
         services = streaming + vod
         trailer_hosted = bool(m.get('links', {}).get('trailer_hosted', ''))
         trailer_yt = bool(m.get('links', {}).get('trailer', ''))
@@ -94,6 +106,11 @@ Present the output directly. Any `⚠` flags become Concerns below.
 ### Stall Detection
 From `run_diagnostics.json` `stall_status` — is the pipeline stalled? How many days without transitions?
 
+### JustWatch Health (JW_BREAKER)
+From `discovery_run.json` `results.jw_healthy`:
+- `true` or missing/`null` → JustWatch was reachable (or the breaker never tripped). No action.
+- `false` → the JW_BREAKER detected an outage that run: JustWatch couldn't find its control titles, so reverts were **suppressed** (films left in tracking, strike counts untouched). Expect **fewer transitions** that day and some genuinely-available films held back — they should transition on the next healthy run. Flag this in Concerns and re-check tomorrow.
+
 ---
 
 ### Concerns
@@ -102,6 +119,7 @@ Bullet list of anything actionable:
 - Any `⚠ NO TRAILER` from the New Arrivals script above
 - Any `⚠ NO LINKS` or `⚠ PLEX ONLY` from the New Arrivals script above
 - Enrichment errors
+- JustWatch outage: `discovery_run.json` `results.jw_healthy == false` (reverts suppressed this run — fewer arrivals, recheck tomorrow)
 - Pull quote gaps (films in curation queue with no entry in `pull_quotes_combined.json`)
 
 If nothing: "No concerns."
