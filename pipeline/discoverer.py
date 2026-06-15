@@ -38,10 +38,42 @@ class ProviderDiscoverer:
         self.tmdb_key = ctx.tmdb_key
         self.host = host
         self._jw_client = None  # Lazy-initialized for verification gate
+        self._jw_healthy = None  # JW_BREAKER: run-scoped health (None=unchecked, True/False=canary result)
 
     # ------------------------------------------------------------------
     # JustWatch verification gate
     # ------------------------------------------------------------------
+
+    # JW_BREAKER: blockbuster control titles guaranteed to have US offers on
+    # JustWatch. If JW can't find ANY of them, it is unreachable/blocked from
+    # this environment (datacenter IP → HTTP 200 + empty results) and its "no
+    # match" answers cannot be trusted. Title+year matching is enough here.
+    _JW_CANARY_TITLES = [("Oppenheimer", 2023), ("Barbie", 2023), ("Dune: Part Two", 2024)]
+
+    def _check_jw_health(self):
+        """Confirm JustWatch is reachable by looking up known-available control titles.
+        Result is cached for the whole run. Returns True if healthy, False if degraded."""
+        if self._jw_healthy is not None:
+            return self._jw_healthy
+        if self._jw_client is None:
+            from pipeline.justwatch import JustWatchClient
+            self._jw_client = JustWatchClient(logger=self.logger)
+        for _title, _year in self._JW_CANARY_TITLES:
+            try:
+                if self._jw_client.verify_availability(_title, _year) is not None:
+                    self._jw_healthy = True
+                    return True
+            except Exception:
+                continue
+        # Every control title came back empty → JustWatch is not answering for us.
+        self._jw_healthy = False
+        self.logger.error(
+            "JW_BREAKER: JustWatch returned no match for ALL control titles — treating "
+            "as an outage. Suppressing JW reverts this run (films stay in tracking, "
+            "revert counts untouched) to avoid poisoning the permanent-skip ceiling."
+        )
+        print("  🛑 JW_BREAKER: JustWatch appears blocked/down — suppressing reverts this run")
+        return False
 
     def _verify_before_wall(self, movie_id, movie):
         """JustWatch pre-check before adding a movie to the wall.
@@ -119,6 +151,14 @@ class ProviderDiscoverer:
             return {'verified': True, '_fail_open': True}
 
         if result is None or not result.get('verified'):
+            # JW_BREAKER: result is None means "no match" — but a blocked/throttled
+            # JustWatch returns the same thing (HTTP 200, empty results). Before we
+            # revert (which inflates the revert count toward the 10-revert permanent-
+            # skip ceiling), confirm JW is actually healthy. If it's down, leave the
+            # movie untouched in tracking — re-checked next run, no count poisoning.
+            if result is None and not self._check_jw_health():
+                print(f"  ⏸ {title} — JW unreachable, leaving in tracking (no revert recorded)")
+                return None
             # Increment revert count and log — always print so blocked titles are visible
             revert_count += 1
             movie['_jw_revert_count'] = revert_count
@@ -599,6 +639,7 @@ class ProviderDiscoverer:
                     'polled': checked,
                     'transitions': newly_digital,
                     'failed': failed,
+                    'jw_healthy': self._jw_healthy,  # JW_BREAKER: None=not checked, False=outage detected
                     'scan_tag': scan_tag.strip() if scan_tag else None
                 },
                 'transition_details': transition_details[:100],

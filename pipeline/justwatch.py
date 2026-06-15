@@ -222,7 +222,14 @@ class JustWatchClient:
             edges = data.get('data', {}).get('popularTitles', {}).get('edges', [])
 
             if not edges:
-                self.logger.debug(f"No results for '{title}'")
+                # JW_DIAG (temporary): a blocked/throttled datacenter IP returns
+                # HTTP 200 with zero edges — indistinguishable from a genuine
+                # no-match unless we surface the status + body. Printed so it is
+                # captured in CI logs (where logger output may be suppressed).
+                _diag = (f"JW_DIAG empty-result '{title}' — HTTP {response.status_code}, "
+                         f"0 edges, body[:200]={response.text[:200]!r}")
+                self.logger.warning(_diag)
+                print(f"      {_diag}")
                 self.stats['failures'] += 1
                 return None
 
