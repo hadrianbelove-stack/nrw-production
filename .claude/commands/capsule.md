@@ -28,8 +28,10 @@ Also read the movie's cast from data.json (`movie.crew.cast`) — you'll need it
 
 Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER** below them, then the **SUGGESTED LINKS** block (Step 2b). This is the required format — never drop the primer or links. **This is the single source of truth for capsule presentation — `/curate` defers to this format.**
 
+**Batch numbering:** when this movie is part of a numbered batch (e.g. `/curate` Stage 4), prefix the heading with `#N of TOTAL — ` so the user always sees where they are and can redirect by number ("skip to #5", "go to #5"). Omit the prefix for a standalone single-movie `/capsule` run.
+
 ```
-## Capsule Variants for [Title] ([Year])
+## [#N of TOTAL — ]Capsule Variants for [Title] ([Year])
 
 *directed by [Director] | [Genres, up to 2] | [Runtime] min | [Country] | [Platform(s)]*
 [Keywords up to 6, space-separated with · — then badges: [SLOP] if is_slop=true, [VIRTUAL SCREENING] if is_virtual_screening=true, [PREORDER] if digital_date is in the future — omit this line entirely if no keywords and no badges apply]
