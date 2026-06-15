@@ -429,6 +429,10 @@ header h1 {
 /* Section banner (SLOP / SELECTS / FESTS / PRE-ORDER) — ~2× the date dividers
    so the "which view am I in" header reads as a major heading, not a date row. */
 .date-row-header.section-banner {
+    /* View header sits at the top of the section and scrolls away — NOT pinned.
+       Pinning it (like the date strips) made it overlap the sticky date strip on
+       scroll. The active view is still indicated by the toggle. */
+    position: static;
     border-top-width: 3px;
     border-bottom-width: 3px;
     border-radius: 6px;

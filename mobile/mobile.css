@@ -393,6 +393,9 @@ body {
 
 /* Section banner (SLOP / SELECTS / FESTS / PRE-ORDER) — ~2x the date dividers */
 .date-row-header.section-banner {
+  /* Not pinned — scrolls away at the top of the view so it can't overlap the
+     sticky date strips on scroll (the view is still shown by the toggle). */
+  position: static;
   flex-wrap: wrap;
   border-top-width: 3px;
   border-bottom-width: 3px;
