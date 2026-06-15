@@ -36,7 +36,7 @@
   .title { font-size: 3.4cqw; font-weight: 200; letter-spacing: 0.45cqw; white-space: nowrap; }
   .row { display: flex; align-items: center; gap: 1.4cqw; }
 
-  .chips { display: flex; gap: 1.1cqw; flex: 1; }
+  .chips { display: flex; gap: 1.1cqw; }
   .chip {
     flex: 1; text-align: center;
     background: #16161c; border: 1px solid #2c2c33; border-radius: 2.2cqw;
@@ -65,6 +65,22 @@
   .tg.on { background: currentColor; }
   .tg.on .lbl { color: #07070b; }
   .tg.on .knob { background: #07070b; }
+
+  /* SLOP 3-state — pill form (Layout A): label + FREE / ALL / ONLY, active filled */
+  .slopCtl {
+    flex: 1.7; display: flex; align-items: center; justify-content: center; gap: 0.6cqw;
+    background: #0e0e13; border: 0.18cqw solid #ff9500; border-radius: 3cqw; padding: 0.95cqw 1.1cqw;
+  }
+  .slopCtl .cap { color: #ff9500; font-weight: 800; font-size: 1.55cqw; letter-spacing: 0.12cqw; margin-right: 0.4cqw; }
+  .slopCtl .opt { color: rgba(255,149,0,.55); font-weight: 700; font-size: 1.4cqw; padding: 0.4cqw 0.95cqw; border-radius: 1.6cqw; letter-spacing: 0.08cqw; }
+  .slopCtl .opt.act { background: #ff9500; color: #07070b; }
+
+  /* SLOP 3-state — segmented form (Layout B) */
+  .segCap { color: #ff9500; font-weight: 800; font-size: 1.55cqw; letter-spacing: 0.12cqw; }
+  .seg3 { display: flex; border: 0.16cqw solid #ff9500; border-radius: 2.4cqw; overflow: hidden; }
+  .seg3 .opt { padding: 1.2cqw 1.4cqw; font-size: 1.5cqw; font-weight: 700; color: #ff9500; background: #0e0e13; border-right: 0.14cqw solid rgba(255,149,0,.35); letter-spacing: 0.1cqw; }
+  .seg3 .opt:last-child { border-right: none; }
+  .seg3 .opt.act { background: #ff9500; color: #07070b; }
 
   /* segmented control (Layout B) — connected, search inline at right */
   .seg { display: flex; flex: 1; border: 0.16cqw solid #2c2c33; border-radius: 2.4cqw; overflow: hidden; }
@@ -115,7 +131,7 @@
     </div>
     <div class="chips" style="margin-bottom:1.8cqw;" id="chipsA"></div>
     <div class="toggleBar">
-      <div class="tg slop"><span class="knob"></span><span class="lbl">SLOP FREE</span></div>
+      <div class="slopCtl"><span class="cap">SLOP</span><span class="opt act">FREE</span><span class="opt">ALL</span><span class="opt">ONLY</span></div>
       <div class="tg selects on"><span class="lbl">SELECTS</span><span class="knob"></span></div>
       <div class="tg fests"><span class="knob"></span><span class="lbl">FESTS</span></div>
       <div class="tg pre"><span class="knob"></span><span class="lbl">PRE-ORDER</span></div>
@@ -132,14 +148,17 @@
       <div class="title">THE NEW RELEASE WALL</div>
     </div>
     <div class="chips" style="margin-bottom:1.8cqw;" id="chipsB"></div>
-    <div class="row" style="gap:1.6cqw;">
-      <div class="seg">
-        <div class="s slop">SLOP FREE</div>
+    <div class="row" style="gap:1.4cqw;">
+      <span class="segCap">SLOP</span>
+      <div class="seg3">
+        <span class="opt act">FREE</span><span class="opt">ALL</span><span class="opt">ONLY</span>
+      </div>
+      <div class="seg" style="flex:1.7;">
         <div class="s selects act">SELECTS</div>
         <div class="s fests">FESTS</div>
         <div class="s pre">PRE-ORDER</div>
       </div>
-      <div class="search" style="width:24cqw;"><span class="mag">⌕</span><span>Search…</span></div>
+      <div class="search" style="width:22cqw;"><span class="mag">⌕</span><span>Search…</span></div>
     </div>
     <div class="wall" id="wallB"></div>
     <div class="fade"></div>
