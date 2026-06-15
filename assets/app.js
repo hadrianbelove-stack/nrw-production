@@ -470,6 +470,14 @@ const NRW = {
 
         this.renderWall(moviesToShow);
         this.renderMoreButton(hasMore, sortedMovies.length);
+
+        // After a filter/toggle change (pagination reset to the first page), jump
+        // back to the top so the new view starts at its banner, not mid-scroll.
+        // "Load more" grows displayedCount so it's skipped; the >0 guard avoids a
+        // no-op jump on the initial render or when already at the top.
+        if (this.displayedCount === this.loadIncrement && window.scrollY > 0) {
+            window.scrollTo({ top: 0 });
+        }
     },
 
     renderMoreButton(hasMore, totalCount) {

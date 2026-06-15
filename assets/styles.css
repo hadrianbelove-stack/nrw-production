@@ -1594,6 +1594,33 @@ header h1 {
     background: rgba(0, 212, 170, 0.3);
     color: #00ffbb;
 }
+/* Cycle arrows pinned to the lightbox's left/right edges so they're obvious and
+   people notice they can page through movies. CSS-only: the buttons stay put in
+   the DOM, so all click/keyboard behavior is unchanged — only their position and
+   size move. (.poster-lightbox is a fullscreen fixed overlay, so the viewport
+   edges ARE the lightbox edges, and these render only while it's open.) */
+.lb-nav-prev,
+.lb-nav-next {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(52px, 6vw, 78px);
+    height: clamp(52px, 6vw, 78px);
+    font-size: clamp(2.4rem, 4vw, 3.4rem);
+    background: rgba(10, 12, 16, 0.6);
+    color: #ffffff;
+    border: 2px solid rgba(0, 212, 170, 0.65);
+    box-shadow: 0 0 26px rgba(0, 0, 0, 0.6);
+    z-index: 10002;
+}
+.lb-nav-prev { left: clamp(10px, 2.5vw, 32px); }
+.lb-nav-next { right: clamp(10px, 2.5vw, 32px); }
+.lb-nav-prev:hover,
+.lb-nav-next:hover {
+    background: rgba(0, 212, 170, 0.9);
+    color: #04130f;
+    border-color: #00ffbb;
+}
 .lb-trailer-btn {
     flex: 1;
     height: 56px;
