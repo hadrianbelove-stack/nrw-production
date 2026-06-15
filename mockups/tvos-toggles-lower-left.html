@@ -3,163 +3,129 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>tvOS — toggles lower-left of header</title>
+<title>tvOS — 2×2 View module placements</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: #050507;
-    color: #fff;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    padding: 18px 14px 60px;
-  }
-  .pageCaption { font-size: 15px; color: #00d4aa; letter-spacing: 1px; text-transform: uppercase; margin: 26px 4px 10px; font-weight: 700; }
-  .pageCaption span { color: #777; font-weight: 400; text-transform: none; letter-spacing: 0; }
-  .intro { color:#aaa; font-size:13px; line-height:1.5; margin: 0 4px 8px; max-width: 820px; }
+  body { background:#050507; color:#fff; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; padding:18px 14px 60px; }
+  .pageCaption { font-size:15px; color:#00d4aa; letter-spacing:1px; text-transform:uppercase; margin:26px 4px 10px; font-weight:700; }
+  .pageCaption span { color:#777; font-weight:400; text-transform:none; letter-spacing:0; }
+  .intro { color:#aaa; font-size:13px; line-height:1.5; margin:0 4px 8px; max-width:820px; }
 
-  .tv {
-    container-type: inline-size;
-    width: 100%; aspect-ratio: 16 / 9;
-    background: radial-gradient(120% 120% at 50% 0%, #14141f 0%, #07070b 60%);
-    border: 1px solid #222; border-radius: 10px; overflow: hidden; position: relative;
-  }
-  .pad { padding: 3cqw 3.2cqw 0; height: 100%; display: flex; flex-direction: column; }
+  .tv { container-type:inline-size; width:100%; aspect-ratio:16/9;
+    background:radial-gradient(120% 120% at 50% 0%, #14141f 0%, #07070b 60%);
+    border:1px solid #222; border-radius:10px; overflow:hidden; position:relative; }
+  .pad { padding:3cqw 3.2cqw 0; height:100%; display:flex; flex-direction:column; }
 
-  .title { font-size: 4.8cqw; font-weight: 100; letter-spacing: 0.48cqw; white-space: nowrap; color: #ffffff; }
-  .row { display: flex; align-items: center; gap: 1.4cqw; }
+  /* Title — white→teal gradient wordmark (matches desktop h1) */
+  .title { font-size:4.2cqw; font-weight:100; letter-spacing:0.2em; white-space:nowrap; line-height:1;
+    background:linear-gradient(45deg,#fff,#00d4aa); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .row { display:flex; align-items:center; gap:1.6cqw; }
 
-  .chips { display: flex; gap: 1.1cqw; }
-  .chips.wrap { flex-wrap: wrap; }
-  .chip {
-    flex: 1; text-align: center;
-    background: #16161c; border: 1px solid #2c2c33; border-radius: 2.2cqw;
-    color: #e9e9ee; font-size: 1.45cqw; padding: 1.05cqw 1cqw; white-space: nowrap;
-  }
-  .chips.wrap .chip { flex: 0 0 auto; }
+  .chips { display:flex; gap:1.1cqw; }
+  .chip { flex:1; text-align:center; background:#16161c; border:1px solid #2c2c33; border-radius:2.2cqw;
+    color:#e9e9ee; font-size:1.4cqw; padding:1cqw 0.6cqw; white-space:nowrap; }
 
-  .search {
-    display: flex; align-items: center; gap: 0.8cqw;
-    background: #111116; border: 1px solid #2c2c33; border-radius: 2.2cqw;
-    padding: 1.05cqw 1.6cqw; color: #777; font-size: 1.45cqw;
-  }
-  .search .mag { font-size: 1.6cqw; }
+  .search { display:flex; align-items:center; gap:0.8cqw; background:#111116; border:1px solid #2c2c33;
+    border-radius:2.2cqw; padding:1cqw 1.6cqw; color:#777; font-size:1.4cqw; }
+  .search .mag { font-size:1.6cqw; }
 
-  /* toggles — each control with a descriptor below */
-  .toggleBar { display: flex; gap: 1.4cqw; align-items: flex-start; }
-  .tgCol { flex: 1; display: flex; flex-direction: column; gap: 0.55cqw; }
-  .tgCol.wide { flex: 1.7; }
-  .tgCol .tg, .tgCol .slopCtl { flex: none; width: 100%; }
-  .tgDesc { text-align: center; font-size: 1.12cqw; letter-spacing: 0.14cqw; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
-  .tg {
-    display: flex; align-items: center; justify-content: center; gap: 0.9cqw;
-    border-radius: 3cqw; padding: 1.25cqw 0; font-size: 1.7cqw; font-weight: 700;
-    letter-spacing: 0.12cqw; background: #0e0e13; border: 0.18cqw solid; cursor: pointer;
-  }
-  .tg .knob { width: 2.2cqw; height: 2.2cqw; border-radius: 50%; background: #fff; box-shadow: 0 0 1.2cqw rgba(255,255,255,.4); order: 0; }
-  .tg .lbl { order: 1; }
-  .tg.on .knob { order: 1; background: #07070b; }
-  .tg.on .lbl { order: 0; color: #07070b; }
-  .tg.selects{ color: #dc143c; border-color: #dc143c; }
-  .tg.fests  { color: #f59e0b; border-color: #f59e0b; }
-  .tg.pre    { color: #7c3aed; border-color: #7c3aed; }
-  .tg.on { background: currentColor; }
+  /* Boxed 2×2 View module (matches desktop .view-module) */
+  .view-module { flex-shrink:0; background:rgba(255,255,255,0.04); border:0.12cqw solid rgba(255,255,255,0.16);
+    border-radius:1.4cqw; padding:1.05cqw 1.6cqw 1.25cqw; }
+  .view-module-head { font-size:0.78cqw; font-weight:800; letter-spacing:0.2em; text-transform:uppercase; color:#888; margin-bottom:0.85cqw; }
+  .toggle-grid { display:grid; grid-template-columns:auto auto; gap:0.95cqw 2.2cqw; }
 
-  .slopCtl {
-    display: flex; align-items: center; justify-content: center; gap: 0.6cqw;
-    background: #0e0e13; border: 0.18cqw solid #ff9500; border-radius: 3cqw; padding: 0.95cqw 1.1cqw;
-  }
-  .slopCtl .cap { color: #ff9500; font-weight: 800; font-size: 1.55cqw; letter-spacing: 0.12cqw; margin-right: 0.4cqw; }
-  .slopCtl .opt { color: rgba(255,149,0,.55); font-weight: 700; font-size: 1.4cqw; padding: 0.4cqw 0.95cqw; border-radius: 1.6cqw; letter-spacing: 0.08cqw; cursor: pointer; }
-  .slopCtl .opt.act { background: #ff9500; color: #07070b; }
+  .slop-toggle-wrap { display:flex; align-items:center; gap:0.7cqw; cursor:pointer; user-select:none; }
+  .slop-label { font-size:0.95cqw; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(0,212,170,0.75); white-space:nowrap; transition:color .25s; }
+  .slop-toggle .slop-label { min-width:5.6cqw; }
+  .slop-track { width:6.2cqw; height:1.9cqw; border-radius:1cqw; background:#1a1a1a; border:0.1cqw solid rgba(0,212,170,0.45); position:relative; flex-shrink:0; transition:background .25s,border-color .25s; }
+  .slop-thumb { position:absolute; top:0.25cqw; left:0.25cqw; width:1.4cqw; height:1.4cqw; border-radius:50%; background:rgba(0,212,170,0.55); transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s; }
 
-  .dateStrip {
-    border-top: 0.18cqw solid; border-bottom: 0.18cqw solid; border-radius: 1cqw;
-    padding: 0.85cqw 0; text-align: center; display: flex; gap: 0.9cqw; align-items: baseline; justify-content: center;
-  }
-  .dateStrip .day { font-size: 1.9cqw; font-weight: 800; letter-spacing: 0.15cqw; }
-  .dateStrip .rest { font-size: 1.9cqw; font-weight: 300; color: #fff; letter-spacing: 0.25cqw; }
+  /* View on/off toggles */
+  .view-toggle.active .slop-thumb { transform:translateX(4.3cqw); background:#fff; }
+  .view-toggle.selects.active .slop-track { background:#dc143c; border-color:rgba(0,0,0,.35); }
+  .view-toggle.selects.active .slop-label { color:#dc143c; }
+  .view-toggle.fests.active   .slop-track { background:#f59e0b; border-color:rgba(0,0,0,.35); }
+  .view-toggle.fests.active   .slop-label { color:#f59e0b; }
+  .view-toggle.pre.active     .slop-track { background:#7c3aed; border-color:rgba(0,0,0,.35); }
+  .view-toggle.pre.active     .slop-label { color:#b794f6; }
 
-  .wall { flex: 1; overflow: hidden; margin-top: 1.4cqw; }
-  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.5cqw; margin: 1.2cqw 0; }
-  .card { position: relative; }
-  .poster { width: 100%; aspect-ratio: 2/3; border-radius: 1.1cqw; object-fit: cover; display: block; border: 0.12cqw solid #23232a; }
-  .badge {
-    position: absolute; top: 0.7cqw; left: 0.7cqw; background: rgba(8,10,14,.82); color: #cfe8ff;
-    border-radius: 0.6cqw; font-size: 0.85cqw; font-weight: 800; letter-spacing: 0.08cqw; padding: 0.35cqw 0.6cqw; line-height: 1.15;
-  }
+  /* SLOP 3-state switch (free / all / only) */
+  .slop-toggle[data-state="free"] .slop-track { background:#00d4aa; border-color:rgba(0,0,0,.35); }
+  .slop-toggle[data-state="free"] .slop-thumb { transform:translateX(0); background:#fff; }
+  .slop-toggle[data-state="free"] .slop-label { color:#00d4aa; }
+  .slop-toggle[data-state="all"] .slop-track { background:rgba(0,212,170,0.12); border-color:#00d4aa; }
+  .slop-toggle[data-state="all"] .slop-thumb { transform:translateX(2.1cqw); background:#00d4aa; }
+  .slop-toggle[data-state="all"] .slop-label { color:#00d4aa; }
+  .slop-toggle[data-state="only"] .slop-track { background:#ff9500; border-color:rgba(0,0,0,.35); }
+  .slop-toggle[data-state="only"] .slop-thumb { transform:translateX(4.3cqw); background:#fff; }
+  .slop-toggle[data-state="only"] .slop-label { color:#ff9500; }
+
+  .dateStrip { border-top:0.18cqw solid; border-bottom:0.18cqw solid; border-radius:1cqw; padding:0.85cqw 0;
+    display:flex; gap:0.9cqw; align-items:baseline; justify-content:center; }
+  .dateStrip .day { font-size:1.9cqw; font-weight:800; letter-spacing:0.15cqw; }
+  .dateStrip .rest { font-size:1.9cqw; font-weight:300; color:#fff; letter-spacing:0.25cqw; }
+
+  .wall { flex:1; overflow:hidden; margin-top:1.4cqw; }
+  .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:1.5cqw; margin:1.2cqw 0; }
+  .card { position:relative; }
+  .poster { width:100%; aspect-ratio:2/3; border-radius:1.1cqw; object-fit:cover; display:block; border:0.12cqw solid #23232a; }
+  .badge { position:absolute; top:0.7cqw; left:0.7cqw; background:rgba(8,10,14,.82); color:#cfe8ff; border-radius:0.6cqw;
+    font-size:0.85cqw; font-weight:800; letter-spacing:0.08cqw; padding:0.35cqw 0.6cqw; line-height:1.15; }
   .badge small { display:block; font-size:0.62cqw; font-weight:600; color:#8fb6d6; letter-spacing:0.12cqw; }
-  .meta { color: #00d4aa; font-size: 1.02cqw; margin-top: 0.7cqw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .fade { position: absolute; left:0; right:0; bottom:0; height: 9cqw; background: linear-gradient(transparent, #07070b); pointer-events:none; }
+  .meta { color:#00d4aa; font-size:1.02cqw; margin-top:0.7cqw; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fade { position:absolute; left:0; right:0; bottom:0; height:9cqw; background:linear-gradient(transparent,#07070b); pointer-events:none; }
 </style>
 </head>
 <body>
 
-<div class="intro">Two whole-page tvOS layouts with the toggles moved to the <b>lower-left of the header</b>. SELECTS / FESTS / PRE-ORDER are on/off toggles; SLOP is the 3-state control. One-at-a-time exclusivity is live — tap to feel it.</div>
+<div class="intro">Same look as the desktop — the boxed 2×2 <b>View</b> module (switch toggles, no captions), gradient wordmark — just reorganized. Three placements to compare. SLOP is the 3-state switch; the rest are on/off; one-at-a-time exclusivity is live (tap to feel it).</div>
 
-<!-- ============ VARIATION 1 ============ -->
-<div class="pageCaption">A — Lower-left toggles, chips fill to the right <span>· one bottom row: toggles left, genre chips right</span></div>
-<div class="tv" data-frame="A">
-  <div class="pad">
-    <div class="row" style="margin-bottom:1.8cqw;">
-      <div class="title">THE NEW RELEASE WALL</div>
-      <div class="search" style="flex:1;"><span class="mag">⌕</span><span>Search…</span></div>
-    </div>
-    <div class="row" style="gap:2.4cqw; align-items:center; margin-bottom:1.4cqw;">
-      <div class="toggleBar" style="flex:0 0 52cqw;">
-        <div class="tgCol wide">
-          <div class="slopCtl"><span class="cap">SLOP</span><span class="opt act">FREE</span><span class="opt">ALL</span><span class="opt">ONLY</span></div>
-          <div class="tgDesc" style="color:#ff9500">The Content River</div>
-        </div>
-        <div class="tgCol">
-          <div class="tg selects on"><span class="knob"></span><span class="lbl">SELECTS</span></div>
-          <div class="tgDesc" style="color:#dc143c">Films of Note</div>
-        </div>
-        <div class="tgCol">
-          <div class="tg fests"><span class="knob"></span><span class="lbl">FESTS</span></div>
-          <div class="tgDesc" style="color:#f59e0b">Virtual Screenings</div>
-        </div>
-        <div class="tgCol">
-          <div class="tg pre"><span class="knob"></span><span class="lbl">PRE-ORDER</span></div>
-          <div class="tgDesc" style="color:#7c3aed">Coming Soon</div>
-        </div>
-      </div>
-      <div class="chips wrap" style="flex:1;"></div>
-    </div>
-    <div class="wall"></div>
-    <div class="fade"></div>
-  </div>
-</div>
-
-<!-- ============ VARIATION 2 ============ -->
-<div class="pageCaption">B — Toggles on their own lower-left tier <span>· chips keep full width; toggles sit beneath them, left-aligned</span></div>
-<div class="tv" data-frame="B">
+<!-- A: module lower-left -->
+<div class="pageCaption">A — View module lower-left <span>· title + search top; module bottom-left, chips fill right</span></div>
+<div class="tv" data-frame>
   <div class="pad">
     <div class="row" style="margin-bottom:1.6cqw;">
       <div class="title">THE NEW RELEASE WALL</div>
       <div class="search" style="flex:1;"><span class="mag">⌕</span><span>Search…</span></div>
     </div>
-    <div class="chips" style="margin-bottom:1.6cqw;"></div>
-    <div class="row" style="margin-bottom:1.2cqw;">
-      <div class="toggleBar" style="flex:0 0 66cqw;">
-        <div class="tgCol wide">
-          <div class="slopCtl"><span class="cap">SLOP</span><span class="opt act">FREE</span><span class="opt">ALL</span><span class="opt">ONLY</span></div>
-          <div class="tgDesc" style="color:#ff9500">The Content River</div>
-        </div>
-        <div class="tgCol">
-          <div class="tg selects on"><span class="knob"></span><span class="lbl">SELECTS</span></div>
-          <div class="tgDesc" style="color:#dc143c">Films of Note</div>
-        </div>
-        <div class="tgCol">
-          <div class="tg fests"><span class="knob"></span><span class="lbl">FESTS</span></div>
-          <div class="tgDesc" style="color:#f59e0b">Virtual Screenings</div>
-        </div>
-        <div class="tgCol">
-          <div class="tg pre"><span class="knob"></span><span class="lbl">PRE-ORDER</span></div>
-          <div class="tgDesc" style="color:#7c3aed">Coming Soon</div>
-        </div>
-      </div>
+    <div class="row" style="align-items:center; margin-bottom:1.2cqw;">
+      <div class="MODULE"></div>
+      <div class="chips" style="flex:1;"></div>
     </div>
-    <div class="wall"></div>
-    <div class="fade"></div>
+    <div class="wall"></div><div class="fade"></div>
+  </div>
+</div>
+
+<!-- B: module lower-right -->
+<div class="pageCaption">B — View module lower-right <span>· title + search top; chips fill left, module bottom-right</span></div>
+<div class="tv" data-frame>
+  <div class="pad">
+    <div class="row" style="margin-bottom:1.6cqw;">
+      <div class="title">THE NEW RELEASE WALL</div>
+      <div class="search" style="flex:1;"><span class="mag">⌕</span><span>Search…</span></div>
+    </div>
+    <div class="row" style="align-items:center; margin-bottom:1.2cqw;">
+      <div class="chips" style="flex:1;"></div>
+      <div class="MODULE"></div>
+    </div>
+    <div class="wall"></div><div class="fade"></div>
+  </div>
+</div>
+
+<!-- C: module top-right (desktop-style) -->
+<div class="pageCaption">C — View module top-right (desktop-style) <span>· title + module top; chips + search bottom</span></div>
+<div class="tv" data-frame>
+  <div class="pad">
+    <div class="row" style="align-items:flex-start; margin-bottom:1.6cqw;">
+      <div class="title" style="flex:1;">THE NEW RELEASE WALL</div>
+      <div class="MODULE"></div>
+    </div>
+    <div class="row" style="margin-bottom:1.2cqw;">
+      <div class="chips" style="flex:1;"></div>
+      <div class="search" style="flex:0 0 26cqw;"><span class="mag">⌕</span><span>Search…</span></div>
+    </div>
+    <div class="wall"></div><div class="fade"></div>
   </div>
 </div>
 
@@ -180,47 +146,40 @@ const MOVIES = [
  {"title":"Maternal Instinct","poster":"https://image.tmdb.org/t/p/w500/sSY1K2wENhlpAEo2ASrtsezn0YH.jpg","director":"Jessica Dimmock","genre":"Documentary","country":"United States of America","date":"2026-06-12","badge":"NETFLIX"},
  {"title":"Bizarrofilia","poster":"https://image.tmdb.org/t/p/w500/vT7nXdh8ak0A8uhZOf9a9dUzXyR.jpg","director":"Ayi Turzi","genre":"Documentary","country":"Argentina","date":"2026-06-12","badge":"PRIME"}
 ];
-const CC = { 'United States of America':'USA','US':'USA','India':'IND','Japan':'JPN','JP':'JPN','Taiwan':'TWN','Norway':'NOR','Australia':'AUS','Argentina':'ARG' };
+const CC = {'United States of America':'USA','US':'USA','India':'IND','Japan':'JPN','JP':'JPN','Taiwan':'TWN','Norway':'NOR','Australia':'AUS','Argentina':'ARG'};
 const cc = c => CC[c] || (c && c.length<=3 ? c.toUpperCase() : (c||'').slice(0,3).toUpperCase());
-function badge(b){
-  const u=(b||'').toUpperCase();
-  if(u.includes('NETFLIX')) return 'NETFLIX';
-  if(u.includes('YOUTUBE')) return 'YOUTUBE';
-  if(u.includes('AMAZON')||u.includes('PRIME')) return 'PRIME';
-  return u.split(' ')[0] || 'PRIME';
-}
-function strip(date){
-  const d=new Date(date+'T12:00:00');
+function badge(b){ const u=(b||'').toUpperCase(); if(u.includes('NETFLIX'))return'NETFLIX'; if(u.includes('YOUTUBE'))return'YOUTUBE'; if(u.includes('AMAZON')||u.includes('PRIME'))return'PRIME'; return u.split(' ')[0]||'PRIME'; }
+function strip(date){ const d=new Date(date+'T12:00:00');
   const day=d.toLocaleDateString('en-US',{weekday:'short'}).toUpperCase();
   const rest=(d.toLocaleDateString('en-US',{month:'short'})+' '+d.getDate()).toUpperCase();
-  return `<div class="dateStrip" style="border-color:#ff9500;box-shadow:0 0 1.4cqw rgba(255,149,0,.25)"><span class="day" style="color:#ff9500;text-shadow:0 0 1cqw #ff9500">${day}</span><span class="rest">${rest}</span></div>`;
-}
-function card(m){
-  return `<div class="card">
-    <img class="poster" src="${m.poster}" referrerpolicy="no-referrer">
-    <div class="badge">${badge(m.badge)}<small>NOW STREAMING</small></div>
-    <div class="meta">${(m.director&&m.director!=='Unknown'?m.director:'—')} • ${m.genre} • ${cc(m.country)}</div>
+  return `<div class="dateStrip" style="border-color:#ff9500;box-shadow:0 0 1.4cqw rgba(255,149,0,.25)"><span class="day" style="color:#ff9500;text-shadow:0 0 1cqw #ff9500">${day}</span><span class="rest">${rest}</span></div>`; }
+function card(m){ return `<div class="card"><img class="poster" src="${m.poster}" referrerpolicy="no-referrer"><div class="badge">${badge(m.badge)}<small>NOW STREAMING</small></div><div class="meta">${(m.director&&m.director!=='Unknown'?m.director:'—')} • ${m.genre} • ${cc(m.country)}</div></div>`; }
+function wallHtml(){ const byDate={}; MOVIES.forEach(m=>{(byDate[m.date]=byDate[m.date]||[]).push(m);});
+  return Object.keys(byDate).sort().reverse().map(dt=>strip(dt)+'<div class="grid">'+byDate[dt].map(card).join('')+'</div>').join(''); }
+
+const MODULE_HTML = `
+  <div class="view-module">
+    <div class="view-module-head">View</div>
+    <div class="toggle-grid">
+      <div class="slop-toggle-wrap slop-toggle" data-state="free"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">SLOP FREE</span></div>
+      <div class="slop-toggle-wrap view-toggle selects"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">SELECTS</span></div>
+      <div class="slop-toggle-wrap view-toggle fests"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">FESTS</span></div>
+      <div class="slop-toggle-wrap view-toggle pre"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">PRE-ORDER</span></div>
+    </div>
   </div>`;
-}
-function wallHtml(){
-  const byDate={};
-  MOVIES.forEach(m=>{ (byDate[m.date]=byDate[m.date]||[]).push(m); });
-  return Object.keys(byDate).sort().reverse()
-    .map(dt => strip(dt) + '<div class="grid">'+byDate[dt].map(card).join('')+'</div>').join('');
-}
-// Render chips + wall and wire one-at-a-time exclusivity per frame.
+
 document.querySelectorAll('.tv').forEach(tv => {
+  tv.querySelectorAll('.MODULE').forEach(el => el.outerHTML = MODULE_HTML);
   tv.querySelector('.chips').innerHTML = FILTERS.map(f=>`<div class="chip">${f}</div>`).join('');
   tv.querySelector('.wall').innerHTML = wallHtml();
-  const views = [...tv.querySelectorAll('.tg')];
-  const slopOpts = [...tv.querySelectorAll('.slopCtl .opt')];
-  const clearViews = () => views.forEach(t => t.classList.remove('on'));
-  const slopFree = () => { slopOpts.forEach(o => o.classList.remove('act')); if (slopOpts[0]) slopOpts[0].classList.add('act'); };
-  views.forEach(t => t.onclick = () => { const was = t.classList.contains('on'); clearViews(); slopFree(); if (!was) t.classList.add('on'); });
-  slopOpts.forEach(o => o.onclick = () => {
-    slopOpts.forEach(x => x.classList.remove('act')); o.classList.add('act');
-    if (o.textContent.trim() !== 'FREE') clearViews();
-  });
+
+  const slop = tv.querySelector('.slop-toggle');
+  const views = [...tv.querySelectorAll('.view-toggle')];
+  const STATES = ['free','all','only'];
+  const LABELS = { free:'SLOP FREE', all:'ALL', only:'SLOP ONLY' };
+  const setSlop = s => { slop.dataset.state = s; slop.querySelector('.slop-label').textContent = LABELS[s]; if (s !== 'free') views.forEach(v => v.classList.remove('active')); };
+  slop.onclick = () => setSlop(STATES[(STATES.indexOf(slop.dataset.state) + 1) % 3]);
+  views.forEach(v => v.onclick = () => { const was = v.classList.contains('active'); views.forEach(x => x.classList.remove('active')); setSlop('free'); if (!was) v.classList.add('active'); });
 });
 </script>
 </body>
