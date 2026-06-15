@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW — Section Header in Full Context</title>
+<style>
+  :root { --accent:#00d4aa; --crimson:#dc143c; --amber:#f59e0b; --purple:#7c3aed; --slop:#ff9500; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:linear-gradient(160deg,#0a0a0a,#1a1a2e); min-height:100vh; color:#fff; }
+
+  /* ===== HEADER (layout G, matches the real site) ===== */
+  header { position:sticky; top:0; z-index:100; padding:1.5rem 1.5rem 1.1rem; border-bottom:1px solid #333;
+    background:rgba(8,8,12,0.9); backdrop-filter:blur(12px); }
+  .title-row { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.2rem 1rem; }
+  .header-left { display:flex; flex-direction:column; align-items:stretch; gap:1.1rem; min-width:0; flex:1 1 720px; }
+  .hl-top { display:flex; align-items:center; gap:1.8rem; width:100%; }
+  .hl-top .search { flex:1 1 200px; min-width:0; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.2);
+    border-radius:25px; padding:0.55rem 1.1rem; color:#fff; font-size:0.9rem; outline:none; }
+  .hl-top .search::placeholder { color:#888; }
+  h1 { font-weight:100; letter-spacing:0.24em; font-size:2.9rem; line-height:1; white-space:nowrap; flex-shrink:0;
+    background:linear-gradient(45deg,#fff,var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .filters { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.7rem; width:100%; }
+  .filter-btn { padding:0.62rem 0.6rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+    color:#fff; border-radius:25px; font-size:1.02rem; text-align:center; white-space:nowrap; cursor:pointer; }
+  .view-module { flex-shrink:0; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.16); border-radius:16px; padding:14px 20px 16px; }
+  .vm-head { font-size:0.62rem; font-weight:800; letter-spacing:0.2em; text-transform:uppercase; color:#888; margin-bottom:12px; }
+  .toggle-grid { display:grid; grid-template-columns:auto auto; gap:13px 28px; }
+  .tog { display:flex; align-items:center; gap:9px; }
+  .tog .track { width:74px; height:28px; border-radius:15px; background:#1a1a1a; border:1px solid rgba(0,212,170,0.45); position:relative; }
+  .tog .thumb { position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:rgba(0,212,170,0.55); }
+  .tog .lbl { font-size:0.68rem; font-weight:700; letter-spacing:0.1em; color:rgba(0,212,170,0.7); white-space:nowrap; }
+  .tog.slop .track { background:var(--slop); border-color:rgba(0,0,0,.35); } .tog.slop .thumb { left:auto; right:3px; background:#fff; } .tog.slop .lbl { color:var(--slop); }
+
+  /* ===== style switcher ===== */
+  .switcher { position:sticky; top:0; z-index:200; display:flex; gap:8px; align-items:center; justify-content:center;
+    background:#0a0a0a; border-bottom:1px solid #222; padding:10px; flex-wrap:wrap; }
+  .switcher b { color:#888; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; margin-right:6px; }
+  .sw-btn { padding:6px 14px; border-radius:20px; border:1px solid rgba(255,255,255,0.2); background:transparent; color:#bbb; cursor:pointer; font-size:0.8rem; font-weight:700; }
+  .sw-btn.on { background:var(--slop); color:#0a0a0a; border-color:var(--slop); }
+
+  /* ===== river ===== */
+  .river { max-width:1200px; margin:0 auto; padding:18px 24px 80px; }
+  .date-div { display:flex; justify-content:center; align-items:baseline; gap:0.8rem; background:rgba(8,8,12,0.94);
+    border-top:2px solid var(--slop); border-bottom:2px solid var(--slop); border-radius:4px; padding:10px 12px; margin:16px 0 14px;
+    box-shadow:0 0 22px color-mix(in srgb,var(--slop) 40%,transparent); }
+  .date-div .d-day { font-size:1.1rem; font-weight:900; letter-spacing:0.3em; color:var(--slop); text-shadow:0 0 10px var(--slop); }
+  .date-div .d-rest { font-size:1.1rem; font-weight:500; letter-spacing:0.3em; color:#fff; }
+  .cards { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; }
+  .card img { width:100%; aspect-ratio:2/3; object-fit:cover; border-radius:10px; display:block; background:#222; }
+  .card .cap { font-size:0.72rem; color:#aaa; margin-top:6px; text-align:center; }
+
+  /* ===== section header — switchable ===== */
+  .sec .s-day, .sec .s-rest { display:inline; }
+
+  .sec.cur { display:flex; justify-content:center; align-items:baseline; gap:0.8rem; background:rgba(8,8,12,0.94);
+    border-top:2px solid var(--slop); border-bottom:2px solid var(--slop); border-radius:4px; padding:10px 12px; box-shadow:0 0 22px color-mix(in srgb,var(--slop) 40%,transparent); }
+  .sec.cur .s-day { font-size:1.1rem; font-weight:900; letter-spacing:0.3em; color:var(--slop); text-shadow:0 0 10px var(--slop); }
+  .sec.cur .s-rest { font-size:1.1rem; font-weight:500; letter-spacing:0.3em; color:#fff; }
+
+  .sec.a { display:flex; justify-content:center; align-items:baseline; gap:1rem; background:rgba(8,8,12,0.96);
+    border-top:3px solid var(--slop); border-bottom:3px solid var(--slop); border-radius:6px; padding:22px 16px;
+    box-shadow:0 0 40px color-mix(in srgb,var(--slop) 50%,transparent), inset 0 0 26px color-mix(in srgb,var(--slop) 16%,transparent); }
+  .sec.a .s-day { font-size:2.4rem; font-weight:900; letter-spacing:0.28em; color:var(--slop); text-shadow:0 0 16px var(--slop); }
+  .sec.a .s-rest { font-size:1.5rem; font-weight:400; letter-spacing:0.3em; color:#fff; }
+
+  .sec.b { background:var(--slop); border-radius:8px; padding:20px 24px; text-align:center; box-shadow:0 0 36px color-mix(in srgb,var(--slop) 45%,transparent); }
+  .sec.b .s-day { font-size:2.2rem; font-weight:900; letter-spacing:0.22em; color:#0a0a0a; display:block; }
+  .sec.b .s-rest { font-size:0.95rem; font-weight:700; letter-spacing:0.35em; color:rgba(10,10,10,0.7); text-transform:uppercase; }
+
+  .sec.c { margin:0 4px; padding-bottom:12px; border-bottom:3px solid var(--slop); text-align:left; }
+  .sec.c .s-day { font-size:2.9rem; font-weight:800; letter-spacing:0.04em; color:var(--slop); display:block; line-height:1; }
+  .sec.c .s-rest { font-size:1.05rem; font-weight:500; letter-spacing:0.16em; color:#aaa; text-transform:uppercase; margin-top:8px; display:block; }
+
+  .sec.d { text-align:center; padding:14px 0 6px; }
+  .sec.d .s-day { font-size:3rem; font-weight:900; letter-spacing:0.3em; color:var(--slop); display:block; line-height:1; text-shadow:0 0 22px color-mix(in srgb,var(--slop) 55%,transparent); }
+  .sec.d .s-rest { font-size:0.85rem; font-weight:700; letter-spacing:0.45em; color:#888; text-transform:uppercase; display:block; margin-top:12px; }
+
+  .sec.e { display:flex; flex-direction:column; justify-content:center; border-left:8px solid var(--slop);
+    background:linear-gradient(90deg, color-mix(in srgb,var(--slop) 14%,transparent), transparent 60%); padding:16px 0 16px 22px; border-radius:0 8px 8px 0; text-align:left; }
+  .sec.e .s-day { font-size:2.3rem; font-weight:900; letter-spacing:0.12em; color:var(--slop); line-height:1; }
+  .sec.e .s-rest { font-size:0.9rem; font-weight:700; letter-spacing:0.3em; color:#999; text-transform:uppercase; margin-top:8px; }
+</style>
+</head>
+<body>
+
+<div class="switcher">
+  <b>Section header style</b>
+  <button class="sw-btn" data-s="cur">Current</button>
+  <button class="sw-btn on" data-s="a">A · 2× bar</button>
+  <button class="sw-btn" data-s="b">B · slab</button>
+  <button class="sw-btn" data-s="c">C · editorial</button>
+  <button class="sw-btn" data-s="d">D · centered</button>
+  <button class="sw-btn" data-s="e">E · side-bar</button>
+</div>
+
+<header>
+  <div class="title-row">
+    <div class="header-left">
+      <div class="hl-top">
+        <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
+        <input class="search" placeholder="Search title, director, genre...">
+      </div>
+      <div class="filters">
+        <button class="filter-btn">Indie</button><button class="filter-btn">Horror</button>
+        <button class="filter-btn">Action</button><button class="filter-btn">Comedy</button>
+        <button class="filter-btn">Family</button><button class="filter-btn">Thriller</button>
+        <button class="filter-btn">Foreign</button><button class="filter-btn">Docs</button>
+        <button class="filter-btn">Reissues</button>
+      </div>
+    </div>
+    <div class="view-module">
+      <div class="vm-head">View</div>
+      <div class="toggle-grid">
+        <div class="tog slop"><div class="track"><div class="thumb"></div></div><span class="lbl">SLOP ONLY</span></div>
+        <div class="tog"><div class="track"><div class="thumb"></div></div><span class="lbl">SELECTS</span></div>
+        <div class="tog"><div class="track"><div class="thumb"></div></div><span class="lbl">FESTS</span></div>
+        <div class="tog"><div class="track"><div class="thumb"></div></div><span class="lbl">PRE-ORDER</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="river">
+  <div id="section" class="sec a"><span class="s-day">SLOP</span><span class="s-rest">THE CONTENT RIVER</span></div>
+  <div class="date-div"><span class="d-day">SAT</span><span class="d-rest">JUN 14</span></div>
+  <div class="cards" id="row1"></div>
+  <div class="date-div"><span class="d-day">FRI</span><span class="d-rest">JUN 13</span></div>
+  <div class="cards" id="row2"></div>
+</div>
+
+<script>
+const FILMS = [
+  ["BORN SEXY YESTERDAY","sl9s7mANjzIyuZt7HWAu3SPYKi2","USA"],
+  ["A Child of My Own","OP9GDVWBKdWW6xsrPw8bq1hEjQ","MEX"],
+  ["Color Book","wQEVvXJpJL5ixw63Ir4ESbx9RYW","USA"],
+  ["Love & Other Crimes","mVO5KafSNW8sZ2EtsMreZomqjBz","USA"],
+  ["Mockbuster","wcjyHnvWtohsGrZHcNTEBwO2ooY","AUS"],
+  ["The Jealous Bride","fCdtM7FKPjimt0XijKlwOSv9E0v","USA"],
+  ["Toh, Ti Ani Fuji","1JGkVOvJZEwVOHzmdRvkc7dPI6r","IND"],
+  ["Time of Death","86NmEEtkQFvbWT28YtZyFVfv6mO","USA"],
+  ["Maternal Instinct","sSY1K2wENhlpAEo2ASrtsezn0YH","USA"],
+  ["Bizarrofilia","vT7nXdh8ak0A8uhZOf9a9dUzXyR","ARG"],
+];
+const card = f => `<div class="card"><img loading="lazy" src="https://image.tmdb.org/t/p/w300/${f[1]}.jpg" alt=""><div class="cap">${f[0]} · ${f[2]}</div></div>`;
+document.getElementById('row1').innerHTML = FILMS.slice(0,5).map(card).join('');
+document.getElementById('row2').innerHTML = FILMS.slice(5,10).map(card).join('');
+
+document.querySelectorAll('.sw-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.sw-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('section').className = 'sec ' + btn.dataset.s;
+}));
+</script>
+</body>
+</html>
