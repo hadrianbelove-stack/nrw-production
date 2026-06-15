@@ -232,14 +232,14 @@ Merge into one list, deduplicated, sorted by `digital_date` descending. For each
 
 **Build a stable numbered queue.** Assign each candidate a fixed index `#1 … #N` in this sorted order and persist it to `cache/curation_stage4_queue.json` (list of `{n, id, title, year, digital_date, needs, status}` where `status` starts as `pending`). The numbers must stay stable for the whole session even as items get completed or the watermark moves. If that file already exists for the current `session_start`, **reuse it** (resume) rather than renumbering.
 
-Print the full queue once before starting, as a numbered checklist with the total. **Hyperlink each film title to its Wikipedia page (`movie.links.wikipedia`) when one exists; plain text if absent.** Show RT score next to each so standouts are visible.
+Print the full queue once before starting, as a numbered checklist with the total. For each film show: **title hyperlinked to its Wikipedia page (`movie.links.wikipedia`) when one exists** (plain text if absent), **a trailer hyperlink (`movie.links.trailer_hosted`, falling back to `movie.links.trailer`)**, and the RT score so standouts are visible.
 
 ```
 STAGE 4 — 35 movies to curate
-  #1  [The Jealous Bride (2026)](wiki-url)   RT --   — capsule+quotes
-  #2  [Double Happiness (2026)](wiki-url)    RT 73%  — capsule+quotes
+  #1  [The Jealous Bride (2026)](wiki-url) · [▶ trailer](trailer-url)   RT --   — capsule+quotes
+  #2  [Double Happiness (2026)](wiki-url) · [▶ trailer](trailer-url)    RT 73%  — capsule+quotes
   ...
-  #35 Wetiko (2025)                          RT --   — quotes   (no wiki page)
+  #35 Wetiko (2025) · [▶ trailer](trailer-url)                         RT --   — quotes   (no wiki page)
 ```
 
 If no candidates for either: report through-dates and mark stage `completed`.
