@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>tvOS — toggles above posters</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #050507;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 18px 14px 60px;
+  }
+  .pageCaption {
+    font-size: 15px; color: #00d4aa; letter-spacing: 1px; text-transform: uppercase;
+    margin: 26px 4px 10px; font-weight: 700;
+  }
+  .pageCaption span { color: #777; font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .intro { color:#aaa; font-size:13px; line-height:1.5; margin: 0 4px 8px; max-width: 760px; }
+
+  /* ---- TV frame: 16:9, scales to width, inner sized in container-query units ---- */
+  .tv {
+    container-type: inline-size;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: radial-gradient(120% 120% at 50% 0%, #14141f 0%, #07070b 60%);
+    border: 1px solid #222;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .pad { padding: 3cqw 3.2cqw 0; height: 100%; display: flex; flex-direction: column; }
+
+  /* ---- shared pieces ---- */
+  .title { font-size: 3.4cqw; font-weight: 200; letter-spacing: 0.45cqw; white-space: nowrap; }
+  .row { display: flex; align-items: center; gap: 1.4cqw; }
+
+  .chips { display: flex; gap: 1.1cqw; flex: 1; }
+  .chip {
+    flex: 1; text-align: center;
+    background: #16161c; border: 1px solid #2c2c33; border-radius: 2.2cqw;
+    color: #e9e9ee; font-size: 1.45cqw; padding: 1.05cqw 0; white-space: nowrap;
+  }
+
+  .search {
+    display: flex; align-items: center; gap: 0.8cqw;
+    background: #111116; border: 1px solid #2c2c33; border-radius: 2.2cqw;
+    padding: 1.05cqw 1.6cqw; color: #777; font-size: 1.45cqw;
+  }
+  .search .mag { font-size: 1.6cqw; }
+
+  /* toggle pills (Layout A) — separate, accent-outlined, evenly spread */
+  .toggleBar { display: flex; gap: 1.4cqw; }
+  .tg {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.9cqw;
+    border-radius: 3cqw; padding: 1.25cqw 0; font-size: 1.7cqw; font-weight: 700;
+    letter-spacing: 0.12cqw; background: #0e0e13; border: 0.18cqw solid;
+  }
+  .tg .knob { width: 2.2cqw; height: 2.2cqw; border-radius: 50%; background: #fff; box-shadow: 0 0 1.2cqw rgba(255,255,255,.4); }
+  .tg.slop   { color: #ff9500; border-color: #ff9500; }
+  .tg.selects{ color: #dc143c; border-color: #dc143c; }
+  .tg.fests  { color: #f59e0b; border-color: #f59e0b; }
+  .tg.pre    { color: #7c3aed; border-color: #7c3aed; }
+  .tg.on { background: currentColor; }
+  .tg.on .lbl { color: #07070b; }
+  .tg.on .knob { background: #07070b; }
+
+  /* segmented control (Layout B) — connected, search inline at right */
+  .seg { display: flex; flex: 1; border: 0.16cqw solid #2c2c33; border-radius: 2.4cqw; overflow: hidden; }
+  .seg .s {
+    flex: 1; text-align: center; padding: 1.2cqw 0; font-size: 1.65cqw; font-weight: 700;
+    letter-spacing: 0.12cqw; color: #cfcfd6; border-right: 0.16cqw solid #2c2c33; background:#0e0e13;
+  }
+  .seg .s:last-child { border-right: none; }
+  .seg .s.slop.act   { background:#ff9500; color:#07070b; }
+  .seg .s.selects.act{ background:#dc143c; color:#fff; }
+  .seg .s.fests.act  { background:#f59e0b; color:#07070b; }
+  .seg .s.pre.act    { background:#7c3aed; color:#fff; }
+
+  /* date strip */
+  .dateStrip {
+    border-top: 0.18cqw solid; border-bottom: 0.18cqw solid;
+    border-radius: 1cqw; padding: 0.85cqw 0; text-align: center;
+    display: flex; gap: 0.9cqw; align-items: baseline; justify-content: center;
+  }
+  .dateStrip .day { font-size: 1.9cqw; font-weight: 800; letter-spacing: 0.15cqw; }
+  .dateStrip .rest { font-size: 1.9cqw; font-weight: 300; color: #fff; letter-spacing: 0.25cqw; }
+
+  /* wall (scrolls inside the frame) */
+  .wall { flex: 1; overflow: hidden; margin-top: 1.6cqw; }
+  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.5cqw; margin: 1.2cqw 0; }
+  .card { position: relative; }
+  .poster { width: 100%; aspect-ratio: 2/3; border-radius: 1.1cqw; object-fit: cover; display: block; border: 0.12cqw solid #23232a; }
+  .badge {
+    position: absolute; top: 0.7cqw; left: 0.7cqw;
+    background: rgba(8,10,14,.82); color: #cfe8ff; border-radius: 0.6cqw;
+    font-size: 0.85cqw; font-weight: 800; letter-spacing: 0.08cqw; padding: 0.35cqw 0.6cqw; line-height: 1.15;
+  }
+  .badge small { display:block; font-size:0.62cqw; font-weight:600; color:#8fb6d6; letter-spacing:0.12cqw; }
+  .meta { color: #00d4aa; font-size: 1.02cqw; margin-top: 0.7cqw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fade { position: absolute; left:0; right:0; bottom:0; height: 9cqw; background: linear-gradient(transparent, #07070b); pointer-events:none; }
+</style>
+</head>
+<body>
+
+<div class="intro">Two whole-page tvOS layouts with the SLOP / SELECTS / FESTS / PRE-ORDER toggles moved down to sit <b>directly above the poster wall</b>. Everything is sized to fill the wide screen. (Resting states shown; SLOP is the 3-state control.)</div>
+
+<div class="pageCaption">Layout A — Toolbar <span>· title + search top, chips, then a full-width row of separate accent pills above the wall</span></div>
+<div class="tv">
+  <div class="pad">
+    <div class="row" style="justify-content:space-between; margin-bottom:1.8cqw;">
+      <div class="title">THE NEW RELEASE WALL</div>
+      <div class="search" style="width:26cqw;"><span class="mag">⌕</span><span>Search…</span></div>
+    </div>
+    <div class="chips" style="margin-bottom:1.8cqw;" id="chipsA"></div>
+    <div class="toggleBar">
+      <div class="tg slop"><span class="knob"></span><span class="lbl">SLOP FREE</span></div>
+      <div class="tg selects on"><span class="lbl">SELECTS</span><span class="knob"></span></div>
+      <div class="tg fests"><span class="knob"></span><span class="lbl">FESTS</span></div>
+      <div class="tg pre"><span class="knob"></span><span class="lbl">PRE-ORDER</span></div>
+    </div>
+    <div class="wall" id="wallA"></div>
+    <div class="fade"></div>
+  </div>
+</div>
+
+<div class="pageCaption">Layout B — Inline rail <span>· title alone, chips, then one full-width bar: segmented toggles on the left, search on the right, right above the wall</span></div>
+<div class="tv">
+  <div class="pad">
+    <div class="row" style="margin-bottom:1.8cqw;">
+      <div class="title">THE NEW RELEASE WALL</div>
+    </div>
+    <div class="chips" style="margin-bottom:1.8cqw;" id="chipsB"></div>
+    <div class="row" style="gap:1.6cqw;">
+      <div class="seg">
+        <div class="s slop">SLOP FREE</div>
+        <div class="s selects act">SELECTS</div>
+        <div class="s fests">FESTS</div>
+        <div class="s pre">PRE-ORDER</div>
+      </div>
+      <div class="search" style="width:24cqw;"><span class="mag">⌕</span><span>Search…</span></div>
+    </div>
+    <div class="wall" id="wallB"></div>
+    <div class="fade"></div>
+  </div>
+</div>
+
+<script>
+const FILTERS = ['Indie','Horror','Action','Comedy','Family','Thriller','Foreign','Docs','Reissues'];
+const MOVIES = [
+ {
+  "title": "The Jealous Bride",
+  "poster": "https://image.tmdb.org/t/p/w500/fCdtM7FKPjimt0XijKlwOSv9E0v.jpg",
+  "director": "Troy Scott",
+  "genre": "TV Movie",
+  "country": "US",
+  "date": "2026-06-13",
+  "badge": "PRIME",
+  "rt": ""
+ },
+ {
+  "title": "Time of Death",
+  "poster": "https://image.tmdb.org/t/p/w500/xwA7uRchl9ol2RmpkQBlMfqMpV7.jpg",
+  "director": "Will Wernick",
+  "genre": "Thriller",
+  "country": "United States of America",
+  "date": "2026-06-12",
+  "badge": "PRIME",
+  "rt": "7.0"
+ },
+ {
+  "title": "Double Happiness",
+  "poster": "https://image.tmdb.org/t/p/w500/1MzikEP1A09dZFuQu5DBxJFPNH7.jpg",
+  "director": "Joseph Hsu",
+  "genre": "Drama",
+  "country": "Taiwan",
+  "date": "2026-06-13",
+  "badge": "NETFLIX",
+  "rt": "7.9"
+ },
+ {
+  "title": "Toh, Ti Ani Fuji",
+  "poster": "https://image.tmdb.org/t/p/w500/1JGkVOvJZEwVOHzmdRvkc7dPI6r.jpg",
+  "director": "Mohit Takalkar",
+  "genre": "Romance",
+  "country": "India",
+  "date": "2026-06-13",
+  "badge": "YOUTUBE",
+  "rt": "5.8"
+ },
+ {
+  "title": "Kalamkaval",
+  "poster": "https://image.tmdb.org/t/p/w500/5vdogNH72GrriiZ45H8U7CPWGfO.jpg",
+  "director": "Jithin K Jose",
+  "genre": "Crime",
+  "country": "India",
+  "date": "2026-06-13",
+  "badge": "YOUTUBE",
+  "rt": "7.2"
+ },
+ {
+  "title": "Viral Hit",
+  "poster": "https://image.tmdb.org/t/p/w500/8VCLKvxUpnsRH4ZjECM5e22KcIB.jpg",
+  "director": "Unknown",
+  "genre": "Drama",
+  "country": "JP",
+  "date": "2026-06-11",
+  "badge": "NETFLIX",
+  "rt": "7.8"
+ },
+ {
+  "title": "Chloe et Emma",
+  "poster": "https://image.tmdb.org/t/p/w500/zUHE73VCTCnXifdBXdNUxGF3aek.jpg",
+  "director": "Unknown",
+  "genre": "Drama",
+  "country": "JP",
+  "date": "2026-06-12",
+  "badge": "AMAZON PRIME VIDEO",
+  "rt": ""
+ },
+ {
+  "title": "Kraken",
+  "poster": "https://image.tmdb.org/t/p/w500/xdZ8k5s8DTwWyPBMIcflrYLgcAK.jpg",
+  "director": "P\u00e5l \u00d8ie",
+  "genre": "Horror",
+  "country": "Norway",
+  "date": "2026-06-12",
+  "badge": "PRIME",
+  "rt": "67%"
+ },
+ {
+  "title": "Just Kids",
+  "poster": "https://image.tmdb.org/t/p/w500/1QFtQrzwUMZQHUd4i1j5IdPKsvF.jpg",
+  "director": "Gianna Toboni",
+  "genre": "Documentary",
+  "country": "United States of America",
+  "date": "2026-06-12",
+  "badge": "PRIME",
+  "rt": "6.8"
+ },
+ {
+  "title": "This Tempting Madness",
+  "poster": "https://image.tmdb.org/t/p/w500/yxyWCKdUcfqgBUCrf1xIvghxJlu.jpg",
+  "director": "Jennifer E. Montgomery",
+  "genre": "Thriller",
+  "country": "United States of America",
+  "date": "2026-06-12",
+  "badge": "PRIME",
+  "rt": "7.8"
+ },
+ {
+  "title": "Badland Rising",
+  "poster": "https://image.tmdb.org/t/p/w500/zJ9cH08c1x1WNsVRR6v6FCK805w.jpg",
+  "director": "Blair Moore",
+  "genre": "Action",
+  "country": "Australia",
+  "date": "2026-06-12",
+  "badge": "PRIME",
+  "rt": "7.6"
+ },
+ {
+  "title": "Time of Death",
+  "poster": "https://image.tmdb.org/t/p/w500/86NmEEtkQFvbWT28YtZyFVfv6mO.jpg",
+  "director": "Will Wernick",
+  "genre": "Horror",
+  "country": "United States of America",
+  "date": "2026-06-12",
+  "badge": "PRIME",
+  "rt": ""
+ },
+ {
+  "title": "Maternal Instinct",
+  "poster": "https://image.tmdb.org/t/p/w500/sSY1K2wENhlpAEo2ASrtsezn0YH.jpg",
+  "director": "Jessica Dimmock",
+  "genre": "Documentary",
+  "country": "United States of America",
+  "date": "2026-06-12",
+  "badge": "NETFLIX",
+  "rt": ""
+ },
+ {
+  "title": "Bizarrofilia",
+  "poster": "https://image.tmdb.org/t/p/w500/vT7nXdh8ak0A8uhZOf9a9dUzXyR.jpg",
+  "director": "Ayi Turzi",
+  "genre": "Documentary",
+  "country": "Argentina",
+  "date": "2026-06-12",
+  "badge": "PRIME",
+  "rt": "8.2"
+ }
+];
+const CC = { 'United States of America':'USA','US':'USA','India':'IND','Japan':'JPN','JP':'JPN','Taiwan':'TWN','Norway':'NOR','Australia':'AUS','Argentina':'ARG' };
+const cc = c => CC[c] || (c && c.length<=3 ? c.toUpperCase() : (c||'').slice(0,3).toUpperCase());
+function badge(b){
+  const u=(b||'').toUpperCase();
+  if(u.includes('NETFLIX')) return 'NETFLIX';
+  if(u.includes('YOUTUBE')) return 'YOUTUBE';
+  if(u.includes('AMAZON')||u.includes('PRIME')) return 'PRIME';
+  return u.split(' ')[0] || 'PRIME';
+}
+function strip(date){
+  const d=new Date(date+'T12:00:00');
+  const day=d.toLocaleDateString('en-US',{weekday:'short'}).toUpperCase();
+  const rest=(d.toLocaleDateString('en-US',{month:'short'})+' '+d.getDate()).toUpperCase();
+  return `<div class="dateStrip" style="border-color:#ff9500;box-shadow:0 0 1.4cqw rgba(255,149,0,.25)"><span class="day" style="color:#ff9500;text-shadow:0 0 1cqw #ff9500">${day}</span><span class="rest">${rest}</span></div>`;
+}
+function chipRow(el){ el.innerHTML = FILTERS.map(f=>`<div class="chip">${f}</div>`).join(''); }
+function card(m){
+  return `<div class="card">
+    <img class="poster" src="${m.poster}" referrerpolicy="no-referrer">
+    <div class="badge">${badge(m.badge)}<small>NOW STREAMING</small></div>
+    <div class="meta">${(m.director&&m.director!=='Unknown'?m.director:'—')} • ${m.genre} • ${cc(m.country)}</div>
+  </div>`;
+}
+function wall(el){
+  const byDate={};
+  MOVIES.forEach(m=>{ (byDate[m.date]=byDate[m.date]||[]).push(m); });
+  const dates=Object.keys(byDate).sort().reverse();
+  let html='';
+  dates.forEach(dt=>{
+    html+=strip(dt);
+    html+='<div class="grid">'+byDate[dt].map(card).join('')+'</div>';
+  });
+  el.innerHTML=html;
+}
+chipRow(document.getElementById('chipsA'));
+chipRow(document.getElementById('chipsB'));
+wall(document.getElementById('wallA'));
+wall(document.getElementById('wallB'));
+</script>
+</body>
+</html>
