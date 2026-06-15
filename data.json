@@ -6495,16 +6495,6 @@
       "featured": false,
       "_enrichment_attempts": 1,
       "_last_enrichment_attempt": "2026-06-15",
-      "_is_preorder": true,
-      "_buyonly_preorder": true,
-      "pre_order_links": [
-        {
-          "service": "Amazon Video",
-          "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.1ac79551-b729-4f21-8953-d5c9d512ea5f&tag=nrw04-20",
-          "buy_price": "$15.99",
-          "price": "$15.99"
-        }
-      ],
       "imdb_rating": "7.1",
       "letterboxd_score": "3.5",
       "keywords": [
@@ -6541,7 +6531,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "display_title": "Blue Film"
+      "display_title": "Blue Film",
+      "_buyonly_verified": true
     },
     {
       "id": "tv_312493",
