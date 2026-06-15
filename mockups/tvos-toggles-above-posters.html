@@ -51,14 +51,22 @@
   }
   .search .mag { font-size: 1.6cqw; }
 
-  /* toggle pills (Layout A) — separate, accent-outlined, evenly spread */
-  .toggleBar { display: flex; gap: 1.4cqw; }
+  /* toggle pills (Layout A) — separate, accent-outlined, evenly spread, each with a descriptor below */
+  .toggleBar { display: flex; gap: 1.4cqw; align-items: flex-start; }
+  .tgCol { flex: 1; display: flex; flex-direction: column; gap: 0.55cqw; }
+  .tgCol.wide { flex: 1.7; }
+  .tgCol .tg, .tgCol .slopCtl { flex: none; width: 100%; }
+  .tgDesc { text-align: center; font-size: 1.12cqw; letter-spacing: 0.14cqw; font-weight: 600; text-transform: uppercase; }
   .tg {
     flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.9cqw;
     border-radius: 3cqw; padding: 1.25cqw 0; font-size: 1.7cqw; font-weight: 700;
     letter-spacing: 0.12cqw; background: #0e0e13; border: 0.18cqw solid;
   }
-  .tg .knob { width: 2.2cqw; height: 2.2cqw; border-radius: 50%; background: #fff; box-shadow: 0 0 1.2cqw rgba(255,255,255,.4); }
+  .tg { cursor: pointer; }
+  .tg .knob { width: 2.2cqw; height: 2.2cqw; border-radius: 50%; background: #fff; box-shadow: 0 0 1.2cqw rgba(255,255,255,.4); order: 0; }
+  .tg .lbl { order: 1; }
+  .tg.on .knob { order: 1; }
+  .tg.on .lbl { order: 0; }
   .tg.slop   { color: #ff9500; border-color: #ff9500; }
   .tg.selects{ color: #dc143c; border-color: #dc143c; }
   .tg.fests  { color: #f59e0b; border-color: #f59e0b; }
@@ -73,7 +81,7 @@
     background: #0e0e13; border: 0.18cqw solid #ff9500; border-radius: 3cqw; padding: 0.95cqw 1.1cqw;
   }
   .slopCtl .cap { color: #ff9500; font-weight: 800; font-size: 1.55cqw; letter-spacing: 0.12cqw; margin-right: 0.4cqw; }
-  .slopCtl .opt { color: rgba(255,149,0,.55); font-weight: 700; font-size: 1.4cqw; padding: 0.4cqw 0.95cqw; border-radius: 1.6cqw; letter-spacing: 0.08cqw; }
+  .slopCtl .opt { color: rgba(255,149,0,.55); font-weight: 700; font-size: 1.4cqw; padding: 0.4cqw 0.95cqw; border-radius: 1.6cqw; letter-spacing: 0.08cqw; cursor: pointer; }
   .slopCtl .opt.act { background: #ff9500; color: #07070b; }
 
   /* SLOP 3-state — segmented form (Layout B) */
@@ -132,10 +140,22 @@
     </div>
     <div class="chips" style="margin-bottom:1.8cqw;" id="chipsA"></div>
     <div class="toggleBar">
-      <div class="slopCtl"><span class="cap">SLOP</span><span class="opt act">FREE</span><span class="opt">ALL</span><span class="opt">ONLY</span></div>
-      <div class="tg selects on"><span class="lbl">SELECTS</span><span class="knob"></span></div>
-      <div class="tg fests"><span class="knob"></span><span class="lbl">FESTS</span></div>
-      <div class="tg pre"><span class="knob"></span><span class="lbl">PRE-ORDER</span></div>
+      <div class="tgCol wide">
+        <div class="slopCtl"><span class="cap">SLOP</span><span class="opt act">FREE</span><span class="opt">ALL</span><span class="opt">ONLY</span></div>
+        <div class="tgDesc" style="color:#ff9500">The Content River</div>
+      </div>
+      <div class="tgCol">
+        <div class="tg selects on"><span class="knob"></span><span class="lbl">SELECTS</span></div>
+        <div class="tgDesc" style="color:#dc143c">Films of Note</div>
+      </div>
+      <div class="tgCol">
+        <div class="tg fests"><span class="knob"></span><span class="lbl">FESTS</span></div>
+        <div class="tgDesc" style="color:#f59e0b">Virtual Screenings</div>
+      </div>
+      <div class="tgCol">
+        <div class="tg pre"><span class="knob"></span><span class="lbl">PRE-ORDER</span></div>
+        <div class="tgDesc" style="color:#7c3aed">Coming Soon</div>
+      </div>
     </div>
     <div class="wall" id="wallA"></div>
     <div class="fade"></div>
@@ -322,6 +342,22 @@ function wall(el){
 }
 chipRow(document.getElementById('chipsA'));
 wall(document.getElementById('wallA'));
+
+// One-at-a-time: at most one of SLOP(non-free)/SELECTS/FESTS/PRE-ORDER active (matches app).
+const views = [...document.querySelectorAll('.toggleBar .tg')];
+const slopOpts = [...document.querySelectorAll('.slopCtl .opt')];
+function clearViews(){ views.forEach(t => t.classList.remove('on')); }
+function slopFree(){ slopOpts.forEach(o => o.classList.remove('act')); slopOpts[0].classList.add('act'); }
+views.forEach(t => t.onclick = () => {
+  const was = t.classList.contains('on');
+  clearViews(); slopFree();            // turning on a view resets slop to FREE
+  if (!was) t.classList.add('on');     // tap again to turn off
+});
+slopOpts.forEach(o => o.onclick = () => {
+  slopOpts.forEach(x => x.classList.remove('act'));
+  o.classList.add('act');
+  if (o.textContent.trim() !== 'FREE') clearViews();  // ALL/ONLY clears the views
+});
 </script>
 </body>
 </html>
