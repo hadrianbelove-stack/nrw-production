@@ -46,7 +46,6 @@ const FILTERS = [
   { id: 'restorations', label: 'Reissues' },
 ];
 
-// Filter descriptions — shown below filter row when a single filter is active (matches web)
 // Date strips adopt the active filter's color when exactly one filter is on
 const STRIP_COLORS = {
   'indie': '#00d4aa',
@@ -58,19 +57,6 @@ const STRIP_COLORS = {
   'foreign': '#e84393',
   'documentary': '#4A90D9',
   'restorations': '#C8A951',
-};
-
-const FILTER_DESCRIPTIONS = {
-  'staff-picks': { title: 'Selects', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
-  'indie':       { title: 'Indie', text: "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home." },
-  'horror':      { title: 'Horror', text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." },
-  'action':      { title: 'Action', text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." },
-  'comedy':      { title: 'Comedy', text: "Films that are actually funny. Comedies — broad and subtle — now streaming." },
-  'family':      { title: 'Family', text: "Films for all ages. Family movies now available to watch at home." },
-  'thriller':    { title: 'Thriller', text: "Suspense, dread, and unease. Thrillers now streaming — from psychological slow-burns to pulse-pounding crime." },
-  'foreign':     { title: 'Foreign', text: "Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they're streaming now." },
-  'documentary': { title: 'Documentary', text: "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home." },
-  'restorations':{ title: 'Reissues', text: "Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers." },
 };
 
 // Filter Button Component - forwardRef to allow focus navigation from grid
@@ -517,6 +503,7 @@ const HomeScreenTvOS = () => {
     setHideFest(view !== 'fests');
     setShowPreorders(view === 'preorders');
     setSlopMode('free'); // slop is part of the same exclusive group (matches desktop)
+    setActiveFilters(new Set()); // view toggles are mutually exclusive with genre filters
   }, []);
   const toggleShowHighlights = useCallback(() => showExclusiveView(showHighlightsOnly ? 'none' : 'selects'), [showHighlightsOnly, showExclusiveView]);
   const toggleHideFest = useCallback(() => showExclusiveView(hideFest ? 'fests' : 'none'), [hideFest, showExclusiveView]);
@@ -526,6 +513,7 @@ const HomeScreenTvOS = () => {
   const cycleSlopMode = useCallback(() => {
     const next = slopMode === 'free' ? 'all' : slopMode === 'all' ? 'only' : 'free';
     setSlopMode(next);
+    setActiveFilters(new Set()); // slop toggle is mutually exclusive with genre filters
     if (next !== 'free') {
       setShowHighlightsOnly(false);
       setHideFest(true);
@@ -608,21 +596,20 @@ const HomeScreenTvOS = () => {
     trackScreenView('Home', { filters: Array.from(activeFilters) });
   }, []);
 
-  // Handle filter change - multi-select toggle behavior
+  // Single-select: a genre replaces any other active genre and is mutually exclusive
+  // with the view toggles — only one filter OR one toggle is ever active. Tapping the
+  // active filter again clears it (back to the default wall).
   const handleFilterChange = useCallback((filterId) => {
     setActiveFilters(prev => {
-      const newFilters = new Set(prev);
-
-      // Toggle this filter on/off
-      if (newFilters.has(filterId)) {
-        newFilters.delete(filterId);
-      } else {
-        newFilters.add(filterId);
-      }
-
+      const isOnlyActive = prev.size === 1 && prev.has(filterId);
       trackFilterChange(filterId, Array.from(prev).join(','));
-      return newFilters;
+      return isOnlyActive ? new Set() : new Set([filterId]);
     });
+    // Picking a genre clears the view toggles.
+    setShowHighlightsOnly(false);
+    setHideFest(true);
+    setShowPreorders(false);
+    setSlopMode('free');
   }, []);
 
   // Get movies based on active filters (multi-select with OR logic - cumulative)
@@ -1240,20 +1227,6 @@ const HomeScreenTvOS = () => {
           </View>
         </View>
       </View>
-
-      {/* Filter description — only for exactly one active genre filter (matches web;
-          the Selects / Slop / Fests / Pre-Order views show no description blurb). */}
-      {activeFilters.size === 1 && (() => {
-        const filterId = Array.from(activeFilters)[0];
-        const desc = FILTER_DESCRIPTIONS[filterId];
-        if (!desc) return null;
-        return (
-          <View style={styles.filterDescriptionRow}>
-            <Text style={styles.filterDescriptionTitle}>{desc.title}</Text>
-            <Text style={styles.filterDescriptionText}>{desc.text}</Text>
-          </View>
-        );
-      })()}
 
       {/* Heads-up date banner — tracks the focused row's date group.
           Hidden while focus is in the first group: its in-grid strip is
