@@ -1918,3 +1918,16 @@ header h1 {
         font-size: 0.9rem;
     }
 }
+
+/* === Desktop header — Layout C (toggles left, filters+search right, 2 rows) === */
+.cwide-hdr { padding: 18px 26px; max-width: 1500px; margin: 0 auto; }
+.cwide-hdr h1 { margin: 0 0 16px; }
+.cwide-controls { display: flex; gap: 18px; align-items: stretch; }
+.cwide-toggles { flex: 0 0 auto; box-sizing: border-box; display: grid; grid-template-columns: auto auto; gap: 14px 22px; align-content: center; padding: 16px 22px; }
+.cwide-toggles .slop-toggle-wrap { margin: 0; }
+.cwide-toggles .slop-label { font-size: 0.95rem; letter-spacing: 0.08em; }
+.cwide-filters { display: flex; flex-direction: column; gap: 12px; justify-content: center; align-items: stretch; flex: 0 0 auto; }
+.cwide-row { display: flex; gap: 10px; align-items: stretch; }
+.cwide-row .filter-btn { flex: 0 0 auto; }
+.cwide-search { flex: 1 1 0; min-width: 0; display: flex; }
+.cwide-search .search-container { flex: 1 1 0; min-width: 0; width: 100%; }
