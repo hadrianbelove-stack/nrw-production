@@ -1152,7 +1152,6 @@ const HomeScreenTvOS = () => {
               autoCapitalize="none"
               autoCorrect={false}
               returnKeyType="search"
-              nextFocusDown={toggleNodeHandle}
             />
             {searchQuery.length > 0 && (
               <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
