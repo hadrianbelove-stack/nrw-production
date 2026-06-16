@@ -578,7 +578,7 @@ const NRW = {
         // Then every film flows through the normal date strips below, so each view
         // still shows the films grouped by date (the way SLOP already does).
         if (this.showHighlightsOnly) {
-            html += stripHtml('SELECTS', 'NOTABLE RELEASES', '#dc143c', ' section-banner');
+            html += stripHtml('SELECTS', 'OF NOTE', '#dc143c', ' section-banner');
         } else if (this.slopMode === 'only') {
             html += stripHtml('SLOP', 'THE CONTENT RIVER', '#ff9500', ' section-banner');
         } else if (this.showFest) {

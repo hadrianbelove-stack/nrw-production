@@ -251,7 +251,7 @@ Sub UpdateDateHud(index as Integer)
         color = "0x7C3AEDFF"
     else if key = "HIGHLIGHTS"
         day = "SELECTS"
-        rest = "OUR PICKS"
+        rest = "OF NOTE"
         color = "0xDC143CFF"
     else if key = "Unknown"
         day = "DATE TBD"
@@ -331,7 +331,7 @@ Function FormatSectionTitle(dateStr as String) as String
     else if dateStr = "FEST"
         return "FEST · NOW SCREENING"
     else if dateStr = "HIGHLIGHTS"
-        return "SELECTS  ·  OUR PICKS"
+        return "SELECTS  ·  OF NOTE"
     else if dateStr = "Unknown"
         return "DATE TBD"
     end if

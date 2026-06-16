@@ -543,7 +543,7 @@ fun DateRowHeader(
     when (dateString) {
         "PRE-ORDER" -> { day = "PRE-ORDER"; rest = "COMING SOON"; color = Color(0xFF7C3AED) }
         "FEST" -> { day = "FEST"; rest = "NOW SCREENING"; color = Color(0xFFF59E0B) }
-        "HIGHLIGHTS" -> { day = "SELECTS"; rest = "OUR PICKS"; color = Color(0xFFDC143C) }
+        "HIGHLIGHTS" -> { day = "SELECTS"; rest = "OF NOTE"; color = Color(0xFFDC143C) }
         "SLOP" -> { day = "SLOP"; rest = "THE CONTENT RIVER"; color = Color(0xFFFF9500) }
         else -> {
             val parts = dateString.split("-")
@@ -580,7 +580,7 @@ fun DateRowHeader(
                 Text(
                     text = rest,
                     color = Color.White,
-                    fontSize = if (isSection) 20.sp else 16.sp,
+                    fontSize = if (isSection) 32.sp else 16.sp,
                     fontWeight = FontWeight.Light,
                     letterSpacing = 4.sp
                 )

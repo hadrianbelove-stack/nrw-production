@@ -595,7 +595,7 @@ const NRWMobile = {
         } else if (dateStr === 'fest') {
             day = 'FEST'; rest = 'VIRTUAL SCREENINGS'; color = '#f59e0b';
         } else if (dateStr === 'highlights') {
-            day = 'SELECTS'; rest = 'FILMS OF NOTE'; color = '#dc143c';
+            day = 'SELECTS'; rest = 'OF NOTE'; color = '#dc143c';
         } else if (dateStr === 'slop') {
             day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#ff9500';  // matches SLOP ONLY toggle orange
         } else {
