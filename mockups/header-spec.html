@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NRW header C2</title><style>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NRW header C3</title><style>
 /* CSS Custom Properties - Single source of truth for colors */
 :root {
     --accent-primary: #00d4aa;
@@ -1926,15 +1926,14 @@ header h1 {
         gap:14px 22px; align-content:center; padding:16px 22px; }
   .cwide-toggles .slop-toggle-wrap { margin:0; }
   .cwide-toggles .slop-label { font-size:0.95rem; letter-spacing:0.08em; }
-  /* filter block sizes to the top row (6 filters); it does NOT stretch to the page edge */
-  .cwide-filters { display:flex; flex-direction:column; gap:12px; justify-content:center; align-items:stretch; }
+  /* block width is set by the TOP row (6 filters); it does not grow to the page edge */
+  .cwide-filters { display:flex; flex-direction:column; gap:12px; justify-content:center; align-items:stretch; flex:0 0 auto; }
   .cwide-row { display:flex; gap:10px; align-items:stretch; }
   .cwide-row .filter-btn { flex:0 0 auto; }
-  /* search fills the bottom row only up to the top row's right edge */
-  .cwide-search { flex:1 1 auto; display:flex; min-width:120px; }
-  .cwide-search .search-container { width:100%; display:flex; }
-  .cwide-search input { width:100%; box-sizing:border-box; background:#161616; border:1px solid rgba(255,255,255,0.14);
-        border-radius:12px; padding:0 18px; color:#ddd; font-size:1rem; outline:none; }
+  /* search shrinks to 0 intrinsic width, then flex-fills row 2 only up to the top-row (Thriller) edge */
+  .cwide-search { flex:1 1 0; min-width:0; display:flex; }
+  .cwide-search input { flex:1 1 0; width:100%; min-width:0; box-sizing:border-box; background:#161616;
+        border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:0 18px; color:#ddd; font-size:1rem; outline:none; }
   .cwide-search input::placeholder { color:#7a7a7a; }
 
 </style></head><body>
@@ -1951,11 +1950,11 @@ header h1 {
         </div></div>
       <div class="cwide-filters">
         <div class="cwide-row"><button class="filter-btn" data-filter="indie">Indie</button><button class="filter-btn" data-filter="horror">Horror</button><button class="filter-btn" data-filter="action">Action</button><button class="filter-btn" data-filter="comedy">Comedy</button><button class="filter-btn" data-filter="family">Family</button><button class="filter-btn" data-filter="thriller">Thriller</button></div>
-        <div class="cwide-row"><button class="filter-btn" data-filter="foreign">Foreign</button><button class="filter-btn" data-filter="documentary">Docs</button><button class="filter-btn" data-filter="restorations">Reissues</button><div class="cwide-search"><div class="search-container"><input type="text" placeholder="Search..."></div></div></div>
+        <div class="cwide-row"><button class="filter-btn" data-filter="foreign">Foreign</button><button class="filter-btn" data-filter="documentary">Docs</button><button class="filter-btn" data-filter="restorations">Reissues</button><div class="cwide-search"><input type="text" placeholder="Search..."></div></div>
       </div>
     </div>
   </div>
 </header>
-<div style="position:fixed;top:0;left:0;right:0;background:#b8860b;color:#000;font:600 13px system-ui;padding:6px 14px;z-index:9999;text-align:center;">MOCKUP C2 — search ends at top-row edge (no dead space), block does not stretch to page edge</div><div style="height:34px"></div>
+<div style="position:fixed;top:0;left:0;right:0;background:#b8860b;color:#000;font:600 13px system-ui;padding:6px 14px;z-index:9999;text-align:center;">MOCKUP C3 — search ends exactly under Thriller (top-row edge)</div><div style="height:34px"></div>
 <div style="display:flex;gap:14px;flex-wrap:wrap;padding:24px;max-width:1400px;margin:0 auto;"><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div></div>
 </body></html>
