@@ -248,6 +248,7 @@ const NRWMobile = {
             slopToggle.addEventListener('click', () => {
                 const idx = SLOP_STATES.indexOf(this.slopMode);
                 this.slopMode = SLOP_STATES[(idx + 1) % 3];
+                if (this.slopMode !== 'free') this.setExclusiveView('slop'); // clear the other views
                 updateSlopToggle();
                 this.applyFilter();
                 this.buildGrid();
@@ -313,6 +314,13 @@ const NRWMobile = {
             selects:   () => { this.showHighlightsOnly = false; document.getElementById('highlights-toggle')?.classList.remove('active'); },
             fests:     () => { this.hideFest = true;            document.getElementById('fest-toggle')?.classList.remove('active'); },
             preorders: () => { this.showPreorders = false;      document.getElementById('preorder-toggle')?.classList.remove('active'); },
+            slop:      () => {
+                this.slopMode = 'free';
+                const st = document.getElementById('slop-free-toggle');
+                if (st) st.dataset.state = 'free';
+                const lbl = document.getElementById('slop-state-label');
+                if (lbl) lbl.textContent = 'SLOP FREE';
+            },
         };
         for (const name in others) {
             if (name !== winner) others[name]();
@@ -489,8 +497,7 @@ const NRWMobile = {
 
         if (this.showHighlightsOnly && this.filteredMovies.length > 0) {
             this.gridEntries.push({ type: 'date', dateStr: 'highlights' });
-            // Description lives in the river, below the banner — scrolls away naturally
-            this.gridEntries.push({ type: 'desc', key: 'staff-picks' });
+            // No description blurb — the "SELECTS · FILMS OF NOTE" banner says enough
         }
         if (this.slopMode === 'only' && this.filteredMovies.length > 0) {
             this.gridEntries.push({ type: 'date', dateStr: 'slop' });
@@ -586,9 +593,9 @@ const NRWMobile = {
         if (dateStr === 'pre-order') {
             day = 'PRE-ORDER'; rest = 'COMING SOON'; color = '#7c3aed';
         } else if (dateStr === 'fest') {
-            day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
+            day = 'FEST'; rest = 'VIRTUAL SCREENINGS'; color = '#f59e0b';
         } else if (dateStr === 'highlights') {
-            day = 'SELECTS'; rest = 'OUR PICKS'; color = '#dc143c';
+            day = 'SELECTS'; rest = 'FILMS OF NOTE'; color = '#dc143c';
         } else if (dateStr === 'slop') {
             day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#ff9500';  // matches SLOP ONLY toggle orange
         } else {
