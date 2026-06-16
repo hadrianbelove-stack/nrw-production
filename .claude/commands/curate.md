@@ -93,22 +93,23 @@ If the output shows 0 candidates, report "No new arrivals to curate since [from_
 
 ## Stage 1: Selects (formerly "Staff Picks" — file is still admin/staff_picks.json)
 
-Show a numbered list of all candidates, then recommend 2–4 picks with brief reasoning.
+Show a numbered table of all candidates, then recommend 2–4 picks with brief reasoning.
 
 ```
 SELECTS — which movies are you vouching for?
 
- 1. Title (Year) — RT: 85% | MC: 72 | Amazon, Apple TV
- 2. Title (Year) — RT: -- | MC: -- | Netflix
- 3. Title (Year) — RT: 92% | MC: 80 | Fandango At Home
- ...
+| # | Title (Year) | RT | MC | Trailer |
+|---|---|---|---|---|
+| 1 | [Title (Year)](https://en.wikipedia.org/wiki/...) | 85% | 72 | [▶](trailer-url) |
+| 2 | Title (Year) | -- | -- | [▶](trailer-url) |
+| 3 | [Title (Year)](https://en.wikipedia.org/wiki/...) | 92% | 80 | — |
 
-★ Recommended: 1 (strong RT/MC, wide availability), 3 (RT 92%, critical darling)
+★ Recommended: 1 (strong RT/MC), 3 (RT 92%, critical darling)
 
 Reply with numbers (e.g. "1, 7, 10") or "skip" to skip.
 ```
 
-For each movie row show: title, year, RT score (or `--`), Metacritic score (or `--`), and which services it has watch links for.
+For each movie row show: title (hyperlinked to its Wikipedia page from `movie.links.wikipedia` when one exists; plain text if absent), year, RT score (or `--`), Metacritic score (or `--`), and a Trailer link (`[▶](url)` using `movie.links.trailer_hosted`, falling back to `movie.links.trailer`; `—` if neither exists). Do not show watch-link services in this table.
 
 **Recommendations**: After the list, add a `★ Recommended:` line with 2–4 suggested picks and a short reason for each (scores, notable director, awards, distributor quality signal, etc.). Base this only on data already in data.json — do not web search at this step. If nothing stands out, say so.
 
@@ -183,7 +184,7 @@ SLOP REVIEW — confirm or correct auto-classifications
 - `Links` — clickable [RT](movie.links.rt) and [LB](movie.links.letterboxd) when present, so the user can identity-check each film
 - `Why` column: show `_slop_reason` if present; otherwise show RT/MC scores or "no classifier signal"
 
-**Flag contradictions** below the table: any slop-flagged movie that is also a Select, or has an approved capsule, or has selected pull quotes — films the user invested in but the default slop-free view filters out. (All movies are on the site regardless of slop flag — the toggle is a view mode, never removal.)
+**Flag contradictions** below the table: any slop-flagged movie that is also a **Select** — a film the user explicitly vouched for but the default slop-free view filters out. Do **not** flag capsules or pull quotes as contradictions: every film gets a capsule and quotes, so they carry no signal about slop and are irrelevant here. (All movies are on the site regardless of slop flag — the toggle is a view mode, never removal.)
 
 **On user reply:**
 
