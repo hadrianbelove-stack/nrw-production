@@ -64,23 +64,28 @@ def svc_names(val):
             out.append(s)
     return out
 
+WINDOW_DAYS = 7
+
 data = json.load(open('data.json'))
 today = str(date.today())
+from_date = str(date.today() - timedelta(days=WINDOW_DAYS))
 
+# Days since last check-in — cosmetic only; the anchor never gates curation.
 try:
     sess = json.load(open('.claude/last_nrw_session.json'))
-    from_date = sess['timestamp'][:10]
+    last = date.fromisoformat(sess['timestamp'][:10])
+    print(f'(Last check-in: {last} — {(date.today() - last).days} day(s) ago)')
 except Exception:
-    from_date = str(date.today() - timedelta(days=1))
+    pass
 
 arrivals = [m for m in data['movies']
             if from_date <= m.get('digital_date', '') <= today]
 arrivals.sort(key=lambda m: m.get('digital_date', ''), reverse=True)
 
 if not arrivals:
-    print(f'No new arrivals since {from_date}')
+    print(f'No arrivals in the last {WINDOW_DAYS} days')
 else:
-    print(f'{len(arrivals)} arrival(s) since {from_date}:')
+    print(f'{len(arrivals)} arrival(s) in the last {WINDOW_DAYS} days:')
     for m in arrivals:
         title = m.get('title', '?')
         year = m.get('year', '?')
@@ -126,9 +131,26 @@ If nothing: "No concerns."
 
 ---
 
+## Mark the check-in
+
+After presenting Phase 1, stamp today's check-in so tomorrow's "days since" line is accurate. This is **cosmetic only** — it never gates curation (the rolling 7-day window does that), so it's safe even if curation is interrupted:
+
+```bash
+/usr/bin/python3 -c "
+import json
+from datetime import datetime
+json.dump({'timestamp': datetime.now().isoformat(),
+           'note': 'check-in marker — cosmetic only; curation uses a rolling 7-day window, not this anchor'},
+          open('.claude/last_nrw_session.json','w'), indent=2)
+print('check-in stamped')
+"
+```
+
+---
+
 ## Phase 2 — Curation
 
-After the overnight report, run `/curate` to handle new arrivals in full: staff picks → section review → per-film (capsule + Wikipedia links + pull quotes).
+After the overnight report, run `/curate` to handle recent arrivals: Selects → section review → slop review → per-film (capsule + Wikipedia links + pull quotes). `/curate` is **state-based** — it shows everything from the **last 7 days** still needing work (slop unconfirmed / no capsule / no quotes), newest first. There is no session to resume; skipped days just accumulate in the window until handled.
 
 The curation queue is ready when:
 - Capsule variants can be generated for films without one

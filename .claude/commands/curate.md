@@ -3,7 +3,7 @@ description: Curate new arrivals — staff picks, sections, slop review, pull qu
 allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 ---
 
-Curate movies added since last session. Runs 4 stages in order, each with a user prompt. Resumable — if interrupted, re-running picks up where you left off.
+Curate recent arrivals. Runs 4 stages in order, each with a user prompt. **State-based and cumulative** — every run shows everything from the **last 7 days** that still needs work (slop unconfirmed / no capsule / no quotes), newest first. There are no "sessions" to resume or finish: skip as many days as you want and the next run simply shows whatever is still outstanding in the window. Nothing goes stale.
 
 ## Before You Start — pull latest
 
@@ -15,29 +15,15 @@ cd /Users/hadrianbelove/Downloads/nrw-production && git pull origin main
 
 If any `git push` in this session is rejected (CI or another writer pushed mid-session), run `git pull --rebase origin main` and push again — never resolve a data.json merge by hand (`--ours`/`--theirs` loses transitions; see CLAUDE.md).
 
-## Resume Logic
+## The model — state-based, no sessions
 
-Before starting, check for an existing session:
+There is **no resume logic and no session/progress file**. Each run rebuilds everything from current state, so a film stays in the queue until it is actually handled — no matter how many days you skip. The rolling window is the **last 7 days** of `digital_date` (the 90-day wall is the hard ceiling). Within that window:
 
-1. Read `cache/curation_progress.json` (if it exists)
-2. Read `.claude/last_nrw_session.json` to get the session timestamp
-3. If `curation_progress.session_start` matches the session timestamp → **resume**: skip stages marked `completed`, jump to first `pending` or `in_progress` stage
-4. If no match or no file → **fresh start**: create new progress file with all stages `pending`
+- **Stage 1 (Selects)** and **Stage 2 (Sections)** operate on all in-window arrivals.
+- **Stage 3 (Slop)** operates on in-window films where `_is_slop_guess == True` (unconfirmed). Confirming clears the flag, so the queue drains.
+- **Stage 4 (Capsule + Quotes)** operates on in-window films missing a capsule (`approved_capsules.json`) or missing a `pull_quotes` key.
 
-**Progress file format** (`cache/curation_progress.json`):
-```json
-{
-  "session_start": "2026-05-18T15:29:11",
-  "stages": {
-    "staff_picks": "pending",
-    "sections": "pending",
-    "slop_review": "pending",
-    "per_movie": "pending"
-  }
-}
-```
-
-Update the progress file after completing each stage (set to `completed`). Set a stage to `in_progress` when you begin it.
+To change the window, edit `WINDOW_DAYS` below.
 
 ## Candidate List (shared by Stages 1, 2, and 3)
 
@@ -48,20 +34,17 @@ Run this script to build the candidate list. Stages 1, 2, and 3 operate on this 
 import json
 from datetime import date, timedelta
 
+WINDOW_DAYS = 7
+
 data = json.load(open('data.json'))
 today = str(date.today())
-
-try:
-    sess = json.load(open('.claude/last_nrw_session.json'))
-    from_date = sess['timestamp'][:10]
-except Exception:
-    from_date = str(date.today() - timedelta(days=7))
+from_date = str(date.today() - timedelta(days=WINDOW_DAYS))
 
 current_year = date.today().year
 candidates = []
 for m in data['movies']:
     dd = m.get('digital_date', '')
-    if not (from_date < dd <= today):
+    if not (from_date <= dd <= today):
         continue
     cats = m.get('filters', {})
     if cats.get('is_restoration'):
@@ -79,15 +62,15 @@ for m in data['movies']:
     candidates.append((dd, m.get('id'), title, m.get('year','?'), rt, mc, svc))
 
 candidates.sort(key=lambda x: x[0], reverse=True)
-print(f'{len(candidates)} candidate(s) since {from_date}:')
+print(f'{len(candidates)} candidate(s) in the last {WINDOW_DAYS} days (since {from_date}):')
 for i, (dd, mid, title, year, rt, mc, svc) in enumerate(candidates, 1):
     print(f'  {i}. {title} ({year}) — RT:{rt} | MC:{mc} | {svc}  [id:{mid}]')
 "
 ```
 
-If the output shows 0 candidates, report "No new arrivals to curate since [from_date]" and stop.
+If the output shows 0 candidates, report "No arrivals in the last 7 days to curate" and stop.
 
-**Note**: Stage 4 (Per-Movie Curation) uses its own watermark-based candidate logic — see that stage for details.
+**Note**: Stage 4 (Per-Movie Curation) re-derives its own list from current state (capsule / pull-quote presence) within the same 7-day window — see that stage.
 
 ---
 
@@ -117,7 +100,6 @@ For each movie row show: title (hyperlinked to its Wikipedia page from `movie.li
 - Parse the numbers, map to movie IDs
 - Read `admin/staff_picks.json`, add new IDs (avoid duplicates), write back
 - Commit + push: `git add admin/staff_picks.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Staff picks updated APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`
-- Mark stage `completed` in progress file
 
 ---
 
@@ -151,7 +133,6 @@ Show as human-readable names. If no filters are active, show "(none)". Selects i
 - For studio/indie overrides: read `admin/category_overrides.json`, add entries, write back
 - For restoration overrides: read `admin/restorations.json`, add IDs, write back
 - Commit + push any override file changes
-- Mark stage `completed` in progress file
 
 **Note**: All filters are auto-detected from TMDB data — genres (Comedy, Horror, Action, Thriller), language (Foreign), and distributor rules (Indie, Studio, Documentary). To improve detection logic (e.g. add indie distributor rules), update the pipeline code — not this command.
 
@@ -215,9 +196,7 @@ print('done')
 git add data.json scripts/slop_classifier.py && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Slop review APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
 ```
 
-If "looks good" with no changes: mark stage `completed`, no commit needed.
-
-Mark stage `completed` in progress file.
+If "looks good" with no changes: no commit needed.
 
 ---
 
@@ -225,13 +204,37 @@ Mark stage `completed` in progress file.
 
 Capsules and pull quotes are done together, movie by movie — not as separate passes.
 
-**Find candidates**: Stage 4 uses watermark logic, not the Stage 1/2/3 candidate list. Take the union of:
-- Movies needing a capsule: `digital_date` > capsule watermark (most recent `digital_date` among movies in `cache/approved_capsules.json`), not already in `cache/approved_capsules.json` by title, not a restoration
-- Movies needing pull quotes: `digital_date` > pull quote watermark (most recent `digital_date` among movies with a `pull_quotes` array in `data.json`), not already having a `pull_quotes` **key** (check key presence — an empty array `[]` means "reviewed and skipped", not "needs quotes"), not a restoration
+**Find candidates** — state-based, same 7-day window as Stages 1–3 (no watermark). Build the union of:
+- Movies needing a capsule: `digital_date` within the last 7 days, **not** in `cache/approved_capsules.json` by title, not a restoration
+- Movies needing pull quotes: `digital_date` within the last 7 days, **no** `pull_quotes` **key** in `data.json` (check key presence — an empty array `[]` means "reviewed and skipped", not "needs quotes"), not a restoration
 
-Merge into one list, deduplicated, sorted by `digital_date` descending. For each movie, track which work it needs: capsule, quotes, or both.
+```bash
+/usr/bin/python3 -c "
+import json
+from datetime import date, timedelta
+WINDOW_DAYS = 7
+data = json.load(open('data.json'))
+caps = json.load(open('cache/approved_capsules.json'))
+ct = set((c.get('title','') if isinstance(c,dict) else '').lower() for c in caps)
+today = str(date.today()); from_date = str(date.today() - timedelta(days=WINDOW_DAYS))
+rows = []
+for m in data['movies']:
+    dd = m.get('digital_date','') or ''
+    if not (from_date <= dd <= today): continue
+    if m.get('filters',{}).get('is_restoration'): continue
+    needs = []
+    if m.get('title','').lower() not in ct: needs.append('capsule')
+    if 'pull_quotes' not in m: needs.append('quotes')
+    if not needs: continue
+    rows.append((dd, str(m.get('id')), m.get('title',''), m.get('year','?'), '+'.join(needs), m.get('rt_score') or '--'))
+rows.sort(key=lambda r: r[0], reverse=True)
+print(f'STAGE 4 — {len(rows)} movie(s) to curate')
+for i,(dd,mid,t,y,needs,rt) in enumerate(rows,1):
+    print(f'  #{i}  {t} ({y})  RT {rt}  — {needs}  [id:{mid}]')
+"
+```
 
-**Build a stable numbered queue.** Assign each candidate a fixed index `#1 … #N` in this sorted order and persist it to `cache/curation_stage4_queue.json` (list of `{n, id, title, year, digital_date, needs, status}` where `status` starts as `pending`). The numbers must stay stable for the whole session even as items get completed or the watermark moves. If that file already exists for the current `session_start`, **reuse it** (resume) rather than renumbering.
+This list is **rebuilt fresh every run** from current state — there is no persisted queue file. Number the films `#1 … #N` in the printed order for this run only; if the user redirects ("go to #5", "skip to Kraken"), continue from there. A film that's already been handled simply won't appear next run.
 
 Print the full queue once before starting, as a numbered checklist with the total. For each film show: **title hyperlinked to its Wikipedia page (`movie.links.wikipedia`) when one exists** (plain text if absent), **a trailer hyperlink (`movie.links.trailer_hosted`, falling back to `movie.links.trailer`)**, and the RT score so standouts are visible.
 
@@ -243,11 +246,11 @@ STAGE 4 — 35 movies to curate
   #35 Wetiko (2025) · [▶ trailer](trailer-url)                         RT --   — quotes   (no wiki page)
 ```
 
-If no candidates for either: report through-dates and mark stage `completed`.
+If no candidates for either: report "nothing needs capsules or quotes in the last 7 days" and finish.
 
 **For each movie, in order — always lead with its queue position:**
 
-Every time you present a movie (capsule variants *and* pull quotes), title the section **`#N of TOTAL — Title (Year)`** so the user always sees where they are. The user may redirect at any point — "go to #5", "jump to #5", "skip to Kraken" — in which case continue from that index. Update each movie's `status` in the queue file (`done` / `skipped`) as you finish it; on resume, start at the first index still `pending`.
+Every time you present a movie (capsule variants *and* pull quotes), title the section **`#N of TOTAL — Title (Year)`** so the user always sees where they are. The user may redirect at any point — "go to #5", "jump to #5", "skip to Kraken" — in which case continue from that index. Progress isn't tracked in a file: a handled film (capsule written / `pull_quotes` key set) just won't reappear when the list is rebuilt next run.
 
 ### Step A — Capsule (if needed)
 
@@ -408,8 +411,6 @@ After both capsule and pull quote are resolved for a movie:
 - If pull quotes skipped (capsule also skipped or not needed): commit the empty `pull_quotes: []` written in Step B rule 3 above
 
 (`cache/*.json` files are gitignored — do not `git add` them.)
-
-After all movies processed, mark stage `completed` in progress file.
 
 ---
 
