@@ -66,28 +66,47 @@ header {
     backdrop-filter: blur(12px);
 }
 
-/* Header: left column = wordmark with the boxed "View" toggle module beneath it
-   (the box spans the wordmark's width); right = genre filters + search as two
-   even rows of 5, filling the remaining space. */
-.header-grid {
+/* Layout G: title + filters on the left, a boxed "View" control module right.
+   title-row wraps — when the window narrows past the point where both fit, the
+   View box drops to its own line below instead of colliding with the search. */
+.title-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: stretch;
-    gap: 1.2rem 1.6rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem 1rem;
+    margin-bottom: 0;
 }
 
-/* Left column sizes to the wordmark; the View box below it inherits that width */
-.header-left-col {
+.header-left {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    flex: 0 0 auto;
+    align-items: stretch;
+    gap: 1.1rem;
+    min-width: 0;
+    /* basis ≈ wordmark + a usable search; when this + the View box can't both
+       fit, the View box wraps to its own line instead of crushing the search */
+    flex: 1 1 720px;
 }
+
+/* Top line of the left block: wordmark + a flexible search bar beside it */
+.hl-top {
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+    width: 100%;
+}
+.hl-top .search-container {
+    flex: 1 1 200px;
+    min-width: 0;
+    margin-left: 0;
+}
+.hl-top #search-input { width: 100%; }
 
 header h1 {
     font-weight: 100;
     letter-spacing: 0.24em;
-    font-size: 3.5rem;
+    font-size: 2.9rem;
     line-height: 1.0;
     white-space: nowrap;
     flex-shrink: 0;
@@ -98,59 +117,43 @@ header h1 {
     margin-bottom: 0;
 }
 
-/* Boxed control module — the four view toggles, 2×2. Spans the wordmark width. */
+/* Boxed control module — the four view toggles, 2×2 */
 .view-module {
-    width: 100%;
+    flex-shrink: 0;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 16px;
-    padding: 20px 28px;
+    padding: 14px 20px 16px;
+}
+.view-module-head {
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 12px;
 }
 .toggle-grid {
     display: grid;
-    /* two equal halves; each toggle spans its half (label left, switch right)
-       so the box fills edge to edge with no dead space */
-    grid-template-columns: 1fr 1fr;
-    gap: 24px 40px;
+    grid-template-columns: auto auto;
+    gap: 13px 28px;
 }
 
 /* Small screens: let the wordmark wrap and shrink so it never overflows */
 @media (max-width: 760px) {
     header h1 { font-size: 2rem; white-space: normal; }
+    .hl-top { flex-wrap: wrap; }
 }
 
 .filters {
-    /* two even rows of 5 (9 genre filters + search) that fill the right side,
-       rows stretch to fill the column height so there's no empty band above or
-       below the buttons */
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    grid-auto-rows: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 0.7rem;
     margin-top: 0;
-    flex: 1 1 480px;
-    min-width: 0;
-    align-content: stretch;
-}
-
-/* Search sits as the 10th cell in the filter grid — fill the cell width + height */
-.filters .search-container {
-    margin-left: 0;
-    width: 100%;
-    height: 100%;
-}
-.filters #search-input {
-    width: 100%;
-    height: 100%;
-}
-.filters #search-input:focus {
     width: 100%;
 }
 
 .filter-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: 0.62rem 0.6rem;
     background: rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.2);
@@ -179,19 +182,15 @@ header h1 {
 /* Slop toggle — lives in the title row */
 .slop-toggle-wrap {
     display: flex;
-    /* label on the left, switch pushed to the right edge of the half-cell so
-       each toggle spans its half and the box reads as full settings rows */
-    flex-direction: row-reverse;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
 }
 .slop-label {
-    font-size: 0.9rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -203,7 +202,7 @@ header h1 {
     color: #00d4aa;
 }
 #slop-state-label {
-    width: 104px;
+    width: 80px;
     display: inline-block;
 }
 .slop-track {
