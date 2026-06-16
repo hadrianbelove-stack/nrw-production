@@ -757,6 +757,7 @@ const MovieDetailTvOS = () => {
                     d += '\u2013' + formatShortDate(movie.virtual_screening_info.available_end);
                   hp.push(d);
                 }
+                if (formattedCountries) hp.push(formattedCountries);
                 return hp.length > 0 ? <Text style={styles.titleDate}>{hp.join(' \u00b7 ')}</Text> : null;
               })()}
             </View>
@@ -848,20 +849,7 @@ const MovieDetailTvOS = () => {
               </View>
             )}
 
-            {/* 7b. Country · Runtime · Year — shown below synopsis */}
-            {(formattedCountries || formattedRuntime || movie.year) && (
-              <Text style={styles.synopsisFooterMeta}>
-                {[formattedCountries, formattedRuntime, movie.year].filter(Boolean).join(' · ')}
-              </Text>
-            )}
 
-            {/* 7c. Awards */}
-            {movie.awards && (
-              <View style={styles.creditRow}>
-                <Text style={styles.creditLabel}>Awards</Text>
-                <Text style={styles.creditValue}>{movie.awards}</Text>
-              </View>
-            )}
 
           </ScrollView>
 
