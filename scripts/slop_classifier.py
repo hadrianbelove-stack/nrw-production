@@ -50,6 +50,15 @@ MANUAL_OVERRIDES = {
     1265340: False,   # The Second Coming of John Cooper (curator call)
     1556616: False,   # Summer House (curator call)
     1477377: False,   # Real Couples (curator Select)
+    # Curator not-slop calls (June 15 2026)
+    1291659: False,   # The Wizard of the Kremlin
+    1331349: False,   # Two Pianos (Select)
+    1462322: False,   # The Last One for the Road (Select)
+    1541560: False,   # Stop! That! Train! (Select)
+    1400756: False,   # Mad Bills to Pay (Select)
+    1536559: False,   # Double Happiness
+    1398655: False,   # Blue Film (Select)
+    312493:  False,   # Viral Hit (tv_312493)
     # TV-movie mill thrillers — confirmed slop by curator (June 2026)
     1708839: True,    # Her Husband's Double Life
     1409853: True,    # Neglected
