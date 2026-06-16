@@ -1,0 +1,1955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The New Release Wall</title>
+    <style>
+/* CSS Custom Properties - Single source of truth for colors */
+:root {
+    --accent-primary: #00d4aa;
+    --accent-glow: rgba(0, 212, 170, 0.3);
+    --bg-dark: #1a1a2e;
+    --bg-darker: #0a0a0a;
+    --border-subtle: #333;
+    --text-muted: #888;
+    --staff-pick: #dc143c;
+    --staff-pick-glow: rgba(220, 20, 60, 0.3);
+    --staff-pick-subtle: rgba(220, 20, 60, 0.05);
+    --screening-gold: #FFD700;
+    --screening-glow: rgba(255, 215, 0, 0.3);
+    --screening-subtle: rgba(255, 215, 0, 0.05);
+
+    /* Sticky-header height — JS (updateHeaderOffset) overwrites with the exact
+       measured value; this default just prevents banner overlap before JS runs. */
+    --header-height: 160px;
+
+    /* Service colors — single source of truth for badges + buttons */
+    --svc-netflix: #E50914;
+    --svc-disney: #113CCF;
+    --svc-max: #B537F2;
+    --svc-prime: #00A8E1;
+    --svc-hulu: #1CE783;
+    --svc-peacock: #000;
+    --svc-mubi: #DA2128;
+    --svc-shudder: #8B0000;
+    --svc-criterion: #000;
+    --svc-tubi: #FA382F;
+    --svc-youtube: #FF0000;
+    --svc-paramount: #0064FF;
+    --svc-kanopy: #1B7A43;
+    --svc-hoopla: #FC4F08;
+    --svc-roku: #6C3A97;
+    --svc-pluto: #00B4E4;
+    --svc-crackle: #FF6600;
+    --svc-amc: #1B6FE0;
+    --svc-fawesome: #5B8DEF;
+    --svc-fandango: #FF6600;
+    --svc-amazon: #ff9900;
+    --svc-plex: #E5A00D;
+    --svc-preorder: #7c3aed;
+    --svc-restoration: #C8A951;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    background-attachment: fixed;
+    color: #fff;
+    font-family: -apple-system, system-ui, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 1.5rem 1.5rem 1.1rem;
+    text-align: left;
+    border-bottom: 1px solid #333;
+    background: rgba(8, 8, 12, 0.88);
+    backdrop-filter: blur(12px);
+}
+
+/* Layout G: title + filters on the left, a boxed "View" control module right.
+   title-row wraps — when the window narrows past the point where both fit, the
+   View box drops to its own line below instead of colliding with the search. */
+.title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem 1rem;
+    margin-bottom: 0;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.1rem;
+    min-width: 0;
+    /* basis ≈ wordmark + a usable search; when this + the View box can't both
+       fit, the View box wraps to its own line instead of crushing the search */
+    flex: 1 1 720px;
+}
+
+/* Top line of the left block: wordmark + a flexible search bar beside it */
+.hl-top {
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+    width: 100%;
+}
+.hl-top .search-container {
+    flex: 1 1 200px;
+    min-width: 0;
+    margin-left: 0;
+}
+.hl-top #search-input { width: 100%; }
+
+header h1 {
+    font-weight: 100;
+    letter-spacing: 0.24em;
+    font-size: 2.9rem;
+    line-height: 1.0;
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: linear-gradient(45deg, #fff, var(--accent-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0;
+}
+
+/* Boxed control module — the four view toggles, 2×2 */
+.view-module {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    padding: 14px 20px 16px;
+}
+.view-module-head {
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 12px;
+}
+.toggle-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 13px 28px;
+}
+
+/* Small screens: let the wordmark wrap and shrink so it never overflows */
+@media (max-width: 760px) {
+    header h1 { font-size: 2rem; white-space: normal; }
+    .hl-top { flex-wrap: wrap; }
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.7rem;
+    margin-top: 0;
+    width: 100%;
+}
+
+.filter-btn {
+    padding: 0.62rem 0.6rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    font-size: 1.02rem;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.filter-btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 3px;
+    box-shadow: 0 0 12px rgba(0, 212, 170, 0.4);
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--accent-glow);
+}
+
+/* Slop toggle — lives in the title row */
+.slop-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+}
+.slop-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(0,212,170,0.75);
+    transition: color 0.25s;
+    white-space: nowrap;
+}
+.slop-toggle-wrap.active .slop-label {
+    color: #00d4aa;
+}
+#slop-state-label {
+    width: 80px;
+    display: inline-block;
+}
+.slop-track {
+    width: 108px;
+    height: 32px;
+    border-radius: 16px;
+    background: #1a1a1a;
+    border: 1px solid rgba(0,212,170,0.45);
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.25s, border-color 0.25s;
+}
+.slop-toggle-wrap.active .slop-track {
+    background: #00d4aa;
+    border-color: rgba(0,0,0,0.35);
+}
+.slop-thumb {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    background: rgba(0,212,170,0.55);
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
+}
+.slop-toggle-wrap.active .slop-thumb {
+    transform: translateX(72px);
+    background: #ffffff;
+}
+/* 3-state slop toggle */
+#slop-free-toggle[data-state="free"] .slop-track {
+    background: #00d4aa;
+    border-color: rgba(0,0,0,0.35);
+}
+#slop-free-toggle[data-state="free"] .slop-thumb {
+    transform: translateX(0);
+    background: #ffffff;
+}
+#slop-free-toggle[data-state="free"] #slop-state-label { color: #00d4aa; }
+#slop-free-toggle[data-state="all"] .slop-track {
+    background: rgba(0,212,170,0.1);
+    border-color: #00d4aa;
+}
+#slop-free-toggle[data-state="all"] .slop-thumb {
+    transform: translateX(38px);
+    background: #00d4aa;
+}
+#slop-free-toggle[data-state="all"] #slop-state-label { color: #00d4aa; }
+#slop-free-toggle[data-state="only"] .slop-track {
+    background: #ff9500;
+    border-color: rgba(0,0,0,0.35);
+}
+#slop-free-toggle[data-state="only"] .slop-thumb {
+    transform: translateX(76px);
+    background: #ffffff;
+}
+#slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
+/* View toggles show their identity color when active (matches banners + date strips) */
+#highlights-toggle.active .slop-track { background: #dc143c; }
+#highlights-toggle.active .slop-label { color: #dc143c; }
+#fest-toggle.active .slop-track { background: #f59e0b; }
+#fest-toggle.active .slop-label { color: #f59e0b; }
+#preorder-toggle.active .slop-track { background: #7c3aed; }
+#preorder-toggle.active .slop-label { color: #7c3aed; }
+
+/* Search input */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 1.5rem;
+}
+
+#search-input {
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    width: 240px;
+    transition: all 0.3s ease;
+}
+
+#search-input:focus {
+    outline: none;
+    width: 320px;
+    background: rgba(255,255,255,0.15);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+#search-input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.search-clear {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.search-clear:hover {
+    color: #fff;
+}
+
+#wall {
+    padding: 1.5rem 2rem;
+    display: grid;
+    /* Fluid gallery: fit as many ~260px posters as the window allows; they stretch to fill */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem 1rem;
+}
+
+#wall > * {
+    justify-self: stretch;
+}
+
+.movie-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-width: 0; /* grid item: a long one-line caption can't widen its column */
+}
+
+/* Staff Pick movie styling (renamed from featured) */
+.movie-container.staff-pick-movie {
+    border: 3px solid var(--staff-pick);
+    border-radius: 15px;
+    padding: 8px;
+    background: var(--staff-pick-subtle);
+    box-shadow: 0 0 20px var(--staff-pick-glow);
+}
+
+/* Virtual screening movie glow (gold, same pattern as staff pick) */
+.movie-container.screening-movie {
+    border: 3px solid var(--screening-gold);
+    border-radius: 15px;
+    padding: 8px;
+    background: var(--screening-subtle);
+    box-shadow: 0 0 20px var(--screening-glow);
+}
+
+/* Badge bar below title/director (Design K) — used for both Staff Pick and Virtual Screening */
+.badge-bar {
+    width: calc(100% + 16px);
+    margin: 6px -8px -8px -8px;
+    text-align: center;
+    padding: 5px 4px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-radius: 0 0 12px 12px;
+}
+.badge-bar.red { background: var(--staff-pick); color: #fff; }
+.badge-bar.gold { background: var(--screening-gold); color: #000; font-size: 0.6rem; letter-spacing: 0.08em; line-height: 1.3; }
+
+/* Virtual screening banner on poster (top, full-width) */
+.screening-top-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 4px 6px;
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    text-align: center;
+    z-index: 5;
+    background: rgba(255, 215, 0, 0.92);
+    color: #000;
+}
+
+/* Date row strips — neon sticky banners between date groups.
+   Sticks to the viewport top while its day scrolls; color follows --strip-c. */
+.date-row-header {
+    grid-column: 1 / -1;
+    position: sticky;
+    top: var(--header-height, 160px);
+    z-index: 30;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.8rem;
+    background: rgba(8, 8, 12, 0.94);
+    border-top: 2px solid var(--strip-c, var(--accent-primary));
+    border-bottom: 2px solid var(--strip-c, var(--accent-primary));
+    border-radius: 4px;
+    padding: 10px 12px;
+    box-shadow: 0 0 28px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 55%, transparent),
+                inset 0 0 18px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 22%, transparent);
+}
+
+.drh-day {
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--strip-c, var(--accent-primary));
+    text-shadow: 0 0 10px var(--strip-c, var(--accent-primary)),
+                 0 0 22px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 60%, transparent);
+}
+
+.drh-rest {
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #fff;
+}
+
+/* Section banner (SLOP / SELECTS / FESTS / PRE-ORDER) — ~2× the date dividers
+   so the "which view am I in" header reads as a major heading, not a date row. */
+.date-row-header.section-banner {
+    /* View header sits at the top of the section and scrolls away — NOT pinned.
+       Pinning it (like the date strips) made it overlap the sticky date strip on
+       scroll. The active view is still indicated by the toggle. */
+    position: static;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-radius: 6px;
+    padding: 22px 16px;
+    box-shadow: 0 0 40px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 50%, transparent),
+                inset 0 0 26px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 16%, transparent);
+}
+.date-row-header.section-banner .drh-day {
+    font-size: 2.4rem;
+    letter-spacing: 0.28em;
+}
+.date-row-header.section-banner .drh-rest {
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+/* NEW TRAILERS card - same size as movie cards */
+.trailers-card {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+    border: 2px solid var(--accent-primary);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4),
+                0 0 30px rgba(0,212,170,0.2);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.trailers-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5),
+                0 0 60px rgba(0,212,170,0.4);
+}
+
+.trailers-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    z-index: 1;
+}
+
+.trailers-text {
+    font-size: 1.8rem;
+    font-weight: 100;
+    color: #ffffff;
+    letter-spacing: 0.12em;
+    line-height: 1.1;
+}
+
+.trailers-date {
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin-top: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.trailers-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: var(--svc-netflix);
+    border-radius: 50%;
+    font-size: 1.2rem;
+    color: #ffffff;
+    padding-left: 4px;
+}
+
+.movie-card {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+}
+
+/* ---- Grid navigation selection glow (matches tvOS focus) ---- */
+.movie-container.grid-selected {
+    z-index: 2;
+}
+
+.movie-container.grid-selected .movie-card {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 4px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.5);
+    transform: scale(1.1);
+    transition: transform 150ms ease;
+}
+
+.movie-container.staff-pick-movie.grid-selected .movie-card {
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.5),
+                0 0 20px var(--staff-pick-glow);
+}
+
+.movie-container.screening-movie.grid-selected .movie-card {
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.5),
+                0 0 20px var(--screening-glow);
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.card-front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+    align-items: center;
+    justify-content: center;
+}
+
+/* Fallback gradient title card when poster is missing */
+.poster-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    text-align: center;
+    z-index: 0;
+    background: linear-gradient(160deg, #0a0a0a 0%, #111118 50%, #0a0f14 100%);
+}
+
+.poster-fallback-title {
+    color: #bbb;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    max-width: 85%;
+}
+
+/* Lightbox fallback gradient title card for missing posters */
+.lightbox-poster-fallback {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    height: 96vh;
+    aspect-ratio: 2 / 3;
+    padding: 2rem;
+    text-align: center;
+    background: linear-gradient(160deg, #0a0a0a 0%, #111118 50%, #0a0f14 100%);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.lightbox-poster-fallback-title {
+    color: #bbb;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    max-width: 80%;
+}
+
+.card-front img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Pre-order badge on poster (full-width top bar) */
+.streaming-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 6px 0;
+    border-radius: 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    z-index: 5;
+}
+
+/* Gallery Label frame: service-colored card with left-aligned header strip */
+.card-front.streaming-frame {
+    align-items: stretch;
+    justify-content: flex-start;
+}
+
+.card-front.streaming-frame img {
+    flex: 1 1 0;
+    width: 100%;
+    height: 0;
+    min-height: 0;
+    position: relative;
+    z-index: 1;
+    object-fit: cover;
+    display: block;
+}
+
+.streaming-frame-header {
+    height: 52px;
+    margin: 0 -12px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    position: relative;
+    z-index: 2;
+    background: inherit;
+}
+
+.streaming-frame-name {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.streaming-frame-super {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.75;
+    line-height: 1;
+}
+
+/* Push restoration badge below the 52px frame header */
+.card-front.streaming-frame .restoration-badge {
+    top: 60px;
+}
+
+/* Service badge colors — uses :root service color variables */
+.badge-netflix { background: var(--svc-netflix); color: white; }
+.badge-disney { background: var(--svc-disney); color: white; }
+.badge-max { background: var(--svc-max); color: white; }
+.badge-prime { background: var(--svc-prime); color: white; }
+.badge-hulu { background: var(--svc-hulu); color: black; }
+.badge-peacock { background: var(--svc-peacock); color: white; border: 1px solid #fff; }
+.badge-mubi { background: var(--svc-mubi); color: white; }
+.badge-shudder { background: var(--svc-shudder); color: white; }
+.badge-criterion { background: var(--svc-criterion); color: white; border: 1px solid #444; }
+.badge-tubi { background: var(--svc-tubi); color: white; }
+.badge-youtube { background: var(--svc-youtube); color: white; }
+.badge-paramount { background: var(--svc-paramount); color: white; }
+.badge-kanopy { background: var(--svc-kanopy); color: white; }
+.badge-hoopla { background: var(--svc-hoopla); color: white; }
+.badge-roku { background: var(--svc-roku); color: white; }
+.badge-pluto { background: var(--svc-pluto); color: white; }
+.badge-crackle { background: var(--svc-crackle); color: white; }
+.badge-amc { background: var(--svc-amc); color: white; }
+.badge-fawesome { background: var(--svc-fawesome); color: white; }
+.badge-fandango { background: var(--svc-fandango); color: white; }
+.badge-other { background: #444; color: white; }
+.badge-preorder {
+    background: var(--svc-preorder);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.2;
+    padding: 4px 8px;
+}
+.badge-preorder .po-label { font-size: 8px; letter-spacing: 0.8px; }
+.badge-preorder .po-date { font-size: 11px; font-weight: 600; }
+
+/* Pre-order availability date label (lightbox) */
+.po-available-date {
+    color: #c4b5fd;
+    font-size: 13px;
+    font-weight: 500;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+/* Restoration/reissue badge on poster (top-left, opposite streaming badge) */
+.restoration-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    z-index: 5;
+    background: var(--svc-restoration);
+    color: #000;
+}
+
+
+/* Virtual screening name banner in lightbox (full-width gold bar at top of info panel) */
+.lightbox-screening-name {
+    background: #FFD700;
+    color: #000;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-align: center;
+    padding: 10px 14px;
+    margin: -2rem -2rem 16px -2rem;
+    border-radius: 12px 12px 0 0;
+}
+
+/* Virtual screening callout appended to synopsis in lightbox */
+.screening-callout {
+    color: #FFD700;
+    font-weight: 700;
+    font-style: italic;
+}
+
+/* Virtual screening "Buy Ticket" button — styled via .lightbox-buttons rule below */
+
+.movie-info {
+    margin-top: 0.4rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+}
+
+.movie-info .movie-title {
+    display: none;
+}
+
+/* Meta line: Director · Genre · Nation, all teal, on one line.
+   The director ellipsizes if long; ` · Genre · Nation` is pinned and never lost. */
+.movie-info .movie-meta {
+    display: flex;
+    justify-content: center;
+    white-space: nowrap;
+    color: var(--accent-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.movie-info .m-dir {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+.movie-info .m-dir a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+}
+.movie-info .m-dir a:hover { opacity: 0.75; }
+
+.movie-info .m-rest {
+    flex-shrink: 0;
+}
+
+.score-badge {
+    flex: 1;
+    display: block;
+    padding: 0.4rem 0.5rem;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-decoration: none;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+.score-badge:hover { opacity: 0.85; }
+.score-badge.rt {
+    background: rgba(250, 50, 50, 0.85);
+    color: #fff;
+}
+.score-badge.mc {
+    background: rgba(102, 204, 51, 0.85);
+    color: #fff;
+}
+.score-badge.imdb {
+    background: rgba(245, 197, 24, 0.9);
+    color: #000;
+}
+.score-badge.lb {
+    background: rgba(0, 224, 84, 0.85);
+    color: #fff;
+}
+
+/* Filter Description (slide-down when single filter active) */
+.filter-description {
+    display: flex;
+    align-items: baseline;
+    gap: 3rem;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding: 0 3rem;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.4s ease;
+}
+
+.filter-description.active {
+    max-height: 200px;
+    opacity: 1;
+    padding: 2.5rem 3rem 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.filter-description-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.05;
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.filter-description-right {
+    flex: 1;
+    padding-top: 0.5rem;
+}
+
+.filter-description-right p {
+    font-size: 1.05rem;
+    color: #999;
+    line-height: 1.8;
+}
+
+@media (max-width: 1200px) {
+    .filters {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+    }
+    .filters::-webkit-scrollbar {
+        display: none;
+    }
+    .search-container {
+        margin-left: 1rem;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    #wall {
+        padding: 1rem;
+        gap: 1.5rem 0.75rem;
+    }
+
+    .filters {
+        gap: 0.5rem;
+    }
+
+    .filter-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .filter-description-title {
+        font-size: 2rem;
+    }
+
+    .filter-description.active {
+        padding: 1.5rem 1.5rem 1rem;
+        gap: 1.5rem;
+    }
+
+}
+
+/* Wide screens handled by the fluid auto-fill grid above (no fixed column counts). */
+
+@media (max-width: 900px) {
+    #wall {
+        /* smaller fluid posters on tablets / large phones */
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    #wall {
+        grid-template-columns: repeat(auto-fill, 160px);
+        gap: 0.75rem;
+    }
+
+    .movie-card,
+    .trailers-card {
+        width: 160px;
+        height: 240px;
+    }
+
+    .movie-info {
+        max-width: 160px;
+        font-size: 0.75rem;
+    }
+
+    .drh-day, .drh-rest {
+        font-size: 0.95rem;
+    }
+
+    .trailers-text {
+        font-size: 1.5rem;
+    }
+
+    .trailers-date {
+        font-size: 0.5rem;
+    }
+
+    .trailers-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+}
+
+/* Bootstrap date indicator - shows approximate dates */
+.date-approximate {
+    opacity: 0.8;
+    font-style: italic;
+}
+
+/* Add cursor hint for tooltip */
+.date-approximate[title] {
+    cursor: help;
+    text-decoration: underline dotted;
+}
+
+/* Load More Button */
+#load-more-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem 4rem;
+}
+
+.load-more-btn {
+    padding: 1rem 3rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+}
+
+.load-more-btn:hover {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 212, 170, 0.4);
+}
+
+/* Trailer Modal */
+.trailer-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+}
+
+.trailer-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trailer-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    cursor: pointer;
+}
+
+.trailer-modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 1200px;
+    z-index: 1;
+    animation: trailerFadeIn 0.3s ease;
+}
+
+@keyframes trailerFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.trailer-close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2.5rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s, transform 0.2s;
+    line-height: 1;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+.trailer-close-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.trailer-video-container {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+}
+
+.trailer-video-container iframe,
+.trailer-video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.trailer-loading,
+.trailer-error {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #999;
+    font-size: 14px;
+    z-index: 1;
+    pointer-events: none;
+}
+.trailer-error { color: #ff6b6b; }
+
+.trailer-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #333;
+    border-top-color: #00D4AA;
+    border-radius: 50%;
+    animation: trailer-spin 0.8s linear infinite;
+}
+
+@keyframes trailer-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Trailer Header (title + close) */
+.trailer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    min-height: 40px;
+}
+
+.trailer-movie-title {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 60px);
+}
+
+.trailer-reel-counter {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    font-weight: 400;
+    white-space: nowrap;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
+
+/* Trailer Navigation Arrows */
+.trailer-nav-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.trailer-nav {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 212, 170, 0.1);
+    border: none;
+    color: #00d4aa;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+}
+
+.trailer-nav:hover {
+    background: rgba(0, 212, 170, 0.3);
+    color: #00ffbb;
+}
+
+
+/* ============================================
+   Fullscreen Poster Lightbox
+   ============================================ */
+
+/* Expand button on card front */
+.expand-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0.25;
+    transition: opacity 0.2s, background 0.2s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-front:hover .expand-btn {
+    opacity: 1;
+}
+
+.expand-btn:hover {
+    background: var(--accent-primary);
+}
+
+/* Lightbox container */
+.poster-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.80);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.poster-lightbox.active {
+    display: flex;
+}
+
+/* Lightbox content - side by side layout with nav arrows */
+.lightbox-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 98vw;
+    max-height: 98vh;
+    animation: lightboxFadeIn 0.3s ease;
+}
+
+@keyframes lightboxFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Score badges on card front (RT + IMDb, bottom-left) */
+.card-score-overlay {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 5;
+}
+.card-score-overlay:empty { display: none; }
+.card-score-badge {
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-decoration: none;
+    line-height: 1;
+    cursor: pointer;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.card-score-badge:hover { opacity: 0.85; text-decoration: underline; text-underline-offset: 2px; }
+.card-score-badge.rt { color: #ff6b6b; }
+.card-score-badge.mc { color: #7ddf64; }
+.card-score-badge.imdb { color: #f5c518; }
+.card-score-badge.lb { color: #00e054; }
+.card-score-badge .score-logo {
+    height: 11px;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 2px;
+    display: inline-block;
+}
+.card-score-badge.mc .score-logo {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1);
+}
+
+/* Poster wrapper for positioning shrink button + score overlay */
+.lightbox-poster-wrap {
+    position: relative;
+}
+
+/* Large poster */
+.lightbox-poster {
+    height: 96vh;
+    width: auto;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    display: block;
+}
+
+/* Info panel wrapper — holds close button + scrollable content + sticky buttons */
+.lightbox-info-wrap {
+    position: relative;
+    width: calc(96vh * 0.67);
+    height: 96vh;
+    background: rgba(12, 12, 24, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Scrollable content area */
+.lightbox-info {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem 2rem 0.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Gradient fade over bottom of scroll content */
+.lightbox-scroll-fade {
+    height: 40px;
+    margin-top: -40px;
+    background: linear-gradient(to bottom, transparent, rgba(12, 12, 24, 0.9));
+    pointer-events: none;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Title area wrapper — fixed min-height prevents layout jump between short and long titles */
+.lightbox-title-area {
+    min-height: 5.5rem;
+    border-bottom: 2px solid rgba(0, 212, 170, 0.4);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* First row: title + staff-pick badge */
+.lightbox-title-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+
+/* Second row: reissue pill (left) + date (right) */
+.lightbox-title-sub {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 1.8rem;
+    margin-top: 4px;
+}
+
+.lightbox-title {
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+}
+
+.lightbox-reissue-pill {
+    background: #C8A951;
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.lightbox-date {
+    color: #00d4aa;
+    font-size: 1.4rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.staff-pick-badge {
+    background: var(--staff-pick);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transform: translateY(2px);
+}
+
+.lightbox-meta {
+    color: #888;
+    margin-bottom: 1.25rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+.lightbox-crew-label {
+    color: #00d4aa;
+    font-weight: 700;
+}
+.lightbox-crew-name {
+    color: #fff;
+    font-weight: 700;
+}
+.lightbox-crew-link {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+}
+.lightbox-crew-link:hover { border-bottom-color: #fff; }
+
+/* Scores row below meta */
+.lightbox-scores {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+.lightbox-scores:empty { display: none; }
+.lightbox-scores .score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    transition: all 0.2s;
+}
+.lightbox-scores .score-badge:hover { filter: brightness(1.15); }
+.lightbox-scores .score-badge.rt   { color: #ff6b6b; border-color: rgba(255,107,107,0.55); background: rgba(255,107,107,0.08); }
+.lightbox-scores .score-badge.mc   { color: #7ddf64; border-color: rgba(125,223,100,0.55); background: rgba(125,223,100,0.08); }
+.lightbox-scores .score-badge.imdb { color: #f5c518; border-color: rgba(245,197,24,0.55);  background: rgba(245,197,24,0.08); }
+.lightbox-scores .score-badge.lb   { color: #00e054; border-color: rgba(0,224,84,0.55);    background: rgba(0,224,84,0.08); }
+.lightbox-scores .score-badge.wiki { color: #bbb;    border-color: rgba(255,255,255,0.3);   background: rgba(255,255,255,0.05); }
+.lightbox-scores .score-badge .score-logo {
+    height: 18px;
+    width: auto;
+    vertical-align: middle;
+}
+.lightbox-scores .score-badge.mc .score-logo {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1);
+}
+.lightbox-scores .score-badge.wiki .score-logo {
+    filter: brightness(0) invert(1);
+    height: 22px;
+}
+
+.lightbox-synopsis {
+    color: #ccc;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+}
+.lightbox-synopsis a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(255,255,255,0.35);
+}
+.lightbox-synopsis a:hover { text-decoration-color: rgba(255,255,255,0.85); }
+
+.lightbox-runtime {
+    color: #ccc;
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+}
+
+.lightbox-awards {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.45);
+    margin: 0 0 0.4rem;
+    letter-spacing: 0.01em;
+}
+.lightbox-box-office {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.35);
+    margin: 0 0 1.25rem;
+    letter-spacing: 0.01em;
+}
+
+/* Pull quotes in lightbox */
+.lightbox-pull-quotes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.pq-card {
+    position: relative;
+    padding: 0.6rem 0.75rem;
+    background: rgba(0,212,170,0.07);
+    border-radius: 6px;
+    border-left: 3px solid #00d4aa;
+}
+
+.pq-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.pq-link:hover .pq-text {
+    color: #00ffbb;
+}
+
+.pq-text {
+    display: block;
+    font-style: italic;
+    color: #00d4aa;
+    font-size: 1rem;
+    line-height: 1.5;
+    quotes: "C" "D";
+}
+
+.pq-cite {
+    display: block;
+    font-style: normal;
+    font-size: 0.85rem;
+    color: rgba(0,212,170,0.55);
+    margin-top: 0.25rem;
+}
+
+/* Lightbox buttons container — always anchored at bottom, outside scroll area */
+.lightbox-buttons {
+    padding: 0.75rem 2rem 1.5rem;
+    flex-shrink: 0;
+    background: rgba(12, 12, 24, 0.6);
+}
+
+/* ROW 1: < TRAILER > navigation row */
+.lb-nav-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.lb-nav-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 212, 170, 0.1);
+    color: #00d4aa;
+    font-size: 2rem;
+    font-weight: 300;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.lb-nav-btn:hover {
+    background: rgba(0, 212, 170, 0.3);
+    color: #00ffbb;
+}
+/* Cycle arrows pinned to the lightbox's left/right edges so they're obvious and
+   people notice they can page through movies. CSS-only: the buttons stay put in
+   the DOM, so all click/keyboard behavior is unchanged — only their position and
+   size move. (.poster-lightbox is a fullscreen fixed overlay, so the viewport
+   edges ARE the lightbox edges, and these render only while it's open.) */
+.lb-nav-prev,
+.lb-nav-next {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(52px, 6vw, 78px);
+    height: clamp(52px, 6vw, 78px);
+    font-size: clamp(2.4rem, 4vw, 3.4rem);
+    background: rgba(10, 12, 16, 0.6);
+    color: #ffffff;
+    border: 2px solid rgba(0, 212, 170, 0.65);
+    box-shadow: 0 0 26px rgba(0, 0, 0, 0.6);
+    z-index: 10002;
+}
+.lb-nav-prev { left: clamp(10px, 2.5vw, 32px); }
+.lb-nav-next { right: clamp(10px, 2.5vw, 32px); }
+.lb-nav-prev:hover,
+.lb-nav-next:hover {
+    background: rgba(0, 212, 170, 0.9);
+    color: #04130f;
+    border-color: #00ffbb;
+}
+.lb-trailer-btn {
+    flex: 1;
+    height: 56px;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    background: #E50914;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.lb-trailer-btn:hover {
+    background: #ff1a25;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(229,9,20,0.5);
+}
+
+/* STREAM ROW: own row below nav */
+.lb-stream-row {
+    margin-bottom: 8px;
+}
+
+/* VOD ROW: own row below streaming, side by side */
+.lb-vod-row {
+    display: flex;
+    gap: 8px;
+}
+.lb-vod-row > * { flex: 1; min-width: 0; }
+
+/* === Streaming button: solid brand fill, logo only === */
+.stream-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #fff;
+    min-height: 58px;
+    border: 1.5px solid transparent;
+    transition: all 0.2s;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1rem;
+}
+.stream-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.stream-btn:active { transform: scale(0.97); }
+.stream-btn img {
+    height: 26px;
+    width: auto;
+    max-width: 120px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+/* Streaming service colors */
+.stream-btn.netflix { background: var(--svc-netflix); }
+.stream-btn.max { background: var(--svc-max); }
+.stream-btn.disney { background: var(--svc-disney); }
+.stream-btn.prime { background: var(--svc-prime); }
+.stream-btn.hulu { background: var(--svc-hulu); color: #000; }
+.stream-btn.mubi { background: var(--svc-mubi); }
+.stream-btn.criterion { background: var(--svc-criterion); }
+.stream-btn.peacock { background: var(--svc-peacock); }
+.stream-btn.shudder { background: var(--svc-shudder); }
+.stream-btn.tubi { background: var(--svc-tubi); }
+.stream-btn.paramount { background: var(--svc-paramount); }
+.stream-btn.kanopy { background: var(--svc-kanopy); }
+.stream-btn.hoopla { background: var(--svc-hoopla); }
+.stream-btn.amc { background: var(--svc-amc); }
+.stream-btn.roku { background: var(--svc-roku); }
+.stream-btn.pluto { background: var(--svc-pluto); }
+.stream-btn.crackle { background: var(--svc-crackle); }
+.stream-btn.fawesome { background: var(--svc-fawesome); }
+.stream-btn.other { background: #333; }
+/* Dark-bg services need a subtle edge so they don't disappear */
+.stream-btn.peacock,
+.stream-btn.criterion,
+.stream-btn.other { border-color: rgba(255,255,255,0.18); }
+
+/* === VOD button: split logo half + price half === */
+.vod-btn {
+    display: flex;
+    align-items: stretch;
+    border-radius: 10px;
+    overflow: hidden;
+    text-decoration: none;
+    color: #fff;
+    min-height: 56px;
+    border: 1.5px solid transparent;
+    transition: all 0.2s;
+}
+.vod-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.vod-btn:active { transform: scale(0.97); }
+.vod-btn .logo-half {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 8px;
+    width: 40%;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    overflow: hidden;
+}
+.vod-btn .logo-half img {
+    height: 18px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+.vod-btn .price-half {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 6px;
+    width: 60%;
+    background: rgba(0,0,0,0.4);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    text-align: center;
+}
+/* VOD logo-half brand colors */
+.vod-btn.amazon .logo-half { background: var(--svc-prime); }
+.vod-btn.apple .logo-half { background: #333; }
+.vod-btn.fandango .logo-half { background: var(--svc-fandango); }
+.vod-btn.youtube .logo-half { background: var(--svc-youtube); }
+.vod-btn.plex .logo-half { background: #1a1a1a; }
+/* Virtual screening — gold */
+.vod-btn.screening { border-color: #FFD700; }
+.vod-btn.screening .price-half.screening-full {
+    width: 100%;
+    background: transparent;
+    color: #FFD700;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+/* Keyboard focus: green border (replaces white) */
+.lb-focused {
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 10px rgba(0,212,170,0.3) !important;
+}
+/* Nav buttons get brighter background on focus */
+.lb-nav-btn.lb-focused {
+    background: rgba(0, 212, 170, 0.3) !important;
+    color: #00ffbb !important;
+}
+/* TRAILER button focus */
+.lb-trailer-btn.lb-focused {
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 12px rgba(0,212,170,0.4), 0 0 20px rgba(229,9,20,0.3) !important;
+}
+
+/* Trailer — poster overlay (#10: entire poster is the button) */
+.lightbox-poster-wrap.has-trailer {
+    cursor: pointer;
+}
+.lightbox-trailer-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.45);
+    border: 3px solid #E50914;
+    box-shadow: inset 0 0 30px rgba(229,9,20,0.15);
+    transition: all 0.2s;
+    z-index: 5;
+}
+.lightbox-trailer-overlay:hover {
+    background: rgba(0,0,0,0.55);
+    border-color: #ff3333;
+    box-shadow: inset 0 0 40px rgba(229,9,20,0.2), 0 0 20px rgba(229,9,20,0.3);
+}
+.lightbox-trailer-circle {
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    background: #E50914;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 28px rgba(229,9,20,0.6);
+}
+.lightbox-trailer-circle::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 12px 0 12px 20px;
+    border-color: transparent transparent transparent #fff;
+    margin-left: 4px;
+}
+.lightbox-trailer-text {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.3em;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+}
+
+
+/* X close button — anchored to top-right of info panel */
+.lightbox-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.4rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    z-index: 10001;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+    .lightbox-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .lightbox-poster {
+        height: 50vh;
+        max-height: 400px;
+    }
+
+    .lightbox-poster-fallback {
+        height: 50vh;
+        max-height: 400px;
+    }
+
+    .lightbox-info-wrap {
+        width: 100%;
+        max-width: 90vw;
+        height: auto;
+        max-height: 40vh;
+    }
+
+    .lightbox-info {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    /* Compact nav row on mobile */
+    .lb-nav-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.5rem;
+    }
+    .lb-trailer-btn {
+        height: 44px;
+        font-size: 0.9rem;
+    }
+}
+
+</style>
+</head>
+<body>
+    <header>
+        <div class="title-row">
+            <div class="header-left">
+                <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
+                <div class="filters">
+                    <button class="filter-btn" data-filter="indie">Indie</button>
+                    <button class="filter-btn" data-filter="horror">Horror</button>
+                    <button class="filter-btn" data-filter="action">Action</button>
+                    <button class="filter-btn" data-filter="comedy">Comedy</button>
+                    <button class="filter-btn" data-filter="family">Family</button>
+                    <button class="filter-btn" data-filter="thriller">Thriller</button>
+                    <button class="filter-btn" data-filter="foreign">Foreign</button>
+                    <button class="filter-btn" data-filter="documentary">Docs</button>
+                    <button class="filter-btn" data-filter="restorations">Reissues</button>
+                    <div class="search-container">
+                        <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
+                        <button id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
+                    </div>
+                </div>
+            </div>
+            <div class="view-module">
+                <div class="view-module-head">View</div>
+                <div class="toggle-grid">
+                    <div class="slop-toggle-wrap" id="slop-free-toggle" data-state="free">
+                        <div class="slop-track"><div class="slop-thumb"></div></div>
+                        <span class="slop-label" id="slop-state-label">SLOP FREE</span>
+                    </div>
+                    <div class="slop-toggle-wrap" id="highlights-toggle">
+                        <div class="slop-track"><div class="slop-thumb"></div></div>
+                        <span class="slop-label">SELECTS</span>
+                    </div>
+                    <div class="slop-toggle-wrap" id="fest-toggle">
+                        <div class="slop-track"><div class="slop-thumb"></div></div>
+                        <span class="slop-label">FESTS</span>
+                    </div>
+                    <div class="slop-toggle-wrap" id="preorder-toggle">
+                        <div class="slop-track"><div class="slop-thumb"></div></div>
+                        <span class="slop-label">PRE-ORDER</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header><div style="position:fixed;top:0;left:0;right:0;background:#b8860b;color:#000;font:600 13px system-ui;padding:6px 14px;z-index:9999;text-align:center;">MOCKUP — BEFORE (this morning) — filters left, boxed VIEW module w/ label</div><div style="height:34px"></div><div style="display:flex;gap:14px;flex-wrap:wrap;padding:24px;max-width:1400px;margin:0 auto;"><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div></div></body></html>
