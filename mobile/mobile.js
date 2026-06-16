@@ -1510,28 +1510,48 @@ const NRWMobile = {
             if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onKey); }
         });
 
-        // Double-tap left/right on video to seek ±10 seconds
+        // Reel navigation: manual prev/next through movies that have an MP4 trailer.
+        const isMp4 = (m) => { const u = m.links?.trailer_hosted; if (!u) return false; try { return new URL(u).pathname.endsWith('.mp4'); } catch { return u.endsWith('.mp4'); } };
+        const reel = this.filteredMovies.filter(isMp4);
+        const reelIdx = reel.findIndex(m => String(m.id) === String(movie.id));
+        const goTo = (dir) => {
+            if (reel.length < 2) return;
+            const n = reel[(reelIdx + dir + reel.length) % reel.length];
+            if (n && String(n.id) !== String(movie.id)) this.showTrailer(n.id);
+        };
+        // Tappable < > cue arrows (swipe affordance + manual nav). Only with a reel.
+        if (reel.length >= 2) {
+            [['trailer-cue-prev', '‹', 'Previous trailer', -1],
+             ['trailer-cue-next', '›', 'Next trailer', 1]].forEach(([cls, glyph, label, dir]) => {
+                const btn = document.createElement('button');
+                btn.className = 'trailer-cue ' + cls;
+                btn.textContent = glyph;
+                btn.setAttribute('aria-label', label);
+                btn.addEventListener('click', (e) => { e.stopPropagation(); goTo(dir); });
+                overlay.appendChild(btn);
+            });
+        }
+
+        // Double-tap left/right to seek ±10s; horizontal swipe → prev/next trailer
         const video = overlay.querySelector('video');
         if (video) {
             // Auto-advance: when this trailer ends, roll to the next movie's hosted
             // trailer (continuous reel). Only MP4s play in this overlay.
-            video.addEventListener('ended', () => {
-                const isMp4 = (m) => {
-                    const u = m.links?.trailer_hosted;
-                    if (!u) return false;
-                    try { return new URL(u).pathname.endsWith('.mp4'); }
-                    catch { return u.endsWith('.mp4'); }
-                };
-                const reel = this.filteredMovies.filter(isMp4);
-                if (reel.length < 2) return;
-                const cur = reel.findIndex(m => String(m.id) === String(movie.id));
-                const next = reel[(cur + 1) % reel.length];
-                if (next && String(next.id) !== String(movie.id)) this.showTrailer(next.id);
-            });
+            video.addEventListener('ended', () => goTo(1));
 
-            let lastTap = 0, lastSide = null;
+            let lastTap = 0, lastSide = null, swipeX = null, swipeY = null;
+            video.addEventListener('touchstart', (e) => {
+                swipeX = e.touches[0].clientX; swipeY = e.touches[0].clientY;
+            }, { passive: true });
             video.addEventListener('touchend', (e) => {
                 e.stopPropagation();
+                // Horizontal swipe → previous/next trailer (takes priority over seek)
+                if (swipeX !== null) {
+                    const dx = e.changedTouches[0].clientX - swipeX;
+                    const dy = e.changedTouches[0].clientY - swipeY;
+                    swipeX = null;
+                    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) { goTo(dx < 0 ? 1 : -1); return; }
+                }
                 const now = Date.now();
                 const x = e.changedTouches[0].clientX;
                 const rect = video.getBoundingClientRect();

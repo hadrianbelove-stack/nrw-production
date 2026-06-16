@@ -607,6 +607,32 @@ body {
   transform: translateY(-50%) scale(1.3);
 }
 
+/* Trailer overlay swipe cues — tappable < > arrows flanking the video, same
+   nudge as the poster chevrons. The overlay has no transform/filter, so these
+   pin to the screen edges. */
+.trailer-cue {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(10, 12, 16, 0.55);
+  border: 1px solid rgba(0, 212, 170, 0.55);
+  color: var(--accent);
+  font-size: 1.9rem;
+  font-weight: 300;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+  cursor: pointer;
+}
+.trailer-cue-prev { left: 8px; animation: chevNudgeL 1.7s ease-in-out infinite; }
+.trailer-cue-next { right: 8px; animation: chevNudgeR 1.7s ease-in-out infinite; }
+
 /* ===== VIEW 3: BOTTOM SHEET ===== */
 .bottom-sheet {
   position: fixed;
