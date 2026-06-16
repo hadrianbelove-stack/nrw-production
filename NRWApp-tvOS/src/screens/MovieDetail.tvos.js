@@ -91,6 +91,7 @@ const StreamButton = forwardRef(({
       accessibilityLabel={`Watch on ${displayName}`}
       accessibilityRole="button"
       testID={testID}
+      style={{ flex: 1 }}
     >
       <Animated.View style={[
         streamBtnStyles.button,
@@ -361,13 +362,26 @@ const trailerBtnStyles = StyleSheet.create({
 });
 
 // Compact score badge — small inline pill matching site's .score-badge (display-only)
-const ScoreBadge = ({ logo, score, color, borderColor, bgColor, accessibilityLabel }) => (
+// Map ISO language codes to full names for display.
+const LANGUAGE_NAMES = {
+  en: 'English', es: 'Spanish', fr: 'French', de: 'German', it: 'Italian', pt: 'Portuguese',
+  ja: 'Japanese', ko: 'Korean', zh: 'Chinese', hi: 'Hindi', ru: 'Russian', ar: 'Arabic',
+  nl: 'Dutch', sv: 'Swedish', da: 'Danish', no: 'Norwegian', fi: 'Finnish', pl: 'Polish',
+  tr: 'Turkish', th: 'Thai', he: 'Hebrew', fa: 'Persian', el: 'Greek', cs: 'Czech',
+  hu: 'Hungarian', ro: 'Romanian', uk: 'Ukrainian', id: 'Indonesian', vi: 'Vietnamese',
+  ta: 'Tamil', te: 'Telugu', is: 'Icelandic', ga: 'Irish', ca: 'Catalan',
+};
+const languageName = (code) => code ? (LANGUAGE_NAMES[code.toLowerCase()] || code.toUpperCase()) : null;
+
+// Brand logos render in their native colors — no tintColor (these are full-color marks,
+// and tinting flattens them into solid blobs).
+const ScoreBadge = ({ logo, logoStyle, score, color, borderColor, bgColor, accessibilityLabel }) => (
   <View
     style={[badgeStyles.pill, borderColor && { borderColor, backgroundColor: bgColor }]}
     accessible={true}
     accessibilityLabel={accessibilityLabel}
   >
-    <Image source={logo} style={[badgeStyles.logo, { tintColor: color }]} />
+    <Image source={logo} style={[badgeStyles.logo, logoStyle]} />
     <Text style={[badgeStyles.score, { color }]}>{score}</Text>
   </View>
 );
@@ -391,6 +405,11 @@ const badgeStyles = StyleSheet.create({
   },
   logo: {
     width: 24,
+    height: 24,
+    resizeMode: 'contain',
+  },
+  logoWide: {
+    width: 52,
     height: 24,
     resizeMode: 'contain',
   },
@@ -718,14 +737,17 @@ const MovieDetailTvOS = () => {
           >
             {/* 1. Title row with date */}
             <View style={styles.titleRow}>
-              <Text
-                style={styles.title}
-                accessible={true}
-                accessibilityLabel={accessibilityLabel}
-                accessibilityRole="header"
-              >
-                {movie.display_title || movie.title}
-              </Text>
+              <View style={styles.titleClamp}>
+                <Text
+                  style={styles.title}
+                  numberOfLines={2}
+                  accessible={true}
+                  accessibilityLabel={accessibilityLabel}
+                  accessibilityRole="header"
+                >
+                  {movie.display_title || movie.title}
+                </Text>
+              </View>
               {(() => {
                 const hp = [];
                 if (movie.genres?.[0]) hp.push(movie.genres[0]);
@@ -766,66 +788,36 @@ const MovieDetailTvOS = () => {
                       <Text style={styles.metadataText}>{formattedRuntime}</Text>
                     </>
                   )}
-                  {(movie.distributor || movie.studio) && (
+                  {movie.original_language && (
                     <>
                       <Text style={styles.metadataDot}>•</Text>
-                      <Text style={styles.metadataText}>{movie.distributor || movie.studio}</Text>
+                      <Text style={styles.metadataText}>{languageName(movie.original_language)}</Text>
                     </>
                   )}
                 </View>
-                {movie.original_language && movie.original_language !== 'en' && (
-                  <View style={styles.creditRow}>
-                    <Text style={styles.creditLabel}>Language</Text>
-                    <Text style={styles.creditValue}>{movie.original_language.toUpperCase()}</Text>
-                  </View>
-                )}
               </View>
 
               {/* Right: Score badges stacked vertically */}
-              {(rtScore || imdbScore || mcScore || lbScore) && (
-                <View style={styles.scoresColumn}>
-                  {rtScore && (
-                    <ScoreBadge
-                      logo={require('../../assets/logos/rt.png')}
-                      score={rtScore.label}
-                      color="#ff6b6b"
-                      borderColor="rgba(255,107,107,0.55)"
-                      bgColor="rgba(255,107,107,0.08)"
-                      accessibilityLabel={`Rotten Tomatoes ${rtScore.label}`}
-                    />
-                  )}
-                  {imdbScore && (
-                    <ScoreBadge
-                      logo={require('../../assets/logos/imdb.png')}
-                      score={imdbScore.label}
-                      color="#f5c518"
-                      borderColor="rgba(245,197,24,0.55)"
-                      bgColor="rgba(245,197,24,0.08)"
-                      accessibilityLabel={`IMDb rating ${imdbScore.label}`}
-                    />
-                  )}
-                  {mcScore && (
-                    <ScoreBadge
-                      logo={require('../../assets/logos/metacritic.png')}
-                      score={mcScore.label}
-                      color="#7ddf64"
-                      borderColor="rgba(125,223,100,0.55)"
-                      bgColor="rgba(125,223,100,0.08)"
-                      accessibilityLabel={`Metacritic score ${mcScore.label}`}
-                    />
-                  )}
-                  {lbScore && (
-                    <ScoreBadge
-                      logo={require('../../assets/logos/letterboxd.png')}
-                      score={lbScore.label}
-                      color="#00E054"
-                      borderColor="rgba(0,224,84,0.55)"
-                      bgColor="rgba(0,224,84,0.08)"
-                      accessibilityLabel={`Letterboxd rating ${lbScore.label}`}
-                    />
-                  )}
-                </View>
-              )}
+              {(rtScore || imdbScore || mcScore || lbScore) && (() => {
+                const badges = [
+                  rtScore && { k: 'rt', logo: require('../../assets/logos/rt.png'), score: rtScore.label, color: '#ff6b6b', borderColor: 'rgba(255,107,107,0.55)', bgColor: 'rgba(255,107,107,0.08)', accessibilityLabel: `Rotten Tomatoes ${rtScore.label}` },
+                  imdbScore && { k: 'imdb', logo: require('../../assets/logos/imdb.png'), score: imdbScore.label, color: '#f5c518', borderColor: 'rgba(245,197,24,0.55)', bgColor: 'rgba(245,197,24,0.08)', accessibilityLabel: `IMDb rating ${imdbScore.label}` },
+                  mcScore && { k: 'mc', logo: require('../../assets/logos/metacritic.png'), score: mcScore.label, color: '#7ddf64', borderColor: 'rgba(125,223,100,0.55)', bgColor: 'rgba(125,223,100,0.08)', accessibilityLabel: `Metacritic score ${mcScore.label}` },
+                  lbScore && { k: 'lb', logo: require('../../assets/logos/letterboxd.png'), logoStyle: badgeStyles.logoWide, score: lbScore.label, color: '#00E054', borderColor: 'rgba(0,224,84,0.55)', bgColor: 'rgba(0,224,84,0.08)', accessibilityLabel: `Letterboxd rating ${lbScore.label}` },
+                ].filter(Boolean);
+                // Grid, max 2 per row — 4 scores render as 2x2, never a tall stack that pushes content down.
+                return (
+                  <View style={styles.scoresGrid}>
+                    {[0, 2].map(i => badges.slice(i, i + 2).length > 0 && (
+                      <View key={i} style={styles.scoresGridRow}>
+                        {badges.slice(i, i + 2).map(b => (
+                          <ScoreBadge key={b.k} logo={b.logo} logoStyle={b.logoStyle} score={b.score} color={b.color} borderColor={b.borderColor} bgColor={b.bgColor} accessibilityLabel={b.accessibilityLabel} />
+                        ))}
+                      </View>
+                    ))}
+                  </View>
+                );
+              })()}
             </View>
 
             {/* 6. Pull Quotes */}
@@ -899,16 +891,19 @@ const MovieDetailTvOS = () => {
               )}
             </View>
 
-            {/* 9. Stream button — full-width row (before VOD) */}
+            {/* 9. Stream buttons — one per free stream, split row (before VOD) */}
             {streamingLinks.length > 0 && (
               <View style={styles.streamRow}>
-                <StreamButton
-                  service={streamingLinks[0].service}
-                  onPress={() => handleWatchPress(streamingLinks[0])}
-                  hasTVPreferredFocus={!movie?.links?.trailer_hosted && !movie?.links?.trailer}
-                  nextFocusUp={trailerHandle}
-                  testID="action-btn-stream"
-                />
+                {streamingLinks.map((link, i) => (
+                  <StreamButton
+                    key={`stream-${i}`}
+                    service={link.service}
+                    onPress={() => handleWatchPress(link)}
+                    hasTVPreferredFocus={!movie?.links?.trailer_hosted && !movie?.links?.trailer && i === 0}
+                    nextFocusUp={trailerHandle}
+                    testID={`action-btn-stream-${i}`}
+                  />
+                ))}
               </View>
             )}
 
@@ -1085,9 +1080,16 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Colors.textPrimary,
-    fontSize: Typography.tvos.title,
+    fontSize: 40,
     fontWeight: '700',
-    lineHeight: Typography.tvos.title * 1.2,
+    lineHeight: 48,
+  },
+  // Reserve a fixed 2-line height so long US/foreign titles never push the date,
+  // divider, or anything below them down — placement stays locked. Bottom-aligned
+  // so a one-line title sits just above the divider instead of floating.
+  titleClamp: {
+    height: 96,
+    justifyContent: 'flex-end',
   },
   titleDate: {
     color: Colors.primary,
@@ -1122,10 +1124,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 12,
   },
-  scoresColumn: {
-    flexDirection: 'column',
+  scoresGrid: {
     gap: 6,
     alignItems: 'flex-end',
+  },
+  scoresGridRow: {
+    flexDirection: 'row',
+    gap: 6,
+    justifyContent: 'flex-end',
   },
   metadataRow: {
     flexDirection: 'row',
@@ -1167,7 +1173,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   synopsisContainer: {
-    marginTop: Spacing.tvos.lg,
+    marginTop: Spacing.tvos.sm,
   },
   synopsis: {
     color: Colors.textPrimary,
@@ -1194,6 +1200,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   streamRow: {
+    flexDirection: 'row',
+    gap: 10,
     marginBottom: 8,
   },
   vodRow: {
@@ -1223,7 +1231,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.caption,
   },
   pullQuotesSection: {
-    marginTop: Spacing.tvos.lg,
+    marginTop: Spacing.tvos.sm,
   },
   pullQuoteCard: {
     marginBottom: Spacing.tvos.sm,
