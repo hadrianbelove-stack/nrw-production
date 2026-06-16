@@ -577,20 +577,33 @@ body {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   color: var(--accent);
   opacity: 0;
   z-index: 900;
   pointer-events: none;
   transition: opacity 0.15s ease-out, transform 0.15s ease-out;
-  font-weight: 200;
-  text-shadow: 0 0 20px rgba(0,212,170,0.5);
+  font-weight: 300;
+  text-shadow: 0 0 20px rgba(0,212,170,0.6);
 }
-.chevron-left { left: -2px; }
-.chevron-right { right: -2px; }
-.chevron.visible { opacity: 0.5; }
+.chevron-left { left: 6px; }
+.chevron-right { right: 6px; }
+/* Visible in the detail/poster views, with a slow horizontal nudge toward
+   center so people read it as "swipe to change movies." */
+.chevron.visible { opacity: 0.8; }
+.chevron-left.visible  { animation: chevNudgeL 1.7s ease-in-out infinite; }
+.chevron-right.visible { animation: chevNudgeR 1.7s ease-in-out infinite; }
+@keyframes chevNudgeL {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50%      { transform: translateY(-50%) translateX(7px); }
+}
+@keyframes chevNudgeR {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50%      { transform: translateY(-50%) translateX(-7px); }
+}
 .chevron.flash {
   opacity: 1;
+  animation: none;
   transform: translateY(-50%) scale(1.3);
 }
 
