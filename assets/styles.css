@@ -95,6 +95,7 @@ header {
     align-items: center;
     gap: 1.8rem;
     width: 100%;
+    margin-bottom: 1.2rem;
 }
 .hl-top .search-container {
     flex: 1 1 200px;
@@ -106,7 +107,7 @@ header {
 header h1 {
     font-weight: 100;
     letter-spacing: 0.24em;
-    font-size: 2.9rem;
+    font-size: 3.3rem;
     line-height: 1.0;
     white-space: nowrap;
     flex-shrink: 0;
@@ -145,15 +146,31 @@ header h1 {
     .hl-top { flex-wrap: wrap; }
 }
 
+/* Bottom row: genre filters (two rows of 5 & 4) filling the space, with the
+   View toggle box at the right. */
+.header-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 1.2rem;
+}
+
 .filters {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
     gap: 0.7rem;
     margin-top: 0;
-    width: 100%;
+    /* fill the space left of the View box */
+    flex: 1 1 480px;
+    min-width: 0;
+    align-content: stretch;
 }
 
 .filter-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 0.62rem 0.6rem;
     background: rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.2);
