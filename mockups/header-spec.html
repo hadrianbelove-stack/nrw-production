@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NRW header v2</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NRW header v3</title>
 <style>
 /* CSS Custom Properties - Single source of truth for colors */
 :root {
@@ -1922,16 +1922,17 @@ header h1 {
 
   .spec-hdr { display:flex; gap:26px; align-items:stretch; padding:20px 26px; max-width:1500px; margin:0 auto; }
   .spec-left { flex:1; display:flex; flex-direction:column; gap:14px; justify-content:space-between; }
-  .spec-row1 { display:flex; align-items:center; gap:18px; }
-  .spec-row1 h1 { margin:0; white-space:nowrap; flex:0 0 auto; }
-  .spec-filt { display:flex; gap:10px; }
-  /* search as a filter-pill, fills remaining row-1 space, lines up with toggle box right edge */
-  .spec-search { flex:1 1 auto; display:flex; align-items:center; }
-  .spec-search .search-container { width:100%; }
-  .spec-search input { width:100%; height:54px; box-sizing:border-box; background:#1c1c1c; border:1px solid rgba(255,255,255,0.14);
+  .spec-row1 { display:flex; align-items:center; }
+  .spec-row1 h1 { margin:0; white-space:nowrap; }
+  .spec-filt { display:flex; gap:10px; align-items:stretch; }
+  .spec-filt .filter-btn { flex:0 0 auto; }
+  /* search fills the leftover space in the bottom filter row, same height as a filter pill */
+  .spec-search { flex:1 1 auto; display:flex; }
+  .spec-search .search-container { width:100%; display:flex; }
+  .spec-search input { width:100%; box-sizing:border-box; background:#1c1c1c; border:1px solid rgba(255,255,255,0.14);
         border-radius:14px; padding:0 18px; color:#eee; font-size:1rem; outline:none; }
   .spec-search input::placeholder { color:#888; }
-  /* toggle box: no VIEW head, 2x2 that fills the full height of the 3 left rows */
+  /* toggle box: no VIEW head, 2x2 filling the full height of the 3 left rows */
   .spec-right { display:flex; }
   .spec-toggles { height:100%; box-sizing:border-box; display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr;
         gap:10px 26px; align-content:stretch; padding:18px 22px; }
@@ -1941,12 +1942,9 @@ header h1 {
 <header>
   <div class="spec-hdr">
     <div class="spec-left">
-      <div class="spec-row1">
-        <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
-        <div class="spec-search"><div class="search-container"><input type="text" placeholder="Search title, director, genre..."></div></div>
-      </div>
+      <div class="spec-row1"><h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1></div>
       <div class="spec-filt"><button class="filter-btn" data-filter="indie">Indie</button><button class="filter-btn" data-filter="horror">Horror</button><button class="filter-btn" data-filter="action">Action</button><button class="filter-btn" data-filter="comedy">Comedy</button><button class="filter-btn" data-filter="family">Family</button></div>
-      <div class="spec-filt"><button class="filter-btn" data-filter="thriller">Thriller</button><button class="filter-btn" data-filter="foreign">Foreign</button><button class="filter-btn" data-filter="documentary">Docs</button><button class="filter-btn" data-filter="restorations">Reissues</button></div>
+      <div class="spec-filt"><button class="filter-btn" data-filter="thriller">Thriller</button><button class="filter-btn" data-filter="foreign">Foreign</button><button class="filter-btn" data-filter="documentary">Docs</button><button class="filter-btn" data-filter="restorations">Reissues</button><div class="spec-search"><div class="search-container"><input type="text" placeholder="Search title, director, genre..."></div></div></div>
     </div>
     <div class="spec-right">
         <div class="view-module spec-toggles">
@@ -1958,6 +1956,6 @@ header h1 {
     </div>
   </div>
 </header>
-<div style="position:fixed;top:0;left:0;right:0;background:#b8860b;color:#000;font:600 13px system-ui;padding:6px 14px;z-index:9999;text-align:center;">MOCKUP v2 — no VIEW label, toggles fill box, search as a pill in the title row</div><div style="height:34px"></div>
+<div style="position:fixed;top:0;left:0;right:0;background:#b8860b;color:#000;font:600 13px system-ui;padding:6px 14px;z-index:9999;text-align:center;">MOCKUP v3 — title alone; search in bottom filter row; toggle box full-height, no VIEW label</div><div style="height:34px"></div>
 <div style="display:flex;gap:14px;flex-wrap:wrap;padding:24px;max-width:1400px;margin:0 auto;"><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div></div>
 </body></html>
