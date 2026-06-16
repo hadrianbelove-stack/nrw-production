@@ -1482,7 +1482,7 @@ const NRWMobile = {
 
         const existing = document.getElementById('trailer-overlay');
         if (existing) existing.remove();
-        if (this._trailerOrient) { window.removeEventListener('orientationchange', this._trailerOrient); this._trailerOrient = null; }
+        if (this._trailerOrient) { this._trailerOrient(); this._trailerOrient = null; }
 
         const overlay = document.createElement('div');
         overlay.id = 'trailer-overlay';
@@ -1506,7 +1506,7 @@ const NRWMobile = {
 
         const close = () => {
             overlay.remove();
-            if (this._trailerOrient) { window.removeEventListener('orientationchange', this._trailerOrient); this._trailerOrient = null; }
+            if (this._trailerOrient) { this._trailerOrient(); this._trailerOrient = null; }
         };
         overlay.querySelector('button').addEventListener('click', close);
         overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
@@ -1554,19 +1554,25 @@ const NRWMobile = {
         // Double-tap left/right to seek ±10s
         const video = overlay.querySelector('video');
         if (video) {
-            // Rotate to landscape → fullscreen the video. Best-effort: fullscreen
-            // needs user activation, so iOS may require a tap instead.
-            const goFsLandscape = () => {
-                if (!document.getElementById('trailer-overlay')) return;
-                if (!window.matchMedia('(orientation: landscape)').matches) return;
+            // Rotate to landscape → fullscreen the video. Listen to the matchMedia
+            // CHANGE event (fires with the correct orientation, unlike a bare
+            // orientationchange + immediate matchMedia read, which can be stale).
+            const mql = window.matchMedia('(orientation: landscape)');
+            const onOrient = (e) => {
+                const landscape = (e && typeof e.matches === 'boolean') ? e.matches : mql.matches;
+                if (!landscape || !document.getElementById('trailer-overlay')) return;
                 try {
                     const p = video.requestFullscreen ? video.requestFullscreen()
                         : (video.webkitEnterFullscreen && video.webkitEnterFullscreen());
                     if (p && p.catch) p.catch(() => {});
                 } catch (_) {}
             };
-            this._trailerOrient = goFsLandscape;
-            window.addEventListener('orientationchange', goFsLandscape);
+            if (mql.addEventListener) mql.addEventListener('change', onOrient);
+            else mql.addListener(onOrient); // older Safari
+            this._trailerOrient = () => {
+                if (mql.removeEventListener) mql.removeEventListener('change', onOrient);
+                else mql.removeListener(onOrient);
+            };
 
             // Auto-advance: when this trailer ends, roll to the next movie's hosted
             // trailer (continuous reel). Only MP4s play in this overlay.
