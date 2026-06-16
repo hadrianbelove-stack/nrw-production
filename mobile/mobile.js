@@ -1482,6 +1482,7 @@ const NRWMobile = {
 
         const existing = document.getElementById('trailer-overlay');
         if (existing) existing.remove();
+        if (this._trailerOrient) { window.removeEventListener('orientationchange', this._trailerOrient); this._trailerOrient = null; }
 
         const overlay = document.createElement('div');
         overlay.id = 'trailer-overlay';
@@ -1503,7 +1504,10 @@ const NRWMobile = {
 
         document.body.appendChild(overlay);
 
-        const close = () => overlay.remove();
+        const close = () => {
+            overlay.remove();
+            if (this._trailerOrient) { window.removeEventListener('orientationchange', this._trailerOrient); this._trailerOrient = null; }
+        };
         overlay.querySelector('button').addEventListener('click', close);
         overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
         document.addEventListener('keydown', function onKey(e) {
@@ -1532,26 +1536,45 @@ const NRWMobile = {
             });
         }
 
-        // Double-tap left/right to seek ±10s; horizontal swipe → prev/next trailer
+        // Swipe anywhere in the overlay → prev/next trailer. Capture phase so it
+        // beats the video's native controls/seek; only a clear horizontal drag
+        // navigates — taps fall through (close, seek, controls).
+        let swStartX = null, swStartY = null;
+        overlay.addEventListener('touchstart', (e) => {
+            const t = e.touches[0]; swStartX = t.clientX; swStartY = t.clientY;
+        }, { capture: true, passive: true });
+        overlay.addEventListener('touchend', (e) => {
+            if (swStartX === null) return;
+            const t = e.changedTouches[0];
+            const dx = t.clientX - swStartX, dy = t.clientY - swStartY;
+            swStartX = null;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { e.stopPropagation(); goTo(dx < 0 ? 1 : -1); }
+        }, { capture: true });
+
+        // Double-tap left/right to seek ±10s
         const video = overlay.querySelector('video');
         if (video) {
+            // Rotate to landscape → fullscreen the video. Best-effort: fullscreen
+            // needs user activation, so iOS may require a tap instead.
+            const goFsLandscape = () => {
+                if (!document.getElementById('trailer-overlay')) return;
+                if (!window.matchMedia('(orientation: landscape)').matches) return;
+                try {
+                    const p = video.requestFullscreen ? video.requestFullscreen()
+                        : (video.webkitEnterFullscreen && video.webkitEnterFullscreen());
+                    if (p && p.catch) p.catch(() => {});
+                } catch (_) {}
+            };
+            this._trailerOrient = goFsLandscape;
+            window.addEventListener('orientationchange', goFsLandscape);
+
             // Auto-advance: when this trailer ends, roll to the next movie's hosted
             // trailer (continuous reel). Only MP4s play in this overlay.
             video.addEventListener('ended', () => goTo(1));
 
-            let lastTap = 0, lastSide = null, swipeX = null, swipeY = null;
-            video.addEventListener('touchstart', (e) => {
-                swipeX = e.touches[0].clientX; swipeY = e.touches[0].clientY;
-            }, { passive: true });
+            let lastTap = 0, lastSide = null;
             video.addEventListener('touchend', (e) => {
                 e.stopPropagation();
-                // Horizontal swipe → previous/next trailer (takes priority over seek)
-                if (swipeX !== null) {
-                    const dx = e.changedTouches[0].clientX - swipeX;
-                    const dy = e.changedTouches[0].clientY - swipeY;
-                    swipeX = null;
-                    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) { goTo(dx < 0 ? 1 : -1); return; }
-                }
                 const now = Date.now();
                 const x = e.changedTouches[0].clientX;
                 const rect = video.getBoundingClientRect();
