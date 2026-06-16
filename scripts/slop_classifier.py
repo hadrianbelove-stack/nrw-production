@@ -59,6 +59,7 @@ MANUAL_OVERRIDES = {
     1536559: False,   # Double Happiness
     1398655: False,   # Blue Film (Select)
     312493:  False,   # Viral Hit (tv_312493)
+    1560681: False,   # Colors of Evil: Black (Netflix global Top 10 Polish thriller)
     # TV-movie mill thrillers — confirmed slop by curator (June 2026)
     1708839: True,    # Her Husband's Double Life
     1409853: True,    # Neglected
