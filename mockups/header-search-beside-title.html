@@ -35,41 +35,38 @@ header {
     backdrop-filter: blur(12px);
 }
 
-/* Left column (title over filters) + View toggle box on the right */
-.title-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1.2rem 1.6rem;
-}
-.header-left {
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
-    flex: 1 1 480px;
-    min-width: 0;
-}
-
+/* Title alone on top; filters + toggle box share the row below so their
+   top and bottom edges line up. */
 header h1 {
     font-weight: 100;
     letter-spacing: 0.24em;
     font-size: 3.3rem;
     line-height: 1.0;
     white-space: nowrap;
-    flex-shrink: 0;
     background: linear-gradient(45deg, #fff, var(--accent-primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    margin-bottom: 1.1rem;
 }
 
-/* Bottom: genre filters + search as two neat rows of 5 (search = last slot) */
+.header-bottom {
+    display: flex;
+    align-items: stretch;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+}
+
+/* Genre filters + search as two neat rows of 5 (search = last slot), filling
+   the space left of the toggle box and the full row height. */
 .filters {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
     gap: 0.7rem;
-    width: 100%;
+    flex: 1 1 480px;
+    min-width: 0;
+    align-content: stretch;
 }
 /* search drops into the grid as the 10th cell, same width as a filter */
 .filters .search-container { width: 100%; }
@@ -93,19 +90,25 @@ header h1 {
     box-shadow: 0 5px 15px var(--accent-glow);
 }
 
-/* Boxed control module — the four view toggles, 2×2 */
+/* Boxed control module — the four view toggles, 2×2. No header label.
+   Stretches to the filters' height; toggle rows fill it so they line up with
+   the two filter rows on the left. */
 .view-module {
     flex-shrink: 0;
+    display: flex;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 16px;
-    padding: 14px 20px 16px;
+    padding: 12px 22px;
 }
-.view-module-head {
-    font-size: 0.62rem; font-weight: 800; letter-spacing: 0.2em;
-    text-transform: uppercase; color: #888; margin-bottom: 12px;
+.toggle-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-auto-rows: 1fr;
+    align-content: stretch;
+    width: 100%;
+    gap: 12px 36px;
 }
-.toggle-grid { display: grid; grid-template-columns: auto auto; gap: 13px 28px; }
 
 /* Search */
 .search-container { position: relative; display: flex; align-items: center; }
@@ -185,30 +188,27 @@ header h1 {
 </style>
 </head>
 <body>
-<div class="mock-banner">MOCKUP — title upper-left · filters lower-left (search = a slot) · View box right</div>
+<div class="mock-banner">MOCKUP — title on top · filters lower-left · toggles justified to the filter rows · no VIEW label</div>
 <div class="mock-spacer"></div>
 
 <header>
-    <div class="title-row">
-        <div class="header-left">
-            <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
-            <div class="filters">
-                <button class="filter-btn" data-filter="indie">Indie</button>
-                <button class="filter-btn" data-filter="horror">Horror</button>
-                <button class="filter-btn" data-filter="action">Action</button>
-                <button class="filter-btn" data-filter="comedy">Comedy</button>
-                <button class="filter-btn" data-filter="family">Family</button>
-                <button class="filter-btn" data-filter="thriller">Thriller</button>
-                <button class="filter-btn" data-filter="foreign">Foreign</button>
-                <button class="filter-btn" data-filter="documentary">Docs</button>
-                <button class="filter-btn" data-filter="restorations">Reissues</button>
-                <div class="search-container">
-                    <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
-                </div>
+    <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
+    <div class="header-bottom">
+        <div class="filters">
+            <button class="filter-btn" data-filter="indie">Indie</button>
+            <button class="filter-btn" data-filter="horror">Horror</button>
+            <button class="filter-btn" data-filter="action">Action</button>
+            <button class="filter-btn" data-filter="comedy">Comedy</button>
+            <button class="filter-btn" data-filter="family">Family</button>
+            <button class="filter-btn" data-filter="thriller">Thriller</button>
+            <button class="filter-btn" data-filter="foreign">Foreign</button>
+            <button class="filter-btn" data-filter="documentary">Docs</button>
+            <button class="filter-btn" data-filter="restorations">Reissues</button>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
             </div>
         </div>
         <div class="view-module">
-            <div class="view-module-head">View</div>
             <div class="toggle-grid">
                 <div class="slop-toggle-wrap" id="slop-free-toggle" data-state="free">
                     <div class="slop-track"><div class="slop-thumb"></div></div>
