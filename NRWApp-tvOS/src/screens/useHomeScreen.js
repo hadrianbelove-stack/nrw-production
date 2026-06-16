@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { AppState } from 'react-native';
 import {
   fetchMovies,
   getFeaturedMovies,
@@ -96,6 +97,18 @@ export function useHomeScreen() {
   // Refresh movies
   const refreshMovies = useCallback(async () => {
     await loadMovies();
+  }, [loadMovies]);
+
+  // Refetch when the app returns to the foreground (e.g. reopened from suspend),
+  // so data updates without needing a force-quit / cold launch. AppState 'change'
+  // only fires on transitions, so this does not double-fetch on initial mount.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        loadMovies();
+      }
+    });
+    return () => sub.remove();
   }, [loadMovies]);
 
   // Change filter

@@ -33,6 +33,7 @@ import {
   openAppleTV,
   openURL,
   openPlex,
+  openTrailer,
   showLinkError,
 } from '../utils/links.tvos';
 import { fetchMovies } from '../services/api';
@@ -573,6 +574,16 @@ const MovieDetailTvOS = () => {
     }).start();
   }, [fadeAnim]);
 
+  // Trailer press: hosted MP4 plays in-app (tvOS can't play YouTube in a WebView);
+  // YouTube-only trailers deep-link out to the YouTube app via openTrailer().
+  const handleTrailerPress = useCallback(() => {
+    if (movie?.links?.trailer_hosted) {
+      setTrailerVisible(true);
+    } else if (movie?.links?.trailer) {
+      openTrailer(movie.links.trailer);
+    }
+  }, [movie]);
+
   // Handle TV remote events (disabled while trailer player is active)
   // Both d-pad clicks (LEFT/RIGHT) and touchpad swipes (SWIPE_LEFT/SWIPE_RIGHT) cycle movies
   useTVEventHandler(trailerVisible ? {} : {
@@ -580,9 +591,7 @@ const MovieDetailTvOS = () => {
       navigation.goBack();
     },
     [TV_EVENTS.PLAY_PAUSE]: () => {
-      if (movie?.links?.trailer_hosted || movie?.links?.trailer) {
-        setTrailerVisible(true);
-      }
+      handleTrailerPress();
     },
     [TV_EVENTS.LEFT]: () => {
       if (movieList.length > 1) navigatePrevious();
@@ -876,7 +885,7 @@ const MovieDetailTvOS = () => {
               {(movie?.links?.trailer_hosted || movie?.links?.trailer) ? (
                 <TrailerButton
                   ref={trailerRefCallback}
-                  onPress={() => setTrailerVisible(true)}
+                  onPress={handleTrailerPress}
                   hasTVPreferredFocus={true}
                 />
               ) : (
