@@ -580,7 +580,7 @@ body {
   font-size: 2.8rem;
   color: var(--accent);
   opacity: 0;
-  z-index: 900;
+  z-index: 950;
   pointer-events: none;
   transition: opacity 0.15s ease-out, transform 0.15s ease-out;
   font-weight: 300;
@@ -642,7 +642,7 @@ body {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 20px 30px;
+  padding: 0 46px 30px;
 }
 
 /* Sheet internals */
