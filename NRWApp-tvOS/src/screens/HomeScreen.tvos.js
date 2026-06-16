@@ -645,9 +645,11 @@ const HomeScreenTvOS = () => {
       );
     }
 
-    // Hide-fest mode: hide virtual screenings
+    // Fests view is exclusive: ON => only virtual screenings; OFF => hide them.
     if (hideFest) {
       movies = movies.filter(m => !m.filters?.is_virtual_screening);
+    } else {
+      movies = movies.filter(m => m.filters?.is_virtual_screening);
     }
 
     // Pre-orders only show in the Pre-Order view (or search). Hide them everywhere
@@ -729,21 +731,26 @@ const HomeScreenTvOS = () => {
       if (!aStaff && bStaff) return 1;
       return 0;
     };
-    // Fest: active (NOW) first by soonest expiry, then upcoming (FUTURE) ascending, then expired
+    // FEST availability uses the real screening window (available_start / available_end),
+    // NOT the pipeline "active" flag — "active" only means "not expired yet" and wrongly
+    // includes future-dated screenings. NOW = open today; UPCOMING = starts later.
     const today = new Date().toISOString().slice(0, 10);
-    const festTier = m => {
-      if (m.virtual_screening_info?.status === 'active') return 0;
-      if ((m.digital_date || '') > today) return 1;
-      return 2;
-    };
-    const sortedFest = [...festMovies].sort((a, b) => {
+    const vsStart = m => (m.virtual_screening_info?.available_start || '').slice(0, 10);
+    const vsEnd = m => (m.virtual_screening_info?.available_end || '').slice(0, 10);
+    const isExpired = m =>
+      m.virtual_screening_info?.status === 'expired' || (vsEnd(m) && vsEnd(m) < today);
+    // Drop screenings whose window has already closed.
+    const liveFest = festMovies.filter(m => !isExpired(m));
+    // Tier 0 = available now (started, or no start date as a safe fallback); 1 = upcoming.
+    const festTier = m => (vsStart(m) && vsStart(m) > today ? 1 : 0);
+    const sortedFest = [...liveFest].sort((a, b) => {
       const ta = festTier(a), tb = festTier(b);
       if (ta !== tb) return ta - tb;
-      if (ta === 0) return (a.virtual_screening_info?.available_end || '').localeCompare(b.virtual_screening_info?.available_end || '');
-      if (ta === 1) return (a.digital_date || '').localeCompare(b.digital_date || '');
-      return (b.digital_date || '').localeCompare(a.digital_date || '');
+      if (ta === 0) return vsEnd(a).localeCompare(vsEnd(b));   // now: soonest to close first
+      return vsStart(a).localeCompare(vsStart(b));             // upcoming: soonest to open first
     });
-    const sortedPreorders = [...preorderMovies].sort((a, b) => (a.digital_date || '').localeCompare(b.digital_date || ''));
+    // Undated ("TBD") pre-orders sort to the end, not the top.
+    const sortedPreorders = [...preorderMovies].sort((a, b) => (a.digital_date || '9999-99-99').localeCompare(b.digital_date || '9999-99-99'));
     const sortedRegular = [...regularMovies].sort(byDateDesc);
 
     const items = [];
@@ -764,11 +771,12 @@ const HomeScreenTvOS = () => {
       items.push({ type: 'date', id: 'date-fest-top', date: 'SCREENING' });
       let festDate = null;
       sortedFest.forEach((movie, index) => {
-        const isActive = movie.virtual_screening_info?.status === 'active';
-        if (isActive) {
+        if (festTier(movie) === 0) {
+          // Available now → under the NOW SCREENING banner
           items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `fest-${index}`, movie, mIdx: mIdx++, stripKey: 'SCREENING' });
         } else {
-          const d = movie.digital_date || 'Unknown';
+          // Upcoming → grouped by the screening's start date
+          const d = vsStart(movie) || 'Unknown';
           if (d !== festDate) {
             festDate = d;
             items.push({ type: 'date', id: `date-fest-${d}-${index}`, date: d });
@@ -1150,20 +1158,7 @@ const HomeScreenTvOS = () => {
         {/* Bottom row: 2x2 toggle module (lower-left) + filters as two rows filling the rest */}
         <View style={styles.bottomRow}>
           <View style={styles.toggleModule}>
-            <View style={styles.toggleModuleRow}>
-              <SlopToggle
-                ref={setFirstToggleRef}
-                slopMode={slopMode}
-                onPress={cycleSlopMode}
-              />
-              <MetaToggle
-                isActive={showHighlightsOnly}
-                label="SELECTS"
-                accentColor="#dc143c"
-                accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
-                onPress={toggleShowHighlights}
-              />
-            </View>
+            {/* Top row: section views (FESTS / PRE-ORDER); bottom row: SLOP / SELECTS */}
             <View style={styles.toggleModuleRow}>
               <MetaToggle
                 isActive={!hideFest}
@@ -1179,6 +1174,20 @@ const HomeScreenTvOS = () => {
                 accentColor="#7c3aed"
                 accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
                 onPress={toggleShowPreorders}
+              />
+            </View>
+            <View style={styles.toggleModuleRow}>
+              <SlopToggle
+                ref={setFirstToggleRef}
+                slopMode={slopMode}
+                onPress={cycleSlopMode}
+              />
+              <MetaToggle
+                isActive={showHighlightsOnly}
+                label="SELECTS"
+                accentColor="#dc143c"
+                accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
+                onPress={toggleShowHighlights}
               />
             </View>
           </View>
