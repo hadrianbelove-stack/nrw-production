@@ -60,6 +60,7 @@ MANUAL_OVERRIDES = {
     1398655: False,   # Blue Film (Select)
     312493:  False,   # Viral Hit (tv_312493)
     1560681: False,   # Colors of Evil: Black (Netflix global Top 10 Polish thriller)
+    1233354: False,   # Heads or Fails (Belgian arthouse, FIFIGROT/BAFICI winner)
     # TV-movie mill thrillers — confirmed slop by curator (June 2026)
     1708839: True,    # Her Husband's Double Life
     1409853: True,    # Neglected
