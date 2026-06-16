@@ -1935,7 +1935,7 @@ header h1 {
 .cwide-toggles .slop-label { font-size: 0.95rem; letter-spacing: 0.08em; }
 .cwide-filters { display: flex; flex-direction: column; gap: 12px; justify-content: center; align-items: stretch; flex: 1 1 auto; min-width: 0; }
 .cwide-row { display: flex; gap: 10px; align-items: stretch; }
-.cwide-filters .cwide-row:first-child { justify-content: space-between; }
-.cwide-row .filter-btn { flex: 0 0 auto; }
-.cwide-search { flex: 1 1 0; min-width: 0; display: flex; }
-.cwide-search .search-container { flex: 1 1 0; min-width: 0; width: 100%; }
+.cwide-row .filter-btn { flex: 1 1 0; }
+.cwide-search { flex: 3 1 0; min-width: 0; display: flex; }
+.cwide-search .search-container { flex: 1 1 0; min-width: 0; width: 100%; position: relative; }
+.cwide-search #search-input { width: 100%; }
