@@ -35,16 +35,15 @@ header {
     backdrop-filter: blur(12px);
 }
 
-/* Top line: wordmark + a flexible search bar beside it */
-.hl-top {
+/* Top line: wordmark (left) + the View toggle box (right) */
+.title-row {
     display: flex;
     align-items: center;
-    gap: 1.8rem;
-    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.2rem 1.6rem;
     margin-bottom: 1.2rem;
 }
-.hl-top .search-container { flex: 1 1 200px; min-width: 0; margin-left: 0; }
-.hl-top #search-input { width: 100%; }
 
 header h1 {
     font-weight: 100;
@@ -59,22 +58,16 @@ header h1 {
     background-clip: text;
 }
 
-/* Bottom line: genre filters (two rows of 5 & 4) + the View toggle box at right */
-.header-bottom {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    gap: 1.2rem;
-}
+/* Bottom: genre filters + search as two neat rows of 5 (search = last slot) */
 .filters {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    grid-auto-rows: 1fr;
     gap: 0.7rem;
-    flex: 1 1 480px;
-    min-width: 0;
-    align-content: stretch;
+    width: 100%;
 }
+/* search drops into the grid as the 10th cell, same width as a filter */
+.filters .search-container { width: 100%; }
+.filters #search-input { width: 100%; }
 .filter-btn {
     display: flex; align-items: center; justify-content: center;
     padding: 0.62rem 0.6rem;
@@ -186,28 +179,12 @@ header h1 {
 </style>
 </head>
 <body>
-<div class="mock-banner">MOCKUP — search beside title · filters 5&4 · bigger title · View box right</div>
+<div class="mock-banner">MOCKUP — search sits in the filter rows (last slot) · title alone up top · View box right</div>
 <div class="mock-spacer"></div>
 
 <header>
-    <div class="hl-top">
+    <div class="title-row">
         <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
-        </div>
-    </div>
-    <div class="header-bottom">
-        <div class="filters">
-            <button class="filter-btn" data-filter="indie">Indie</button>
-            <button class="filter-btn" data-filter="horror">Horror</button>
-            <button class="filter-btn" data-filter="action">Action</button>
-            <button class="filter-btn" data-filter="comedy">Comedy</button>
-            <button class="filter-btn" data-filter="family">Family</button>
-            <button class="filter-btn" data-filter="thriller">Thriller</button>
-            <button class="filter-btn" data-filter="foreign">Foreign</button>
-            <button class="filter-btn" data-filter="documentary">Docs</button>
-            <button class="filter-btn" data-filter="restorations">Reissues</button>
-        </div>
         <div class="view-module">
             <div class="view-module-head">View</div>
             <div class="toggle-grid">
@@ -228,6 +205,20 @@ header h1 {
                     <span class="slop-label">PRE-ORDER</span>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="filters">
+        <button class="filter-btn" data-filter="indie">Indie</button>
+        <button class="filter-btn" data-filter="horror">Horror</button>
+        <button class="filter-btn" data-filter="action">Action</button>
+        <button class="filter-btn" data-filter="comedy">Comedy</button>
+        <button class="filter-btn" data-filter="family">Family</button>
+        <button class="filter-btn" data-filter="thriller">Thriller</button>
+        <button class="filter-btn" data-filter="foreign">Foreign</button>
+        <button class="filter-btn" data-filter="documentary">Docs</button>
+        <button class="filter-btn" data-filter="restorations">Reissues</button>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
         </div>
     </div>
 </header>
