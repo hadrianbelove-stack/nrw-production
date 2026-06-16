@@ -262,7 +262,7 @@ const DateRowStrip = ({ stripKey, stripColor }) => {
   } else if (stripKey === 'SCREENING') {
     day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
   } else if (stripKey === 'HIGHLIGHTS') {
-    day = 'SELECTS'; rest = 'OUR PICKS'; color = '#dc143c';
+    day = 'SELECTS'; rest = 'OF NOTE'; color = '#dc143c';
   } else if (stripKey === 'SLOP') {
     day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#ff9500';
   } else {
@@ -1630,7 +1630,7 @@ const styles = StyleSheet.create({
     shadowRadius: 30,
   },
   dateStripDaySection: { fontSize: 54 },
-  dateStripRestSection: { fontSize: 34, fontWeight: '400' },
+  dateStripRestSection: { fontSize: 54, fontWeight: '400' },
   cardWrapper: {
     marginRight: CARD_GAP,
     overflow: 'visible',
