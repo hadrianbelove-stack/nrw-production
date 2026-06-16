@@ -66,42 +66,27 @@ header {
     backdrop-filter: blur(12px);
 }
 
-/* Layout G: title + filters on the left, a boxed "View" control module right.
-   title-row wraps — when the window narrows past the point where both fit, the
-   View box drops to its own line below instead of colliding with the search. */
+/* Layout (matches tvOS): top row = wordmark + search; bottom row = boxed "View"
+   toggle module in the lower-left, with the genre filters filling the space to
+   its right. */
 .title-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 1.2rem 1rem;
-    margin-bottom: 0;
+    margin-bottom: 1.1rem;
 }
 
-.header-left {
+/* Bottom row: 2×2 View module (left) + genre filters filling the rest (right).
+   Wraps so the filters drop to their own line below the View box when the
+   window is too narrow to fit both. */
+.bottom-row {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: stretch;
-    gap: 1.1rem;
-    min-width: 0;
-    /* basis ≈ wordmark + a usable search; when this + the View box can't both
-       fit, the View box wraps to its own line instead of crushing the search */
-    flex: 1 1 720px;
+    gap: 1.2rem;
 }
-
-/* Top line of the left block: wordmark + a flexible search bar beside it */
-.hl-top {
-    display: flex;
-    align-items: center;
-    gap: 1.8rem;
-    width: 100%;
-}
-.hl-top .search-container {
-    flex: 1 1 200px;
-    min-width: 0;
-    margin-left: 0;
-}
-.hl-top #search-input { width: 100%; }
 
 header h1 {
     font-weight: 100;
@@ -142,7 +127,6 @@ header h1 {
 /* Small screens: let the wordmark wrap and shrink so it never overflows */
 @media (max-width: 760px) {
     header h1 { font-size: 2rem; white-space: normal; }
-    .hl-top { flex-wrap: wrap; }
 }
 
 .filters {
@@ -150,7 +134,11 @@ header h1 {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 0.7rem;
     margin-top: 0;
-    width: 100%;
+    /* fill the space to the right of the View module in the bottom row;
+       basis triggers a wrap to its own line when both can't fit */
+    flex: 1 1 480px;
+    min-width: 0;
+    align-content: center;
 }
 
 .filter-btn {
