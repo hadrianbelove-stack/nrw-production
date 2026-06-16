@@ -47,6 +47,7 @@ Sub Init()
     m.vodButton2 = m.top.FindNode("vodButton2")
     m.streamSectionLabel = m.top.FindNode("streamSectionLabel")
     m.streamButton = m.top.FindNode("streamButton")
+    m.streamButton2 = m.top.FindNode("streamButton2")
     m.plexButton = m.top.FindNode("plexButton")
     m.infoRow = m.top.FindNode("infoRow")
     m.rtGroup = m.top.FindNode("rtGroup")
@@ -80,6 +81,7 @@ Sub Init()
     ' Set up button observers
     m.trailerButton.ObserveField("selected", "onTrailerSelected")
     m.streamButton.ObserveField("selected", "onStreamSelected")
+    m.streamButton2.ObserveField("selected", "onStream2Selected")
     m.vodButton1.ObserveField("selected", "onVod1Selected")
     m.vodButton2.ObserveField("selected", "onVod2Selected")
     m.plexButton.ObserveField("selected", "onPlexSelected")
@@ -459,19 +461,23 @@ Sub SetupWatchButtons(movie as Object)
     end for
     m.vodSectionLabel.visible = hasVod
 
-    ' Streaming button (after VOD)
-    streaming = GetStreamingService(movie)
-    if streaming <> invalid AND streaming.service <> invalid
-        m.streamSectionLabel.visible = true
-        m.streamButton.service = streaming.service
-        m.streamButton.label = GetStreamDisplayName(streaming.service)
-        m.streamButton.url = streaming.link
-        m.streamButton.visible = true
-        m.buttons.Push(m.streamButton)
-    else
-        m.streamSectionLabel.visible = false
-        m.streamButton.visible = false
-    end if
+    ' Streaming buttons (after VOD) — one per free stream (2 static nodes)
+    streamingServices = GetStreamingServices(movie)
+    streamButtons = [m.streamButton, m.streamButton2]
+    hasStream = false
+    for i = 0 to 1
+        if i < streamingServices.Count() AND streamingServices[i].service <> invalid
+            streamButtons[i].service = streamingServices[i].service
+            streamButtons[i].label = GetStreamDisplayName(streamingServices[i].service)
+            streamButtons[i].url = streamingServices[i].link
+            streamButtons[i].visible = true
+            m.buttons.Push(streamButtons[i])
+            hasStream = true
+        else
+            streamButtons[i].visible = false
+        end if
+    end for
+    m.streamSectionLabel.visible = hasStream
 
     ' Pre-order buttons (JustWatch buy offers for pre-order movies)
     preOrderLinks = GetPreOrderLinks(movie)
@@ -615,6 +621,14 @@ End Sub
 Sub onStreamSelected()
     service = m.streamButton.service
     url = m.streamButton.url
+    if service <> "" AND url <> ""
+        LaunchStreamingService(service, url)
+    end if
+End Sub
+
+Sub onStream2Selected()
+    service = m.streamButton2.service
+    url = m.streamButton2.url
     if service <> "" AND url <> ""
         LaunchStreamingService(service, url)
     end if

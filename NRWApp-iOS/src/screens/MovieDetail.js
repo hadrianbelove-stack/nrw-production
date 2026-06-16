@@ -402,7 +402,7 @@ export default function MovieDetail({route}) {
           {watchLinks.filter(l => l.type === 'streaming').length > 0 && (
             <>
               <Text style={styles.watchSectionLabel}>Stream:</Text>
-              <WatchButtonGroup links={watchLinks.filter(l => l.type === 'streaming')} onPress={handleWatchPress} maxButtons={2} />
+              <WatchButtonGroup links={watchLinks.filter(l => l.type === 'streaming')} onPress={handleWatchPress} maxButtons={6} />
             </>
           )}
           {watchLinks.filter(l => l.type === 'plex').length > 0 && (

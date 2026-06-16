@@ -492,6 +492,20 @@ Function GetStreamingService(movie as Object) as Object
     return invalid
 End Function
 
+' Get all streaming services as an array (one button each)
+Function GetStreamingServices(movie as Object) as Object
+    if movie.watch_links <> invalid AND movie.watch_links.streaming <> invalid
+        s = movie.watch_links.streaming
+        if Type(s) = "roArray"
+            return s
+        end if
+        if s <> invalid
+            return [s]  ' legacy single-object form
+        end if
+    end if
+    return []
+End Function
+
 ' Strip storefront wrappers ("Shudder Amazon Channel" -> "Shudder") so we name the
 ' brand, not the platform it is sold through. Leaves "Amazon Prime Video" /
 ' "The Roku Channel" alone (only strips a trailing storefront suffix).

@@ -93,6 +93,14 @@ const NRW = {
         return null;
     },
 
+    // All free-streaming services as a list (one button each in the lightbox).
+    getStreamingList(wl) {
+        const s = wl?.streaming;
+        if (Array.isArray(s)) return s.filter(x => x && x.service && x.link);
+        if (s?.service && s?.link) return [s];
+        return [];
+    },
+
 
     // Grid navigation state
     gridSelectedId: null,   // movie ID of selected card (string)
@@ -1516,38 +1524,34 @@ const NRW = {
 
         container.appendChild(navRow);
 
-        // === STREAM ROW (own row, before VOD) ===
-        const lbStreamData = this.getStreaming(watchLinks);
-        let streamSvc = lbStreamData?.service;
-        let streamLink = lbStreamData?.link;
-        if (!streamSvc && providers.streaming?.length) {
-            const screeningNames = NRWConfig.VOD_SERVICE_MAP.screening.matches;
-            const realStreamers = providers.streaming.filter(p =>
-                !p.includes('with Ads') && !screeningNames.some(s => p.toLowerCase().includes(s))
-            );
-            streamSvc = realStreamers[0] || null;
-        }
-        if (streamSvc && streamLink) {
-            const resolved = this.resolveService(streamSvc);
-            const cls = resolved?.class || '';
-            const logo = resolved?.wideLogo || null;
+        // === STREAM ROW (own row, before VOD) — one button per free stream ===
+        // Multiple free streams (e.g. Tubi + Fawesome) split the row into equal
+        // widths, mirroring the VOD row, so the lightbox footprint stays stable.
+        const lbStreamList = this.getStreamingList(watchLinks);
+        if (lbStreamList.length) {
             const streamRowEl = document.createElement('div');
             streamRowEl.className = 'lb-stream-row';
-            const btn = document.createElement('a');
-            btn.className = `stream-btn ${cls}`;
-            btn.setAttribute('href', streamLink);
-            btn.setAttribute('target', '_blank');
-            btn.setAttribute('rel', 'noopener noreferrer');
-            if (logo) {
-                const img = document.createElement('img');
-                img.src = `assets/logos/${logo}`;
-                img.alt = resolved?.btnName || streamSvc;
-                btn.appendChild(img);
-            } else {
-                btn.textContent = resolved?.name || streamSvc.toUpperCase();
-            }
-            streamRowEl.appendChild(btn);
-            container.appendChild(streamRowEl);
+            lbStreamList.forEach(({ service: streamSvc, link: streamLink }) => {
+                if (!streamSvc || !streamLink) return;
+                const resolved = this.resolveService(streamSvc);
+                const cls = resolved?.class || '';
+                const logo = resolved?.wideLogo || null;
+                const btn = document.createElement('a');
+                btn.className = `stream-btn ${cls}`;
+                btn.setAttribute('href', streamLink);
+                btn.setAttribute('target', '_blank');
+                btn.setAttribute('rel', 'noopener noreferrer');
+                if (logo) {
+                    const img = document.createElement('img');
+                    img.src = `assets/logos/${logo}`;
+                    img.alt = resolved?.btnName || streamSvc;
+                    btn.appendChild(img);
+                } else {
+                    btn.textContent = resolved?.name || streamSvc.toUpperCase();
+                }
+                streamRowEl.appendChild(btn);
+            });
+            if (streamRowEl.children.length) container.appendChild(streamRowEl);
         }
 
         // === VOD ROW (own row, after streaming) ===

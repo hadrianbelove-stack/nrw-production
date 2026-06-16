@@ -997,10 +997,10 @@ const NRWMobile = {
         }
 
         // Providers
-        const streaming = this.getStreamingProvider(movie);
+        const streamingList = this.getStreamingProviders(movie);
         const vodList = this.getVODList(movie);
 
-        if (streaming || vodList.length > 0) {
+        if (streamingList.length > 0 || vodList.length > 0) {
             // Filter out screening VODs (already shown as ticket button above)
             const rentVod = isScreening
                 ? vodList.filter(v => v.resolvedKey !== 'screening')
@@ -1010,9 +1010,10 @@ const NRWMobile = {
                     '<div class="sheet-providers">' +
                     rentVod.map(v => this.renderVODPriceCard(v)).join('') + '</div>';
             }
-            if (streaming) {
+            if (streamingList.length > 0) {
                 html += '<div class="sheet-section-label">Stream:</div>' +
-                    '<div class="sheet-providers">' + this.renderProviderBadge(streaming) + '</div>';
+                    '<div class="sheet-providers">' +
+                    streamingList.map(s => this.renderProviderBadge(s)).join('') + '</div>';
             }
         } else if (!isScreening) {
             // Pre-order links
@@ -1130,6 +1131,36 @@ const NRWMobile = {
             link: link || null,
             resolvedKey: resolved?.class
         };
+    },
+
+    // All free-streaming providers (one badge each). Falls back to the single
+    // provider-name resolver when watch_links has no linked streaming entries.
+    getStreamingProviders(movie) {
+        const wl = movie.watch_links || {};
+        const EXCLUDED_STREAMING = ['spectrum on demand'];
+        const isExcluded = s => s && EXCLUDED_STREAMING.includes(s.toLowerCase());
+        const streamingWl = wl.streaming;
+        let raw = [];
+        if (Array.isArray(streamingWl)) {
+            raw = streamingWl.filter(s => s && s.service && s.link && !isExcluded(s.service));
+        } else if (streamingWl?.service && streamingWl?.link && !isExcluded(streamingWl.service)) {
+            raw = [streamingWl];
+        }
+        if (raw.length) {
+            return raw.map(s => {
+                const resolved = this.resolveService(s.service);
+                return {
+                    name: resolved?.name || NRWConfig.cleanServiceName(s.service),
+                    wideLogo: resolved?.wideLogo,
+                    serviceKey: resolved?.class,
+                    link: s.link,
+                    resolvedKey: resolved?.class
+                };
+            });
+        }
+        // Fallback: provider-name-only (no link) — preserve single-badge behavior
+        const single = this.getStreamingProvider(movie);
+        return single ? [single] : [];
     },
 
     getGridStreamingService(movie) {

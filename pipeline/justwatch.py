@@ -390,14 +390,11 @@ class JustWatchClient:
             elif mtype == 'BUY':
                 buy_offers.append(offer_data)
 
-        # Select best streaming option
+        # Streaming: return ALL services as a list (UI shows each side by side)
         if streaming_offers:
-            best_streaming = self._select_best_offer(streaming_offers, self.STREAMING_PRIORITY)
-            if best_streaming:
-                result['streaming'] = {
-                    'service': best_streaming['service'],
-                    'link': best_streaming['link']
-                }
+            streaming_entries = self._select_streaming_offers(streaming_offers, self.STREAMING_PRIORITY)
+            if streaming_entries:
+                result['streaming'] = streaming_entries
 
         # Select VOD options — return both Amazon and Apple TV when available
         if rent_offers or buy_offers:
@@ -600,12 +597,9 @@ class JustWatchClient:
         # Build watch_links in NRW schema (same format as get_watch_links)
         watch_links = {}
         if streaming_offers:
-            best_streaming = self._select_best_offer(streaming_offers, self.STREAMING_PRIORITY)
-            if best_streaming:
-                watch_links['streaming'] = {
-                    'service': best_streaming['service'],
-                    'link': best_streaming['link']
-                }
+            streaming_entries = self._select_streaming_offers(streaming_offers, self.STREAMING_PRIORITY)
+            if streaming_entries:
+                watch_links['streaming'] = streaming_entries
 
         if rent_offers or buy_offers:
             vod_entries = self._merge_vod_offers(rent_offers, buy_offers, affiliate_tag)
@@ -728,6 +722,41 @@ class JustWatchClient:
 
         # Fall back to first offer
         return offers[0]
+
+    def _select_streaming_offers(
+        self,
+        offers: List[Dict],
+        priority_list: List[str]
+    ) -> List[Dict]:
+        """
+        Return ALL streaming offers as a list, deduped by service and ordered by
+        priority. Mirrors _merge_vod_offers (which returns a list) so the UI can
+        surface every free stream (e.g. Fawesome AND Tubi) instead of only the
+        single 'best' one.
+        """
+        if not offers:
+            return []
+
+        # Dedupe by service — JustWatch can list the same service twice
+        # (e.g. separate HD/SD presentation types).
+        seen = {}
+        for offer in offers:
+            service = offer.get('service')
+            link = offer.get('link')
+            if not service or not link or service in seen:
+                continue
+            seen[service] = {'service': service, 'link': link}
+
+        # Order by STREAMING_PRIORITY; unknown services keep insertion order at
+        # the end (sorted() is stable).
+        def rank(entry):
+            s = entry['service'].lower()
+            for i, p in enumerate(priority_list):
+                if p.lower() in s:
+                    return i
+            return len(priority_list)
+
+        return sorted(seen.values(), key=rank)
 
     def get_stats(self) -> Dict[str, int]:
         """Get client statistics."""

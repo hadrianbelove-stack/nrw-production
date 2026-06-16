@@ -633,7 +633,7 @@ class EnrichmentService:
 
     def _build_streaming_links(self, movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
                                title_variants=None):
-        """Build best streaming service dict from available sources."""
+        """Build streaming service list (deduped) from available sources."""
         streaming_services = []
 
         if tmdb_streaming:
@@ -655,12 +655,19 @@ class EnrichmentService:
                                                               title_variants=title_variants)
                     streaming_services.append(agent_result)
 
-        # Return best streaming option as a dict (first with a link, or first overall)
-        with_links = [s for s in streaming_services if s.get('link')]
+        # Return ALL streaming options as a list (dedupe by service). The UI
+        # renders every free stream side by side, mirroring the VOD row.
+        seen = {}
+        for s in streaming_services:
+            svc = s.get('service')
+            if svc and svc not in seen:
+                seen[svc] = s
+        deduped = list(seen.values())
+        with_links = [s for s in deduped if s.get('link')]
         if with_links:
-            return with_links[0]
-        if streaming_services:
-            return streaming_services[0]
+            return with_links
+        if deduped:
+            return deduped[:1]
         return None
 
     def _find_amazon_link(self, tmdb_rent, tmdb_buy):

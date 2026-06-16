@@ -266,13 +266,15 @@
           <WatchButton id="vodButton2"
             visible="false" />
 
-          <!-- Stream label + button -->
+          <!-- Stream label + buttons (one per free stream) -->
           <Label id="streamSectionLabel"
             text="Stream:"
             font="font:SmallSystemFont"
             color="0x00D4AAFF"
             visible="false" />
           <WatchButton id="streamButton"
+            visible="false" />
+          <WatchButton id="streamButton2"
             visible="false" />
 
           <!-- Plex button -->

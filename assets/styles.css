@@ -1668,8 +1668,11 @@ header h1 {
 
 /* STREAM ROW: own row below nav */
 .lb-stream-row {
+    display: flex;
+    gap: 8px;
     margin-bottom: 8px;
 }
+.lb-stream-row > * { flex: 1; min-width: 0; }
 
 /* VOD ROW: own row below streaming, side by side */
 .lb-vod-row {
