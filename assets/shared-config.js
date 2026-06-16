@@ -186,6 +186,9 @@ const NRWConfig = {
         return esc
             .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
             .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-            .replace(/\[([^\]]+)\]\((https:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+            .replace(/\[([^\]]+)\]\((https:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+            // Paragraph breaks: collapse any run of newlines to ONE <br> — a tight
+            // line break, not a full blank-line gap. Capsule text stores breaks as \n.
+            .replace(/\n+/g, '<br>');
     }
 };
