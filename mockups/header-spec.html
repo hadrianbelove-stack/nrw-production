@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NRW header C</title><style>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NRW header C2</title><style>
 /* CSS Custom Properties - Single source of truth for colors */
 :root {
     --accent-primary: #00d4aa;
@@ -1922,16 +1922,16 @@ header h1 {
   .cwide-hdr { padding:18px 26px; max-width:1500px; margin:0 auto; }
   .cwide-hdr h1 { margin:0 0 16px; }
   .cwide-controls { display:flex; gap:18px; align-items:stretch; }
-  /* LEFT: toggle box — larger, grouped tight (small center gap), no VIEW label, nudged wider */
   .cwide-toggles { flex:0 0 auto; box-sizing:border-box; display:grid; grid-template-columns:auto auto;
         gap:14px 22px; align-content:center; padding:16px 22px; }
   .cwide-toggles .slop-toggle-wrap { margin:0; }
   .cwide-toggles .slop-label { font-size:0.95rem; letter-spacing:0.08em; }
-  /* RIGHT: filters in two rows, search fills the bottom row */
-  .cwide-filters { flex:1; display:flex; flex-direction:column; gap:12px; justify-content:center; }
+  /* filter block sizes to the top row (6 filters); it does NOT stretch to the page edge */
+  .cwide-filters { display:flex; flex-direction:column; gap:12px; justify-content:center; align-items:stretch; }
   .cwide-row { display:flex; gap:10px; align-items:stretch; }
   .cwide-row .filter-btn { flex:0 0 auto; }
-  .cwide-search { flex:1 1 auto; display:flex; }
+  /* search fills the bottom row only up to the top row's right edge */
+  .cwide-search { flex:1 1 auto; display:flex; min-width:120px; }
   .cwide-search .search-container { width:100%; display:flex; }
   .cwide-search input { width:100%; box-sizing:border-box; background:#161616; border:1px solid rgba(255,255,255,0.14);
         border-radius:12px; padding:0 18px; color:#ddd; font-size:1rem; outline:none; }
@@ -1956,6 +1956,6 @@ header h1 {
     </div>
   </div>
 </header>
-<div style="position:fixed;top:0;left:0;right:0;background:#b8860b;color:#000;font:600 13px system-ui;padding:6px 14px;z-index:9999;text-align:center;">MOCKUP — Layout C (toggles LEFT, filters+search RIGHT in 2 rows)</div><div style="height:34px"></div>
+<div style="position:fixed;top:0;left:0;right:0;background:#b8860b;color:#000;font:600 13px system-ui;padding:6px 14px;z-index:9999;text-align:center;">MOCKUP C2 — search ends at top-row edge (no dead space), block does not stretch to page edge</div><div style="height:34px"></div>
 <div style="display:flex;gap:14px;flex-wrap:wrap;padding:24px;max-width:1400px;margin:0 auto;"><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div><div style="width:150px;height:225px;background:linear-gradient(135deg,#2a2a2a,#3a3a3a);border-radius:6px;flex:0 0 auto;"></div></div>
 </body></html>
