@@ -451,19 +451,15 @@ const HomeScreenTvOS = () => {
   const [toggleNodeHandle, setToggleNodeHandle] = useState(null);
   const [lastFilterNodeHandle, setLastFilterNodeHandle] = useState(null);
   const [lastToggleNodeHandle, setLastToggleNodeHandle] = useState(null);
+  const [searchNodeHandle, setSearchNodeHandle] = useState(null);
   // Ref to first rendered movie card — used by the boundary TVFocusGuideView for DOWN from filters
   const [firstMovieRefState, setFirstMovieRefState] = useState(null);
 
-  // Callback ref for first filter button
-  const setFirstFilterRef = useCallback((ref) => {
-    if (ref) {
-      headerRefObject.current = ref;
-      const handle = findNodeHandle(ref);
-      setHeaderNodeHandle(handle);
-    }
-  }, []);
+  // First filter button — no longer the wall's UP target (the toggle module is, now
+  // that toggles sit in the lower-left directly above the wall).
+  const setFirstFilterRef = useCallback((ref) => {}, []);
 
-  // Callback ref for last filter button (Reissues) — slop toggle LEFT target
+  // Callback ref for last filter button (Reissues)
   const setLastFilterRef = useCallback((ref) => {
     if (ref) {
       const handle = findNodeHandle(ref);
@@ -471,12 +467,20 @@ const HomeScreenTvOS = () => {
     }
   }, []);
 
-  // Callback ref for slop toggle — this is what movie cards navigate UP to
+  // Slop toggle (first toggle) — the wall's UP target AND the toggle handle, so a
+  // poster pressing UP lands on the toggles.
   const setFirstToggleRef = useCallback((ref) => {
     if (ref) {
+      headerRefObject.current = ref;
       const handle = findNodeHandle(ref);
+      setHeaderNodeHandle(handle);
       setToggleNodeHandle(handle);
     }
+  }, []);
+
+  // Search box — toggles/filters navigate UP to here; search goes DOWN to the toggles.
+  const setSearchRef = useCallback((ref) => {
+    if (ref) setSearchNodeHandle(findNodeHandle(ref));
   }, []);
 
   // Callback ref for last toggle (pre-order) — leftmost first-row poster LEFT target
@@ -1130,61 +1134,12 @@ const HomeScreenTvOS = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header: top row = title + toggles; bottom row = filters + search */}
+      {/* Header: top row = title + search; bottom row = 2x2 toggle module (lower-left) + filters (two rows) */}
       <View style={styles.header}>
-        {/* Top row: title left, toggles right */}
+        {/* Top row: title left, search right */}
         <View style={styles.headerTopRow}>
           <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
-          <View style={styles.toggleRow}>
-            <SlopToggle
-              ref={setFirstToggleRef}
-              slopMode={slopMode}
-              onPress={cycleSlopMode}
-              nextFocusDown={headerNodeHandle}
-            />
-            <MetaToggle
-              isActive={showHighlightsOnly}
-              label="SELECTS"
-              accentColor="#dc143c"
-              accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
-              onPress={toggleShowHighlights}
-              nextFocusDown={headerNodeHandle}
-            />
-            <MetaToggle
-              isActive={!hideFest}
-              label="FESTS"
-              accentColor="#f59e0b"
-              accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
-              onPress={toggleHideFest}
-              nextFocusDown={headerNodeHandle}
-            />
-            <MetaToggle
-              ref={setLastToggleRef}
-              isActive={showPreorders}
-              label="PRE-ORDER"
-              accentColor="#7c3aed"
-              accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
-              onPress={toggleShowPreorders}
-              nextFocusDown={headerNodeHandle}
-            />
-          </View>
-        </View>
-        {/* Bottom row: filter chips left, search right */}
-        <View style={styles.filterSearchRow}>
-          <View style={styles.filterRow}>
-            {FILTERS.map((filter, idx) => (
-              <FilterButton
-                key={filter.id}
-                ref={idx === 0 ? setFirstFilterRef : idx === FILTERS.length - 1 ? setLastFilterRef : undefined}
-                filter={filter}
-                isActive={activeFilters.has(filter.id)}
-                onPress={() => handleFilterChange(filter.id)}
-                nextFocusUp={toggleNodeHandle}
-                style={{ flex: 1 }}
-              />
-            ))}
-          </View>
-          <View style={[styles.searchContainer, searchFocused && styles.searchContainerFocused]}>
+          <View ref={setSearchRef} style={[styles.searchContainer, styles.searchGrow, searchFocused && styles.searchContainerFocused]}>
             <Text style={styles.searchIcon}>⌕</Text>
             <TextInput
               style={styles.searchInput}
@@ -1197,12 +1152,78 @@ const HomeScreenTvOS = () => {
               autoCapitalize="none"
               autoCorrect={false}
               returnKeyType="search"
+              nextFocusDown={toggleNodeHandle}
             />
             {searchQuery.length > 0 && (
               <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
                 <Text style={styles.searchClearText}>✕</Text>
               </TouchableOpacity>
             )}
+          </View>
+        </View>
+        {/* Bottom row: 2x2 toggle module (lower-left) + filters as two rows filling the rest */}
+        <View style={styles.bottomRow}>
+          <View style={styles.toggleModule}>
+            <View style={styles.toggleModuleRow}>
+              <SlopToggle
+                ref={setFirstToggleRef}
+                slopMode={slopMode}
+                onPress={cycleSlopMode}
+                nextFocusUp={searchNodeHandle}
+              />
+              <MetaToggle
+                isActive={showHighlightsOnly}
+                label="SELECTS"
+                accentColor="#dc143c"
+                accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
+                onPress={toggleShowHighlights}
+                nextFocusUp={searchNodeHandle}
+              />
+            </View>
+            <View style={styles.toggleModuleRow}>
+              <MetaToggle
+                isActive={!hideFest}
+                label="FESTS"
+                accentColor="#f59e0b"
+                accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
+                onPress={toggleHideFest}
+              />
+              <MetaToggle
+                ref={setLastToggleRef}
+                isActive={showPreorders}
+                label="PRE-ORDER"
+                accentColor="#7c3aed"
+                accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
+                onPress={toggleShowPreorders}
+              />
+            </View>
+          </View>
+          <View style={styles.filterColumn}>
+            <View style={styles.filterRow}>
+              {FILTERS.slice(0, 5).map((filter, idx) => (
+                <FilterButton
+                  key={filter.id}
+                  ref={idx === 0 ? setFirstFilterRef : undefined}
+                  filter={filter}
+                  isActive={activeFilters.has(filter.id)}
+                  onPress={() => handleFilterChange(filter.id)}
+                  nextFocusUp={searchNodeHandle}
+                  style={{ flex: 1 }}
+                />
+              ))}
+            </View>
+            <View style={styles.filterRow}>
+              {FILTERS.slice(5).map((filter, idx, arr) => (
+                <FilterButton
+                  key={filter.id}
+                  ref={idx === arr.length - 1 ? setLastFilterRef : undefined}
+                  filter={filter}
+                  isActive={activeFilters.has(filter.id)}
+                  onPress={() => handleFilterChange(filter.id)}
+                  style={{ flex: 1 }}
+                />
+              ))}
+            </View>
           </View>
         </View>
       </View>
@@ -1314,6 +1335,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 4,
     gap: 20,
+  },
+  // Lower-left layout: bottom row holds the 2x2 toggle module (left) + filters (two rows, right)
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    gap: 28,
+    paddingBottom: 4,
+  },
+  toggleModule: {
+    flexDirection: 'column',
+    gap: 14,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+  },
+  toggleModuleRow: {
+    flexDirection: 'row',
+    gap: 28,
+    alignItems: 'center',
+  },
+  filterColumn: {
+    flex: 1,
+    flexDirection: 'column',
+    gap: 8,
+    justifyContent: 'center',
+  },
+  searchGrow: {
+    flex: 1,
+    marginLeft: 28,
+    maxWidth: 560,
   },
   searchContainer: {
     flexDirection: 'row',
