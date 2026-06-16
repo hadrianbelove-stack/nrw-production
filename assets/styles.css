@@ -1075,7 +1075,8 @@ header h1 {
 .trailer-modal-content {
     position: relative;
     width: 90%;
-    max-width: 1200px;
+    /* Leave ~120px gutter each side for the edge-pinned cycle arrows. */
+    max-width: min(1200px, calc(100vw - 240px));
     z-index: 1;
     animation: trailerFadeIn 0.3s ease;
 }
@@ -1619,7 +1620,9 @@ header h1 {
    size move. (.poster-lightbox is a fullscreen fixed overlay, so the viewport
    edges ARE the lightbox edges, and these render only while it's open.) */
 .lb-nav-prev,
-.lb-nav-next {
+.lb-nav-next,
+.trailer-nav.prev,
+.trailer-nav.next {
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
@@ -1632,10 +1635,14 @@ header h1 {
     box-shadow: 0 0 26px rgba(0, 0, 0, 0.6);
     z-index: 10002;
 }
-.lb-nav-prev { left: clamp(10px, 2.5vw, 32px); }
-.lb-nav-next { right: clamp(10px, 2.5vw, 32px); }
+.lb-nav-prev,
+.trailer-nav.prev { left: clamp(10px, 2.5vw, 32px); }
+.lb-nav-next,
+.trailer-nav.next { right: clamp(10px, 2.5vw, 32px); }
 .lb-nav-prev:hover,
-.lb-nav-next:hover {
+.lb-nav-next:hover,
+.trailer-nav.prev:hover,
+.trailer-nav.next:hover {
     background: rgba(0, 212, 170, 0.9);
     color: #04130f;
     border-color: #00ffbb;
