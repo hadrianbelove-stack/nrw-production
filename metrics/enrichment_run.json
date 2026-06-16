@@ -1,102 +1,58 @@
 {
-  "timestamp": "2026-06-15T16:07:57.441965",
-  "movies_requested": 9,
-  "movies_enriched": 1,
-  "movies_deferred": 8,
+  "timestamp": "2026-06-16T15:11:09.867053",
+  "movies_requested": 27,
+  "movies_enriched": 23,
+  "movies_deferred": 4,
   "deferred_details": [
+    {
+      "title": "Busboys",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-16",
+      "discovered_at": "2026-06-16T13:32:52.687551",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Pressure",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-06-15",
+      "discovered_at": "2026-06-16T13:32:56.221368",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
+    },
     {
       "title": "The Thing in the Fog",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-12",
-      "discovered_at": "2026-06-15T15:18:40.037299",
+      "discovered_at": "2026-06-16T13:33:06.055473",
       "discovery_source": "tmdb_type4",
-      "revert_count": 5,
+      "revert_count": 6,
       "tmdb_platforms": []
     },
     {
-      "title": "The Terror: Devil in Silver",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-05-07",
-      "discovered_at": "2026-06-15T15:19:04.131233",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "AMC Plus Apple TV Channel ",
-        "AMC+ Amazon Channel",
-        "AMC+",
-        "Philo",
-        "Spectrum On Demand"
-      ]
-    },
-    {
-      "title": "Mockbuster",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-15",
-      "discovered_at": "2026-06-15T15:32:05.778464",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "The Last One for the Road",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-15",
-      "discovered_at": "2026-06-15T15:46:19.114017",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
-    },
-    {
-      "title": "Blue Film",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-12",
-      "discovered_at": "2026-06-15T15:49:03.918640",
+      "title": "40 Dates and 40 Nights",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-30",
+      "discovered_at": "2026-06-16T14:55:36.387869",
       "discovery_source": "tmdb_type4",
-      "revert_count": 2,
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
+      "revert_count": 1,
+      "tmdb_platforms": []
     },
     {
-      "title": "Disclosure Day",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-15",
-      "discovered_at": "2026-06-15T16:02:01.154232",
-      "discovery_source": "provider_availability_check",
+      "title": "Two Prosecutors",
+      "reason": "zero_watch_links",
+      "digital_date": "2026-05-26",
+      "discovered_at": "2026-06-15T15:18:51.585478",
+      "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "Stop! That! Train!",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-15",
-      "discovered_at": "2026-06-15T16:02:10.630215",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "Veerabhadrudu",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-15",
-      "discovered_at": "2026-06-15T16:02:16.548540",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "tmdb_platforms": [
-        "Amazon Prime Video",
-        "Amazon Prime Video with Ads"
-      ]
+      "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 333.28,
+  "enrichment_duration_seconds": 921.64,
   "error_details": [],
   "total_errors": 0
 }
