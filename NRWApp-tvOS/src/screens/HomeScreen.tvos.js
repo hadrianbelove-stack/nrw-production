@@ -160,7 +160,7 @@ const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, n
 
   const thumbTranslate = thumbAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 42],
+    outputRange: [0, 46],
   });
 
   return (
@@ -214,10 +214,10 @@ const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp, nextFocusLeft, 
     Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
   }, [scaleAnim]);
 
-  // Thumb travels across 108px track with 20px thumb, 4px padding each side
+  // Thumb travels across 122px track with 24px thumb, 4px padding each side
   const thumbTranslate = thumbAnim.interpolate({
     inputRange: [0, 1, 2],
-    outputRange: [0, 40, 80],
+    outputRange: [0, 45, 90],
   });
 
   const LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
@@ -1052,15 +1052,22 @@ const HomeScreenTvOS = () => {
                   : (prevRow ? itemNodeHandles.get(prevRow[prevRow.length - 1]) : undefined))
               : undefined;
 
-            // UP: column-preserving into the previous row (clamped to its width);
-            // first row lets spatial focus find the header naturally
+            // Each day is its own navigation block. Within a day, up/down is
+            // column-preserving (clamped to the row width). At a day's edge, down
+            // lands on the next day's first poster (top-left) and up on the previous
+            // day's last poster — a clean hop instead of a column-preserving vault.
+            const thisDay = thisRow.length ? stripKeyByIdx[thisRow[0]] : null;
+            const rowStartsDay = !prevRow || stripKeyByIdx[prevRow[0]] !== thisDay;
+            const rowEndsDay = !nextRow || stripKeyByIdx[nextRow[0]] !== thisDay;
+
             const nextFocusUp = isFirstMovieRow
               ? undefined
-              : (prevRow ? itemNodeHandles.get(prevRow[Math.min(colIdx, prevRow.length - 1)]) : headerNodeHandle);
+              : (prevRow
+                  ? itemNodeHandles.get(rowStartsDay ? prevRow[prevRow.length - 1] : prevRow[Math.min(colIdx, prevRow.length - 1)])
+                  : headerNodeHandle);
 
-            // DOWN: column-preserving into the next row (clamped)
             const nextFocusDown = nextRow
-              ? itemNodeHandles.get(nextRow[Math.min(colIdx, nextRow.length - 1)])
+              ? itemNodeHandles.get(rowEndsDay ? nextRow[0] : nextRow[Math.min(colIdx, nextRow.length - 1)])
               : undefined;
 
             const isFirstMovie = mIdx === 0;
@@ -1087,7 +1094,7 @@ const HomeScreenTvOS = () => {
         </View>
       );
     },
-    [movieGrid, dateStripColor, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, registerItemRef, registerWrapperRef, giveInitialFocus]
+    [movieGrid, stripKeyByIdx, dateStripColor, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, registerItemRef, registerWrapperRef, giveInitialFocus]
   );
 
   // Key extractor
@@ -1136,29 +1143,9 @@ const HomeScreenTvOS = () => {
     <View style={styles.container}>
       {/* Header: top row = title + search; bottom row = 2x2 toggle module (lower-left) + filters (two rows) */}
       <View style={styles.header}>
-        {/* Top row: title left, search right */}
+        {/* Top row: title only (search now lives in the filter grid below) */}
         <View style={styles.headerTopRow}>
           <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
-          <View ref={setSearchRef} style={[styles.searchContainer, styles.searchGrow, searchFocused && styles.searchContainerFocused]}>
-            <Text style={styles.searchIcon}>⌕</Text>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search..."
-              placeholderTextColor="rgba(255,255,255,0.4)"
-              value={searchQuery}
-              onChangeText={updateSearchQuery}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="search"
-            />
-            {searchQuery.length > 0 && (
-              <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
-                <Text style={styles.searchClearText}>✕</Text>
-              </TouchableOpacity>
-            )}
-          </View>
         </View>
         {/* Bottom row: 2x2 toggle module (lower-left) + filters as two rows filling the rest */}
         <View style={styles.bottomRow}>
@@ -1168,7 +1155,6 @@ const HomeScreenTvOS = () => {
                 ref={setFirstToggleRef}
                 slopMode={slopMode}
                 onPress={cycleSlopMode}
-                nextFocusUp={searchNodeHandle}
               />
               <MetaToggle
                 isActive={showHighlightsOnly}
@@ -1176,7 +1162,6 @@ const HomeScreenTvOS = () => {
                 accentColor="#dc143c"
                 accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
                 onPress={toggleShowHighlights}
-                nextFocusUp={searchNodeHandle}
               />
             </View>
             <View style={styles.toggleModuleRow}>
@@ -1199,20 +1184,19 @@ const HomeScreenTvOS = () => {
           </View>
           <View style={styles.filterColumn}>
             <View style={styles.filterRow}>
-              {FILTERS.slice(0, 5).map((filter, idx) => (
+              {FILTERS.slice(0, 6).map((filter, idx) => (
                 <FilterButton
                   key={filter.id}
                   ref={idx === 0 ? setFirstFilterRef : undefined}
                   filter={filter}
                   isActive={activeFilters.has(filter.id)}
                   onPress={() => handleFilterChange(filter.id)}
-                  nextFocusUp={searchNodeHandle}
                   style={{ flex: 1 }}
                 />
               ))}
             </View>
             <View style={styles.filterRow}>
-              {FILTERS.slice(5).map((filter, idx, arr) => (
+              {FILTERS.slice(6).map((filter, idx, arr) => (
                 <FilterButton
                   key={filter.id}
                   ref={idx === arr.length - 1 ? setLastFilterRef : undefined}
@@ -1222,6 +1206,27 @@ const HomeScreenTvOS = () => {
                   style={{ flex: 1 }}
                 />
               ))}
+              {/* Search lives in the grid now — spans ~3 chip slots (right half of row 2) */}
+              <View ref={setSearchRef} style={[styles.searchInGrid, searchFocused && styles.searchContainerFocused]}>
+                <Text style={styles.searchIcon}>⌕</Text>
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder="Search..."
+                  placeholderTextColor="rgba(255,255,255,0.4)"
+                  value={searchQuery}
+                  onChangeText={updateSearchQuery}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setSearchFocused(false)}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  returnKeyType="search"
+                />
+                {searchQuery.length > 0 && (
+                  <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
+                    <Text style={styles.searchClearText}>✕</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           </View>
         </View>
@@ -1344,18 +1349,18 @@ const styles = StyleSheet.create({
   },
   toggleModule: {
     flexDirection: 'column',
-    gap: 14,
+    gap: 18,
     justifyContent: 'center',
     backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.16)',
     borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
+    paddingVertical: 18,
+    paddingHorizontal: 32,
   },
   toggleModuleRow: {
     flexDirection: 'row',
-    gap: 28,
+    gap: 34,
     alignItems: 'center',
   },
   filterColumn: {
@@ -1368,6 +1373,19 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 28,
     maxWidth: 560,
+  },
+  // Search rendered inside the filter grid (row 2): spans ~3 chip slots and
+  // stretches to the chip height so it sits flush with the filter buttons.
+  searchInGrid: {
+    flex: 3,
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 18,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -1447,18 +1465,18 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   metaToggleLabel: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '700',
-    letterSpacing: 1.2,
+    letterSpacing: 1.4,
     color: 'rgba(0,212,170,0.45)',
   },
   metaToggleLabelActive: {
     color: '#00d4aa',
   },
   slopToggleTrack: {
-    width: 108,
-    height: 28,
-    borderRadius: 14,
+    width: 122,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: '#1a1a1a',
     borderWidth: 1,
     borderColor: 'rgba(0,212,170,0.45)',
@@ -1466,9 +1484,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   slopToggleThumb: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: 'rgba(0,212,170,0.55)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -1476,9 +1494,9 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   metaToggleTrack: {
-    width: 80,
-    height: 38,
-    borderRadius: 19,
+    width: 88,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: '#1a1a1a',
     borderWidth: 1,
     borderColor: 'rgba(0,212,170,0.3)',
@@ -1494,9 +1512,9 @@ const styles = StyleSheet.create({
     borderWidth: 2.5,
   },
   metaToggleThumb: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },

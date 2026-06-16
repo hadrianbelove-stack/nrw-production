@@ -8,6 +8,11 @@ config.yaml
 .env
 # Local configuration with secrets
 config.ini
+
+# tvOS TestFlight: local credentials + build artifacts (never commit secrets)
+NRWApp-tvOS/.testflight.env
+NRWApp-tvOS/build/
+*.p8
 cache/*
 !cache/.gitkeep
 !cache/screenshots/

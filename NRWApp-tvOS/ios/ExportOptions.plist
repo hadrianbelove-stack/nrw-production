@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- App Store distribution. If xcodebuild rejects "app-store-connect" on an
+	     older toolchain, change this value to "app-store". -->
+	<key>method</key>
+	<string>app-store-connect</string>
+	<!-- Upload straight to App Store Connect / TestFlight after export. -->
+	<key>destination</key>
+	<string>upload</string>
+	<key>teamID</key>
+	<string>N97GA9NN35</string>
+	<key>signingStyle</key>
+	<string>automatic</string>
+	<key>uploadSymbols</key>
+	<true/>
+	<key>stripSwiftSymbols</key>
+	<true/>
+</dict>
+</plist>
