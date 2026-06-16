@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW Header — search beside title, filters 5&4</title>
+<style>
+:root {
+    --accent-primary: #00d4aa;
+    --accent-glow: rgba(0, 212, 170, 0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    background-attachment: fixed;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ---- MOCKUP banner ---- */
+.mock-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+    background: #b8860b; color: #000; text-align: center;
+    font: 600 13px system-ui; padding: 6px 14px;
+}
+.mock-spacer { height: 30px; }
+
+header {
+    position: sticky; top: 0; z-index: 100;
+    padding: 1.5rem 1.5rem 1.1rem;
+    border-bottom: 1px solid #333;
+    background: rgba(8, 8, 12, 0.88);
+    backdrop-filter: blur(12px);
+}
+
+/* Top line: wordmark + a flexible search bar beside it */
+.hl-top {
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+    width: 100%;
+    margin-bottom: 1.2rem;
+}
+.hl-top .search-container { flex: 1 1 200px; min-width: 0; margin-left: 0; }
+.hl-top #search-input { width: 100%; }
+
+header h1 {
+    font-weight: 100;
+    letter-spacing: 0.24em;
+    font-size: 3.3rem;
+    line-height: 1.0;
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: linear-gradient(45deg, #fff, var(--accent-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Bottom line: genre filters (two rows of 5 & 4) + the View toggle box at right */
+.header-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 1.2rem;
+}
+.filters {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 0.7rem;
+    flex: 1 1 480px;
+    min-width: 0;
+    align-content: stretch;
+}
+.filter-btn {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0.62rem 0.6rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white; cursor: pointer;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    font-size: 1.02rem;
+    text-align: center;
+    white-space: nowrap;
+}
+.filter-btn:hover, .filter-btn.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--accent-glow);
+}
+
+/* Boxed control module — the four view toggles, 2×2 */
+.view-module {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    padding: 14px 20px 16px;
+}
+.view-module-head {
+    font-size: 0.62rem; font-weight: 800; letter-spacing: 0.2em;
+    text-transform: uppercase; color: #888; margin-bottom: 12px;
+}
+.toggle-grid { display: grid; grid-template-columns: auto auto; gap: 13px 28px; }
+
+/* Search */
+.search-container { position: relative; display: flex; align-items: center; }
+#search-input {
+    padding: 0.6rem 2rem 0.6rem 1rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white; border-radius: 25px; font-size: 0.95rem; width: 100%;
+    transition: all 0.3s ease;
+}
+#search-input:focus {
+    outline: none; background: rgba(255,255,255,0.15);
+    border-color: var(--accent-primary); box-shadow: 0 0 10px var(--accent-glow);
+}
+#search-input::placeholder { color: rgba(255,255,255,0.5); }
+
+/* Toggles */
+.slop-toggle-wrap {
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+    user-select: none; -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+}
+.slop-label {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: rgba(0,212,170,0.75);
+    transition: color 0.25s; white-space: nowrap;
+}
+.slop-toggle-wrap.active .slop-label { color: #00d4aa; }
+#slop-state-label { width: 80px; display: inline-block; }
+.slop-track {
+    width: 108px; height: 32px; border-radius: 16px;
+    background: #1a1a1a; border: 1px solid rgba(0,212,170,0.45);
+    position: relative; flex-shrink: 0; transition: background .25s, border-color .25s;
+}
+.slop-toggle-wrap.active .slop-track { background: #00d4aa; border-color: rgba(0,0,0,0.35); }
+.slop-thumb {
+    position: absolute; top: 4px; left: 4px; width: 24px; height: 24px;
+    background: rgba(0,212,170,0.55); border-radius: 50%;
+    transition: transform .25s cubic-bezier(.4,0,.2,1), background .25s;
+}
+.slop-toggle-wrap.active .slop-thumb { transform: translateX(72px); background: #fff; }
+#slop-free-toggle[data-state="free"] .slop-track { background: #00d4aa; border-color: rgba(0,0,0,0.35); }
+#slop-free-toggle[data-state="free"] .slop-thumb { transform: translateX(0); background: #fff; }
+#slop-free-toggle[data-state="free"] #slop-state-label { color: #00d4aa; }
+#slop-free-toggle[data-state="all"] .slop-track { background: rgba(0,212,170,0.1); border-color: #00d4aa; }
+#slop-free-toggle[data-state="all"] .slop-thumb { transform: translateX(38px); background: #00d4aa; }
+#slop-free-toggle[data-state="all"] #slop-state-label { color: #00d4aa; }
+#slop-free-toggle[data-state="only"] .slop-track { background: #ff9500; border-color: rgba(0,0,0,0.35); }
+#slop-free-toggle[data-state="only"] .slop-thumb { transform: translateX(76px); background: #fff; }
+#slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
+#highlights-toggle.active .slop-track { background: #dc143c; }
+#highlights-toggle.active .slop-label { color: #dc143c; }
+#fest-toggle.active .slop-track { background: #f59e0b; }
+#fest-toggle.active .slop-label { color: #f59e0b; }
+#preorder-toggle.active .slop-track { background: #7c3aed; }
+#preorder-toggle.active .slop-label { color: #7c3aed; }
+
+/* Sample wall grid (context only) */
+#wall {
+    padding: 1.5rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem 1.25rem;
+}
+.card {
+    aspect-ratio: 2 / 3;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #23232e, #313143);
+    display: flex; align-items: flex-end; padding: 12px;
+    font-size: 0.9rem; color: #cfcfe0;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+@media (max-width: 760px) {
+    header h1 { font-size: 2rem; white-space: normal; }
+    .hl-top { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+<div class="mock-banner">MOCKUP — search beside title · filters 5&4 · bigger title · View box right</div>
+<div class="mock-spacer"></div>
+
+<header>
+    <div class="hl-top">
+        <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
+        </div>
+    </div>
+    <div class="header-bottom">
+        <div class="filters">
+            <button class="filter-btn" data-filter="indie">Indie</button>
+            <button class="filter-btn" data-filter="horror">Horror</button>
+            <button class="filter-btn" data-filter="action">Action</button>
+            <button class="filter-btn" data-filter="comedy">Comedy</button>
+            <button class="filter-btn" data-filter="family">Family</button>
+            <button class="filter-btn" data-filter="thriller">Thriller</button>
+            <button class="filter-btn" data-filter="foreign">Foreign</button>
+            <button class="filter-btn" data-filter="documentary">Docs</button>
+            <button class="filter-btn" data-filter="restorations">Reissues</button>
+        </div>
+        <div class="view-module">
+            <div class="view-module-head">View</div>
+            <div class="toggle-grid">
+                <div class="slop-toggle-wrap" id="slop-free-toggle" data-state="free">
+                    <div class="slop-track"><div class="slop-thumb"></div></div>
+                    <span class="slop-label" id="slop-state-label">SLOP FREE</span>
+                </div>
+                <div class="slop-toggle-wrap" id="highlights-toggle">
+                    <div class="slop-track"><div class="slop-thumb"></div></div>
+                    <span class="slop-label">SELECTS</span>
+                </div>
+                <div class="slop-toggle-wrap" id="fest-toggle">
+                    <div class="slop-track"><div class="slop-thumb"></div></div>
+                    <span class="slop-label">FESTS</span>
+                </div>
+                <div class="slop-toggle-wrap" id="preorder-toggle">
+                    <div class="slop-track"><div class="slop-thumb"></div></div>
+                    <span class="slop-label">PRE-ORDER</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main id="wall"></main>
+
+<script>
+// sample poster grid for context
+const titles = ["Anora","The Brutalist","Nosferatu","A Real Pain","Conclave","The Substance",
+    "Flow","Hard Truths","Nickel Boys","September 5","The Order","Babygirl",
+    "Queer","The Seed of the Sacred Fig","Memoir of a Snail","I'm Still Here"];
+const wall = document.getElementById('wall');
+titles.forEach(t => {
+    const d = document.createElement('div');
+    d.className = 'card';
+    d.textContent = t;
+    wall.appendChild(d);
+});
+
+// genre filters: multi-select toggle
+document.querySelectorAll('.filter-btn').forEach(b =>
+    b.addEventListener('click', () => b.classList.toggle('active')));
+
+// view toggles
+const SLOP = ['free','all','only'];
+document.getElementById('slop-free-toggle').addEventListener('click', e => {
+    const el = e.currentTarget;
+    el.dataset.state = SLOP[(SLOP.indexOf(el.dataset.state) + 1) % 3];
+    document.getElementById('slop-state-label').textContent =
+        {free:'SLOP FREE', all:'ALL', only:'SLOP ONLY'}[el.dataset.state];
+});
+['highlights-toggle','fest-toggle','preorder-toggle'].forEach(id =>
+    document.getElementById(id).addEventListener('click', e =>
+        e.currentTarget.classList.toggle('active')));
+</script>
+</body>
+</html>
