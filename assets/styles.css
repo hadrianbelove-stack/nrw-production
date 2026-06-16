@@ -1269,7 +1269,9 @@ header h1 {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    max-width: 98vw;
+    /* Leave ~120px gutter each side so the edge-pinned cycle arrows (.lb-nav-prev/
+       -next, ~110px wide incl. offset) sit beside the content, not over it. */
+    max-width: calc(100vw - 240px);
     max-height: 98vh;
     animation: lightboxFadeIn 0.3s ease;
 }
