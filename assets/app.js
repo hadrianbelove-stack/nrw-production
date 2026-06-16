@@ -1472,16 +1472,25 @@ const NRW = {
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
-        // === ROW 1: < TRAILER > ===
+        // === ROW 1: TRAILER (the < > cycle arrows are appended to the overlay) ===
         const navRow = document.createElement('div');
         navRow.className = 'lb-nav-row';
+
+        // < and > cycle buttons live on the .poster-lightbox OVERLAY, not inside
+        // .lightbox-info-wrap \u2014 that panel's backdrop-filter creates a containing
+        // block that traps position:fixed and pins the arrows over the capsule.
+        // On the overlay (no transform/filter) they pin to the viewport edges as
+        // intended. Clicks are handled by delegation on document.body; remove any
+        // stale pair first since the overlay isn't rebuilt between opens.
+        const overlay = document.getElementById('poster-lightbox');
+        overlay.querySelectorAll('.lb-nav-prev, .lb-nav-next').forEach(n => n.remove());
 
         // < button
         const prevBtn = document.createElement('button');
         prevBtn.className = 'lb-nav-btn lb-nav-prev';
         prevBtn.textContent = '\u2039';
         prevBtn.setAttribute('aria-label', 'Previous movie');
-        navRow.appendChild(prevBtn);
+        overlay.appendChild(prevBtn);
 
         // TRAILER button (or disabled placeholder when no trailer)
         const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
@@ -1503,7 +1512,7 @@ const NRW = {
         nextBtn.className = 'lb-nav-btn lb-nav-next';
         nextBtn.textContent = '\u203A';
         nextBtn.setAttribute('aria-label', 'Next movie');
-        navRow.appendChild(nextBtn);
+        overlay.appendChild(nextBtn);
 
         container.appendChild(navRow);
 
