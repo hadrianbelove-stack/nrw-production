@@ -35,14 +35,20 @@ header {
     backdrop-filter: blur(12px);
 }
 
-/* Top line: wordmark (left) + the View toggle box (right) */
+/* Left column (title over filters) + View toggle box on the right */
 .title-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 1.2rem 1.6rem;
-    margin-bottom: 1.2rem;
+}
+.header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    flex: 1 1 480px;
+    min-width: 0;
 }
 
 header h1 {
@@ -179,12 +185,28 @@ header h1 {
 </style>
 </head>
 <body>
-<div class="mock-banner">MOCKUP — search sits in the filter rows (last slot) · title alone up top · View box right</div>
+<div class="mock-banner">MOCKUP — title upper-left · filters lower-left (search = a slot) · View box right</div>
 <div class="mock-spacer"></div>
 
 <header>
     <div class="title-row">
-        <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
+        <div class="header-left">
+            <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
+            <div class="filters">
+                <button class="filter-btn" data-filter="indie">Indie</button>
+                <button class="filter-btn" data-filter="horror">Horror</button>
+                <button class="filter-btn" data-filter="action">Action</button>
+                <button class="filter-btn" data-filter="comedy">Comedy</button>
+                <button class="filter-btn" data-filter="family">Family</button>
+                <button class="filter-btn" data-filter="thriller">Thriller</button>
+                <button class="filter-btn" data-filter="foreign">Foreign</button>
+                <button class="filter-btn" data-filter="documentary">Docs</button>
+                <button class="filter-btn" data-filter="restorations">Reissues</button>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
+                </div>
+            </div>
+        </div>
         <div class="view-module">
             <div class="view-module-head">View</div>
             <div class="toggle-grid">
@@ -205,20 +227,6 @@ header h1 {
                     <span class="slop-label">PRE-ORDER</span>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="filters">
-        <button class="filter-btn" data-filter="indie">Indie</button>
-        <button class="filter-btn" data-filter="horror">Horror</button>
-        <button class="filter-btn" data-filter="action">Action</button>
-        <button class="filter-btn" data-filter="comedy">Comedy</button>
-        <button class="filter-btn" data-filter="family">Family</button>
-        <button class="filter-btn" data-filter="thriller">Thriller</button>
-        <button class="filter-btn" data-filter="foreign">Foreign</button>
-        <button class="filter-btn" data-filter="documentary">Docs</button>
-        <button class="filter-btn" data-filter="restorations">Reissues</button>
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
         </div>
     </div>
 </header>
