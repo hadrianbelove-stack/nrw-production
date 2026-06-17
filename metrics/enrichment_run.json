@@ -1,25 +1,17 @@
 {
-  "timestamp": "2026-06-16T15:11:09.867053",
-  "movies_requested": 27,
-  "movies_enriched": 23,
-  "movies_deferred": 4,
+  "timestamp": "2026-06-17T13:56:18.840005",
+  "movies_requested": 9,
+  "movies_enriched": 6,
+  "movies_deferred": 3,
   "deferred_details": [
-    {
-      "title": "Busboys",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-16",
-      "discovered_at": "2026-06-16T13:32:52.687551",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 2,
-      "tmdb_platforms": []
-    },
     {
       "title": "Pressure",
       "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-06-15",
-      "discovered_at": "2026-06-16T13:32:56.221368",
-      "discovery_source": "provider_availability_check",
+      "digital_date": "2026-06-16",
+      "discovered_at": "2026-06-17T12:56:46.452613",
+      "discovery_source": "tmdb_type4",
       "revert_count": 1,
+      "first_reverted_at": "2026-06-17",
       "tmdb_platforms": [
         "Amazon Video"
       ]
@@ -28,31 +20,24 @@
       "title": "The Thing in the Fog",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-12",
-      "discovered_at": "2026-06-16T13:33:06.055473",
+      "discovered_at": "2026-06-17T12:56:48.363192",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
+      "revert_count": 7,
+      "first_reverted_at": "2026-06-17",
       "tmdb_platforms": []
     },
     {
-      "title": "40 Dates and 40 Nights",
+      "title": "Eagles of the Republic",
       "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-30",
-      "discovered_at": "2026-06-16T14:55:36.387869",
+      "digital_date": "2026-06-23",
+      "discovered_at": "2026-06-17T13:28:11.419822",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Two Prosecutors",
-      "reason": "zero_watch_links",
-      "digital_date": "2026-05-26",
-      "discovered_at": "2026-06-15T15:18:51.585478",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
+      "first_reverted_at": "2026-06-17",
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 921.64,
+  "enrichment_duration_seconds": 577.57,
   "error_details": [],
   "total_errors": 0
 }

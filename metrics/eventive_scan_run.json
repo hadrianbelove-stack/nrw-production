@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-06-16T13:32:49.646670",
+  "timestamp": "2026-06-17T12:56:41.496378",
   "operation": "eventive_scan_pipeline",
   "stats": {
-    "festivals_scanned": 118,
-    "festivals_with_films": 113,
+    "festivals_scanned": 119,
+    "festivals_with_films": 114,
     "festivals_failed": 48,
-    "total_films_indexed": 2070,
+    "total_films_indexed": 2081,
     "expired_filtered": 0,
-    "unique_active": 1563,
-    "tracking_matches": 88,
-    "wall_matches": 37,
-    "new_cached": 93,
+    "unique_active": 1578,
+    "tracking_matches": 92,
+    "wall_matches": 39,
+    "new_cached": 99,
     "skipped_undated": 32
   },
   "tracking_matches": [
@@ -84,7 +84,7 @@
       "end": "2026-06-28T03:29:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1503486",
@@ -387,18 +387,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1514056",
-      "nrw_title": "Nika & Madison",
-      "eventive_title": "Nika & Madison",
-      "festival": "2026 Annual Oakville Film Festival",
-      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
-      "start": "2026-06-17T11:00:00.000Z",
-      "end": "2026-06-28T03:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1462784",
       "nrw_title": "Life in a Beat",
       "eventive_title": "Life in a Beat",
@@ -409,6 +397,18 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
+    },
+    {
+      "movie_id": "1646067",
+      "nrw_title": "Best Friends Forever",
+      "eventive_title": "Best Friends Forever",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a316100610e82d3ba071e53",
+      "start": "2026-06-16T17:00:00.000Z",
+      "end": "2026-06-20T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
     },
     {
       "movie_id": "1533246",
@@ -447,6 +447,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1373104",
+      "nrw_title": "Maysoon",
+      "eventive_title": "Maysoon",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a22efa77b6aa701c0d4ebfa",
+      "start": "2026-06-06T05:00:00.000Z",
+      "end": "2026-06-20T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1569807",
       "nrw_title": "Receptions",
       "eventive_title": "Receptions",
@@ -478,6 +490,42 @@
       "link": "https://watch.eventive.org/lagff26/play/6a206e072d4a433ac2a004d8",
       "start": "2026-06-03T02:00:00.000Z",
       "end": "2026-06-20T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1306368",
+      "nrw_title": "The Rip",
+      "eventive_title": "RIP",
+      "festival": "ICFF at Home",
+      "link": "https://watch.eventive.org/icff/play/6a3191f15b2b7f7a6adbf593",
+      "start": "2026-07-03T16:00:00.000Z",
+      "end": "2026-07-14T07:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1127674",
+      "nrw_title": "The Forbidden City",
+      "eventive_title": "The Forbidden City",
+      "festival": "ICFF at Home",
+      "link": "https://watch.eventive.org/icff/play/6a318fd127d255ee974c1de1",
+      "start": "2026-07-03T16:00:00.000Z",
+      "end": "2026-07-14T07:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1514056",
+      "nrw_title": "Nika & Madison",
+      "eventive_title": "Nika & Madison",
+      "festival": "2026 Annual Oakville Film Festival",
+      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
+      "start": "2026-06-17T11:00:00.000Z",
+      "end": "2026-06-28T03:00:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
@@ -627,30 +675,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1585144",
-      "nrw_title": "Connection",
-      "eventive_title": "The Connection",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1049439",
-      "nrw_title": "The Golden Age",
-      "eventive_title": "The Golden Age",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
       "movie_id": "1561978",
       "nrw_title": "The Ark",
       "eventive_title": "The Ark",
@@ -721,6 +745,30 @@
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
+    },
+    {
+      "movie_id": "1585144",
+      "nrw_title": "Connection",
+      "eventive_title": "The Connection",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1049439",
+      "nrw_title": "The Golden Age",
+      "eventive_title": "The Golden Age",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
     },
     {
       "movie_id": "1604573",
@@ -1097,6 +1145,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1713277",
+      "nrw_title": "The King of Black Goo",
+      "eventive_title": "The King of Black Goo",
+      "festival": "Chattanooga Film Festival 2026",
+      "link": "https://watch.eventive.org/chattfilmfest/play/6a027f0dd47b6eb7f3880360",
+      "start": "2026-06-25T22:40:00.000Z",
+      "end": "2026-06-28T03:29:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1484833",
       "nrw_title": "The Obsessed",
       "eventive_title": "The Obsessed",
@@ -1265,18 +1325,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1514056",
-      "nrw_title": "Nika & Madison",
-      "eventive_title": "Nika & Madison",
-      "festival": "2026 Annual Oakville Film Festival",
-      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
-      "start": "2026-06-17T11:00:00.000Z",
-      "end": "2026-06-28T03:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1462784",
       "nrw_title": "Life in a Beat",
       "eventive_title": "Life in a Beat",
@@ -1313,6 +1361,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1373104",
+      "nrw_title": "Maysoon",
+      "eventive_title": "Maysoon",
+      "festival": "20th Los Angeles Greek Film Festival 2026",
+      "link": "https://watch.eventive.org/lagff26/play/6a22efa77b6aa701c0d4ebfa",
+      "start": "2026-06-06T05:00:00.000Z",
+      "end": "2026-06-20T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1569807",
       "nrw_title": "Receptions",
       "eventive_title": "Receptions",
@@ -1332,6 +1392,18 @@
       "link": "https://watch.eventive.org/lagff26/play/6a206e072d4a433ac2a004d8",
       "start": "2026-06-03T02:00:00.000Z",
       "end": "2026-06-20T06:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1514056",
+      "nrw_title": "Nika & Madison",
+      "eventive_title": "Nika & Madison",
+      "festival": "2026 Annual Oakville Film Festival",
+      "link": "https://watch.eventive.org/offa2026/play/69fa5ec20a1945f51175d566",
+      "start": "2026-06-17T11:00:00.000Z",
+      "end": "2026-06-28T03:00:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
