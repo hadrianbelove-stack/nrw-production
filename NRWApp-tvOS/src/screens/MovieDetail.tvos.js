@@ -257,12 +257,12 @@ const vodBtnStyles = StyleSheet.create({
 
 // Visual-only navigation arrow indicator (not focusable — d-pad LEFT/RIGHT navigates via useTVEventHandler)
 const NavArrowIndicator = ({ direction, flash }) => {
-  const opacity = useRef(new Animated.Value(0.5)).current;
+  const opacity = useRef(new Animated.Value(0.85)).current;
 
   useEffect(() => {
     if (flash) {
       opacity.setValue(1);
-      Animated.timing(opacity, { toValue: 0.5, duration: 400, useNativeDriver: true }).start();
+      Animated.timing(opacity, { toValue: 0.85, duration: 400, useNativeDriver: true }).start();
     }
   }, [flash, opacity]);
 
@@ -277,16 +277,18 @@ const NavArrowIndicator = ({ direction, flash }) => {
 
 const navArrowStyles = StyleSheet.create({
   circle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 212, 170, 0.1)',
+    backgroundColor: 'rgba(0, 212, 170, 0.18)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(0, 212, 170, 0.55)',
   },
   symbol: {
     color: Colors.primary,
-    fontSize: 36,
+    fontSize: 52,
     fontWeight: '300',
     marginTop: -2,
   },
@@ -584,6 +586,17 @@ const MovieDetailTvOS = () => {
     return () => sub.remove();
   }, [trailerVisible]);
 
+  // Also block React Navigation from popping this screen while the trailer overlay is up.
+  // On tvOS the MENU button can pop the stack even past the BackHandler guard, dumping you
+  // back on the wall instead of returning here — beforeRemove cancels that pop. The
+  // trailer's own MENU handler still closes the overlay, so MENU just exits the trailer.
+  React.useEffect(() => {
+    const unsub = navigation.addListener('beforeRemove', (e) => {
+      if (trailerVisible) e.preventDefault();
+    });
+    return unsub;
+  }, [navigation, trailerVisible]);
+
   // Fade in on mount
   React.useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -856,12 +869,8 @@ const MovieDetailTvOS = () => {
           {/* Fixed footer — always anchored at the same position regardless of content length */}
           <View style={styles.detailsFooter}>
 
-            {/* 8. Navigation + Trailer row: ‹ [TRAILER] › */}
+            {/* 8. Trailer row — movie-nav ‹ › are pinned to the top corners of the box */}
             <View style={styles.navTrailerRow}>
-              {movieList.length > 1 && (
-                <NavArrowIndicator direction="left" flash={arrowFlash === 'left'} />
-              )}
-
               {(movie?.links?.trailer_hosted || movie?.links?.trailer) ? (
                 <TrailerButton
                   ref={trailerRefCallback}
@@ -872,10 +881,6 @@ const MovieDetailTvOS = () => {
                 <View style={[trailerBtnStyles.button, { opacity: 0.35 }]}>
                   <Text style={trailerBtnStyles.text}>NO TRAILER</Text>
                 </View>
-              )}
-
-              {movieList.length > 1 && (
-                <NavArrowIndicator direction="right" flash={arrowFlash === 'right'} />
               )}
             </View>
 
@@ -960,6 +965,18 @@ const MovieDetailTvOS = () => {
           </View>
         </View>
       </View>
+
+      {/* Movie-nav arrows pinned to the top corners of the box (flash on swipe) */}
+      {movieList.length > 1 && (
+        <View style={styles.navArrowLeft} pointerEvents="none">
+          <NavArrowIndicator direction="left" flash={arrowFlash === 'left'} />
+        </View>
+      )}
+      {movieList.length > 1 && (
+        <View style={styles.navArrowRight} pointerEvents="none">
+          <NavArrowIndicator direction="right" flash={arrowFlash === 'right'} />
+        </View>
+      )}
 
       {/* Trailer player overlay */}
       {trailerVisible && movieList.length > 0 && (
@@ -1078,6 +1095,23 @@ const styles = StyleSheet.create({
   titleClamp: {
     height: 96,
     justifyContent: 'flex-end',
+  },
+  // Movie-nav ‹ › pinned to the left/right edges of the box, vertically centered.
+  navArrowLeft: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 28,
+    justifyContent: 'center',
+    zIndex: 20,
+  },
+  navArrowRight: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 28,
+    justifyContent: 'center',
+    zIndex: 20,
   },
   titleDate: {
     color: Colors.primary,

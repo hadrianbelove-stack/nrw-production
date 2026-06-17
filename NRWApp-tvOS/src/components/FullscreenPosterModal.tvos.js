@@ -39,6 +39,15 @@ const FullscreenPosterModal = ({
   const [trailerVisible, setTrailerVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [imageError, setImageError] = useState(false);
+  // Visual-only ‹ › cues at the screen edges; they flash when you swipe to a new movie.
+  const leftArrowOpacity = useRef(new Animated.Value(0.4)).current;
+  const rightArrowOpacity = useRef(new Animated.Value(0.4)).current;
+  const flashArrow = useCallback((anim) => {
+    Animated.sequence([
+      Animated.timing(anim, { toValue: 1, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 0.4, duration: 200, useNativeDriver: true }),
+    ]).start();
+  }, []);
 
   // Update index when initialIndex changes
   useEffect(() => {
@@ -56,17 +65,21 @@ const FullscreenPosterModal = ({
   // Current movie
   const movie = movies[currentIndex] || {};
 
-  // Navigate to previous/next movie
+  // Navigate to previous/next movie, flashing the matching edge arrow as a cue.
   const navigate = useCallback((direction) => {
+    if (movies.length < 2) return;
+    flashArrow(direction < 0 ? leftArrowOpacity : rightArrowOpacity);
     const newIndex = (currentIndex + direction + movies.length) % movies.length;
     setCurrentIndex(newIndex);
     setImageError(false);
-  }, [currentIndex, movies.length]);
+  }, [currentIndex, movies.length, flashArrow, leftArrowOpacity, rightArrowOpacity]);
 
-  // Only MENU — no LEFT/RIGHT interception.
-  // Movie navigation is handled by the < > buttons via onFocus.
+  // SWIPE left/right changes movie (arrows flash); d-pad LEFT/RIGHT is left alone so it
+  // still moves focus between the watch-service buttons. MENU closes.
   useTVEventHandler(trailerVisible ? {} : {
     [TV_EVENTS.MENU]: () => onClose(),
+    [TV_EVENTS.SWIPE_LEFT]: () => navigate(-1),
+    [TV_EVENTS.SWIPE_RIGHT]: () => navigate(1),
   });
 
   // Get poster URL
@@ -144,26 +157,6 @@ const FullscreenPosterModal = ({
 
   // --- Sub-components ---
 
-  // Nav button: < or >. Auto-fires navigate on focus AND on press.
-  const NavButton = ({ direction }) => {
-    const [isFocused, setIsFocused] = useState(false);
-
-    return (
-      <TouchableOpacity
-        onFocus={() => {
-          setIsFocused(true);
-          navigate(direction === 'left' ? -1 : 1);
-        }}
-        onBlur={() => setIsFocused(false)}
-        onPress={() => navigate(direction === 'left' ? -1 : 1)}
-        style={[styles.navBtn, isFocused && styles.navBtnFocused]}
-        activeOpacity={1}
-      >
-        <Text style={styles.navBtnText}>{direction === 'left' ? '‹' : '›'}</Text>
-      </TouchableOpacity>
-    );
-  };
-
   // Action button (trailer / service)
   const ActionButton = ({ label, onPress, color, borderColor, textColor, isPreferred = false, disabled = false, size = 'lg' }) => {
     const [isFocused, setIsFocused] = useState(false);
@@ -224,7 +217,7 @@ const FullscreenPosterModal = ({
       visible={visible}
       transparent={true}
       animationType="none"
-      onRequestClose={onClose}
+      onRequestClose={() => { if (!trailerVisible) onClose(); }}
     >
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
         {/* Main content - side by side */}
@@ -259,9 +252,8 @@ const FullscreenPosterModal = ({
             {/* Buttons — key forces full remount so hasTVPreferredFocus re-fires */}
             <View key={`btns-${currentIndex}`} style={styles.buttonArea}>
 
-              {/* Row 1: < TRAILER > (always present for movie navigation) */}
+              {/* Row 1: TRAILER (swipe left/right changes movie; ‹ › cues sit at the screen edges) */}
               <View style={styles.navRow}>
-                <NavButton direction="left" />
                 {hasTrailer && (
                   <ActionButton
                     label="TRAILER"
@@ -271,7 +263,6 @@ const FullscreenPosterModal = ({
                     size="lg"
                   />
                 )}
-                <NavButton direction="right" />
               </View>
 
               {/* Row 2: all watch services side by side */}
@@ -319,6 +310,18 @@ const FullscreenPosterModal = ({
             </View>
           </View>
         </View>
+
+        {/* Visual-only ‹ › edge cues — flash on swipe, never focusable */}
+        {movies.length > 1 && (
+          <View style={styles.arrowLeft} pointerEvents="none">
+            <Animated.Text style={[styles.arrowText, { opacity: leftArrowOpacity }]}>‹</Animated.Text>
+          </View>
+        )}
+        {movies.length > 1 && (
+          <View style={styles.arrowRight} pointerEvents="none">
+            <Animated.Text style={[styles.arrowText, { opacity: rightArrowOpacity }]}>›</Animated.Text>
+          </View>
+        )}
 
         {/* Counter */}
         <Text style={styles.counter}>
@@ -419,22 +422,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  navBtn: {
-    width: 60,
-    height: 54,
-    borderRadius: 12,
-    backgroundColor: 'rgba(0, 212, 170, 0.1)',
+  arrowLeft: {
+    position: 'absolute',
+    left: 40,
+    top: 0,
+    bottom: 0,
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  navBtnFocused: {
-    backgroundColor: 'rgba(0, 212, 170, 0.3)',
-    borderWidth: 3,
-    borderColor: Colors.focusBorderHighlight,
+  arrowRight: {
+    position: 'absolute',
+    right: 40,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
   },
-  navBtnText: {
-    color: 'rgba(0, 212, 170, 0.8)',
-    fontSize: 32,
+  arrowText: {
+    color: Colors.primary,
+    fontSize: 70,
     fontWeight: '300',
   },
   // Row 2: services
