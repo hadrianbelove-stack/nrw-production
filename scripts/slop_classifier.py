@@ -81,6 +81,7 @@ MANUAL_OVERRIDES = {
     1357922: True,    # Broken Land
     1701450: True,    # Vick & Tarstar's Scarecrow Factory
     1709198: True,    # Thou Shall Not Commit Adultery
+    1297201: True,    # Crosspoint (curator call)
     # TV-movie mill thrillers — confirmed slop by curator (June 2026)
     1708839: True,    # Her Husband's Double Life
     1409853: True,    # Neglected
