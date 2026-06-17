@@ -61,6 +61,26 @@ MANUAL_OVERRIDES = {
     312493:  False,   # Viral Hit (tv_312493)
     1560681: False,   # Colors of Evil: Black (Netflix global Top 10 Polish thriller)
     1233354: False,   # Heads or Fails (Belgian arthouse, FIFIGROT/BAFICI winner)
+    # Curator slop sweep — June 16 2026
+    1563190: False,   # La Scala: The Force of Destiny (theatrical doc, Tribeca-winning dir)
+    1463681: True,    # Southern Scares
+    1711959: True,    # Cheer Dad
+    1198439: True,    # Easy Girl
+    1501018: True,    # A Family of Bastards
+    1511549: True,    # Still Sexy
+    1639356: True,    # Sidosa
+    1662231: True,    # Jean-Louis Aubert - 50 ans avec vous (concert)
+    1711071: True,    # The Jealous Bride
+    1608277: True,    # Toh, Ti Ani Fuji
+    1477431: True,    # Time of Death (2025)
+    316178:  True,    # Chloe et Emma (tv_316178)
+    1465786: True,    # Just Kids
+    1699155: True,    # Maternal Instinct
+    1357544: True,    # Bizarrofilia
+    1490884: True,    # My Boyfriend's Wife Is Dead
+    1357922: True,    # Broken Land
+    1701450: True,    # Vick & Tarstar's Scarecrow Factory
+    1709198: True,    # Thou Shall Not Commit Adultery
     # TV-movie mill thrillers — confirmed slop by curator (June 2026)
     1708839: True,    # Her Husband's Double Life
     1409853: True,    # Neglected
