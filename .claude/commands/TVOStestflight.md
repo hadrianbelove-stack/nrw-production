@@ -51,22 +51,25 @@ p.write_text(s)
 print(f"Build number: {cur} -> {nxt}")
 PY
 
-# 3) Archive (Release)
-rm -rf build && mkdir -p build
+# 3) Archive (Release) — timestamped paths so repeat runs never collide
+#    (avoids `rm -rf`, which trips the destructive-command guard).
+mkdir -p build
+STAMP=$(date +%Y%m%d-%H%M%S)
+ARCH="build/NRWApp-tvOS-$STAMP.xcarchive"
 xcodebuild -workspace ios/NRWApp.xcworkspace \
   -scheme NRWAppTemp-tvOS \
   -configuration Release \
   -sdk appletvos \
   -destination 'generic/platform=tvOS' \
-  -archivePath build/NRWApp-tvOS.xcarchive \
+  -archivePath "$ARCH" \
   -allowProvisioningUpdates \
   clean archive
 
-# 4) Export + upload to TestFlight in one step
+# 4) Export + upload to TestFlight in one step (destination=upload in ExportOptions)
 xcodebuild -exportArchive \
-  -archivePath build/NRWApp-tvOS.xcarchive \
+  -archivePath "$ARCH" \
   -exportOptionsPlist ios/ExportOptions.plist \
-  -exportPath build/export \
+  -exportPath "build/export-$STAMP" \
   -authenticationKeyPath "$P8" \
   -authenticationKeyID "$ASC_KEY_ID" \
   -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
@@ -82,7 +85,8 @@ xcodebuild -exportArchive \
 
 ## Notes / first-run gotchas
 
-- `ios/ExportOptions.plist` uses `method = app-store-connect`. If export fails complaining
-  about the method value on this toolchain, change it to `app-store`.
+- `ios/ExportOptions.plist` uses `method = app-store-connect` — confirmed working on
+  Xcode 26 (build 22 uploaded cleanly Jun 16 2026). If a future toolchain rejects it,
+  change it to `app-store`.
 - The scheme is `NRWAppTemp-tvOS` and the bundle ID is `org.reactjs.native.example.NRWApp-tvOS`.
 - The first archive of a session takes several minutes (full native compile + JS bundle).
