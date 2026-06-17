@@ -34,7 +34,23 @@ Then present this report in order:
 ### Overnight Pipeline
 - Overall: success or failure, total duration
 - **Intake**: total intaked, scan window, duplicates skipped
-- **Discovery**: movies polled, transitions (newly available)
+- **Discovery**: movies polled, plus the two transition numbers below — show BOTH, labeled. The raw count is inflated whenever a local run put films on the wall before CI transitioned them (the wall-add date and CI's transition land on different days), so it is not "new things that happened":
+
+```bash
+/usr/bin/python3 -c "
+import json
+data = json.load(open('data.json'))
+ms = data['movies'] if isinstance(data, dict) else data
+disc = json.load(open('metrics/discovery_run.json'))
+run_date = disc.get('timestamp', '')[:10]
+new_today = [m for m in ms if str(m.get('_discovered_at', ''))[:10] == run_date]
+print(f'Total transition events: {disc.get(\"total_transitions\", 0)} (raw — includes films a local run already put on the wall, re-counted by CI)')
+print(f'Genuinely new today (first appeared on the wall this run): {len(new_today)}')
+for m in sorted(new_today, key=lambda m: not m.get('is_slop')):
+    print(f'  • {m.get(\"title\")} ({m.get(\"year\")}) — {\"SLOP\" if m.get(\"is_slop\") else \"shown\"}')
+"
+```
+
 - **Enrichment**: movies enriched, deferred — show deferred as a table:
   Title | Digital Date | First Reverted | Reverts | TMDB Platforms | Reason
   - JW revert deferrals only shown if `first_reverted_at` is within the last 3 days; after that, hide them (add: "N deferrals hidden — aged out"). Use `first_reverted_at` (the stable first-revert date), **NOT** `discovered_at` — chronic reverters re-transition every run, which resets `discovered_at` to today and would keep them in the report forever. If `first_reverted_at` is missing (older records), fall back to `discovered_at`.

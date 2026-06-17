@@ -26,7 +26,22 @@ Then report these sections:
   - Total intaked: `results.total_intaked` (films: `results.intaked`, miniseries: `results.miniseries_intaked`)
   - Scan window: `scan_window.start_date` to `scan_window.end_date` (`scan_window.mode`)
   - Duplicates skipped: `results.duplicates_skipped`, blocked: `results.blocked_by_filter`
-- Discovery: how many movies polled, how many transitions (from discovery_run.json)
+- Discovery: how many movies polled, plus the two transition numbers below — show BOTH, labeled. The raw count is inflated whenever a local run put films on the wall before CI transitioned them, so it is not "new things that happened":
+
+```bash
+/usr/bin/python3 -c "
+import json
+data = json.load(open('data.json'))
+ms = data['movies'] if isinstance(data, dict) else data
+disc = json.load(open('metrics/discovery_run.json'))
+run_date = disc.get('timestamp', '')[:10]
+new_today = [m for m in ms if str(m.get('_discovered_at', ''))[:10] == run_date]
+print(f'Total transition events: {disc.get(\"total_transitions\", 0)} (raw — includes films a local run already put on the wall, re-counted by CI)')
+print(f'Genuinely new today (first appeared on the wall this run): {len(new_today)}')
+for m in sorted(new_today, key=lambda m: not m.get('is_slop')):
+    print(f'  • {m.get(\"title\")} ({m.get(\"year\")}) — {\"SLOP\" if m.get(\"is_slop\") else \"shown\"}')
+"
+```
 - Enrichment: movies requested / enriched / deferred and duration (from enrichment_run.json)
   - **Deferred breakdown**: from `deferred_details` in enrichment_run.json — show as a table with columns: Title | Digital Date | Discovered | Reverts | TMDB Platforms | Reason. List all titles grouped by reason. Use date-only format (strip timestamps to YYYY-MM-DD). Column notes: "Discovered" = `discovered_at`, "Reverts" = `revert_count` (how many times reverted), "TMDB Platforms" = `tmdb_platforms` (what services TMDB says have it).
     - **3-day window**: Only show JW revert deferrals (`jw_revert:justwatch_no_match` and `jw_revert:justwatch_no_valid_offers`) if `discovered_at` is within the last 3 days. After 3 days, exclude them — they're either dead ends or chronic. All other deferral reasons (timeout, error, not_in_data_json, etc.) always show.

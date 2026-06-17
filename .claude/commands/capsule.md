@@ -121,10 +121,10 @@ This does TWO things automatically:
 3. Commit and push:
 
 ```bash
-cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
+cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json movie_tracking.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
 ```
 
-Commit **only** `data.json`. Cache files are gitignored — do not `git add` them.
+Commit `data.json` **and** `movie_tracking.json` together — they must never drift. A local run can transition films in both files; committing only `data.json` loses the tracking transition, and CI re-discovers and re-counts it the next day (inflating "new arrivals"). Cache files are gitignored — do not `git add` them.
 
 ---
 
