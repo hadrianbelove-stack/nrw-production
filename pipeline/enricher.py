@@ -969,6 +969,10 @@ class MovieEnricher:
                 entry['discovery_source'] = m.get('_discovery_source', '')
             if tracking_movie:
                 entry['revert_count'] = tracking_movie.get('_jw_revert_count', 0)
+                # Stable first-revert date (set via setdefault, never resets) — the
+                # report ages reverts out off this, NOT discovered_at, which resets
+                # every run when a stuck film re-transitions.
+                entry['first_reverted_at'] = tracking_movie.get('_jw_reverted_at', '')
                 provs = tracking_movie.get('providers', {})
                 flat = []
                 for kind in ('streaming', 'rent', 'buy'):

@@ -36,8 +36,8 @@ Then present this report in order:
 - **Intake**: total intaked, scan window, duplicates skipped
 - **Discovery**: movies polled, transitions (newly available)
 - **Enrichment**: movies enriched, deferred — show deferred as a table:
-  Title | Digital Date | Discovered | Reverts | TMDB Platforms | Reason
-  - JW revert deferrals only shown if `discovered_at` is within last 3 days; after that, hide them (add: "N deferrals hidden — aged out")
+  Title | Digital Date | First Reverted | Reverts | TMDB Platforms | Reason
+  - JW revert deferrals only shown if `first_reverted_at` is within the last 3 days; after that, hide them (add: "N deferrals hidden — aged out"). Use `first_reverted_at` (the stable first-revert date), **NOT** `discovered_at` — chronic reverters re-transition every run, which resets `discovered_at` to today and would keep them in the report forever. If `first_reverted_at` is missing (older records), fall back to `discovered_at`.
   - All other deferral reasons (timeout, error, etc.) always show
 - **Any phase failures or warnings**
 

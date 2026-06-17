@@ -118,9 +118,13 @@ class ProviderDiscoverer:
                for p in all_providers if isinstance(p, str)):
             return {'verified': True, '_bypass': 'virtual_screening'}
 
-        # Revert ceiling: stop wasting API calls on perpetual failures
+        # Revert ceiling: stop wasting API calls on perpetual failures.
+        # Lowered 10 → 4 (Jun 2026): a film that fails JW 4 days running is almost
+        # never going to verify; the old ceiling of 10 meant ~10 days of churn and
+        # report noise per stuck title before discovery finally gave up.
+        REVERT_CEILING = 4
         revert_count = movie.get('_jw_revert_count', 0)
-        if revert_count >= 10:
+        if revert_count >= REVERT_CEILING:
             movie['_skip_provider_discovery'] = True
             self.logger.info(f"Revert ceiling reached for {title} ({revert_count} reverts) — skipping future discovery")
             print(f"  ⛔ {title} — {revert_count} reverts, skipping permanently")
