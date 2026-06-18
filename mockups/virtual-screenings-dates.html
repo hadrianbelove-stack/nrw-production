@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW — Virtual Screening Date Treatments</title>
+<style>
+:root{
+  --accent-primary:#00d4aa;
+  --bg-dark:#1a1a2e; --bg-darker:#0a0a0a;
+  --staff-pick:#dc143c;
+  --screening-gold:#FFD700; --screening-glow:rgba(255,215,0,0.3); --screening-subtle:rgba(255,215,0,0.05);
+  --leaving-red:#ff5252; --leaving-amber:#ffab40;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:linear-gradient(160deg,#0a0a0a 0%,#1a1a2e 100%); color:#fff; min-height:100vh;
+}
+/* ---- header ---- */
+.site-header{ text-align:center; padding:2.2rem 1rem 1rem; }
+.site-header h1{ font-weight:100; letter-spacing:0.3em; font-size:2.1rem; margin:0;
+  background:linear-gradient(45deg,#fff,var(--accent-primary)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+.site-header .sub{ color:#888; letter-spacing:0.25em; text-transform:uppercase; font-size:0.7rem; margin-top:0.6rem; }
+
+/* ---- solution toggle ---- */
+.mode-bar{ position:sticky; top:0; z-index:50; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+  padding:14px; background:rgba(8,8,12,0.92); backdrop-filter:blur(8px); border-bottom:1px solid rgba(255,255,255,0.08); }
+.mode-btn{ background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#ddd;
+  border-radius:25px; padding:9px 18px; font-weight:700; letter-spacing:0.04em; font-size:0.82rem; cursor:pointer; }
+.mode-btn .t{ display:block; font-size:0.66rem; font-weight:500; color:#999; letter-spacing:0.02em; margin-top:2px;}
+.mode-btn.active{ background:var(--screening-gold); border-color:var(--screening-gold); color:#000; }
+.mode-btn.active .t{ color:#3a3000; }
+
+/* ---- section + date banners ---- */
+.section-banner,.date-divider{ grid-column:1/-1; display:flex; justify-content:center; align-items:baseline; gap:0.8rem;
+  background:rgba(8,8,12,0.94); border-radius:6px; }
+.section-banner{ border-top:3px solid var(--strip-c); border-bottom:3px solid var(--strip-c); padding:20px 16px; margin-top:6px;
+  box-shadow:0 0 40px color-mix(in srgb,var(--strip-c) 45%,transparent), inset 0 0 26px color-mix(in srgb,var(--strip-c) 14%,transparent); }
+.section-banner .b-day{ font-size:2.1rem; font-weight:900; letter-spacing:0.26em; text-transform:uppercase; color:var(--strip-c);
+  text-shadow:0 0 12px var(--strip-c); }
+.section-banner .b-rest{ font-size:2.1rem; font-weight:900; letter-spacing:0.26em; text-transform:uppercase; color:#fff; }
+.section-banner.soon{ --strip-c:#b9952e; opacity:0.92; }
+.section-banner.soon .b-day,.section-banner.soon .b-rest{ font-size:1.5rem; }
+.date-divider{ border-top:2px solid var(--strip-c); border-bottom:2px solid var(--strip-c); padding:9px 12px;
+  box-shadow:0 0 22px color-mix(in srgb,var(--strip-c) 45%,transparent); --strip-c:#b9952e; }
+.date-divider .b-day{ font-size:1.1rem; font-weight:900; letter-spacing:0.3em; color:var(--strip-c); text-shadow:0 0 10px var(--strip-c); text-transform:uppercase;}
+.date-divider .b-rest{ font-size:1.1rem; font-weight:500; letter-spacing:0.3em; color:#fff; text-transform:uppercase;}
+.section-note{ grid-column:1/-1; text-align:center; color:#777; font-size:0.8rem; font-style:italic; margin:-2px 0 4px;}
+
+/* ---- wall ---- */
+#wall{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:2rem 1rem; padding:1.5rem 2rem 4rem; max-width:1400px; margin:0 auto;}
+@media(max-width:700px){ #wall{ grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1.4rem 0.7rem; padding:1rem;} }
+.movie-container{ display:flex; flex-direction:column; position:relative; min-width:0;
+  border:3px solid var(--screening-gold); border-radius:15px; padding:8px; background:var(--screening-subtle);
+  box-shadow:0 0 20px var(--screening-glow); }
+.movie-container.soon{ border-color:#8c7a2e; box-shadow:0 0 16px rgba(255,215,0,0.12); opacity:0.96;}
+.movie-card{ position:relative; width:100%; aspect-ratio:2/3; }
+.card-front{ position:absolute; inset:0; border-radius:12px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.3);
+  background:linear-gradient(135deg,#1a1a2e,#0f0f1a); display:flex; align-items:center; justify-content:center;}
+.card-front img{ width:100%; height:100%; object-fit:cover; }
+.poster-fallback{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center;
+  padding:14px; background:linear-gradient(135deg,#23233e,#12121f); color:#cfcfe6; font-weight:700; font-size:0.95rem; letter-spacing:0.02em;}
+.card-score-overlay{ position:absolute; bottom:8px; left:8px; display:flex; gap:4px; z-index:6;}
+.card-score-badge{ padding:3px 6px; border-radius:6px; font-size:0.62rem; font-weight:800; line-height:1; background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.1); color:#ff6b6b;}
+.movie-info{ width:100%; padding:6px 2px 0;}
+.movie-title{ font-weight:700; font-size:0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.movie-meta{ font-size:0.78rem; color:#00d4aa; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;}
+.movie-meta .muted{ color:#888;}
+
+/* ===== shared gold badge bar (festival name) ===== */
+.badge-bar{ width:calc(100% + 16px); margin:6px -8px -8px -8px; text-align:center; padding:5px 6px;
+  font-size:0.6rem; font-weight:900; letter-spacing:0.07em; line-height:1.3; text-transform:uppercase;
+  border-radius:0 0 12px 12px; background:var(--screening-gold); color:#000;}
+
+/* ============================================================= */
+/* SOLUTION A — window band (date range under poster)            */
+/* ============================================================= */
+.solA .badge-bar .fest{ display:block; }
+.solA .badge-bar .win{ display:block; font-weight:700; letter-spacing:0.05em; font-size:0.62rem; margin-top:2px; color:#3a3000;}
+.solA .badge-bar.leaving{ background:linear-gradient(90deg,var(--leaving-amber),var(--leaving-red)); color:#000;}
+.solA .badge-bar.leaving .win{ color:#3a0000; font-weight:900;}
+.solA .badge-bar.soonband{ background:#8c7a2e; color:#fff;}
+.solA .badge-bar.soonband .win{ color:#ffe9a8;}
+
+/* ============================================================= */
+/* SOLUTION B — corner "until" pill (urgency forward)            */
+/* ============================================================= */
+.corner-pill{ position:absolute; top:8px; right:8px; z-index:7; padding:4px 9px; border-radius:20px;
+  font-size:0.6rem; font-weight:900; letter-spacing:0.05em; text-transform:uppercase; background:var(--screening-gold); color:#000;
+  box-shadow:0 2px 8px rgba(0,0,0,0.45);}
+.corner-pill.leaving{ background:var(--leaving-red); color:#fff; animation:pulse 1.6s infinite;}
+.corner-pill.starts{ left:8px; right:auto; background:rgba(20,20,30,0.85); color:var(--screening-gold); border:1px solid var(--screening-gold);}
+@keyframes pulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,82,82,0.55);} 50%{ box-shadow:0 0 0 7px rgba(255,82,82,0);} }
+
+/* ============================================================= */
+/* SOLUTION C — progress timeline bar on poster bottom           */
+/* ============================================================= */
+.timeline{ position:absolute; left:0; right:0; bottom:0; z-index:7; padding:8px 10px 9px;
+  background:linear-gradient(0deg,rgba(0,0,0,0.85),transparent);}
+.timeline .tl-labels{ display:flex; justify-content:space-between; font-size:0.56rem; font-weight:700; letter-spacing:0.03em; color:#e7e7f0; margin-bottom:4px;}
+.timeline .tl-labels .end{ color:var(--screening-gold);}
+.timeline .tl-track{ height:5px; border-radius:3px; background:rgba(255,255,255,0.22); overflow:hidden;}
+.timeline .tl-fill{ height:100%; border-radius:3px; background:var(--screening-gold);}
+.timeline.urgent .tl-fill{ background:linear-gradient(90deg,var(--leaving-amber),var(--leaving-red));}
+.timeline.urgent .tl-labels .end{ color:var(--leaving-red);}
+.timeline.soon .tl-track{ background:rgba(255,255,255,0.14);}
+.timeline.soon .tl-fill{ background:#8c7a2e; opacity:0.6;}
+.timeline .tl-soon{ font-size:0.56rem; font-weight:800; color:var(--screening-gold); letter-spacing:0.04em; text-align:center; }
+</style>
+</head>
+<body class="solA">
+
+<div class="site-header">
+  <h1>THE NEW RELEASE WALL</h1>
+  <div class="sub">Virtual Screenings · Festival Films</div>
+</div>
+
+<div class="mode-bar">
+  <button class="mode-btn active" data-mode="solA">A<span class="t">Window band</span></button>
+  <button class="mode-btn" data-mode="solB">B<span class="t">"Until" pill</span></button>
+  <button class="mode-btn" data-mode="solC">C<span class="t">Progress bar</span></button>
+</div>
+
+<div id="wall"></div>
+
+<script>
+const TODAY = new Date('2026-06-18T12:00:00');
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const d = s => new Date(s + 'T12:00:00');
+const fmt = s => { const x=d(s); return MONTHS[x.getMonth()]+' '+x.getDate(); };
+const daysBetween = (a,b) => Math.round((d(b)-a)/86400000);
+
+const FILMS = [
+ {title:"Best Friends Forever",dir:"Konstantinos Mousoulis",genre:"Comedy",country:"GRE",poster:"https://image.tmdb.org/t/p/w500/2lNZYwLljw2WAoYGfK9zQ1cODoy.jpg",fest:"Los Angeles Greek Film Fest",start:"2026-06-02",end:"2026-06-20"},
+ {title:"Maysoon",dir:"Nancy Biniadaki",genre:"Drama",country:"GER",poster:"https://image.tmdb.org/t/p/w500/1RfYLEEurFa0rMQYIQh0lVQuSQr.jpg",fest:"Los Angeles Greek Film Fest",start:"2026-06-02",end:"2026-06-20"},
+ {title:"Together Apart",dir:"Aliki Danezi-Knutsen",genre:"Drama",country:"GRE",poster:"https://image.tmdb.org/t/p/w500/nvVpHKrckA4CTuFIpFGSNaE3Htw.jpg",fest:"Los Angeles Greek Film Fest",start:"2026-06-02",end:"2026-06-20"},
+ {title:"Nika & Madison",dir:"Eva Thomas",genre:"Drama",country:"CAN",poster:"https://image.tmdb.org/t/p/w500/j3x9UqLLhAESI75TCjOszArBHFW.jpg",fest:"Oakville Film Festival",start:"2026-06-17",end:"2026-06-28"},
+ {title:"This Is Buzz",dir:"Mark Pellington",genre:"Documentary",country:"USA",poster:"https://image.tmdb.org/t/p/w500/i366RBufEAt0JwFeQUe8kfJrSET.jpg",fest:"Chattanooga Film Fest",start:"2026-06-19",end:"2026-06-28"},
+ {title:"The King of Black Goo",dir:"Andrew Zappin",genre:"Horror",country:"USA",poster:"https://image.tmdb.org/t/p/w500/64X9KHY6AdJMPCobrUSzvWX25P7.jpg",fest:"Chattanooga Film Fest",start:"2026-06-19",end:"2026-06-28"},
+ {title:"Pitfall",dir:"James Kondelik",genre:"Action",country:"CAN",poster:"https://image.tmdb.org/t/p/w500/kIwc4DgHpAQwEKBB6bPEsCRHnNB.jpg",fest:"Chattanooga Film Fest",start:"2026-06-19",end:"2026-06-28"},
+ {title:"Big City Pizza",dir:"Dusty Saunders",genre:"Comedy",country:"USA",poster:"https://image.tmdb.org/t/p/w500/7lNYhuKWBLn9Ooj31MG6iOxQELN.jpg",fest:"Chattanooga Film Fest",start:"2026-06-19",end:"2026-06-28",rt:"59%"},
+ {title:"The Obsessed",dir:"Wataru Takahashi",genre:"Animation",country:"JPN",poster:"https://image.tmdb.org/t/p/w500/vzNDv1Ts7GzlFJ2pgcMYev3BDCG.jpg",fest:"Chattanooga Film Fest",start:"2026-06-19",end:"2026-06-28"},
+ {title:"Glorious Summer",dir:"Bartosz Szpak",genre:"Drama",country:"POL",poster:"https://image.tmdb.org/t/p/w500/p2q0K48xUotHLqhY3AKsPqYZsMo.jpg",fest:"Chattanooga Film Fest",start:"2026-06-21",end:"2026-06-21"},
+ {title:"Miles Away",dir:"Jackie Quinones",genre:"Comedy",country:"USA",poster:null,fest:"RECON Extended Film Fest",start:"2026-06-21",end:"2026-06-25"},
+];
+
+function classify(f){
+  const startsIn = daysBetween(TODAY, f.start);   // >0 = future
+  const leavesIn = daysBetween(TODAY, f.end);     // days until it leaves
+  const now = startsIn <= 0 && leavesIn >= 0;
+  return {now, startsIn, leavesIn};
+}
+
+function poster(f){
+  return f.poster
+    ? `<img src="${f.poster}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="poster-fallback" style="display:none">${f.title}</div>`
+    : `<div class="poster-fallback">${f.title}</div>`;
+}
+function scores(f){ return f.rt ? `<div class="card-score-overlay"><span class="card-score-badge">🍅 ${f.rt}</span></div>` : ''; }
+function info(f){ return `<div class="movie-info"><div class="movie-title">${f.title}</div><div class="movie-meta">${f.dir} <span class="muted">· ${f.genre} · ${f.country}</span></div></div>`; }
+
+/* ---- per-solution cover extras ---- */
+function coverExtra(mode,f,c){
+  if(mode==='solB'){
+    if(c.now){
+      const urgent = c.leavesIn<=3;
+      const txt = urgent ? `⏳ ${c.leavesIn===0?'Last day':c.leavesIn+' day'+(c.leavesIn===1?'':'s')+' left'}` : `Until ${fmt(f.end)}`;
+      return `<div class="corner-pill ${urgent?'leaving':''}">${txt}</div>`;
+    }
+    return `<div class="corner-pill starts">${c.startsIn===1?'Tomorrow':fmt(f.start)}</div>`;
+  }
+  if(mode==='solC'){
+    if(c.now){
+      const total = daysBetween(d(f.start), f.end) || 1;
+      const elapsed = Math.min(Math.max(daysBetween(d(f.start), TODAY.toISOString().slice(0,10)),0), total);
+      const pct = Math.round(elapsed/total*100);
+      const urgent = c.leavesIn<=3;
+      const single = f.start===f.end;
+      return `<div class="timeline ${urgent?'urgent':''}">
+        <div class="tl-labels"><span>${single?'Today only':fmt(f.start)}</span><span class="end">${single?'':fmt(f.end)}</span></div>
+        <div class="tl-track"><div class="tl-fill" style="width:${single?100:pct}%"></div></div></div>`;
+    }
+    return `<div class="timeline soon"><div class="tl-soon">▶ Starts ${c.startsIn===1?'tomorrow':fmt(f.start)}</div></div>`;
+  }
+  return ''; // solA puts info in the badge bar (below)
+}
+function badgeBar(mode,f,c){
+  if(mode==='solA'){
+    if(c.now){
+      const urgent = c.leavesIn<=3;
+      const single = f.start===f.end;
+      const win = urgent
+        ? `⏳ Leaving ${fmt(f.end)}${c.leavesIn<=1?(c.leavesIn===0?' · today':' · tomorrow'):` · ${c.leavesIn} days`}`
+        : (single ? `${fmt(f.start)} only` : `${fmt(f.start)} – ${fmt(f.end)}`);
+      return `<div class="badge-bar ${urgent?'leaving':''}"><span class="fest">${f.fest}</span><span class="win">${win}</span></div>`;
+    }
+    const single = f.start===f.end;
+    return `<div class="badge-bar soonband"><span class="fest">${f.fest}</span><span class="win">Starts ${fmt(f.start)}${single?'':' – '+fmt(f.end)}</span></div>`;
+  }
+  // B & C keep the plain festival-name bar
+  return `<div class="badge-bar">${f.fest}</div>`;
+}
+
+function card(mode,f,c){
+  return `<div class="movie-container ${c.now?'':'soon'}">
+    <div class="movie-card"><div class="card-front">${poster(f)}${scores(f)}${coverExtra(mode,f,c)}</div></div>
+    ${info(f)}
+    ${badgeBar(mode,f,c)}
+  </div>`;
+}
+
+function render(mode){
+  const wall = document.getElementById('wall');
+  const enriched = FILMS.map(f=>({f,c:classify(f)}));
+  const now = enriched.filter(x=>x.c.now).sort((a,b)=>a.c.leavesIn-b.c.leavesIn);
+  const soon = enriched.filter(x=>!x.c.now).sort((a,b)=>a.c.startsIn-b.c.startsIn);
+
+  let html = `<div class="section-banner" style="--strip-c:#FFD700"><span class="b-day">AVAILABLE</span><span class="b-rest">NOW</span></div>`;
+  html += `<div class="section-note">${now.length} festival films you can watch today — soonest to leave first</div>`;
+  now.forEach(x=> html += card(mode,x.f,x.c));
+
+  if(soon.length){
+    html += `<div class="section-banner soon"><span class="b-day">AVAILABLE</span><span class="b-rest">SOON</span></div>`;
+    // group soon by start date
+    let lastStart='';
+    soon.forEach(x=>{
+      if(x.f.start!==lastStart){
+        const lbl = x.c.startsIn===1 ? 'TOMORROW' : fmt(x.f.start).toUpperCase();
+        html += `<div class="date-divider"><span class="b-day">${lbl}</span><span class="b-rest">opens</span></div>`;
+        lastStart=x.f.start;
+      }
+      html += card(mode,x.f,x.c);
+    });
+  }
+  wall.innerHTML = html;
+}
+
+document.querySelectorAll('.mode-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.mode;
+    document.body.className = mode;
+    render(mode);
+  });
+});
+render('solA');
+</script>
+</body>
+</html>
