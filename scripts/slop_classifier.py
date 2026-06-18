@@ -61,6 +61,9 @@ MANUAL_OVERRIDES = {
     312493:  False,   # Viral Hit (tv_312493)
     1560681: False,   # Colors of Evil: Black (Netflix global Top 10 Polish thriller)
     1233354: False,   # Heads or Fails (Belgian arthouse, FIFIGROT/BAFICI winner)
+    # Curator slop sweep — June 18 2026
+    1443200: True,    # Burt (2025) — curator call
+    1715076: True,    # The Exhibitor (no wiki/RT/IMDb signal)
     # Curator slop sweep — June 16 2026
     1563190: False,   # La Scala: The Force of Destiny (theatrical doc, Tribeca-winning dir)
     1463681: True,    # Southern Scares
