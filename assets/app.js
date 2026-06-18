@@ -452,10 +452,12 @@ const NRW = {
 
             // Pre-orders: their own view; every other view hides upcoming titles
             if (this.showPreorders) return !!movie._is_preorder;
+            // Fest view includes upcoming screenings (shown under "Available Soon"),
+            // so it must run before the pre-order exclusion below.
+            if (this.showFest) return !!movie.filters?.is_virtual_screening;
             if (movie._is_preorder) return false;
 
             if (this.showHighlightsOnly) return !!(movie.filters?.is_staff_pick || movie.featured);
-            if (this.showFest) return !!movie.filters?.is_virtual_screening;
             // Slop view = slop films on the regular wall; fests live only in the Fests view
             if (this.slopMode === 'only') return !!(movie.is_slop || movie._is_slop_guess) && !movie.filters?.is_virtual_screening;
 
@@ -470,7 +472,17 @@ const NRW = {
     },
 
     renderWallWithMore() {
+        // Fest view paginates "now" before "soon" so a large festival batch can't
+        // push available-now screenings past the page cut (renderWall regroups them).
+        const _fToday = new Date().toISOString().slice(0, 10);
+        const _fStart = m => (m.virtual_screening_info && m.virtual_screening_info.available_start) || '';
         const sortedMovies = [...this.filteredMovies].sort((a, b) => {
+            if (this.showFest) {
+                const aNow = !_fStart(a) || _fStart(a) <= _fToday;
+                const bNow = !_fStart(b) || _fStart(b) <= _fToday;
+                if (aNow !== bNow) return aNow ? -1 : 1;
+                return _fStart(a).localeCompare(_fStart(b));
+            }
             return new Date(b.digital_date) - new Date(a.digital_date);
         });
 
@@ -564,12 +576,26 @@ const NRW = {
             return (b.digital_date || '').localeCompare(a.digital_date || '');
         });
 
-        // Combine: fest at top, then pre-orders, then regular movies
-        const orderedMovies = [...festMovies, ...preorderMovies, ...regularMovies];
+        // Virtual-screening view groups by availability (now / soon), not arrival date
+        const vsStart = m => (m.virtual_screening_info && m.virtual_screening_info.available_start) || '';
+        const vsEnd = m => (m.virtual_screening_info && m.virtual_screening_info.available_end) || '';
+        let orderedMovies;
+        if (this.showFest) {
+            const vsNow = movies.filter(m => { const s = vsStart(m); return !s || s <= today; })
+                                .sort((a, b) => (vsEnd(a) || '9999-99-99').localeCompare(vsEnd(b) || '9999-99-99'));
+            const vsSoon = movies.filter(m => { const s = vsStart(m); return s && s > today; })
+                                 .sort((a, b) => vsStart(a).localeCompare(vsStart(b)));
+            orderedMovies = [...vsNow, ...vsSoon];
+        } else {
+            // Combine: fest at top, then pre-orders, then regular movies
+            orderedMovies = [...festMovies, ...preorderMovies, ...regularMovies];
+        }
 
         let html = '';
         let lastDate = '';
         let isFirstDate = true;
+        let vsLastSection = '';
+        let vsLastStart = '';
         const SHOW_TRAILERS_CARD = false; // Trailers card temporarily disabled — set true to restore
 
         // Date strips: single active filter recolors them; each view has its own color
@@ -583,6 +609,22 @@ const NRW = {
         const stripHtml = (day, rest, color, extraClass = '', titleAttr = '') =>
             `<div class="date-row-header${extraClass}" style="--strip-c:${color}"${titleAttr}><span class="drh-day">${day}</span>${rest ? `<span class="drh-rest">${rest}</span>` : ''}</div>`;
 
+        // Virtual-screening days-left bottom bar: red when ≤3 days left, gold "Until …" when calm,
+        // muted "Opens …" for upcoming screenings.
+        const vsDaysBar = (movie) => {
+            const info = movie.virtual_screening_info || {};
+            const start = info.available_start || '';
+            const end = info.available_end || '';
+            if (start && start > today) return `<div class="days-bar soon">Opens ${NRW.formatShortDate(start)}</div>`;
+            if (!end) return `<div class="days-bar calm">Screening live</div>`;
+            const daysLeft = Math.round((new Date(end + 'T12:00:00') - new Date(today + 'T12:00:00')) / 86400000);
+            if (daysLeft <= 3) {
+                const txt = daysLeft <= 0 ? 'Last day' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`;
+                return `<div class="days-bar urgent">⏳ ${txt}</div>`;
+            }
+            return `<div class="days-bar calm">Until ${NRW.formatShortDate(end)}</div>`;
+        };
+
         // View section banner at the very top — one per active view (exclusive).
         // Then every film flows through the normal date strips below, so each view
         // still shows the films grouped by date (the way SLOP already does).
@@ -590,13 +632,29 @@ const NRW = {
             html += stripHtml('SELECTS', 'OF NOTE', '#dc143c', ' section-banner');
         } else if (this.slopMode === 'only') {
             html += stripHtml('SLOP', 'THE CONTENT RIVER', '#ff9500', ' section-banner');
-        } else if (this.showFest) {
-            html += stripHtml('VIRTUAL SCREENINGS', 'FESTS', '#f59e0b', ' section-banner');
         } else if (this.showPreorders) {
             html += stripHtml('PRE-ORDER', 'COMING SOON', '#7c3aed', ' section-banner');
         }
 
         orderedMovies.forEach(movie => {
+          if (this.showFest) {
+            // VS view: "Available Now" / "Available Soon" banners + start-date dividers
+            const _s = vsStart(movie);
+            const _section = (_s && _s > today) ? 'soon' : 'now';
+            if (_section !== vsLastSection) {
+                html += _section === 'now'
+                    ? stripHtml('AVAILABLE', 'NOW', '#FFD700', ' section-banner')
+                    : stripHtml('AVAILABLE', 'SOON', '#b9952e', ' section-banner');
+                vsLastSection = _section;
+                vsLastStart = '';
+            }
+            if (_section === 'soon' && _s !== vsLastStart) {
+                const _sd = new Date(_s + 'T12:00:00');
+                html += stripHtml(_sd.toLocaleDateString('en', { weekday: 'short' }),
+                    `${_sd.toLocaleDateString('en', { month: 'short' })} ${_sd.getDate()} · OPENS`, '#b9952e');
+                vsLastStart = _s;
+            }
+          } else {
             const date = (movie.digital_date || '').substring(0, 10);
 
             // Date strip whenever the date changes — every view groups by date
@@ -636,6 +694,7 @@ const NRW = {
 
                 lastDate = date;
             }
+          }
 
             // Movie card
             const title = movie.title || 'Untitled';
@@ -703,8 +762,13 @@ const NRW = {
             const isScreening = movie.filters?.is_virtual_screening;
             const screeningClass = isScreening ? ' screening-movie' : '';
             const festivalName = movie.virtual_screening_info?.screening_name;
+            // VS: festival name in a dark band above the poster (poster not cropped)
+            const festBand = isScreening
+                ? `<div class="fest-above">${festivalName || 'VIRTUAL SCREENING'}</div>`
+                : '';
+            // VS: days-left bottom bar; Staff Picks keep the red SELECT badge
             const badgeBar = isScreening
-                ? `<div class="badge-bar gold">${festivalName || '\u2605 VIRTUAL SCREENING \u2605'}</div>`
+                ? vsDaysBar(movie)
                 : isStaffPick
                 ? '<div class="badge-bar red">\u2605 SELECT \u2605</div>'
                 : '';
@@ -733,6 +797,7 @@ const NRW = {
 
             html += `
             <div class="movie-container${staffPickClass}${screeningClass}">
+                ${festBand}
                 <div class="movie-card">
                     <div class="card-inner">
                         <div class="card-front${hasStreamingFrame ? ' streaming-frame' : ''}"${hasStreamingFrame ? ` style="background:var(--svc-${streamingSvcClass},#444);padding:0 12px 12px;"` : ''}>
@@ -1376,23 +1441,6 @@ const NRW = {
             }
         }
 
-        // Awards blurb (only if present)
-        const awardsEl = document.getElementById('lightbox-awards');
-        if (movie.awards) {
-            awardsEl.textContent = movie.awards;
-            awardsEl.style.display = '';
-        } else {
-            awardsEl.style.display = 'none';
-        }
-
-        // Box office (only if present)
-        const boxOfficeEl = document.getElementById('lightbox-box-office');
-        if (movie.box_office) {
-            boxOfficeEl.textContent = `Box office: ${movie.box_office}`;
-            boxOfficeEl.style.display = '';
-        } else {
-            boxOfficeEl.style.display = 'none';
-        }
     },
 
     _updateLightboxScores(movie) {

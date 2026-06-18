@@ -480,18 +480,6 @@ export default function MovieDetail({route}) {
             <Text style={styles.detailValue}>{movie.digital_date}</Text>
           </View>
         )}
-        {movie.awards && (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Awards</Text>
-            <Text style={styles.detailValue}>{movie.awards}</Text>
-          </View>
-        )}
-        {movie.box_office && (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Box office</Text>
-            <Text style={styles.detailValue}>{movie.box_office}</Text>
-          </View>
-        )}
       </View>
     </ScrollView>
 

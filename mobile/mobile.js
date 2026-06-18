@@ -914,7 +914,7 @@ const NRWMobile = {
         // Inline scores
         let scoresHtml = '';
         const hasScores = movie.rt_score || movie.imdb_rating ||
-            (movie.metacritic_score && movie.metacritic_score !== '0');
+            (movie.metacritic_score && movie.metacritic_score !== '0') || movie.letterboxd_score;
         if (hasScores) {
             scoresHtml += '<div class="sheet-scores">';
             if (movie.rt_score) {
@@ -931,6 +931,11 @@ const NRWMobile = {
                 scoresHtml += '<div class="sheet-score">' +
                     '<img class="sheet-score-logo mc-logo" src="../assets/logos/metacritic.png" alt="MC">' +
                     '<span class="sheet-score-value meta">' + movie.metacritic_score + '</span></div>';
+            }
+            if (movie.letterboxd_score) {
+                scoresHtml += '<div class="sheet-score">' +
+                    '<img class="sheet-score-logo" src="../assets/logos/services/letterboxd-dots.svg" alt="Letterboxd">' +
+                    '<span class="sheet-score-value lb">' + movie.letterboxd_score + '</span></div>';
             }
             scoresHtml += '</div>';
         }
@@ -956,7 +961,6 @@ const NRWMobile = {
             (dirLine ? '<div class="sheet-crew">' + dirLine + '</div>' : '') +
             (castLine ? '<div class="sheet-crew">' + castLine + '</div>' : '') +
             (detailParts.length ? '<div class="sheet-meta"><span>' + detailParts.join(' \u00b7 ') + '</span></div>' : '') +
-            (movie.box_office ? '<div class="sheet-meta" style="margin-top:2px"><span style="color:var(--text-muted);font-size:0.72rem">Box office: ' + this.esc(movie.box_office) + '</span></div>' : '') +
             scoresHtml +
             '</div></div>';
 
