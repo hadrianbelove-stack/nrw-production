@@ -154,6 +154,7 @@ const NRW = {
                 this.setupCardFlipHandler();
                 this.setupLightboxKeyboardHandler();
                 this.setupGridKeyboardHandler();
+                this.setupHeaderKeyboardNav();
                 this.setupDelegatedClickHandlers();
                 this.applyFilter();
                 this.renderWallWithMore();
@@ -1080,7 +1081,7 @@ const NRW = {
         // Scroll back to grid-selected card
         if (this.gridSelectedId) {
             const sel = document.querySelector('#wall .movie-container.grid-selected');
-            if (sel) setTimeout(() => sel.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+            if (sel) setTimeout(() => sel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
         }
     },
 
@@ -1843,6 +1844,13 @@ const NRW = {
                 this.gridAnchorX = null;
             }
             this.gridSelect(targetEl);
+        } else if (direction === 'up') {
+            // Up from the top row hands off to the header toggles — restores the
+            // pre-grid-nav ability to escape upward. Lands on the SLOP toggle;
+            // Left/Right then walks the toggles/filters, Down drops back in.
+            this.gridClearSelection();
+            document.getElementById('slop-free-toggle')?.focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     },
 
@@ -1854,7 +1862,9 @@ const NRW = {
             containerEl.classList.add('grid-selected');
             const expandBtn = containerEl.querySelector('.expand-btn[data-movie-id]');
             this.gridSelectedId = expandBtn ? expandBtn.dataset.movieId : null;
-            containerEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+            // 'nearest' (with .movie-container scroll-margin-top) keeps the card clear
+            // of the sticky header + date strip. 'center' parked rows under the strip.
+            containerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
         } else {
             this.gridSelectedId = null;
         }
@@ -1866,6 +1876,64 @@ const NRW = {
         this.gridSelectedId = null;
         this.gridNavActive = false;
         this.gridAnchorX = null;
+    },
+
+    // Header (toggles + filters + search) keyboard zone. Reached by pressing Up
+    // from the top grid row; Down drops back into the wall. The toggles are <div>s,
+    // so they're made focusable + Enter/Space-activatable here.
+    setupHeaderKeyboardNav() {
+        const toggleIds = ['preorder-toggle', 'fest-toggle', 'slop-free-toggle', 'highlights-toggle'];
+        toggleIds.forEach(id => {
+            const t = document.getElementById(id);
+            if (t) { t.setAttribute('tabindex', '0'); t.setAttribute('role', 'button'); }
+        });
+
+        // Left/Right traversal order, left to right: toggles, then filters, then search.
+        const controls = () => [
+            ...toggleIds.map(id => document.getElementById(id)),
+            ...Array.from(document.querySelectorAll('.filter-btn')),
+            document.getElementById('search-input'),
+        ].filter(Boolean);
+
+        document.addEventListener('keydown', (e) => {
+            if (!e.target.closest('header')) return;
+            const lightbox = document.getElementById('poster-lightbox');
+            if (lightbox && lightbox.classList.contains('active')) return;
+
+            const isToggle = e.target.classList.contains('slop-toggle-wrap');
+            const onSearch = e.target.id === 'search-input';
+
+            // Enter/Space activates a focused toggle (filters are <button>, native handles those).
+            if (isToggle && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                e.target.click();
+                return;
+            }
+
+            // In the search field, only Down (enter grid) is special — leave typing alone.
+            if (onSearch && e.key !== 'ArrowDown') return;
+
+            const list = controls();
+            const idx = list.indexOf(e.target);
+
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                const next = e.key === 'ArrowRight' ? Math.min(idx + 1, list.length - 1) : Math.max(idx - 1, 0);
+                list[next]?.focus();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                document.getElementById('slop-free-toggle')?.focus();  // Up always parks on the SLOP toggle
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                e.target.blur();
+                const { allCards } = this.buildGridMap();
+                if (allCards.length > 0) {
+                    this.gridNavActive = true;
+                    this.gridAnchorX = null;
+                    this.gridSelect(allCards[0]);
+                }
+            }
+        });
     },
 
     setupGridKeyboardHandler() {
@@ -1908,6 +1976,11 @@ const NRW = {
 
             // Don't handle arrow/enter/escape if typing in search
             if (onSearch) return;
+
+            // Header controls (toggles/filters) own their own arrow nav — see
+            // setupHeaderKeyboardNav. Leaving them to the grid handler would
+            // hijack the arrows and trap focus on a filter button.
+            if (e.target.closest('header')) return;
 
             const arrowKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
 

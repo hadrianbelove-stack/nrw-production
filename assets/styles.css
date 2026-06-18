@@ -206,6 +206,12 @@ header h1 {
     -webkit-tap-highlight-color: transparent;
     flex-shrink: 0;
 }
+/* Keyboard focus ring when arrow-navigated (matches the filter buttons) */
+.slop-toggle-wrap:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 6px;
+    border-radius: 10px;
+}
 .slop-label {
     font-size: 0.72rem;
     font-weight: 700;
@@ -351,6 +357,9 @@ header h1 {
     align-items: center;
     position: relative;
     min-width: 0; /* grid item: a long one-line caption can't widen its column */
+    /* Keyboard/lightbox scroll-to-card leaves room for the sticky header + date
+       strip so a card never lands cropped beneath the pinned strip. */
+    scroll-margin-top: calc(var(--header-height, 160px) + 64px);
 }
 
 /* Staff Pick movie styling (renamed from featured) */
