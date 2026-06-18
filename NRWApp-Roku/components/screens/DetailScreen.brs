@@ -211,7 +211,7 @@ Sub LoadMovie(index as Integer)
 
     ' Set language (only if not English)
     if movie.original_language <> invalid AND movie.original_language <> "en" AND movie.original_language <> ""
-        m.languageLabel.text = "Language: " + UCase(movie.original_language)
+        m.languageLabel.text = "Language: " + LanguageName(movie.original_language)
         m.languageLabel.visible = true
     else
         m.languageLabel.visible = false
@@ -753,4 +753,20 @@ function MarkdownToMultiStyle(s as String) as String
     italRx = CreateObject("roRegex", "\*([^*]+)\*", "g")
     s = italRx.ReplaceAll(s, "<italic>$1</italic>")
     return s
+end function
+
+' ISO language code -> readable name (e.g. "es" -> "Spanish"); falls back to the upper code.
+function LanguageName(code as String) as String
+    if code = invalid OR code = "" then return ""
+    names = {
+        en: "English", es: "Spanish", fr: "French", de: "German", it: "Italian", pt: "Portuguese",
+        ja: "Japanese", ko: "Korean", zh: "Chinese", hi: "Hindi", ru: "Russian", ar: "Arabic",
+        nl: "Dutch", sv: "Swedish", da: "Danish", no: "Norwegian", fi: "Finnish", pl: "Polish",
+        tr: "Turkish", th: "Thai", he: "Hebrew", fa: "Persian", el: "Greek", cs: "Czech",
+        hu: "Hungarian", ro: "Romanian", uk: "Ukrainian", id: "Indonesian", vi: "Vietnamese",
+        ta: "Tamil", te: "Telugu", is: "Icelandic", ga: "Irish", ca: "Catalan"
+    }
+    key = LCase(code)
+    if names.DoesExist(key) then return names[key]
+    return UCase(code)
 end function

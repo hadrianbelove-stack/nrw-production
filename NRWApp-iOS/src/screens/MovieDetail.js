@@ -26,6 +26,16 @@ import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
 import TrailerPlayer from '../components/TrailerPlayer';
 import {renderMarkdownSpans} from '../utils/markdown';
 
+const LANGUAGE_NAMES = {
+  en: 'English', es: 'Spanish', fr: 'French', de: 'German', it: 'Italian', pt: 'Portuguese',
+  ja: 'Japanese', ko: 'Korean', zh: 'Chinese', hi: 'Hindi', ru: 'Russian', ar: 'Arabic',
+  nl: 'Dutch', sv: 'Swedish', da: 'Danish', no: 'Norwegian', fi: 'Finnish', pl: 'Polish',
+  tr: 'Turkish', th: 'Thai', he: 'Hebrew', fa: 'Persian', el: 'Greek', cs: 'Czech',
+  hu: 'Hungarian', ro: 'Romanian', uk: 'Ukrainian', id: 'Indonesian', vi: 'Vietnamese',
+  ta: 'Tamil', te: 'Telugu', is: 'Icelandic', ga: 'Irish', ca: 'Catalan',
+};
+const languageName = (code) => code ? (LANGUAGE_NAMES[code.toLowerCase()] || code.toUpperCase()) : null;
+
 const COUNTRY_ABBREV = {
   'United States of America': 'USA', 'United States': 'USA', 'US': 'USA', 'USA': 'USA',
   'United Kingdom': 'UK', 'Great Britain': 'UK', 'GB': 'UK',
@@ -460,7 +470,7 @@ export default function MovieDetail({route}) {
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Language</Text>
             <Text style={styles.detailValue}>
-              {movie.original_language.toUpperCase()}
+              {languageName(movie.original_language)}
             </Text>
           </View>
         )}

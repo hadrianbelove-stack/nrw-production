@@ -86,6 +86,18 @@ private fun lbStars(score: Float): String {
     return "\u2605".repeat(n) + "\u2606".repeat(5 - n)
 }
 
+/** ISO language code -> readable name (e.g. "es" -> "Spanish"); falls back to the upper code. */
+private val LANGUAGE_NAMES = mapOf(
+    "en" to "English", "es" to "Spanish", "fr" to "French", "de" to "German", "it" to "Italian",
+    "pt" to "Portuguese", "ja" to "Japanese", "ko" to "Korean", "zh" to "Chinese", "hi" to "Hindi",
+    "ru" to "Russian", "ar" to "Arabic", "nl" to "Dutch", "sv" to "Swedish", "da" to "Danish",
+    "no" to "Norwegian", "fi" to "Finnish", "pl" to "Polish", "tr" to "Turkish", "th" to "Thai",
+    "he" to "Hebrew", "fa" to "Persian", "el" to "Greek", "cs" to "Czech", "hu" to "Hungarian",
+    "ro" to "Romanian", "uk" to "Ukrainian", "id" to "Indonesian", "vi" to "Vietnamese",
+    "ta" to "Tamil", "te" to "Telugu", "is" to "Icelandic", "ga" to "Irish", "ca" to "Catalan",
+)
+private fun languageName(code: String): String = LANGUAGE_NAMES[code.lowercase()] ?: code.uppercase()
+
 /**
  * Append text rendering a tiny markdown subset: **bold** and *italic*.
  * Anything outside the markers is appended as plain text.
@@ -476,7 +488,7 @@ private fun MovieDetail(
                 movie.originalLanguage?.takeIf { it != "en" }?.let { lang ->
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Language: ${lang.uppercase()}",
+                        text = "Language: ${languageName(lang)}",
                         color = TextMuted,
                         fontSize = 11.sp
                     )
