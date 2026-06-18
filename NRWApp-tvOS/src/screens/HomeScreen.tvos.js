@@ -1086,6 +1086,20 @@ const HomeScreenTvOS = () => {
               </View>
             );
           })}
+          {/* Fill a partial row's trailing empty cells with focus guides that redirect into
+              THIS row's posters. Stops DOWN from the row above spatial-skipping past a short
+              day to a later date (tvOS ignores the cards' own nextFocusDown across rows). */}
+          {item.items.length < NUM_COLUMNS && (() => {
+            const lastMIdx = item.items[item.items.length - 1].mIdx;
+            const dest = itemRefsMap.current.get(lastMIdx);
+            return Array.from({ length: NUM_COLUMNS - item.items.length }).map((_, i) => (
+              <TVFocusGuideView
+                key={`fill-${item.items[0].mIdx}-${i}`}
+                style={styles.cellFiller}
+                destinations={dest ? [dest] : []}
+              />
+            ));
+          })()}
         </View>
       );
     },
@@ -1635,6 +1649,12 @@ const styles = StyleSheet.create({
     marginRight: CARD_GAP,
     overflow: 'visible',
     zIndex: 1,
+  },
+  // Invisible focus-redirect placeholder occupying an empty trailing cell of a partial row.
+  cellFiller: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    marginRight: CARD_GAP,
   },
   loadMoreCard: {
     width: CARD_WIDTH,
