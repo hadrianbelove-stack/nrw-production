@@ -176,7 +176,7 @@ Sub LoadMovie(index as Integer)
     ' Line 3: Country • Year • Runtime • Studio
     metaParts = []
     if movie.country <> invalid AND movie.country <> ""
-        metaParts.Push(movie.country)
+        metaParts.Push(FormatCountry(movie.country))
     end if
     if movie.year <> invalid
         metaParts.Push(Str(movie.year).Trim())
