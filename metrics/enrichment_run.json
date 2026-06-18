@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-06-17T13:56:18.840005",
-  "movies_requested": 9,
-  "movies_enriched": 6,
-  "movies_deferred": 3,
+  "timestamp": "2026-06-18T13:37:26.760178",
+  "movies_requested": 12,
+  "movies_enriched": 7,
+  "movies_deferred": 5,
   "deferred_details": [
     {
       "title": "Pressure",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-06-16",
-      "discovered_at": "2026-06-17T12:56:46.452613",
+      "discovered_at": "2026-06-18T12:29:34.469989",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-17",
+      "first_reverted_at": "2026-06-18",
       "tmdb_platforms": [
         "Amazon Video"
       ]
@@ -20,24 +20,46 @@
       "title": "The Thing in the Fog",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-12",
-      "discovered_at": "2026-06-17T12:56:48.363192",
+      "discovered_at": "2026-06-18T12:29:37.117206",
       "discovery_source": "tmdb_type4",
-      "revert_count": 7,
-      "first_reverted_at": "2026-06-17",
+      "revert_count": 8,
+      "first_reverted_at": "2026-06-18",
       "tmdb_platforms": []
     },
     {
-      "title": "Eagles of the Republic",
+      "title": "The Last Light",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-21",
+      "discovered_at": "2026-06-18T12:29:44.135317",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 11,
+      "first_reverted_at": "2026-06-01",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Furious",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "",
+      "discovered_at": "2026-06-18T12:29:46.830579",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "first_reverted_at": "2026-06-18",
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ]
+    },
+    {
+      "title": "Strung",
       "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-23",
-      "discovered_at": "2026-06-17T13:28:11.419822",
+      "digital_date": "2026-06-26",
+      "discovered_at": "2026-06-18T13:25:43.533908",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-17",
+      "first_reverted_at": "2026-06-18",
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 577.57,
+  "enrichment_duration_seconds": 701.54,
   "error_details": [],
   "total_errors": 0
 }
