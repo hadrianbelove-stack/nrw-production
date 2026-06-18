@@ -116,22 +116,6 @@
       <Rectangle id="filterDivider" width="1" height="28" color="0x444444FF"
         translation="[0, 4]" />
 
-      <!-- Slop Toggle -->
-      <Group id="chip_slop_free">
-        <Rectangle id="chipBg_slop_free" width="120" height="36" color="0x00342AFF" />
-        <Label id="chipLabel_slop_free" text="SLOP FREE" width="120" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0x00D4AAFF" />
-      </Group>
-
-      <!-- Selects Toggle -->
-      <Group id="chip_show_highlights">
-        <Rectangle id="chipBg_show_highlights" width="110" height="36" color="0x0D0D0DFF" />
-        <Label id="chipLabel_show_highlights" text="SELECTS" width="110" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0x00D4AA73" />
-      </Group>
-
       <!-- Fest Toggle: dim = fests hidden (default), teal = fests shown -->
       <Group id="chip_hide_fest">
         <Rectangle id="chipBg_hide_fest" width="110" height="36" color="0x0D0D0DFF" />
@@ -146,6 +130,22 @@
         <Label id="chipLabel_show_preorders" text="NO PRE-ORDERS" width="130" height="36"
           horizAlign="center" vertAlign="center"
           font="font:SmallBoldSystemFont" color="0x59595959" />
+      </Group>
+
+      <!-- Slop Toggle -->
+      <Group id="chip_slop_free">
+        <Rectangle id="chipBg_slop_free" width="120" height="36" color="0x00342AFF" />
+        <Label id="chipLabel_slop_free" text="SLOP FREE" width="120" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0x00D4AAFF" />
+      </Group>
+
+      <!-- Selects Toggle -->
+      <Group id="chip_show_highlights">
+        <Rectangle id="chipBg_show_highlights" width="110" height="36" color="0x0D0D0DFF" />
+        <Label id="chipLabel_show_highlights" text="SELECTS" width="110" height="36"
+          horizAlign="center" vertAlign="center"
+          font="font:SmallBoldSystemFont" color="0x00D4AA73" />
       </Group>
     </LayoutGroup>
 

@@ -39,24 +39,6 @@ export default function FilterBar({activeFilters, onFilterChange, slopMode, onSl
         ))}
         <View style={styles.divider} />
         <TouchableOpacity
-          style={[styles.filterButton, styles.slopButton, slopMode !== 'all' && styles.slopButtonActive, slopMode === 'only' && styles.slopButtonOnly]}
-          onPress={() => onSlopModeChange(SLOP_STATES[(SLOP_STATES.indexOf(slopMode) + 1) % 3])}
-          activeOpacity={0.7}>
-          <Text style={[styles.filterText, styles.slopText, slopMode !== 'all' && styles.slopTextActive, slopMode === 'only' && styles.slopTextOnly]}>
-            {SLOP_LABELS[slopMode] || 'SLOP FREE'}
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.divider} />
-        <TouchableOpacity
-          style={[styles.filterButton, styles.slopButton, showHighlightsOnly && styles.selectsButtonActive]}
-          onPress={() => onShowHighlightsChange(!showHighlightsOnly)}
-          activeOpacity={0.7}>
-          <Text style={[styles.filterText, styles.slopText, showHighlightsOnly && styles.selectsTextActive]}>
-            SELECTS
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.divider} />
-        <TouchableOpacity
           style={[styles.filterButton, styles.slopButton, !hideFest && styles.festButtonActive]}
           onPress={() => onHideFestChange(!hideFest)}
           activeOpacity={0.7}>
@@ -71,6 +53,24 @@ export default function FilterBar({activeFilters, onFilterChange, slopMode, onSl
           activeOpacity={0.7}>
           <Text style={[styles.filterText, styles.slopText, showPreorders && styles.preorderTextActive]}>
             {showPreorders ? 'PRE-ORDERS' : 'NO PRE-ORDERS'}
+          </Text>
+        </TouchableOpacity>
+        <View style={styles.divider} />
+        <TouchableOpacity
+          style={[styles.filterButton, styles.slopButton, slopMode !== 'all' && styles.slopButtonActive, slopMode === 'only' && styles.slopButtonOnly]}
+          onPress={() => onSlopModeChange(SLOP_STATES[(SLOP_STATES.indexOf(slopMode) + 1) % 3])}
+          activeOpacity={0.7}>
+          <Text style={[styles.filterText, styles.slopText, slopMode !== 'all' && styles.slopTextActive, slopMode === 'only' && styles.slopTextOnly]}>
+            {SLOP_LABELS[slopMode] || 'SLOP FREE'}
+          </Text>
+        </TouchableOpacity>
+        <View style={styles.divider} />
+        <TouchableOpacity
+          style={[styles.filterButton, styles.slopButton, showHighlightsOnly && styles.selectsButtonActive]}
+          onPress={() => onShowHighlightsChange(!showHighlightsOnly)}
+          activeOpacity={0.7}>
+          <Text style={[styles.filterText, styles.slopText, showHighlightsOnly && styles.selectsTextActive]}>
+            SELECTS
           </Text>
         </TouchableOpacity>
       </ScrollView>

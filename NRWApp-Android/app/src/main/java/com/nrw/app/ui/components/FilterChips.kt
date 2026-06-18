@@ -85,6 +85,26 @@ fun FilterChips(
         }
 
         item {
+            MetaTogglePill(
+                isActive = !hideFest,
+                activeLabel = "FESTS",
+                inactiveLabel = "NO FEST",
+                onClick = onHideFestToggle,
+                accentColor = if (!hideFest) Color(0xFFF59E0B) else SlopTeal
+            )
+        }
+
+        item {
+            MetaTogglePill(
+                isActive = showPreorders,
+                activeLabel = "PRE-ORDERS",
+                inactiveLabel = "NO PRE-ORDERS",
+                onClick = onShowPreordersToggle,
+                accentColor = if (showPreorders) Color(0xFF7C3AED) else SlopTeal
+            )
+        }
+
+        item {
             val slopLabel = when (slopMode) { "only" -> "SLOP ONLY"; "all" -> "ALL"; else -> "SLOP FREE" }
             val slopAccent = if (slopMode == "only") Color(0xFFFF9500) else SlopTeal
             MetaTogglePill(
@@ -104,26 +124,6 @@ fun FilterChips(
                 inactiveLabel = "SELECTS",
                 onClick = onShowHighlightsToggle,
                 accentColor = if (showHighlightsOnly) Color(0xFFDC143C) else SlopTeal
-            )
-        }
-
-        item {
-            MetaTogglePill(
-                isActive = !hideFest,
-                activeLabel = "FESTS",
-                inactiveLabel = "NO FEST",
-                onClick = onHideFestToggle,
-                accentColor = if (!hideFest) Color(0xFFF59E0B) else SlopTeal
-            )
-        }
-
-        item {
-            MetaTogglePill(
-                isActive = showPreorders,
-                activeLabel = "PRE-ORDERS",
-                inactiveLabel = "NO PRE-ORDERS",
-                onClick = onShowPreordersToggle,
-                accentColor = if (showPreorders) Color(0xFF7C3AED) else SlopTeal
             )
         }
     }
