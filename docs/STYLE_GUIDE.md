@@ -118,11 +118,16 @@ Both fields may contain a tiny markdown subset:
 |--------|---------|---------|
 | `**text**` | Bold — people's names | `**Brady Corbet**` |
 | `*text*`   | Italic — film titles  | `*The Brutalist*` |
+| `[text](url)` | Link — Wikipedia etc. | `[Dee Wallace](https://en.wikipedia.org/wiki/Dee_Wallace)` |
 
 Rules:
 - This is the **only** field that carries markdown. Pull quotes are plain text.
 - Markers must be **balanced**: every `**` opens and closes; every single `*` opens and closes.
 - Canonical regex (bold matched first): `\*\*([^*]+)\*\*|\*([^*]+)\*`
+- **Links render differently per surface, by design:** the web (`renderMarkdown`) turns `[text](url)`
+  into a clickable `<a>` showing `text`; the native apps (iOS, tvOS, Android, Roku) **strip the link
+  to its `text`** and discard the URL, because the URL isn't navigable on a TV/app. Link-strip regex:
+  `\[([^\]]+)\]\([^)]+\)` → `text`, applied **before** bold/italic so `**[Name](url)**` still bolds.
 - Authoring convention: `gemini_scraper/capsule_style_guide.txt` (FORMATTING section). Approval warns on unbalanced markers (`gemini_scraper/capsule.py`).
 
 Renderers — all must match the spec above:

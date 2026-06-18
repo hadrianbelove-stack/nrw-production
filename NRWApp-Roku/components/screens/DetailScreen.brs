@@ -743,11 +743,14 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
     return false
 End Function
 
-' Convert the **bold**/*italic* markdown subset into MultiStyleLabel tags.
-' Bold first (** before single *). Untagged text uses the "default" style.
+' Convert the **bold**/*italic*/[text](url) markdown subset into MultiStyleLabel tags.
+' Links are stripped to their text first (URLs aren't navigable on Roku), matching tvOS/iOS;
+' then bold (** before single *). Untagged text uses the "default" style.
 ' Canonical spec: docs/STYLE_GUIDE.md "Synopsis / Capsule Text Formatting".
 function MarkdownToMultiStyle(s as String) as String
     if s = invalid then return ""
+    linkRx = CreateObject("roRegex", "\[([^\]]+)\]\(([^)]+)\)", "g")
+    s = linkRx.ReplaceAll(s, "$1")
     boldRx = CreateObject("roRegex", "\*\*([^*]+)\*\*", "g")
     s = boldRx.ReplaceAll(s, "<bold>$1</bold>")
     italRx = CreateObject("roRegex", "\*([^*]+)\*", "g")

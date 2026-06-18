@@ -99,15 +99,18 @@ private val LANGUAGE_NAMES = mapOf(
 private fun languageName(code: String): String = LANGUAGE_NAMES[code.lowercase()] ?: code.uppercase()
 
 /**
- * Append text rendering a tiny markdown subset: **bold** and *italic*.
- * Anything outside the markers is appended as plain text.
+ * Append text rendering a tiny markdown subset: **bold**, *italic*, and [text](url).
+ * Links are stripped to their text — URLs are discarded (not navigable on Android TV),
+ * matching the tvOS/iOS renderMarkdownSpans. Anything else is appended as plain text.
  * Canonical spec: docs/STYLE_GUIDE.md "Synopsis / Capsule Text Formatting".
  */
 private fun androidx.compose.ui.text.AnnotatedString.Builder.appendMarkdown(text: String) {
+    // Strip markdown links [text](url) -> text first, so **[Name](url)** still bolds correctly.
+    val src = text.replace(Regex("""\[([^\]]+)\]\([^)]+\)"""), "$1")
     val regex = Regex("""\*\*([^*]+)\*\*|\*([^*]+)\*""")
     var last = 0
-    for (m in regex.findAll(text)) {
-        if (m.range.first > last) append(text.substring(last, m.range.first))
+    for (m in regex.findAll(src)) {
+        if (m.range.first > last) append(src.substring(last, m.range.first))
         val bold = m.groupValues[1]
         val italic = m.groupValues[2]
         if (bold.isNotEmpty()) {
@@ -117,7 +120,7 @@ private fun androidx.compose.ui.text.AnnotatedString.Builder.appendMarkdown(text
         }
         last = m.range.last + 1
     }
-    if (last < text.length) append(text.substring(last))
+    if (last < src.length) append(src.substring(last))
 }
 
 /**
