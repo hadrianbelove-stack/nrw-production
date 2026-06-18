@@ -28,6 +28,25 @@ class YouTubeTrailerScraper:
     # - 0.75 correctly passes all verified matches while rejecting wrong-movie matches
     TITLE_MATCH_THRESHOLD = 0.75
 
+    # A YouTube result is only accepted as a trailer if its title contains one of
+    # these tokens. The search query already asks for "trailer", but YouTube can rank
+    # news clips / interviews / featurettes for the SAME film above the real trailer
+    # (e.g. "BURT Wins Best Picture | CBS 5 News" outranked Burt's actual trailer).
+    # This is a positive match, not a banlist — it won't reject a legit trailer that
+    # merely mentions a festival or award, as long as the title says trailer/teaser/etc.
+    # Foreign terms are included so non-English trailers aren't dropped.
+    TRAILER_TITLE_TOKENS = (
+        'trailer', 'teaser', 'preview',      # EN (+ loanword in DE/IT/PT/NL)
+        'tráiler', 'avance', 'adelanto',     # ES
+        'bande-annonce', 'bande annonce',    # FR
+    )
+
+    @staticmethod
+    def is_trailer_title(video_title):
+        """True if the video title looks like an actual trailer (not a clip/news/interview)."""
+        vt = (video_title or '').lower()
+        return any(tok in vt for tok in YouTubeTrailerScraper.TRAILER_TITLE_TOKENS)
+
     @staticmethod
     def check_title_match(movie_title, video_title):
         """Check if a video title matches the movie title using whole-word matching.
@@ -231,6 +250,12 @@ class YouTubeTrailerScraper:
                     if not seg_passed:
                         print(f"  ✗ Title in credit only: '{video_title_text[:60]}' for '{title}'")
                         continue
+                    # Must actually be a trailer, not a clip/news/interview for the right
+                    # film. YouTube can rank such videos above the real trailer even for an
+                    # "official trailer" query (see TRAILER_TITLE_TOKENS).
+                    if not YouTubeTrailerScraper.is_trailer_title(video_title_text):
+                        print(f"  ✗ Not a trailer video: '{video_title_text[:60]}' for '{title}'")
+                        continue
 
                     # Normalize relative URLs to absolute URLs
                     if video_url.startswith('/watch'):
@@ -316,8 +341,8 @@ class YouTubeTrailerScraper:
                     if not video_url or '/watch?v=' not in video_url:
                         continue
 
-                    # Filter: video title must contain 'trailer' or 'preview'
-                    if 'trailer' not in video_title and 'preview' not in video_title:
+                    # Filter: video title must look like a trailer (incl. foreign terms)
+                    if not YouTubeTrailerScraper.is_trailer_title(video_title):
                         continue
 
                     # Filter: video title must contain the movie title words as whole words
