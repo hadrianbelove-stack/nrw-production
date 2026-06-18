@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NRW — Virtual Screening Date Label · Design Gallery</title>
+<title>NRW — VS Card Layout · balancing 3 elements</title>
 <style>
 :root{
   --accent-primary:#00d4aa;
   --screening-gold:#FFD700; --screening-glow:rgba(255,215,0,0.3); --screening-subtle:rgba(255,215,0,0.05);
-  --leaving-red:#ff5252; --leaving-amber:#ffab40; --gold-deep:#b9952e;
+  --leaving-red:#ff5252; --gold-deep:#b9952e;
 }
 *{box-sizing:border-box;}
 body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
@@ -17,133 +17,74 @@ body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,s
 .site-header h1{ font-weight:100; letter-spacing:0.3em; font-size:1.9rem; margin:0;
   background:linear-gradient(45deg,#fff,var(--accent-primary)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
 .site-header .sub{ color:#888; letter-spacing:0.22em; text-transform:uppercase; font-size:0.7rem; margin-top:0.5rem; }
-.legend{ max-width:880px; margin:14px auto 0; color:#9a9ab0; font-size:0.82rem; text-align:center; line-height:1.6; padding:0 1rem;}
+.legend{ max-width:900px; margin:14px auto 0; color:#9a9ab0; font-size:0.82rem; text-align:center; line-height:1.7; padding:0 1rem;}
 .legend b{ color:#ddd; }
+.legend .k1{ color:#FFD700;} .legend .k2{ color:#ff7b7b;} .legend .k3{ color:#00d4aa;}
 
 #gallery{ max-width:1500px; margin:0 auto; padding:1.5rem 1.5rem 5rem; display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:1.6rem; }
+  grid-template-columns:repeat(auto-fill,minmax(380px,1fr)); gap:1.7rem; }
 .variation{ border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:14px 14px 18px; background:rgba(255,255,255,0.02); }
-.var-label{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-.var-label .n{ background:var(--screening-gold); color:#000; font-weight:900; font-size:0.8rem; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
-.var-label .nm{ font-weight:700; font-size:0.98rem; }
-.var-label .ds{ color:#888; font-size:0.75rem; }
-.var-cards{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.var-label{ display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.var-label .n{ background:var(--screening-gold); color:#000; font-weight:900; font-size:0.82rem; min-width:26px; height:26px; padding:0 7px; border-radius:13px; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+.var-label .nm{ font-weight:700; font-size:1rem; }
+.var-desc{ color:#888; font-size:0.74rem; margin:0 0 12px 36px; line-height:1.4;}
+.var-cards{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 
 /* ---- card shell ---- */
 .movie-container{ display:flex; flex-direction:column; position:relative; min-width:0;
   border:3px solid var(--screening-gold); border-radius:14px; padding:7px; background:var(--screening-subtle); box-shadow:0 0 16px var(--screening-glow); }
-.movie-container.soon{ border-color:#8c7a2e; box-shadow:0 0 12px rgba(255,215,0,0.1); }
 .movie-card{ position:relative; width:100%; aspect-ratio:2/3; }
 .card-front{ position:absolute; inset:0; border-radius:10px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.3);
   background:linear-gradient(135deg,#1a1a2e,#0f0f1a); display:flex; align-items:center; justify-content:center;}
 .card-front img{ width:100%; height:100%; object-fit:cover; }
 .poster-fallback{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:10px;
   background:linear-gradient(135deg,#23233e,#12121f); color:#cfcfe6; font-weight:700; font-size:0.8rem;}
-.movie-info{ width:100%; padding:5px 1px 0;}
-.movie-title{ font-weight:700; font-size:0.84rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.movie-meta{ font-size:0.7rem; color:#00d4aa; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
+
+/* element 3a — festival TOP banner on poster */
+.fest-top{ position:absolute; top:0; left:0; right:0; z-index:5; padding:4px 6px; text-align:center;
+  font-size:0.58rem; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; line-height:1.25;
+  background:rgba(255,215,0,0.94); color:#000; }
+/* days-left BOTTOM-of-poster overlay bar (optional) */
+.days-bottompost{ position:absolute; bottom:0; left:0; right:0; z-index:5; padding:5px 6px; text-align:center;
+  font-size:0.6rem; font-weight:900; letter-spacing:0.05em; text-transform:uppercase; }
+.days-bottompost.u{ background:rgba(255,82,82,0.95); color:#fff;} .days-bottompost.n{ background:rgba(255,215,0,0.94); color:#000;}
+
+.movie-info{ width:100%; padding:5px 2px 0;}
+.movie-title{ font-weight:700; font-size:0.86rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.movie-meta{ font-size:0.72rem; color:#00d4aa; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
 .movie-meta .muted{ color:#888;}
-.fest-muted{ text-align:center; font-size:0.6rem; color:#9a8f63; letter-spacing:0.05em; text-transform:uppercase; margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.dt-wrap{ text-align:center; margin-top:6px; min-height:22px; }
 
-/* =================== DATE-LABEL TREATMENTS =================== */
-/* 1 — solid pill */
-.t1{ display:inline-block; border-radius:20px; padding:3px 11px; font-size:0.6rem; font-weight:900; letter-spacing:0.05em; text-transform:uppercase; line-height:1.4; }
-.t1.u{ background:var(--leaving-red); color:#fff; }
-.t1.n{ background:var(--screening-gold); color:#000; }
-.t1.s{ background:transparent; border:1px solid var(--screening-gold); color:var(--screening-gold); }
+/* element 1 — festival as muted caption text */
+.fest-muted{ text-align:center; font-size:0.62rem; color:#c9b86a; letter-spacing:0.04em; text-transform:uppercase; margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+/* element 2 — festival as full-width gold bottom BAR */
+.fest-bar{ width:calc(100% + 14px); margin:6px -7px -7px -7px; text-align:center; padding:5px 6px; font-size:0.58rem; font-weight:900;
+  letter-spacing:0.06em; line-height:1.3; text-transform:uppercase; border-radius:0 0 11px 11px; background:var(--screening-gold); color:#000;}
 
-/* 2 — outline pill */
-.t2{ display:inline-block; border-radius:20px; padding:3px 11px; font-size:0.6rem; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; background:transparent; border:1.5px solid; }
-.t2.u{ border-color:var(--leaving-red); color:var(--leaving-red); }
-.t2.n{ border-color:var(--screening-gold); color:var(--screening-gold); }
-.t2.s{ border-color:#888; color:#aaa; }
+/* days-left chip (the pill) in caption */
+.pill{ display:inline-block; border-radius:20px; padding:3px 11px; font-size:0.6rem; font-weight:900; letter-spacing:0.05em; text-transform:uppercase; line-height:1.4;}
+.pill.u{ background:var(--leaving-red); color:#fff;} .pill.n{ background:var(--screening-gold); color:#000;}
+/* days-left as plain colored text */
+.days-text{ font-size:0.66rem; font-weight:800; letter-spacing:0.04em; text-transform:uppercase;}
+.days-text.u{ color:#ff7b7b;} .days-text.n{ color:var(--screening-gold);}
+/* days-left full-width bar */
+.days-bar{ width:calc(100% + 14px); margin:6px -7px -7px -7px; text-align:center; padding:5px 6px; font-size:0.6rem; font-weight:900; letter-spacing:0.07em; text-transform:uppercase; border-radius:0 0 11px 11px;}
+.days-bar.u{ background:var(--leaving-red); color:#fff;} .days-bar.n{ background:var(--screening-gold); color:#000;}
 
-/* 3 — square tag */
-.t3{ display:inline-block; border-radius:4px; padding:3px 9px; font-size:0.6rem; font-weight:900; letter-spacing:0.08em; text-transform:uppercase; }
-.t3.u{ background:var(--leaving-red); color:#fff; }
-.t3.n{ background:var(--screening-gold); color:#000; }
-.t3.s{ background:#3a3528; color:var(--screening-gold); }
-
-/* 4 — ticket stub (notched) */
-.t4{ display:inline-block; padding:4px 14px; font-size:0.6rem; font-weight:900; letter-spacing:0.07em; text-transform:uppercase;
-  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,6px 100%,0 50%); }
-.t4.u{ background:var(--leaving-red); color:#fff; }
-.t4.n{ background:var(--screening-gold); color:#000; }
-.t4.s{ background:#3a3528; color:var(--screening-gold); }
-
-/* 5 — underline only */
-.t5{ display:inline-block; font-size:0.66rem; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; padding-bottom:3px; border-bottom:2px solid; }
-.t5.u{ color:#ff7b7b; border-color:var(--leaving-red); }
-.t5.n{ color:var(--screening-gold); border-color:var(--screening-gold); }
-.t5.s{ color:#aaa; border-color:#888; }
-
-/* 6 — dot + text */
-.t6{ display:inline-flex; align-items:center; gap:6px; font-size:0.66rem; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; color:#ddd;}
-.t6 .dot{ width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
-.t6.u .dot{ background:var(--leaving-red); box-shadow:0 0 8px var(--leaving-red); animation:pulse 1.6s infinite;}
-.t6.n .dot{ background:var(--screening-gold); }
-.t6.s .dot{ background:#888; }
-
-/* 7 — big countdown number */
-.t7{ display:inline-flex; align-items:baseline; gap:5px; }
-.t7 .num{ font-size:1.35rem; font-weight:900; line-height:0.9; }
-.t7 .lab{ font-size:0.55rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:#bbb; text-align:left; }
-.t7.u .num{ color:var(--leaving-red); } .t7.n .num{ color:var(--screening-gold);} .t7.s .num{ color:#aaa;}
-
-/* 8 — split two-tone pill (LABEL | VALUE) */
-.t8{ display:inline-flex; border-radius:20px; overflow:hidden; font-size:0.58rem; font-weight:900; letter-spacing:0.05em; text-transform:uppercase; }
-.t8 .k{ background:rgba(0,0,0,0.55); color:#fff; padding:3px 8px; }
-.t8 .v{ padding:3px 10px; }
-.t8.u .v{ background:var(--leaving-red); color:#fff; } .t8.n .v{ background:var(--screening-gold); color:#000;} .t8.s .v{ background:#3a3528; color:var(--screening-gold);}
-
-/* 9 — icon + date, no chip */
-.t9{ display:inline-flex; align-items:center; gap:5px; font-size:0.68rem; font-weight:800; letter-spacing:0.03em; text-transform:uppercase;}
-.t9.u{ color:#ff7b7b;} .t9.n{ color:var(--screening-gold);} .t9.s{ color:#aaa;}
-
-/* 10 — full-width strip bar (replaces festival bar) */
-.t10{ width:calc(100% + 14px); margin:6px -7px -7px -7px; text-align:center; padding:5px 6px; font-size:0.6rem; font-weight:900; letter-spacing:0.08em; text-transform:uppercase; border-radius:0 0 11px 11px;}
-.t10.u{ background:var(--leaving-red); color:#fff; } .t10.n{ background:var(--screening-gold); color:#000;} .t10.s{ background:#8c7a2e; color:#fff;}
-
-/* 11 — bracketed text */
-.t11{ display:inline-block; font-size:0.66rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;}
-.t11.u{ color:#ff7b7b;} .t11.n{ color:var(--screening-gold);} .t11.s{ color:#aaa;}
-
-/* 12 — minimal: only flags urgency, calm = plain range */
-.t12{ display:inline-block; font-size:0.64rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;}
-.t12.u{ color:var(--leaving-red); font-weight:900; } .t12.n{ color:#9a9ab0; } .t12.s{ color:#9a8f63; }
-
-/* 13 — date range with red tail */
-.t13{ display:inline-block; font-size:0.64rem; font-weight:700; letter-spacing:0.03em; color:#cfcfe6;}
-.t13 .end-u{ color:var(--leaving-red); font-weight:900; } .t13 .end-n{ color:var(--screening-gold); font-weight:800;}
-
-/* 14 — pill with mini progress underline */
-.t14{ display:inline-block; }
-.t14 .lbl{ display:block; font-size:0.6rem; font-weight:900; letter-spacing:0.05em; text-transform:uppercase; }
-.t14 .bar{ height:3px; border-radius:2px; background:rgba(255,255,255,0.18); margin-top:3px; overflow:hidden;}
-.t14 .fill{ height:100%; border-radius:2px; }
-.t14.u .lbl{ color:#ff7b7b;} .t14.u .fill{ background:var(--leaving-red);}
-.t14.n .lbl{ color:var(--screening-gold);} .t14.n .fill{ background:var(--screening-gold);}
-.t14.s .lbl{ color:#aaa;} .t14.s .fill{ background:#888;}
-
-/* 15 — glow capsule */
-.t15{ display:inline-block; border-radius:20px; padding:3px 12px; font-size:0.6rem; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; background:rgba(20,20,30,0.6); border:1px solid; }
-.t15.u{ color:#ff8a8a; border-color:var(--leaving-red); box-shadow:0 0 12px rgba(255,82,82,0.5);}
-.t15.n{ color:var(--screening-gold); border-color:var(--screening-gold); box-shadow:0 0 12px rgba(255,215,0,0.35);}
-.t15.s{ color:#bbb; border-color:#777; }
-
-@keyframes pulse{ 0%,100%{ opacity:1;} 50%{ opacity:0.45;} }
+.center{ text-align:center; margin-top:6px; }
+.split-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:6px; }
+.split-row .fest-muted{ margin:0; text-align:left; }
+.split-row .days-text{ flex:0 0 auto; }
 </style>
 </head>
 <body>
 
 <div class="site-header">
   <h1>THE NEW RELEASE WALL</h1>
-  <div class="sub">Virtual Screening · Date-Label Designs</div>
+  <div class="sub">Virtual Screening · Card Layouts</div>
 </div>
 <div class="legend">
-  Each design shown in its two key states: <b style="color:#ff7b7b">leaving soon</b> (urgent) and <b style="color:#FFD700">plenty of time</b> (calm).
-  All sit <b>below the poster</b>, never on it. Upcoming films would use a quieter version (e.g. "Opens Jun 19").
+  Balancing three things on one card: <b class="k3">director / cast</b> · <b class="k2">days left</b> · <b class="k1">festival name</b>.<br>
+  Each layout shown <b>urgent</b> (leaving soon) and <b>calm</b> (plenty of time). Festival may live on the poster top; days-left stays off the poster image.
 </div>
 
 <div id="gallery"></div>
@@ -153,64 +94,59 @@ const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov',
 const d=s=>new Date(s+'T12:00:00');
 const fmt=s=>{const x=d(s);return MONTHS[x.getMonth()]+' '+x.getDate();};
 
-// two sample films: one urgent, one calm
-const URGENT={title:"Best Friends Forever",dir:"K. Mousoulis",genre:"Comedy",country:"GRE",poster:"https://image.tmdb.org/t/p/w500/2lNZYwLljw2WAoYGfK9zQ1cODoy.jpg",fest:"Los Angeles Greek Film Fest",start:"2026-06-02",end:"2026-06-20",leavesIn:2,pct:88};
-const CALM={title:"The Obsessed",dir:"W. Takahashi",genre:"Animation",country:"JPN",poster:"https://image.tmdb.org/t/p/w500/vzNDv1Ts7GzlFJ2pgcMYev3BDCG.jpg",fest:"Chattanooga Film Fest",start:"2026-06-19",end:"2026-06-28",leavesIn:10,pct:30};
+const URGENT={title:"Best Friends Forever",dir:"K. Mousoulis",genre:"Comedy",country:"GRE",poster:"https://image.tmdb.org/t/p/w500/2lNZYwLljw2WAoYGfK9zQ1cODoy.jpg",fest:"Los Angeles Greek Film Fest",end:"2026-06-20",leavesIn:2};
+const CALM={title:"The Obsessed",dir:"W. Takahashi",genre:"Animation",country:"JPN",poster:"https://image.tmdb.org/t/p/w500/vzNDv1Ts7GzlFJ2pgcMYev3BDCG.jpg",fest:"Chattanooga Film Fest",end:"2026-06-28",leavesIn:10};
 
-// each treatment: (film, state) -> html for the date element ; state = 'u' | 'n'
-const T = {
- 1:(f,s)=> s==='u'?`<span class="t1 u">⏳ ${f.leavesIn} days left</span>`:`<span class="t1 n">Until ${fmt(f.end)}</span>`,
- 2:(f,s)=> s==='u'?`<span class="t2 u">⏳ ${f.leavesIn} days left</span>`:`<span class="t2 n">Until ${fmt(f.end)}</span>`,
- 3:(f,s)=> s==='u'?`<span class="t3 u">${f.leavesIn} days left</span>`:`<span class="t3 n">Until ${fmt(f.end)}</span>`,
- 4:(f,s)=> s==='u'?`<span class="t4 u">🎟 ${f.leavesIn} days left</span>`:`<span class="t4 n">🎟 Until ${fmt(f.end)}</span>`,
- 5:(f,s)=> s==='u'?`<span class="t5 u">${f.leavesIn} days left</span>`:`<span class="t5 n">Until ${fmt(f.end)}</span>`,
- 6:(f,s)=> s==='u'?`<span class="t6 u"><span class="dot"></span>${f.leavesIn} days left</span>`:`<span class="t6 n"><span class="dot"></span>Until ${fmt(f.end)}</span>`,
- 7:(f,s)=> s==='u'?`<span class="t7 u"><span class="num">${f.leavesIn}</span><span class="lab">days<br>left</span></span>`:`<span class="t7 n"><span class="num">${f.leavesIn}</span><span class="lab">days<br>left</span></span>`,
- 8:(f,s)=> s==='u'?`<span class="t8 u"><span class="k">Ends</span><span class="v">${fmt(f.end)}</span></span>`:`<span class="t8 n"><span class="k">Ends</span><span class="v">${fmt(f.end)}</span></span>`,
- 9:(f,s)=> s==='u'?`<span class="t9 u">🕒 Ends ${fmt(f.end)}</span>`:`<span class="t9 n">📅 Ends ${fmt(f.end)}</span>`,
- 10:(f,s)=> s==='u'?`<span class="t10 u">⏳ ${f.leavesIn} days left</span>`:`<span class="t10 n">Until ${fmt(f.end)}</span>`,
- 11:(f,s)=> s==='u'?`<span class="t11 u">[ ${f.leavesIn} days left ]</span>`:`<span class="t11 n">[ Until ${fmt(f.end)} ]</span>`,
- 12:(f,s)=> s==='u'?`<span class="t12 u">⚠ Leaving in ${f.leavesIn} days</span>`:`<span class="t12 n">${fmt(f.start)} – ${fmt(f.end)}</span>`,
- 13:(f,s)=> s==='u'?`<span class="t13">${fmt(f.start)} – <span class="end-u">${fmt(f.end)}</span></span>`:`<span class="t13">${fmt(f.start)} – <span class="end-n">${fmt(f.end)}</span></span>`,
- 14:(f,s)=> `<span class="t14 ${s}"><span class="lbl">${s==='u'?f.leavesIn+' days left':'Until '+fmt(f.end)}</span><span class="bar"><span class="fill" style="width:${f.pct}%"></span></span></span>`,
- 15:(f,s)=> s==='u'?`<span class="t15 u">⏳ ${f.leavesIn} days left</span>`:`<span class="t15 n">Until ${fmt(f.end)}</span>`,
+const poster=f=>`<img src="${f.poster}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="poster-fallback" style="display:none">${f.title}</div>`;
+const meta=f=>`<div class="movie-info"><div class="movie-title">${f.title}</div><div class="movie-meta">${f.dir} <span class="muted">· ${f.genre} · ${f.country}</span></div></div>`;
+const pill=(f,s)=> s==='u'?`<span class="pill u">⏳ ${f.leavesIn} days left</span>`:`<span class="pill n">Until ${fmt(f.end)}</span>`;
+const daysText=(f,s)=> s==='u'?`<span class="days-text u">⏳ ${f.leavesIn} days left</span>`:`<span class="days-text n">Until ${fmt(f.end)}</span>`;
+
+// LAYOUTS: each returns full card HTML for film f, state s
+const LAYOUTS = {
+ 1:(f,s)=>`<div class="movie-container"><div class="movie-card"><div class="card-front"><div class="fest-top">${f.fest}</div>${poster(f)}</div></div>
+    ${meta(f)}<div class="center">${pill(f,s)}</div></div>`,
+
+ 2:(f,s)=>`<div class="movie-container"><div class="movie-card"><div class="card-front">${poster(f)}</div></div>
+    ${meta(f)}<div class="fest-muted">${f.fest}</div><div class="center">${pill(f,s)}</div></div>`,
+
+ 3:(f,s)=>`<div class="movie-container"><div class="movie-card"><div class="card-front">${poster(f)}</div></div>
+    ${meta(f)}<div class="split-row"><div class="fest-muted">${f.fest}</div>${daysText(f,s)}</div></div>`,
+
+ 4:(f,s)=>`<div class="movie-container"><div class="movie-card"><div class="card-front"><div class="fest-top">${f.fest}</div>${poster(f)}</div></div>
+    ${meta(f)}<div class="days-bar ${s}">${s==='u'?'⏳ '+f.leavesIn+' days left':'Until '+fmt(f.end)}</div></div>`,
+
+ 5:(f,s)=>`<div class="movie-container"><div class="movie-card"><div class="card-front">${poster(f)}</div></div>
+    ${meta(f)}<div class="center" style="margin-top:5px">${pill(f,s)}</div><div class="fest-bar">${f.fest}</div></div>`,
+
+ 6:(f,s)=>`<div class="movie-container"><div class="movie-card"><div class="card-front"><div class="fest-top">${f.fest}</div>${poster(f)}</div></div>
+    ${meta(f)}<div class="center" style="margin-top:5px">${daysText(f,s)}</div></div>`,
+
+ 7:(f,s)=>`<div class="movie-container"><div class="movie-card"><div class="card-front"><div class="fest-top">${f.fest}</div>${poster(f)}<div class="days-bottompost ${s}">${s==='u'?'⏳ '+f.leavesIn+' days left':'Until '+fmt(f.end)}</div></div></div>
+    ${meta(f)}</div>`,
+
+ 8:(f,s)=>`<div class="movie-container"><div class="movie-card"><div class="card-front">${poster(f)}</div></div>
+    ${meta(f)}<div class="fest-muted">${f.fest}</div><div class="days-bar ${s}">${s==='u'?'⏳ '+f.leavesIn+' days left':'Until '+fmt(f.end)}</div></div>`,
 };
 
 const NAMES={
- 1:['Solid pill','filled chip'],2:['Outline pill','hollow chip'],3:['Square tag','sharp corners'],
- 4:['Ticket stub','cinema notch'],5:['Underline','text + rule'],6:['Status dot','● + text'],
- 7:['Big countdown','number-forward'],8:['Split badge','ENDS | date'],9:['Icon + date','clock / cal'],
- 10:['Full-width strip','replaces fest bar'],11:['Bracketed','[ text ]'],12:['Minimal','urgent-only'],
- 13:['Range, red tail','Jun 2 – Jun 20'],14:['Pill + mini bar','label + progress'],15:['Glow capsule','neon outline'],
+ 1:['Fest on top · pill below','Festival banners the poster top; days-left pill in the caption. Cleanest separation.'],
+ 2:['Full caption stack','Everything below poster: title, director, festival (muted), then pill.'],
+ 3:['Split line','Director line, then festival left + days-left right on one shared row.'],
+ 4:['Fest top · days bar bottom','Festival banner on poster; days-left becomes a full-width bar (turns red when urgent).'],
+ 5:['Pill in caption · fest bar','Days-left pill sits above a gold festival bottom-bar.'],
+ 6:['Fest top · days text','Festival on poster; days-left as plain colored text (no chip) — quietest.'],
+ 7:['Both on poster','Festival top banner + days-left bottom-of-poster strip; caption is just director.'],
+ 8:['Fest muted · days bar','Festival as muted caption text; days-left as the bold bottom bar.'],
 };
-
-function card(f,state,treatmentFn,isStrip){
-  const dateEl = treatmentFn(f,state);
-  const festLine = isStrip ? '' : `<div class="fest-muted">${f.fest}</div>`;
-  const dateZone = isStrip ? dateEl : `<div class="dt-wrap">${dateEl}</div>`;
-  return `<div class="movie-container">
-    <div class="movie-card"><div class="card-front">
-      <img src="${f.poster}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="poster-fallback" style="display:none">${f.title}</div>
-    </div></div>
-    <div class="movie-info">
-      <div class="movie-title">${f.title}</div>
-      <div class="movie-meta">${f.dir} <span class="muted">· ${f.country}</span></div>
-    </div>
-    ${festLine}${dateZone}
-  </div>`;
-}
 
 const g=document.getElementById('gallery');
 let html='';
-for(let i=1;i<=15;i++){
-  const isStrip = (i===10);
+for(let i=1;i<=8;i++){
   html += `<div class="variation">
-    <div class="var-label"><span class="n">${i}</span><span class="nm">${NAMES[i][0]}</span><span class="ds">${NAMES[i][1]}</span></div>
-    <div class="var-cards">
-      ${card(URGENT,'u',T[i],isStrip)}
-      ${card(CALM,'n',T[i],isStrip)}
-    </div>
+    <div class="var-label"><span class="n">${i}</span><span class="nm">${NAMES[i][0]}</span></div>
+    <div class="var-desc">${NAMES[i][1]}</div>
+    <div class="var-cards">${LAYOUTS[i](URGENT,'u')}${LAYOUTS[i](CALM,'n')}</div>
   </div>`;
 }
 g.innerHTML=html;
