@@ -13,6 +13,9 @@ config.ini
 NRWApp-tvOS/.testflight.env
 NRWApp-tvOS/build/
 *.p8
+
+# /reviewsince marker — personal "last reviewed commit" pointer
+.claude/last_review_commit
 cache/*
 !cache/.gitkeep
 !cache/screenshots/
