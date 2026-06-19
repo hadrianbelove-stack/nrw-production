@@ -100,7 +100,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -121,7 +121,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "614945",
@@ -206,7 +207,7 @@
       "metacritic_score": "59",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -224,7 +225,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": true,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1359607",
@@ -333,7 +336,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1413976",
@@ -416,7 +421,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -436,7 +441,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": true,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1451344",
@@ -515,7 +522,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -535,7 +542,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": true,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1468380",
@@ -646,7 +655,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -667,7 +676,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1712326",
@@ -740,7 +750,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -761,7 +771,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1702960",
@@ -836,7 +847,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -860,7 +871,8 @@
       },
       "featured": false,
       "_trailer_retry_count": 1,
-      "_trailer_last_retry": "2026-06-19T14:33:50.869239"
+      "_trailer_last_retry": "2026-06-19T14:33:50.869239",
+      "_slop_confidence": "weak"
     },
     {
       "id": "847742",
@@ -1065,7 +1077,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1354900",
@@ -1170,7 +1184,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1404184",
@@ -1259,7 +1274,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1313006",
@@ -1345,7 +1362,7 @@
       "_quality_warnings": [
         "Title matches original foreign title (language: it): 'Familia'"
       ],
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -1364,7 +1381,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": true,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1549609",
@@ -1490,7 +1509,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1213025",
@@ -1600,7 +1621,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1172265",
@@ -1718,7 +1740,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1418361",
@@ -1813,7 +1837,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1218412",
@@ -1905,7 +1931,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1535838",
@@ -1984,7 +2012,11 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-06-19T14:30:03.882685"
+      "_watch_links_verified": "2026-06-19T14:30:03.882685",
+      "is_slop": true,
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_confidence": "weak",
+      "_is_slop_guess": true
     },
     {
       "id": "1250512",
@@ -2092,7 +2124,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1575438",
@@ -2196,7 +2230,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1385773",
@@ -2848,7 +2884,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -3151,7 +3187,7 @@
       "display_title": "BORN SEXY YESTERDAY: Decoding the Enigma of Beauty",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -3227,8 +3263,8 @@
       "display_title": "Barrio Triste",
       "letterboxd_score": "3.4",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -3297,7 +3333,7 @@
       "display_title": "Them Bones",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -3372,7 +3408,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -3481,7 +3517,7 @@
       "_quality_warnings": [
         "Title matches original foreign title (language: uk): 'The Ark'"
       ],
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "imdb_rating",
@@ -3511,7 +3547,7 @@
         "manual_override": null
       },
       "featured": false,
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak"
     },
     {
@@ -3592,7 +3628,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -3701,7 +3737,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -3817,7 +3853,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -4042,7 +4078,7 @@
       "_digital_date_source": "detection",
       "_needs_review": false,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -4819,8 +4855,8 @@
       ],
       "_is_preorder": true,
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_imdb)",
       "_slop_confidence": "weak",
       "_trailer_retry_count": 1,
       "_trailer_last_retry": "2026-06-01T16:25:00.936716",
@@ -5021,7 +5057,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -5055,7 +5091,8 @@
       "featured": false,
       "_is_preorder": true,
       "_trailer_retry_count": 1,
-      "_trailer_last_retry": "2026-06-19T14:33:59.920937"
+      "_trailer_last_retry": "2026-06-19T14:33:59.920937",
+      "_slop_confidence": "weak"
     },
     {
       "id": "1362365",
@@ -5127,7 +5164,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -5557,8 +5594,8 @@
       "_discovery_source": "tmdb_type4",
       "featured": false,
       "reissue_label": null,
-      "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "is_slop": false,
+      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": true,
@@ -5663,8 +5700,8 @@
         "metacritic_score"
       ],
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -5901,7 +5938,9 @@
           "outlet": "The Weekend Warrior (Substack)",
           "review_url": "https://edwarddouglas.substack.com/p/the-weekend-warrior-print-edition-93b"
         }
-      ]
+      ],
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1631572",
@@ -5998,7 +6037,8 @@
       },
       "featured": false,
       "capsule": "Faith-forward rom-com. Book editor secretly pens her own novel, finding unexpected notes from a mysterious critic in the margins.\nBased on **Melissa Ferguson**'s bestselling novel\nShot entirely on location in Buffalo, New York.",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "weak"
     },
     {
       "id": "1692417",
@@ -6112,7 +6152,8 @@
       "featured": false,
       "capsule": "Spanish horror-comedy-thriller. A soon-to-be-married couple's trip to a wedding tasting turns bloody when they pick up a mysterious, sensual hitchhiker.\nFrom cult filmmaker **César del Álamo**, a pioneer of Spanish \"low-cost\" genre cinema.",
       "_keywords_generated": true,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "weak"
     },
     {
       "id": "1582296",
@@ -6219,7 +6260,9 @@
       "featured": false,
       "capsule": "Multimillion-dollar docudrama from Nat Geo/Discovery director **Stephen Pettit**\nFollows archaeologist **Dr. Chris McKinny** (Lipscomb University) on a global, real-life Indiana Jones quest for the Ark of the Covenant.\nVery Christian.",
       "_keywords_generated": true,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1525426",
@@ -6300,7 +6343,7 @@
       ],
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "trailer",
@@ -6327,7 +6370,9 @@
       "capsule": "Queer Anthology/Omnibus film. 5 interwoven stories exploring men's desires.\nA genuinely international co-production: UK, Switzerland, Italy, Denmark, Ecuador.",
       "_keywords_generated": true,
       "pull_quotes": [],
-      "_watch_links_verified": "2026-06-19T14:30:33.237647"
+      "_watch_links_verified": "2026-06-19T14:30:33.237647",
+      "is_slop": true,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1477317",
@@ -6415,7 +6460,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -6450,7 +6495,9 @@
           "review_url": "https://letterboxd.com/julie44_/film/your-fault-london/"
         }
       ],
-      "_keywords_generated": true
+      "_keywords_generated": true,
+      "is_slop": true,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1715076",
@@ -6533,7 +6580,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -6556,7 +6603,8 @@
       },
       "featured": false,
       "capsule": "Crime thriller. Suspicion mounts around an enigmatic woman named Vi as murders plague hotels and expos.",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "strong"
     },
     {
       "id": "1514056",
@@ -6767,7 +6815,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -6797,7 +6845,8 @@
           "outlet": "Letterboxd",
           "review_url": "https://letterboxd.com/fr0zenf00d/film/night-of-blood/"
         }
-      ]
+      ],
+      "_slop_confidence": "weak"
     },
     {
       "id": "1391074",
@@ -6944,7 +6993,9 @@
           "review_url": "https://letterboxd.com/knightofmugs/film/busboys/"
         }
       ],
-      "_keywords_generated": true
+      "_keywords_generated": true,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1443200",
@@ -7044,7 +7095,7 @@
       "metacritic_score": "0",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -7067,7 +7118,8 @@
       "_is_slop_guess": false,
       "capsule": "poignant B&W comedy-drama\n**Burton Berger** plays a fictionalized version of himself, a 69-year-old musician with Parkinson's who welcomes a stranger claiming to be his son\nExecutive produced by **[David Gordon Green](https://en.wikipedia.org/wiki/David_Gordon_Green)**.",
       "pull_quotes": [],
-      "_keywords_generated": true
+      "_keywords_generated": true,
+      "_slop_confidence": "strong"
     },
     {
       "id": "1463681",
@@ -7163,7 +7215,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -7187,7 +7239,8 @@
       "featured": false,
       "capsule": "90's-set \"*Goosebumps* meets *The Blair Witch Project*\" semi-found footage horror flick.\nA video store worker uncovers chilling secrets in her missing sister's camcorder-style documentary series, *Southern Scares*.\nFeaturing **[Dee Wallace](https://en.wikipedia.org/wiki/Dee_Wallace)**, the mom from *E.T.* Regional cinema: made in Columbus, Georgia.",
       "_watch_links_verified": "2026-06-17T13:56:40.056547",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "strong"
     },
     {
       "id": "1711959",
@@ -7276,7 +7329,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -7300,7 +7353,8 @@
       "featured": false,
       "capsule": "Family comedy. Young girl gets into cheerleading and her adoptive father steps up as an assistant coach. Real wholesome.\nBased on **Patrick Riccards**' award-winning book *Dad in a Cheer Bow*.",
       "_watch_links_verified": "2026-06-17T13:56:40.527316",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "strong"
     },
     {
       "id": "1291659",
@@ -7425,7 +7479,7 @@
       "awards": "2 nominations total",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "manual_override",
       "status": "available",
       "reissue_label": null,
       "filters": {
@@ -7459,7 +7513,8 @@
       ],
       "is_slop": false,
       "_is_slop_guess": false,
-      "_watch_links_verified": "2026-06-17T13:57:01.678043"
+      "_watch_links_verified": "2026-06-17T13:57:01.678043",
+      "_slop_confidence": "strong"
     },
     {
       "id": "999689",
@@ -7591,7 +7646,9 @@
           "review_url": "https://letterboxd.com/solokiefer/film/queerpanorama/"
         }
       ],
-      "_watch_links_verified": "2026-06-17T13:57:01.983617"
+      "_watch_links_verified": "2026-06-17T13:57:01.983617",
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1331349",
@@ -7706,7 +7763,7 @@
       "awards": "1 win & 1 nomination total",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "capsule": "French romantic drama from auteur director **Arnaud Desplechin** (*A Christmas Tale*, *My Golden Days*).\n\nStars **[François Civil](https://en.wikipedia.org/wiki/Fran%C3%A7ois_Civil)** (*The Three Musketeers*), César-winner **[Nadia Tereszkiewicz](https://en.wikipedia.org/wiki/Nadia_Tereszkiewicz)** (*Forever Young*), and screen icon **[Charlotte Rampling](https://en.wikipedia.org/wiki/Charlotte_Rampling)** (*Dune*, *The Night Porter*). Shot on location in Lyon.\n\nNamed one of 2025's best films by Scout Tafoya of RogerEbert.com.",
       "is_slop": false,
@@ -7720,7 +7777,8 @@
           "review_url": "https://www.newyorker.com/culture/the-front-row/two-pianos-turns-modern-melodrama-old-fashioned"
         }
       ],
-      "_watch_links_verified": "2026-06-19T14:30:38.823137"
+      "_watch_links_verified": "2026-06-19T14:30:38.823137",
+      "_slop_confidence": "strong"
     },
     {
       "id": "1713571",
@@ -7819,7 +7877,7 @@
       "_quality_warnings": [
         "Title matches original foreign title (language: te): 'Veerabhadrudu'"
       ],
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -7857,7 +7915,8 @@
           "review_url": "https://letterboxd.com/lakshmana_b/film/veerabhadrudu/"
         }
       ],
-      "is_slop": true
+      "is_slop": true,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1462322",
@@ -7970,7 +8029,7 @@
       "awards": "2 nominations total",
       "_digital_date_source": "manual_override",
       "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "reissue_label": null,
       "filters": {
@@ -8004,7 +8063,8 @@
       "capsule": "Italian tragicomedy. A shy architecture student gets swept into an all-night bar crawl with two aging, life-long drunkards across the Veneto.\n\nRevival of the *[Commedia all'italiana](https://en.wikipedia.org/wiki/Commedia_all'italiana)* genre, in the spirit of **[Dino Risi](https://en.wikipedia.org/wiki/Dino_Risi)**'s *[Il Sorpasso](https://en.wikipedia.org/wiki/Il_Sorpasso)*.\n\nShot on film. Premiered at [Cannes](https://en.wikipedia.org/wiki/Cannes_Film_Festival) (Un Certain Regard).",
       "is_slop": false,
       "_is_slop_guess": false,
-      "_watch_links_verified": "2026-06-17T13:57:03.131127"
+      "_watch_links_verified": "2026-06-17T13:57:03.131127",
+      "_slop_confidence": "strong"
     },
     {
       "id": "tv_318262",
@@ -8119,7 +8179,9 @@
       },
       "display_title": "Should I Marry a Murderer?",
       "capsule": "3-part Netflix true-crime doc, #1 in UK.\n\nForensic pathologist **Caroline Muirhead**'s fiancé confesses that he and his twin brother killed a cyclist in a 2017 hit-and-run.",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1572196",
@@ -8236,7 +8298,8 @@
           "source": "letterboxd",
           "review_url": "https://letterboxd.com/olsen_twin/film/perilous-passage-birth-in-america/"
         }
-      ]
+      ],
+      "_slop_confidence": "strong"
     },
     {
       "id": "1678170",
@@ -8378,7 +8441,8 @@
           "source": "letterboxd",
           "review_url": "https://letterboxd.com/adampink96/film/house-at-the-edge-of-the-woods/"
         }
-      ]
+      ],
+      "_slop_confidence": "strong"
     },
     {
       "id": "1198439",
@@ -8485,7 +8549,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -8506,7 +8570,8 @@
       "featured": false,
       "capsule": "German autofiction · female friendship · sexual self-determination · trauma · \"candy-colored\"\nWon Best Production Design at Tallinn Black Nights Film Festival.",
       "_watch_links_verified": "2026-06-17T13:56:41.001728",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "strong"
     },
     {
       "id": "1501018",
@@ -8591,7 +8656,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -8603,7 +8668,8 @@
       "capsule": "French crime-comedy *Une Famille de Bâtards* twists mafia tropes into a story of family reconciliation.\n\nSet in the \"golden age\" of late-90s Paris.\n\nDirect to Amazon Prime.",
       "_trailer_retry_count": 1,
       "_trailer_last_retry": "2026-06-16T15:15:15.281526",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "strong"
     },
     {
       "id": "1511549",
@@ -8694,7 +8760,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -8714,7 +8780,8 @@
         }
       ],
       "_trailer_retry_count": 1,
-      "_trailer_last_retry": "2026-06-16T15:15:15.423541"
+      "_trailer_last_retry": "2026-06-16T15:15:15.423541",
+      "_slop_confidence": "strong"
     },
     {
       "id": "912378",
@@ -8916,7 +8983,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -8924,7 +8991,8 @@
         "metacritic_score"
       ],
       "capsule": "Spanish documentary.\n\nCharts actor-director **[Eduardo Casanova](https://en.wikipedia.org/wiki/Eduardo_Casanova)**'s (*Skins*, *Piety*) public declaration that he has had HIV since he was seventeen.",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "strong"
     },
     {
       "id": "1662231",
@@ -9019,7 +9087,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -9031,7 +9099,8 @@
       "capsule": "Concert film and documentary event celebrating 50 years of French rock icon **[Jean-Louis Aubert](https://en.wikipedia.org/wiki/Jean-Louis_Aubert)**.\n\nCaptured live at Paris La Défense Arena before tens of thousands.\n\nGuest appearances by **[Louane](https://en.wikipedia.org/wiki/Louane_%28singer%29)**, **[Matthieu Chedid](https://en.wikipedia.org/wiki/Matthieu_Chedid)**, **[Vianney](https://en.wikipedia.org/wiki/Vianney_%28singer%29)**, and **[Raphaël](https://en.wikipedia.org/wiki/Rapha%C3%ABl_Haroche)**.",
       "pull_quotes": [],
       "_trailer_retry_count": 1,
-      "_trailer_last_retry": "2026-06-19T14:34:31.332508"
+      "_trailer_last_retry": "2026-06-19T14:34:31.332508",
+      "_slop_confidence": "strong"
     },
     {
       "id": "1400756",
@@ -9132,7 +9201,7 @@
       "metacritic_score": "80",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "capsule": "Coming-of-age dramedy: a teen hustling homemade \"nutcracker\" cocktails on Orchard Beach braces for impending fatherhood.\n\nShot guerrilla-style in the Bronx in 16 days.\n\nWon the Ensemble Cast jury award at [Sundance](https://en.wikipedia.org/wiki/Sundance_Film_Festival). [Killer Films](https://en.wikipedia.org/wiki/Killer_Films) and [Oscilloscope](https://en.wikipedia.org/wiki/Oscilloscope_Laboratories).",
       "is_slop": false,
@@ -9146,7 +9215,8 @@
           "review_url": "https://letterboxd.com/st_vasil/film/mad-bills-to-pay-or-destiny-dile-que-no-soy/"
         }
       ],
-      "_watch_links_verified": "2026-06-17T13:57:13.141522"
+      "_watch_links_verified": "2026-06-17T13:57:13.141522",
+      "_slop_confidence": "strong"
     },
     {
       "id": "1510339",
@@ -9329,7 +9399,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -9356,7 +9426,8 @@
       "pull_quotes": [],
       "_trailer_retry_count": 1,
       "_trailer_last_retry": "2026-06-19T14:34:42.820755",
-      "_trailer_source": "tmdb_official"
+      "_trailer_source": "tmdb_official",
+      "_slop_confidence": "strong"
     },
     {
       "id": "1536559",
@@ -9432,7 +9503,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "metacritic_score"
@@ -9461,7 +9532,8 @@
         }
       ],
       "is_slop": false,
-      "_is_slop_guess": false
+      "_is_slop_guess": false,
+      "_slop_confidence": "strong"
     },
     {
       "id": "1608277",
@@ -9800,7 +9872,7 @@
       "_quality_warnings": [
         "Title matches original foreign title (language: tl): 'Crosspoint'"
       ],
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -9824,7 +9896,8 @@
         }
       ],
       "is_slop": true,
-      "_is_slop_guess": false
+      "_is_slop_guess": false,
+      "_slop_confidence": "strong"
     },
     {
       "id": "1477431",
@@ -9921,7 +9994,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -9944,7 +10017,8 @@
       "featured": false,
       "capsule": "Psychological horror-thriller set in a decaying, soon-to-be-shutdown prison.\n\nSet in 1987 at the Civil War-era Seneca Ridge Penitentiary (iron locks, a '74 fire, a botched '78 execution).\n\nSeasoned ensemble cast includes: **[Michael Kelly](https://en.wikipedia.org/wiki/Michael_Kelly_%28actor%29)** (*House of Cards*), **[Mena Suvari](https://en.wikipedia.org/wiki/Mena_Suvari)** (*American Beauty*), **[Dennis Haysbert](https://en.wikipedia.org/wiki/Dennis_Haysbert)** (*24*), and **[Kevin Pollak](https://en.wikipedia.org/wiki/Kevin_Pollak)** (*The Usual Suspects*).",
       "_watch_links_verified": "2026-06-17T13:57:19.387298",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "strong"
     },
     {
       "id": "tv_316178",
@@ -10030,7 +10104,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -10055,7 +10129,8 @@
       "capsule": "Japanese miniseries. Based on the popular manga by **Umino Tsunami** (the acclaimed artist behind the cultural phenomenon *[The Full-Time Wife Escapist](https://en.wikipedia.org/wiki/The_Full-Time_Wife_Escapist)*).\n\nTwo become housemates and open a fortune-telling shop.\n\nAmazon Original.",
       "pull_quotes": [],
       "_trailer_retry_count": 1,
-      "_trailer_last_retry": "2026-06-19T14:34:59.033586"
+      "_trailer_last_retry": "2026-06-19T14:34:59.033586",
+      "_slop_confidence": "strong"
     },
     {
       "id": "1110034",
@@ -10201,7 +10276,9 @@
         }
       ],
       "capsule": "Norwegian creature-feature horror.\n\nA marine biologist investigating strange deaths in Norway's deepest fjord awakens the mythical kraken.\nFrom genre director **Pål Øie** (*The Tunnel*, *Hidden*).\n\nOne of two Kraken movies this year — not to be confused with the [Russian submarine monster thriller](https://en.wikipedia.org/wiki/Kraken_%282025_film%29).",
-      "_watch_links_verified": "2026-06-17T13:57:20.994674"
+      "_watch_links_verified": "2026-06-17T13:57:20.994674",
+      "_slop_reason": "manual_override",
+      "_slop_confidence": "strong"
     },
     {
       "id": "1465786",
@@ -10276,7 +10353,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -10316,7 +10393,8 @@
           "review_url": "https://letterboxd.com/soleiii/film/just-kids-2025/"
         }
       ],
-      "capsule": "Doc about three families with trans children seeking gender-affirming care. Director **Gianna Toboni** was an Emmy and GLAAD Award-winning former senior correspondent for VICE News."
+      "capsule": "Doc about three families with trans children seeking gender-affirming care. Director **Gianna Toboni** was an Emmy and GLAAD Award-winning former senior correspondent for VICE News.",
+      "_slop_confidence": "strong"
     },
     {
       "id": "1226834",
@@ -10416,7 +10494,7 @@
       "metacritic_score": null,
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "metacritic_score",
@@ -10436,7 +10514,7 @@
       },
       "featured": false,
       "is_slop": true,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "_watch_links_verified": "2026-06-17T13:57:21.954102",
       "_is_slop_guess": false,
       "pull_quotes": [
@@ -10633,7 +10711,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -10655,7 +10733,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "pull_quotes": [
         {
           "text": "This is a crazy documentary.",
@@ -10753,7 +10831,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -10774,7 +10852,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "capsule": "Argentine documentary on \"bizarro\" cinema—a loving survey of the country's strange, low-budget genre films.\n\nFrom director **Ayi Turzi**, who literally wrote the book: a catalog of nearly 900 Argentine fantastic films.",
       "pull_quotes": []
     },
@@ -10843,7 +10921,7 @@
       "distributor": "Shudder",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:0()",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -10953,7 +11031,7 @@
       "distributor": "Cinépolis Distribución (Mexico) / Netflix (International)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:-1(good_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -11114,7 +11192,7 @@
       "_trailer_source": "gemini_playwright",
       "metacritic_score": "86",
       "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "reissue_label": null,
       "filters": {
@@ -11152,7 +11230,8 @@
           "review_url": "https://www.slantmagazine.com/film/blue-film-review-elliot-tuttle/"
         }
       ],
-      "_watch_links_verified": "2026-06-17T13:57:24.505333"
+      "_watch_links_verified": "2026-06-17T13:57:24.505333",
+      "_slop_confidence": "strong"
     },
     {
       "id": "tv_312493",
@@ -11234,7 +11313,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -11257,7 +11336,8 @@
       "is_slop": false,
       "_is_slop_guess": false,
       "capsule": "A bullied teen becomes a sensation by live-streaming street fights, then has to survive the fame.\n\nLive-action adaptation of the smash Korean fighting-webtoon *[Viral Hit](https://en.wikipedia.org/wiki/Viral_Hit)* (2.28 billion views).\n\nLead **Ouji Suzuka** trained seven months and fluctuated his weight to play the role.",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "strong"
     },
     {
       "id": "1490884",
@@ -11358,7 +11438,7 @@
       "_quality_warnings": [
         "Service 'Hoopla' not in TMDB providers for this title (TMDB has: ['google play movies', 'amazon video', 'youtube', 'fandango at home', 'plex'])"
       ],
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "wikipedia",
@@ -11379,7 +11459,7 @@
       },
       "featured": false,
       "is_slop": true,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "_is_slop_guess": false,
       "capsule": "Lifetime thriller, throuple edition. Messy divorcée falls in with a too-perfect married couple… and things go awry.",
       "pull_quotes": [
@@ -11609,8 +11689,8 @@
       "_watch_links_verified": "2026-06-17T13:57:26.269234",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
+      "_slop_reason": "manual_override",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": false,
@@ -11796,7 +11876,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_slop_confidence": "strong"
     },
     {
       "id": "1701450",
@@ -11874,7 +11955,7 @@
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "wikipedia",
@@ -11895,7 +11976,7 @@
       },
       "featured": false,
       "is_slop": true,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "_is_slop_guess": false,
       "capsule": "Meta-horror-comedy from Philadelphia underground filmmaker **[Brewce Longo](https://www.splittoothmedia.com/brewce-longo/)** in the SOV/VHS aesthetic.\n\nTwo filmmakers' chaotic, drug-fueled exploits making a low-budget trash epic called *Scarecrowed*.\n\nA \"hangout movie\" with a cast of punks, drug addicts, fetish models, and dumpster divers. [Vinegar Syndrome](https://en.wikipedia.org/wiki/Vinegar_Syndrome)."
     },
@@ -11975,7 +12056,7 @@
       "_needs_review": false,
       "is_slop": false,
       "_is_slop_guess": false,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -11997,7 +12078,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "pull_quotes": [
         {
           "text": "Very complicated and confusing. Probably did not help that it was dubbed.",
@@ -12112,7 +12193,7 @@
         "Service 'Lifetime' not in TMDB providers for this title (TMDB has: ['amazon video'])",
         "Service 'Fandango' not in TMDB providers for this title (TMDB has: ['amazon video'])"
       ],
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "wikipedia",
@@ -12133,7 +12214,7 @@
       },
       "featured": false,
       "is_slop": true,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "_is_slop_guess": false,
       "pull_quotes": [
         {
@@ -12368,7 +12449,7 @@
       "_quality_warnings": [
         "Service 'myfilmfriend' not in TMDB providers for this title (TMDB has: ['fandango at home'])"
       ],
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "wikipedia",
@@ -12388,7 +12469,7 @@
       },
       "featured": false,
       "is_slop": false,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "_is_slop_guess": false,
       "_watch_links_verified": "2026-06-13T12:37:43.371899",
       "capsule": "*Frances Ha* meets *Uncut Gems*. Armande Pigeon, a gambling enthusiast, finds her luck turning after a lifetime of bad bets, leading to a frantic struggle to know when to stop.\n\nBelgian-French \"trash cinema\" from brothers **[Lenny Guit and Harpo Guit](https://courtsmaistrash.net/en/festival-2025-en/program-2025-en/lenny-harpo-guit-en/)** (known for their cult Sundance hit *Mother Schmuckers*).",
@@ -12722,7 +12803,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "imdb_rating",
@@ -12743,7 +12824,7 @@
       },
       "featured": false,
       "_watch_links_verified": "2026-06-12T13:24:54.682205",
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak",
       "pull_quotes": [
         {
@@ -12847,7 +12928,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "is_slop": true,
+      "is_slop": false,
       "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
@@ -12872,7 +12953,7 @@
       "featured": false,
       "capsule": "**Kevin Kraft**, senior producer on *The Howard Stern Show*, stepped into the director's chair for *The Second Coming of John Cooper*, a mockumentary comedy about a washed-up Hollywood star.\n\nShot in a brisk 13 days, but nearly saw its entire footage lost to a catastrophic hard drive crash that took months to recover.\n\nFeatures real-life comics like **[Rob Corddry](https://en.wikipedia.org/wiki/Rob_Corddry)**, **[Brian Posehn](https://en.wikipedia.org/wiki/Brian_Posehn)**, **[Doug Benson](https://en.wikipedia.org/wiki/Doug_Benson)**, and **[Dustin Ybarra](https://en.wikipedia.org/wiki/Dustin_Ybarra)**, alongside TikTok star **Mads Lewis**.",
       "_watch_links_verified": "2026-06-10T13:35:51.365078",
-      "_slop_confidence": "weak"
+      "_slop_confidence": "strong"
     },
     {
       "id": "1556616",
@@ -12951,7 +13032,7 @@
       "_trailer_source": "suppressed",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "is_slop": true,
+      "is_slop": false,
       "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
@@ -12974,7 +13055,7 @@
       },
       "featured": false,
       "capsule": "Romance with a time-travel twist. 21-year-old Selin unexpectedly flung back to the summer of 1996, where she befriends her own mother as a young woman. Turkish arthouse \"back to the future.\"\n\nFrom director **Erdem Tepegöz** (*Zerre*, *Ashes*), a filmmaker recognized for his social realist approach in earlier award-winning works.",
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "_trailer_retry_count": 1,
       "_trailer_last_retry": "2026-06-19T14:35:10.039005"
     },
@@ -13082,7 +13163,7 @@
       "featured": false,
       "capsule": "Lifetime domestic thriller: a woman's world shatters when her husband is found critically injured with another woman claiming to be his wife.\n\nFrom **Roxanne Boisvert**, a prolific director known for over 45 TV movies.",
       "is_slop": true,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "_is_slop_guess": false,
       "pull_quotes": [
         {
@@ -13213,7 +13294,7 @@
       "capsule": "Little action thriller directed by the guy who played Viper on *Full House*.\n\nA retiring detective's last case becomes personal when his son is buried alive.",
       "_watch_links_verified": "2026-06-12T13:25:17.816642",
       "is_slop": true,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "_is_slop_guess": false
     },
     {
@@ -13508,7 +13589,7 @@
       ],
       "is_slop": false,
       "_is_slop_guess": false,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -13530,7 +13611,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "capsule": "Fly-on-the-wall doc on Milan's legendary [La Scala](https://en.wikipedia.org/wiki/La_Scala) opera house.\nFollows the 900-person crew and international cast (including conductor **[Riccardo Chailly](https://en.wikipedia.org/wiki/Riccardo_Chailly)** and soprano **[Anna Netrebko](https://en.wikipedia.org/wiki/Anna_Netrebko)**) from the first rehearsals to opening night."
     },
     {
@@ -13802,7 +13883,7 @@
         "metacritic_score",
         "letterboxd_score"
       ],
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "pull_quotes": [
         {
           "text": "Captures the classic reckless, impatient immature personas of young men in their early twenties.",
@@ -13916,7 +13997,7 @@
       },
       "featured": false,
       "is_slop": false,
-      "_slop_confidence": "weak",
+      "_slop_confidence": "strong",
       "pull_quotes": [
         {
           "text": "A lovely snapshot.",
@@ -14509,7 +14590,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -15187,7 +15268,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -15302,7 +15383,7 @@
       "metacritic_score": "52",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -15332,7 +15413,7 @@
         }
       ],
       "_watch_links_verified": "2026-06-09T13:06:28.808951",
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak"
     },
     {
@@ -15664,7 +15745,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -15702,7 +15783,7 @@
           "review_url": "https://letterboxd.com/pramitheus/film/the-marked-woman-2026/"
         }
       ],
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak"
     },
     {
@@ -15790,7 +15871,7 @@
       "metacritic_score": "53",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:2(no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "imdb_rating"
@@ -16157,7 +16238,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -16180,7 +16261,7 @@
       "featured": false,
       "_watch_links_verified": "2026-06-07T12:49:06.188381",
       "capsule": "IFC Films Horror-thriller about a newlywed couple and their friends caught between a predatory shark and a psychopathic killer.\n\nFilmed entirely on location in Malta.\n\nAudience reaction was dominated by complaints about AI-generated sharks and blood.",
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak"
     },
     {
@@ -16822,7 +16903,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -16934,7 +17015,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -17383,7 +17464,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -17491,7 +17572,7 @@
       "_trailer_last_retry": "2026-06-16T15:15:15.564385",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -18042,7 +18123,7 @@
         "manual_override": null
       },
       "featured": false,
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak"
     },
     {
@@ -18153,7 +18234,7 @@
       "featured": false,
       "capsule": "**[RZA](https://en.wikipedia.org/wiki/RZA)**-directed action-exploitation throwback, presented by **[Quentin Tarantino](https://en.wikipedia.org/wiki/Quentin_Tarantino)**.\n\n**[RZA](https://en.wikipedia.org/wiki/RZA)** began developing this in 2011, rediscovered the script a decade later during the writer's strike, and finished it on a tour bus with [Nas](https://en.wikipedia.org/wiki/Nas).\n\nSet in Ohio.",
       "_watch_links_verified": "2026-06-18T13:39:07.263280",
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak"
     },
     {
@@ -18257,7 +18338,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1373104",
@@ -18434,7 +18517,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -19210,7 +19293,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -20238,7 +20321,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -20660,7 +20743,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -20918,7 +21001,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -21057,7 +21140,7 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak"
     },
     {
@@ -22735,7 +22818,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -22962,7 +23045,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -23370,7 +23453,7 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak",
       "capsule": "**John Travolta** makes his directorial debut adapting his own 1997 children's novel — a love letter to the golden age of propeller plane travel. The film is a family affair: Travolta narrates, his daughter **Ella Bleu Travolta** co-stars, his sister Margaret and brother Joey appear, and the film is dedicated to his late wife and son. Cannes premiere."
     },
@@ -24050,8 +24133,8 @@
         "metacritic_score"
       ],
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "pull_quotes": [
         {
@@ -24680,7 +24763,7 @@
         "Title contains non-ASCII characters (language: es): 'Reinosa 1987: El precio de la reconversión industrial'"
       ],
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -24933,7 +25016,10 @@
       },
       "featured": false,
       "_buyonly_verified": true,
-      "capsule": "Kafkaesque thriller set during Stalin's Great Terror. Shot in a former 1905 prison in Riga. Based on a novella by **Georgy Demidov**. By **Sergei Loznitsa**, Ukraine's foremost chronicler of Soviet horror."
+      "capsule": "Kafkaesque thriller set during Stalin's Great Terror. Shot in a former 1905 prison in Riga. Based on a novella by **Georgy Demidov**. By **Sergei Loznitsa**, Ukraine's foremost chronicler of Soviet horror.",
+      "is_slop": false,
+      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_confidence": "weak"
     },
     {
       "id": "1595149",
@@ -25391,7 +25477,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "_is_slop_guess": true,
       "pull_quotes": [
@@ -25504,7 +25590,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "_is_slop_guess": true,
       "keywords": [],
@@ -25714,7 +25800,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "_is_slop_guess": true,
       "pull_quotes": [
@@ -25957,7 +26043,7 @@
       "featured": false,
       "distributor": "Atlas Distribution",
       "reissue_label": null,
-      "is_slop": false,
+      "is_slop": true,
       "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "keywords": [
@@ -26185,7 +26271,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "_is_slop_guess": true,
       "keywords": [
@@ -26489,7 +26575,7 @@
       "_trailer_last_retry": "2026-06-09T13:09:10.246742",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "keywords": [
         "art",
@@ -26894,8 +26980,8 @@
       "_enrichment_attempts": 1,
       "_last_enrichment_attempt": "2026-05-17",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "keywords": [],
       "filters": {
@@ -27104,7 +27190,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -27341,7 +27427,7 @@
       "_watch_links_verified": "2026-06-07T12:50:19.484535",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "hidden": true,
       "filters": {
@@ -27571,7 +27657,7 @@
       "_watch_links_verified": "2026-05-26T20:46:37.116975",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -27685,7 +27771,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "_watch_links_verified": "2026-05-30T12:23:05.040946",
       "filters": {
@@ -27890,7 +27976,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -28308,7 +28394,7 @@
       ],
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -29679,8 +29765,8 @@
       ],
       "featured": false,
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -30108,7 +30194,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -30820,7 +30906,7 @@
       "_watch_links_verified": "2026-06-01T16:23:12.737701",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -31276,7 +31362,7 @@
       "display_title": "Friends Until the End",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -31389,7 +31475,7 @@
       "display_title": "Death at the Dinner Party",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -32288,7 +32374,7 @@
       "display_title": "To Love a Narcissist",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": true,
@@ -33459,7 +33545,7 @@
       "letterboxd_score": "3.0",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -33558,7 +33644,7 @@
       "_trailer_source": "gemini_playwright",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -33786,8 +33872,8 @@
       "_trailer_source": "gemini_playwright",
       "_watch_links_verified": "2026-06-09T13:08:13.774008",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -34364,7 +34450,7 @@
       "display_title": "Inside The Works",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -34552,7 +34638,7 @@
       ],
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:2(no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -34671,8 +34757,8 @@
       "featured": false,
       "_watch_links_verified": "2026-05-17T11:05:32.632117",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -34948,7 +35034,7 @@
       "display_title": "Maid Robot 2",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -35038,7 +35124,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -35252,7 +35338,7 @@
       "letterboxd_score": "3.2",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -35758,7 +35844,7 @@
       "_watch_links_verified": "2026-05-17T11:05:40.484158",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:2(no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -36375,8 +36461,8 @@
       "display_title": "The Hybrids",
       "_watch_links_verified": "2026-05-17T11:05:44.411658",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -37532,7 +37618,7 @@
       "display_title": "Hunting Party",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -38628,8 +38714,8 @@
       "_trailer_retry_count": 4,
       "_trailer_last_retry": "2026-06-03T14:15:49.043667",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -39011,8 +39097,8 @@
       "letterboxd_score": "3.8",
       "distributor": "Netflix",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -39117,7 +39203,7 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -39217,7 +39303,7 @@
       "letterboxd_score": "2.5",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -40278,7 +40364,7 @@
       "hidden": true,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -40585,7 +40671,7 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -40693,7 +40779,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -40713,7 +40799,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "display_title": "The Terror: Devil in Silver"
+      "display_title": "The Terror: Devil in Silver",
+      "is_slop": true,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1685471",
@@ -41623,7 +41711,7 @@
       ],
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -41805,7 +41893,7 @@
       "_watch_links_verified": "2026-05-17T11:06:11.807766",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -42648,7 +42736,7 @@
       "_watch_links_verified": "2026-06-01T16:24:46.309536",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -42861,7 +42949,7 @@
       "_trailer_last_retry": "2026-06-03T14:16:26.759160",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -42956,8 +43044,8 @@
       "display_title": "CYCLE",
       "hidden": true,
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43058,7 +43146,7 @@
       "hidden": true,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43257,8 +43345,8 @@
       "display_title": "Lone Star Bull",
       "hidden": true,
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43368,7 +43456,7 @@
       "_trailer_source": "gemini_playwright",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43474,7 +43562,7 @@
       "hidden": true,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43775,7 +43863,7 @@
       "hidden": true,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43982,7 +44070,7 @@
       "hidden": true,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -44075,8 +44163,8 @@
       "_watch_links_verified": "2026-05-17T11:06:16.142027",
       "distributor": "Indie Rights",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -45718,7 +45806,7 @@
       "distributor": "Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:2(no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -46546,7 +46634,7 @@
       "_trailer_source": "gemini_playwright",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -46741,7 +46829,7 @@
       "_watch_links_verified": "2026-05-18T13:58:24.011335",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -48131,7 +48219,7 @@
       "_watch_links_verified": "2026-05-25T14:09:26.524087",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -48233,7 +48321,7 @@
       "_watch_links_verified": "2026-05-25T14:09:26.933399",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -48325,7 +48413,7 @@
       "_watch_links_verified": "2026-05-25T14:09:27.306108",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -49687,7 +49775,7 @@
       "letterboxd_score": "3.2",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -49882,7 +49970,7 @@
       "display_title": "Pirates Gold 3",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -50153,8 +50241,8 @@
       "display_title": "Lost for Words",
       "_watch_links_verified": "2026-05-25T14:09:35.504096",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -51237,7 +51325,7 @@
       "_watch_links_verified": "2026-05-15T14:18:35.432323",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -51338,7 +51426,7 @@
       "distributor": "Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:2(no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -51546,7 +51634,7 @@
       "_watch_links_verified": "2026-05-15T14:25:19.306835",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -52625,7 +52713,7 @@
       "_watch_links_verified": "2026-05-15T14:25:23.762191",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -54263,7 +54351,7 @@
       "display_title": "Finding Satoshi",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -55277,8 +55365,8 @@
       "display_title": "Bound by Blood (La Sangre que nos Une)",
       "distributor": "Extreme Associates",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -56067,7 +56155,7 @@
       "display_title": "Unraveling the Dream",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -56244,8 +56332,8 @@
       "featured": false,
       "display_title": "Malevolent",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -56421,7 +56509,7 @@
       "display_title": "Agape: The Unconditional Love",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -56507,7 +56595,7 @@
       "display_title": "Gen Hoshino presents MAD HOPE MAD MUSIC",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -57745,7 +57833,7 @@
       "display_title": "By His Hand",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -58032,7 +58120,7 @@
       "_watch_links_verified": "2026-05-15T14:25:45.060403",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -58241,7 +58329,7 @@
       "_watch_links_verified": "2026-05-15T14:25:45.964417",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -59558,7 +59646,7 @@
       "display_title": "Personale",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -59654,7 +59742,7 @@
       "_watch_links_verified": "2026-05-15T14:25:54.526753",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -60242,8 +60330,8 @@
       "letterboxd_score": "3.2",
       "distributor": "Netflix",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -60326,8 +60414,8 @@
       "display_title": "Trevor Noah: Joy in the Trenches",
       "letterboxd_score": "3.4",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -60619,7 +60707,7 @@
       "_watch_links_verified": "2026-05-06T14:49:03.781834",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -62063,7 +62151,7 @@
       "distributor": "Sonar Entertainment",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:2(no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -62564,8 +62652,8 @@
       "display_title": "Eva Longoria: Searching for France",
       "_watch_links_verified": "2026-05-06T14:50:21.395830",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -62854,7 +62942,7 @@
       "display_title": "You Need This",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -63339,7 +63427,7 @@
       "_watch_links_verified": "2026-05-06T14:51:40.169740",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -63428,8 +63516,8 @@
       "display_title": "The Unknown",
       "distributor": "Pathé",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": true,
@@ -63615,7 +63703,7 @@
       "display_title": "Infiltrate",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -63695,8 +63783,8 @@
       "featured": false,
       "display_title": "The Book",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -64169,7 +64257,7 @@
       "display_title": "Bandi",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -64540,8 +64628,8 @@
       "display_title": "Untold: Chess Mates",
       "letterboxd_score": "3.2",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -65119,7 +65207,7 @@
       "distributor": "Apple TV",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:2(no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -65515,7 +65603,7 @@
       "display_title": "Katwe",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -65615,8 +65703,8 @@
       ],
       "display_title": "Matter of Time",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -65902,8 +65990,8 @@
       "display_title": "Sniper: No Nation",
       "letterboxd_score": "3.0",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -66005,7 +66093,7 @@
       "display_title": "Winter: Battleground",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -66080,8 +66168,8 @@
       "featured": false,
       "display_title": "The Unseen",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -66453,7 +66541,7 @@
       "display_title": "I Know Exactly How You Die",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -67351,8 +67439,8 @@
       "featured": false,
       "display_title": "Aisha's Story",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -67872,8 +67960,8 @@
       "featured": false,
       "display_title": "Nikola Tesla 19hz",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -68995,7 +69083,7 @@
       "display_title": "Samhain",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -69371,7 +69459,7 @@
       "letterboxd_score": "2.8",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -69462,7 +69550,7 @@
       "letterboxd_score": "2.3",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -69554,7 +69642,7 @@
       "display_title": "Submarine",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:2(no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -69642,7 +69730,7 @@
       "display_title": "Dragon Fury 3",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -69722,7 +69810,7 @@
       "display_title": "The Staff",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -70908,7 +70996,7 @@
       "display_title": "Grahanam 2.0",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -71003,8 +71091,8 @@
       ],
       "display_title": "Of the People: The Women of the Civil Rights Movement",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -71476,7 +71564,7 @@
       "display_title": "Malavia",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -71760,8 +71848,8 @@
       ],
       "display_title": "House of Leaves",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -71938,7 +72026,7 @@
       "display_title": "Something Divine",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -72213,7 +72301,7 @@
       "display_title": "Infected",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -73323,7 +73411,7 @@
       "display_title": "Oh...My Wife (ผีจิก)",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -73754,8 +73842,8 @@
       "display_title": "Really Happy Someday",
       "letterboxd_score": "3.6",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -73947,8 +74035,8 @@
       "display_title": "Starbright",
       "distributor": "Ruby Max Entertainment",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -74257,7 +74345,7 @@
       "display_title": "A Future on Stage",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -74339,7 +74427,7 @@
       "display_title": "First Haunt",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -74515,8 +74603,8 @@
       "letterboxd_score": "3.3",
       "distributor": "Disney–ABC Domestic Television / Disney+",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -74782,7 +74870,7 @@
       "display_title": "Quakeasaurus",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -75680,8 +75768,8 @@
       "display_title": "Marlon Williams: Two Worlds",
       "letterboxd_score": "3.8",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -75865,7 +75953,7 @@
       "display_title": "Hope Valley: 1874",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -76043,7 +76131,7 @@
       "distributor": "Immina Films",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:2(no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -76322,7 +76410,7 @@
       "_trailer_source": "gemini_playwright",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -76405,7 +76493,7 @@
       "display_title": "Daggers Inn",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -76673,7 +76761,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_imdb)",
+      "_slop_reason": "score:2(no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -76754,8 +76842,8 @@
       "featured": false,
       "display_title": "Freedom Way",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -76997,7 +77085,8 @@
           "price": "$9.99"
         }
       ],
-      "_digital_date_source": "detection"
+      "_digital_date_source": "detection",
+      "_slop_confidence": "strong"
     },
     {
       "id": "1275779",
@@ -77147,7 +77236,8 @@
           "price": "$29.99"
         }
       ],
-      "_digital_date_source": "detection"
+      "_digital_date_source": "detection",
+      "_slop_confidence": "strong"
     },
     {
       "id": "1541560",
@@ -77247,7 +77337,7 @@
       "metacritic_score": "59",
       "awards": "1 nomination total",
       "_needs_review": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "watch_links"
@@ -77294,7 +77384,8 @@
           "price": "$19.99"
         }
       ],
-      "_digital_date_source": "detection"
+      "_digital_date_source": "detection",
+      "_slop_confidence": "strong"
     },
     {
       "id": "1330232",
@@ -77401,7 +77492,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak"
     },
     {
       "id": "1650789",
@@ -78657,8 +78750,8 @@
         }
       ],
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,no_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
