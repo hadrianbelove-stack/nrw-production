@@ -944,7 +944,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "indian_cinema_no_crossover:ml",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -962,7 +962,10 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": true,
+      "_slop_confidence": "strong",
+      "_is_slop_guess": false
     },
     {
       "id": "1679751",
@@ -8803,7 +8806,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "indian_cinema_no_crossover:ml",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -8811,7 +8814,9 @@
       ],
       "capsule": "A Malayalam rookie-cop procedural.",
       "is_slop": true,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_slop_confidence": "strong",
+      "_is_slop_guess": false
     },
     {
       "id": "1639356",
@@ -9230,7 +9235,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "indian_cinema_no_crossover:kn",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -9252,7 +9257,10 @@
           "source": "letterboxd",
           "review_url": "https://letterboxd.com/shrey09/film/mark-2025/"
         }
-      ]
+      ],
+      "is_slop": true,
+      "_slop_confidence": "strong",
+      "_is_slop_guess": false
     },
     {
       "id": "1711071",
@@ -9532,7 +9540,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": false,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -9569,7 +9577,8 @@
           "source": "letterboxd",
           "review_url": "https://letterboxd.com/abhineet97/film/toh-ti-ani-fuji/"
         }
-      ]
+      ],
+      "_slop_confidence": "strong"
     },
     {
       "id": "1254590",
@@ -9646,7 +9655,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "indian_cinema_no_crossover:ml",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -9682,7 +9691,9 @@
         }
       ],
       "capsule": "Malayalam-language psychological thriller. Inspired by the Hindi crime drama series *[Dahaad](https://en.wikipedia.org/wiki/Dahaad)*.",
-      "is_slop": true
+      "is_slop": true,
+      "_slop_confidence": "strong",
+      "_is_slop_guess": false
     },
     {
       "id": "1297201",
@@ -14008,7 +14019,7 @@
       "_quality_warnings": [
         "Title matches original foreign title (language: ta): '29'"
       ],
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "indian_cinema_no_crossover:ta",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -14027,9 +14038,10 @@
         "manual_override": null
       },
       "featured": false,
-      "is_slop": false,
-      "_slop_confidence": "weak",
-      "capsule": "Tamil-language romantic drama. A quirky 29-year-old's journey through unexpected friendships and self-discovery."
+      "is_slop": true,
+      "_slop_confidence": "strong",
+      "capsule": "Tamil-language romantic drama. A quirky 29-year-old's journey through unexpected friendships and self-discovery.",
+      "_is_slop_guess": false
     },
     {
       "id": "1642859",
@@ -15400,7 +15412,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "_slop_reason": "indian_cinema_no_crossover:te",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -15435,8 +15447,9 @@
           "review_url": "https://letterboxd.com/basedcritic101/film/jetlee/"
         }
       ],
-      "is_slop": false,
-      "_slop_confidence": "weak"
+      "is_slop": true,
+      "_slop_confidence": "strong",
+      "_is_slop_guess": false
     },
     {
       "id": "1083884",
@@ -15891,8 +15904,8 @@
       "_digital_date_source": "detection",
       "_needs_review": false,
       "is_slop": true,
-      "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_is_slop_guess": false,
+      "_slop_reason": "indian_cinema_no_crossover:bn",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -15915,7 +15928,7 @@
       },
       "featured": false,
       "capsule": "Bangladeshi family drama.\n\nSequel from prolific Bangladeshi filmmaker **[Mohammad Mostafa Kamal Raz](https://en.wikipedia.org/wiki/Mohammad_Mostafa_Kamal_Raz)** (*Projapoti*, *Samraat*). Its predecessor, *Tomader Golpo*, was a YouTube phenomenon — over 35 million views.\n\nReleased on [Eid al-Fitr](https://en.wikipedia.org/wiki/Eid_al-Fitr) (end of Ramadan)",
-      "_slop_confidence": "weak"
+      "_slop_confidence": "strong"
     },
     {
       "id": "1507097",
@@ -15996,7 +16009,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "indian_cinema_no_crossover:ta",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -16034,8 +16047,9 @@
           "review_url": "https://letterboxd.com/jeeva0303/film/sattendru-maarudhu-vaanilai/"
         }
       ],
-      "is_slop": false,
-      "_slop_confidence": "weak"
+      "is_slop": true,
+      "_slop_confidence": "strong",
+      "_is_slop_guess": false
     },
     {
       "id": "1694978",
@@ -16687,7 +16701,7 @@
       "_quality_warnings": [
         "Title matches original foreign title (language: hi): 'Maa Behen'"
       ],
-      "_slop_reason": "score:3(no_rt,no_imdb)",
+      "_slop_reason": "indian_cinema_no_crossover:hi",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -16739,8 +16753,9 @@
           "review_url": "https://letterboxd.com/valiavade/film/maa-behen/"
         }
       ],
-      "is_slop": false,
-      "_slop_confidence": "weak"
+      "is_slop": true,
+      "_slop_confidence": "strong",
+      "_is_slop_guess": false
     },
     {
       "id": "1693002",
@@ -23467,7 +23482,8 @@
         "manual_override": null
       },
       "_slop_confidence": "strong",
-      "capsule": "A \"Kollywood\" action thriller from the Tamil-language Southern part of India. Set in the early 1990s, the film stars superstar **Dhanush** as a reformed thief pulled back into crime when his family's land is seized. Featuring well-crafted heist sequences and songs with lyrics co-written by **Dhanush** himself."
+      "capsule": "A \"Kollywood\" action thriller from the Tamil-language Southern part of India. Set in the early 1990s, the film stars superstar **Dhanush** as a reformed thief pulled back into crime when his family's land is seized. Featuring well-crafted heist sequences and songs with lyrics co-written by **Dhanush** himself.",
+      "_is_slop_guess": false
     },
     {
       "id": "1537707",
@@ -26369,8 +26385,8 @@
       ],
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
+      "_slop_reason": "indian_cinema_no_crossover:bn",
+      "_slop_confidence": "strong",
       "keywords": [],
       "filters": {
         "is_indie": false,
@@ -26383,7 +26399,7 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1601853",
@@ -26573,9 +26589,9 @@
       ],
       "distributor": "La Fabrica Nocturna Cinema",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
       "pull_quotes": [
         {
           "text": "a meditation on the inheritance of land, labour, defiance, and fear.",
@@ -26603,7 +26619,8 @@
         "is_documentary": true,
         "auto_categorized": true,
         "manual_override": null
-      }
+      },
+      "_is_slop_guess": false
     },
     {
       "id": "1447245",
@@ -28384,9 +28401,9 @@
       "featured": false,
       "distributor": "Sri Venkateswara Creations",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:te",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -28398,7 +28415,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1223169",
@@ -30596,9 +30614,9 @@
       ],
       "featured": false,
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:te",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -30610,7 +30628,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1432596",
@@ -31556,9 +31575,9 @@
       "letterboxd_score": "3.0",
       "distributor": "<!-- only include Tamil Nadu distributor -->",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ta",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -31570,7 +31589,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1245084",
@@ -33132,8 +33152,8 @@
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
       "is_slop": true,
-      "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
+      "_is_slop_guess": false,
+      "_slop_reason": "indian_cinema_no_crossover:ta",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -33153,7 +33173,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_slop_confidence": "weak"
+      "_slop_confidence": "strong"
     },
     {
       "id": "575476",
@@ -33347,9 +33367,9 @@
       "featured": false,
       "distributor": "Netflix",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -33365,7 +33385,8 @@
         "detective",
         "gritty",
         "dark thriller"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "1662317",
@@ -34832,9 +34853,9 @@
       "featured": false,
       "letterboxd_score": "3.8",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ml",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -34850,7 +34871,8 @@
         "dark comedy",
         "family secrets",
         "dark humor"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "1653738",
@@ -38518,9 +38540,9 @@
       "featured": false,
       "letterboxd_score": "2.7",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:te",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -38535,7 +38557,8 @@
       "keywords": [
         "betrayal",
         "false imprisonment"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "1635153",
@@ -39294,9 +39317,9 @@
       "_watch_links_verified": "2026-05-18T13:57:54.076809",
       "letterboxd_score": "2.5",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ta",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -39308,7 +39331,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1341137",
@@ -41002,9 +41026,9 @@
       "letterboxd_score": "2.1",
       "distributor": "Red Giant Movies",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ta",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -41020,7 +41044,8 @@
         "artificial intelligence (a.i.)",
         "futuristic society",
         "robots"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "1523374",
@@ -41188,9 +41213,9 @@
       "featured": false,
       "letterboxd_score": "2.7",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:te",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -41202,7 +41227,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1369521",
@@ -42299,9 +42325,9 @@
       "letterboxd_score": "3.1",
       "distributor": "Think Studios / Shloka Entertainment / E4 Entertainment",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:te",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -42317,7 +42343,8 @@
         "bike racing",
         "bikers",
         "motor racing"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "1647142",
@@ -42398,9 +42425,9 @@
       "_watch_links_verified": "2026-05-17T11:06:14.166354",
       "letterboxd_score": "3.0",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:te",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -42412,7 +42439,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1400731",
@@ -44901,9 +44929,9 @@
       "featured": false,
       "letterboxd_score": "3.4",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:0()",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ta",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -44921,7 +44949,8 @@
         "female autonomy",
         "free soul",
         "conservative society"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "1595531",
@@ -45187,8 +45216,8 @@
       "_watch_links_verified": "2026-05-17T11:06:20.729833",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
-      "_slop_confidence": "weak",
+      "_slop_reason": "indian_cinema_no_crossover:ta",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -45201,7 +45230,7 @@
         "manual_override": null
       },
       "keywords": [],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "916588",
@@ -47795,8 +47824,8 @@
       "letterboxd_score": "3.3",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
-      "_slop_confidence": "weak",
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -47809,7 +47838,7 @@
         "manual_override": null
       },
       "keywords": [],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "tv_278113",
@@ -49946,8 +49975,8 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
-      "_slop_confidence": "weak",
+      "_slop_reason": "indian_cinema_no_crossover:te",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -49960,7 +49989,7 @@
         "manual_override": null
       },
       "keywords": [],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1567711",
@@ -50543,9 +50572,9 @@
       "letterboxd_score": "2.8",
       "distributor": "Five Star Creations",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ta",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -50557,7 +50586,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1616685",
@@ -56300,9 +56330,9 @@
       "display_title": "Ustaad Bhagat Singh (ఉస్తాద్ భగత్ సింగ్)",
       "letterboxd_score": "2.1",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:te",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -56314,7 +56344,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1525446",
@@ -56566,8 +56597,8 @@
       "distributor": "Sri Kumaran Films / Ayngaran International",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
-      "_slop_confidence": "weak",
+      "_slop_reason": "indian_crossover_hit:ta",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -56579,7 +56610,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1391847",
@@ -57897,9 +57929,9 @@
       "letterboxd_score": "2.7",
       "distributor": "E4 Entertainments / Zee Studios / London Talkies",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ml",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -57911,7 +57943,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1457710",
@@ -58996,9 +59029,9 @@
       "letterboxd_score": "2.6",
       "distributor": "Pen Marudhar",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -59010,7 +59043,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "tv_316544",
@@ -59439,9 +59473,9 @@
       "letterboxd_score": "2.3",
       "distributor": "Netflix",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -59453,7 +59487,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1374399",
@@ -60674,9 +60709,9 @@
       "featured": false,
       "display_title": "2020 Delhi",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -60688,7 +60723,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1546107",
@@ -61356,9 +61392,9 @@
       "hidden": true,
       "display_title": "Black Water",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:bn",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -61370,7 +61406,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1352520",
@@ -63742,8 +63779,8 @@
       "distributor": "PVR Inox Pictures",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
-      "_slop_confidence": "weak",
+      "_slop_reason": "indian_crossover_hit:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -63763,7 +63800,8 @@
         "content creators",
         "survival thriller",
         "official adaptation"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "786567",
@@ -63838,9 +63876,9 @@
       "letterboxd_score": "3.1",
       "distributor": "Zee Studios",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ta",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -63856,7 +63894,8 @@
         "dark comedy",
         "silent film",
         "get rich quick scheme"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "1418657",
@@ -64217,9 +64256,9 @@
       "letterboxd_score": "2.5",
       "distributor": "Pen India Limited",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -64237,7 +64276,8 @@
         "organized crime",
         "gang warfare",
         "romantic thriller"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "1189885",
@@ -64787,9 +64827,9 @@
       "letterboxd_score": "2.6",
       "distributor": "Zee Studios",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -64801,7 +64841,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1403612",
@@ -66687,9 +66728,9 @@
       "display_title": "Mrithyunjay (మృత్యుంజయ)",
       "letterboxd_score": "2.9",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:te",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -66701,7 +66742,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1595507",
@@ -66775,8 +66817,8 @@
       "distributor": "Pen Marudhar / Yash Raj Films",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
-      "_slop_confidence": "weak",
+      "_slop_reason": "indian_crossover_hit:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -66788,7 +66830,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1275772",
@@ -67041,9 +67084,9 @@
       "letterboxd_score": "2.7",
       "distributor": "PVR Inox Pictures",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -67060,7 +67103,8 @@
         "satire",
         "hilarious",
         "spy comedy"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "1552958",
@@ -67134,9 +67178,9 @@
       "display_title": "S. Saraswathi (స. సరస్వతి)",
       "letterboxd_score": "2.9",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:te",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -67148,7 +67192,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1551900",
@@ -71043,9 +71088,9 @@
       "display_title": "Masthishka Maranam (മസ്തിഷ്‌ക മരണം)",
       "letterboxd_score": "3.1",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ml",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -71057,7 +71102,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1339876",
@@ -71129,9 +71175,9 @@
       "letterboxd_score": "2.8",
       "distributor": "Yash Raj Films",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -71143,7 +71189,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1374310",
@@ -71530,8 +71577,8 @@
       "display_title": "Muthu Alias Kaattaan (முத்து எங்கிற காட்டான்)",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
+      "_slop_reason": "indian_cinema_no_crossover:ta",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -71544,7 +71591,7 @@
         "manual_override": null
       },
       "keywords": [],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1523985",
@@ -73814,9 +73861,9 @@
       "display_title": "Written & Directed by God (എഴുതിയതും സംവിധാനം ചെയ്തതും ദൈവം)",
       "letterboxd_score": "3.0",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ml",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -73828,7 +73875,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "662707",
@@ -75538,9 +75586,9 @@
       "letterboxd_score": "3.2",
       "distributor": "2D Entertainment",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
-      "_slop_confidence": "weak",
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ta",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -75552,7 +75600,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "keywords": []
+      "keywords": [],
+      "_is_slop_guess": false
     },
     {
       "id": "1478049",
@@ -76528,8 +76577,8 @@
       "distributor": "AA Films",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
-      "_slop_confidence": "weak",
+      "_slop_reason": "indian_crossover_hit:hi",
+      "_slop_confidence": "strong",
       "filters": {
         "is_indie": false,
         "is_foreign": true,
@@ -76553,7 +76602,8 @@
         "indian air force",
         "india pakistan conflict",
         "epic drama"
-      ]
+      ],
+      "_is_slop_guess": false
     },
     {
       "id": "tv_298425",

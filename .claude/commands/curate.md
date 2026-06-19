@@ -202,10 +202,10 @@ Build the table by reading `movie.is_slop`, `movie._is_slop_guess`, and `movie._
 ```
 SLOP REVIEW — confirm or correct auto-classifications
 
-| # | Title (Year) | Slop? | RT | IMDb | Links | Why |
-|---|--------------|-------|----|------|-------|-----|
-| 1 | [Title (Year)](imdb-url) | ✅ Not slop | 85% | 7.2 | [RT](url) · [LB](url) | score:1(good_imdb) |
-| 2 | [Title (Year)](imdb-url) | 🗑 SLOP (auto) | -- | -- | [LB](url) | score:5(no_wiki,no_rt) |
+| # | Title (Year) | Slop? | RT | IMDb | Trailer | Wiki | Why |
+|---|--------------|-------|----|------|---------|------|-----|
+| 1 | [Title (Year)](imdb-url) | ✅ Not slop | 85% | 7.2 | [▶](trailer-url) | [W](wiki-url) | score:1(good_imdb) |
+| 2 | [Title (Year)](imdb-url) | 🗑 SLOP (auto) | -- | -- | [▶](trailer-url) | — | score:5(no_wiki,no_rt) |
 
 "auto" = classifier made the call. Reply with overrides (e.g. "2: not slop; 5: slop") or "looks good" to confirm all.
 ```
@@ -217,7 +217,8 @@ SLOP REVIEW — confirm or correct auto-classifications
   - `is_slop=True` + `_is_slop_guess=False` → `🗑 SLOP (manual)`
   - `is_slop=False` → `✅ Not slop`
 - `RT` / `IMDb` — `movie.rt_score` and `movie.imdb_rating` (`--` if absent)
-- `Links` — clickable [RT](movie.links.rt) and [LB](movie.links.letterboxd) when present, so the user can identity-check each film
+- `Trailer` — clickable `[▶](url)` using `movie.links.trailer_hosted`, falling back to `movie.links.trailer`; `—` if neither exists
+- `Wiki` — clickable `[W](movie.links.wikipedia)` when present; `—` if absent
 - `Why` column: show `_slop_reason` if present; otherwise show RT/MC scores or "no classifier signal"
 
 **Flag contradictions** below the table: any slop-flagged movie that is also a **Select** — a film the user explicitly vouched for but the default slop-free view filters out. Do **not** flag capsules or pull quotes as contradictions: every film gets a capsule and quotes, so they carry no signal about slop and are irrelevant here. (All movies are on the site regardless of slop flag — the toggle is a view mode, never removal.)

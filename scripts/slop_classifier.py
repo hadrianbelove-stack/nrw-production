@@ -214,10 +214,34 @@ def classify_slop(movie):
         if s and len(s) > 3 and s in studio:
             return False, f'prestige_studio:{studio[:40]}', 'strong'
 
+    links = movie.get('links') or {}
+
+    # Tier 2c: Indian commercial cinema → SLOP unless a major crossover hit.
+    # Almost all Bollywood/Tamil/Telugu/Malayalam/etc. is slop; the rare exception
+    # (e.g. RRR) clears a high bar: Wikipedia AND Letterboxd AND healthy RT AND healthy IMDb.
+    INDIAN_LANGS = {'hi', 'ta', 'te', 'ml', 'kn', 'bn', 'mr', 'pa', 'gu'}
+    lang = (movie.get('original_language') or '').lower()
+    if lang in INDIAN_LANGS:
+        def _num(v):
+            try:
+                return float(str(v).replace('%', '').strip())
+            except (TypeError, ValueError):
+                return None
+        rt = _num(movie.get('rt_score'))
+        imdb = _num(movie.get('imdb_rating'))
+        crossover = (
+            bool(links.get('wikipedia'))
+            and bool(links.get('letterboxd'))
+            and rt is not None and rt >= 60
+            and imdb is not None and imdb >= 7.0
+        )
+        if not crossover:
+            return True, f'indian_cinema_no_crossover:{lang}', 'strong'
+        return False, f'indian_crossover_hit:{lang}', 'strong'
+
     # Tier 3: Score-based signals
     score = 0
     reasons = []
-    links = movie.get('links') or {}
     has_wiki = bool(links.get('wikipedia'))
 
     if not has_wiki:
