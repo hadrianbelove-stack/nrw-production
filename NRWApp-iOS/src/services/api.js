@@ -220,9 +220,11 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopM
       });
     }
   }
-  // Pre-orders only appear when toggle is ON or search is active
-  if (!showPreorders && !searchQuery) {
-    movies = movies.filter(m => !m._is_preorder);
+  // Pre-order view is exclusive: ON => only pre-orders; OFF => hide them (matches desktop).
+  if (!searchQuery) {
+    movies = showPreorders
+      ? movies.filter(m => m._is_preorder)
+      : movies.filter(m => !m._is_preorder);
   }
   if (!activeFilters || activeFilters.size === 0 || searchQuery) {
     return movies.filter(movie => !movie.hidden);

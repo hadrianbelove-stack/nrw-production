@@ -176,8 +176,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
 
-        if (!state.showPreorders && state.searchQuery.isBlank()) {
-            filtered = filtered.filter { !it.isPreorder }
+        // Pre-order view is exclusive: ON => only pre-orders; OFF => hide them (matches desktop).
+        if (state.searchQuery.isBlank()) {
+            filtered = if (state.showPreorders) filtered.filter { it.isPreorder }
+                       else filtered.filter { !it.isPreorder }
         }
 
         if (state.searchQuery.isNotBlank()) {

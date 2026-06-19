@@ -185,17 +185,17 @@ Sub ApplyFilters()
         movies = filtered
     end if
 
-    ' Pre-orders: only show when toggle is ON (search always shows all)
-    if NOT m.showPreorders
-        filtered = []
-        for each movie in movies
-            isPreorder = (movie._is_preorder = true)
-            if NOT isPreorder
-                filtered.Push(movie)
-            end if
-        end for
-        movies = filtered
-    end if
+    ' Pre-order view is exclusive: ON => only pre-orders; OFF => hide them (matches desktop).
+    filtered = []
+    for each movie in movies
+        isPreorder = (movie._is_preorder = true)
+        if m.showPreorders
+            if isPreorder then filtered.Push(movie)
+        else
+            if NOT isPreorder then filtered.Push(movie)
+        end if
+    end for
+    movies = filtered
 
     ' Highlights mode: only staff picks
     if m.showHighlightsOnly
