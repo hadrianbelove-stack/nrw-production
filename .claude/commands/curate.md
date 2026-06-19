@@ -5,6 +5,8 @@ allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 
 Curate recent arrivals. Runs 4 stages in order, each with a user prompt. **State-based and cumulative** — every run shows everything from the **last 7 days** that still needs work (slop unconfirmed / no capsule / no quotes), newest first. There are no "sessions" to resume or finish: skip as many days as you want and the next run simply shows whatever is still outstanding in the window. Nothing goes stale.
 
+**Rhythm (user preference):** always curate **slop films too** — never skip or batch-drop them. Go **straight through from #1** in queue order unless the user redirects. In Stage 4, present each film's **capsule and pull quotes together** (back-to-back, same film), then move to the next — not as separate passes across all films.
+
 ## Before You Start — pull latest
 
 The daily CI rewrites `data.json` every morning. Start on fresh main so your edits don't conflict:
@@ -17,11 +19,14 @@ If any `git push` in this session is rejected (CI or another writer pushed mid-s
 
 ## The model — state-based, no sessions
 
-There is **no resume logic and no session/progress file**. Each run rebuilds everything from current state, so a film stays in the queue until it is actually handled — no matter how many days you skip. The rolling window is the **last 7 days** of `digital_date` (the 90-day wall is the hard ceiling). Within that window:
+There is **no resume logic and no session/progress file**. Each run rebuilds everything from current state, so a film stays in the queue until it is actually handled — no matter how many days you skip. The rolling window is the **last 7 days** of `digital_date` (the 90-day wall is the hard ceiling). Every stage drains as it's handled, so a film is shown **once** and then not re-shown:
 
-- **Stage 1 (Selects)** and **Stage 2 (Sections)** operate on all in-window arrivals.
+- **Stage 1 (Selects)** operates on in-window arrivals **not yet marked `selects`** in `admin/curate_reviewed.json`. Replying (picks *or* "skip") marks every film shown, so the queue drains.
+- **Stage 2 (Sections)** operates on in-window arrivals **not yet marked `sections`** in `admin/curate_reviewed.json`. Confirming ("looks good" or changes) marks every film shown, so the queue drains.
 - **Stage 3 (Slop)** operates on in-window films where `_is_slop_guess == True` (unconfirmed). Confirming clears the flag, so the queue drains.
 - **Stage 4 (Capsule + Quotes)** operates on in-window films missing a capsule (`approved_capsules.json`) or missing a `pull_quotes` key.
+
+**`admin/curate_reviewed.json`** is the watermark for Stages 1 and 2 (which write nothing per-film on the wall otherwise). It maps `str(movie_id)` → which stages are signed off, e.g. `{"1398655": {"selects": "2026-06-18", "sections": "2026-06-18"}}`. Marking a film as reviewed for a stage = recording the date under its id. A genuinely new arrival has no entry and still appears.
 
 To change the window, edit `WINDOW_DAYS` below.
 
@@ -76,7 +81,37 @@ If the output shows 0 candidates, report "No arrivals in the last 7 days to cura
 
 ## Stage 1: Selects (formerly "Staff Picks" — file is still admin/staff_picks.json)
 
-Show a numbered table of all candidates, then recommend 2–4 picks with brief reasoning.
+**Filter first:** show only candidates **not yet marked `selects`** in `admin/curate_reviewed.json`. This script prints the Stage 1 list, already filtered and re-numbered for this run:
+
+```bash
+/usr/bin/python3 -c "
+import json, os
+from datetime import date, timedelta
+WINDOW_DAYS = 7
+data = json.load(open('data.json'))
+today = str(date.today()); from_date = str(date.today() - timedelta(days=WINDOW_DAYS))
+cy = date.today().year
+rev = json.load(open('admin/curate_reviewed.json')) if os.path.exists('admin/curate_reviewed.json') else {}
+rows = []
+for m in data['movies']:
+    dd = m.get('digital_date','')
+    if not (from_date <= dd <= today): continue
+    if m.get('filters',{}).get('is_restoration'): continue
+    t = m.get('title',''); y = m.get('year',0) or 0
+    if any(k in t for k in ('Remaster','Restoration','4K')) or (y and cy-int(y)>=10): continue
+    if 'selects' in rev.get(str(m.get('id')), {}): continue   # already reviewed
+    L = m.get('links',{})
+    rows.append((dd, m.get('id'), t, m.get('year','?'), m.get('rt_score') or '--',
+                 m.get('metacritic_score') or '--', L.get('wikipedia','') or '',
+                 L.get('trailer_hosted','') or L.get('trailer','') or ''))
+rows.sort(key=lambda x: x[0], reverse=True)
+print(f'Stage 1 Selects — {len(rows)} unreviewed candidate(s):')
+for i,(dd,mid,t,y,rt,mc,w,tr) in enumerate(rows,1):
+    print(f'{i}|||{t}|||{y}|||{rt}|||{mc}|||{w}|||{tr}|||{mid}')
+"
+```
+
+If the script prints 0 candidates, report "Selects: all caught up" and move to Stage 2. Otherwise show a numbered table of the remaining candidates, then recommend 2–4 picks with brief reasoning.
 
 ```
 SELECTS — which movies are you vouching for?
@@ -99,13 +134,30 @@ For each movie row show: title (hyperlinked to its Wikipedia page from `movie.li
 **On user reply:**
 - Parse the numbers, map to movie IDs
 - Read `admin/staff_picks.json`, add new IDs (avoid duplicates), write back
-- Commit + push: `git add admin/staff_picks.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Staff picks updated APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`
+- **Mark every film shown this run** (picks *and* non-picks — "skip" still counts as reviewed) as `selects` in `admin/curate_reviewed.json`, using the script below. This is what drains the queue so these films aren't re-shown next run.
+- Commit + push: `git add admin/staff_picks.json admin/curate_reviewed.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Staff picks updated APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`
+
+```bash
+# Pass the str(id) of every film shown in the Stage 1 table (space-separated).
+cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
+import json, os, sys
+from datetime import date
+path = 'admin/curate_reviewed.json'
+rev = json.load(open(path)) if os.path.exists(path) else {}
+for mid in sys.argv[1:]:
+    rev.setdefault(mid, {})['selects'] = str(date.today())
+json.dump(rev, open(path,'w'), indent=2)
+print(f'Marked {len(sys.argv)-1} film(s) selects-reviewed')
+" ID1 ID2 ID3 ...
+```
 
 ---
 
 ## Stage 2: Section Review
 
-Show each candidate with its auto-detected filters (from TMDB genres, language, and distributor data). Review and correct any misses.
+**Filter first:** show only candidates **not yet marked `sections`** in `admin/curate_reviewed.json` (same pattern as Stage 1 — swap `'selects'` for `'sections'` in the filter script). If 0 remain, report "Sections: all caught up" and move to Stage 3. Re-number the rest `1…N` for this run.
+
+Show each remaining candidate with its auto-detected filters (from TMDB genres, language, and distributor data). Review and correct any misses.
 
 Present as a markdown table with columns: `#`, `Title (Year)`, `Sections`. Hyperlink the title to the movie's Wikipedia page if one exists in `movie.links.wikipedia` (or found via WebSearch). If no Wikipedia page, plain text. Categories should all be in the same column so they scan cleanly vertically.
 
@@ -132,7 +184,8 @@ Show as human-readable names. If no filters are active, show "(none)". Selects i
 **On user reply:**
 - For studio/indie overrides: read `admin/category_overrides.json`, add entries, write back
 - For restoration overrides: read `admin/restorations.json`, add IDs, write back
-- Commit + push any override file changes
+- **Mark every film shown this run** (changes *and* unchanged — "looks good" still counts as reviewed) as `sections` in `admin/curate_reviewed.json` (use the Stage 1 marking script, but set the `'sections'` key instead of `'selects'`). This drains the queue.
+- Commit + push: include `admin/curate_reviewed.json` in the `git add` along with any override file changes.
 
 **Note**: All filters are auto-detected from TMDB data — genres (Comedy, Horror, Action, Thriller), language (Foreign), and distributor rules (Indie, Studio, Documentary). To improve detection logic (e.g. add indie distributor rules), update the pipeline code — not this command.
 
@@ -369,6 +422,7 @@ Pick a number — paste a trim — or skip.
 - Letterboxd quotes: username only (`— @username`), no outlet suffix needed
 - Letterboxd section always comes last
 - All quote text in *italics*
+- **Wrap each quote to ~72 columns** — print via a script using `textwrap.fill` with a hanging indent and the attribution on its own line. The user reads this in the IDE's Bash-output side panel, which does **not** soft-wrap, so long single lines force horizontal scrolling. Use a single `@` for Letterboxd usernames (strip any leading `@` from the cache).
 
 **3. Wait for user response**
 
