@@ -27,7 +27,7 @@ cd "$PROJECT_DIR" || { echo "ERROR: Cannot cd to $PROJECT_DIR" >> "$LOG"; exit 1
 echo "Pulling latest from GitHub..." >> "$LOG"
 
 # Always reset CI-regenerated files before pulling (CI versions are authoritative)
-/usr/bin/git checkout -- data.json data_archive.json movie_tracking.json metrics/ >> "$LOG" 2>&1
+/usr/bin/git checkout -- data.json data_archive.json movie_tracking.json metrics/ cache/wikipedia_cache.json >> "$LOG" 2>&1
 # Clean untracked files in metrics/ so they don't block git pull
 /usr/bin/git clean -f metrics/ >> "$LOG" 2>&1
 
