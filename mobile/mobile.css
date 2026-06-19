@@ -353,6 +353,46 @@ body {
   z-index: 2;
 }
 
+/* VS: festival name band above the poster (dark, gold text — matches desktop) */
+.grid-item.screening-movie .screening-fest-band {
+  background: #15151f;
+  color: var(--screening-gold);
+  border: 2px solid var(--screening-gold);
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  font-size: 0.42rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 3px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Band sits flush on top of the poster: square the poster's top corners */
+.grid-item.screening-movie .screening-fest-band + .grid-item-poster {
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+/* VS: hollow days-left pill below the caption */
+.grid-item .days-row { text-align: center; margin-top: 1px; }
+.grid-item .days-pill {
+  display: inline-block;
+  background: transparent;
+  border: 1.5px solid;
+  border-radius: 14px;
+  padding: 2px 9px;
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.grid-item .days-pill.calm   { color: var(--screening-gold); border-color: var(--screening-gold); }
+.grid-item .days-pill.urgent { color: #ff6b6b; border-color: #ff6b6b; }
+.grid-item .days-pill.soon   { color: #9a9aa5; border-color: #888; }
+
 /* Date divider card */
 /* Date row header — spans full grid width, replaces old card-style divider */
 .date-row-header {

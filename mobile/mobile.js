@@ -188,14 +188,16 @@ const NRWMobile = {
             if (aFest && !bFest) return -1;
             if (!aFest && bFest) return 1;
 
-            // Virtual screenings: sort by tier (active → upcoming → expired)
-            const screeningTier = m => {
-                if (!m.filters?.is_virtual_screening) return -1;
-                const s = m.virtual_screening_info?.status;
-                return s === 'active' ? 0 : s === 'expired' ? 2 : 1;
-            };
-            const ta = screeningTier(a), tb = screeningTier(b);
-            if (ta >= 0 && tb >= 0 && ta !== tb) return ta - tb;
+            // Virtual screenings: Available Now first (soonest to leave), then upcoming (soonest to open)
+            if (aFest && bFest) {
+                const t = new Date().toISOString().slice(0, 10);
+                const sA = a.virtual_screening_info?.available_start || '';
+                const sB = b.virtual_screening_info?.available_start || '';
+                const nowA = !sA || sA <= t, nowB = !sB || sB <= t;
+                if (nowA !== nowB) return nowA ? -1 : 1;
+                if (nowA) return (a.virtual_screening_info?.available_end || '9999-99-99').localeCompare(b.virtual_screening_info?.available_end || '9999-99-99');
+                return sA.localeCompare(sB);
+            }
 
             const dateA = new Date(a.digital_date);
             const dateB = new Date(b.digital_date);
@@ -416,8 +418,10 @@ const NRWMobile = {
                 if (this.hideFest && movie.filters?.is_virtual_screening) return false;
             }
 
-            // Pre-orders only appear when toggle is ON or search is active
-            if (movie._is_preorder && !this.showPreorders && !this.searchQuery) return false;
+            // Pre-orders only appear when toggle is ON or search is active —
+            // the Fest view also surfaces upcoming screenings (Available Soon).
+            if (movie._is_preorder && !this.showPreorders && !this.searchQuery
+                && !(!this.hideFest && movie.filters?.is_virtual_screening)) return false;
 
             // Category filters (OR logic) — bypassed when search is active
             if (filters.size > 0 && !this.searchQuery) {
@@ -487,7 +491,10 @@ const NRWMobile = {
         this.gridEntries = [];
         let lastDate = '';
         let preorderStarted = false;
-        let festStarted = false;
+        let festNowStarted = false;
+        let festSoonStarted = false;
+        let lastFestStart = '';
+        const festToday = new Date().toISOString().slice(0, 10);
 
         if (this.showHighlightsOnly && this.filteredMovies.length > 0) {
             this.gridEntries.push({ type: 'date', dateStr: 'highlights' });
@@ -498,15 +505,29 @@ const NRWMobile = {
         }
 
         this.filteredMovies.forEach((movie, i) => {
-            if (movie._is_preorder) {
+            if (movie.filters?.is_virtual_screening) {
+                // Virtual screenings group into Available Now / Available Soon (not by arrival date)
+                const start = movie.virtual_screening_info?.available_start || '';
+                const isNow = !start || start <= festToday;
+                if (isNow) {
+                    if (!festNowStarted) {
+                        festNowStarted = true;
+                        this.gridEntries.push({ type: 'date', dateStr: 'fest-now' });
+                    }
+                } else {
+                    if (!festSoonStarted) {
+                        festSoonStarted = true;
+                        this.gridEntries.push({ type: 'date', dateStr: 'fest-soon' });
+                    }
+                    if (start !== lastFestStart) {
+                        this.gridEntries.push({ type: 'date', dateStr: 'fest-open:' + start });
+                        lastFestStart = start;
+                    }
+                }
+            } else if (movie._is_preorder) {
                 if (!preorderStarted) {
                     preorderStarted = true;
                     this.gridEntries.push({ type: 'date', dateStr: 'pre-order' });
-                }
-            } else if (movie.filters?.is_virtual_screening) {
-                if (!festStarted) {
-                    festStarted = true;
-                    this.gridEntries.push({ type: 'date', dateStr: 'fest' });
                 }
             } else if (!this.showHighlightsOnly) {
                 // SELECTS is a single curated section (like FEST / PRE-ORDER) —
@@ -579,15 +600,22 @@ const NRWMobile = {
     createDateRowHeader(dateStr) {
         const row = document.createElement('div');
         // Section banners (the view header) render ~2x the date dividers
-        const SECTION_TYPES = ['pre-order', 'fest', 'highlights', 'slop'];
+        const SECTION_TYPES = ['pre-order', 'fest', 'fest-now', 'fest-soon', 'highlights', 'slop'];
         row.className = 'date-row-header' + (SECTION_TYPES.includes(dateStr) ? ' section-banner' : '');
 
         // Neon sticky banner: colored day + white rest; color follows section / active filter
         let day, rest = '', color = '';
         if (dateStr === 'pre-order') {
             day = 'PRE-ORDER'; rest = 'COMING SOON'; color = '#7c3aed';
-        } else if (dateStr === 'fest') {
-            day = 'FEST'; rest = 'VIRTUAL SCREENINGS'; color = '#f59e0b';
+        } else if (dateStr === 'fest' || dateStr === 'fest-now') {
+            day = 'AVAILABLE'; rest = 'NOW'; color = '#FFD700';
+        } else if (dateStr === 'fest-soon') {
+            day = 'AVAILABLE'; rest = 'SOON'; color = '#b9952e';
+        } else if (dateStr.startsWith('fest-open:')) {
+            const fd = new Date(dateStr.slice(10) + 'T12:00:00');
+            day = fd.toLocaleDateString('en', { weekday: 'short' });
+            rest = fd.toLocaleDateString('en', { month: 'short' }) + ' ' + fd.getDate() + ' · OPENS';
+            color = '#b9952e';
         } else if (dateStr === 'highlights') {
             day = 'SELECTS'; rest = 'OF NOTE'; color = '#dc143c';
         } else if (dateStr === 'slop') {
@@ -630,6 +658,14 @@ const NRWMobile = {
 
         const item = document.createElement('div');
         item.className = 'grid-item' + (isScreening ? ' screening-movie' : '');
+
+        // VS: festival name band above the poster (dark, gold text — matches desktop)
+        if (isScreening && movie.virtual_screening_info?.screening_name) {
+            const band = document.createElement('div');
+            band.className = 'screening-fest-band';
+            band.textContent = movie.virtual_screening_info.screening_name;
+            item.appendChild(band);
+        }
 
         // Poster container
         const posterWrap = document.createElement('div');
@@ -676,12 +712,6 @@ const NRWMobile = {
             badgeTarget = posterWrap;
         }
 
-        if (isScreening) {
-            const banner = document.createElement('span');
-            banner.className = 'screening-banner';
-            banner.textContent = 'Virtual Screening';
-            badgeTarget.appendChild(banner);
-        }
         if (isStaffPick) {
             const badge = document.createElement('span');
             badge.className = 'staff-pick-badge';
@@ -749,8 +779,34 @@ const NRWMobile = {
 
         item.appendChild(info);
 
+        // VS: hollow days-left pill below the caption
+        if (isScreening) {
+            const pill = this.vsDaysPill(movie);
+            const pillRow = document.createElement('div');
+            pillRow.className = 'days-row';
+            pillRow.innerHTML = '<span class="days-pill ' + pill.cls + '">' + this.esc(pill.txt) + '</span>';
+            item.appendChild(pillRow);
+        }
+
         item.addEventListener('click', () => this.selectMovie(index));
         return item;
+    },
+
+    // Virtual-screening days-left pill: red ≤3 days, gold "Until <date>", gray "Opens <date>"
+    vsDaysPill(movie) {
+        const info = movie.virtual_screening_info || {};
+        const start = info.available_start || '';
+        const end = info.available_end || '';
+        const today = new Date().toISOString().slice(0, 10);
+        const fmt = iso => {
+            const d = new Date(iso + 'T12:00:00');
+            return d.toLocaleDateString('en', { month: 'short' }) + ' ' + d.getDate();
+        };
+        if (start && start > today) return { cls: 'soon', txt: 'Opens ' + fmt(start) };
+        if (!end) return { cls: 'calm', txt: 'Screening live' };
+        const daysLeft = Math.round((new Date(end + 'T12:00:00') - new Date(today + 'T12:00:00')) / 86400000);
+        if (daysLeft <= 3) return { cls: 'urgent', txt: daysLeft <= 0 ? 'Last day' : daysLeft + (daysLeft === 1 ? ' day left' : ' days left') };
+        return { cls: 'calm', txt: 'Until ' + fmt(end) };
     },
 
     // ===== VIEW TRANSITIONS =====
