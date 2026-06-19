@@ -14,7 +14,6 @@ Or import classify_slop() for use in the enricher.
 """
 
 import json
-import sys
 
 # ── Manual overrides (TMDB ID → bool) ────────────────────────────────────────
 # Films the classifier gets wrong that require human judgment.
@@ -62,7 +61,7 @@ MANUAL_OVERRIDES = {
     1560681: False,   # Colors of Evil: Black (Netflix global Top 10 Polish thriller)
     1233354: False,   # Heads or Fails (Belgian arthouse, FIFIGROT/BAFICI winner)
     # Curator slop sweep — June 18 2026
-    1443200: True,    # Burt (2025) — curator call
+    1443200: False,   # Burt (2025) — not slop (Cinequest Best Comedy, Phoenix Best Pic, DGG EP, 8.1 IMDb)
     1715076: True,    # The Exhibitor (no wiki/RT/IMDb signal)
     # Curator slop sweep — June 16 2026
     1563190: False,   # La Scala: The Force of Destiny (theatrical doc, Tribeca-winning dir)
