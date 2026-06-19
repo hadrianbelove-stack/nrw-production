@@ -5,7 +5,7 @@ allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 
 Curate recent arrivals. Runs 4 stages in order, each with a user prompt. **State-based and cumulative** — every run shows everything from the **last 7 days** that still needs work (slop unconfirmed / no capsule / no quotes), newest first. There are no "sessions" to resume or finish: skip as many days as you want and the next run simply shows whatever is still outstanding in the window. Nothing goes stale.
 
-**Rhythm (user preference):** always curate **slop films too** — never skip or batch-drop them. Go **straight through from #1** in queue order unless the user redirects. In Stage 4, present each film's **capsule and pull quotes together** (back-to-back, same film), then move to the next — not as separate passes across all films.
+**Rhythm (user preference):** always curate **slop films too** — never skip or batch-drop them. Go **straight through from #1** in queue order unless the user redirects. In Stage 4, present each film's **capsule and pull quotes together in the same message** (one film at a time), then move to the next — never capsule-first-wait-then-quotes, and never as separate passes across all films.
 
 ## Before You Start — pull latest
 
@@ -310,12 +310,14 @@ If no candidates for either: report "nothing needs capsules or quotes in the las
 
 Every time you present a movie (capsule variants *and* pull quotes), title the section **`#N of TOTAL — Title (Year)`** so the user always sees where they are. The user may redirect at any point — "go to #5", "jump to #5", "skip to Kraken" — in which case continue from that index. Progress isn't tracked in a file: a handled film (capsule written / `pull_quotes` key set) just won't reappear when the list is rebuilt next run.
 
+**Present capsule and pull quotes TOGETHER in the same message** (user preference) — run Step A *and* Step B, then post both in one turn: the three capsule variants + factoid primer + suggested links, immediately followed by that same film's pull quotes. Do **not** wait for the capsule pick before showing the quotes. The user replies to both at once (e.g. "capsule 2, quote 4"). Only then apply/save/commit.
+
 ### Step A — Capsule (if needed)
 
 1. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --force --variants 3 --skip-verify`
 2. **Read `.claude/commands/capsule.md` Step 2** for the exact presentation format — that file is the single source of truth. Use it exactly: movie header (director/genres/runtime/country/platforms), keyword/badge line, three variants with approach labels, FACTOID PRIMER, SUGGESTED LINKS, pick prompt.
-3. Wait for user response. **When user provides edited text, that IS the final version.**
-4. If picked/rewritten:
+3. **Do not wait yet** — go straight to Step B and append this film's pull quotes in the *same* message. Wait for the user only after both are shown. **When user provides edited text, that IS the final version.**
+4. **After the user replies** (their reply covers both capsule and quote — see Step B.3), if they picked or rewrote the capsule:
    1. Apply standard formatting: **bold** the director's name and cast member names; *italicize* titles of other films mentioned in the text
    2. **Pre-embed Wikipedia links** into the chosen text (see Step A-Links below), then confirm with user before continuing
    3. Write final approved text to `cache/rewrite.txt`
@@ -384,9 +386,9 @@ with open('data.json', 'w') as f:
 
 Only include cast members in cast_wiki (not director, historical figures, or events — those are capsule-text links only). Wikipedia URLs with parentheses: encode `(` as `%28` and `)` as `%29`.
 
-### Step B — Pull Quotes (immediately after capsule, same movie)
+### Step B — Pull Quotes (in the SAME message as the capsule)
 
-Show pull quotes for this movie right after the capsule is resolved (picked, skipped, or not needed).
+Append this movie's pull quotes to the same message that shows its capsule variants (see Step A.3) — do **not** wait for the capsule pick first. The user reviews capsule and quotes together and replies to both at once.
 
 **⚙ Configuration** *(change these to adjust output)*
 - Letterboxd quotes to show: **10** (max; show all if 10 or fewer)
@@ -429,13 +431,15 @@ Pick a number — paste a trim — or skip.
 - All quote text in *italics*
 - **Wrap each quote to ~72 columns** — print via a script using `textwrap.fill` with a hanging indent and the attribution on its own line. The user reads this in the IDE's Bash-output side panel, which does **not** soft-wrap, so long single lines force horizontal scrolling. Use a single `@` for Letterboxd usernames (strip any leading `@` from the cache).
 
-**3. Wait for user response**
+**3. On the user's reply** (one reply covers both capsule and quote, e.g. "capsule 2, quote 4")
+
+Handle the capsule part via Step A.4, and the quote part here:
 
 - Number → use that quote verbatim
 - Pasted text → **that text IS the final version** (never revert to original)
 - "skip" → write `pull_quotes: []` (empty array) to `data.json` for this movie, then commit: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] skipped APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`. An empty array signals "reviewed, nothing selected" and prevents this film from reappearing in the queue. **Remember:** `pull_quotes: []` and no `pull_quotes` key are NOT the same. `[]` = the user reviewed this movie and rejected everything — do not re-queue it. No key = never been through the queue.
 
-**4b. Verify the review URL** (for each chosen quote that has a `review_url`)
+**4. Verify the review URL** (for each chosen quote that has a `review_url`)
 
 ```bash
 cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
