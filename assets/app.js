@@ -615,14 +615,15 @@ const NRW = {
             const info = movie.virtual_screening_info || {};
             const start = info.available_start || '';
             const end = info.available_end || '';
-            if (start && start > today) return `<div class="days-bar soon">Opens ${NRW.formatShortDate(start)}</div>`;
-            if (!end) return `<div class="days-bar calm">Screening live</div>`;
-            const daysLeft = Math.round((new Date(end + 'T12:00:00') - new Date(today + 'T12:00:00')) / 86400000);
-            if (daysLeft <= 3) {
-                const txt = daysLeft <= 0 ? 'Last day' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`;
-                return `<div class="days-bar urgent">⏳ ${txt}</div>`;
+            let cls, txt;
+            if (start && start > today) { cls = 'soon'; txt = `Opens ${NRW.formatShortDate(start)}`; }
+            else if (!end) { cls = 'calm'; txt = 'Screening live'; }
+            else {
+                const daysLeft = Math.round((new Date(end + 'T12:00:00') - new Date(today + 'T12:00:00')) / 86400000);
+                if (daysLeft <= 3) { cls = 'urgent'; txt = daysLeft <= 0 ? 'Last day' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`; }
+                else { cls = 'calm'; txt = `Until ${NRW.formatShortDate(end)}`; }
             }
-            return `<div class="days-bar calm">Until ${NRW.formatShortDate(end)}</div>`;
+            return `<div class="days-row"><span class="days-pill ${cls}">${txt}</span></div>`;
         };
 
         // View section banner at the very top — one per active view (exclusive).
