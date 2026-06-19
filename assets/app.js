@@ -463,17 +463,7 @@ const NRW = {
     },
 
     renderWallWithMore() {
-        // Fest view paginates "now" before "soon" so a large festival batch can't
-        // push available-now screenings past the page cut (renderWall regroups them).
-        const _fToday = new Date().toISOString().slice(0, 10);
-        const _fStart = m => (m.virtual_screening_info && m.virtual_screening_info.available_start) || '';
         const sortedMovies = [...this.filteredMovies].sort((a, b) => {
-            if (this.showFest) {
-                const aNow = !_fStart(a) || _fStart(a) <= _fToday;
-                const bNow = !_fStart(b) || _fStart(b) <= _fToday;
-                if (aNow !== bNow) return aNow ? -1 : 1;
-                return _fStart(a).localeCompare(_fStart(b));
-            }
             return new Date(b.digital_date) - new Date(a.digital_date);
         });
 

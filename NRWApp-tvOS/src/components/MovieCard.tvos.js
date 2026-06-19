@@ -638,14 +638,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     textAlign: 'center',
   },
-  festFrameDates: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1,
-    color: 'rgba(255,215,0,0.8)',
-    textAlign: 'center',
-    marginTop: 2,
-  },
   festPosterWrap: {
     flex: 1,
     paddingHorizontal: 12,
