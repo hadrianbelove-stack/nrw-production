@@ -146,14 +146,33 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 filtered = filtered.filter { it.isStaffPick() }
             }
 
+            // Slop: fests/pre-orders are exempt when their view is on (matches tvOS/desktop).
             if (state.slopMode == "free") {
-                filtered = filtered.filter { !it.isSlop && !it.isSlopGuess }
+                filtered = filtered.filter {
+                    (!it.isSlop && !it.isSlopGuess) ||
+                        (!state.hideFest && it.filters?.isVirtualScreening == true) ||
+                        (state.showPreorders && it.isPreorder)
+                }
             } else if (state.slopMode == "only") {
-                filtered = filtered.filter { it.isSlop || it.isSlopGuess }
+                filtered = filtered.filter {
+                    (it.isSlop || it.isSlopGuess) ||
+                        (!state.hideFest && it.filters?.isVirtualScreening == true) ||
+                        (state.showPreorders && it.isPreorder)
+                }
             }
 
+            // Fests view is exclusive: ON => only LIVE virtual screenings (drop expired);
+            // OFF => hide them entirely (matches tvOS/desktop).
             if (state.hideFest) {
                 filtered = filtered.filter { it.filters?.isVirtualScreening != true }
+            } else {
+                val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
+                filtered = filtered.filter { m ->
+                    if (m.filters?.isVirtualScreening != true) return@filter false
+                    val end = m.screeningInfo?.availableEnd?.take(10)
+                    val expired = m.screeningInfo?.status == "expired" || (end != null && end < today)
+                    !expired
+                }
             }
         }
 

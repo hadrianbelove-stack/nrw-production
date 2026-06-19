@@ -111,11 +111,19 @@ Sub ApplyFilters()
     ' Filter movies using multi-select OR logic
     movies = FilterMoviesMulti(m.allMovies, m.activeFilters)
 
-    ' Slop mode: free=hide slop, all=show all, only=show only slop
+    ' Slop mode: free=hide slop, only=show only slop. Fests/pre-orders are exempt
+    ' when their view is on (matches tvOS/desktop — you asked to see all of them).
     if m.slopMode = "free"
         filtered = []
         for each movie in movies
-            if movie.is_slop <> true AND movie._is_slop_guess <> true
+            isVS = false
+            if movie.filters <> invalid
+                isVS = (movie.filters.is_virtual_screening = true)
+            end if
+            keep = (movie.is_slop <> true AND movie._is_slop_guess <> true)
+            if (NOT m.hideFest) AND isVS then keep = true
+            if m.showPreorders AND movie._is_preorder = true then keep = true
+            if keep
                 filtered.Push(movie)
             end if
         end for
@@ -123,14 +131,22 @@ Sub ApplyFilters()
     else if m.slopMode = "only"
         filtered = []
         for each movie in movies
-            if movie.is_slop = true OR movie._is_slop_guess = true
+            isVS = false
+            if movie.filters <> invalid
+                isVS = (movie.filters.is_virtual_screening = true)
+            end if
+            keep = (movie.is_slop = true OR movie._is_slop_guess = true)
+            if (NOT m.hideFest) AND isVS then keep = true
+            if m.showPreorders AND movie._is_preorder = true then keep = true
+            if keep
                 filtered.Push(movie)
             end if
         end for
         movies = filtered
     end if
 
-    ' Hide-fest mode: hide virtual screenings
+    ' Fests view is exclusive: ON (hideFest=false) => only LIVE virtual screenings
+    ' (drop expired); OFF (hideFest=true) => hide them entirely (matches tvOS/desktop).
     if m.hideFest
         filtered = []
         for each movie in movies
@@ -140,6 +156,30 @@ Sub ApplyFilters()
             end if
             if NOT isVS
                 filtered.Push(movie)
+            end if
+        end for
+        movies = filtered
+    else
+        dt = CreateObject("roDateTime")
+        today = Left(dt.GetISO8601(), 10)
+        filtered = []
+        for each movie in movies
+            isVS = false
+            if movie.filters <> invalid
+                isVS = (movie.filters.is_virtual_screening = true)
+            end if
+            if isVS
+                expired = false
+                if movie.virtual_screening_info <> invalid
+                    if movie.virtual_screening_info.status = "expired" then expired = true
+                    endStr = movie.virtual_screening_info.available_end
+                    if endStr <> invalid AND endStr <> ""
+                        if Left(endStr, 10) < today then expired = true
+                    end if
+                end if
+                if NOT expired
+                    filtered.Push(movie)
+                end if
             end if
         end for
         movies = filtered

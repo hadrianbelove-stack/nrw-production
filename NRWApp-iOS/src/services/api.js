@@ -192,15 +192,32 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopM
   movies = movies.filter(m => m._enrichment_status !== 'reverted');
   // Toggles are view modes — an active search bypasses them all
   if (!searchQuery) {
-    // Slop mode: free = hide slop, all = show everything, only = show only slop
+    // Slop mode: free = hide slop, only = show only slop. Fests/pre-orders are
+    // exempt when their view is on (matches tvOS/desktop — if you turned them on,
+    // you want all of them).
     if (slopMode === 'free') {
-      movies = movies.filter(m => !m.is_slop && !m._is_slop_guess);
+      movies = movies.filter(m =>
+        (!m.is_slop && !m._is_slop_guess) ||
+        (!hideFest && m.filters?.is_virtual_screening) ||
+        (showPreorders && m._is_preorder));
     } else if (slopMode === 'only') {
-      movies = movies.filter(m => m.is_slop || m._is_slop_guess);
+      movies = movies.filter(m =>
+        (m.is_slop || m._is_slop_guess) ||
+        (!hideFest && m.filters?.is_virtual_screening) ||
+        (showPreorders && m._is_preorder));
     }
-    // Hide-fest mode: hide virtual screenings
+    // Fests view is exclusive: ON => only LIVE virtual screenings (drop expired);
+    // OFF => hide them entirely (matches tvOS/desktop).
     if (hideFest) {
       movies = movies.filter(m => !m.filters?.is_virtual_screening);
+    } else {
+      const _today = new Date().toISOString().slice(0, 10);
+      movies = movies.filter(m => {
+        if (!m.filters?.is_virtual_screening) return false;
+        const end = (m.virtual_screening_info?.available_end || '').slice(0, 10);
+        const expired = m.virtual_screening_info?.status === 'expired' || (end && end < _today);
+        return !expired;
+      });
     }
   }
   // Pre-orders only appear when toggle is ON or search is active
