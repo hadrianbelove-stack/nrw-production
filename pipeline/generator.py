@@ -79,6 +79,8 @@ class DataGenerator:
         self.rt_overrides = self.storage.load_cache('overrides/rt_overrides.json')
         self.watch_links_overrides = self.storage.load_cache('overrides/watch_links_overrides.json')
         self.trailer_overrides = self.storage.load_cache('overrides/trailer_overrides.json')
+        # Movies intentionally marked NO TRAILER (keyed by TMDB ID). Never searched again.
+        self.trailer_suppress = self.storage.load_cache('overrides/trailer_suppress.json')
         self.watch_links_cache = self.storage.load_cache('cache/watch_links_cache.json')
 
         # Enrichment statistics (shared across all enrichment sources)
@@ -1125,6 +1127,11 @@ class DataGenerator:
         """
         title = movie_details.get('name') or movie_details.get('title', '')
         year = (movie_details.get('first_air_date') or movie_details.get('release_date', ''))[:4] if (movie_details.get('first_air_date') or movie_details.get('release_date')) else ''
+
+        # --- Tier 0: Suppression (intentionally no trailer — never search) ---
+        if str(movie_details.get('id', '')) in self.trailer_suppress:
+            self.logger.info(f"Trailer for {title} ({year}): tier=suppressed (marked no-trailer)")
+            return None, 'suppressed'
 
         # --- Tier 1: Manual overrides (always trusted) ---
         override_key = f"{title}_{year}"

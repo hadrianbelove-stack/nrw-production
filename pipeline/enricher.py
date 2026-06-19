@@ -346,6 +346,11 @@ class MovieEnricher:
             trailer_url, trailer_source = trailer_result
             result['links']['trailer'] = trailer_url
             result['_trailer_source'] = trailer_source
+            # Suppressed = intentionally no trailer: also clear any existing hosted
+            # copy so previously-hosted junk is removed on re-enrich (hosting then
+            # auto-skips on the empty URL).
+            if trailer_source == 'suppressed':
+                result['links']['trailer_hosted'] = None
 
         # RT score and link.
         # OMDb is the authoritative score source (runs later and overwrites).
