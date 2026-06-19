@@ -3,13 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NRW — Days-left legibility options</title>
+<title>NRW — Large pill · color combos</title>
 <style>
-:root{
-  --accent-primary:#00d4aa;
-  --screening-gold:#FFD700; --screening-glow:rgba(255,215,0,0.3); --screening-subtle:rgba(255,215,0,0.05);
-  --leaving-red:#ff5252;
-}
+:root{ --accent-primary:#00d4aa; --screening-gold:#FFD700; --screening-glow:rgba(255,215,0,0.3); --screening-subtle:rgba(255,215,0,0.05); }
 *{box-sizing:border-box;}
 body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   background:linear-gradient(160deg,#0a0a0a 0%,#1a1a2e 100%); color:#fff; min-height:100vh; }
@@ -17,19 +13,18 @@ body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,s
 .site-header h1{ font-weight:100; letter-spacing:0.3em; font-size:1.9rem; margin:0;
   background:linear-gradient(45deg,#fff,var(--accent-primary)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
 .site-header .sub{ color:#888; letter-spacing:0.22em; text-transform:uppercase; font-size:0.7rem; margin-top:0.5rem; }
-.legend{ max-width:900px; margin:14px auto 0; color:#9a9ab0; font-size:0.84rem; text-align:center; line-height:1.7; padding:0 1rem;}
+.legend{ max-width:900px; margin:14px auto 0; color:#9a9ab0; font-size:0.84rem; text-align:center; line-height:1.6; padding:0 1rem;}
 .legend b{ color:#ddd; }
 
 #gallery{ max-width:1500px; margin:0 auto; padding:1.5rem 1.5rem 5rem; display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(380px,1fr)); gap:1.7rem; }
+  grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:1.7rem; }
 .variation{ border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:14px 14px 18px; background:rgba(255,255,255,0.02); }
-.var-label{ display:flex; align-items:center; gap:10px; margin-bottom:6px; }
-.var-label .n{ background:var(--screening-gold); color:#000; font-weight:900; font-size:0.82rem; min-width:26px; height:26px; padding:0 8px; border-radius:13px; display:flex; align-items:center; justify-content:center;}
-.var-label .nm{ font-weight:700; font-size:1rem; }
-.var-desc{ color:#888; font-size:0.74rem; margin:0 0 12px 36px; line-height:1.4;}
+.var-label{ display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+.var-label .n{ background:var(--screening-gold); color:#000; font-weight:900; font-size:0.78rem; min-width:24px; height:24px; padding:0 8px; border-radius:12px; display:flex; align-items:center; justify-content:center;}
+.var-label .nm{ font-weight:700; font-size:0.98rem; }
+.var-desc{ color:#888; font-size:0.72rem; margin:0 0 12px 34px;}
 .var-cards{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 
-/* ---- card shell (fixed: dark fest band above poster + caption) ---- */
 .movie-container{ display:flex; flex-direction:column; position:relative; min-width:0;
   border:3px solid var(--screening-gold); border-radius:14px; padding:7px; background:var(--screening-subtle); box-shadow:0 0 16px var(--screening-glow); overflow:hidden; }
 .fest-above{ width:calc(100% + 14px); margin:-7px -7px 7px -7px; padding:5px 8px; text-align:center;
@@ -46,107 +41,63 @@ body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,s
 .movie-meta{ font-size:0.74rem; color:#00d4aa; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;}
 .movie-meta .muted{ color:#888;}
 
-/* =================== DAYS-LEFT TREATMENTS (bigger / more legible) =================== */
-/* A — bold standalone text, no bar */
-.dA{ margin-top:8px; text-align:center; font-size:1.05rem; font-weight:900; letter-spacing:0.02em; }
-.dA.u{ color:#ff6b6b; } .dA.n{ color:var(--screening-gold); }
-
-/* B — days-left ABOVE the title (first thing in caption) */
-.b-top{ text-align:center; font-size:1rem; font-weight:900; margin:8px 0 2px; }
-.b-top.u{ color:#ff6b6b; } .b-top.n{ color:var(--screening-gold); }
-
-/* C — large pill */
-.dC{ display:inline-block; margin-top:8px; border-radius:22px; padding:6px 16px; font-size:0.92rem; font-weight:900; letter-spacing:0.02em; }
-.dC.u{ background:var(--leaving-red); color:#fff; } .dC.n{ background:var(--screening-gold); color:#000; }
-
-/* D — big number countdown */
-.dD{ margin-top:8px; display:inline-flex; align-items:center; gap:8px; }
-.dD .num{ font-size:2.1rem; font-weight:900; line-height:0.85; }
-.dD .lab{ text-align:left; font-size:0.7rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:#cfcfe6; }
-.dD.u .num{ color:var(--leaving-red);} .dD.n .num{ color:var(--screening-gold);}
-
-/* E — fuller, bolder bottom bar (bigger text) */
-.dE{ width:calc(100% + 14px); margin:8px -7px -7px -7px; text-align:center; padding:8px 6px;
-  font-size:0.95rem; font-weight:900; letter-spacing:0.03em; text-transform:uppercase; border-radius:0 0 11px 11px; }
-.dE.u{ background:var(--leaving-red); color:#fff; } .dE.n{ background:var(--screening-gold); color:#000; }
-
-/* F — title row + days badge on the right */
-.f-row{ display:flex; align-items:center; gap:8px; margin-top:6px; }
-.f-row .ftitle{ font-weight:700; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1 1 auto;}
-.f-row .fbadge{ flex:0 0 auto; font-size:0.82rem; font-weight:900; padding:3px 10px; border-radius:14px;}
-.f-row .fbadge.u{ background:var(--leaving-red); color:#fff;} .f-row .fbadge.n{ background:var(--screening-gold); color:#000;}
-
-/* G — two-line LABEL / big VALUE */
-.dG{ margin-top:8px; text-align:center; line-height:1.05;}
-.dG .lab{ font-size:0.62rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#9a9ab0;}
-.dG .val{ font-size:1.25rem; font-weight:900;}
-.dG.u .val{ color:#ff6b6b;} .dG.n .val{ color:var(--screening-gold);}
-
-/* H — big text with colored top rule (sits between caption and card edge) */
-.dH{ margin-top:8px; padding-top:7px; border-top:2px solid; text-align:center; font-size:1rem; font-weight:900; letter-spacing:0.02em;}
-.dH.u{ color:#ff6b6b; border-color:var(--leaving-red);} .dH.n{ color:var(--screening-gold); border-color:rgba(255,215,0,0.5);}
+/* large pill (style C) — colors set inline per combo */
+.pillrow{ text-align:center; margin-top:8px; }
+.dC{ display:inline-block; border-radius:22px; padding:6px 16px; font-size:0.92rem; font-weight:900; letter-spacing:0.02em; }
 </style>
 </head>
 <body>
 
 <div class="site-header">
   <h1>THE NEW RELEASE WALL</h1>
-  <div class="sub">Virtual Screening · days-left legibility</div>
+  <div class="sub">Large pill · color combinations</div>
 </div>
 <div class="legend">
-  Same card every time (dark festival band above poster, director in caption). Only the <b>days-left</b> changes —
-  bigger, bolder, and several pulled <b>out of the colored bar</b>. Each shown at <b>1 day left</b> (urgent) and <b>calm</b>.
+  Style C (large pill) in different color schemes. Left card = <b>urgent</b> (1 day left), right card = <b>calm</b> (plenty of time).
+  ★ = uses existing NRW palette colors; others are new and would need a quick OK.
 </div>
 
 <div id="gallery"></div>
 
 <script>
-const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const fmt=s=>{const x=new Date(s+'T12:00:00');return MONTHS[x.getMonth()]+' '+x.getDate();};
-const URGENT={title:"Best Friends Forever",dir:"K. Mousoulis",genre:"Comedy",country:"GRE",poster:"https://image.tmdb.org/t/p/w500/2lNZYwLljw2WAoYGfK9zQ1cODoy.jpg",fest:"Los Angeles Greek Film Fest",end:"2026-06-19",leavesIn:1};
-const CALM={title:"The Obsessed",dir:"W. Takahashi",genre:"Animation",country:"JPN",poster:"https://image.tmdb.org/t/p/w500/vzNDv1Ts7GzlFJ2pgcMYev3BDCG.jpg",fest:"Chattanooga Film Fest",end:"2026-06-28",leavesIn:10};
-
+const URGENT={title:"Best Friends Forever",dir:"K. Mousoulis",genre:"Comedy",country:"GRE",poster:"https://image.tmdb.org/t/p/w500/2lNZYwLljw2WAoYGfK9zQ1cODoy.jpg",fest:"Los Angeles Greek Film Fest"};
+const CALM={title:"The Obsessed",dir:"W. Takahashi",genre:"Animation",country:"JPN",poster:"https://image.tmdb.org/t/p/w500/vzNDv1Ts7GzlFJ2pgcMYev3BDCG.jpg",fest:"Chattanooga Film Fest"};
 const poster=f=>`<img src="${f.poster}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="poster-fallback" style="display:none">${f.title}</div>`;
-const urgentTxt=f=> f.leavesIn<=0?'Last day':`${f.leavesIn} day${f.leavesIn===1?'':'s'} left`;
-
-// caption block (title + meta) — used by most layouts
 const cap=f=>`<div class="movie-info"><div class="movie-title">${f.title}</div><div class="movie-meta">${f.dir} <span class="muted">· ${f.genre} · ${f.country}</span></div></div>`;
 
-const LAYOUTS={
- A:(f,s)=>`${cap(f)}<div class="dA ${s}">${s==='u'?'⏳ '+urgentTxt(f):'Until '+fmt(f.end)}</div>`,
- B:(f,s)=>`<div class="b-top ${s}">${s==='u'?'⏳ '+urgentTxt(f):'Until '+fmt(f.end)}</div>${cap(f)}`,
- C:(f,s)=>`${cap(f)}<div style="text-align:center"><span class="dC ${s}">${s==='u'?'⏳ '+urgentTxt(f):'Until '+fmt(f.end)}</span></div>`,
- D:(f,s)=>`${cap(f)}<div style="text-align:center"><span class="dD ${s}">${s==='u'?`<span class="num">${f.leavesIn}</span><span class="lab">day${f.leavesIn===1?'':'s'}<br>left</span>`:`<span class="lab" style="font-size:0.95rem;color:${'var(--screening-gold)'}">Until<br>${fmt(f.end)}</span>`}</span></div>`,
- E:(f,s)=>`${cap(f)}<div class="dE ${s}">${s==='u'?'⏳ '+urgentTxt(f):'Until '+fmt(f.end)}</div>`,
- F:(f,s)=>`<div class="f-row"><span class="ftitle">${f.title}</span><span class="fbadge ${s}">${s==='u'?urgentTxt(f):fmt(f.end)}</span></div><div class="movie-meta" style="padding-left:2px">${f.dir} <span class="muted">· ${f.country}</span></div>`,
- G:(f,s)=>`${cap(f)}<div class="dG ${s}"><div class="lab">${s==='u'?'Leaving':'Available until'}</div><div class="val">${s==='u'?(f.leavesIn<=0?'Today':f.leavesIn+' day'+(f.leavesIn===1?'':'s')):fmt(f.end)}</div></div>`,
- H:(f,s)=>`${cap(f)}<div class="dH ${s}">${s==='u'?'⏳ '+urgentTxt(f):'Until '+fmt(f.end)}</div>`,
-};
-const NAMES={
- A:['Bold text, no bar','large red/gold text under the caption — out of the bar'],
- B:['Above the title','days-left is the first thing you read, then the title'],
- C:['Large pill','bigger, bolder rounded chip'],
- D:['Big number','huge "1" + "day left"'],
- E:['Bigger bottom bar','keep the bar, much larger bolder text'],
- F:['Title-row badge','badge sits on the title line'],
- G:['Label + big value','small "Leaving" + large "1 day"'],
- H:['Text with top rule','bold text divided by a colored line'],
-};
+// combo: [name, urgentStyle, calmStyle]  — style = {bg, color, border?}
+const fill=(bg,color)=>({bg,color});
+const out=(color)=>({bg:'transparent',color,border:color});
+const COMBOS=[
+ ['Red / Gold ★', fill('#ff5252','#fff'), fill('#FFD700','#000')],
+ ['Red / Teal ★', fill('#ff5252','#fff'), fill('#00d4aa','#000')],
+ ['Crimson / Gold ★', fill('#dc143c','#fff'), fill('#FFD700','#000')],
+ ['Orange / Gold ★', fill('#ff9500','#000'), fill('#FFD700','#000')],
+ ['Crimson / Teal ★', fill('#dc143c','#fff'), fill('#00d4aa','#000')],
+ ['Red / Doc-blue ★', fill('#ff5252','#fff'), fill('#4A90D9','#fff')],
+ ['Amber / Gold', fill('#ffab40','#000'), fill('#FFD700','#000')],
+ ['Red / Green', fill('#ff5252','#fff'), fill('#2ecc71','#000')],
+ ['Red / Gray (quiet calm) ★', fill('#ff5252','#fff'), fill('#888','#fff')],
+ ['Hollow red / Hollow gold', out('#ff6b6b'), out('#FFD700')],
+ ['Hollow red / Hollow teal', out('#ff6b6b'), out('#00d4aa')],
+ ['Gradient red→amber / Gold', {bg:'linear-gradient(90deg,#ffab40,#ff3b3b)',color:'#fff'}, fill('#FFD700','#000')],
+];
 
-function card(f,s,key){
+const pill=(txt,st)=>`<span class="dC" style="background:${st.bg};color:${st.color};${st.border?'border:2px solid '+st.border+';':''}">${txt}</span>`;
+function card(f,txt,st){
   return `<div class="movie-container">
     <div class="fest-above">${f.fest}</div>
     <div class="movie-card"><div class="card-front">${poster(f)}</div></div>
-    ${LAYOUTS[key](f,s)}
+    ${cap(f)}
+    <div class="pillrow">${pill(txt,st)}</div>
   </div>`;
 }
 const g=document.getElementById('gallery');
 let html='';
-['A','B','C','D','E','F','G','H'].forEach((k,i)=>{
+COMBOS.forEach((c,i)=>{
   html+=`<div class="variation">
-    <div class="var-label"><span class="n">${k}</span><span class="nm">${NAMES[k][0]}</span></div>
-    <div class="var-desc">${NAMES[k][1]}</div>
-    <div class="var-cards">${card(URGENT,'u',k)}${card(CALM,'n',k)}</div>
+    <div class="var-label"><span class="n">${i+1}</span><span class="nm">${c[0]}</span></div>
+    <div class="var-cards">${card(URGENT,'⏳ 1 day left',c[1])}${card(CALM,'Until Jun 28',c[2])}</div>
   </div>`;
 });
 g.innerHTML=html;
