@@ -4,10 +4,14 @@
 ' ============================================================================
 
 ' Data URL - same as all other NRW apps
-Const DATA_URL = "https://raw.githubusercontent.com/hadrianbelove-stack/nrw-production/main/data.json"
+Function DATA_URL() as String
+    return "https://raw.githubusercontent.com/hadrianbelove-stack/nrw-production/main/data.json"
+End Function
 
 ' Request timeout in seconds
-Const REQUEST_TIMEOUT = 15
+Function REQUEST_TIMEOUT() as Integer
+    return 15
+End Function
 
 ' ============================================================================
 ' Fetch Movies (with caching)
@@ -62,7 +66,7 @@ Function FetchDataFromNetwork() as Object
     port = CreateObject("roMessagePort")
 
     request.SetMessagePort(port)
-    request.SetUrl(DATA_URL)
+    request.SetUrl(DATA_URL())
     request.SetCertificatesFile("common:/certs/ca-bundle.crt")
     request.InitClientCertificates()
 
@@ -80,7 +84,7 @@ Function FetchDataFromNetwork() as Object
     end if
 
     ' Wait for response with timeout
-    timeout = REQUEST_TIMEOUT * 1000  ' Convert to milliseconds
+    timeout = REQUEST_TIMEOUT() * 1000  ' Convert to milliseconds
     msg = Wait(timeout, port)
 
     if msg = invalid

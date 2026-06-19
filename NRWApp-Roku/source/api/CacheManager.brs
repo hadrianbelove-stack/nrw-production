@@ -4,10 +4,14 @@
 ' ============================================================================
 
 ' Cache duration: 24 hours in seconds
-Const CACHE_DURATION_SECONDS = 86400
+Function CACHE_DURATION_SECONDS() as Integer
+    return 86400
+End Function
 
 ' Registry section name
-Const CACHE_SECTION = "nrw_cache"
+Function CACHE_SECTION() as String
+    return "nrw_cache"
+End Function
 
 ' ============================================================================
 ' Cache Keys
@@ -27,7 +31,7 @@ End Function
 ' Returns cached data if valid, invalid if expired or not found
 ' ============================================================================
 Function GetCachedData(key as String) as Dynamic
-    sec = CreateObject("roRegistrySection", CACHE_SECTION)
+    sec = CreateObject("roRegistrySection", CACHE_SECTION())
 
     if NOT sec.Exists(key)
         return invalid
@@ -42,7 +46,7 @@ Function GetCachedData(key as String) as Dynamic
     timestamp = sec.Read(timestampKey).ToInt()
     now = CreateObject("roDateTime").AsSeconds()
 
-    if (now - timestamp) > CACHE_DURATION_SECONDS
+    if (now - timestamp) > CACHE_DURATION_SECONDS()
         ' Cache expired
         return invalid
     end if
@@ -60,7 +64,7 @@ End Function
 ' Get Cached Data (ignore expiry - for offline fallback)
 ' ============================================================================
 Function GetStaleCachedData(key as String) as Dynamic
-    sec = CreateObject("roRegistrySection", CACHE_SECTION)
+    sec = CreateObject("roRegistrySection", CACHE_SECTION())
 
     if NOT sec.Exists(key)
         return invalid
@@ -78,7 +82,7 @@ End Function
 ' Save Data to Cache
 ' ============================================================================
 Sub CacheData(key as String, data as Dynamic)
-    sec = CreateObject("roRegistrySection", CACHE_SECTION)
+    sec = CreateObject("roRegistrySection", CACHE_SECTION())
 
     ' Store the data
     dataStr = FormatJson(data)
@@ -97,7 +101,7 @@ End Sub
 ' Clear Cache Entry
 ' ============================================================================
 Sub ClearCacheEntry(key as String)
-    sec = CreateObject("roRegistrySection", CACHE_SECTION)
+    sec = CreateObject("roRegistrySection", CACHE_SECTION())
 
     if sec.Exists(key)
         sec.Delete(key)
@@ -115,7 +119,7 @@ End Sub
 ' Clear All Cache
 ' ============================================================================
 Sub ClearAllCache()
-    sec = CreateObject("roRegistrySection", CACHE_SECTION)
+    sec = CreateObject("roRegistrySection", CACHE_SECTION())
     keys = sec.GetKeyList()
 
     for each key in keys
@@ -130,7 +134,9 @@ End Sub
 ' Focus Memory (for restoring position after navigation)
 ' Expires after 5 minutes
 ' ============================================================================
-Const FOCUS_MEMORY_DURATION = 300  ' 5 minutes
+Function FOCUS_MEMORY_DURATION() as Integer
+    return 300  ' 5 minutes
+End Function
 
 Sub SaveFocusIndex(index as Integer)
     sec = CreateObject("roRegistrySection", "nrw_focus")
@@ -152,7 +158,7 @@ Function GetFocusIndex() as Integer
     now = CreateObject("roDateTime").AsSeconds()
 
     ' Only restore if within 5 minutes
-    if (now - timestamp) > FOCUS_MEMORY_DURATION
+    if (now - timestamp) > FOCUS_MEMORY_DURATION()
         return 0
     end if
 

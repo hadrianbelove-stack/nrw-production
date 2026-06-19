@@ -183,15 +183,15 @@ Function GroupMoviesByDate(movies as Object, highlightsMode = false as Boolean) 
         grp = groups[dateKey]
         picks = []
         others = []
-        for each m in grp
+        for each mv in grp
             isStaff = false
-            if m.filters <> invalid AND m.filters.is_staff_pick = true then isStaff = true
-            if m.featured = true then isStaff = true
-            if isStaff then picks.Push(m) else others.Push(m)
+            if mv.filters <> invalid AND mv.filters.is_staff_pick = true then isStaff = true
+            if mv.featured = true then isStaff = true
+            if isStaff then picks.Push(mv) else others.Push(mv)
         end for
         sorted = []
-        for each m in picks : sorted.Push(m) : end for
-        for each m in others : sorted.Push(m) : end for
+        for each mv in picks : sorted.Push(mv) : end for
+        for each mv in others : sorted.Push(mv) : end for
         groups[dateKey] = sorted
     end for
 
