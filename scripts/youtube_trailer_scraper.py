@@ -47,6 +47,28 @@ class YouTubeTrailerScraper:
         vt = (video_title or '').lower()
         return any(tok in vt for tok in YouTubeTrailerScraper.TRAILER_TITLE_TOKENS)
 
+    # Mirror the host-side cap (trailer_downloader.MAX_DURATION_SECONDS = 300). A video
+    # titled "...Trailer" can still be a full film/long piece (e.g. a 47-min doc), so
+    # reject over-long candidates at SELECTION too — otherwise the long URL lands in
+    # links.trailer (YouTube fallback) even though the host would refuse to download it.
+    MAX_TRAILER_SECONDS = 300
+
+    @staticmethod
+    def _duration_seconds_from_label(aria_label):
+        """Extract a YouTube result's duration (seconds) from its aria-label, e.g.
+        '... 4 minutes, 12 seconds' or '... 1 hour, 3 minutes'. None if not present
+        (fail-open: the host-side duration cap is the backstop)."""
+        if not aria_label:
+            return None
+        h = re.search(r'(\d+)\s*hour', aria_label)
+        m = re.search(r'(\d+)\s*minute', aria_label)
+        s = re.search(r'(\d+)\s*second', aria_label)
+        if not (h or m or s):
+            return None
+        return ((int(h.group(1)) * 3600 if h else 0)
+                + (int(m.group(1)) * 60 if m else 0)
+                + (int(s.group(1)) if s else 0))
+
     @staticmethod
     def check_title_match(movie_title, video_title):
         """Check if a video title matches the movie title using whole-word matching.
@@ -256,6 +278,11 @@ class YouTubeTrailerScraper:
                     if not YouTubeTrailerScraper.is_trailer_title(video_title_text):
                         print(f"  ✗ Not a trailer video: '{video_title_text[:60]}' for '{title}'")
                         continue
+                    secs = YouTubeTrailerScraper._duration_seconds_from_label(
+                        video_link.get_attribute('aria-label'))
+                    if secs and secs > YouTubeTrailerScraper.MAX_TRAILER_SECONDS:
+                        print(f"  ✗ Too long ({secs}s > {YouTubeTrailerScraper.MAX_TRAILER_SECONDS}s cap), not a trailer: '{video_title_text[:50]}'")
+                        continue
 
                     # Normalize relative URLs to absolute URLs
                     if video_url.startswith('/watch'):
@@ -343,6 +370,13 @@ class YouTubeTrailerScraper:
 
                     # Filter: video title must look like a trailer (incl. foreign terms)
                     if not YouTubeTrailerScraper.is_trailer_title(video_title):
+                        continue
+
+                    # Filter: reject over-long videos (full films/long pieces) — mirror host cap
+                    secs = YouTubeTrailerScraper._duration_seconds_from_label(
+                        link.get_attribute('aria-label'))
+                    if secs and secs > YouTubeTrailerScraper.MAX_TRAILER_SECONDS:
+                        print(f"  ✗ Broad search too long ({secs}s > {YouTubeTrailerScraper.MAX_TRAILER_SECONDS}s cap): '{video_title[:50]}'")
                         continue
 
                     # Filter: video title must contain the movie title words as whole words
