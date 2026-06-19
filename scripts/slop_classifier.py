@@ -252,7 +252,7 @@ def classify_slop(movie):
         reasons.append('no_rt')
     imdb = movie.get('imdb_rating')
     if not imdb:
-        score += 1
+        score += 2
         reasons.append('no_imdb')
     elif float(imdb) < 6:
         score += 1
@@ -267,8 +267,9 @@ def classify_slop(movie):
         score += 1
         reasons.append('no_rt_link')
 
-    # Higher threshold when Wikipedia is present (film has critical attention)
-    threshold = 5 if has_wiki else 4
+    # Fixed threshold. Missing Wikipedia is already one signal (+2 above) —
+    # it is NOT also used to lower the bar (that double-counted it).
+    threshold = 4
 
     is_slop = score >= threshold
     return is_slop, f'score:{score}({",".join(reasons)})', 'weak'
