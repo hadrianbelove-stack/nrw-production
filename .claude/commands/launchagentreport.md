@@ -43,7 +43,7 @@ for m in sorted(new_today, key=lambda m: not m.get('is_slop')):
 "
 ```
 - Enrichment: movies requested / enriched / deferred and duration (from enrichment_run.json)
-  - **Deferred breakdown**: from `deferred_details` in enrichment_run.json — show as a table with columns: Title | Digital Date | Discovered | Reverts | TMDB Platforms | Reason. List all titles grouped by reason. Use date-only format (strip timestamps to YYYY-MM-DD). Column notes: "Discovered" = `discovered_at`, "Reverts" = `revert_count` (how many times reverted), "TMDB Platforms" = `tmdb_platforms` (what services TMDB says have it).
+  - **Deferred breakdown**: from `deferred_details` in enrichment_run.json — show as a table with columns: Title | Digital Date | Discovered | Reverts | Platforms | Reason. List all titles grouped by reason. Use date-only format (strip timestamps to YYYY-MM-DD). Column notes: "Discovered" = `discovered_at`, "Reverts" = `revert_count` (how many times reverted), "Platforms" = prefer `jw_platforms` (what JustWatch saw at revert time — the accurate source), fall back to `tmdb_platforms` (what TMDB says have it), show "—" if both empty.
     - **3-day window**: Only show JW revert deferrals (`jw_revert:justwatch_no_match` and `jw_revert:justwatch_no_valid_offers`) if `discovered_at` is within the last 3 days. After 3 days, exclude them — they're either dead ends or chronic. All other deferral reasons (timeout, error, not_in_data_json, etc.) always show.
     - After the table, add a summary line: "N deferrals hidden (aged out past 3-day window)"
 - Any failures or warnings (from run_diagnostics.json `failures` and `warnings`)

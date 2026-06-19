@@ -9,7 +9,7 @@ and admin override application for the final display output.
 import json
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class DisplayGenerator:
@@ -558,6 +558,21 @@ class DisplayGenerator:
                 # Only fetch festival page if we don't have per-film dates from cache
                 if not _cached_start and not _cached_end:
                     eventive_info = self.host._fetch_eventive_screening_info(screening_slug) if screening_slug else {}
+                    # White-label / custom-domain Eventive (e.g. watch.imaginenative.org):
+                    # no recognizable slug and the festival page exposes no dates. Read the
+                    # window straight from the play link so it can expire on schedule.
+                    if (not eventive_info.get('available_end') and screening_link
+                            and (screening_service or '').lower() == 'eventive'):
+                        _play_info = self.host._fetch_eventive_play_info(screening_link)
+                        if _play_info.get('available_end'):
+                            eventive_info = _play_info
+                            if not screening_slug:
+                                # Derive a slug from the play URL's first path segment so the
+                                # config end-date fallback and metrics have a key.
+                                try:
+                                    screening_slug = screening_link.split('://', 1)[1].split('/')[1]
+                                except (IndexError, AttributeError):
+                                    pass
                 else:
                     eventive_info = {}
 
@@ -667,6 +682,30 @@ class DisplayGenerator:
 
             # Combine ordered + remaining
             display_movies = ordered_movies + remaining_movies
+
+        # Coming Soon cap — never publish a pre-order more than COMING_SOON_MAX_DAYS
+        # ahead of release. Far-future placeholders / pre-orders are hidden (NOT
+        # deleted — they stay tracked and curation auto-restores) and reappear on
+        # their own once the date is within the window. Mirrors the enrichment-side
+        # cap. We tag our own hides with _coming_soon_capped so un-hiding can never
+        # clobber an expired-screening hide.
+        COMING_SOON_MAX_DAYS = 30  # keep in sync with enricher.py
+        _cs_cap = (datetime.now() + timedelta(days=COMING_SOON_MAX_DAYS)).strftime('%Y-%m-%d')
+        _cs_hidden = 0
+        for movie in display_movies:
+            dd = movie.get('digital_date') or ''
+            if movie.get('_is_preorder') and dd > _cs_cap:
+                if not movie.get('hidden'):
+                    movie['hidden'] = True
+                    _cs_hidden += 1
+                movie['_coming_soon_capped'] = True
+            elif movie.get('_coming_soon_capped'):
+                # Was capped before; now within the window (or no longer a pre-order)
+                # — restore it. Only films WE capped carry this marker.
+                movie.pop('_coming_soon_capped', None)
+                movie['hidden'] = False
+        if _cs_hidden:
+            print(f"⏳ Coming Soon cap: hid {_cs_hidden} pre-order(s) dated >{COMING_SOON_MAX_DAYS}d out")
 
         staff_pick_count = len([m for m in display_movies if m.get('filters', {}).get('is_staff_pick')])
         ordered_count = len(ordering) if ordering else 0

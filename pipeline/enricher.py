@@ -959,7 +959,7 @@ class MovieEnricher:
         enriched_count = 0
         deferred_details = []  # Track per-movie deferred reasons for metrics
 
-        def _deferred_entry(title, reason, movie_idx=None, tracking_movie=None):
+        def _deferred_entry(title, reason, movie_idx=None, tracking_movie=None, jw_platforms=None):
             """Build a deferred-details dict with all available context."""
             entry = {'title': title, 'reason': reason}
             if movie_idx is not None and movie_idx < len(existing_movies):
@@ -978,6 +978,11 @@ class MovieEnricher:
                 for kind in ('streaming', 'rent', 'buy'):
                     flat.extend(provs.get(kind, []))
                 entry['tmdb_platforms'] = list(dict.fromkeys(flat))  # dedupe, preserve order
+            # Platforms JustWatch actually saw at revert time — more accurate than
+            # TMDB's provider list (empty for no-match/no-offer reverts). The launch
+            # report prefers these and falls back to tmdb_platforms.
+            if jw_platforms:
+                entry['jw_platforms'] = list(dict.fromkeys(jw_platforms))
             return entry
 
         _loop_start = time.time()
@@ -987,6 +992,7 @@ class MovieEnricher:
         # The loop-level timeout (ENRICHMENT_LOOP_TIMEOUT_MINUTES) is checked between movies only,
         # so a hung page.goto() inside one movie would block it from ever firing.
         _PER_MOVIE_TIMEOUT_S = 300  # 5 minutes per movie
+        COMING_SOON_MAX_DAYS = 30  # surface upcoming (not-yet-released) films at most this far ahead
 
         def _per_movie_timeout_handler(signum, frame):
             raise TimeoutError(f"Movie enrichment exceeded {_PER_MOVIE_TIMEOUT_S}s")
@@ -1056,6 +1062,7 @@ class MovieEnricher:
                                          or existing_movies[movie_index].get('filters', {}).get('is_virtual_screening'))
                 _jw_verified = False
                 _revert_reason = 'justwatch_error'
+                _jw_result = None  # may stay None if the JW call below raises
                 try:
                     if not hasattr(self.ctx.enrichment_service, '_justwatch_client') or self.ctx.enrichment_service._justwatch_client is None:
                         from pipeline.justwatch import JustWatchClient
@@ -1180,7 +1187,32 @@ class MovieEnricher:
                 except Exception as _jw_err:
                     self.ctx.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} \u2014 proceeding with enrichment")
 
-                if not _jw_verified and not _is_manual and not _has_override and not _is_virtual_screening:
+                # Coming Soon exemption: JustWatch has the title indexed but no live
+                # offers yet (justwatch_no_valid_offers) and the digital date is near-
+                # future \u2014 an upcoming streaming premiere / pre-order, not a dead end.
+                # Keep it on the wall instead of reverting (the zero-watch-links guard
+                # below likewise exempts _is_preorder future-dated films). Scoped to
+                # no_valid_offers (NOT no_match, which is usually bad/chronic data) and
+                # capped at COMING_SOON_MAX_DAYS so we don't surface far-out announcements.
+                _dd_cs = existing_movies[movie_index].get('digital_date') or ''
+                _today_cs = datetime.now().strftime('%Y-%m-%d')
+                _cap_cs = (datetime.now() + timedelta(days=COMING_SOON_MAX_DAYS)).strftime('%Y-%m-%d')
+                _coming_soon = (not _jw_verified
+                                and _revert_reason == 'justwatch_no_valid_offers'
+                                and bool(_dd_cs) and _today_cs < _dd_cs <= _cap_cs
+                                and not _is_manual and not _has_override and not _is_virtual_screening)
+
+                if _coming_soon:
+                    existing_movies[movie_index]['_is_preorder'] = True
+                    existing_movies[movie_index].pop('_jw_reverted', None)
+                    existing_movies[movie_index].pop('_jw_revert_reason', None)
+                    # Stay available on the wall; clear stale revert strikes in tracking.
+                    tracking_data['movies'][movie_id].pop('_jw_revert_reason', None)
+                    tracking_data['movies'][movie_id].pop('_jw_reverted_at', None)
+                    tracking_data['movies'][movie_id].pop('_jw_revert_count', None)
+                    print(f"  \U0001f51c {_title} \u2014 coming soon ({_dd_cs}), kept on wall (no live JustWatch offers yet)")
+                    # fall through to enrichment \u2014 trailer / RT / Wikipedia are still wanted
+                elif not _jw_verified and not _is_manual and not _has_override and not _is_virtual_screening:
                     _today_iso = datetime.now().strftime('%Y-%m-%d')
                     tracking_data['movies'][movie_id]['status'] = 'tracking'
                     tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason
@@ -1194,7 +1226,14 @@ class MovieEnricher:
                     tracking_changed = True
                     if _revert_count == 1:
                         print(f"  \U0001f504 {_title} \u2014 JustWatch pre-check: {_revert_reason} \u2192 reverted to tracking")
-                    deferred_details.append(_deferred_entry(_title, f'jw_revert:{_revert_reason}', movie_index, tracking_data['movies'].get(movie_id)))
+                    # Pull the platforms JustWatch saw (if any) so the launch report
+                    # can show real availability rather than only TMDB's provider list.
+                    _jw_platforms = []
+                    if _jw_result:
+                        _pn = _jw_result.get('provider_names', {})
+                        for _k in ('streaming', 'rent', 'buy'):
+                            _jw_platforms.extend(_pn.get(_k, []))
+                    deferred_details.append(_deferred_entry(_title, f'jw_revert:{_revert_reason}', movie_index, tracking_data['movies'].get(movie_id), jw_platforms=_jw_platforms))
                     signal.alarm(0)
                     continue
                 elif not _jw_verified:
