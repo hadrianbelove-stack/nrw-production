@@ -43,13 +43,21 @@ Sub Init()
     ' Store original dimensions for scaling
     m.originalWidth = 320
     m.originalHeight = 480
+
 End Sub
 
 ' ============================================================================
 ' Movie Data Changed
 ' ============================================================================
 Sub onMovieChanged()
-    movie = m.top.movie
+    ' Data arrives from the grid via itemContent; fall back to the direct field
+    movie = invalid
+    if m.top.itemContent <> invalid
+        movie = m.top.itemContent.movie
+    end if
+    if movie = invalid
+        movie = m.top.movie
+    end if
     if movie = invalid
         return
     end if

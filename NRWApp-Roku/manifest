@@ -20,7 +20,8 @@ splash_color=#0a0a0a
 splash_min_time=1500
 
 # Resolution support
-ui_resolutions=hd,fhd
+# Authored at 1920x1080 (FHD); Roku auto-scales down to HD displays.
+ui_resolutions=fhd
 
 # SceneGraph required
 bs_libs_required=roku_ads_lib

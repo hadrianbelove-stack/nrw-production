@@ -8,6 +8,9 @@
 <component name="MovieCard" extends="Group">
   <interface>
     <!-- Input fields -->
+    <!-- MarkupGrid delivers each item's ContentNode here; declaring it (like
+         focusPercent) ensures the onChange observer fires reliably. -->
+    <field id="itemContent" type="node" onChange="onMovieChanged" />
     <field id="movie" type="assocarray" onChange="onMovieChanged" />
     <field id="cardIndex" type="integer" value="0" />
 
