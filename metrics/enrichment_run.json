@@ -1,65 +1,80 @@
 {
-  "timestamp": "2026-06-18T13:37:26.760178",
-  "movies_requested": 12,
-  "movies_enriched": 7,
-  "movies_deferred": 5,
+  "timestamp": "2026-06-19T14:29:43.374977",
+  "movies_requested": 27,
+  "movies_enriched": 21,
+  "movies_deferred": 6,
   "deferred_details": [
+    {
+      "title": "Love & Other Crimes",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-19",
+      "discovered_at": "2026-05-02T16:53:48.251290",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-06-19",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Defne",
+      "reason": "under_60min",
+      "digital_date": "2026-06-18",
+      "discovered_at": "2026-06-19T12:49:35.972576",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
+    },
     {
       "title": "Pressure",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-06-16",
-      "discovered_at": "2026-06-18T12:29:34.469989",
+      "discovered_at": "2026-06-19T12:49:39.255072",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-18",
+      "first_reverted_at": "2026-06-19",
       "tmdb_platforms": [
         "Amazon Video"
+      ],
+      "jw_platforms": [
+        "Amazon Video",
+        "Apple TV Store",
+        "Fandango At Home"
       ]
     },
     {
       "title": "The Thing in the Fog",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-12",
-      "discovered_at": "2026-06-18T12:29:37.117206",
+      "discovered_at": "2026-06-19T12:49:42.528889",
       "discovery_source": "tmdb_type4",
-      "revert_count": 8,
-      "first_reverted_at": "2026-06-18",
+      "revert_count": 9,
+      "first_reverted_at": "2026-06-19",
       "tmdb_platforms": []
     },
     {
-      "title": "The Last Light",
+      "title": "Desire",
       "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-21",
-      "discovered_at": "2026-06-18T12:29:44.135317",
+      "digital_date": "2026-07-17",
+      "discovered_at": "2026-06-19T14:02:55.426200",
       "discovery_source": "tmdb_type4",
-      "revert_count": 11,
-      "first_reverted_at": "2026-06-01",
+      "revert_count": 1,
+      "first_reverted_at": "2026-06-19",
       "tmdb_platforms": []
     },
     {
-      "title": "The Furious",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-06-18T12:29:46.830579",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-18",
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "Strung",
+      "title": "THE RIBBON HERO",
       "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-26",
-      "discovered_at": "2026-06-18T13:25:43.533908",
+      "digital_date": "2026-08-08",
+      "discovered_at": "2026-06-19T14:12:44.151083",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-18",
+      "first_reverted_at": "2026-06-19",
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 701.54,
+  "enrichment_duration_seconds": 1017.33,
   "error_details": [],
   "total_errors": 0
 }
