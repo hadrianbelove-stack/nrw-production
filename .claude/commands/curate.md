@@ -23,10 +23,10 @@ There is **no resume logic and no session/progress file**. Each run rebuilds eve
 
 - **Stage 1 (Selects)** operates on in-window arrivals **not yet marked `selects`** in `admin/curate_reviewed.json`. Replying (picks *or* "skip") marks every film shown, so the queue drains.
 - **Stage 2 (Sections)** operates on in-window arrivals **not yet marked `sections`** in `admin/curate_reviewed.json`. Confirming ("looks good" or changes) marks every film shown, so the queue drains.
-- **Stage 3 (Slop)** operates on in-window films where `_is_slop_guess == True` (unconfirmed). Confirming clears the flag, so the queue drains.
+- **Stage 3 (Slop)** operates on in-window films **not yet marked `slop`** in `admin/curate_reviewed.json`. The false-negative pass is done once per film; reviewing (confirm or correct) marks it, so the queue drains.
 - **Stage 4 (Capsule + Quotes)** operates on in-window films missing a capsule (`approved_capsules.json`) or missing a `pull_quotes` key.
 
-**`admin/curate_reviewed.json`** is the watermark for Stages 1 and 2 (which write nothing per-film on the wall otherwise). It maps `str(movie_id)` → which stages are signed off, e.g. `{"1398655": {"selects": "2026-06-18", "sections": "2026-06-18"}}`. Marking a film as reviewed for a stage = recording the date under its id. A genuinely new arrival has no entry and still appears.
+**`admin/curate_reviewed.json`** is the watermark for Stages 1, 2, and 3 (which otherwise re-show every in-window film each run). It maps `str(movie_id)` → which stages are signed off, e.g. `{"1398655": {"selects": "2026-06-18", "sections": "2026-06-18", "slop": "2026-06-18"}}`. Marking a film as reviewed for a stage = recording the date under its id. A genuinely new arrival has no entry and still appears. (Stage 4 needs no watermark — capsule/quote presence is its own drain.)
 
 To change the window, edit `WINDOW_DAYS` below.
 
@@ -193,9 +193,11 @@ Show as human-readable names. If no filters are active, show "(none)". Selects i
 
 ## Stage 3: Slop Review
 
-Show all candidates in a table so the user can confirm or correct the auto-classifier's slop determinations.
+**Filter first:** show only candidates **not yet marked `slop`** in `admin/curate_reviewed.json` (same pattern as Stage 1 — filter on a `'slop'` key). This is the false-negative pass done **once per film**: a film you've already reviewed for slop (confirmed or corrected) is not re-shown. If 0 remain, report "Slop: all caught up" and move to Stage 4. Re-number the rest `1…N` for this run.
 
-Build the table by reading `movie.is_slop`, `movie._is_slop_guess`, and `movie._slop_reason` from `data.json` for each candidate. Show **all candidates** — not just the ones flagged as slop — so the user can catch false negatives (real movies misclassified as not-slop, or vice versa).
+Show each remaining candidate in a table so the user can confirm or correct the auto-classifier's slop determinations.
+
+Build the table by reading `movie.is_slop`, `movie._is_slop_guess`, and `movie._slop_reason` from `data.json` for each candidate. Show **all remaining candidates** — not just the ones flagged as slop — so the user can catch false negatives (real movies misclassified as not-slop, or vice versa).
 
 ```
 SLOP REVIEW — confirm or correct auto-classifications
@@ -244,12 +246,14 @@ print('done')
 
 2. **Update `scripts/slop_classifier.py` MANUAL_OVERRIDES** — add a durable entry so rebuilds don't revert it. Read the file, find the `MANUAL_OVERRIDES` dict (around line 22), and add `numeric_int_id: True/False,  # Title`. The numeric ID must be an integer (not a string) — read `movie.id` from data.json and cast to int.
 
-3. Commit + push after all overrides applied:
+3. **Mark every film shown this run** (overrides *and* "looks good" — confirming the auto-calls still counts as reviewed) as `slop` in `admin/curate_reviewed.json` (use the Stage 1 marking script, but set the `'slop'` key). This is what stops the false-negative pass from re-showing the same films every run.
+
+4. Commit + push after all overrides applied:
 ```bash
-git add data.json scripts/slop_classifier.py && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Slop review APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
+git add data.json scripts/slop_classifier.py admin/curate_reviewed.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Slop review APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
 ```
 
-If "looks good" with no changes: no commit needed.
+Even on "looks good" with no slop changes, still mark the films `slop`-reviewed and commit `admin/curate_reviewed.json` so they drain.
 
 ---
 
