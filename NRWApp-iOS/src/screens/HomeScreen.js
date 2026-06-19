@@ -32,18 +32,6 @@ import {trackFilterChange, trackSearch} from '../services/analytics';
 
 const screenWidth = RNDimensions.get('window').width;
 
-const FILTER_DESCRIPTIONS = {
-  'staff-picks': { title: 'Selects', text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations." },
-  'indie':       { title: 'Indie', text: "The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they're available to stream at home." },
-  'horror':      { title: 'Horror', text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." },
-  'action':      { title: 'Action', text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." },
-  'comedy':      { title: 'Comedy', text: "Films that are actually funny. Comedies — broad and subtle — now streaming." },
-  'family':      { title: 'Family', text: "Films for all ages. Family movies now available to watch at home." },
-  'thriller':    { title: 'Thriller', text: "Suspense, dread, and unease. Thrillers now streaming — from psychological slow-burns to pulse-pounding crime." },
-  'foreign':     { title: 'Foreign', text: "Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they're streaming now." },
-  'documentary': { title: 'Documentary', text: "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home." },
-  'restorations':{ title: 'Reissues', text: "Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers." },
-};
 // 3-column grid matching mobile web
 const numColumns = 3;
 const cardMargin = Spacing.cardGap;
@@ -198,26 +186,42 @@ export default function HomeScreen({navigation}) {
     }
   };
 
+  // Genres are single-select: a genre replaces any current genre (click again clears).
+  // Picking a genre clears the view toggles — only one filter OR one toggle at a time (matches tvOS).
   const handleFilterChange = useCallback(filterId => {
     setActiveFilters(prev => {
-      const newFilters = new Set(prev);
-      if (newFilters.has(filterId)) {
-        newFilters.delete(filterId);
-      } else {
-        newFilters.add(filterId);
-      }
+      const isOnlyActive = prev.size === 1 && prev.has(filterId);
       trackFilterChange(filterId);
-      return newFilters;
+      return isOnlyActive ? new Set() : new Set([filterId]);
     });
+    setShowHighlightsOnly(false);
+    setHideFest(true);
+    setShowPreorders(false);
+    setSlopMode('free');
   }, []);
 
   // View toggles (Selects / Fests / Pre-Orders) are mutually exclusive: at most
   // one is active. Each handler maps to the single winning view, or 'none' when
   // toggled off. (hideFest is inverted — fests are shown only when view==='fests'.)
+  // Toggles also clear genre filters + slop so only one thing is ever active.
   const showExclusiveView = useCallback(view => {
     setShowHighlightsOnly(view === 'selects');
     setHideFest(view !== 'fests');
     setShowPreorders(view === 'preorders');
+    setSlopMode('free');
+    setActiveFilters(new Set());
+  }, []);
+
+  // Slop toggle is part of the same exclusive group: entering a non-free state
+  // clears genre filters and the other view toggles.
+  const handleSlopModeChange = useCallback(next => {
+    setSlopMode(next);
+    setActiveFilters(new Set());
+    if (next !== 'free') {
+      setShowHighlightsOnly(false);
+      setHideFest(true);
+      setShowPreorders(false);
+    }
   }, []);
 
   const handleShowHighlightsChange = useCallback(v => showExclusiveView(v ? 'selects' : 'none'), [showExclusiveView]);
@@ -334,22 +338,9 @@ export default function HomeScreen({navigation}) {
     );
   }
 
-  const activeFilterDesc = showHighlightsOnly
-    ? FILTER_DESCRIPTIONS['staff-picks']
-    : activeFilters.size === 1
-    ? FILTER_DESCRIPTIONS[Array.from(activeFilters)[0]]
-    : null;
-
   return (
     <View style={[styles.container, {paddingBottom: insets.bottom}]}>
-      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopMode={slopMode} onSlopModeChange={setSlopMode} hideFest={hideFest} onHideFestChange={handleHideFestChange} showPreorders={showPreorders} onShowPreordersChange={handleShowPreordersChange} showHighlightsOnly={showHighlightsOnly} onShowHighlightsChange={handleShowHighlightsChange} />
-
-      {activeFilterDesc && (
-        <View style={styles.filterDescRow}>
-          <Text style={styles.filterDescTitle}>{activeFilterDesc.title}</Text>
-          <Text style={styles.filterDescText}>{activeFilterDesc.text}</Text>
-        </View>
-      )}
+      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopMode={slopMode} onSlopModeChange={handleSlopModeChange} hideFest={hideFest} onHideFestChange={handleHideFestChange} showPreorders={showPreorders} onShowPreordersChange={handleShowPreordersChange} showHighlightsOnly={showHighlightsOnly} onShowHighlightsChange={handleShowHighlightsChange} />
 
       <FlatList
         data={gridRows}

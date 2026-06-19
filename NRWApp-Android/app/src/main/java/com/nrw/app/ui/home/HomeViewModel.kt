@@ -74,12 +74,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun toggleFilter(filter: FilterCategory) {
         val current = _uiState.value.activeFilters
-        val newFilters = if (current.contains(filter)) {
-            current - filter
-        } else {
-            current + filter
-        }
-        _uiState.value = _uiState.value.copy(activeFilters = newFilters)
+        // Genres are single-select: a genre replaces any current genre (tap again clears).
+        val newFilters = if (current.size == 1 && current.contains(filter)) emptySet() else setOf(filter)
+        // Picking a genre clears the view toggles — only one filter OR one toggle at a time.
+        _uiState.value = _uiState.value.copy(
+            activeFilters = newFilters,
+            showHighlightsOnly = false,
+            hideFest = true,
+            showPreorders = false,
+            slopMode = "free",
+        )
         applyFilters()
     }
 
@@ -100,18 +104,27 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             "all" -> "only"
             else -> "free"
         }
-        _uiState.value = _uiState.value.copy(slopMode = next)
+        // Slop is part of the exclusive group: clear genre filters, and (for a non-free
+        // state) the other view toggles, so only one thing is ever active.
+        var s = _uiState.value.copy(slopMode = next, activeFilters = emptySet())
+        if (next != "free") {
+            s = s.copy(showHighlightsOnly = false, hideFest = true, showPreorders = false)
+        }
+        _uiState.value = s
         applyFilters()
     }
 
     // View toggles (Selects / Fests / Pre-Orders) are mutually exclusive: at most
     // one is active. Each public toggle maps to its winning view, or "none" when
     // toggled off. (hideFest is inverted — fests are shown only for "fests".)
+    // Toggles also clear genre filters + slop so only one thing is ever active.
     private fun showExclusiveView(view: String) {
         _uiState.value = _uiState.value.copy(
             showHighlightsOnly = view == "selects",
             hideFest = view != "fests",
             showPreorders = view == "preorders",
+            slopMode = "free",
+            activeFilters = emptySet(),
         )
         applyFilters()
     }

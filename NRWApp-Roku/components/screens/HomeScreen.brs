@@ -353,9 +353,14 @@ Sub SetExclusiveView(winner as String)
     m.showHighlightsOnly = (winner = "selects")
     m.hideFest = (winner <> "fests")
     m.showPreorders = (winner = "preorders")
+    ' Toggles clear genre filters + slop so only one thing is ever active.
+    m.slopMode = "free"
+    m.activeFilters = []
     m.filterBar.showHighlights = m.showHighlightsOnly
     m.filterBar.hideFest = m.hideFest
     m.filterBar.showPreorders = m.showPreorders
+    m.filterBar.slopMode = m.slopMode
+    m.filterBar.activeFilters = m.activeFilters
     UpdateFilterDescription()
     ApplyFilters()
 End Sub
@@ -375,7 +380,20 @@ Sub onFilterSelected()
         else
             m.slopMode = "free"
         end if
+        ' Slop is part of the exclusive group: clear genre filters, and (for a
+        ' non-free state) the other view toggles.
+        m.activeFilters = []
+        if m.slopMode <> "free"
+            m.showHighlightsOnly = false
+            m.hideFest = true
+            m.showPreorders = false
+            m.filterBar.showHighlights = m.showHighlightsOnly
+            m.filterBar.hideFest = m.hideFest
+            m.filterBar.showPreorders = m.showPreorders
+        end if
         m.filterBar.slopMode = m.slopMode
+        m.filterBar.activeFilters = m.activeFilters
+        UpdateFilterDescription()
         ApplyFilters()
         return
     end if
@@ -409,16 +427,26 @@ Sub onFilterSelected()
         return
     end if
 
-    ' Toggle filter in array
+    ' Genres are single-select: a genre replaces any current genre (tap again clears).
     index = ArrayIndexOf(m.activeFilters, filterId)
-    if index >= 0
-        m.activeFilters.Delete(index)
+    if index >= 0 AND m.activeFilters.Count() = 1
+        m.activeFilters = []
     else
-        m.activeFilters.Push(filterId)
+        m.activeFilters = [filterId]
     end if
+
+    ' Picking a genre clears the view toggles — only one filter OR one toggle at a time.
+    m.slopMode = "free"
+    m.showHighlightsOnly = false
+    m.hideFest = true
+    m.showPreorders = false
 
     ' Update filter bar visual state
     m.filterBar.activeFilters = m.activeFilters
+    m.filterBar.slopMode = m.slopMode
+    m.filterBar.showHighlights = m.showHighlightsOnly
+    m.filterBar.hideFest = m.hideFest
+    m.filterBar.showPreorders = m.showPreorders
 
     UpdateFilterDescription()
     ApplyFilters()
@@ -596,46 +624,9 @@ Sub OnFocusChanged()
     end if
 End Sub
 
-' ============================================================================
-' Filter Description (shown when exactly 1 filter active)
-' ============================================================================
-Function GetFilterDescriptions() as Object
-    return {
-        highlights:    { title: "SELECTS",  text: "The ones we're vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time." }
-        indie:         { title: "INDIE",        text: "The smaller films, the independents, the ones without a billboard campaign. Worth knowing about now that they're available to stream at home." }
-        horror:        { title: "HORROR",       text: "The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter." }
-        action:        { title: "ACTION",       text: "High-octane, kinetic filmmaking. Action movies now available to watch at home." }
-        comedy:        { title: "COMEDY",       text: "Films that are actually funny. Comedies — broad and subtle — now streaming." }
-        family:        { title: "FAMILY",       text: "Films for all ages. Family movies now available to watch at home." }
-        thriller:      { title: "THRILLER",     text: "Suspense, dread, and unease. Thrillers now streaming — from psychological slow-burns to pulse-pounding crime." }
-        foreign:       { title: "FOREIGN",      text: "Non-English language films from around the world. Subtitles and the fact that they're streaming now." }
-        documentary:   { title: "DOCUMENTARY",  text: "Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home." }
-        restorations:  { title: "REISSUES",     text: "Classic and catalog titles with new digital life. Restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers." }
-    }
-End Function
-
 Sub UpdateFilterDescription()
-    if m.filterDescGroup = invalid
-        return
-    end if
-    if m.showHighlightsOnly
-        descs = GetFilterDescriptions()
-        d = descs["highlights"]
-        m.filterDescTitle.text = d.title
-        m.filterDescText.text = d.text
-        m.filterDescGroup.visible = true
-    else if m.activeFilters.Count() = 1
-        descs = GetFilterDescriptions()
-        filterId = m.activeFilters[0]
-        if descs.DoesExist(filterId)
-            d = descs[filterId]
-            m.filterDescTitle.text = d.title
-            m.filterDescText.text = d.text
-            m.filterDescGroup.visible = true
-        else
-            m.filterDescGroup.visible = false
-        end if
-    else
+    ' Filter description blurbs removed (matches tvOS — no genre/view descriptions).
+    if m.filterDescGroup <> invalid
         m.filterDescGroup.visible = false
     end if
 End Sub
