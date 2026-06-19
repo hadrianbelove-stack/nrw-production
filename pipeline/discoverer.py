@@ -471,42 +471,28 @@ class ProviderDiscoverer:
                                     _vs_link = _v.get('link')
                                     if _vs_link:
                                         break
-                            # Validate the screening is still available before forcing transition
-                            if _vs_link and 'eventive.org' in _vs_link:
-                                try:
-                                    _resp = requests.get(_vs_link, timeout=10,
-                                                         headers={'User-Agent': 'Mozilla/5.0'})
-                                    _nd_match = re.search(
-                                        r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>',
-                                        _resp.text)
-                                    if _nd_match:
-                                        _nd = json.loads(_nd_match.group(1))
-                                        _init = _nd.get('props', {}).get('pageProps', {}).get('initialData', {})
-                                        _end_time = _init.get('end_time', '')
-                                        _end_in_future = False
-                                        if _end_time:
-                                            try:
-                                                from datetime import datetime as _dt
-                                                _end_dt = _dt.fromisoformat(_end_time.replace('Z', '+00:00'))
-                                                _end_in_future = _end_dt > _dt.now(_end_dt.tzinfo)
-                                            except (ValueError, TypeError):
-                                                pass
-                                        if _init.get('is_available') is True:
-                                            has_providers = True
-                                            movie['_virtual_screening'] = True
-                                            print(f"  ✓ {movie['title']} — VS bypass: screening active ({_vs_link})")
-                                        elif _end_in_future:
-                                            # Upcoming/pre-order — screening hasn't started but end_time is future
-                                            has_providers = True
-                                            movie['_virtual_screening'] = True
-                                            print(f"  ✓ {movie['title']} — VS bypass: upcoming screening (ends {_end_time[:10]})")
-                                        else:
-                                            _end = _end_time or 'unknown'
-                                            print(f"  ⏭ {movie['title']} — VS bypass skipped: screening expired (ended {_end})")
-                                    else:
-                                        print(f"  ⏭ {movie['title']} — VS bypass skipped: could not parse page")
-                                except requests.RequestException:
-                                    print(f"  ⏭ {movie['title']} — VS bypass skipped: link unreachable")
+                            # Validate the screening is still available before forcing transition.
+                            # Recognize both the central watch.eventive.org domain and white-label
+                            # festival domains (e.g. watch.imaginenative.org/<slug>/play/<id>).
+                            _is_eventive_link = bool(_vs_link) and (
+                                'eventive.org' in _vs_link
+                                or re.match(r'https?://watch\.[^/]+/[^/]+/play/', _vs_link))
+                            if _is_eventive_link:
+                                _play_info = self.host._fetch_eventive_play_info(_vs_link)
+                                _end_date = _play_info.get('available_end')
+                                _today = datetime.now().strftime('%Y-%m-%d')
+                                _end_in_future = bool(_end_date) and _end_date >= _today
+                                if _play_info.get('is_available') is True:
+                                    has_providers = True
+                                    movie['_virtual_screening'] = True
+                                    print(f"  ✓ {movie['title']} — VS bypass: screening active ({_vs_link})")
+                                elif _end_in_future:
+                                    # Upcoming/pre-order — screening hasn't started but end date is future
+                                    has_providers = True
+                                    movie['_virtual_screening'] = True
+                                    print(f"  ✓ {movie['title']} — VS bypass: upcoming screening (ends {_end_date})")
+                                else:
+                                    print(f"  ⏭ {movie['title']} — VS bypass skipped: screening expired (ended {_end_date or 'unknown'})")
                             elif _vs_link:
                                 # Non-Eventive VS links (Shift72, etc.) — HEAD check fallback
                                 try:

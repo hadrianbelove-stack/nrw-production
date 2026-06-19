@@ -1572,6 +1572,56 @@ class DataGenerator:
         self._screening_info_cache[slug] = result
         return result
 
+    def _fetch_eventive_play_info(self, play_url):
+        """Fetch a single Eventive screening's window directly from its play link.
+
+        Works for both the central watch.eventive.org domain AND white-label
+        festival domains (e.g. watch.imaginenative.org). The slug extractor and
+        festival-page scraper only recognize watch.eventive.org, so custom-domain
+        festivals discovered via TMDB arrive with no end date and never expire.
+        The play page's embedded __NEXT_DATA__ carries the window regardless of
+        domain, so we read it straight from the link we already have.
+
+        Returns dict: {'name', 'available_start', 'available_end', 'is_available'}
+        Dates are 'YYYY-MM-DD' (UTC) or None.
+        """
+        if not hasattr(self, '_play_info_cache'):
+            self._play_info_cache = {}
+        if play_url in self._play_info_cache:
+            return self._play_info_cache[play_url]
+
+        result = {'name': None, 'available_start': None, 'available_end': None, 'is_available': None}
+
+        def _to_date(ts):
+            if not ts:
+                return None
+            try:
+                return datetime.fromisoformat(ts.replace('Z', '+00:00')).strftime('%Y-%m-%d')
+            except (ValueError, TypeError):
+                return None
+
+        try:
+            resp = requests.get(play_url, timeout=10, headers={'User-Agent': 'Mozilla/5.0'})
+            if resp.ok:
+                nd_match = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', resp.text)
+                if nd_match:
+                    nd = json.loads(nd_match.group(1))
+                    page_props = nd.get('props', {}).get('pageProps', {})
+                    init = page_props.get('initialData', {}) or {}
+                    tenant = page_props.get('initialTenant', {}) or {}
+                    result['available_start'] = _to_date(init.get('start_time'))
+                    result['available_end'] = _to_date(init.get('end_time'))
+                    result['is_available'] = init.get('is_available')
+                    result['name'] = tenant.get('display_name') or init.get('name')
+                    if result['available_end']:
+                        print(f"  ℹ️  Eventive play-link window for \"{result['name']}\": "
+                              f"{result['available_start']} to {result['available_end']}")
+        except Exception as e:
+            self.logger.debug(f"Could not fetch Eventive play page '{play_url}': {e}")
+
+        self._play_info_cache[play_url] = result
+        return result
+
     def scan_eventive_screenings(self):
         """Scan Eventive for active virtual screenings matching NRW movies.
 
