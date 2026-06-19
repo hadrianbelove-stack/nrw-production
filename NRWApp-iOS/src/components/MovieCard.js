@@ -118,6 +118,20 @@ const getStreamingBadge = (movie) => {
   return {name: service.toUpperCase().slice(0, 8), color: '#444'};
 };
 
+// Virtual-screening days-left pill: red ≤3 days, gold "Until <date>", gray "Opens <date>"
+function getScreeningDaysPill(movie) {
+  const info = movie.virtual_screening_info || {};
+  const start = info.available_start || '';
+  const end = info.available_end || '';
+  const today = new Date().toISOString().slice(0, 10);
+  const fmt = iso => new Date(iso + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+  if (start && start > today) return {text: 'Opens ' + fmt(start), color: '#9a9aa5', border: '#888'};
+  if (!end) return {text: 'Screening live', color: '#FFD700', border: '#FFD700'};
+  const daysLeft = Math.round((new Date(end + 'T12:00:00') - new Date(today + 'T12:00:00')) / 86400000);
+  if (daysLeft <= 3) return {text: daysLeft <= 0 ? 'Last day' : daysLeft + (daysLeft === 1 ? ' day left' : ' days left'), color: '#ff6b6b', border: '#ff6b6b'};
+  return {text: 'Until ' + fmt(end), color: '#FFD700', border: '#FFD700'};
+}
+
 export default function MovieCard({movie, onPress, isFeatured = false, width}) {
   if (!movie) return null;
 
@@ -234,11 +248,21 @@ export default function MovieCard({movie, onPress, isFeatured = false, width}) {
         )}
       </View>
 
-      {metaText !== '' && (
+      {(metaText !== '' || movie.filters?.is_virtual_screening) && (
         <View style={styles.info}>
-          <Text style={styles.director} numberOfLines={1}>
-            {metaText}
-          </Text>
+          {metaText !== '' && (
+            <Text style={styles.director} numberOfLines={1}>
+              {metaText}
+            </Text>
+          )}
+          {movie.filters?.is_virtual_screening && (() => {
+            const pill = getScreeningDaysPill(movie);
+            return (
+              <View style={[styles.daysPill, {borderColor: pill.border}]}>
+                <Text style={[styles.daysPillText, {color: pill.color}]}>{pill.text}</Text>
+              </View>
+            );
+          })()}
         </View>
       )}
     </TouchableOpacity>
@@ -433,6 +457,18 @@ const styles = StyleSheet.create({
     color: Colors.accent,
     fontSize: Typography.caption + 2,
     fontWeight: '700',
+  },
+  daysPill: {
+    marginTop: 4,
+    borderWidth: 1.5,
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    backgroundColor: 'transparent',
+  },
+  daysPillText: {
+    fontSize: Typography.caption,
+    fontWeight: '800',
   },
 
 });

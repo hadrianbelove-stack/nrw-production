@@ -35,6 +35,7 @@ Sub Init()
     m.screeningTopBannerLabel = m.top.FindNode("screeningTopBannerLabel")
     m.screeningFestivalBg = m.top.FindNode("screeningFestivalBg")
     m.screeningFestivalLabel = m.top.FindNode("screeningFestivalLabel")
+    m.screeningDaysLabel = m.top.FindNode("screeningDaysLabel")
 
     ' Director label
     m.directorLabel = m.top.FindNode("directorLabel")
@@ -144,12 +145,22 @@ Sub onMovieChanged()
             m.screeningFestivalBg.visible = false
             m.screeningFestivalLabel.visible = false
         end if
+        ' Days-left pill (red when ≤3 days, gold "UNTIL <date>", gray "OPENS <date>")
+        pill = ScreeningDaysText(movie.virtual_screening_info)
+        if pill <> invalid
+            m.screeningDaysLabel.text = pill.text
+            m.screeningDaysLabel.color = pill.color
+            m.screeningDaysLabel.visible = true
+        else
+            m.screeningDaysLabel.visible = false
+        end if
     else
         m.screeningBorder.visible = false
         m.screeningTopBannerBg.visible = false
         m.screeningTopBannerLabel.visible = false
         m.screeningFestivalBg.visible = false
         m.screeningFestivalLabel.visible = false
+        m.screeningDaysLabel.visible = false
     end if
 
     ' Set RT score badge
@@ -374,5 +385,60 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
         end if
     end if
     return false
+End Function
+
+' Virtual screening days-left label text + color.
+' Returns { text, color } or invalid. red ≤3 days, gold "UNTIL <date>", gray "OPENS <date>".
+Function ScreeningDaysText(vsi as object) as object
+    if vsi = invalid then return invalid
+    startStr = ""
+    endStr = ""
+    if vsi.available_start <> invalid then startStr = Left(vsi.available_start, 10)
+    if vsi.available_end <> invalid then endStr = Left(vsi.available_end, 10)
+    if startStr = "" and endStr = "" then return invalid
+
+    now = CreateObject("roDateTime")
+    todayStr = ISODateOnly(now)
+    red = "0xFF6B6BFF"
+    gold = "0xFFD700FF"
+    gray = "0x9A9AA5FF"
+
+    if startStr <> "" and startStr > todayStr
+        return { text: "OPENS " + ShortDateRoku(startStr), color: gray }
+    end if
+    if endStr = "" then return { text: "SCREENING LIVE", color: gold }
+
+    endDt = CreateObject("roDateTime")
+    endDt.FromISO8601String(endStr + "T00:00:00Z")
+    todayDt = CreateObject("roDateTime")
+    todayDt.FromISO8601String(todayStr + "T00:00:00Z")
+    daysLeft = Int((endDt.AsSeconds() - todayDt.AsSeconds()) / 86400)
+    if daysLeft <= 3
+        if daysLeft <= 0
+            return { text: "LAST DAY", color: red }
+        else if daysLeft = 1
+            return { text: "1 DAY LEFT", color: red }
+        else
+            return { text: daysLeft.ToStr() + " DAYS LEFT", color: red }
+        end if
+    end if
+    return { text: "UNTIL " + ShortDateRoku(endStr), color: gold }
+End Function
+
+Function ISODateOnly(dt as object) as string
+    mm = dt.GetMonth().ToStr()
+    if dt.GetMonth() < 10 then mm = "0" + mm
+    dd = dt.GetDayOfMonth().ToStr()
+    if dt.GetDayOfMonth() < 10 then dd = "0" + dd
+    return dt.GetYear().ToStr() + "-" + mm + "-" + dd
+End Function
+
+Function ShortDateRoku(iso as string) as string
+    parts = iso.Split("-")
+    if parts.Count() < 3 then return iso
+    mons = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"]
+    mi = parts[1].ToInt()
+    if mi < 1 or mi > 12 then return iso
+    return mons[mi - 1] + " " + parts[2].ToInt().ToStr()
 End Function
 

@@ -222,6 +222,7 @@ const MovieCard = forwardRef(({
 
   // Virtual-screening availability window for the cover: "NOW – JUN 25" when open
   // today, full range (e.g. "JUL 1 – 30") when upcoming.
+  // Days-left pill text + color: red ≤3 days, gold "UNTIL <date>", gray "OPENS <date>"
   const festDates = (() => {
     if (!isFest) return null;
     const vsi = movie.virtual_screening_info || {};
@@ -230,13 +231,12 @@ const MovieCard = forwardRef(({
     if (!s && !e) return null;
     const today = new Date().toISOString().slice(0, 10);
     const MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-    const md = iso => { const p = iso.split('-'); return { m: MON[(+p[1]) - 1], d: +p[2] }; };
-    const sd = s ? md(s) : null, ed = e ? md(e) : null;
-    const open = s && s <= today && (!e || e >= today);
-    if (open) return ed ? `NOW – ${ed.m} ${ed.d}` : 'NOW';
-    if (sd && ed) return sd.m === ed.m ? `${sd.m} ${sd.d} – ${ed.d}` : `${sd.m} ${sd.d} – ${ed.m} ${ed.d}`;
-    if (sd) return `${sd.m} ${sd.d}`;
-    return ed ? `NOW – ${ed.m} ${ed.d}` : null;
+    const md = iso => { const p = iso.split('-'); return `${MON[(+p[1]) - 1]} ${+p[2]}`; };
+    if (s && s > today) return { text: `OPENS ${md(s)}`, color: '#9a9aa5' };
+    if (!e) return { text: 'SCREENING LIVE', color: '#FFD700' };
+    const daysLeft = Math.round((new Date(e + 'T12:00:00') - new Date(today + 'T12:00:00')) / 86400000);
+    if (daysLeft <= 3) return { text: daysLeft <= 0 ? 'LAST DAY' : `${daysLeft} DAY${daysLeft === 1 ? '' : 'S'} LEFT`, color: '#ff6b6b' };
+    return { text: `UNTIL ${md(e)}`, color: '#FFD700' };
   })();
   // Light-background services need black text on the frame header
   const frameTextColor = streamingBadge?.name && ['HULU', 'PRIME'].includes(streamingBadge.name) ? '#000' : '#fff';
@@ -303,7 +303,11 @@ const MovieCard = forwardRef(({
               {/* Dark header: festival name in gold, abbreviated */}
               <View style={[styles.streamingFrameHeader, styles.festFrameHeader]}>
                 <Text style={styles.festFrameName} numberOfLines={2}>{decodeHtml((movie.virtual_screening_info?.screening_name || 'FESTIVAL').replace(/\b(19|20)\d{2}\b/g, '').replace(/\bInternational\b/gi, 'Intl.').replace(/\bFilm Festival\b/gi, 'Film Fest').replace(/\s+/g, ' ').trim())}</Text>
-                {festDates ? <Text style={styles.festFrameDates}>{festDates}</Text> : null}
+                {festDates ? (
+                  <View style={[styles.festDatePill, { borderColor: festDates.color }]}>
+                    <Text style={[styles.festDatePillText, { color: festDates.color }]}>{festDates.text}</Text>
+                  </View>
+                ) : null}
               </View>
               {/* Poster framed inside with padding — dark navy shows as border on sides/bottom */}
               {hasPoster && !imageError ? (
@@ -617,6 +621,21 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     color: '#FFD700',
     lineHeight: 15,
+    textAlign: 'center',
+  },
+  festDatePill: {
+    alignSelf: 'center',
+    marginTop: 3,
+    borderWidth: 1.5,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    backgroundColor: 'transparent',
+  },
+  festDatePillText: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.8,
     textAlign: 'center',
   },
   festFrameDates: {

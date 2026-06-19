@@ -416,7 +416,51 @@ fun MovieCard(
                 modifier = Modifier.fillMaxWidth()
             )
         }
+
+        // Virtual screening days-left pill (hollow): red ≤3 days, gold "Until …", gray "Opens …"
+        if (isScreening) {
+            val pill = screeningDaysPill(movie.screeningInfo?.availableStart, movie.screeningInfo?.availableEnd)
+            if (pill != null) {
+                Spacer(modifier = Modifier.height(3.dp))
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .border(BorderStroke(1.5.dp, pill.second), RoundedCornerShape(12.dp))
+                        .padding(horizontal = 10.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = pill.first,
+                        color = pill.second,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
     }
+}
+
+// Virtual screening days-left pill text + color: red ≤3 days, gold "Until <date>", gray "Opens <date>"
+private fun screeningDaysPill(start: String?, end: String?): Pair<String, Color>? {
+    val s = (start ?: "").take(10)
+    val e = (end ?: "").take(10)
+    if (s.isEmpty() && e.isEmpty()) return null
+    val fmt = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+    val today = fmt.format(java.util.Date())
+    val red = Color(0xFFFF6B6B); val gold = Color(0xFFFFD700); val gray = Color(0xFF9A9AA5)
+    fun md(iso: String): String {
+        val mon = listOf("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+        val p = iso.split("-")
+        return "${mon[p[1].toInt() - 1]} ${p[2].toInt()}"
+    }
+    if (s.isNotEmpty() && s > today) return Pair("Opens ${md(s)}", gray)
+    if (e.isEmpty()) return Pair("Screening live", gold)
+    val daysLeft = try {
+        Math.round((fmt.parse(e)!!.time - fmt.parse(today)!!.time) / 86400000.0).toInt()
+    } catch (ex: Exception) { 99 }
+    if (daysLeft <= 3) return Pair(if (daysLeft <= 0) "Last day" else "$daysLeft ${if (daysLeft == 1) "day" else "days"} left", red)
+    return Pair("Until ${md(e)}", gold)
 }
 
 @Composable

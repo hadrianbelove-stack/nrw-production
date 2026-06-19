@@ -261,6 +261,17 @@
         maxLines="1"
         ellipsisText="..." />
 
+      <!-- Virtual screening days-left (below director; red when ≤3 days, gold/gray otherwise) -->
+      <Label id="screeningDaysLabel"
+        width="320"
+        height="34"
+        translation="[0, 2]"
+        horizAlign="center"
+        font="font:MediumBoldSystemFont"
+        color="0xFFD700FF"
+        maxLines="1"
+        visible="false" />
+
     </LayoutGroup>
 
 
