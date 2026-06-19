@@ -22,47 +22,80 @@ Then report these sections:
 
 ### CI Pipeline Summary (from run_diagnostics.json)
 - Overall success/failure and total duration
-- Intake (from intake_run.json):
-  - Total intaked: `results.total_intaked` (films: `results.intaked`, miniseries: `results.miniseries_intaked`)
-  - Scan window: `scan_window.start_date` to `scan_window.end_date` (`scan_window.mode`)
-  - Duplicates skipped: `results.duplicates_skipped`, blocked: `results.blocked_by_filter`
-- Discovery: how many movies polled, plus the two transition numbers below — show BOTH, labeled. The raw count is inflated whenever a local run put films on the wall before CI transitioned them, so it is not "new things that happened":
+- Intake: just the count of new films intaked — `results.total_intaked` (films `results.intaked`, miniseries `results.miniseries_intaked`). This is the "is intake still working?" signal; flag in Concerns only if it's 0 or abnormally low. (No duplicates/scan-window detail — internal noise.)
+- **New Releases & Reverted** — run the script below.
+  - **New Releases** = films that newly landed and stuck on the wall this run (a full successful transition). List each, shown vs slop.
+  - **Reverted** = films that transitioned then got sent back this run only (new reversions, with the reason). Chronic/recurring reverters are not listed, just counted. Reasons are humanized; **Platforms** prefers `jw_platforms` (what JustWatch saw at revert time), falling back to `tmdb_platforms`, "—" if neither.
+  - Any non-revert deferrals (timeout/error) are pulled out for Concerns.
 
 ```bash
 /usr/bin/python3 -c "
 import json
+from datetime import date
 data = json.load(open('data.json'))
 ms = data['movies'] if isinstance(data, dict) else data
 disc = json.load(open('metrics/discovery_run.json'))
-run_date = disc.get('timestamp', '')[:10]
-new_today = [m for m in ms if str(m.get('_discovered_at', ''))[:10] == run_date]
-print(f'Total transition events: {disc.get(\"total_transitions\", 0)} (raw — includes films a local run already put on the wall, re-counted by CI)')
-print(f'Genuinely new today (first appeared on the wall this run): {len(new_today)}')
-for m in sorted(new_today, key=lambda m: not m.get('is_slop')):
-    print(f'  • {m.get(\"title\")} ({m.get(\"year\")}) — {\"SLOP\" if m.get(\"is_slop\") else \"shown\"}')
+run_date = disc.get('timestamp', '')[:10] or str(date.today())
+try:
+    enr = json.load(open('metrics/enrichment_run.json'))
+except Exception:
+    enr = {}
+deferred = enr.get('deferred_details', [])
+REASONS = {
+  'justwatch_no_valid_offers': 'Coming soon (JustWatch has no live offers yet)',
+  'justwatch_theatrical_pvod': 'In theaters / PVOD only',
+  'justwatch_no_match': 'No JustWatch listing yet',
+  'zero_watch_links': 'No watch links after enrichment',
+}
+def humanize(r): return REASONS.get(r.split('jw_revert:')[-1], r.split('jw_revert:')[-1])
+def plats(d):
+    p = d.get('jw_platforms') or d.get('tmdb_platforms') or []
+    return ', '.join(p) if p else '—'
+def first_rev(d): return d.get('first_reverted_at') or str(d.get('discovered_at',''))[:10]
+
+new_rel = [m for m in ms if str(m.get('_discovered_at',''))[:10] == run_date]
+print(f'New Releases: {len(new_rel)}')
+for m in sorted(new_rel, key=lambda m: not m.get('is_slop')):
+    print(f'  • {m.get(\"title\")} ({m.get(\"year\")}) — {\"slop\" if m.get(\"is_slop\") else \"shown\"}')
+
+reverts = [d for d in deferred if str(d.get('reason','')).startswith('jw_revert:')]
+new_rev = [d for d in reverts if first_rev(d) == run_date]
+hidden = len(reverts) - len(new_rev)
+print(f'\nReverted (new this run): {len(new_rev)}')
+for d in new_rev:
+    print(f'  • {d.get(\"title\")} [{d.get(\"digital_date\") or \"—\"}] — {humanize(d.get(\"reason\",\"\"))} | {plats(d)}')
+if hidden:
+    print(f'  ({hidden} chronic/aged revert(s) not listed)')
+
+other = [d for d in deferred if not str(d.get('reason','')).startswith('jw_revert:')]
+if other:
+    print(f'\n⚠ Other enrichment deferrals (→ Concerns): {len(other)}')
+    for d in other:
+        print(f'  • {d.get(\"title\")} — {d.get(\"reason\")}')
 "
 ```
-- Enrichment: movies requested / enriched / deferred and duration (from enrichment_run.json)
-  - **Deferred breakdown**: from `deferred_details` in enrichment_run.json — show as a table with columns: Title | Digital Date | Discovered | Reverts | Platforms | Reason. List all titles grouped by reason. Use date-only format (strip timestamps to YYYY-MM-DD). Column notes: "Discovered" = `discovered_at`, "Reverts" = `revert_count` (how many times reverted), "Platforms" = prefer `jw_platforms` (what JustWatch saw at revert time — the accurate source), fall back to `tmdb_platforms` (what TMDB says have it), show "—" if both empty.
-    - **3-day window**: Only show JW revert deferrals (`jw_revert:justwatch_no_match` and `jw_revert:justwatch_no_valid_offers`) if `discovered_at` is within the last 3 days. After 3 days, exclude them — they're either dead ends or chronic. All other deferral reasons (timeout, error, not_in_data_json, etc.) always show.
-    - After the table, add a summary line: "N deferrals hidden (aged out past 3-day window)"
-- Any failures or warnings (from run_diagnostics.json `failures` and `warnings`)
 
-### Stall Detection
-- From run_diagnostics.json `stall_status`: is the pipeline stalled? How many days without transitions?
+- Any failures or warnings (from run_diagnostics.json `failures` and `warnings`) → list in Concerns
 
-### New Arrivals
+### Health Scan
 
-Run this script — reads exact field paths, no guessing:
+Recent arrivals (since the last local run) — only flagged films are listed. Run this script — reads exact field paths, no guessing:
 
 ```bash
 /usr/bin/python3 -c "
 import json
 from datetime import date, timedelta
 
+def svc_names(val):
+    items = val if isinstance(val, list) else ([val] if val else [])
+    out = []
+    for s in items:
+        if isinstance(s, dict): out.append(s.get('service','?'))
+        elif isinstance(s, str): out.append(s)
+    return out
+
 data = json.load(open('data.json'))
 today = str(date.today())
-
 try:
     sess = json.load(open('.claude/last_nrw_session.json'))
     from_date = sess['timestamp'][:10]
@@ -73,33 +106,38 @@ arrivals = [m for m in data['movies']
             if from_date <= m.get('digital_date', '') <= today]
 arrivals.sort(key=lambda m: m.get('digital_date', ''), reverse=True)
 
-if not arrivals:
-    print(f'No new arrivals since {from_date}')
-else:
-    print(f'{len(arrivals)} arrival(s) since {from_date}:')
-    for m in arrivals:
-        title = m.get('title', '?')
-        year = m.get('year', '?')
+flagged = 0
+for m in arrivals:
+    streaming = svc_names(m.get('watch_links', {}).get('streaming'))
+    vod = svc_names(m.get('watch_links', {}).get('vod'))
+    services = streaming + vod
+    trailer_hosted = bool(m.get('links', {}).get('trailer_hosted', ''))
+    trailer_yt = bool(m.get('links', {}).get('trailer', ''))
+    has_links = bool(streaming or vod)
+    plex_only = services == ['Plex']
+    t_flag = 'trailer:hosted' if trailer_hosted else ('trailer:YT' if trailer_yt else '⚠ NO TRAILER')
+    l_flag = ('⚠ PLEX ONLY' if plex_only else 'links:ok') if has_links else '⚠ NO LINKS'
+    if '⚠' in t_flag or '⚠' in l_flag:
+        flagged += 1
         rt = m.get('rt_score') or '--'
-        streaming = [s['service'] for s in m.get('watch_links', {}).get('streaming', [])]
-        vod = [v['service'] for v in m.get('watch_links', {}).get('vod', [])]
-        services = streaming + vod
-        trailer_hosted = bool(m.get('links', {}).get('trailer_hosted', ''))
-        trailer_yt = bool(m.get('links', {}).get('trailer', ''))
-        has_links = bool(streaming or vod)
-        plex_only = services == ['Plex']
-        t_flag = 'trailer:hosted' if trailer_hosted else ('trailer:YT' if trailer_yt else '⚠ NO TRAILER')
-        l_flag = ('⚠ PLEX ONLY' if plex_only else 'links:ok') if has_links else '⚠ NO LINKS'
         svc = ', '.join(services) if services else '—'
-        print(f'  • {title} ({year}) — {svc} | RT:{rt} | {t_flag} | {l_flag}')
+        print(f'  ⚠ {m.get(\"title\")} ({m.get(\"year\")}) — {svc} | RT:{rt} | {t_flag} | {l_flag}')
+if flagged == 0:
+    print(f'Health scan: all {len(arrivals)} arrival(s) since {from_date} have a trailer and working links.')
+else:
+    print(f'Health scan: {flagged} flagged above (of {len(arrivals)} arrivals since {from_date}).')
 "
 ```
 
 ### Concerns
+Stall and JustWatch health live here — they only appear when something is actually wrong, not as a daily "all good" line:
 - Any failures or warnings from run_diagnostics.json `failures` and `warnings`
-- Any `⚠ NO TRAILER` from the New Arrivals script above
-- Any `⚠ NO LINKS` or `⚠ PLEX ONLY` from the New Arrivals script above
+- **Pipeline stalled**: `run_diagnostics.json` `stall_status.stalled == true` (3+ days with zero transitions — usually means something broke). Note how many days.
+- **JustWatch outage**: `discovery_run.json` `results.jw_healthy == false` (the JW_BREAKER suppressed reverts this run — expect fewer New Releases; recheck tomorrow).
+- Any `⚠ NO TRAILER` from the Health Scan script above
+- Any `⚠ NO LINKS` or `⚠ PLEX ONLY` from the Health Scan script above
 - Trailer hosting failures from launchagent log
+- Enrichment timeouts/errors, plus any "Other enrichment deferrals" flagged by the New Releases & Reverted script
 - **Pull quote gaps**: check `cache/pull_quotes_combined.json` — for each new arrival, look up `"{title}_{year}"`. If a movie is absent from the cache entirely, flag it: `⚠ [Title] — no pull quotes scraped (morning batch missed it)`
 - If no concerns, say "No concerns."
 

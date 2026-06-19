@@ -219,10 +219,13 @@ const NRWMobile = {
 
             const filter = pill.dataset.filter;
 
-            if (this.activeFilters.has(filter)) {
-                this.activeFilters.delete(filter);
-                pill.classList.remove('active');
-            } else {
+            // One exclusive group: picking a genre clears the toggles + other
+            // genres (single-select). Re-tapping the active genre clears it.
+            const wasActive = this.activeFilters.has(filter);
+            this.setExclusiveView('genre');
+            this.activeFilters.clear();
+            document.querySelectorAll('#filters .filter-pill.active').forEach(p => p.classList.remove('active'));
+            if (!wasActive) {
                 this.activeFilters.add(filter);
                 pill.classList.add('active');
             }
@@ -310,6 +313,11 @@ const NRWMobile = {
     // The caller turns its own toggle on; this clears the other two —
     // both the state flag and the button highlight.
     setExclusiveView(winner) {
+        // Picking a toggle clears genre filters (one filter OR one toggle at a time).
+        if (winner !== 'genre') {
+            this.activeFilters.clear();
+            document.querySelectorAll('#filters .filter-pill.active').forEach(p => p.classList.remove('active'));
+        }
         const others = {
             selects:   () => { this.showHighlightsOnly = false; document.getElementById('highlights-toggle')?.classList.remove('active'); },
             fests:     () => { this.hideFest = true;            document.getElementById('fest-toggle')?.classList.remove('active'); },
@@ -330,21 +338,7 @@ const NRWMobile = {
     updateFilterDesc() {
         const desc = this.dom.filterDesc;
         if (!desc) return;
-
-        // Selects description renders in the river (below its banner) — the
-        // fixed bar is only for single category filters
-        if (!this.showHighlightsOnly && this.activeFilters.size === 1) {
-            const key = [...this.activeFilters][0];
-            const info = this.FILTER_DESCRIPTIONS[key];
-            if (info) {
-                desc.innerHTML = '<div class="filter-desc-inner">' + this.esc(info.text) + '</div>';
-                desc.classList.add('visible');
-                // Adjust grid padding after transition
-                setTimeout(() => this.updateGridPadding(), 320);
-                return;
-            }
-        }
-
+        // Filter description blurbs removed (matches tvOS — no genre/view descriptions).
         desc.classList.remove('visible');
         setTimeout(() => this.updateGridPadding(), 320);
     },

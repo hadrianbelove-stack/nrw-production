@@ -334,17 +334,8 @@ const NRW = {
     updateFilterDescription() {
         const el = document.getElementById('filter-description');
         if (!el) return;
-
-        const filters = Array.from(this.activeFilters);
-        // Selects shows no description blurb (the toggle label says enough).
-        if (filters.length === 1 && this.FILTER_DESCRIPTIONS[filters[0]]) {
-            const desc = this.FILTER_DESCRIPTIONS[filters[0]];
-            document.getElementById('filter-description-title').textContent = desc.title;
-            document.getElementById('filter-description-text').textContent = desc.text;
-            el.classList.add('active');
-        } else {
-            el.classList.remove('active');
-        }
+        // Filter description blurbs removed (matches tvOS — no genre/view descriptions).
+        el.classList.remove('active');
     },
 
     setupSearchEventListeners() {
