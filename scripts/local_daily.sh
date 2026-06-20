@@ -87,24 +87,43 @@ fi
 CI_DATE=$(/usr/bin/python3 -c "import json; print(json.load(open('metrics/run_diagnostics.json'))['timestamp'][:10])" 2>/dev/null)
 TODAY=$(date +%Y-%m-%d)
 if [ "$CI_DATE" = "$TODAY" ]; then
-    # Step 4: Scrape pull quotes for new movies (ready for morning curation)
-    # alarm(3600) hard-kills after 1 hour — same backstop as the trailer step.
-    # Without it, one hung scrape froze this script (and all runs behind it)
-    # for 3 days in June 2026.
-    echo "Scraping pull quotes for new arrivals..." >> "$LOG"
-    /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
-        /usr/bin/python3 scripts/batch_pull_quotes.py >> "$LOG" 2>&1 \
-        || echo "  WARNING: pull quotes exited non-zero (timeout or error)" >> "$LOG"
-    echo "  Pull quotes done" >> "$LOG"
+    # Steps 4+5: Curation caches (pull quotes + capsule drafts).
+    # These now run in CI (daily-check.yml) — off this battery-dependent Mac —
+    # and are shipped back as the "curation-caches" artifact. We just download
+    # and merge them in (merge is add-new-only, so it never clobbers the user's
+    # `selected` picks or curated capsules). If the artifact can't be fetched,
+    # we FALL BACK to generating locally so curation is never left empty.
+    echo "Fetching curation caches from CI artifact..." >> "$LOG"
+    ARTIFACT_OK=false
+    TMP_ART="$PROJECT_DIR/cache/_ci_artifact"
+    rm -rf "$TMP_ART" && mkdir -p "$TMP_ART"
+    RUN_ID=$(gh run list --repo hadrianbelove-stack/nrw-production \
+        --workflow daily-check.yml --status success --limit 1 \
+        --json databaseId -q '.[0].databaseId' 2>>"$LOG")
+    if [ -n "$RUN_ID" ] && gh run download "$RUN_ID" \
+            --repo hadrianbelove-stack/nrw-production \
+            --name curation-caches --dir "$TMP_ART" >> "$LOG" 2>&1; then
+        if /usr/bin/python3 scripts/merge_curation_caches.py "$TMP_ART" >> "$LOG" 2>&1; then
+            ARTIFACT_OK=true
+            echo "  Curation caches merged from CI run $RUN_ID" >> "$LOG"
+        fi
+    fi
+    rm -rf "$TMP_ART"
 
-    # Step 5: Pre-generate capsules (3 variants) for new arrivals so curation
-    # reads them from cache/capsule_cache.json instead of waiting on live LLM calls.
-    # Skips already-cached movies; alarm(3600) hard-kills a hung run.
-    echo "Pre-generating capsules for new arrivals..." >> "$LOG"
-    /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
-        /usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 3 --skip-verify >> "$LOG" 2>&1 \
-        || echo "  WARNING: capsule batch exited non-zero (timeout or error)" >> "$LOG"
-    echo "  Capsules done" >> "$LOG"
+    if [ "$ARTIFACT_OK" = false ]; then
+        # Fallback: CI artifact unavailable — generate locally (the old path).
+        # alarm(3600) hard-kills a hung run so it can't freeze later cycles.
+        echo "  Artifact unavailable — falling back to local generation" >> "$LOG"
+        echo "Scraping pull quotes for new arrivals..." >> "$LOG"
+        /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
+            /usr/bin/python3 scripts/batch_pull_quotes.py >> "$LOG" 2>&1 \
+            || echo "  WARNING: pull quotes exited non-zero (timeout or error)" >> "$LOG"
+        echo "Pre-generating capsules for new arrivals..." >> "$LOG"
+        /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
+            /usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 3 --skip-verify >> "$LOG" 2>&1 \
+            || echo "  WARNING: capsule batch exited non-zero (timeout or error)" >> "$LOG"
+    fi
+    echo "  Curation caches ready" >> "$LOG"
 
     touch "$SENTINEL"
     echo "  CI data is current ($CI_DATE) — sentinel created, done for today" >> "$LOG"
