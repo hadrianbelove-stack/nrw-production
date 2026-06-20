@@ -96,6 +96,33 @@ intake:
   enable_pass_c: true  # Enable Pass C: Festival premieres (with_release_type=1 in festival regions)
   festival_max_pages: 50  # Higher page limit for festival intake (more obscure films)
 
+  # Pass D: Reissue / Restoration candidate collection (NOT auto-intaked — held for human confirm)
+  # Catches OLD films (original release reissue_min_age_years+ ago) that just got a NEW release
+  # event (theatrical 4K restoration, anniversary re-release, festival revival, alt cut). These are
+  # invisible to Passes A/B because TMDB keeps their ORIGINAL primary_release_date. Candidates are
+  # written to admin/reissue_candidates.json and surfaced in the /curate & /morning "Confirm
+  # Reissues" stage. Only films the user confirms enter tracking.
+  enable_pass_d: true
+  reissue_min_age_years: 10      # Original release must be at least this old (matches restoration_config year_gap_threshold)
+  reissue_days_back: 30          # Wider window than normal intake — reissues are rare, scan further back
+  reissue_max_pages: 5           # TMDB discover pages for the candidate sweep
+  # Greenlight note keywords — a recent release entry whose note contains one of these flags a
+  # likely reissue. Used only to PRE-SORT the confirm list (likely/maybe); never a hard gate —
+  # every candidate is still shown to the user.
+  reissue_note_keywords:
+    - restoration
+    - restored
+    - 4k
+    - remaster
+    - re-release
+    - rerelease
+    - reissue
+    - anniversary
+    - extended cut
+    - assembly cut
+    - director's cut
+    - film festival
+
 # Film Festival Configuration
 # Used by intake Pass C to discover films premiering at major festivals
 # festival_templates: defines each festival once with typical timing — code auto-generates

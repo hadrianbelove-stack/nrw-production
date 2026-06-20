@@ -322,6 +322,20 @@ class DisplayGenerator:
             with open('admin/category_overrides.json', 'r') as f:
                 category_overrides = json.load(f)
 
+        # Load the general durable override layer (admin/overrides.json). Applied as
+        # the LAST mutation per movie below, so it survives re-enrichment of any field
+        # that gets rebuilt from TMDB (genres, studio, cast, etc.). Supports:
+        #   "set":           {field: value}   -> overwrite any top-level field
+        #   "genres_add":    [..]             -> append to movie['genres'] (deduped)
+        #   "genres_remove": [..]             -> drop from movie['genres']
+        field_overrides = {}
+        if os.path.exists('admin/overrides.json'):
+            with open('admin/overrides.json', 'r') as f:
+                try:
+                    field_overrides = json.load(f)
+                except (ValueError, json.JSONDecodeError):
+                    field_overrides = {}  # a malformed file must never break the build
+
         # Auto-refresh distributor filmography lookup if stale (>7 days)
         try:
             from scripts.build_distributor_lookup import build_lookup
@@ -506,6 +520,15 @@ class DisplayGenerator:
             if reissue_label:
                 is_restoration = True
 
+            # Reissue confirmed via the /curate "Confirm Reissues" stage (intake Pass D).
+            # The flag + label live on the tracking entry; the manual reissue_labels.json
+            # still wins if both are set.
+            tracking_entry = tracking_data.get(str(movie_id), {})
+            if tracking_entry.get('_reissue'):
+                is_restoration = True
+                if not reissue_label:
+                    reissue_label = tracking_entry.get('reissue_label')
+
             categories['is_restoration'] = is_restoration
             movie['reissue_label'] = reissue_label
 
@@ -644,6 +667,29 @@ class DisplayGenerator:
                     if key in categories:
                         categories[key] = val
                         categories['auto_categorized'] = False
+
+            # Crime + Drama -> also tag Thriller (site filter section). True-crime
+            # documentaries and crime-comedies are deliberately excluded.
+            genres = movie.get('genres') or []
+            if ('Crime' in genres and 'Drama' in genres
+                    and 'Comedy' not in genres and 'Documentary' not in genres
+                    and 'Thriller' not in genres):
+                genres.append('Thriller')
+                movie['genres'] = genres
+
+            # General durable override layer (admin/overrides.json) — applied LAST so
+            # nothing downstream (incl. the rules above) overwrites a manual decision.
+            ov = field_overrides.get(movie_id)
+            if isinstance(ov, dict):
+                cur = movie.get('genres') or []
+                for g in ov.get('genres_add', []) or []:
+                    if g not in cur:
+                        cur.append(g)
+                cur = [g for g in cur if g not in (ov.get('genres_remove', []) or [])]
+                movie['genres'] = cur
+                for key, val in (ov.get('set') or {}).items():
+                    movie[key] = val
+
             # Set 'featured' field for backwards compatibility (true or false)
             movie['featured'] = categories['is_staff_pick']
 

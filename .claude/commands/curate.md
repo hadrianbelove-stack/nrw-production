@@ -3,7 +3,7 @@ description: Curate new arrivals — staff picks, sections, slop review, pull qu
 allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 ---
 
-Curate recent arrivals. Runs 4 stages in order, each with a user prompt. **State-based and cumulative** — every run shows everything from the **last 7 days** that still needs work (slop unconfirmed / no capsule / no quotes), newest first. There are no "sessions" to resume or finish: skip as many days as you want and the next run simply shows whatever is still outstanding in the window. Nothing goes stale.
+Curate recent arrivals. Runs 5 stages in order (Stage 0 first), each with a user prompt. **State-based and cumulative** — every run shows everything from the **last 7 days** that still needs work (slop unconfirmed / no capsule / no quotes), newest first. There are no "sessions" to resume or finish: skip as many days as you want and the next run simply shows whatever is still outstanding in the window. Nothing goes stale.
 
 **Rhythm (user preference):** always curate **slop films too** — never skip or batch-drop them. Go **straight through from #1** in queue order unless the user redirects. In Stage 4, present each film's **capsule and pull quotes together in the same message** (one film at a time), then move to the next — never capsule-first-wait-then-quotes, and never as separate passes across all films.
 
@@ -21,6 +21,7 @@ If any `git push` in this session is rejected (CI or another writer pushed mid-s
 
 There is **no resume logic and no session/progress file**. Each run rebuilds everything from current state, so a film stays in the queue until it is actually handled — no matter how many days you skip. The rolling window is the **last 7 days** of `digital_date` (the 90-day wall is the hard ceiling). Every stage drains as it's handled, so a film is shown **once** and then not re-shown:
 
+- **Stage 0 (Confirm Reissues)** operates on its own queue, `admin/reissue_candidates.json` (written by intake Pass D), not the 7-day window or `curate_reviewed.json`. It shows every candidate with `status: pending`; confirming or rejecting flips that status, so the queue drains. Independent of the other stages.
 - **Stage 1 (Selects)** operates on in-window arrivals **not yet marked `selects`** in `admin/curate_reviewed.json`. Replying (picks *or* "skip") marks every film shown, so the queue drains.
 - **Stage 2 (Sections)** operates on in-window arrivals **not yet marked `sections`** in `admin/curate_reviewed.json`. Confirming ("looks good" or changes) marks every film shown, so the queue drains.
 - **Stage 3 (Slop)** operates on in-window films **not yet marked `slop`** in `admin/curate_reviewed.json`. The false-negative pass is done once per film; reviewing (confirm or correct) marks it, so the queue drains.
@@ -76,6 +77,45 @@ for i, (dd, mid, title, year, rt, mc, svc) in enumerate(candidates, 1):
 If the output shows 0 candidates, report "No arrivals in the last 7 days to curate" and stop.
 
 **Note**: Stage 4 (Per-Movie Curation) re-derives its own list from current state (capsule / pull-quote presence) within the same 7-day window — see that stage.
+
+---
+
+## Stage 0: Confirm Reissues
+
+Old films (original release 10+ years ago) that just got a new theatrical 4K restoration, anniversary re-release, festival revival, or alt cut. Intake **Pass D** finds them and holds them in `admin/reissue_candidates.json` — they do **not** reach the wall until you confirm them here. This stage is independent of the 7-day window and `curate_reviewed.json`; it drains as candidates are confirmed/rejected.
+
+**Step 1 — research any new candidates** (Gemini + Google Search verdict, distributor, evidence link). Skips candidates already researched:
+
+```bash
+cd /Users/hadrianbelove/Downloads/nrw-production && GEMINI_API_KEY=$(grep -rhoE "GEMINI_API_KEY[=:][^ ]*" .env* 2>/dev/null | head -1 | sed -E 's/.*[=:]//') /usr/bin/python3 pipeline/reissue_research.py
+```
+
+**Step 2 — show the table** (every pending candidate, pre-sorted by Gemini confidence: 🟢 likely → 🟡 maybe → ⚪ unlikely; ⭐DIST = known reissue label like Kino Lorber/Janus/Criterion):
+
+```bash
+/usr/bin/python3 scripts/reissue_table.py
+```
+
+If it prints "all caught up", report that and move to Stage 1. Otherwise present the table to the user as-is (it is already link-dense: 🔍 Google search, 📰 evidence article, W / IMDb / TMDB / ▶ trailer). Recommend the 🟢/⭐DIST rows. The user will reply with the row numbers to confirm (and any label edits).
+
+**Step 3 — apply the user's decision.** Confirm the chosen rows, drain the rest:
+
+```bash
+# Example: user said "confirm 1 and 3, custom label on 3"
+/usr/bin/python3 scripts/confirm_reissue.py --confirm 1,3 --label "3=New 4K Restoration" --drain
+```
+
+- `--confirm N[,N]` intakes those films into tracking with `_reissue` + badge label; they surface on the wall via normal discovery / virtual-screening flow.
+- `--label "N=Custom"` overrides the suggested badge for a confirmed row (otherwise the suggested label is used).
+- `--drain` marks every other shown pending candidate as rejected so they don't re-appear. Omit `--drain` to leave undecided ones pending for next run (e.g. user wants to research one more).
+
+**Step 4 — commit** the queue (and tracking export if films were confirmed):
+
+```bash
+git add admin/reissue_candidates.json movie_tracking.json && git commit -m "Confirm Reissues: N added, M rejected APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
+```
+
+Then move to Stage 1.
 
 ---
 
@@ -486,9 +526,10 @@ After both capsule and pull quote are resolved for a movie:
 
 ## Completion
 
-After all 4 stages, report a summary:
+After all 5 stages, report a summary:
 ```
 CURATION COMPLETE
+- Reissues: N confirmed, M rejected
 - Staff picks: N added (M total)
 - Sections: N overrides applied
 - Slop review: N overrides (N→slop, N→not slop)

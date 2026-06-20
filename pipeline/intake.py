@@ -217,6 +217,18 @@ class MovieIntake:
             if debug:
                 self.logger.info(f"Pass C completed: {pass_c_count} festival premieres intaked")
 
+        # Pass D: Reissue / restoration candidate collection (held for human confirm — NOT intaked here)
+        enable_pass_d = intake_config.get('enable_pass_d', True)
+        if enable_pass_d:
+            if debug:
+                self.logger.info("Starting Pass D: Reissue / restoration candidates")
+            try:
+                pass_d_count = self.collect_reissue_candidates(existing_ids, debug)
+                if debug:
+                    self.logger.info(f"Pass D completed: {pass_d_count} new reissue candidate(s) queued")
+            except Exception as e:
+                self.logger.error(f"Pass D (reissue candidates) failed: {e}")
+
         # Merge all intaked movies into database
         for movie_id, movie_data in all_intaked_movies.items():
             if movie_id not in existing_ids:
@@ -1052,3 +1064,168 @@ class MovieIntake:
                 break
 
         return fest_new_count
+
+    # ------------------------------------------------------------------
+    # Pass D: Reissue / restoration candidate collection
+    # ------------------------------------------------------------------
+
+    # TMDB release_dates type codes
+    _RELEASE_TYPE_NAMES = {
+        1: 'Premiere', 2: 'Theatrical (limited)', 3: 'Theatrical',
+        4: 'Digital', 5: 'Physical', 6: 'TV',
+    }
+
+    REISSUE_CANDIDATES_FILE = 'admin/reissue_candidates.json'
+
+    def collect_reissue_candidates(self, existing_ids, debug=False):
+        """Collect reissue/restoration candidates into admin/reissue_candidates.json.
+
+        Finds OLD films (original release reissue_min_age_years+ ago) that just had a
+        NEW release event in the last reissue_days_back days. These are invisible to
+        Passes A/B because TMDB keeps their original primary_release_date. Candidates are
+        held for the /curate "Confirm Reissues" stage — they are NOT intaked into tracking
+        here. Films already in tracking (existing_ids) are skipped.
+
+        Returns:
+            int: number of NEW candidates added to the queue this run.
+        """
+        cfg = self.config.get('intake', {})
+        min_age = cfg.get('reissue_min_age_years', 10)
+        days_back = cfg.get('reissue_days_back', 30)
+        max_pages = cfg.get('reissue_max_pages', 5)
+        keywords = [k.lower() for k in cfg.get('reissue_note_keywords', [])]
+        min_runtime = cfg.get('min_runtime', 60)
+
+        today = datetime.now().date()
+        window_start = today - timedelta(days=days_back)
+        # Original release must be at least min_age years old
+        try:
+            old_cutoff = today.replace(year=today.year - min_age)
+        except ValueError:  # Feb 29 edge case
+            old_cutoff = today.replace(year=today.year - min_age, day=28)
+
+        # Load existing candidate queue (preserve research/confirm status across runs)
+        queue = {}
+        if os.path.exists(self.REISSUE_CANDIDATES_FILE):
+            try:
+                with open(self.REISSUE_CANDIDATES_FILE, 'r') as f:
+                    data = json.load(f)
+                    queue = data.get('candidates', {}) if isinstance(data, dict) else {}
+            except Exception as e:
+                self.logger.warning(f"Could not load reissue candidate queue: {e}")
+
+        session = create_retry_session()
+        url = "https://api.themoviedb.org/3/discover/movie"
+        seen_this_run = {}
+
+        for page in range(1, max_pages + 1):
+            params = {
+                'api_key': self.tmdb_key,
+                'release_date.gte': window_start.strftime('%Y-%m-%d'),
+                'release_date.lte': today.strftime('%Y-%m-%d'),
+                'primary_release_date.lte': old_cutoff.strftime('%Y-%m-%d'),
+                'with_release_type': '2|3|4',  # theatrical (ltd), theatrical, digital
+                'region': 'US',
+                'with_runtime.gte': min_runtime,
+                'language': 'en-US',
+                'include_adult': 'false',
+                'sort_by': 'release_date.desc',
+                'page': page,
+            }
+            try:
+                self.intake_stats['api_calls'] += 1
+                resp = session.get(url, params=params, timeout=(10, 30))
+                resp.raise_for_status()
+                data = resp.json()
+            except Exception as e:
+                self.logger.error(f"Reissue sweep page {page} failed: {e}")
+                break
+
+            results = data.get('results', [])
+            if not results:
+                break
+
+            for m in results:
+                seen_this_run[str(m['id'])] = m
+
+            if page >= data.get('total_pages', 1):
+                break
+            time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.1))
+
+        new_added = 0
+        for mid, m in seen_this_run.items():
+            # Skip films already tracked or already queued
+            if mid in existing_ids or mid in queue:
+                continue
+
+            recent = self._find_reissue_release_note(mid, window_start, today)
+            if recent is None:
+                # No release event actually landed in-window (TMDB primary may differ) — skip
+                continue
+
+            note = (recent.get('note') or '').lower()
+            keyword_hit = any(kw in note for kw in keywords)
+
+            release_date = m.get('release_date', '')
+            year = int(release_date[:4]) if release_date and len(release_date) >= 4 else None
+
+            queue[mid] = {
+                'tmdb_id': mid,
+                'title': m.get('title', 'Unknown'),
+                'year': year,
+                'recent_release': recent,
+                'note_keyword_hit': keyword_hit,
+                'status': 'pending',           # pending | confirmed | rejected
+                'first_seen': today.strftime('%Y-%m-%d'),
+                'research': None,              # filled by the Gemini research step
+            }
+            new_added += 1
+            if debug:
+                flag = '★' if keyword_hit else ' '
+                self.logger.info(f"  {flag} reissue candidate: {m.get('title')} ({year}) — {recent.get('note') or recent.get('type')}")
+
+        # Save queue only when something actually changed — avoids daily git churn
+        # from a timestamp-only rewrite when no new candidates were found.
+        if new_added > 0:
+            out = {'last_updated': datetime.now().isoformat(), 'candidates': queue}
+            os.makedirs(os.path.dirname(self.REISSUE_CANDIDATES_FILE), exist_ok=True)
+            if not self.storage.atomic_write_json(out, self.REISSUE_CANDIDATES_FILE, backup=False):
+                self.logger.error("Failed to save reissue candidate queue")
+
+        self.logger.info(f"Reissue candidates: {new_added} new ({len(queue)} total in queue)")
+        return new_added
+
+    def _find_reissue_release_note(self, tmdb_id, window_start, today):
+        """Fetch a film's release_dates and return the in-window release entry that best
+        signals a reissue (prefers one with a note). Returns a dict or None.
+
+        Returns dict: {date, type, note, country} for the most relevant in-window release.
+        """
+        try:
+            resp = requests.get(
+                f"https://api.themoviedb.org/3/movie/{tmdb_id}/release_dates",
+                params={'api_key': self.tmdb_key}, timeout=15)
+            resp.raise_for_status()
+            data = resp.json()
+        except Exception as e:
+            self.logger.warning(f"release_dates fetch failed for {tmdb_id}: {e}")
+            return None
+
+        ws, te = window_start.strftime('%Y-%m-%d'), today.strftime('%Y-%m-%d')
+        in_window = []
+        for country in data.get('results', []):
+            cc = country.get('iso_3166_1', '')
+            for e in country.get('release_dates', []):
+                dt = (e.get('release_date') or '')[:10]
+                if dt and ws <= dt <= te:
+                    in_window.append({
+                        'date': dt,
+                        'type': self._RELEASE_TYPE_NAMES.get(e.get('type'), str(e.get('type'))),
+                        'note': e.get('note', ''),
+                        'country': cc,
+                    })
+        if not in_window:
+            return None
+        # Prefer US entries with a note, then any with a note, then most recent
+        in_window.sort(key=lambda r: (r['country'] != 'US', not r['note'], r['date']), reverse=False)
+        return in_window[0]

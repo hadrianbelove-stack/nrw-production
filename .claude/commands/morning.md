@@ -195,7 +195,7 @@ If nothing: "No concerns."
 
 ## Phase 2 — Curation
 
-After the overnight report, run `/curate` to handle recent arrivals: Selects → section review → slop review → per-film (capsule + Wikipedia links + pull quotes). `/curate` is **state-based** — it shows everything from the **last 7 days** still needing work (slop unconfirmed / no capsule / no quotes), newest first. There is no session to resume; skipped days just accumulate in the window until handled.
+After the overnight report, run `/curate` to handle recent arrivals: Confirm Reissues (Stage 0) → Selects → section review → slop review → per-film (capsule + Wikipedia links + pull quotes). Stage 0 surfaces old films caught getting a new restoration/re-release (intake Pass D) for you to confirm onto the wall. `/curate` is **state-based** — it shows everything from the **last 7 days** still needing work (slop unconfirmed / no capsule / no quotes), newest first. There is no session to resume; skipped days just accumulate in the window until handled.
 
 The curation queue is ready when:
 - Capsule variants can be generated for films without one
