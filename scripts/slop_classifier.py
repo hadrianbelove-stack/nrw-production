@@ -117,6 +117,13 @@ PRESTIGE_STREAMING = {
     'hbo max',
 }
 
+# ── Slop streaming platforms → instant SLOP ──────────────────────────────────
+# Crunchyroll = anime simulcast/library; never surfaced as curated. Manual override
+# (Tier 0) is the escape hatch when the user explicitly intervenes.
+SLOP_STREAMING = {
+    'crunchyroll',
+}
+
 # ── Prestige studios → NOT SLOP ──────────────────────────────────────────────
 PRESTIGE_STUDIOS = {
     'a24', 'neon', 'mubi', 'criterion', 'kino lorber', 'magnolia',
@@ -210,6 +217,12 @@ def classify_slop(movie):
         for prestige in PRESTIGE_STREAMING:
             if prestige in svc:
                 return False, f'prestige_streaming:{svc}', 'strong'
+
+    # Tier 1b: Slop streaming platform → SLOP (Crunchyroll). Manual override wins (Tier 0).
+    for svc in _get_streaming_services(movie):
+        for s in SLOP_STREAMING:
+            if s in svc:
+                return True, f'slop_streaming:{svc}', 'strong'
 
     studio = (movie.get('studio') or '').lower().strip()
 

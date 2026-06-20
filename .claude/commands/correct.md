@@ -64,15 +64,35 @@ for m in d['movies']:
 
 ### Path A: Specific field override
 
-If the user gave you a concrete correction (trailer URL, missing link, wrong synopsis text), apply it directly to data.json. This is the common case.
+If the user gave you a concrete correction (trailer URL, missing link, wrong synopsis text), apply it. This is the common case.
+
+**Durable vs. one-off — pick the right home for the fix:**
+
+Some top-level fields are **rebuilt from TMDB on every re-enrichment** (`genres`, `studio`, `cast`, `crew`, `synopsis`/`overview`, `poster_path`, `original_language`). A bare data.json edit to one of these gets **wiped** the next time that movie is enriched. (The old `manually_corrected` flag does NOT protect anything — nothing in the pipeline reads it.)
+
+- **Field that gets rebuilt by enrichment** → write to **`admin/overrides.json`** so it re-applies on every build. This is the durable layer.
+- **Field that is NOT rebuilt** (trailer URL) → edit data.json directly. **Watch links** → use `admin/watch_link_overrides.json`.
+
+**`admin/overrides.json`** is keyed by `str(movie_id)` and applied as the last mutation in display generation:
+```json
+{
+  "tv_278178": {
+    "set": { "synopsis": "Corrected synopsis text." },
+    "genres_add": ["Thriller"],
+    "genres_remove": ["Comedy"]
+  }
+}
+```
+- `set` → overwrite any top-level field
+- `genres_add` / `genres_remove` → list ops on the genres array
+
+After editing `admin/overrides.json`, run `/usr/bin/python3 generate_data.py` (display-only, no enrichment) to apply it to data.json.
 
 **Rules for manual edits:**
-- **Trailer**: Edit `links.trailer` in the movie entry. If a hosted trailer exists at the old URL, note that `links.trailer_hosted` may need updating too.
-- **Watch links / VOD**: Only allowed platforms are **Amazon, Apple TV, YouTube**. Fandango at Home only if it's the sole option. No Google Play, Plex, Vudu, or anything else. Amazon links must include `&tag=nrw04-20`. Use HD prices.
-- **Poster**: If user says it's wrong but doesn't provide a replacement, check TMDB for the current poster_path.
-- **Any field**: Just edit it. Don't overthink it.
-
-After applying the override, set `"manually_corrected": true` on the movie entry.
+- **Trailer**: Edit `links.trailer` in the movie entry directly (not rebuilt). If a hosted trailer exists at the old URL, `links.trailer_hosted` may need updating too.
+- **Watch links / VOD**: Use `admin/watch_link_overrides.json`. Only allowed platforms are **Amazon, Apple TV, YouTube**. Fandango at Home only if it's the sole option. No Google Play, Plex, Vudu, or anything else. Amazon links must include `&tag=nrw04-20`. Use HD prices.
+- **Poster / synopsis / genres / studio / cast**: rebuilt by enrichment — use `admin/overrides.json`.
+- **Any other field**: if unsure whether enrichment rebuilds it, prefer `admin/overrides.json` to be safe.
 
 ### Path B: Wrong TMDB ID (wrong movie entirely)
 
