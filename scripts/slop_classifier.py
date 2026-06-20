@@ -2,10 +2,16 @@
 Slop classifier — determines whether a film on the NRW wall is "slop"
 (low-quality direct-to-digital content) or a legitimate film.
 
-Three-tier logic:
-  1. Prestige streaming platform → instant NOT SLOP
-  2. Studio/distributor veto lists → instant SLOP or NOT SLOP
-  3. Score-based signals → SLOP if score >= 5 (or 4 when no Wikipedia)
+Tiered logic:
+  0. Manual overrides (MANUAL_OVERRIDES) → human verdict wins
+  1. Prestige streaming (Max/HBO/MUBI…) → NOT SLOP; slop streaming (Crunchyroll) → SLOP
+  2. Studio veto lists → SLOP (Hallmark, True Story, asylum…) or NOT SLOP (A24, Skydance, Factory 25…)
+  2c. Indian commercial cinema → SLOP unless a major crossover hit
+  3. Score-based signals → SLOP if score >= 4. Signals:
+       +2 no Wikipedia, +2 no RT score, +1 no RT link
+       IMDb: +2 if <=6.0, +1 if 6.1-6.9, -1 if >=7.0
+       -1 prestige festival (admin/festival_films.json)
+       -1 major streamer (Netflix/Prime/Disney+/HBO/Max/Shudder; Tubi neutral)
 
 Run directly to apply is_slop to all films in data.json:
   python3 scripts/slop_classifier.py
@@ -14,6 +20,35 @@ Or import classify_slop() for use in the enricher.
 """
 
 import json
+import os
+
+# ── Prestige festivals → -1 score signal (Tier 3) ────────────────────────────
+# Selection at a top festival is a quality signal that offsets the no-RT penalty
+# many arthouse/foreign films incur. Membership lives in admin/festival_films.json
+# (movie_id -> festival name), seeded manually and auto-fed from Wikipedia.
+PRESTIGE_FESTIVALS = {
+    'cannes', 'berlinale', 'berlin international film festival',
+    'international film festival rotterdam', 'iffr', 'rotterdam',
+    'sundance', 'telluride',
+    'new york film festival', 'nyff',
+    'venice film festival', 'venice international film festival', 'venezia',
+    'locarno',
+}
+
+_FESTIVAL_FILMS_PATH = 'admin/festival_films.json'
+_festival_films_cache = None
+
+def _festival_films():
+    """movie_id (str) -> festival name. Cached; tolerates a missing/bad file."""
+    global _festival_films_cache
+    if _festival_films_cache is None:
+        try:
+            with open(_FESTIVAL_FILMS_PATH) as f:
+                raw = json.load(f)
+            _festival_films_cache = {str(k): v for k, v in raw.items()}
+        except (OSError, ValueError):
+            _festival_films_cache = {}
+    return _festival_films_cache
 
 # ── Manual overrides (TMDB ID → bool) ────────────────────────────────────────
 # Films the classifier gets wrong that require human judgment.
@@ -104,6 +139,14 @@ MANUAL_OVERRIDES = {
     1174334: True,    # A Foggy Tale
     1433117: True,    # Kara
     959646:  True,    # Zombie Land Saga: Yumeginga Paradise (Crunchyroll)
+    # Human-confirmed NOT slop (curator call, June 2026) — no data signal to key on
+    1526220: False,   # Still Single
+    1086247: False,   # Moss & Freud
+    1353467: False,   # Mongrels
+    1078581: False,   # Giant
+    467914:  False,   # The Land of Sometimes (Factory 25 distributor)
+    845875:  False,   # The Champion of Auschwitz (historical drama)
+    1006024: False,   # Who'll Stop the Rain (Taiwan festival film)
 }
 
 # ── Prestige streaming platforms → instant NOT SLOP ──────────────────────────
@@ -122,6 +165,19 @@ PRESTIGE_STREAMING = {
 # (Tier 0) is the escape hatch when the user explicitly intervenes.
 SLOP_STREAMING = {
     'crunchyroll',
+}
+
+# ── Soft non-slop streamers → -1 score signal (Tier 3) ───────────────────────
+# Being licensed onto a major SVOD (or a curated genre service like Shudder) is a
+# mild quality/legitimacy signal. -1 point, not an instant pass (Max/HBO already
+# get that via PRESTIGE_STREAMING). Matched against streaming services only, so an
+# Amazon *rental* (VOD) does not count. Tubi is intentionally absent = neutral.
+MAJOR_STREAMING = {
+    'netflix',
+    'amazon prime video', 'prime video',
+    'hbo max', 'hbo', 'max',
+    'disney plus', 'disney+',
+    'shudder',
 }
 
 # ── Prestige studios → NOT SLOP ──────────────────────────────────────────────
@@ -143,7 +199,7 @@ PRESTIGE_STUDIOS = {
     'bbc films', 'channel 4', 'film4', 'screen australia', 'nfb',
     'telefilm canada', 'nzfc', 'amplify releasing', 'mongrel media',
     'entertainment one', 'kimstim', 'oscilloscope laboratories',
-    'lionsgate', 'lions gate',
+    'lionsgate', 'lions gate', 'skydance', 'factory 25',
     # Documentary / prestige TV labels
     'black public media', 'pbs', 'hbo documentary', 'hbo documentary films',
     'imagine documentaries',
@@ -175,7 +231,8 @@ SLOP_STUDIOS = {
     'screen media ventures',
     'indican pictures',
     'yale entertainment',
-    'hallmark channel', 'hallmark movies', 'crown media',
+    'hallmark', 'hallmark channel', 'hallmark media', 'hallmark movies', 'crown media',
+    'true story',  # True Story channel
     'up entertainment', 'up tv',
     'pure flix', 'angel studios', 'affirm films',
     'lifetime', 'lmn',
@@ -276,10 +333,13 @@ def classify_slop(movie):
     if not imdb:
         score += 2
         reasons.append('no_imdb')
-    elif float(imdb) < 6:
-        score += 1
+    elif float(imdb) <= 6.0:
+        score += 2
         reasons.append('low_imdb')
-    elif float(imdb) >= 6.5:
+    elif float(imdb) < 7.0:  # 6.1 - 6.9
+        score += 1
+        reasons.append('mid_imdb')
+    else:  # imdb >= 7.0
         score -= 1
         reasons.append('good_imdb')
     if movie.get('content_type') == 'tv_movie':
@@ -288,6 +348,19 @@ def classify_slop(movie):
     if not links.get('rt') and not links.get('rotten_tomatoes'):
         score += 1
         reasons.append('no_rt_link')
+
+    # Prestige festival selection → -1 (offsets the no-RT penalty arthouse films incur)
+    fest = _festival_films().get(str(tmdb_id))
+    if fest:
+        score -= 1
+        reasons.append(f'festival:{fest}')
+
+    # Major streamer (Netflix/Prime/HBO/Max) → -1 (licensing legitimacy signal)
+    for svc in _get_streaming_services(movie):
+        if any(s in svc for s in MAJOR_STREAMING):
+            score -= 1
+            reasons.append(f'major_streamer:{svc}')
+            break
 
     # Fixed threshold. Missing Wikipedia is already one signal (+2 above) —
     # it is NOT also used to lower the bar (that double-counted it).

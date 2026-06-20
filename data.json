@@ -185,7 +185,7 @@
       "distributor": "Vertigo Média",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:0(no_rt,good_imdb,festival:Cannes)",
       "_slop_confidence": "weak",
       "pull_quotes": [
         {
@@ -525,7 +525,7 @@
       "letterboxd_score": "2.6",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -657,7 +657,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:amazon prime video)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -2181,7 +2181,7 @@
       "letterboxd_score": "3.3",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -2403,8 +2403,8 @@
       "_is_preorder": true,
       "letterboxd_score": "3.5",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -2511,7 +2511,7 @@
       "distributor": "The Yellow Affair",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -2751,7 +2751,7 @@
       "distributor": "Filmoption International",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -3175,7 +3175,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_rt,mid_imdb,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -3271,7 +3271,7 @@
       "_quality_warnings": [
         "Title matches original foreign title (language: lt): 'Laguna'"
       ],
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -3291,7 +3291,7 @@
         "manual_override": null
       },
       "featured": false,
-      "is_slop": false,
+      "is_slop": true,
       "_is_slop_guess": true
     },
     {
@@ -3374,7 +3374,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link,major_streamer:amazon prime video)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -3681,7 +3681,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "slop_streaming:crunchyroll",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "metacritic_score"
@@ -4208,7 +4208,7 @@
       "metacritic_score": "59",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,no_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -4571,7 +4571,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,no_imdb)",
+      "_slop_reason": "score:3(no_rt,no_imdb,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -4592,7 +4592,7 @@
         "manual_override": null
       },
       "featured": false,
-      "is_slop": true,
+      "is_slop": false,
       "_slop_confidence": "weak",
       "capsule": "South Korean action-comedy.\nAn ex-husband and a current husband are forced to join forces to rescue their kidnapped ex-wife.",
       "_is_slop_guess": true,
@@ -4903,7 +4903,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -5251,7 +5251,7 @@
       "_needs_review": false,
       "is_slop": false,
       "_is_slop_guess": false,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -5607,7 +5607,7 @@
         "Service 'The Roku Channel' not in TMDB providers for this title (TMDB has: ['amazon video'])",
         "Service 'Hoopla' not in TMDB providers for this title (TMDB has: ['amazon video'])"
       ],
-      "_slop_reason": "score:3(no_wiki,low_imdb)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "wikipedia",
@@ -5722,7 +5722,7 @@
       "_needs_review": false,
       "is_slop": false,
       "_is_slop_guess": false,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -5986,7 +5986,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:0(no_rt,good_imdb,major_streamer:shudder)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -6111,7 +6111,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "metacritic_score",
@@ -6216,7 +6216,7 @@
       "_needs_review": false,
       "is_slop": false,
       "_is_slop_guess": false,
-      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -6467,7 +6467,7 @@
       "_digital_date_source": "detection",
       "_needs_review": false,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score"
@@ -6695,7 +6695,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_reason": "manual_override",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": true,
@@ -6935,7 +6935,7 @@
       "distributor": "Paramount Pictures",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "manual_override",
       "_slop_confidence": "weak",
       "_trailer_source": "gemini_playwright",
       "filters": {
@@ -7058,7 +7058,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:1(no_rt,good_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -7244,7 +7244,7 @@
       "metacritic_score": "0",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:1(low_imdb,major_streamer:disney+)",
       "status": "available",
       "reissue_label": null,
       "filters": {
@@ -7821,7 +7821,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,no_imdb)",
+      "_slop_reason": "score:3(no_rt,no_imdb,major_streamer:amazon prime video)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -7859,7 +7859,7 @@
         }
       ],
       "_keywords_generated": true,
-      "is_slop": true,
+      "is_slop": false,
       "_slop_confidence": "weak",
       "_is_slop_guess": true
     },
@@ -8328,7 +8328,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "metacritic_score"
@@ -9118,7 +9118,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:3(no_rt,mid_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -9373,7 +9373,7 @@
       "_quality_warnings": [
         "Title matches original foreign title (language: te): 'Veerabhadrudu'"
       ],
-      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link,major_streamer:amazon prime video)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -9656,7 +9656,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:0(mid_imdb,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "metacritic_score",
@@ -12451,7 +12451,7 @@
       "distributor": "Shudder",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(low_imdb,major_streamer:shudder)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -12562,7 +12562,7 @@
       "distributor": "Cinépolis Distribución (Mexico) / Netflix (International)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:-2(good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -14219,7 +14219,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_reason": "score:4(no_wiki,no_rt,mid_imdb,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "wikipedia",
@@ -14239,7 +14239,7 @@
         "manual_override": null
       },
       "featured": true,
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak",
       "capsule": "A Netflix docuseries on Norway's national team ending a 26-year World Cup drought, riding a flawless 8-0-0 qualifying campaign behind **[Erling Haaland](https://en.wikipedia.org/wiki/Erling_Haaland)** and **[Martin Ødegaard](https://en.wikipedia.org/wiki/Martin_%C3%98degaard)**.\n\nIntimate dressing-room access to \"the people's team\" under enormous pressure.",
       "_is_slop_guess": true
@@ -14491,7 +14491,7 @@
       "capsule": "**Kevin Kraft**, senior producer on *The Howard Stern Show*, stepped into the director's chair for *The Second Coming of John Cooper*, a mockumentary comedy about a washed-up Hollywood star.\n\nShot in a brisk 13 days, but nearly saw its entire footage lost to a catastrophic hard drive crash that took months to recover.\n\nFeatures real-life comics like **[Rob Corddry](https://en.wikipedia.org/wiki/Rob_Corddry)**, **[Brian Posehn](https://en.wikipedia.org/wiki/Brian_Posehn)**, **[Doug Benson](https://en.wikipedia.org/wiki/Doug_Benson)**, and **[Dustin Ybarra](https://en.wikipedia.org/wiki/Dustin_Ybarra)**, alongside TikTok star **Mads Lewis**.",
       "_watch_links_verified": "2026-06-10T13:35:51.365078",
       "_slop_confidence": "strong",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1556616",
@@ -14596,7 +14596,7 @@
       "_slop_confidence": "strong",
       "_trailer_retry_count": 1,
       "_trailer_last_retry": "2026-06-19T14:35:10.039005",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1708839",
@@ -15443,7 +15443,7 @@
         }
       ],
       "capsule": "Modern [mumblecore](https://en.wikipedia.org/wiki/Mumblecore) dramedy charting the messy ups and downs of six college-aged couples navigating young love in Los Angeles\n\nWriter-director **Julian Berger** (who also stars) crafted this rom-com for \"women in their 20s... after a manic depressive episode,\" specifically optimized for laptop viewing.\n\nReleased free on YouTube.",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1249271",
@@ -15559,7 +15559,7 @@
       ],
       "capsule": "**[Sky Hopinka](https://en.wikipedia.org/wiki/Sky_Hopinka)** didn't just film a powwow — he co-organized one (at Seattle's Daybreak Star center).\n\nShot over three days, edited as a single day; it climaxes in a mesmeric 30-minute unbroken shot of a Northern Traditional dance.",
       "hidden": true,
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1510769",
@@ -15885,7 +15885,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -16231,7 +16231,7 @@
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -16252,7 +16252,7 @@
       "featured": false,
       "is_slop": false,
       "_slop_confidence": "weak",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1339210",
@@ -16352,7 +16352,7 @@
       "_quality_warnings": [
         "Service 'Apple TV' not in TMDB providers for this title (TMDB has: ['plex', 'youtube', 'fandango at home', 'google play movies'])"
       ],
-      "_slop_reason": "score:3(no_rt,no_rt_link)",
+      "_slop_reason": "score:4(no_rt,mid_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score"
@@ -16370,7 +16370,7 @@
         "manual_override": null
       },
       "featured": false,
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak",
       "_is_slop_guess": true
     },
@@ -16698,9 +16698,9 @@
       "metacritic_score": "0",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "is_slop": true,
+      "is_slop": false,
       "_is_slop_guess": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb,no_rt_link,major_streamer:amazon prime video)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -16817,7 +16817,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:1(no_rt,good_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -17285,7 +17285,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -17323,7 +17323,7 @@
         }
       ],
       "_watch_links_verified": "2026-06-06T12:28:06.591176",
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak",
       "_is_slop_guess": true
     },
@@ -17403,7 +17403,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,no_imdb)",
+      "_slop_reason": "score:3(no_rt,no_imdb,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -17441,7 +17441,7 @@
           "review_url": "https://letterboxd.com/pramitheus/film/the-marked-woman-2026/"
         }
       ],
-      "is_slop": true,
+      "is_slop": false,
       "_slop_confidence": "weak",
       "_is_slop_guess": true
     },
@@ -17530,7 +17530,7 @@
       "metacritic_score": "53",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:2(no_imdb)",
+      "_slop_reason": "score:1(no_imdb,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "imdb_rating"
@@ -17989,7 +17989,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_rt,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -18121,7 +18121,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -18347,7 +18347,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -18568,7 +18568,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -18809,7 +18809,7 @@
       "_quality_warnings": [
         "Title matches original foreign title (language: de): 'Poldi'"
       ],
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_wiki,no_rt,good_imdb,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -18922,7 +18922,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -19025,7 +19025,7 @@
       "_watch_links_verified": "2026-06-08T14:31:05.632087",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_wiki,good_imdb)",
+      "_slop_reason": "score:3(no_wiki,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -19349,7 +19349,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -19576,7 +19576,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -19778,7 +19778,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -19890,7 +19890,7 @@
       "metacritic_score": "38",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_rt,low_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score"
@@ -20286,7 +20286,7 @@
         "Service 'Apple TV' not in TMDB providers for this title (TMDB has: ['amazon video'])",
         "Service 'Fandango' not in TMDB providers for this title (TMDB has: ['amazon video'])"
       ],
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "status": "available",
       "reissue_label": null,
       "filters": {
@@ -20521,7 +20521,7 @@
       "metacritic_score": "72",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "status": "available",
       "reissue_label": null,
       "filters": {
@@ -20899,7 +20899,7 @@
       "metacritic_score": null,
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:4(no_rt,mid_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -20920,7 +20920,7 @@
         "manual_override": null
       },
       "_watch_links_verified": "2026-06-03T14:13:09.502679",
-      "is_slop": false,
+      "is_slop": true,
       "_slop_confidence": "weak",
       "_is_slop_guess": true
     },
@@ -21244,7 +21244,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "_enrichment_attempts": 1,
       "_last_enrichment_attempt": "2026-06-02",
@@ -21478,8 +21478,8 @@
         "metacritic_score"
       ],
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "keywords": [],
       "filters": {
@@ -22482,7 +22482,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -22599,7 +22599,7 @@
       "metacritic_score": null,
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_rt,low_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -22842,7 +22842,7 @@
       },
       "is_slop": true,
       "_slop_confidence": "strong",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1659690",
@@ -23041,7 +23041,7 @@
       ],
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -23182,7 +23182,7 @@
         "manual_override": null
       },
       "_slop_confidence": "strong",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1522496",
@@ -23256,7 +23256,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -23488,9 +23488,9 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
-      "is_slop": true,
+      "is_slop": false,
       "_is_slop_guess": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "prestige_studio:skydance sports",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -23595,7 +23595,7 @@
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:1(no_rt,good_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -23838,7 +23838,7 @@
       "_quality_warnings": [
         "Service 'Hoopla' not in TMDB providers for this title (TMDB has: ['fandango at home', 'amazon video'])"
       ],
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -23865,7 +23865,7 @@
       "is_slop": false,
       "_slop_confidence": "weak",
       "capsule": "Dramatizes **Kate Moss**'s nine-month portrait sittings for renowned painter **Lucian Freud** in 2002, when a pregnant Moss posed for the artist, and their unexpected connection. Produced by Moss herself and starring **Ellie Bamber** (*Nocturnal Animals*, *Willow*) and **Derek Jacobi**. The resulting painting: \"Naked Portrait 2002\" — later sold for £3.928 million.",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1535130",
@@ -23968,7 +23968,7 @@
       },
       "_slop_confidence": "strong",
       "capsule": "Concert film of **Kylie Minogue**'s 2025 Tension World Tour. Made in conjunction with the three-part Netflix doc *Kylie*. Includes the unexplained appearance of \"Sinister Gumbies\" during the \"Better the Devil You Know\" number.",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1425373",
@@ -24095,7 +24095,7 @@
       "_watch_links_verified": "2026-06-11T13:45:57.502574",
       "_slop_confidence": "strong",
       "capsule": "Quirky portrait of the World Porridge Making Championships in a Scottish Highlands village. Feature film debut by opera director **Constantine Costi**. Follows competitors and the aging 'Porridge Chieftain' **Charlie Miller**, who seeks a successor after nearly three decades at the helm. Premiered at CPH:DOX.",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "934584",
@@ -24238,7 +24238,7 @@
       },
       "_slop_confidence": "strong",
       "capsule": "Spanish sci-fi thriller from the director of *The Platform* (a surprise Netflix smash). A mysterious virus selectively targets the richest people on the planet. Premiered at Sitges.",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1465770",
@@ -24403,7 +24403,7 @@
       "metacritic_score": "0",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -24454,7 +24454,7 @@
       "is_slop": false,
       "_slop_confidence": "weak",
       "capsule": "Profile of **Masaki Saito**, Toronto's sushi superstar and the first Canadian chef to earn two Michelin stars. Directors **Jamal Burger** and **Jukan Tateisi** delve into his exquisite craft and his 'sometimes unruly life' outside the kitchen. The title comes from Saito's Michelin acceptance speech: 'I am still single, I don't know why.'",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1687538",
@@ -24656,7 +24656,7 @@
       "letterboxd_score": "3.1",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:3(no_rt,mid_imdb,no_rt_link,major_streamer:shudder)",
       "_slop_confidence": "weak",
       "_enrichment_attempts": 2,
       "_last_enrichment_attempt": "2026-05-31",
@@ -24791,8 +24791,8 @@
       "featured": false,
       "display_title": "Blind Cop 2",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_rt,mid_imdb,major_streamer:amazon prime video)",
       "_slop_confidence": "weak",
       "_watch_links_verified": "2026-06-03T14:13:28.938573",
       "_enrichment_attempts": 2,
@@ -24909,7 +24909,7 @@
       "metacritic_score": "42",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_rt,low_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score"
@@ -25259,7 +25259,7 @@
       },
       "_slop_confidence": "strong",
       "capsule": "Made for Latino Netflix, this hybrid animated documentary about Argentine World Cup hero **Emiliano \"Dibu\" Martínez** blends traditional animation by beloved Argentine cartoonist **Liniers** with archival footage and interviews. Explores Martínez's childhood \"power\" to stop time and converse with a talking ball — a device symbolizing his legendary mental fortitude in high-pressure penalty shootouts.",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1015154",
@@ -25732,9 +25732,9 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
-      "is_slop": true,
+      "is_slop": false,
       "_is_slop_guess": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -25874,7 +25874,7 @@
       "_quality_warnings": [
         "Title matches original foreign title (language: ko): 'Mongrels'"
       ],
-      "_slop_reason": "score:3(no_rt,no_rt_link)",
+      "_slop_reason": "manual_override",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -25913,7 +25913,7 @@
       "is_slop": false,
       "_slop_confidence": "weak",
       "capsule": "A three-part drama about a grieving Korean family immigrating to the Canadian prairies in 1991 to cull feral dogs. Director **Jerome Yoo** specifically traveled to Seoul to cast retired actor **Jae-Hyun Kim** (a retired Korean star who had been living off-grid) as the patriarch struggling with displacement.",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1629367",
@@ -26133,7 +26133,7 @@
         "Service 'Plex' not in TMDB providers for this title (TMDB has: ['amazon video'])",
         "Title matches original foreign title (language: ro): 'Kontinental '25'"
       ],
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:3(no_rt,mid_imdb,no_rt_link,festival:Berlinale)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score"
@@ -26349,7 +26349,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "_enrichment_attempts": 1,
       "_last_enrichment_attempt": "2026-05-27",
@@ -26608,7 +26608,7 @@
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -26743,7 +26743,7 @@
       "distributor": "Galapagos Films",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "_slop_confidence": "weak",
       "pull_quotes": [
         {
@@ -26771,7 +26771,7 @@
         "manual_override": null
       },
       "capsule": "Prisoner #77. **Tadeusz \"Teddy\" Pietrzykowski** was a pre-war Warsaw boxing champion who fought an estimated 40–60 bouts inside Auschwitz — not for sport, but survival. Acclaimed Polish actor **Piotr Głowacki** dropped 39 pounds over 14 months and trained a full year in boxing, performing every fight himself. No stunt doubles. This was a lifelong project by director **Maciej Barczewski**, whose grandfather was a Holocaust survivor.",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1222518",
@@ -26895,7 +26895,7 @@
         "manual_override": null
       },
       "capsule": "Comedian **Harland Williams** directs and stars as Turk, an eccentric 80s-obsessed wingman hired to help a down-on-his-luck guy navigate modern dating. Raunchy throwback aiming squarely for '90s-era laughs. Shot in Canada for $2.5M.",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1604620",
@@ -27224,7 +27224,7 @@
         "manual_override": null
       },
       "capsule": "Chronicles the wild career of soccer hard-man **Vinnie Jones** (who holds the record for most red cards in English top-flight history), from his notorious image with Wimbledon's \"Crazy Gang\" to FA Cup winner to Hollywood tough guy. Delves into the chaos, controversies, and unlikely reinvention of a genuine one-off.",
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1653922",
@@ -27433,7 +27433,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "_is_slop_guess": true,
       "pull_quotes": [
@@ -27549,7 +27549,7 @@
       "distributor": "Atlas Distribution",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "keywords": [
         "found footage",
@@ -28699,7 +28699,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -28848,7 +28848,7 @@
         "manual_override": null
       },
       "keywords": [],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1535951",
@@ -29383,7 +29383,7 @@
       "distributor": "Sony Pictures / Sony Pictures Releasing",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_rt,no_rt_link)",
+      "_slop_reason": "score:3(no_rt,mid_imdb,no_rt_link,major_streamer:amazon prime video)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -29685,7 +29685,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "_watch_links_verified": "2026-05-28T13:24:29.624251",
       "filters": {
@@ -29805,7 +29805,7 @@
       "_watch_links_verified": "2026-05-30T12:23:09.635810",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -30245,7 +30245,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -30344,7 +30344,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:1(no_rt,good_imdb,no_rt_link,major_streamer:amazon prime video)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -30782,7 +30782,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -31084,7 +31084,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -31201,7 +31201,7 @@
         "female empowerment",
         "parallel universe"
       ],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1548223",
@@ -31404,7 +31404,7 @@
       "distributor": "{{Plainlist| * True Brit Entertainment (United Kingdom) * Vertical (United States)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "manual_override",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -31425,7 +31425,7 @@
         "sports drama",
         "biographical drama"
       ],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1411926",
@@ -31620,7 +31620,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -31711,7 +31711,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link,major_streamer:amazon prime video)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -31919,7 +31919,7 @@
       ],
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -32021,7 +32021,7 @@
       "featured": false,
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:1(no_rt,good_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -32137,7 +32137,7 @@
         "suspense",
         "absurd"
       ],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "586369",
@@ -32534,8 +32534,8 @@
       ],
       "featured": false,
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -32631,8 +32631,8 @@
       ],
       "featured": false,
       "reissue_label": null,
-      "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "is_slop": false,
+      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -33102,7 +33102,7 @@
         "manual_override": null
       },
       "keywords": [],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1445033",
@@ -33424,7 +33424,7 @@
       "distributor": "Cirko Film",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -33774,8 +33774,8 @@
         "metacritic_score"
       ],
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -34363,7 +34363,7 @@
         "manual_override": null
       },
       "keywords": [],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1517125",
@@ -34439,7 +34439,7 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "_slop_reason": "score:3(no_rt,low_imdb,festival:Venice)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -34569,7 +34569,7 @@
       "distributor": "Vertical",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:-2(good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -35084,7 +35084,7 @@
       "letterboxd_score": "3.0",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -35183,7 +35183,7 @@
       "_trailer_source": "gemini_playwright",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -35305,8 +35305,8 @@
       "display_title": "An Enemy Within",
       "distributor": "Saban Films",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -35633,7 +35633,7 @@
       "distributor": "Bendita Film Sales",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -35763,7 +35763,7 @@
       "_trailer_source": "gemini_playwright",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -35886,7 +35886,7 @@
       ],
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:-2(good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -36089,7 +36089,7 @@
       ],
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:0(no_rt,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -36411,7 +36411,7 @@
         "manual_override": null
       },
       "keywords": [],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1576369",
@@ -36673,7 +36673,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -36790,7 +36790,7 @@
       "display_title": "Whispers Next Door",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -37306,7 +37306,7 @@
         "nudity",
         "crypto"
       ],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1374397",
@@ -37499,7 +37499,7 @@
       "letterboxd_score": "2.2",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -37913,7 +37913,7 @@
       "distributor": "A24",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": true,
@@ -38264,7 +38264,7 @@
       "_watch_links_verified": "2026-05-15T14:17:29.971696",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -38390,7 +38390,7 @@
       "distributor": "Focus Features (through Universal Pictures<ref name=\"BBFC\" />)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -38626,7 +38626,7 @@
       "keywords": [
         "based on true story"
       ],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "855435",
@@ -38740,7 +38740,7 @@
       "distributor": "Independent Film Company",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": true,
@@ -38884,7 +38884,7 @@
       "distributor": "{{Plainlist| * Lionsgate and Grindstone Entertainment Group (United States) * Rialto Distribution (Australia)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -38990,7 +38990,7 @@
         "sports documentary",
         "sport"
       ],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1195044",
@@ -39282,7 +39282,7 @@
       "letterboxd_score": "2.7",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -39501,7 +39501,7 @@
       "letterboxd_score": "3.2",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "_trailer_source": "gemini_playwright",
       "filters": {
@@ -39604,7 +39604,7 @@
       "distributor": "Levelfilm",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
+      "_slop_reason": "score:3(no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -39718,7 +39718,7 @@
         "enthusiastic",
         "hum"
       ],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1631682",
@@ -39946,7 +39946,7 @@
       "distributor": "UIP-Dunafilm / Netflix / Universal Pictures",
       "reissue_label": "25th Anniversary Restoration",
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -40394,7 +40394,7 @@
         "sports documentary",
         "little league"
       ],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "tv_303143",
@@ -40472,7 +40472,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "first_air_date",
       "_needs_review": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:1(no_rt,good_imdb,no_rt_link,major_streamer:netflix)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -40673,8 +40673,8 @@
       "letterboxd_score": "3.8",
       "distributor": "Netflix",
       "reissue_label": null,
-      "is_slop": true,
-      "_slop_reason": "score:4(no_rt,no_imdb)",
+      "is_slop": false,
+      "_slop_reason": "score:3(no_rt,no_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -41226,7 +41226,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -41364,7 +41364,7 @@
       "letterboxd_score": "4.0",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_wiki,good_imdb)",
+      "_slop_reason": "score:3(no_wiki,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -41507,7 +41507,7 @@
       "distributor": "Greenwich Entertainment",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": true,
@@ -41632,7 +41632,7 @@
       "distributor": "Vertical",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -42168,7 +42168,7 @@
       "letterboxd_score": "3.8",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_wiki,good_imdb)",
+      "_slop_reason": "score:0(no_wiki,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -42258,7 +42258,7 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -42481,7 +42481,7 @@
       "_watch_links_verified": "2026-06-02T14:04:41.240804",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -42609,7 +42609,7 @@
       "distributor": "Maison 4:3 / UFO Distribution / Best Friend Forever",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43099,7 +43099,7 @@
       "distributor": "Les Films du Losange (France)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43197,7 +43197,7 @@
       "distributor": "Pyramide Distribution (France)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43605,7 +43605,7 @@
       "distributor": "Fandango",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43818,7 +43818,7 @@
       "distributor": "Sky Cinema / Pumpkin Films<ref name=\"bbfc\"></ref>",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -43918,8 +43918,8 @@
       "display_title": "Blackout",
       "_watch_links_verified": "2026-05-17T11:06:13.081304",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -44441,7 +44441,7 @@
       "distributor": "Lumiere Distribution",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:3(no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -45569,7 +45569,7 @@
       "hidden": true,
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -45862,7 +45862,7 @@
       "_trailer_last_retry": "2026-06-11T13:48:12.867730",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_wiki,good_imdb)",
+      "_slop_reason": "score:0(no_wiki,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -46072,7 +46072,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -46166,8 +46166,8 @@
       "featured": false,
       "display_title": "Dummy",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -46538,7 +46538,7 @@
       "distributor": "Medusa Film",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
+      "_slop_reason": "score:2(no_rt,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -46726,7 +46726,7 @@
       "letterboxd_score": "3.5",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:3(no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -46818,8 +46818,8 @@
       "display_title": "LARRY (they/them)",
       "distributor": "Les Films du 3 mars",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -47034,7 +47034,7 @@
       "letterboxd_score": "3.6",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_wiki)",
+      "_slop_reason": "score:3(no_wiki,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -47126,7 +47126,7 @@
       "letterboxd_score": "2.0",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -47423,7 +47423,7 @@
       "distributor": "Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_imdb)",
+      "_slop_reason": "prestige_studio:skydance animation",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -47550,7 +47550,7 @@
         "manual_override": null
       },
       "keywords": [],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1418297",
@@ -47627,7 +47627,7 @@
       "distributor": "Walt Disney Studios Motion Pictures / Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "_slop_reason": "score:3(no_rt,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -47749,7 +47749,7 @@
       "letterboxd_score": "3.0",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -47839,8 +47839,8 @@
         "rt_score"
       ],
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -48053,7 +48053,7 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -48149,7 +48149,7 @@
       "distributor": "Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_rt,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -48259,7 +48259,7 @@
       "_trailer_source": "gemini_playwright",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:disney+)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -48352,7 +48352,7 @@
       "display_title": "The Grand-ish Tour",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:4(no_wiki,no_rt,mid_imdb,major_streamer:amazon prime video)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -48566,7 +48566,7 @@
       "distributor": "Strand Releasing",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -48684,7 +48684,7 @@
       "distributor": "Loco Films",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -48828,7 +48828,7 @@
       "distributor": "Toho / ADS Service",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -49018,7 +49018,7 @@
       "letterboxd_score": "3.5",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:0(no_rt,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -49131,7 +49131,7 @@
       "distributor": "Photon Films (Canada) / Kismet Movies / Rialto Distribution<ref></ref> (New Zealand and Australia)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -49224,7 +49224,7 @@
       "letterboxd_score": "3.2",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
+      "_slop_reason": "score:2(no_rt,mid_imdb,major_streamer:shudder)",
       "_slop_confidence": "weak",
       "_last_enrichment_attempt": "2026-05-31",
       "_quality_warnings": [
@@ -49334,7 +49334,7 @@
       "distributor": "HHG Film",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -49454,7 +49454,7 @@
       "letterboxd_score": "3.0",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -49636,7 +49636,7 @@
       "distributor": "The Walt Disney Company (Korea)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:1(no_rt,good_imdb,no_rt_link,major_streamer:disney+)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -49755,7 +49755,7 @@
       "distributor": "Independent Film Company / Shudder",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": true,
@@ -50169,7 +50169,7 @@
       "distributor": "Warner Bros. Pictures / InterCom",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -50290,7 +50290,7 @@
       "letterboxd_score": "2.8",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -50498,7 +50498,7 @@
       "letterboxd_score": "3.2",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_wiki)",
+      "_slop_reason": "score:3(no_wiki,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -50603,8 +50603,8 @@
       "_watch_links_verified": "2026-05-25T14:09:29.246224",
       "distributor": "Saban Films",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -50712,7 +50712,7 @@
         "manual_override": null
       },
       "keywords": [],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1073588",
@@ -50792,7 +50792,7 @@
       "distributor": "Maison 4:3",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -50995,7 +50995,7 @@
       "distributor": "Antenna Entertainment (Malaysia)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:0(no_rt,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -51109,7 +51109,7 @@
       "distributor": "EKKL Entertainment",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -51315,7 +51315,7 @@
       "distributor": "InterCom / Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -51511,8 +51511,8 @@
       "display_title": "The Good Sister (Schwesterherz)",
       "letterboxd_score": "3.5",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -51800,8 +51800,8 @@
       "display_title": "Love in Curaçao (Verliefd op Curaçao)",
       "letterboxd_score": "2.9",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -52509,7 +52509,7 @@
       "letterboxd_score": "3.1",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -52790,7 +52790,7 @@
       "distributor": "Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:-2(good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -53083,7 +53083,7 @@
       "distributor": "Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_imdb)",
+      "_slop_reason": "score:1(no_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -53418,7 +53418,7 @@
       "_watch_links_verified": "2026-05-15T14:25:19.677314",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -53896,8 +53896,8 @@
       "display_title": "Saturnalia",
       "_watch_links_verified": "2026-05-15T14:25:21.898729",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -54071,7 +54071,7 @@
       "letterboxd_score": "2.5",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
+      "_slop_reason": "score:2(no_rt,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -54177,8 +54177,8 @@
       "_watch_links_verified": "2026-05-15T14:18:41.370370",
       "distributor": "Tribeca Releasing",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -54713,7 +54713,7 @@
       "distributor": "Viva Pictures",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -54818,7 +54818,7 @@
       "_watch_links_verified": "2026-05-15T14:25:25.252557",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -55027,7 +55027,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -55129,7 +55129,7 @@
       "letterboxd_score": "3.1",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:4(no_wiki,no_rt,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -55330,7 +55330,7 @@
       "letterboxd_score": "3.6",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:0(no_rt,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -55424,7 +55424,7 @@
       "_trailer_source": "gemini_playwright",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -55510,7 +55510,7 @@
       "display_title": "Killing Grounds: The Gilgo Beach Murders",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_wiki)",
+      "_slop_reason": "score:3(no_wiki,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -55602,7 +55602,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:1(no_rt,good_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -55685,7 +55685,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_wiki,no_rt,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -55872,7 +55872,7 @@
       "distributor": "Area 23a",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -56488,7 +56488,7 @@
       "distributor": "{{Plainlist| * Vertical * Roadside Attractions",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -56605,7 +56605,7 @@
       "distributor": "Warner Bros. Entertainment / Warner Bros. Pictures / InterCom",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -56724,7 +56724,7 @@
       "distributor": "IFC Films",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "_slop_reason": "score:3(no_rt,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -56826,8 +56826,8 @@
       "_watch_links_verified": "2026-05-15T14:25:32.746676",
       "letterboxd_score": "3.2",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -57245,7 +57245,7 @@
       "letterboxd_score": "2.8",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -57352,7 +57352,7 @@
       "distributor": "{{Plainlist| * Utopia * N8",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": true,
@@ -57771,7 +57771,7 @@
       "distributor": "Cinephil / Madman Entertainment",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:3(no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -57937,7 +57937,7 @@
       "letterboxd_score": "2.8",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -58203,7 +58203,7 @@
       "display_title": "Agape: The Unconditional Love",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -58289,7 +58289,7 @@
       "display_title": "Gen Hoshino presents MAD HOPE MAD MUSIC",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -58467,7 +58467,7 @@
       "distributor": "Fathom Entertainment",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -58667,7 +58667,7 @@
       "_watch_links_verified": "2026-05-15T14:25:40.655224",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -58773,7 +58773,7 @@
       "distributor": "Mozinet",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -58864,8 +58864,8 @@
       ],
       "display_title": "Vengeance (Venganza)",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -59160,7 +59160,7 @@
       "letterboxd_score": "4.1",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:0(no_rt,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -59350,8 +59350,8 @@
       "letterboxd_score": "2.3",
       "distributor": "Tubi",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -59444,7 +59444,7 @@
       "distributor": "Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:1(low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -59629,7 +59629,7 @@
       "letterboxd_score": "2.2",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "_slop_reason": "score:3(no_rt,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -60136,7 +60136,7 @@
       "distributor": "{{Plainlist| * Photon Films (Canada) * Brainstorm Media (United States)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -60254,7 +60254,7 @@
       "letterboxd_score": "2.8",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -60344,7 +60344,7 @@
       "_trailer_last_retry": "2026-06-11T13:49:15.575074",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -60614,7 +60614,7 @@
       "letterboxd_score": "3.3",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_wiki)",
+      "_slop_reason": "score:3(no_wiki,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -60735,7 +60735,7 @@
       "distributor": "Diaphana Distribution / Mozinet",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -60912,7 +60912,7 @@
       "display_title": "Unknown Movie tv_316544 (Ronaldinho Gaúcho)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_wiki,no_rt,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -61011,7 +61011,7 @@
       "_trailer_source": "gemini_playwright",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,low_imdb)",
+      "_slop_reason": "score:3(no_wiki,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -61101,8 +61101,8 @@
       "featured": false,
       "display_title": "Made with Love (Luka, Makan, Cinta)",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_rt,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -61189,7 +61189,7 @@
       "distributor": "Amazon MGM Studios (via Prime Video)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "_slop_reason": "prestige_studio:skydance media",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -61650,7 +61650,7 @@
       "distributor": "Bleecker Street / Fox Entertainment Studios",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -61844,7 +61844,7 @@
       "distributor": "{{Plainlist| * Les Films du Losange (France) * The Forge (United States) * British Film Institute (United Kingdom)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -61964,8 +61964,8 @@
       "letterboxd_score": "3.0",
       "distributor": "Paramount Global Content Distribution (through Republic Pictures)",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -62049,7 +62049,7 @@
       "distributor": "Netflix",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -62133,8 +62133,8 @@
       "display_title": "Trevor Noah: Joy in the Trenches",
       "letterboxd_score": "3.4",
       "reissue_label": null,
-      "is_slop": true,
-      "_slop_reason": "score:4(no_rt,no_imdb)",
+      "is_slop": false,
+      "_slop_reason": "score:3(no_rt,no_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -62337,8 +62337,8 @@
       "_watch_links_verified": "2026-05-06T14:48:54.019810",
       "letterboxd_score": "2.9",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -62599,7 +62599,7 @@
       "display_title": "The Day Diana Died",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -62814,7 +62814,7 @@
       "distributor": "Warner Bros. Pictures",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -63298,7 +63298,7 @@
       "display_title": "Ai Weiwei's Turandot",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:3(no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -63680,7 +63680,7 @@
       "_watch_links_verified": "2026-05-06T14:49:55.195962",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -63778,7 +63778,7 @@
       "_watch_links_verified": "2026-05-06T14:50:02.158927",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -63981,8 +63981,8 @@
       "letterboxd_score": "2.8",
       "distributor": "Geetha Arts",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -64065,8 +64065,8 @@
       "metacritic_score": "0",
       "letterboxd_score": "4.3",
       "reissue_label": null,
-      "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "is_slop": false,
+      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -64168,7 +64168,7 @@
       "_watch_links_verified": "2026-05-06T14:50:15.271654",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -64579,7 +64579,7 @@
       "letterboxd_score": "3.2",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -64783,7 +64783,7 @@
       "distributor": "ADS Service",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "_slop_reason": "score:3(no_rt,low_imdb,festival:Berlinale)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -65339,7 +65339,7 @@
       "distributor": "Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:-2(good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -65801,7 +65801,7 @@
       "distributor": "Well Go USA Entertainment",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -65897,7 +65897,7 @@
       "letterboxd_score": "3.2",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
+      "_slop_reason": "score:3(no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -65999,7 +65999,7 @@
       "display_title": "Bandi",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -66193,7 +66193,7 @@
       "letterboxd_score": "2.6",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -66284,7 +66284,7 @@
       "distributor": "Netflix",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "_slop_reason": "score:3(no_rt,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -66372,7 +66372,7 @@
       "letterboxd_score": "3.2",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:4(no_rt,no_imdb,no_rt_link,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -66463,7 +66463,7 @@
       "distributor": "Lionsgate Premiere",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -66568,7 +66568,7 @@
       "letterboxd_score": "3.3",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -66864,7 +66864,7 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -67056,7 +67056,7 @@
       "letterboxd_score": "3.9",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:-2(good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -67166,7 +67166,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -67259,8 +67259,8 @@
       "display_title": "An Evening Song (for Three Voices)",
       "letterboxd_score": "3.6",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -67541,7 +67541,7 @@
       "display_title": "Other People's Bodies",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -68012,7 +68012,7 @@
       "display_title": "Busted Water Pipes (爆水管)",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -68201,7 +68201,7 @@
       "display_title": "The Land of Sometimes",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_reason": "manual_override",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -68219,7 +68219,7 @@
         "fantasy",
         "animation"
       ],
-      "_is_slop_guess": true
+      "_is_slop_guess": false
     },
     {
       "id": "1181566",
@@ -68484,7 +68484,7 @@
       "letterboxd_score": "3.8",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_wiki,no_rt,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -68833,7 +68833,7 @@
       "letterboxd_score": "3.0",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -69114,7 +69114,7 @@
       "letterboxd_score": "3.2",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,low_imdb)",
+      "_slop_reason": "score:3(no_wiki,low_imdb,major_streamer:disney plus)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -69393,7 +69393,7 @@
       "letterboxd_score": "3.5",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_rt,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -69809,7 +69809,7 @@
       "letterboxd_score": "2.7",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_rt,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -69892,7 +69892,7 @@
       "letterboxd_score": "3.3",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_wiki,good_imdb)",
+      "_slop_reason": "score:2(no_wiki,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -70182,7 +70182,7 @@
       "display_title": "Papa Bear (Мой папа — медведь)",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -70386,7 +70386,7 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -70478,7 +70478,7 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:1(low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -70690,7 +70690,7 @@
       "display_title": "Don't Breathe a Word",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -70775,7 +70775,7 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": true,
@@ -71145,7 +71145,7 @@
       "letterboxd_score": "2.9",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -71234,7 +71234,7 @@
       "letterboxd_score": "2.8",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -71325,7 +71325,7 @@
       "letterboxd_score": "2.3",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_reason": "score:5(no_wiki,no_rt,no_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -71680,7 +71680,7 @@
       "letterboxd_score": "4.0",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_wiki,good_imdb)",
+      "_slop_reason": "score:0(no_wiki,good_imdb,major_streamer:disney+)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -71776,7 +71776,7 @@
       "distributor": "Next Entertainment World",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_rt,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -71883,7 +71883,7 @@
       "distributor": "Warner Bros. Pictures",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:0()",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -72127,7 +72127,7 @@
       "display_title": "Picture Perfect Sister-in-Law",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -72221,7 +72221,7 @@
       "distributor": "Utopia",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -72333,7 +72333,7 @@
       "letterboxd_score": "3.5",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -72431,7 +72431,7 @@
       "distributor": "Vision Distribution",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
+      "_slop_reason": "score:3(no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -72520,7 +72520,7 @@
       "display_title": "Are You Dead Yet?",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -72697,7 +72697,7 @@
       "display_title": "The Boy by the Pool",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -73349,7 +73349,7 @@
       "display_title": "Malavia",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link,major_streamer:disney plus)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -74001,7 +74001,7 @@
       "letterboxd_score": "4.3",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_reason": "score:2(no_wiki,no_rt,good_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -74177,7 +74177,7 @@
       "letterboxd_score": "3.1",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb,no_rt_link)",
+      "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -74457,7 +74457,7 @@
       "distributor": "Shudder",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -74553,8 +74553,8 @@
       "letterboxd_score": "3.3",
       "_trailer_source": "gemini_playwright",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_rt,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -74832,7 +74832,7 @@
       "distributor": "Mandarin Motion Pictures",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
+      "_slop_reason": "score:3(no_rt,low_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -75012,7 +75012,7 @@
       "letterboxd_score": "3.7",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:0(mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -75108,7 +75108,7 @@
       "distributor": "KimStim",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -75298,8 +75298,8 @@
       "display_title": "A Thousand Cuts",
       "distributor": "Mongrel Media",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -75384,7 +75384,7 @@
       "letterboxd_score": "3.0",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(no_wiki,good_imdb)",
+      "_slop_reason": "score:2(no_wiki,mid_imdb,major_streamer:netflix)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -75552,7 +75552,7 @@
       "distributor": "Amazon Prime Video",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -75937,7 +75937,7 @@
       "_needs_review": false,
       "is_slop": true,
       "_is_slop_guess": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,no_rt_link)",
+      "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
         "rt_score",
@@ -76323,7 +76323,7 @@
       "letterboxd_score": "3.5",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt)",
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -76591,7 +76591,7 @@
       "distributor": "Photon Films (Canada) / Well Go USA Entertainment (United States)",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -76773,7 +76773,7 @@
       "distributor": "Toho Next",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt)",
+      "_slop_reason": "score:3(no_rt,mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -76878,7 +76878,7 @@
       "display_title": "I Killed Him in My Sleep",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -77404,8 +77404,8 @@
       "display_title": "Two for Tee",
       "letterboxd_score": "3.2",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "is_slop": true,
+      "_slop_reason": "slop_studio:hallmark media",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -78403,8 +78403,8 @@
       "metacritic_score": "0",
       "letterboxd_score": "2.6",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -78778,7 +78778,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:3(no_rt,low_imdb)",
+      "_slop_reason": "score:3(no_rt,low_imdb,festival:Venice)",
       "status": "available",
       "_enrichment_gaps": [
         "watch_links",
@@ -78875,7 +78875,7 @@
       "metacritic_score": "0",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "watch_links"
@@ -79524,7 +79524,7 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "watch_links",
@@ -79626,7 +79626,7 @@
       "metacritic_score": "52",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "status": "available",
       "_enrichment_gaps": [
         "watch_links",
@@ -79955,7 +79955,7 @@
       "_watch_links_verified": "2026-05-17T11:05:50.119346",
       "reissue_label": null,
       "is_slop": true,
-      "_slop_reason": "score:5(no_wiki,no_rt,low_imdb)",
+      "_slop_reason": "score:6(no_wiki,no_rt,low_imdb)",
       "_slop_confidence": "weak",
       "_is_preorder": true,
       "_buyonly_preorder": true,
@@ -80049,7 +80049,7 @@
       "metacritic_score": "72",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:3(no_rt,mid_imdb,no_rt_link,festival:Cannes)",
       "status": "available",
       "_enrichment_gaps": [
         "watch_links",
@@ -80160,8 +80160,8 @@
       "featured": false,
       "distributor": "Dreamscape Productions<ref name=\"numbers\" />",
       "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "is_slop": true,
+      "_slop_reason": "score:4(no_rt,mid_imdb,no_rt_link)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -80407,7 +80407,7 @@
       "distributor": "Signature Entertainment / Angel, Inc.",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:1(low_imdb)",
+      "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -80531,7 +80531,7 @@
       "distributor": "{{Plainlist| * Entract Films * Elevation Pictures",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:1(mid_imdb)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
@@ -80627,7 +80627,7 @@
       "letterboxd_score": "3.4",
       "reissue_label": null,
       "is_slop": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
+      "_slop_reason": "score:3(no_rt,mid_imdb,no_rt_link,festival:Berlinale)",
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
