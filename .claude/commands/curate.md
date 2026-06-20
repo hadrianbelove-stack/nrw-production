@@ -7,6 +7,26 @@ Curate recent arrivals. Runs 5 stages in order (Stage 0 first), each with a user
 
 **Rhythm (user preference):** always curate **slop films too** — never skip or batch-drop them. Go **straight through from #1** in queue order unless the user redirects. In Stage 4, present each film's **capsule and pull quotes together in the same message** (one film at a time), then move to the next — never capsule-first-wait-then-quotes, and never as separate passes across all films.
 
+## Arguments — optional Stage 4 slice
+
+`/curate` with **no argument** runs all five stages in order (default — unchanged).
+
+`/curate` **followed by a number, range, or list** — e.g. `/curate 3`, `/curate 1-3`, `/curate 4,6,9` — is a parallel-window shortcut: **skip Stages 0–3 entirely and go straight to Stage 4**, curating only the requested queue positions. This lets you run several windows at once (`/curate 1-3` in one, `/curate 4-5` in another) and work the next title while a previous one is being saved.
+
+How it resolves:
+1. Build the Stage 4 queue exactly as normal (the script in Stage 4), numbered `#1 … #N`.
+2. Take only the requested positions and **immediately pin them to their titles** — from here on work those titles, not the live numbers, so renumbering in another window can't bump you onto the wrong film.
+3. **Print the pinned slice back** before starting, so overlap between windows is obvious at a glance:
+   ```
+   STAGE 4 (this window) — working #1–3 of 35:
+     #1  The Jealous Bride (2026)
+     #2  Double Happiness (2026)
+     #3  Kraken (2026)
+   ```
+4. Positions are counted against the queue **at launch** — open parallel windows close together so they share the same snapshot, and use the printed titles to confirm no two windows hold the same film.
+
+Out-of-range positions are skipped with a note. Everything else in Stage 4 (presentation, saving, commit) is unchanged.
+
 ## Before You Start — pull latest
 
 The daily CI rewrites `data.json` every morning. Start on fresh main so your edits don't conflict:
@@ -352,6 +372,17 @@ STAGE 4 — 35 movies to curate
 ```
 
 If no candidates for either: report "nothing needs capsules or quotes in the last 7 days" and finish.
+
+**If invoked with a queue-slice argument** (see *Arguments* at the top — `/curate 1-3`, `/curate 4,6`, etc.): Stages 0–3 were skipped. Build this queue as above, then keep only the requested positions, **pin them to their titles immediately**, and print the slice header instead of the full checklist:
+
+```
+STAGE 4 (this window) — working #1–3 of 35:
+  #1  The Jealous Bride (2026)
+  #2  Double Happiness (2026)
+  #3  Kraken (2026)
+```
+
+Then curate only those titles, in order, exactly as below. Work by title (not live position) for the rest of the run so a parallel window draining films can't shift you onto the wrong one. Skip any out-of-range position with a one-line note.
 
 **For each movie, in order — always lead with its queue position:**
 
