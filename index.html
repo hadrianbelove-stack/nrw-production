@@ -3,6 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+    // Phone users get the dedicated mobile site. Escape hatch: add ?desktop=1
+    (function () {
+        try {
+            if (location.search.indexOf('desktop=1') !== -1) return;
+            var ua = navigator.userAgent || '';
+            var isPhone = /Android|iPhone|iPod|Windows Phone|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua);
+            var isNarrow = window.matchMedia('(max-width: 768px)').matches;
+            if (isPhone || isNarrow) {
+                location.replace('mobile/' + location.search + location.hash);
+            }
+        } catch (e) {}
+    })();
+    </script>
     <title>The New Release Wall</title>
     <link rel="stylesheet" href="assets/styles.css?v=97">
 </head>
