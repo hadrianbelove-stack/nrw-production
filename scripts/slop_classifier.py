@@ -32,6 +32,7 @@ MANUAL_OVERRIDES = {
     1684240: False,   # Untold UK: Jamie Vardy
     1684246: False,   # Untold UK: Vinnie Jones
     # Art-house / festival films without RT/wiki yet
+    1484833: False,   # The Obsessed (Shin-Ei anime musical; Tokyo/Annecy; curator call)
     1213025: False,   # Transcending Dimensions (Toshiaki Toyoda; Rotterdam/NYAFF/Fantasia)
     1362365: False,   # This Is Buzz (Mark Pellington doc; Slamdance)
     1303370: False,   # Ways to Traverse a Territory
