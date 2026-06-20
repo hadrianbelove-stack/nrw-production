@@ -111,5 +111,13 @@
     "verdict_type": "confirmed",
     "hypothesis_count": 1,
     "tool_calls_used": 6
+  },
+  {
+    "date": "2026-06-20",
+    "question": "tvOS trailer keeps playing in background after returning to detail; regression from auto-rollover",
+    "scope": "code behavior",
+    "verdict_type": "high_confidence",
+    "hypothesis_count": 2,
+    "tool_calls_used": 8
   }
 ]

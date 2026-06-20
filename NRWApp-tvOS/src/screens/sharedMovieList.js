@@ -13,3 +13,18 @@ export function setSharedMovieList(list) {
 export function getSharedMovieList() {
   return _movieList;
 }
+
+// Pending trailer index — the Trailer route writes the index of the trailer that
+// was last on screen; MovieDetail reads (and clears) it when it regains focus so
+// it can show the detail of whatever trailer was playing. null = nothing pending.
+let _pendingTrailerIndex = null;
+
+export function setPendingTrailerIndex(index) {
+  _pendingTrailerIndex = index;
+}
+
+export function takePendingTrailerIndex() {
+  const index = _pendingTrailerIndex;
+  _pendingTrailerIndex = null;
+  return index;
+}

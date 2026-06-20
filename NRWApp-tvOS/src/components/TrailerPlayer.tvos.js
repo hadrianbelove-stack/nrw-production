@@ -25,7 +25,7 @@ const formatTime = (secs) => {
   return `${m}:${String(s % 60).padStart(2, '0')}`;
 };
 
-const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
+const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [paused, setPaused] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -92,7 +92,8 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     ]).start();
   }, []);
 
-  // Find next movie with an MP4 trailer in given direction, wrapping around
+  // Find next movie with an MP4 trailer in given direction, wrapping around.
+  // Used by manual LEFT/RIGHT navigation and the edge-arrow visibility.
   const findNextTrailerIndex = useCallback((fromIndex, direction) => {
     const count = movieList.length;
     if (count === 0) return -1;
@@ -101,6 +102,17 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
       idx = (idx + direction + count) % count;
       const movie = movieList[idx];
       if (movie.links?.trailer_hosted) return idx;
+    }
+    return -1;
+  }, [movieList]);
+
+  // Find the next hosted trailer strictly AFTER fromIndex, no wrap-around.
+  // Auto-advance uses this so "play all" runs each remaining trailer once and
+  // then closes — never an infinite loop that keeps remounting AVPlayers
+  // (the source of the background-audio leak / app break).
+  const findNextTrailerForward = useCallback((fromIndex) => {
+    for (let i = fromIndex + 1; i < movieList.length; i++) {
+      if (movieList[i].links?.trailer_hosted) return i;
     }
     return -1;
   }, [movieList]);
@@ -133,17 +145,26 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     setTimeout(() => onClose(currentIndex), 400);
   }, [closing, currentIndex, onClose]);
 
-  // When a trailer finishes, roll to the next trailer (continuous reel).
-  // Only the last remaining trailer closes the player.
+  // Report the on-screen trailer index to the parent route so it can return the
+  // detail screen to whatever trailer was playing (incl. after auto-advance).
+  useEffect(() => {
+    onIndexChange?.(currentIndex);
+  }, [currentIndex, onIndexChange]);
+
+  // When a trailer finishes, roll forward to the next trailer ("play all").
+  // No wrap: after the last hosted trailer the player closes, so the reel
+  // never loops forever remounting AVPlayers. The `closing` guard stops an
+  // end-of-stream event from re-arming playback mid-close.
   const handleTrailerEnd = useCallback(() => {
-    const nextIdx = findNextTrailerIndex(currentIndex, 1);
+    if (closing) return;
+    const nextIdx = findNextTrailerForward(currentIndex);
     if (nextIdx >= 0) {
       setPaused(false);
       setCurrentIndex(nextIdx);
     } else {
       handleClose();
     }
-  }, [currentIndex, findNextTrailerIndex, handleClose]);
+  }, [closing, currentIndex, findNextTrailerForward, handleClose]);
 
   // Scrub cursor movement — moves the timeline position without seeking the video
   const scrubBackward = useCallback(() => {
@@ -162,7 +183,8 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose }) => {
     [TV_EVENTS.RIGHT]: paused ? scrubForward : navigateNext,
     [TV_EVENTS.SWIPE_LEFT]: paused ? scrubBackward : navigatePrevious,
     [TV_EVENTS.SWIPE_RIGHT]: paused ? scrubForward : navigateNext,
-    [TV_EVENTS.MENU]: handleClose,
+    // MENU is intentionally not handled here: the Trailer screen is its own route,
+    // so the tvOS Menu button natively pops back to the movie detail.
     [TV_EVENTS.PLAY_PAUSE]: togglePlayPause,
     [TV_EVENTS.SELECT]: paused ? handleResume : handlePause,
   });

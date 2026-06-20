@@ -15,9 +15,8 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   findNodeHandle,
-  BackHandler,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import {
   useMovieDetail,
   getPosterUrl,
@@ -38,8 +37,7 @@ import {
 } from '../utils/links.tvos';
 import { fetchMovies } from '../services/api';
 import { trackWatchButtonTap } from '../services/analytics.tvos';
-import TrailerPlayer from '../components/TrailerPlayer.tvos';
-import { getSharedMovieList } from './sharedMovieList';
+import { getSharedMovieList, takePendingTrailerIndex } from './sharedMovieList';
 import { renderMarkdownSpans } from '../utils/markdown';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -565,8 +563,6 @@ const MovieDetailTvOS = () => {
     hasWatchOptions,
   } = useMovieDetail(movie);
 
-  // Trailer player state
-  const [trailerVisible, setTrailerVisible] = useState(false);
 
   // Trailer button ref → node handle for nextFocusUp on watch buttons
   // trailerButtonRef also used to restore focus after trailer closes (setNativeProps)
@@ -577,25 +573,22 @@ const MovieDetailTvOS = () => {
     if (ref) setTrailerHandle(findNodeHandle(ref));
   }, []);
 
-  // Prevent MENU from popping MovieDetail while trailer is playing.
-  // BackHandler intercepts at the native level (more reliable than beforeRemove on tvOS).
-  // TrailerPlayer handles MENU via its own TVEventHandler to close the overlay.
-  React.useEffect(() => {
-    if (!trailerVisible) return;
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => true);
-    return () => sub.remove();
-  }, [trailerVisible]);
-
-  // Also block React Navigation from popping this screen while the trailer overlay is up.
-  // On tvOS the MENU button can pop the stack even past the BackHandler guard, dumping you
-  // back on the wall instead of returning here — beforeRemove cancels that pop. The
-  // trailer's own MENU handler still closes the overlay, so MENU just exits the trailer.
-  React.useEffect(() => {
-    const unsub = navigation.addListener('beforeRemove', (e) => {
-      if (trailerVisible) e.preventDefault();
-    });
-    return unsub;
-  }, [navigation, trailerVisible]);
+  // Returning from the Trailer route: show the detail of whatever trailer was last
+  // on screen (it may have auto-advanced past the movie we launched from), then put
+  // focus back on the TRAILER button. takePendingTrailerIndex() returns null on a
+  // normal entry from the wall, so this is a no-op then.
+  useFocusEffect(
+    useCallback(() => {
+      const pending = takePendingTrailerIndex();
+      if (pending != null && pending >= 0 && pending < movieList.length) {
+        setCurrentIndex(pending);
+        setMovie(movieList[pending]);
+        if (trailerButtonRef.current) {
+          trailerButtonRef.current.setNativeProps({ hasTVPreferredFocus: true });
+        }
+      }
+    }, [movieList])
+  );
 
   // Fade in on mount
   React.useEffect(() => {
@@ -606,19 +599,19 @@ const MovieDetailTvOS = () => {
     }).start();
   }, [fadeAnim]);
 
-  // Trailer press: hosted MP4 plays in-app (tvOS can't play YouTube in a WebView);
-  // YouTube-only trailers deep-link out to the YouTube app via openTrailer().
+  // Trailer press: hosted MP4 plays in-app on the Trailer route (tvOS can't play
+  // YouTube in a WebView); YouTube-only trailers deep-link out via openTrailer().
   const handleTrailerPress = useCallback(() => {
     if (movie?.links?.trailer_hosted) {
-      setTrailerVisible(true);
+      navigation.navigate('Trailer', { initialIndex: currentIndex });
     } else if (movie?.links?.trailer) {
       openTrailer(movie.links.trailer);
     }
-  }, [movie]);
+  }, [movie, navigation, currentIndex]);
 
-  // Handle TV remote events (disabled while trailer player is active)
+  // Handle TV remote events
   // Both d-pad clicks (LEFT/RIGHT) and touchpad swipes (SWIPE_LEFT/SWIPE_RIGHT) cycle movies
-  useTVEventHandler(trailerVisible ? {} : {
+  useTVEventHandler({
     [TV_EVENTS.MENU]: () => {
       navigation.goBack();
     },
@@ -978,25 +971,8 @@ const MovieDetailTvOS = () => {
         </View>
       )}
 
-      {/* Trailer player overlay */}
-      {trailerVisible && movieList.length > 0 && (
-        <TrailerPlayer
-          movieList={movieList}
-          initialIndex={currentIndex}
-          onClose={(lastIndex) => {
-            setTrailerVisible(false);
-            if (lastIndex !== currentIndex && lastIndex >= 0 && lastIndex < movieList.length) {
-              setCurrentIndex(lastIndex);
-              setMovie(movieList[lastIndex]);
-            }
-            // Restore TV remote focus to the trailer button after the overlay unmounts.
-            // setNativeProps is the correct tvOS focus API; AccessibilityInfo is for VoiceOver.
-            if (trailerButtonRef.current) {
-              trailerButtonRef.current.setNativeProps({ hasTVPreferredFocus: true });
-            }
-          }}
-        />
-      )}
+      {/* Trailer playback lives on its own 'Trailer' route (see handleTrailerPress),
+          not as an overlay here — that keeps the tvOS Menu button a clean native pop. */}
     </Animated.View>
   );
 };

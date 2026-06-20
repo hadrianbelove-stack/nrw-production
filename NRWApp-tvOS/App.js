@@ -13,6 +13,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/HomeScreen.tvos';
 import MovieDetail from './src/screens/MovieDetail.tvos';
 import SearchScreen from './src/screens/SearchScreen.tvos';
+import TrailerScreen from './src/screens/TrailerScreen.tvos';
 
 // Import constants
 import { Colors } from './src/constants/colors';
@@ -138,6 +139,13 @@ const App = () => {
               component={SearchScreen}
               options={{
                 title: 'Search',
+              }}
+            />
+            <Stack.Screen
+              name="Trailer"
+              component={TrailerScreen}
+              options={{
+                title: 'Trailer',
               }}
             />
           </Stack.Navigator>
