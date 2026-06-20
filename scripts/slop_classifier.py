@@ -49,6 +49,7 @@ MANUAL_OVERRIDES = {
     1265340: False,   # The Second Coming of John Cooper (curator call)
     1556616: False,   # Summer House (curator call)
     1477377: False,   # Real Couples (curator Select)
+    1549609: True,    # Exes of Christmas Past (curator call)
     614945:  False,   # Voicemails for Isabelle (Netflix, NYT/Variety reviews)
     # Curator not-slop calls (June 15 2026)
     1291659: False,   # The Wizard of the Kremlin
