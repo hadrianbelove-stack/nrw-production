@@ -78,7 +78,7 @@ private val STRIP_COLORS = mapOf(
     "documentary" to Color(0xFF4A90D9),
     "restorations" to Color(0xFFC8A951)
 )
-private val HighlightCrimson = Color(0xFFDC143C)
+private val HighlightCrimson = Color(0xFF00D4AA)  // teal (Selects)
 
 // Grid item can be either a movie, date strip, or trailers card
 sealed class GridItem {

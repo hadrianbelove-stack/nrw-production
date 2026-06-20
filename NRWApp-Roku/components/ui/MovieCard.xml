@@ -43,7 +43,7 @@
         <Rectangle id="staffPickBorder"
           width="330"
           height="499"
-          color="0xDC143CFF"
+          color="0x00D4AAFF"
           visible="false"
           translation="[-5, -5]" />
 
@@ -249,7 +249,33 @@
           width="320"
           height="10"
           translation="[0, 480]"
-          color="0xDC143CFF"
+          color="0x00D4AAFF"
+          visible="false" />
+
+        <!-- SELECT pill (top-center): teal outline + dark glass + label.
+             Built as outer/inner rects (Roku has no rounded/bordered rects),
+             same pattern as the score badges. -->
+        <Rectangle id="staffPickPillBorder"
+          width="250"
+          height="36"
+          translation="[35, 6]"
+          color="0x00D4AAFF"
+          visible="false" />
+        <Rectangle id="staffPickPillBg"
+          width="246"
+          height="32"
+          translation="[37, 8]"
+          color="0x081412FF"
+          visible="false" />
+        <Label id="staffPickCardLabel"
+          text="★ NRW SELECT ★"
+          width="246"
+          height="32"
+          translation="[37, 8]"
+          horizAlign="center"
+          vertAlign="center"
+          font="font:SmallBoldSystemFont"
+          color="0x00FFBBFF"
           visible="false" />
       </Group>
 

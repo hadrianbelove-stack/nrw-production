@@ -28,9 +28,9 @@ export const Colors = {
   appleTVBlack: '#000000',
   netflixRed: '#e50914',
 
-  // Staff Pick badge
-  staffPick: '#dc143c',
-  staffPickText: '#ffffff',
+  // Staff Pick badge (Select) — teal brand
+  staffPick: '#00d4aa',
+  staffPickText: '#00ffbb',
 
   // Restoration badge
   restoration: '#C8A951',

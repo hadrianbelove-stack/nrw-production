@@ -25,6 +25,9 @@ Sub Init()
     m.imdbBadge = m.top.FindNode("imdbBadge")
     m.staffPickStrip = m.top.FindNode("staffPickStrip")
     m.staffPickBorder = m.top.FindNode("staffPickBorder")
+    m.staffPickPillBorder = m.top.FindNode("staffPickPillBorder")
+    m.staffPickPillBg = m.top.FindNode("staffPickPillBg")
+    m.staffPickCardLabel = m.top.FindNode("staffPickCardLabel")
     m.restorationBadgeBg = m.top.FindNode("restorationBadgeBg")
     m.restorationBadgeLabel = m.top.FindNode("restorationBadgeLabel")
     m.preOrderBadgeBg = m.top.FindNode("preOrderBadgeBg")
@@ -135,9 +138,12 @@ Sub onMovieChanged()
     m.restorationBadgeBg.visible = isRestoration
     m.restorationBadgeLabel.visible = isRestoration
 
-    ' Staff pick border + strip
-    m.staffPickStrip.visible = isStaffPick
+    ' Staff pick: teal border + top-center "★ NRW SELECT ★" pill (thin bottom strip retired)
+    m.staffPickStrip.visible = false
     m.staffPickBorder.visible = (isStaffPick AND NOT isScreening)
+    m.staffPickPillBorder.visible = isStaffPick
+    m.staffPickPillBg.visible = isStaffPick
+    m.staffPickCardLabel.visible = isStaffPick
 
     ' Virtual screening treatment
     if isScreening AND NOT isStaffPick

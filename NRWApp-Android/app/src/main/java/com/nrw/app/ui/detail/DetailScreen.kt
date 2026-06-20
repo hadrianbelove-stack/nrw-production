@@ -378,7 +378,7 @@ private fun MovieDetail(
                                         .padding(horizontal = 8.dp, vertical = 4.dp)
                                 ) {
                                     Text(
-                                        text = "SELECT",
+                                        text = "★ NRW SELECT ★",
                                         color = TextPrimary,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 10.sp,

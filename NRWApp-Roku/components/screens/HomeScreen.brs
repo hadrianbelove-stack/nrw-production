@@ -252,7 +252,7 @@ Sub UpdateSectionDividerColor()
     }
     color = "0x00D4AAFF"  ' default teal
     if m.showHighlightsOnly
-        color = "0xDC143CFF"  ' crimson
+        color = "0x00D4AAFF"  ' crimson
     else if m.hideFest = false
         color = "0xF59E0BFF"  ' fest amber
     else if m.slopMode = "only"
@@ -292,7 +292,7 @@ Sub UpdateDateHud(index as Integer)
     else if key = "HIGHLIGHTS"
         day = "SELECTS"
         rest = "OF NOTE"
-        color = "0xDC143CFF"
+        color = "0x00D4AAFF"
     else if key = "Unknown"
         day = "DATE TBD"
     else
@@ -302,7 +302,7 @@ Sub UpdateDateHud(index as Integer)
         day = days[dt.GetDayOfWeek()]
         rest = UCase(FormatShortDate(key))
     end if
-    if m.showHighlightsOnly then color = "0xDC143CFF"
+    if m.showHighlightsOnly then color = "0x00D4AAFF"
 
     m.dateHudDay.text = day
     m.dateHudRest.text = rest

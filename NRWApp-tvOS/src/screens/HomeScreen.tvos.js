@@ -249,7 +249,7 @@ const DateRowStrip = ({ stripKey, stripColor }) => {
   } else if (stripKey === 'SCREENING') {
     day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
   } else if (stripKey === 'HIGHLIGHTS') {
-    day = 'SELECTS'; rest = 'OF NOTE'; color = '#dc143c';
+    day = 'SELECTS'; rest = 'OF NOTE'; color = '#00d4aa';
   } else if (stripKey === 'SLOP') {
     day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#ff9500';
   } else {
@@ -999,7 +999,7 @@ const HomeScreenTvOS = () => {
   // SLOP ONLY orange); otherwise a single active category filter; otherwise teal
   const singleFilter = activeFilters.size === 1 ? Array.from(activeFilters)[0] : null;
   const dateStripColor = showHighlightsOnly
-    ? '#dc143c'
+    ? '#00d4aa'
     : showPreorders
     ? '#7c3aed'
     : !hideFest
@@ -1221,7 +1221,7 @@ const HomeScreenTvOS = () => {
               <MetaToggle
                 isActive={showHighlightsOnly}
                 label="SELECTS"
-                accentColor="#dc143c"
+                accentColor="#00d4aa"
                 accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
                 onPress={toggleShowHighlights}
               />

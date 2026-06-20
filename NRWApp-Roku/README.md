@@ -61,7 +61,7 @@ Colors match the web and other apps (from `docs/STYLE_GUIDE.md`):
 |-------|-----|-------|
 | Background | `#0A0A0A` | Main background |
 | Primary | `#00D4AA` | Teal accent |
-| Staff Pick | `#DC143C` | Featured items |
+| Staff Pick (Select) | `#00D4AA` | Featured items (teal brand) |
 | Text Primary | `#FFFFFF` | Headings |
 | Text Secondary | `#BBBBBB` | Body text |
 

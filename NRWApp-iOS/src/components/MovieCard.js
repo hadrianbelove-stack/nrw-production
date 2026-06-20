@@ -150,6 +150,7 @@ export default function MovieCard({movie, onPress, isFeatured = false, width}) {
       <View style={[
         styles.posterContainer,
         sizeOverride,
+        (isFeatured || movie.featured || movie.filters?.is_staff_pick) && styles.posterFeatured,
         streamingBadge && {backgroundColor: streamingBadge.color},
       ]}>
         {/* Gallery Label Frame header (replaces overlay bar) */}
@@ -178,7 +179,7 @@ export default function MovieCard({movie, onPress, isFeatured = false, width}) {
         {/* Featured badge */}
         {(isFeatured || movie.featured || movie.filters?.is_staff_pick) && (
           <View style={styles.featuredBadge}>
-            <Text style={styles.featuredText}>★ SELECT</Text>
+            <Text style={styles.featuredText}>★ NRW SELECT ★</Text>
           </View>
         )}
 
@@ -296,19 +297,32 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.caption,
   },
+  posterFeatured: {
+    borderWidth: 3,
+    borderColor: '#00d4aa',
+    shadowColor: '#00d4aa',
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    shadowOffset: {width: 0, height: 0},
+  },
+  // SELECT pill — dark-glass capsule near the poster's top edge (Design A).
   featuredBadge: {
     position: 'absolute',
-    top: 8,
-    left: 8,
-    backgroundColor: Colors.featuredBadge,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
+    top: 6,
+    alignSelf: 'center',
+    backgroundColor: '#081412',
+    borderWidth: 1,
+    borderColor: '#00d4aa',
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+    borderRadius: 12,
+    zIndex: 6,
   },
   featuredText: {
-    color: Colors.featuredBadgeText,
-    fontSize: 10,
-    fontWeight: '700',
+    color: '#00ffbb',
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 0.4,
   },
   restorationBadge: {
     position: 'absolute',

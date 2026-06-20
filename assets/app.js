@@ -538,7 +538,7 @@ const NRW = {
         // Date strips: single active filter recolors them; each view has its own color
         const singleFilter = this.activeFilters.size === 1 ? [...this.activeFilters][0] : null;
         const filterColor = singleFilter ? this.STRIP_COLORS[singleFilter] : null;
-        const dateStripColor = this.showHighlightsOnly ? '#dc143c'
+        const dateStripColor = this.showHighlightsOnly ? '#00d4aa'
             : this.showFest ? '#f59e0b'
             : this.showPreorders ? '#7c3aed'
             : this.slopMode === 'only' ? '#ff9500'
@@ -567,7 +567,7 @@ const NRW = {
         // Then every film flows through the normal date strips below, so each view
         // still shows the films grouped by date (the way SLOP already does).
         if (this.showHighlightsOnly) {
-            html += stripHtml('SELECTS', 'OF NOTE', '#dc143c', ' section-banner');
+            html += stripHtml('SELECTS', 'OF NOTE', '#00d4aa', ' section-banner');
         } else if (this.slopMode === 'only') {
             html += stripHtml('SLOP', 'THE CONTENT RIVER', '#ff9500', ' section-banner');
         } else if (this.showPreorders) {
@@ -704,11 +704,11 @@ const NRW = {
             const festBand = isScreening
                 ? `<div class="fest-above">${festivalName || 'VIRTUAL SCREENING'}</div>`
                 : '';
-            // VS: days-left bottom bar; Staff Picks keep the red SELECT badge
-            const badgeBar = isScreening
-                ? vsDaysBar(movie)
-                : isStaffPick
-                ? '<div class="badge-bar red">\u2605 SELECT \u2605</div>'
+            // VS: days-left bottom bar. Selects use the top-edge pill instead (see selectPill).
+            const badgeBar = isScreening ? vsDaysBar(movie) : '';
+            // Select: dark-glass pill riding the card's top edge (Design A).
+            const selectPill = isStaffPick
+                ? '<div class="select-pill">\u2605 NRW SELECT \u2605</div>'
                 : '';
 
             // Score badges for card front (bottom-left overlay)
@@ -735,6 +735,7 @@ const NRW = {
 
             html += `
             <div class="movie-container${staffPickClass}${screeningClass}">
+                ${selectPill}
                 ${festBand}
                 <div class="movie-card">
                     <div class="card-inner">

@@ -139,11 +139,11 @@ export default function HomeScreen({navigation}) {
     return rows;
   }, [displayedMovies, searchQuery, showHighlightsOnly, slopMode]);
 
-  // Strip color: active view toggle recolors date strips (SELECTS crimson, FESTS amber,
+  // Strip color: active view toggle recolors date strips (SELECTS teal, FESTS amber,
   // SLOP ONLY orange); otherwise a single active category filter; otherwise teal
   const singleFilter = activeFilters.size === 1 ? Array.from(activeFilters)[0] : null;
   const dateStripColor = showHighlightsOnly
-    ? '#dc143c'
+    ? '#00d4aa'
     : !hideFest
     ? '#f59e0b'
     : slopMode === 'only'
@@ -274,44 +274,10 @@ export default function HomeScreen({navigation}) {
     );
   };
 
+  // Sticky index 0 — kept minimal (results count) to preserve the strip-row
+  // sticky offset math. Search + selects now live in the FilterBar, matching mobile.
   const renderHeader = () => (
     <View style={styles.header}>
-      {/* Search bar */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search movies, directors, genres..."
-          placeholderTextColor={Colors.textMuted}
-          value={searchQuery}
-          onChangeText={handleSearch}
-          returnKeyType="search"
-          autoCorrect={false}
-        />
-      </View>
-
-      {/* New This Week section */}
-      {newThisWeek.length > 0 && !searchQuery && activeFilters.size === 0 && (
-        <View style={styles.newThisWeekSection}>
-          <Text style={styles.sectionTitle}>🎬 New This Week</Text>
-          <Text style={styles.sectionSubtitle}>
-            Curated new releases you won't find elsewhere
-          </Text>
-          <FlatList
-            horizontal
-            data={newThisWeek.slice(0, 6)}
-            renderItem={({item}) => (
-              <View style={styles.horizontalCard}>
-                <MovieCard movie={item} onPress={handleMoviePress} isFeatured />
-              </View>
-            )}
-            keyExtractor={item => `new-${item.id}`}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.horizontalList}
-          />
-        </View>
-      )}
-
-      {/* Results count */}
       <View style={styles.resultsHeader}>
         <Text style={styles.resultsCount}>
           {displayedMovies.length} {displayedMovies.length === 1 ? 'movie' : 'movies'}
@@ -339,8 +305,12 @@ export default function HomeScreen({navigation}) {
   }
 
   return (
-    <View style={[styles.container, {paddingBottom: insets.bottom}]}>
-      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopMode={slopMode} onSlopModeChange={handleSlopModeChange} hideFest={hideFest} onHideFestChange={handleHideFestChange} showPreorders={showPreorders} onShowPreordersChange={handleShowPreordersChange} showHighlightsOnly={showHighlightsOnly} onShowHighlightsChange={handleShowHighlightsChange} />
+    <View style={[styles.container, {paddingTop: insets.top, paddingBottom: insets.bottom}]}>
+      <View style={styles.appHeader}>
+        <Text style={styles.appTitle}>THE NEW RELEASE WALL</Text>
+        <Text style={styles.slogan}>Bringing back browsing. What came out, every day.</Text>
+      </View>
+      <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopMode={slopMode} onSlopModeChange={handleSlopModeChange} hideFest={hideFest} onHideFestChange={handleHideFestChange} showPreorders={showPreorders} onShowPreordersChange={handleShowPreordersChange} showHighlightsOnly={showHighlightsOnly} onShowHighlightsChange={handleShowHighlightsChange} searchQuery={searchQuery} onSearchChange={handleSearch} />
 
       <FlatList
         data={gridRows}
@@ -391,6 +361,27 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingBottom: Spacing.md,
+  },
+  appHeader: {
+    paddingHorizontal: Spacing.screenPadding,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.xs,
+    alignItems: 'center',
+  },
+  appTitle: {
+    color: Colors.primary,
+    fontSize: 20,
+    fontWeight: '200',
+    letterSpacing: 5,
+    textAlign: 'center',
+  },
+  slogan: {
+    color: '#cfcfcf',
+    fontSize: 12,
+    fontWeight: '300',
+    letterSpacing: 0.3,
+    marginTop: 5,
+    textAlign: 'center',
   },
   searchContainer: {
     paddingHorizontal: Spacing.screenPadding,

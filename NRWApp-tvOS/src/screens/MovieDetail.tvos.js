@@ -725,7 +725,7 @@ const MovieDetailTvOS = () => {
           {/* Staff Pick badge */}
           {(movie.featured || movie.filters?.is_staff_pick) && (
             <View style={styles.staffPickBadge}>
-              <Text style={styles.staffPickText}>SELECT</Text>
+              <Text style={styles.staffPickText}>★ NRW SELECT ★</Text>
             </View>
           )}
 

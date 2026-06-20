@@ -188,8 +188,8 @@ body {
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
 /* View toggles show their identity color when active (matches banners + date strips) */
-#highlights-toggle.active .slop-track { background: #dc143c; }
-#highlights-toggle.active .slop-label { color: #dc143c; }
+#highlights-toggle.active .slop-track { background: #00d4aa; }
+#highlights-toggle.active .slop-label { color: #00d4aa; }
 #fest-toggle.active .slop-track { background: #f59e0b; }
 #fest-toggle.active .slop-label { color: #f59e0b; }
 #preorder-toggle.active .slop-track { background: #7c3aed; }
@@ -314,18 +314,29 @@ body {
   white-space: nowrap;
   text-align: center;
 }
-.grid-item-poster .staff-pick-badge {
+/* Select: teal border + glow on the poster, matching the screening pattern. */
+.grid-item.staff-pick-movie .grid-item-poster {
+  border: 3px solid #00d4aa;
+  border-radius: 5px;
+  box-shadow: 0 0 14px rgba(0, 212, 170, 0.4);
+}
+/* SELECT pill — dark-glass capsule riding the poster's top edge (Design A). */
+.grid-item .staff-pick-badge {
   position: absolute;
-  top: 3px; right: 3px;
-  background: var(--crimson);
-  color: white;
-  font-size: 0.35rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 1px 4px;
-  border-radius: 3px;
+  top: 0; left: 50%;
+  transform: translate(-50%, -50%);
+  background: #081412;
+  color: #00ffbb;
+  border: 1px solid #00d4aa;
+  font-size: 0.4rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 12px;
   text-transform: uppercase;
-  z-index: 2;
+  white-space: nowrap;
+  z-index: 3;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
 }
 .grid-item.screening-movie .grid-item-poster {
   border: 2px solid var(--screening-gold);

@@ -95,7 +95,7 @@ Sub UpdateChipStyles()
         if filterId = "show_highlights"
             if showHighlights
                 chipBg.color = "0x2D040CFF"
-                chipLabel.color = "0xDC143CFF"
+                chipLabel.color = "0x00D4AAFF"
             else
                 chipBg.color = "0x0D0D0DFF"
                 chipLabel.color = "0x00D4AA73"

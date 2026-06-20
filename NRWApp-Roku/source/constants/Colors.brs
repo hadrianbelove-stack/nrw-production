@@ -24,7 +24,7 @@ Function GetColors() as Object
         textMuted: "0x888888FF"
 
         ' Category colors
-        staffPick: "0xDC143CFF"
+        staffPick: "0x00D4AAFF"
         restoration: "0xC8A951FF"
         studio: "0xFFFFFFFF"
         indie: "0x00D4AAFF"

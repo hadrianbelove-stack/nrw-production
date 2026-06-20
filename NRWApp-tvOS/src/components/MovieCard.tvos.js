@@ -324,7 +324,7 @@ const MovieCard = forwardRef(({
                   <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORED'}</Text>
                 </View>
               )}
-              {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ SELECT</Text></View>}
+              {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ NRW SELECT ★</Text></View>}
               <View style={[styles.screeningBorder, { borderColor: 'rgba(255,215,0,0.55)' }]} />
             </View>
           ) : streamingBadge?.isFrame ? (
@@ -349,7 +349,7 @@ const MovieCard = forwardRef(({
                   <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORED'}</Text>
                 </View>
               )}
-              {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ SELECT</Text></View>}
+              {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ NRW SELECT ★</Text></View>}
               {movie.filters?.is_virtual_screening && !isStaffPick && movie.virtual_screening_info?.screening_name && (
                 <View style={styles.screeningRibbon}><Text style={styles.screeningRibbonText} numberOfLines={2}>{decodeHtml(movie.virtual_screening_info.screening_name)}</Text></View>
               )}
@@ -384,7 +384,7 @@ const MovieCard = forwardRef(({
                   <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORED'}</Text>
                 </View>
               )}
-              {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ SELECT</Text></View>}
+              {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ NRW SELECT ★</Text></View>}
               {movie.filters?.is_virtual_screening && !isStaffPick && movie.virtual_screening_info?.screening_name && (
                 <View style={styles.screeningRibbon}><Text style={styles.screeningRibbonText} numberOfLines={2}>{decodeHtml(movie.virtual_screening_info.screening_name)}</Text></View>
               )}

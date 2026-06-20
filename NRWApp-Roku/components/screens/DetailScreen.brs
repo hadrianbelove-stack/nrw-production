@@ -266,7 +266,7 @@ Sub LoadMovie(index as Integer)
     if IsStaffPick(movie)
         m.staffPickBadge.visible = true
         m.staffPickLabel.visible = true
-        m.posterBorder.color = "0xDC143CFF"  ' Red border for staff picks
+        m.posterBorder.color = "0x00D4AAFF"  ' Red border for staff picks
     else
         m.staffPickBadge.visible = false
         m.staffPickLabel.visible = false

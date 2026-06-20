@@ -567,7 +567,7 @@ const NRWMobile = {
             rest = fd.toLocaleDateString('en', { month: 'short' }) + ' ' + fd.getDate() + ' · OPENS';
             color = '#b9952e';
         } else if (dateStr === 'highlights') {
-            day = 'SELECTS'; rest = 'OF NOTE'; color = '#dc143c';
+            day = 'SELECTS'; rest = 'OF NOTE'; color = '#00d4aa';
         } else if (dateStr === 'slop') {
             day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#ff9500';  // matches SLOP ONLY toggle orange
         } else {
@@ -576,7 +576,7 @@ const NRWMobile = {
             rest = d.toLocaleDateString('en', { month: 'short' }) + ' ' + d.getDate();
             const singleFilter = this.activeFilters.size === 1 ? [...this.activeFilters][0] : null;
             if (this.showHighlightsOnly) {
-                color = '#dc143c';
+                color = '#00d4aa';
             } else if (!this.hideFest) {
                 color = '#f59e0b';
             } else if (this.slopMode === 'only') {
@@ -599,7 +599,7 @@ const NRWMobile = {
         const streamingSvc = this.getGridStreamingService(movie);
 
         const item = document.createElement('div');
-        item.className = 'grid-item' + (isScreening ? ' screening-movie' : '');
+        item.className = 'grid-item' + (isScreening ? ' screening-movie' : '') + (isStaffPick ? ' staff-pick-movie' : '');
 
         // VS: festival name band above the poster (dark, gold text — matches desktop)
         if (isScreening && movie.virtual_screening_info?.screening_name) {
@@ -657,8 +657,8 @@ const NRWMobile = {
         if (isStaffPick) {
             const badge = document.createElement('span');
             badge.className = 'staff-pick-badge';
-            badge.textContent = 'Select';
-            badgeTarget.appendChild(badge);
+            badge.textContent = '★ NRW SELECT ★';
+            item.appendChild(badge);
         }
         if (movie._is_preorder) {
             const badge = document.createElement('span');
@@ -948,7 +948,7 @@ const NRWMobile = {
             this.esc(movie.title || '') + '" onerror="this.style.display=\'none\'">' +
             '<div class="sheet-header-text">' +
             '<div class="sheet-title">' + this.esc(movie.display_title || movie.title || 'Untitled') +
-            (isStaffPick ? ' <span style="color:var(--crimson);font-size:0.7rem">\u2605 SELECT</span>' : '') +
+            (isStaffPick ? ' <span style="color:#00ffbb;font-size:0.7rem">\u2605 NRW SELECT \u2605</span>' : '') +
             '</div>' +
             (dirLine ? '<div class="sheet-crew">' + dirLine + '</div>' : '') +
             (castLine ? '<div class="sheet-crew">' + castLine + '</div>' : '') +

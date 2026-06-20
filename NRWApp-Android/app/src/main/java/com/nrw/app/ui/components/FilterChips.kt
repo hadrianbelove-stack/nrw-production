@@ -123,7 +123,7 @@ fun FilterChips(
                 activeLabel = "SELECTS",
                 inactiveLabel = "SELECTS",
                 onClick = onShowHighlightsToggle,
-                accentColor = if (showHighlightsOnly) Color(0xFFDC143C) else SlopTeal
+                accentColor = if (showHighlightsOnly) Color(0xFF00D4AA) else SlopTeal
             )
         }
     }

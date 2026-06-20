@@ -36,9 +36,9 @@ export const Colors = {
   gradientStart: 'rgba(0, 0, 0, 0)',
   gradientEnd: 'rgba(0, 0, 0, 0.9)',
 
-  // Staff Pick badge
-  staffPick: '#dc143c',
-  staffPickText: '#ffffff',
+  // Staff Pick badge (Select) — teal brand
+  staffPick: '#00d4aa',
+  staffPickText: '#04130f',
 
   // Restoration badge
   restoration: '#C8A951',

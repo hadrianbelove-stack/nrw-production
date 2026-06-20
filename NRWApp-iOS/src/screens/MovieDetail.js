@@ -293,7 +293,7 @@ export default function MovieDetail({route}) {
           {/* Staff Pick badge */}
           {(movie.featured || movie.filters?.is_staff_pick) && (
             <View style={styles.staffPickBadge}>
-              <Text style={styles.staffPickText}>SELECT</Text>
+              <Text style={styles.staffPickText}>★ NRW SELECT ★</Text>
             </View>
           )}
           {/* Restoration badge */}
@@ -550,10 +550,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: Spacing.sm,
     left: Spacing.sm,
-    backgroundColor: Colors.staffPick,
+    backgroundColor: '#081412',
+    borderWidth: 1,
+    borderColor: Colors.staffPick,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 4,
-    borderRadius: 4,
+    borderRadius: 12,
   },
   staffPickText: {
     color: Colors.staffPickText,

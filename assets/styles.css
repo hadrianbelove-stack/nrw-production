@@ -6,9 +6,9 @@
     --bg-darker: #0a0a0a;
     --border-subtle: #333;
     --text-muted: #888;
-    --staff-pick: #dc143c;
-    --staff-pick-glow: rgba(220, 20, 60, 0.3);
-    --staff-pick-subtle: rgba(220, 20, 60, 0.05);
+    --staff-pick: #00d4aa;
+    --staff-pick-glow: rgba(0, 212, 170, 0.3);
+    --staff-pick-subtle: rgba(0, 212, 170, 0.05);
     --screening-gold: #FFD700;
     --screening-glow: rgba(255, 215, 0, 0.3);
     --screening-subtle: rgba(255, 215, 0, 0.05);
@@ -224,8 +224,8 @@ header h1 {
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
 /* View toggles show their identity color when active (matches banners + date strips) */
-#highlights-toggle.active .slop-track { background: #dc143c; }
-#highlights-toggle.active .slop-label { color: #dc143c; }
+#highlights-toggle.active .slop-track { background: #00d4aa; }
+#highlights-toggle.active .slop-label { color: #00d4aa; }
 #fest-toggle.active .slop-track { background: #f59e0b; }
 #fest-toggle.active .slop-label { color: #f59e0b; }
 #preorder-toggle.active .slop-track { background: #7c3aed; }
@@ -303,11 +303,31 @@ header h1 {
 
 /* Staff Pick movie styling (renamed from featured) */
 .movie-container.staff-pick-movie {
-    border: 3px solid var(--staff-pick);
+    border: 5px solid var(--staff-pick);
     border-radius: 15px;
     padding: 8px;
     background: var(--staff-pick-subtle);
-    box-shadow: 0 0 20px var(--staff-pick-glow);
+    box-shadow: 0 0 28px var(--staff-pick-glow);
+}
+
+/* SELECT pill — dark-glass capsule riding the card's top edge (Design A). */
+.movie-container.staff-pick-movie .select-pill {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 6;
+    white-space: nowrap;
+    color: #00ffbb;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 4px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--staff-pick);
+    background: #081412;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* Virtual screening movie glow (gold, same pattern as staff pick) */
@@ -1368,13 +1388,14 @@ header h1 {
 }
 
 .staff-pick-badge {
-    background: var(--staff-pick);
-    color: #fff;
+    background: #081412;
+    color: #00ffbb;
+    border: 1.5px solid var(--staff-pick);
     font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
     text-transform: uppercase;
     transform: translateY(2px);
 }
