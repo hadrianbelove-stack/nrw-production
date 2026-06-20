@@ -60,8 +60,11 @@ def main():
     ap.add_argument('--label', action='append', default=[],
                     help='Override label for a confirmed row, e.g. --label "2=New 4K Restoration"')
     ap.add_argument('--file', default=CANDIDATES_FILE)
+    ap.add_argument('--no-enrich', action='store_true',
+                    help='Skip auto-enrichment (default: confirmed films are enriched immediately)')
     ap.add_argument('--dry-run', action='store_true', help='Show actions without writing')
     args = ap.parse_args()
+    no_enrich = args.no_enrich
 
     if not os.path.exists(args.file):
         print(f"No candidate queue at {args.file}", file=sys.stderr)
@@ -176,10 +179,46 @@ def main():
         os.replace(ltmp, labels_path)
         print(f"Durable labels written to {labels_path} ({len(labels)} total).")
 
-        if added_ids:
-            print("\n⚠ Next: enrich them so they show fully (RT/Wikipedia/trailer/links):")
-            print(f"  for id in {' '.join(added_ids)}; do "
+        # Auto-enrich the newly added films (RT / Wikipedia / trailer / watch links) so
+        # confirming is one complete action — found → labeled → on the wall → enriched,
+        # exactly like every other film. Each failure is isolated; it never aborts the run.
+        if added_ids and not no_enrich:
+            print(f"\nEnriching {len(added_ids)} reissue(s)...")
+            for mid in added_ids:
+                try:
+                    subprocess.run([sys.executable, 'generate_data.py', '--enrich-id', mid],
+                                   check=True, capture_output=True, text=True)
+                    print(f"  ✓ enriched {mid}")
+                except subprocess.CalledProcessError as e:
+                    print(f"  ⚠ enrich failed for {mid}: {(e.stderr or '')[-200:]}")
+        elif added_ids:
+            print(f"\n(--no-enrich) Skipped enrichment for {len(added_ids)} film(s); "
+                  f"run later: for id in {' '.join(added_ids)}; do "
                   f"/usr/bin/python3 generate_data.py --enrich-id $id; done")
+
+        # Auto not-slop: a confirmed reissue is never slop. Set is_slop=false in data.json
+        # (the durable /marknotslop override — enrichment preserves a non-null is_slop and
+        # the classifier skips re-classification). Done AFTER enrichment so it isn't
+        # overwritten by the classifier that runs during enrich.
+        if added_ids and not no_enrich and os.path.exists('data.json'):
+            try:
+                with open('data.json') as f:
+                    dj = json.load(f)
+                movies = dj['movies'] if isinstance(dj, dict) else dj
+                idset = set(added_ids)
+                n = 0
+                for m in movies:
+                    if str(m.get('id')) in idset:
+                        m['is_slop'] = False          # human override: never slop
+                        m['_is_slop_guess'] = False   # not a guess — a decision
+                        n += 1
+                dtmp = 'data.json.tmp'
+                with open(dtmp, 'w') as f:
+                    json.dump(dj, f, indent=2, ensure_ascii=False)  # match pipeline format
+                os.replace(dtmp, 'data.json')
+                print(f"Marked {n} reissue(s) not-slop (is_slop=false).")
+            except Exception as e:
+                print(f"  ⚠ not-slop marking failed: {e}")
 
     # Persist candidate queue
     data['last_confirmed'] = datetime.datetime.now().isoformat()

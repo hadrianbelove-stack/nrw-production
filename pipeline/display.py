@@ -524,13 +524,18 @@ class DisplayGenerator:
             # The flag + label live on the tracking entry; the manual reissue_labels.json
             # still wins if both are set.
             tracking_entry = tracking_data.get(str(movie_id), {})
-            if tracking_entry.get('_reissue'):
+            is_reissue = bool(tracking_entry.get('_reissue'))
+            if is_reissue:
                 is_restoration = True
                 if not reissue_label:
                     reissue_label = tracking_entry.get('reissue_label')
 
             categories['is_restoration'] = is_restoration
             movie['reissue_label'] = reissue_label
+            # Propagate the reissue marker to the wall so /curate and /morning can treat a
+            # reissue as a normal new arrival (capsule + quotes) while still skipping
+            # auto-detected restorations. Distinct from is_restoration, which is the section.
+            movie['_reissue'] = is_reissue
 
             # Mark virtual screenings (Eventive and similar platforms)
             is_virtual_screening = False

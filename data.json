@@ -10915,7 +10915,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "display_title": "Muppets Most Wanted"
+      "display_title": "Muppets Most Wanted",
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "765",
@@ -11108,7 +11110,10 @@
       "_digital_date_source": "manual_override",
       "_needs_review": false,
       "_slop_reason": "score:-1(good_imdb)",
-      "status": "available"
+      "status": "available",
+      "is_slop": false,
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "1711071",
@@ -34229,7 +34234,9 @@
       "_needs_review": false,
       "is_slop": false,
       "_slop_reason": "prestige_streaming:max",
-      "status": "available"
+      "status": "available",
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "1446753",
@@ -34810,7 +34817,10 @@
         "wikipedia",
         "metacritic_score",
         "letterboxd_score"
-      ]
+      ],
+      "is_slop": false,
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "1585266",
@@ -36737,7 +36747,10 @@
       "_digital_date_source": "manual_override",
       "_needs_review": false,
       "_slop_reason": "score:-1(good_imdb)",
-      "status": "available"
+      "status": "available",
+      "is_slop": false,
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "tv_258063",
@@ -38452,7 +38465,9 @@
       "_needs_review": false,
       "is_slop": false,
       "_slop_reason": "prestige_studio:paramount pictures",
-      "status": "available"
+      "status": "available",
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "tv_318449",
@@ -56282,8 +56297,8 @@
       "_trailer_source": "tmdb_official",
       "_digital_date_source": "manual_override",
       "_needs_review": false,
-      "is_slop": true,
-      "_is_slop_guess": true,
+      "is_slop": false,
+      "_is_slop_guess": false,
       "_slop_reason": "score:7(no_wiki,no_rt,low_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
@@ -56291,7 +56306,8 @@
         "rt_score",
         "wikipedia",
         "metacritic_score"
-      ]
+      ],
+      "_reissue": true
     },
     {
       "id": "tv_287011",
@@ -58071,7 +58087,9 @@
       "_needs_review": false,
       "is_slop": false,
       "_slop_reason": "prestige_streaming:max",
-      "status": "available"
+      "status": "available",
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "1374791",
@@ -59421,7 +59439,9 @@
       "_needs_review": false,
       "is_slop": false,
       "_slop_reason": "prestige_studio:warner bros. pictures",
-      "status": "available"
+      "status": "available",
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "868668",
@@ -61745,7 +61765,10 @@
         "rt_score",
         "metacritic_score",
         "letterboxd_score"
-      ]
+      ],
+      "is_slop": false,
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "126273",
@@ -61854,7 +61877,10 @@
         "watch_links",
         "rt_score",
         "metacritic_score"
-      ]
+      ],
+      "is_slop": false,
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "55721",
@@ -62044,7 +62070,10 @@
       "_digital_date_source": "manual_override",
       "_needs_review": false,
       "_slop_reason": "score:2(mid_imdb,no_rt_link)",
-      "status": "available"
+      "status": "available",
+      "is_slop": false,
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "28503",
@@ -62300,7 +62329,10 @@
       "_digital_date_source": "manual_override",
       "_needs_review": false,
       "_slop_reason": "score:2(low_imdb,no_rt_link,major_streamer:amazon prime video)",
-      "status": "available"
+      "status": "available",
+      "is_slop": false,
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "1499488",
@@ -67122,8 +67154,8 @@
       "awards": "1 win",
       "_digital_date_source": "manual_override",
       "_needs_review": false,
-      "is_slop": true,
-      "_is_slop_guess": true,
+      "is_slop": false,
+      "_is_slop_guess": false,
       "_slop_reason": "score:6(no_wiki,no_rt,mid_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
@@ -67132,7 +67164,8 @@
         "trailer",
         "wikipedia",
         "metacritic_score"
-      ]
+      ],
+      "_reissue": true
     },
     {
       "id": "tv_279471",
@@ -71238,7 +71271,9 @@
       "_needs_review": false,
       "is_slop": false,
       "_slop_reason": "prestige_streaming:criterion",
-      "status": "available"
+      "status": "available",
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "1552958",
@@ -74059,7 +74094,9 @@
       "_needs_review": false,
       "is_slop": false,
       "_slop_reason": "prestige_studio:20th century fox",
-      "status": "available"
+      "status": "available",
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "tv_218274",
@@ -77141,7 +77178,10 @@
       "_enrichment_gaps": [
         "watch_links",
         "metacritic_score"
-      ]
+      ],
+      "is_slop": false,
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "1734",
@@ -77329,7 +77369,9 @@
       "_needs_review": false,
       "is_slop": false,
       "_slop_reason": "prestige_studio:universal pictures",
-      "status": "available"
+      "status": "available",
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "tv_302162",
@@ -81486,7 +81528,10 @@
       "status": "available",
       "_enrichment_gaps": [
         "watch_links"
-      ]
+      ],
+      "is_slop": false,
+      "_is_slop_guess": false,
+      "_reissue": true
     },
     {
       "id": "1279493",

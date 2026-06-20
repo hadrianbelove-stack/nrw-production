@@ -125,17 +125,12 @@ If it prints "all caught up", report that and move to Stage 1. Otherwise present
 /usr/bin/python3 scripts/confirm_reissue.py --confirm 1,3 --label "3=New 4K Restoration" --drain
 ```
 
-- `--confirm N[,N]` adds those films to the **wall now** (via `add_movie.py`: `status=available`, `_added_manually=True`, into `data.json`) with `_reissue` + badge label. Confirming is an editorial decision to feature the film immediately — like `/add-movie` — NOT a tracking watch entry. A theatrical-only reissue with no digital availability still stays on the wall because `_added_manually` skips the JustWatch revert.
+- `--confirm N[,N]` does the whole thing in one shot: adds those films to the **wall now** (via `add_movie.py`: `status=available`, `_added_manually=True`, into `data.json`) with `_reissue` + badge label, **auto-enriches** them (RT/Wikipedia/trailer/watch links), and marks them **not-slop** (`is_slop=false`). Confirming is an editorial decision to feature the film immediately — like `/add-movie`. A theatrical-only reissue with no digital availability still stays on the wall because `_added_manually` skips the JustWatch revert.
 - `--label "N=Custom"` overrides the suggested badge for a confirmed row (otherwise the suggested label is used).
-- `--drain` marks every other shown pending candidate as rejected so they don't re-appear. Omit `--drain` to leave undecided ones pending for next run (e.g. user wants to research one more).
+- `--drain` marks every other shown pending candidate as rejected so they don't re-appear. Omit `--drain` to leave undecided ones pending for next run.
+- `--no-enrich` only if you're confirming a large batch and want to defer enrichment (rare).
 
-**Step 3b — enrich the confirmed films** (RT, Wikipedia, trailer, watch links). `confirm_reissue.py` prints the exact loop; it's:
-
-```bash
-for id in <confirmed ids>; do /usr/bin/python3 generate_data.py --enrich-id $id; done
-```
-
-The confirmed films now flow through the rest of /curate (Stage 4 capsule + quotes) like any wall film, provided their reissue date falls in the 7-day window — otherwise curate them on demand with `/capsule` and `/enrich`.
+A confirmed reissue is then a **normal new arrival** — it flows through Stage 4 (capsule + quotes) like any wall film; the only special treatment is its Reissues section and the not-slop lock. (Films dated outside the 7-day window won't auto-appear in Stage 4 — curate those on demand with `/capsule` and `/enrich`.)
 
 **Step 4 — commit** the wall + queue (data.json is CI-authoritative, so verify additive before override):
 
@@ -164,9 +159,11 @@ rows = []
 for m in data['movies']:
     dd = m.get('digital_date','')
     if not (from_date <= dd <= today): continue
-    if m.get('filters',{}).get('is_restoration'): continue
+    # Reissues (confirmed Pass D films, _reissue=true) are normal new arrivals — curate them.
+    # Only AUTO-detected restorations are skipped here.
+    if m.get('filters',{}).get('is_restoration') and not m.get('_reissue'): continue
     t = m.get('title',''); y = m.get('year',0) or 0
-    if any(k in t for k in ('Remaster','Restoration','4K')) or (y and cy-int(y)>=10): continue
+    if not m.get('_reissue') and (any(k in t for k in ('Remaster','Restoration','4K')) or (y and cy-int(y)>=10)): continue
     if 'selects' in rev.get(str(m.get('id')), {}): continue   # already reviewed
     L = m.get('links',{})
     wl = m.get('watch_links',{}) or {}
@@ -354,7 +351,8 @@ rows = []
 for m in data['movies']:
     dd = m.get('digital_date','') or ''
     if not (from_date <= dd <= today): continue
-    if m.get('filters',{}).get('is_restoration'): continue
+    # Reissues get a capsule + quotes like any new arrival; only auto-restorations are skipped.
+    if m.get('filters',{}).get('is_restoration') and not m.get('_reissue'): continue
     needs = []
     if m.get('title','').lower() not in ct: needs.append('capsule')
     if 'pull_quotes' not in m: needs.append('quotes')

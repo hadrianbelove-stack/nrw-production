@@ -134,9 +134,12 @@ def needs_work(m):
     needs = []
     if m.get('_is_slop_guess') == True:
         needs.append('slop?')
-    if m.get('title','').lower() not in ct and not m.get('_restoration'):
+    # Reissues (confirmed Pass D, _reissue) are normal arrivals — they need capsule + quotes.
+    # Only AUTO-detected restorations are skipped. (_restoration was never set — bug fix.)
+    skip_resto = m.get('filters',{}).get('is_restoration') and not m.get('_reissue')
+    if m.get('title','').lower() not in ct and not skip_resto:
         needs.append('capsule')
-    if 'pull_quotes' not in m and not m.get('_restoration'):
+    if 'pull_quotes' not in m and not skip_resto:
         needs.append('quotes')
     return needs
 
@@ -176,6 +179,16 @@ else:
 ```
 
 Present the output directly. Lead with the backlog count. Any `⚠` flags become Concerns below.
+
+---
+
+### Code Catch-up (report-only)
+
+Run `/cleanupcatchup --report-only` — a quality pass over every *code* commit since the last manual catch-up (review bugs/NRW-rule fails + dead-code candidates). This is **report-only**: it makes no edits and does **not** advance the catch-up marker, so the findings stay waiting for a real `/cleanupcatchup` run.
+
+- If it reports "only data/curation commits" → say "No new code since last catch-up" and move on.
+- Otherwise present a 1-line-per-item summary. Any **behavior findings (bugs / rule violations)** become Concerns below. Mechanical cleanup items are listed here but are not Concerns.
+- Do **not** offer to fix anything in `/morning` — point the user to `/cleanupcatchup` for that.
 
 ---
 
