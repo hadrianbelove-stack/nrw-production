@@ -1187,9 +1187,12 @@ const HomeScreenTvOS = () => {
     <View style={styles.container}>
       {/* Header: top row = title + search; bottom row = 2x2 toggle module (lower-left) + filters (two rows) */}
       <View style={styles.header}>
-        {/* Top row: title only (search now lives in the filter grid below) */}
+        {/* Top row: title + slogan (search now lives in the filter grid below) */}
         <View style={styles.headerTopRow}>
-          <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
+          <View>
+            <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
+            <Text style={styles.headerSlogan}>Bringing back browsing. What came out, every day.</Text>
+          </View>
         </View>
         {/* Bottom row: 2x2 toggle module (lower-left) + filters as two rows filling the rest */}
         <View style={styles.bottomRow}>
@@ -1358,6 +1361,13 @@ const styles = StyleSheet.create({
     fontSize: 90,
     fontWeight: '100',
     letterSpacing: 9,
+  },
+  headerSlogan: {
+    color: Colors.primary,
+    fontSize: 30,
+    fontWeight: '300',
+    letterSpacing: 2,
+    marginTop: 2,
   },
   filterRow: {
     flexDirection: 'row',
