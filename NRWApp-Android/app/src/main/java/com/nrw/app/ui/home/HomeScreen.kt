@@ -264,14 +264,23 @@ private fun Header(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // Title (smaller to match tvOS proportions)
-        Text(
-            text = "THE NEW RELEASE WALL",
-            color = Primary,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold,
-            letterSpacing = 3.sp
-        )
+        // Title + slogan (smaller to match tvOS proportions)
+        Column {
+            Text(
+                text = "THE NEW RELEASE WALL",
+                color = Primary,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 3.sp
+            )
+            Text(
+                text = "Bringing back browsing. What came out, every day.",
+                color = TextSecondary,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Light,
+                letterSpacing = 0.3.sp
+            )
+        }
 
         // Search bar
         SearchBar(
