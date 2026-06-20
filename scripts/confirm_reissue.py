@@ -157,6 +157,26 @@ def main():
         tdb.save_all(db, export_json=True)
         print(f"Tracking DB: {added} new reissue(s) added, {len(confirmed) - added} existing flagged.")
 
+        # Durable layer: write labels into admin/reissue_labels.json (display reads this
+        # FIRST on every rebuild, so the badge + restoration filter survive any future
+        # enrichment/regeneration even if the tracking entry is ever rebuilt).
+        labels_path = 'admin/reissue_labels.json'
+        labels = {}
+        if os.path.exists(labels_path):
+            try:
+                with open(labels_path) as f:
+                    labels = json.load(f)
+            except Exception:
+                labels = {}
+        for cand, label in confirmed:
+            if label:  # blank badges fall back to "RESTORED" on site; don't store empty
+                labels[str(cand['tmdb_id'])] = label
+        ltmp = labels_path + '.tmp'
+        with open(ltmp, 'w') as f:
+            json.dump(labels, f, indent=2, ensure_ascii=False)
+        os.replace(ltmp, labels_path)
+        print(f"Durable labels written to {labels_path} ({len(labels)} total).")
+
     # Persist candidate queue
     data['last_confirmed'] = datetime.datetime.now().isoformat()
     tmp = args.file + '.tmp'

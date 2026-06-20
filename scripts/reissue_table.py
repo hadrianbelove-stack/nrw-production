@@ -54,22 +54,43 @@ def _links(c):
 _BADGE_WORDS = ('restoration', 'restored', '4k', 'remaster', 'anniversary',
                 'director', 'extended cut', 'assembly cut')
 
+import re as _re
+
+
+def _short_badge(text):
+    """Reduce a verbose release description to a SHORT poster badge.
+    "4K restoration, theatrical re-release, 4K UHD Blu-ray" -> "4K Restoration"
+    "40th anniversary re-release, theatrical run" -> "40th Anniversary"
+    Returns '' if no clean short descriptor can be extracted."""
+    if not text:
+        return ''
+    full = text.lower()
+    # Prefer a canonical short form when a known badge word appears anywhere in the text
+    m = _re.search(r'(\d+(?:st|nd|rd|th))\s+anniversary', full)
+    if m:
+        return f"{m.group(1)} Anniversary"
+    for kw, label in (('4k restoration', '4K Restoration'), ('4k remaster', '4K Remaster'),
+                      ('2k restoration', '2K Restoration'), ('restoration', 'Restoration'),
+                      ('remaster', '4K Remaster'), ('assembly cut', 'Assembly Cut'),
+                      ('director', "Director's Cut"), ('extended cut', 'Extended Cut'),
+                      ('restored', 'Restoration')):
+        if kw in full:
+            return label
+    # First clause is already short and has a badge word → title-case it
+    clause = text.split(',')[0].split('/')[0].strip()
+    if len(clause.split()) <= 3 and any(w in clause.lower() for w in _BADGE_WORDS):
+        return clause.title()
+    return ''
+
 
 def _suggested_label(c):
-    """The text to print on the poster's restoration badge — ONLY when there's a real
-    descriptor. Returns '' (blank) when nothing clean is available, so the user fills it
-    in rather than getting a meaningless badge. Generic phrases like "theatrical run" are
-    decision data (shown in other columns), never a badge."""
-    def _clean(s):
-        s = (s or '').strip()
-        return s if any(w in s.lower() for w in _BADGE_WORDS) else ''
-
+    """Short poster-badge text — ONLY when there's a real descriptor. Returns '' (blank)
+    when nothing clean is available, so the user fills it in rather than getting a
+    meaningless or verbose badge. Generic phrases like "theatrical run" are decision data
+    (shown in other columns), never a badge."""
     research = c.get('research') or {}
-    kind = _clean(research.get('release_kind'))
-    if kind:
-        return kind if len(kind.split()) > 4 else kind.title()
-    note = _clean((c.get('recent_release') or {}).get('note', ''))
-    return note  # may be '' — blank means "you set it"
+    return (_short_badge(research.get('release_kind'))
+            or _short_badge((c.get('recent_release') or {}).get('note', '')))
 
 
 def sorted_pending(queue):
