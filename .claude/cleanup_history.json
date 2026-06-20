@@ -95,5 +95,24 @@
     "items_found": 11,
     "items_fixed": 11,
     "notes": "mobile: orphaned title div, 2 dead CSS classes (.grid-item-title, .sheet-date). pipeline: dead movie_id unpack in discoverer, bare except->specific in enricher. wiki scraper: except ImportError as e, dead last_error var. gemini base: dead _error_log attr+appends. capsule: dead recent alias, 2 dead stat keys (amazon_synopsis_fetched, imdb_trivia_fetched). vod_date: dead preorder_detected stat."
+  },
+  {
+    "timestamp": "2026-06-18T23:06:48",
+    "target": "code touched by last-week commits (redesign cruft sweep)",
+    "files_scanned": [
+      "assets/styles.css",
+      "assets/app.js",
+      "index.html",
+      "mobile/mobile.css",
+      "mobile/mobile.js",
+      "mobile/index.html",
+      "scripts/slop_classifier.py",
+      "pipeline/enricher.py",
+      "pipeline/discoverer.py",
+      "NRWApp-tvOS/src/screens/HomeScreen.tvos.js"
+    ],
+    "items_found": 27,
+    "items_fixed": 27,
+    "notes": "Cycle1 (24): removed superseded desktop header layout CSS (.title-row/.header-left/.hl-top/.view-module-head/.toggle-grid/.header-bottom/.filters + media), .screening-top-banner, lightbox awards/box-office/trailer-overlay block, .badge-bar.gold, --svc-amazon/--svc-plex; slop_classifier unused 'import sys'; discoverer stale 10->4 revert comment; mobile dead .filter-row-spacer/.poster-trailer*/.score-badge imdb+meta/.filter-desc-inner/.filter-desc.visible/.grid-desc-row + dead createDescRow chain (FILTER_DESCRIPTIONS ~46 lines); 9 orphaned tvOS StyleSheet entries. Cycle2 (3, desktop twins): app.js FILTER_DESCRIPTIONS object (unread), .filter-description.active dead state rule, dead .lightbox-trailer-overlay cleanup in _updateLightboxPoster. Cycle3 probe surfaced Roku dead filter-description subsystem + Android Movie.kt unused 'awards' field -> deferred to user (Roku untestable here, Android JSON-parse risk). iOS trailerOverlay confirmed LIVE (not dead). All JS node --check + Python ast pass; CSS braces balanced."
   }
 ]

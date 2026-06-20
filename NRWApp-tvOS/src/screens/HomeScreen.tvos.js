@@ -18,6 +18,7 @@ import {
   findNodeHandle,
   InteractionManager,
   TVFocusGuideView,
+  AppState,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useHomeScreen } from './useHomeScreen';
@@ -523,11 +524,36 @@ const HomeScreenTvOS = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  // When set, the movie card with this mIdx claims focus on its next render
+  // (used by "MORE" to land on the first newly-loaded film, and by app re-entry
+  // to land on the very first film). Cleared shortly after so it doesn't re-grab.
+  const [pendingFocusMIdx, setPendingFocusMIdx] = useState(null);
 
   // Reset to first page whenever filters change
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly, searchQuery]);
+
+  // Release the one-shot preferred-focus flag once the target card has had a
+  // chance to claim focus, so it won't keep stealing focus on later re-renders.
+  useEffect(() => {
+    if (pendingFocusMIdx == null) return;
+    const t = setTimeout(() => setPendingFocusMIdx(null), 350);
+    return () => clearTimeout(t);
+  }, [pendingFocusMIdx]);
+
+  // When the app returns to the foreground, reset the wall to the top: first
+  // page, scrolled to offset 0, cursor on the first film.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        setVisibleCount(PAGE_SIZE);
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
+        setPendingFocusMIdx(0);
+      }
+    });
+    return () => sub.remove();
+  }, []);
 
   // Fullscreen poster modal state
   const [fullscreenVisible, setFullscreenVisible] = useState(false);
@@ -639,11 +665,13 @@ const HomeScreenTvOS = () => {
       movies = movies.filter(m => m.filters?.is_virtual_screening);
     }
 
-    // Pre-orders only show in the Pre-Order view (or search). Hide them everywhere
-    // else — including ones also flagged as screenings — so they never bleed into
-    // the Fests view (matches desktop).
-    if (!showPreorders && !searchQuery) {
-      movies = movies.filter(m => !m._is_preorder);
+    // Pre-order view is exclusive: ON => only pre-orders; OFF => hide them everywhere
+    // else (incl. ones also flagged as screenings, so they never bleed into the Fests
+    // view). Matches desktop.
+    if (!searchQuery) {
+      movies = showPreorders
+        ? movies.filter(m => m._is_preorder)
+        : movies.filter(m => !m._is_preorder);
     }
 
     // Highlights mode: only staff picks
@@ -1012,7 +1040,14 @@ const HomeScreenTvOS = () => {
           <View style={styles.cardWrapper}>
             <LoadMoreCard
               remaining={item.remaining}
-              onPress={() => setVisibleCount(prev => prev + PAGE_SIZE)}
+              onPress={() => {
+                // Films get sequential mIdx in list order, so the first new film
+                // is one past the current highest mIdx. Focus it after expanding.
+                const lastIdxRow = movieGrid.rowsOfIdx[movieGrid.rowsOfIdx.length - 1];
+                const maxMIdx = lastIdxRow ? lastIdxRow[lastIdxRow.length - 1] : -1;
+                setPendingFocusMIdx(maxMIdx + 1);
+                setVisibleCount(prev => prev + PAGE_SIZE);
+              }}
               nextFocusUp={loadMoreUpHandle}
             />
           </View>
@@ -1076,7 +1111,7 @@ const HomeScreenTvOS = () => {
                   onLongPress={() => handleOpenFullscreen(movie)}
                   onFocus={() => handleMovieFocus(movie, mIdx)}
                   onBlur={() => handleMovieBlur(mIdx)}
-                  hasTVPreferredFocus={giveInitialFocus && isFirstMovie}
+                  hasTVPreferredFocus={(giveInitialFocus && isFirstMovie) || pendingFocusMIdx === mIdx}
                   testID={`movie-card-${mIdx}`}
                   nextFocusUp={nextFocusUp}
                   nextFocusDown={nextFocusDown}
@@ -1103,7 +1138,7 @@ const HomeScreenTvOS = () => {
         </View>
       );
     },
-    [movieGrid, stripKeyByIdx, dateStripColor, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, registerItemRef, registerWrapperRef, giveInitialFocus]
+    [movieGrid, stripKeyByIdx, dateStripColor, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, registerItemRef, registerWrapperRef, giveInitialFocus, pendingFocusMIdx]
   );
 
   // Key extractor
@@ -1330,12 +1365,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  filterSearchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingBottom: 4,
-    gap: 20,
-  },
   // Lower-left layout: bottom row holds the 2x2 toggle module (left) + filters (two rows, right)
   bottomRow: {
     flexDirection: 'row',
@@ -1365,11 +1394,6 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: 'center',
   },
-  searchGrow: {
-    flex: 1,
-    marginLeft: 28,
-    maxWidth: 560,
-  },
   // Search rendered inside the filter grid (row 2): spans ~3 chip slots and
   // stretches to the chip height so it sits flush with the filter buttons.
   searchInGrid: {
@@ -1382,17 +1406,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
     paddingHorizontal: 18,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 12,
-    width: 250,
-    height: 36,
   },
   searchContainerFocused: {
     borderColor: Colors.primary,
@@ -1442,18 +1455,6 @@ const styles = StyleSheet.create({
   filterButtonTextActive: {
     color: '#ffffff', // white on teal — matches desktop (body color: #fff)
     fontWeight: '700',
-  },
-  filterDivider: {
-    width: 1,
-    height: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignSelf: 'center',
-    marginHorizontal: 4,
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
   },
   metaToggleWrap: {
     flexDirection: 'row',
@@ -1534,12 +1535,6 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 20,
     overflow: 'visible',
-  },
-  row: {
-    justifyContent: 'flex-start',
-    marginBottom: CARD_GAP,
-    overflow: 'visible',
-    zIndex: 1,
   },
   movieRow: {
     flexDirection: 'row',
@@ -1728,30 +1723,6 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.tvos.body,
     textAlign: 'center',
-  },
-  // Filter description panel — shown when exactly 1 filter active (matches web)
-  filterDescriptionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 40,
-    paddingHorizontal: 68,
-    paddingVertical: 14,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.08)',
-  },
-  filterDescriptionTitle: {
-    fontSize: 36,
-    fontWeight: '800',
-    letterSpacing: 4,
-    color: Colors.primary,
-    flexShrink: 0,
-    textTransform: 'uppercase',
-  },
-  filterDescriptionText: {
-    fontSize: 20,
-    color: Colors.textMuted,
-    lineHeight: 30,
-    flex: 1,
   },
 });
 

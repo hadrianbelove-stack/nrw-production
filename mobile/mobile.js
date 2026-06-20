@@ -52,54 +52,6 @@ const NRWMobile = {
         mgmplus: { color: '#000000', textColor: '#fff' },
     },
 
-    // Filter descriptions — shown when a single filter is active
-    FILTER_DESCRIPTIONS: {
-        'indie': {
-            title: 'Indie',
-            text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
-        },
-        'staff-picks': {
-            title: 'Selects',
-            text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
-        },
-        'foreign': {
-            title: 'Foreign',
-            text: 'Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces.'
-        },
-        'restorations': {
-            title: 'Reissues',
-            text: 'Classic and catalog titles with new digital life. Films that have been restored, remastered, or newly reissued on streaming platforms.'
-        },
-        'documentary': {
-            title: 'Documentary',
-            text: 'Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home.'
-        },
-        'pre-orders': {
-            title: 'Pre-Orders',
-            text: 'Coming soon. These movies have confirmed digital release dates and are available to pre-order now.'
-        },
-        'horror': {
-            title: 'Horror',
-            text: 'The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter.'
-        },
-        'action': {
-            title: 'Action',
-            text: 'High-octane, kinetic filmmaking. Action movies now available to watch at home.'
-        },
-        'comedy': {
-            title: 'Comedy',
-            text: 'Films that are actually funny. Comedies — broad and subtle — now streaming.'
-        },
-        'family': {
-            title: 'Family',
-            text: 'Films for all ages. Family movies now available to watch at home.'
-        },
-        'thriller': {
-            title: 'Thriller',
-            text: 'Suspense, dread, and unease. Thrillers now streaming — from psychological slow-burns to pulse-pounding crime.'
-        }
-    },
-
     // Date strips adopt the active filter's color when exactly one filter is on
     STRIP_COLORS: {
         'indie': '#00d4aa',
@@ -575,8 +527,6 @@ const NRWMobile = {
             const entry = this.gridEntries[i];
             if (entry.type === 'date') {
                 grid.appendChild(this.createDateRowHeader(entry.dateStr));
-            } else if (entry.type === 'desc') {
-                grid.appendChild(this.createDescRow(entry.key));
             } else {
                 grid.appendChild(this.createGridItem(entry.movie, entry.index));
             }
@@ -640,14 +590,6 @@ const NRWMobile = {
         row.innerHTML =
             '<span class="drh-day">' + day + '</span>' +
             (rest ? '<span class="drh-rest">' + rest + '</span>' : '');
-        return row;
-    },
-
-    createDescRow(key) {
-        const row = document.createElement('div');
-        row.className = 'grid-desc-row';
-        const info = this.FILTER_DESCRIPTIONS[key];
-        row.textContent = info ? info.text : '';
         return row;
     },
 

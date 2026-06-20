@@ -157,7 +157,7 @@ class ProviderDiscoverer:
         if result is None or not result.get('verified'):
             # JW_BREAKER: result is None means "no match" — but a blocked/throttled
             # JustWatch returns the same thing (HTTP 200, empty results). Before we
-            # revert (which inflates the revert count toward the 10-revert permanent-
+            # revert (which inflates the revert count toward the 4-revert permanent-
             # skip ceiling), confirm JW is actually healthy. If it's down, leave the
             # movie untouched in tracking — re-checked next run, no count poisoning.
             if result is None and not self._check_jw_health():

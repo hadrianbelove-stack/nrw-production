@@ -1,37 +1,35 @@
 {
-  "timestamp": "2026-06-09T16:52:17.118405",
+  "timestamp": "2026-06-19T19:03:31.752394",
   "scrapers": {
     "rt_scraper": {
-      "attempts": 1,
-      "successes": 1,
+      "attempts": 0,
+      "successes": 0,
       "cache_hits": 0,
-      "success_rate": 100.0,
-      "cache_hit_rate": 0.0,
+      "success_rate": null,
+      "cache_hit_rate": null,
       "error_types": {}
     },
     "mc_scraper": {
-      "attempts": 1,
-      "successes": 1,
+      "attempts": 0,
+      "successes": 0,
       "cache_hits": 0,
-      "success_rate": 100.0,
-      "cache_hit_rate": 0.0,
+      "success_rate": null,
+      "cache_hit_rate": null,
       "error_types": {}
     },
     "lb_scraper": {
-      "attempts": 1,
-      "successes": 1,
+      "attempts": 0,
+      "successes": 0,
       "cache_hits": 0,
-      "success_rate": 100.0,
-      "cache_hit_rate": 0.0,
+      "success_rate": null,
+      "cache_hit_rate": null,
       "error_types": {}
     },
     "wikipedia_scraper": {
-      "wikidata_attempts": 1,
+      "wikidata_attempts": 0,
       "wikidata_successes": 0,
-      "success_rate": 0.0,
-      "error_types": {
-        "not_found": 1
-      }
+      "success_rate": null,
+      "error_types": {}
     },
     "trailer_scraper": {
       "attempts": 0,
@@ -46,15 +44,15 @@
       "success_rate": null
     },
     "vod_scraper": {
-      "attempts": 3,
+      "attempts": 0,
       "successes": 0,
       "failures": 0,
-      "success_rate": 0.0
+      "success_rate": null
     }
   },
   "validation": {
-    "passes": 1,
+    "passes": 0,
     "warnings": 0,
-    "pass_rate": 100.0
+    "pass_rate": null
   }
 }

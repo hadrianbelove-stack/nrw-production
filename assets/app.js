@@ -24,50 +24,6 @@ const NRW = {
     abbreviateCountry: NRWConfig.abbreviateCountry,
     lightboxCountry: NRWConfig.lightboxCountry,
 
-    // Filter descriptions — shown when a single filter is active
-    FILTER_DESCRIPTIONS: {
-        'indie': {
-            title: 'Indie',
-            text: 'The smaller films, the independents, the ones without a billboard campaign. These movies flew under the radar theatrically but are worth knowing about now that they\'re available to stream at home.'
-        },
-        'staff-picks': {
-            title: 'Selects',
-            text: 'The ones we\'re vouching for. Out of everything on the wall, these are the movies we think are genuinely worth your time. Not a popularity contest, just honest recommendations.'
-        },
-        'foreign': {
-            title: 'Foreign',
-            text: 'Non-English language films from around the world. Some are massive in their home countries, some are intimate art-house pieces. The only thing they have in common is subtitles and the fact that they\'re streaming now.'
-        },
-        'restorations': {
-            title: 'Reissues',
-            text: 'Classic and catalog titles with new digital life. These are films that have been restored, remastered, or newly reissued on streaming platforms. Old movies, fresh transfers.'
-        },
-        'documentary': {
-            title: 'Documentary',
-            text: 'Non-fiction filmmaking. Documentaries covering real stories, real people, and real events — now available to stream at home.'
-        },
-        'horror': {
-            title: 'Horror',
-            text: 'The stuff that goes bump. Horror films now streaming — from slow-burn dread to full-on splatter.'
-        },
-        'action': {
-            title: 'Action',
-            text: 'High-octane, kinetic filmmaking. Action movies now available to watch at home.'
-        },
-        'comedy': {
-            title: 'Comedy',
-            text: 'Films that are actually funny. Comedies — broad and subtle — now streaming.'
-        },
-        'family': {
-            title: 'Family',
-            text: 'Films for all ages. Family movies now available to watch at home.'
-        },
-        'thriller': {
-            title: 'Thriller',
-            text: 'Suspense, dread, and unease. Thrillers now streaming — from psychological slow-burns to pulse-pounding crime.'
-        }
-    },
-
     // Date strips adopt the active filter's color when exactly one filter is on
     STRIP_COLORS: {
         'indie': '#00d4aa',
@@ -1252,17 +1208,11 @@ const NRW = {
     // --- Lightbox sub-renderers (extracted from updateLightbox) ---
 
     _updateLightboxPoster(movie) {
-        const posterWrap = document.querySelector('.lightbox-poster-wrap');
         document.getElementById('lightbox-poster').src = movie.poster || '';
         document.getElementById('lightbox-poster').style.display = movie.poster ? '' : 'none';
         document.getElementById('lightbox-poster-fallback').style.display = movie.poster ? 'none' : 'flex';
         document.getElementById('lightbox-poster-fallback-title').textContent = movie.display_title || movie.title;
         document.getElementById('lightbox-score-overlay').innerHTML = '';
-
-        // Clean poster — no trailer overlay
-        const oldOverlay = posterWrap.querySelector('.lightbox-trailer-overlay');
-        if (oldOverlay) oldOverlay.remove();
-        posterWrap.classList.remove('has-trailer');
     },
 
     _updateLightboxHeader(movie) {
