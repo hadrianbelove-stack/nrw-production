@@ -1682,8 +1682,8 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "is_slop": true,
-      "_is_slop_guess": true,
+      "is_slop": false,
+      "_is_slop_guess": false,
       "_slop_reason": "score:4(no_wiki,no_rt)",
       "status": "available",
       "_enrichment_gaps": [
@@ -1704,7 +1704,22 @@
         "manual_override": null
       },
       "featured": false,
-      "_slop_confidence": "weak"
+      "_slop_confidence": "weak",
+      "capsule": "Keywords: cult · dimension-travel · religious-extremism · psychedelic · noir\nsurreal sci-fi fantasy odyssey from Japanese cult filmmaker **[Toshiaki Toyoda](https://en.wikipedia.org/wiki/Toshiaki_Toyoda)** (*Blue Spring*, *9 Souls*).\n**Toyoda** considered this film the culmination of his career, even deciding on the cast with the intention of it being his final work",
+      "pull_quotes": [
+        {
+          "text": "'Transcending Dimensions' will take you places.",
+          "critic": "James Hadfield",
+          "outlet": "Japan Times",
+          "review_url": "https://www.japantimes.co.jp/culture/2025/10/16/film/transcending-dimensions/"
+        },
+        {
+          "text": "A film that will struggle to unite the masses, Transcending Dimensions will have a niche but fiercely loyal fanbase.",
+          "critic": "Kat Hughes",
+          "outlet": "THN",
+          "review_url": null
+        }
+      ]
     },
     {
       "id": "1172265",
