@@ -33,6 +33,7 @@ MANUAL_OVERRIDES = {
     1684246: False,   # Untold UK: Vinnie Jones
     # Art-house / festival films without RT/wiki yet
     1213025: False,   # Transcending Dimensions (Toshiaki Toyoda; Rotterdam/NYAFF/Fantasia)
+    1362365: False,   # This Is Buzz (Mark Pellington doc; Slamdance)
     1303370: False,   # Ways to Traverse a Territory
     1422627: False,   # Snow Leopard Sisters
     1303498: False,   # $POSITIONS
