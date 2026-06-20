@@ -101,13 +101,20 @@ for m in data['movies']:
     if any(k in t for k in ('Remaster','Restoration','4K')) or (y and cy-int(y)>=10): continue
     if 'selects' in rev.get(str(m.get('id')), {}): continue   # already reviewed
     L = m.get('links',{})
+    wl = m.get('watch_links',{}) or {}
+    def _aslist(v): return v if isinstance(v,list) else ([v] if v else [])
+    services = []
+    for x in _aslist(wl.get('streaming')) + _aslist(wl.get('vod')):
+        n = x.get('service') if isinstance(x,dict) else str(x)
+        if n and n not in services: services.append(n)   # dedupe, keep order
     rows.append((dd, m.get('id'), t, m.get('year','?'), m.get('rt_score') or '--',
-                 m.get('metacritic_score') or '--', L.get('wikipedia','') or '',
+                 m.get('metacritic_score') or '--', m.get('imdb_rating') or '--',
+                 ', '.join(services) or '—', L.get('wikipedia','') or '',
                  L.get('trailer_hosted','') or L.get('trailer','') or ''))
 rows.sort(key=lambda x: x[0], reverse=True)
 print(f'Stage 1 Selects — {len(rows)} unreviewed candidate(s):')
-for i,(dd,mid,t,y,rt,mc,w,tr) in enumerate(rows,1):
-    print(f'{i}|||{t}|||{y}|||{rt}|||{mc}|||{w}|||{tr}|||{mid}')
+for i,(dd,mid,t,y,rt,mc,imdb,svc,w,tr) in enumerate(rows,1):
+    print(f'{i}|||{t}|||{y}|||{rt}|||{mc}|||{imdb}|||{svc}|||{w}|||{tr}|||{mid}')
 "
 ```
 
@@ -116,18 +123,18 @@ If the script prints 0 candidates, report "Selects: all caught up" and move to S
 ```
 SELECTS — which movies are you vouching for?
 
-| # | Title (Year) | RT | MC | Trailer |
-|---|---|---|---|---|
-| 1 | [Title (Year)](https://en.wikipedia.org/wiki/...) | 85% | 72 | [▶](trailer-url) |
-| 2 | Title (Year) | -- | -- | [▶](trailer-url) |
-| 3 | [Title (Year)](https://en.wikipedia.org/wiki/...) | 92% | 80 | — |
+| # | Title (Year) | RT | MC | IMDb | Available on | Trailer |
+|---|---|---|---|---|---|---|
+| 1 | [Title (Year)](https://en.wikipedia.org/wiki/...) | 85% | 72 | 7.2 | Netflix | [▶](trailer-url) |
+| 2 | Title (Year) | -- | -- | -- | Amazon, Apple TV | [▶](trailer-url) |
+| 3 | [Title (Year)](https://en.wikipedia.org/wiki/...) | 92% | 80 | 8.0 | MUBI | — |
 
 ★ Recommended: 1 (strong RT/MC), 3 (RT 92%, critical darling)
 
 Reply with numbers (e.g. "1, 7, 10") or "skip" to skip.
 ```
 
-For each movie row show: title (hyperlinked to its Wikipedia page from `movie.links.wikipedia` when one exists; plain text if absent), year, RT score (or `--`), Metacritic score (or `--`), and a Trailer link (`[▶](url)` using `movie.links.trailer_hosted`, falling back to `movie.links.trailer`; `—` if neither exists). Do not show watch-link services in this table.
+For each movie row show: title (hyperlinked to its Wikipedia page from `movie.links.wikipedia` when one exists; plain text if absent), year, RT score (or `--`), Metacritic score (or `--`), IMDb rating (`movie.imdb_rating`, or `--`), the **Available on** services (deduped watch-link service names — streaming + VOD, in order; `—` if none), and a Trailer link (`[▶](url)` using `movie.links.trailer_hosted`, falling back to `movie.links.trailer`; `—` if neither exists).
 
 **Recommendations**: After the list, add a `★ Recommended:` line with 2–4 suggested picks and a short reason for each (scores, notable director, awards, distributor quality signal, etc.). Base this only on data already in data.json — do not web search at this step. If nothing stands out, say so.
 

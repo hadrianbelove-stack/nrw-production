@@ -103,6 +103,7 @@ MANUAL_OVERRIDES = {
     1424649: True,    # Sampung Utos Kay Josh
     1174334: True,    # A Foggy Tale
     1433117: True,    # Kara
+    959646:  True,    # Zombie Land Saga: Yumeginga Paradise (Crunchyroll)
 }
 
 # ── Prestige streaming platforms → instant NOT SLOP ──────────────────────────
