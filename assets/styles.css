@@ -78,6 +78,21 @@ header h1 {
     margin-bottom: 0;
 }
 
+/* Slogan under the wordmark — matches the gradient wordmark treatment */
+.site-slogan {
+    font-weight: 300;
+    font-size: 1.12rem;
+    letter-spacing: 0.05em;
+    margin: -8px 0 16px;
+    background: linear-gradient(45deg, #fff, var(--accent-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+@media (max-width: 760px) {
+    .site-slogan { font-size: 0.95rem; margin: -4px 0 12px; }
+}
+
 /* Boxed control module — the four view toggles, 2×2 */
 .view-module {
     flex-shrink: 0;

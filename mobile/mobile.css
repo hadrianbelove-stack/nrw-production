@@ -50,6 +50,16 @@ body {
   color: var(--accent);
   margin-bottom: 6px;
 }
+.site-header .site-slogan {
+  margin: -2px 0 6px;
+  font-weight: 300;
+  font-size: clamp(0.62rem, 3vw, 0.8rem);
+  letter-spacing: 0.02em;
+  background: linear-gradient(45deg, #fff, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .header-controls {
   display: flex;
   flex-direction: column;
