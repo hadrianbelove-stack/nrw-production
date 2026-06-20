@@ -1224,8 +1224,8 @@
       "_trailer_source": "gemini_playwright",
       "_digital_date_source": "detection",
       "_needs_review": false,
-      "is_slop": true,
-      "_is_slop_guess": true,
+      "is_slop": false,
+      "_is_slop_guess": false,
       "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
       "status": "available",
       "_enrichment_gaps": [
@@ -1247,7 +1247,9 @@
         "manual_override": null
       },
       "featured": false,
-      "_slop_confidence": "weak"
+      "_slop_confidence": "weak",
+      "capsule": "Doc on the diverse career of Japanese filmmaker **[Ishiro Honda](https://en.wikipedia.org/wiki/Ishir%C5%8D_Honda)**, best known for *Godzilla*.\nPremiered at Sitges. Features **[Joe Dante](https://en.wikipedia.org/wiki/Joe_Dante)** and [Kurosawa](https://en.wikipedia.org/wiki/Akira_Kurosawa)'s son.",
+      "pull_quotes": []
     },
     {
       "id": "1404184",

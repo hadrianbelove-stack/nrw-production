@@ -24,6 +24,7 @@ MANUAL_OVERRIDES = {
     # Documentaries by respected directors with low metadata coverage
     1585266: False,   # Clairtone (Ron Mann)
     1463432: False,   # Steve Schapiro: Being Everywhere
+    1354900: False,   # Ishiro Honda: Memoirs of a Film Director (Sitges; kaiju doc)
     # Comedy specials — major comedians
     1222518: False,   # Josh Johnson: Symphony (not slop despite Irwin Entertainment)
     # Documentary series
