@@ -18,6 +18,7 @@ import concurrent.futures
 import json
 import os
 import re
+import subprocess
 import time
 
 import yt_dlp
@@ -93,6 +94,54 @@ def clean_vtt(content):
     return content
 
 
+def probe_video_codec(path):
+    """Return the video stream codec name (e.g. 'h264', 'av1', 'vp9') or '' if unknown."""
+    try:
+        out = subprocess.run(
+            ['ffprobe', '-v', 'error', '-select_streams', 'v:0',
+             '-show_entries', 'stream=codec_name', '-of', 'default=nw=1:nk=1', path],
+            capture_output=True, text=True, timeout=60,
+        )
+        return out.stdout.strip()
+    except (subprocess.SubprocessError, OSError):
+        return ''
+
+
+def ensure_h264(path):
+    """Guarantee the file is H.264 so it plays on Apple TV / Roku / all devices.
+
+    yt-dlp's format selector prefers H.264 (avc1), but when a YouTube video offers
+    no H.264 stream at all it falls back to an AV1/VP9 mp4 — which plays on web but
+    renders black on tvOS/Roku. This re-encodes any non-H.264 download to H.264+AAC.
+    Returns the final codec ('h264' on success). No-op when already H.264.
+    """
+    codec = probe_video_codec(path)
+    if codec == 'h264' or not codec:
+        return codec
+    tmp_path = path + '.h264.mp4'
+    try:
+        result = subprocess.run(
+            ['ffmpeg', '-y', '-i', path,
+             '-c:v', 'libx264', '-preset', 'fast', '-crf', '20', '-pix_fmt', 'yuv420p',
+             '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', tmp_path],
+            capture_output=True, text=True, timeout=900,
+        )
+        if result.returncode == 0 and os.path.exists(tmp_path) and os.path.getsize(tmp_path) > 0:
+            os.replace(tmp_path, path)
+            return 'h264'
+        # Re-encode failed — leave the original in place, clean up the temp file
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        return codec
+    except (subprocess.SubprocessError, OSError):
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+        return codec
+
+
 def download_trailer(movie, dry_run=False, cookies_browser=None, cookies_file=None):
     """
     Download a single trailer. Returns a result dict with status and details.
@@ -166,6 +215,9 @@ def download_trailer(movie, dry_run=False, cookies_browser=None, cookies_file=No
 
             # Verify the file was created
             if os.path.exists(output_path):
+                # Safety net: re-encode to H.264 if yt-dlp fell back to AV1/VP9
+                # (those play on web but render black on Apple TV / Roku).
+                final_codec = ensure_h264(output_path)
                 size_mb = os.path.getsize(output_path) / (1024 * 1024)
                 duration = info.get('duration', 0)
                 # Clean VTT positioning/timing markup if subtitles were downloaded
@@ -174,7 +226,10 @@ def download_trailer(movie, dry_run=False, cookies_browser=None, cookies_file=No
                         cleaned = clean_vtt(f.read())
                     with open(vtt_path, 'w') as f:
                         f.write(cleaned)
-                return {'status': 'downloaded', 'detail': f'{size_mb:.1f}MB, {duration}s'}
+                detail = f'{size_mb:.1f}MB, {duration}s'
+                if final_codec and final_codec != 'h264':
+                    detail += f' (WARNING: codec {final_codec}, H.264 re-encode failed)'
+                return {'status': 'downloaded', 'detail': detail}
             else:
                 return {'status': 'failed', 'detail': 'File not created after download'}
 
