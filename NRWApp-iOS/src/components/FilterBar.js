@@ -45,7 +45,7 @@ function SlopToggle({mode, onPress}) {
   const isAll = mode === 'all';
   const isOnly = mode === 'only';
   const color = isOnly ? ORANGE : TEAL;
-  const thumbX = mode === 'free' ? 0 : isAll ? 8 : 16;
+  const thumbX = mode === 'free' ? 0 : isAll ? 5 : 11;
   return (
     <TouchableOpacity style={styles.toggleWrap} onPress={onPress} activeOpacity={0.8}>
       <View style={[styles.track, {borderColor: color}, !isAll && {backgroundColor: color}]}>
@@ -66,14 +66,11 @@ export default function FilterBar({
 }) {
   return (
     <View style={styles.container}>
-      {/* Toggle row */}
+      {/* Toggle row — all four fit without scrolling */}
       <View style={styles.toggleRow}>
         <Toggle label="FESTS" active={!hideFest} color={AMBER} onPress={() => onHideFestChange(!hideFest)} />
-        <View style={styles.toggleDivider} />
         <Toggle label="PRE-ORDER" active={showPreorders} color={PURPLE} onPress={() => onShowPreordersChange(!showPreorders)} />
-        <View style={styles.toggleDivider} />
         <SlopToggle mode={slopMode} onPress={() => onSlopModeChange(SLOP_STATES[(SLOP_STATES.indexOf(slopMode) + 1) % 3])} />
-        <View style={styles.toggleDivider} />
         <Toggle label="SELECTS" active={showHighlightsOnly} color={TEAL} onPress={() => onShowHighlightsChange(!showHighlightsOnly)} />
       </View>
 
@@ -121,28 +118,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.backgroundSecondary,
   },
-  // toggle row
+  // toggle row — all four fit across the width
   toggleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.screenPadding,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
-  },
-  toggleDivider: {
-    width: 1,
-    height: 18,
-    backgroundColor: 'rgba(255,255,255,0.15)',
   },
   toggleWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 5,
   },
   track: {
-    width: 34,
-    height: 20,
-    borderRadius: 10,
+    width: 28,
+    height: 17,
+    borderRadius: 9,
     backgroundColor: '#1a1a1a',
     borderWidth: 1,
     borderColor: 'rgba(0,212,170,0.45)',
@@ -151,19 +143,19 @@ const styles = StyleSheet.create({
   thumb: {
     position: 'absolute',
     left: 2,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    width: 11,
+    height: 11,
+    borderRadius: 6,
     backgroundColor: 'rgba(0,212,170,0.55)',
   },
   thumbOn: {
-    transform: [{translateX: 16}],
+    transform: [{translateX: 11}],
     backgroundColor: '#fff',
   },
   toggleLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
-    letterSpacing: 0.6,
+    letterSpacing: 0.3,
     color: 'rgba(0,212,170,0.6)',
   },
   // genre pills

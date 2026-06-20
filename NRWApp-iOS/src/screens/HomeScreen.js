@@ -274,18 +274,9 @@ export default function HomeScreen({navigation}) {
     );
   };
 
-  // Sticky index 0 — kept minimal (results count) to preserve the strip-row
-  // sticky offset math. Search + selects now live in the FilterBar, matching mobile.
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <View style={styles.resultsHeader}>
-        <Text style={styles.resultsCount}>
-          {displayedMovies.length} {displayedMovies.length === 1 ? 'movie' : 'movies'}
-          {searchQuery ? ` matching "${searchQuery}"` : ''}
-        </Text>
-      </View>
-    </View>
-  );
+  // Sticky index 0 — empty spacer kept to preserve the strip-row sticky offset
+  // math (strips are at gridRows index + 1). Search + selects live in the FilterBar.
+  const renderHeader = () => <View style={styles.headerSpacer} />;
 
   if (loading) {
     return (
@@ -361,6 +352,10 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingBottom: Spacing.md,
+  },
+  headerSpacer: {
+    height: Spacing.sm,
+    backgroundColor: Colors.background,
   },
   appHeader: {
     paddingHorizontal: Spacing.screenPadding,
