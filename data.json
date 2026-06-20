@@ -896,7 +896,7 @@
       "metacritic_score": null,
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "slop_streaming:crunchyroll",
       "status": "available",
       "_enrichment_gaps": [
         "metacritic_score"
@@ -913,7 +913,9 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "is_slop": true,
+      "_is_slop_guess": false
     },
     {
       "id": "1426755",
@@ -4181,7 +4183,8 @@
       "_trailer_last_retry": "2026-06-19T14:33:59.920937",
       "_slop_confidence": "weak",
       "pull_quotes": [],
-      "_is_preorder": true
+      "_is_preorder": true,
+      "capsule": "Genre-bending fairy tale. Bitter, lonely man undergoes a personality-altering medical procedure, hoping to finally find love.\nMemorable ensemble with **[DJ Qualls](https://en.wikipedia.org/wiki/DJ_Qualls)** (*Road Trip*), **[Harriet Sansom Harris](https://en.wikipedia.org/wiki/Harriet_Sansom_Harris)** (*Phantom Thread*), and **[Margaret Cho](https://en.wikipedia.org/wiki/Margaret_Cho)** (*Drop Dead Diva*)."
     },
     {
       "id": "1711953",
