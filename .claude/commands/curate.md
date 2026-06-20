@@ -314,7 +314,7 @@ Every time you present a movie (capsule variants *and* pull quotes), title the s
 
 ### Step A — Capsule (if needed)
 
-1. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --force --variants 3 --skip-verify`
+1. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --variants 3 --skip-verify` — the nightly run (`local_daily.sh` Step 5) pre-generates 3 variants into `cache/capsule_cache.json`, so this returns from cache instantly. No `--force`: a cache hit is what makes it fast. If the film arrived after the nightly run and isn't cached, it generates live (same as before). Only add `--force` if you deliberately want to regenerate a cached capsule.
 2. **Read `.claude/commands/capsule.md` Step 2** for the exact presentation format — that file is the single source of truth. Use it exactly: movie header (director/genres/runtime/country/platforms), keyword/badge line, three variants with approach labels, FACTOID PRIMER, SUGGESTED LINKS, pick prompt.
 3. **Do not wait yet** — go straight to Step B and append this film's pull quotes in the *same* message. Wait for the user only after both are shown. **When user provides edited text, that IS the final version.**
 4. **After the user replies** (their reply covers both capsule and quote — see Step B.3), if they picked or rewrote the capsule:

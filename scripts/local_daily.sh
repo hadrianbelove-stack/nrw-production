@@ -97,6 +97,15 @@ if [ "$CI_DATE" = "$TODAY" ]; then
         || echo "  WARNING: pull quotes exited non-zero (timeout or error)" >> "$LOG"
     echo "  Pull quotes done" >> "$LOG"
 
+    # Step 5: Pre-generate capsules (3 variants) for new arrivals so curation
+    # reads them from cache/capsule_cache.json instead of waiting on live LLM calls.
+    # Skips already-cached movies; alarm(3600) hard-kills a hung run.
+    echo "Pre-generating capsules for new arrivals..." >> "$LOG"
+    /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
+        /usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 3 --skip-verify >> "$LOG" 2>&1 \
+        || echo "  WARNING: capsule batch exited non-zero (timeout or error)" >> "$LOG"
+    echo "  Capsules done" >> "$LOG"
+
     touch "$SENTINEL"
     echo "  CI data is current ($CI_DATE) — sentinel created, done for today" >> "$LOG"
 else

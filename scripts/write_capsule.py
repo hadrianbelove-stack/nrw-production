@@ -227,6 +227,14 @@ def cmd_batch(args):
     # Sort by most recent digital_date
     movies.sort(key=lambda m: m.get('digital_date', '') or '', reverse=True)
 
+    # Optional window: only process films whose digital_date is within --days
+    # of today (matches the /curate 7-day window — no need to capsule the whole wall).
+    from_date = None
+    if args.days:
+        from datetime import date, timedelta
+        from_date = str(date.today() - timedelta(days=args.days))
+        today = str(date.today())
+
     writer = GeminiCapsuleWriter()
 
     to_process = []
@@ -235,6 +243,11 @@ def cmd_batch(args):
         year = m.get('year', 0)
         if not title or not year:
             continue
+
+        if from_date is not None:
+            dd = m.get('digital_date', '') or ''
+            if not (from_date <= dd <= today):
+                continue
 
         cache_key = f"{title}_{year}"
 
@@ -269,6 +282,7 @@ def cmd_batch(args):
         kwargs = extract_capsule_args(movie)
         kwargs['force'] = args.force
         kwargs['skip_verify'] = args.skip_verify
+        kwargs['variants'] = args.variants
         title = kwargs['title']
         year = kwargs['year']
 
@@ -430,6 +444,7 @@ def main():
     parser.add_argument('title', nargs='?', help='Movie title to generate capsule for')
     parser.add_argument('--batch', action='store_true', help='Batch process all movies')
     parser.add_argument('--limit', type=int, default=0, help='Limit batch to N movies')
+    parser.add_argument('--days', type=int, default=0, help='Batch only films with digital_date within N days (0 = whole wall)')
     parser.add_argument('--force', action='store_true', help='Regenerate even if cached')
     parser.add_argument('--skip-verify', action='store_true', help='Skip fact verification pass')
     parser.add_argument('--show-sources', action='store_true', help='Print source material alongside capsule')
