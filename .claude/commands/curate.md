@@ -104,7 +104,7 @@ If the output shows 0 candidates, report "No arrivals in the last 7 days to cura
 
 Old films (original release 10+ years ago) that just got a new theatrical 4K restoration, anniversary re-release, festival revival, or alt cut. Intake **Pass D** finds them and holds them in `admin/reissue_candidates.json` — they do **not** reach the wall until you confirm them here. This stage is independent of the 7-day window and `curate_reviewed.json`; it drains as candidates are confirmed/rejected.
 
-**Step 1 — research any new candidates** (Gemini + Google Search verdict, distributor, evidence link). Skips candidates already researched:
+**Step 1 — research any stragglers.** The daily CI pipeline already researches new candidates (orchestrator Phase 1.2), so this is usually a fast no-op that just catches anything collected since the last CI run. Skips candidates already researched:
 
 ```bash
 cd /Users/hadrianbelove/Downloads/nrw-production && GEMINI_API_KEY=$(grep -rhoE "GEMINI_API_KEY[=:][^ ]*" .env* 2>/dev/null | head -1 | sed -E 's/.*[=:]//') /usr/bin/python3 pipeline/reissue_research.py
@@ -125,17 +125,25 @@ If it prints "all caught up", report that and move to Stage 1. Otherwise present
 /usr/bin/python3 scripts/confirm_reissue.py --confirm 1,3 --label "3=New 4K Restoration" --drain
 ```
 
-- `--confirm N[,N]` intakes those films into tracking with `_reissue` + badge label; they surface on the wall via normal discovery / virtual-screening flow.
+- `--confirm N[,N]` adds those films to the **wall now** (via `add_movie.py`: `status=available`, `_added_manually=True`, into `data.json`) with `_reissue` + badge label. Confirming is an editorial decision to feature the film immediately — like `/add-movie` — NOT a tracking watch entry. A theatrical-only reissue with no digital availability still stays on the wall because `_added_manually` skips the JustWatch revert.
 - `--label "N=Custom"` overrides the suggested badge for a confirmed row (otherwise the suggested label is used).
 - `--drain` marks every other shown pending candidate as rejected so they don't re-appear. Omit `--drain` to leave undecided ones pending for next run (e.g. user wants to research one more).
 
-**Step 4 — commit** the queue (and tracking export if films were confirmed):
+**Step 3b — enrich the confirmed films** (RT, Wikipedia, trailer, watch links). `confirm_reissue.py` prints the exact loop; it's:
 
 ```bash
-git add admin/reissue_candidates.json movie_tracking.json && git commit -m "Confirm Reissues: N added, M rejected APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
+for id in <confirmed ids>; do /usr/bin/python3 generate_data.py --enrich-id $id; done
 ```
 
-Then move to Stage 1.
+The confirmed films now flow through the rest of /curate (Stage 4 capsule + quotes) like any wall film, provided their reissue date falls in the 7-day window — otherwise curate them on demand with `/capsule` and `/enrich`.
+
+**Step 4 — commit** the wall + queue (data.json is CI-authoritative, so verify additive before override):
+
+```bash
+git add admin/reissue_candidates.json admin/reissue_labels.json movie_tracking.json data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Confirm Reissues: N added, M rejected APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && NRW_ALLOW_DATA_COMMIT=1 git push origin main))
+```
+
+`data.json` + `movie_tracking.json` are CI-authoritative — before the override, confirm your change is purely additive (the N reissues), losing no CI discoveries/transitions. Then move to Stage 1.
 
 ---
 

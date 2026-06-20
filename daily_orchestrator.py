@@ -1179,6 +1179,14 @@ class NRWOrchestrator:
                 ("python3 generate_data.py --intake",
                  "Intake new premieres from TMDB", True, True, 600),
 
+                # Phase 1.2: Research reissue candidates collected by intake Pass D
+                # (Gemini + Google Search verdict/distributor/evidence) so they're ready to
+                # confirm in /curate Stage 0. --limit bounds CI time; un-researched leftovers
+                # are picked up by the next run or by /curate. Non-critical: never fail the
+                # pipeline on research (GEMINI quota, etc.).
+                ("python3 pipeline/reissue_research.py --limit 30",
+                 "Research reissue candidates (Pass D)", False, False, 600),
+
                 # Phase 1.5: Eventive scan — find virtual screenings and populate cache
                 # Must run BEFORE discovery so VS bypass can use cached links.
                 # Normally 5-10 min. Non-critical: don't fail pipeline if Eventive is down.

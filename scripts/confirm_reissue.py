@@ -51,21 +51,6 @@ def _parse_labels(pairs):
     return out
 
 
-def _build_tracking_entry(cand, label):
-    today = datetime.date.today().strftime('%Y-%m-%d')
-    return {
-        'title': cand.get('title', 'Unknown'),
-        'year': cand.get('year'),
-        'status': 'tracking',          # discovery handles transition to available
-        'intake_date': today,
-        'digital_date': None,
-        'providers': {},
-        'intake_pass': 'D',
-        '_reissue': True,
-        'reissue_label': label,
-    }
-
-
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--confirm', default='', help='Comma-separated table row numbers to confirm')
@@ -138,24 +123,38 @@ def main():
         print("(dry run — no writes)")
         return
 
-    # Intake confirmed films into tracking DB
+    # Add confirmed films to the WALL via add_movie.py (status=available, _added_manually),
+    # then flag them as reissues. Confirming is an editorial decision to feature the film
+    # NOW — exactly like /add-movie — not a tracking watch entry that waits on automated
+    # discovery (a theatrical-only reissue would otherwise never surface). Date = the
+    # reissue's release date so it lands correctly on the wall timeline.
     if confirmed:
+        import subprocess
         from pipeline.tracking_db import get_tracking_db
+        add_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'add_movie.py')
+        added_ids = []
+        for cand, label in confirmed:
+            mid = str(cand['tmdb_id'])
+            date = (cand.get('recent_release') or {}).get('date') or None
+            cmd = [sys.executable, add_script, mid] + (['--date', date] if date else [])
+            try:
+                subprocess.run(cmd, check=True, capture_output=True, text=True)
+                added_ids.append(mid)
+            except subprocess.CalledProcessError as e:
+                print(f"  ⚠ add_movie failed for {cand['title']} ({mid}): "
+                      f"{(e.stderr or '')[-200:]}")
+
+        # Flag the now-on-wall entries as reissues (badge + restoration filter)
         tdb = get_tracking_db()
         db = tdb.load_all()
-        added = 0
         for cand, label in confirmed:
             mid = str(cand['tmdb_id'])
             if mid in db['movies']:
-                # already tracked — just flag it as a reissue + label
                 db['movies'][mid]['_reissue'] = True
                 db['movies'][mid]['reissue_label'] = label
-            else:
-                db['movies'][mid] = _build_tracking_entry(cand, label)
-                added += 1
         db['last_update'] = datetime.datetime.now().isoformat()
         tdb.save_all(db, export_json=True)
-        print(f"Tracking DB: {added} new reissue(s) added, {len(confirmed) - added} existing flagged.")
+        print(f"Added {len(added_ids)}/{len(confirmed)} reissue(s) to the wall (status=available).")
 
         # Durable layer: write labels into admin/reissue_labels.json (display reads this
         # FIRST on every rebuild, so the badge + restoration filter survive any future
@@ -176,6 +175,11 @@ def main():
             json.dump(labels, f, indent=2, ensure_ascii=False)
         os.replace(ltmp, labels_path)
         print(f"Durable labels written to {labels_path} ({len(labels)} total).")
+
+        if added_ids:
+            print("\n⚠ Next: enrich them so they show fully (RT/Wikipedia/trailer/links):")
+            print(f"  for id in {' '.join(added_ids)}; do "
+                  f"/usr/bin/python3 generate_data.py --enrich-id $id; done")
 
     # Persist candidate queue
     data['last_confirmed'] = datetime.datetime.now().isoformat()

@@ -285,9 +285,11 @@ jobs:
             commit_msg="$commit_msg, new_arrivals=${NEW_ARRIVALS:-0}"
           fi
 
-          # Stage generated files (data.json, archive, movie_tracking.json, metrics, and wikipedia cache)
-          echo "📦 Staging data.json, data_archive.json, movie_tracking.json, metrics, and wikipedia cache"
-          git add data.json data_archive.json movie_tracking.json metrics/ cache/wikipedia_cache.json
+          # Stage generated files (data.json, archive, movie_tracking.json, metrics, wikipedia cache,
+          # and the reissue candidate queue written by intake Pass D — otherwise daily-collected
+          # reissues are discarded when the CI job ends and never reach the next /curate)
+          echo "📦 Staging data.json, data_archive.json, movie_tracking.json, metrics, wikipedia cache, reissue queue"
+          git add data.json data_archive.json movie_tracking.json metrics/ cache/wikipedia_cache.json admin/reissue_candidates.json
 
           # Only commit if there are staged changes and set flag accordingly
           if git diff --cached --quiet; then
