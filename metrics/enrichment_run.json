@@ -1,39 +1,27 @@
 {
-  "timestamp": "2026-06-19T14:29:43.374977",
-  "movies_requested": 27,
-  "movies_enriched": 21,
-  "movies_deferred": 6,
+  "timestamp": "2026-06-20T13:27:48.232261",
+  "movies_requested": 17,
+  "movies_enriched": 13,
+  "movies_deferred": 4,
   "deferred_details": [
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-05-02T16:53:48.251290",
+      "discovered_at": "2026-06-20T11:22:14.224020",
       "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-19",
+      "revert_count": 2,
+      "first_reverted_at": "2026-06-20",
       "tmdb_platforms": []
-    },
-    {
-      "title": "Defne",
-      "reason": "under_60min",
-      "digital_date": "2026-06-18",
-      "discovered_at": "2026-06-19T12:49:35.972576",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 0,
-      "first_reverted_at": "",
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
     },
     {
       "title": "Pressure",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-06-16",
-      "discovered_at": "2026-06-19T12:49:39.255072",
+      "discovered_at": "2026-06-20T11:22:17.648487",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-19",
+      "first_reverted_at": "2026-06-20",
       "tmdb_platforms": [
         "Amazon Video"
       ],
@@ -44,37 +32,32 @@
       ]
     },
     {
-      "title": "The Thing in the Fog",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-12",
-      "discovered_at": "2026-06-19T12:49:42.528889",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 9,
-      "first_reverted_at": "2026-06-19",
-      "tmdb_platforms": []
+      "title": "Leviticus",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "",
+      "discovered_at": "2026-06-20T13:03:22.068333",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "first_reverted_at": "2026-06-20",
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ],
+      "jw_platforms": [
+        "Fandango At Home"
+      ]
     },
     {
-      "title": "Desire",
+      "title": "A Super Progressive Movie",
       "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-17",
-      "discovered_at": "2026-06-19T14:02:55.426200",
+      "digital_date": "2026-06-29",
+      "discovered_at": "2026-06-20T13:03:58.076365",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-19",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "THE RIBBON HERO",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-08-08",
-      "discovered_at": "2026-06-19T14:12:44.151083",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-19",
+      "first_reverted_at": "2026-06-20",
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 1017.33,
+  "enrichment_duration_seconds": 703.2,
   "error_details": [],
   "total_errors": 0
 }
