@@ -33,10 +33,13 @@
 
       <!-- Title + slogan -->
       <LayoutGroup layoutDirection="vert" itemSpacings="[4]">
-        <Label id="titleLabel"
-          text="THE NEW RELEASE WALL"
-          font="font:LargeBoldSystemFont"
-          color="0xFFFFFFFF" />
+        <!-- Wordmark is a pre-baked white→teal gradient PNG (Roku Labels can't
+             gradient); matches tvOS/desktop. -->
+        <Poster id="titleLabel"
+          uri="pkg:/images/wordmark.png"
+          width="760"
+          height="72"
+          loadDisplayMode="scaleToFit" />
         <Label id="sloganLabel"
           text="Bringing back browsing. What came out, every day."
           font="font:MediumSystemFont"

@@ -30,7 +30,7 @@ Sub Init()
 
     ' Bundled Lato fonts (match tvOS) — replaces Roku built-in system fonts
     m.fonts = Fonts()
-    m.titleLabel.font = m.fonts.wordmark
+    ' titleLabel is now a gradient-wordmark Poster (no font field)
     if m.sloganLabel <> invalid then m.sloganLabel.font = m.fonts.slogan
     m.dateHudDay.font = m.fonts.sectionDay
     m.dateHudRest.font = m.fonts.sectionDate
