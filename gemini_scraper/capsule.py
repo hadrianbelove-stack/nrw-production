@@ -956,7 +956,7 @@ Using the sources above AND Google Search, dig up everything interesting and use
 Output the bullet list using • characters. Write 10–15 bullets. This is a research dump — go long. Each bullet should be as detailed as the material warrants: 2–4 sentences is normal, more if needed. Do NOT truncate interesting information into a terse one-liner. If you have a direct quote, include it verbatim and in full with attribution. Prioritize specific, surprising, or non-obvious details over generic biography. Do not number the bullets. No headers, no sections — just the bullets.
 
 Then, after the bullets, output ONE machine-readable block on its own line and nothing after it, exactly:
-<NOTABILITY>{"festival": "major festivals played + prizes, or 'none found'", "awards": "named awards/nominations, or 'none found'", "yearend_lists": "critic year-end 'best of <year>' inclusions, or 'none found'", "press_volume": "heavy|moderate|light|minimal"}</NOTABILITY>
+<NOTABILITY>{{"festival": "major festivals played + prizes, or 'none found'", "awards": "named awards/nominations, or 'none found'", "yearend_lists": "critic year-end 'best of <year>' inclusions, or 'none found'", "press_volume": "heavy|moderate|light|minimal"}}</NOTABILITY>
 Use "none found" rather than guessing; never invent an award, festival, or list. press_volume = your read of how much trade/news/online coverage this film has.
 
 FACTOID PRIMER:"""
