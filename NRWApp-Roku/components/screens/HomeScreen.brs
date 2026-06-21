@@ -193,7 +193,7 @@ Sub ApplyFilters()
         movies = filtered
     else
         dt = CreateObject("roDateTime")
-        today = Left(dt.GetISO8601(), 10)
+        today = Left(dt.ToISOString(), 10)
         filtered = []
         for each movie in movies
             isVS = false

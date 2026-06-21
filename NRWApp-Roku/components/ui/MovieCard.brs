@@ -236,32 +236,33 @@ Sub onMovieChanged()
 End Sub
 
 ' ============================================================================
-' Position score badges (RT, MC, IMDb) — right-aligned, shifted based on count
+' Position score badges (RT, IMDb, MC) — bottom-LEFT, left-to-right, uniform
+' filled chips (matches tvOS).
 ' ============================================================================
 Sub PositionScoreBadges(baseY as Integer)
-    ' Count visible badges and position right-to-left
-    ' RT is rightmost, then IMDb, then MC
-    xPos = 243
+    chipW = 48
+    gap = 6
+    x = 12
 
     if m.rtBadge.visible
-        m.rtBadge.translation = [xPos, baseY]
-        m.rtBadgeBg.translation = [xPos, baseY]
-        m.rtBadgeBorder.translation = [xPos - 1, baseY - 1]
-        xPos = xPos - 64  ' 70 width - 6 overlap
+        SetScoreChip(m.rtBadgeBg, m.rtBadge, x, baseY, chipW)
+        x = x + chipW + gap
     end if
 
     if m.imdbBadge.visible
-        m.imdbBadge.translation = [xPos, baseY]
-        m.imdbBadgeBg.translation = [xPos, baseY]
-        m.imdbBadgeBorder.translation = [xPos - 1, baseY - 1]
-        xPos = xPos - 64  ' 58 width + 6 gap
+        SetScoreChip(m.imdbBadgeBg, m.imdbBadge, x, baseY, chipW)
+        x = x + chipW + gap
     end if
 
     if m.mcBadge.visible
-        m.mcBadge.translation = [xPos, baseY]
-        m.mcBadgeBg.translation = [xPos, baseY]
-        m.mcBadgeBorder.translation = [xPos - 1, baseY - 1]
+        SetScoreChip(m.mcBadgeBg, m.mcBadge, x, baseY, chipW)
+        x = x + chipW + gap
     end if
+End Sub
+
+Sub SetScoreChip(bg as Object, lbl as Object, x as Integer, y as Integer, w as Integer)
+    bg.width = w : bg.height = 32 : bg.translation = [x, y]
+    lbl.width = w : lbl.height = 32 : lbl.translation = [x, y]
 End Sub
 
 ' ============================================================================
@@ -349,11 +350,13 @@ Sub SetupRtBadge(score as Dynamic)
         return
     end if
 
-    ' Set badge text
-    m.rtBadge.text = "RT " + scoreInt.ToStr() + "%"
+    ' Filled chip, score-only (matches tvOS)
+    m.rtBadge.text = scoreInt.ToStr()
+    m.rtBadgeBg.color = "0xFA3232D9"
+    m.rtBadge.color = "0xFFFFFFFF"
     m.rtBadge.visible = true
     m.rtBadgeBg.visible = true
-    m.rtBadgeBorder.visible = true
+    m.rtBadgeBorder.visible = false
 End Sub
 
 ' ============================================================================
@@ -377,10 +380,12 @@ Sub SetupMcBadge(score as Dynamic)
         return
     end if
 
-    m.mcBadge.text = "MC " + scoreInt.ToStr()
+    m.mcBadge.text = scoreInt.ToStr()
+    m.mcBadgeBg.color = "0x7DDF64E6"
+    m.mcBadge.color = "0x06270AFF"
     m.mcBadge.visible = true
     m.mcBadgeBg.visible = true
-    m.mcBadgeBorder.visible = true
+    m.mcBadgeBorder.visible = false
 End Sub
 
 ' ============================================================================
@@ -407,9 +412,11 @@ Sub SetupImdbBadge(rating as Dynamic)
     end if
 
     m.imdbBadge.text = ratingStr
+    m.imdbBadgeBg.color = "0xF5C518E6"
+    m.imdbBadge.color = "0x000000FF"
     m.imdbBadge.visible = true
     m.imdbBadgeBg.visible = true
-    m.imdbBadgeBorder.visible = true
+    m.imdbBadgeBorder.visible = false
 End Sub
 
 ' ============================================================================
