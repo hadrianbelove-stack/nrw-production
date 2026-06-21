@@ -40,51 +40,9 @@ Then present this report in order:
   - Any non-revert deferrals (timeout/error) are pulled out for Concerns.
 
 ```bash
-/usr/bin/python3 -c "
-import json
-from datetime import date
-data = json.load(open('data.json'))
-ms = data['movies'] if isinstance(data, dict) else data
-disc = json.load(open('metrics/discovery_run.json'))
-run_date = disc.get('timestamp', '')[:10] or str(date.today())
-try:
-    enr = json.load(open('metrics/enrichment_run.json'))
-except Exception:
-    enr = {}
-deferred = enr.get('deferred_details', [])
-REASONS = {
-  'justwatch_no_valid_offers': 'Coming soon (JustWatch has no live offers yet)',
-  'justwatch_theatrical_pvod': 'In theaters / PVOD only',
-  'justwatch_no_match': 'No JustWatch listing yet',
-  'zero_watch_links': 'No watch links after enrichment',
-}
-def humanize(r): return REASONS.get(r.split('jw_revert:')[-1], r.split('jw_revert:')[-1])
-def plats(d):
-    p = d.get('jw_platforms') or d.get('tmdb_platforms') or []
-    return ', '.join(p) if p else '—'
-def first_rev(d): return d.get('first_reverted_at') or str(d.get('discovered_at',''))[:10]
-
-new_rel = [m for m in ms if str(m.get('_discovered_at',''))[:10] == run_date]
-print(f'New Releases: {len(new_rel)}')
-for m in sorted(new_rel, key=lambda m: not m.get('is_slop')):
-    print(f'  • {m.get(\"title\")} ({m.get(\"year\")}) — {\"slop\" if m.get(\"is_slop\") else \"shown\"}')
-
-reverts = [d for d in deferred if str(d.get('reason','')).startswith('jw_revert:')]
-new_rev = [d for d in reverts if first_rev(d) == run_date]
-hidden = len(reverts) - len(new_rev)
-print(f'\nReverted (new this run): {len(new_rev)}')
-for d in new_rev:
-    print(f'  • {d.get(\"title\")} [{d.get(\"digital_date\") or \"—\"}] — {humanize(d.get(\"reason\",\"\"))} | {plats(d)}')
-if hidden:
-    print(f'  ({hidden} chronic/aged revert(s) not listed)')
-
-other = [d for d in deferred if not str(d.get('reason','')).startswith('jw_revert:')]
-if other:
-    print(f'\n⚠ Other enrichment deferrals (→ Concerns): {len(other)}')
-    for d in other:
-        print(f'  • {d.get(\"title\")} — {d.get(\"reason\")}')
-"
+/usr/bin/python3 scripts/morning_report.py --section overnight
 ```
+*(Logic lives in the script — reads data.json + metrics/discovery_run.json + metrics/enrichment_run.json. New Releases = films first discovered this run, shown vs slop; Reverted = new jw_revert deferrals this run, humanized + platforms; other deferrals split out for Concerns.)*
 
 - **Any phase failures or warnings** → list in Concerns
 
@@ -95,88 +53,9 @@ if other:
 Two parts: the **backlog** (films still needing work — the number that matters, identical logic to `/curate`) and a **health scan** over all recent arrivals (only the flagged ones are listed). Do **not** present the raw arrivals count as a to-do — most of those are already curated from prior days. Run this script — reads exact field paths, no guessing:
 
 ```bash
-/usr/bin/python3 -c "
-import json
-from datetime import date, timedelta
-
-def svc_names(val):
-    # watch_links entries may be a list of dicts, a single dict (legacy
-    # single-object form), or plain strings — normalize to service names.
-    items = val if isinstance(val, list) else ([val] if val else [])
-    out = []
-    for s in items:
-        if isinstance(s, dict):
-            out.append(s.get('service', '?'))
-        elif isinstance(s, str):
-            out.append(s)
-    return out
-
-WINDOW_DAYS = 7
-
-data = json.load(open('data.json'))
-today = str(date.today())
-from_date = str(date.today() - timedelta(days=WINDOW_DAYS))
-
-# Capsule presence — same source /curate Stage 4 uses.
-try:
-    caps = json.load(open('cache/approved_capsules.json'))
-    ct = set(t.lower() for t in (caps.keys() if isinstance(caps, dict)
-             else [c.get('title','') for c in caps]))
-except Exception:
-    ct = set()
-
-arrivals = [m for m in data['movies']
-            if from_date <= m.get('digital_date', '') <= today]
-arrivals.sort(key=lambda m: m.get('digital_date', ''), reverse=True)
-
-# --- Curation backlog: state-based, mirrors /curate (NOT the raw arrivals count) ---
-def needs_work(m):
-    needs = []
-    if m.get('_is_slop_guess') == True:
-        needs.append('slop?')
-    # Reissues (confirmed Pass D, _reissue) are normal arrivals — they need capsule + quotes.
-    # Only AUTO-detected restorations are skipped. (_restoration was never set — bug fix.)
-    skip_resto = m.get('filters',{}).get('is_restoration') and not m.get('_reissue')
-    if m.get('title','').lower() not in ct and not skip_resto:
-        needs.append('capsule')
-    if 'pull_quotes' not in m and not skip_resto:
-        needs.append('quotes')
-    return needs
-
-backlog = [(m, needs_work(m)) for m in arrivals]
-backlog = [(m, n) for m, n in backlog if n]
-
-print(f'{len(backlog)} film(s) still need work:')
-if not backlog:
-    print('  Nothing outstanding — caught up.')
-for m, n in backlog:
-    print(f'  • {m.get(\"title\")} ({m.get(\"year\")}) [{m.get(\"digital_date\")}] — {\"+\".join(n)}')
-
-# --- Health scan: all recent arrivals, but only print the flagged ones ---
-print()
-flagged = 0
-for m in arrivals:
-    streaming = svc_names(m.get('watch_links', {}).get('streaming'))
-    vod = svc_names(m.get('watch_links', {}).get('vod'))
-    services = streaming + vod
-    trailer_hosted = bool(m.get('links', {}).get('trailer_hosted', ''))
-    trailer_yt = bool(m.get('links', {}).get('trailer', ''))
-    has_links = bool(streaming or vod)
-    plex_only = services == ['Plex']
-    t_flag = 'trailer:hosted' if trailer_hosted else ('trailer:YT' if trailer_yt else '⚠ NO TRAILER')
-    l_flag = ('⚠ PLEX ONLY' if plex_only else 'links:ok') if has_links else '⚠ NO LINKS'
-    if '⚠' in t_flag or '⚠' in l_flag:
-        flagged += 1
-        rt = m.get('rt_score') or '--'
-        svc = ', '.join(services) if services else '—'
-        print(f'  ⚠ {m.get(\"title\")} ({m.get(\"year\")}) — {svc} | RT:{rt} | {t_flag} | {l_flag}')
-clean = len(arrivals) - flagged
-if flagged == 0:
-    print(f'Health scan: all {len(arrivals)} arrival(s) in the last {WINDOW_DAYS} days have a trailer and working links.')
-else:
-    print(f'Health scan: {flagged} flagged above, {clean} clean (of {len(arrivals)} arrivals in {WINDOW_DAYS} days).')
-"
+/usr/bin/python3 scripts/morning_report.py --section backlog
 ```
+*(Logic lives in the script. Backlog = in-window films still needing `slop?` review / `capsule` / `quotes` — same capsule+quote presence test `/curate` Stage 4 uses, reissues included, auto-restorations skipped. Health scan flags any recent arrival missing a trailer or watch links (`⚠ PLEX ONLY` for Plex-only). Change the window via `WINDOW_DAYS` in the script.)*
 
 Present the output directly. Lead with the backlog count. Any `⚠` flags become Concerns below.
 
