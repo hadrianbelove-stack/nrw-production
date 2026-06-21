@@ -111,8 +111,9 @@
         maxLines="2" />
     </Group>
 
-    <!-- Heads-up date banner: neon bar that tracks the focused row's date group -->
-    <Group id="dateHud" translation="[100, 240]" visible="false">
+    <!-- Heads-up date banner: neon bar that tracks the focused row's date group.
+         Pushed down to clear the 2-line filter bar (genres + toggle module). -->
+    <Group id="dateHud" translation="[100, 300]" visible="false">
       <Rectangle id="dateHudTop" width="1720" height="3" color="0x00D4AAFF" />
       <Rectangle id="dateHudBg" width="1720" height="58" translation="[0, 3]" color="0x08080CF5" />
       <Label id="dateHudDay" width="846" height="58" translation="[0, 3]"
@@ -126,7 +127,7 @@
 
     <!-- Movie grid: date groups are sections; dividers render as full-width strips -->
     <MarkupGrid id="movieGrid"
-      translation="[100, 320]"
+      translation="[100, 380]"
       visible="false"
       itemComponentName="MovieCard"
       numColumns="5"

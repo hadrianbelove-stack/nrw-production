@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-  NRW Filter Bar Component
-  Horizontal row of filter chips. Chips auto-size to their text (Lato font via
-  Fonts.brs), backgrounds are rounded 9-patch pills (MakeRoundRect trick), and
-  focus is an orange ring (matches tvOS). Layout is computed in BrightScript
-  after the custom font loads (see LayoutChips), so nothing is hard-sized here.
-  Matches tvOS FilterSidebar and the desktop filter pills.
+  NRW Filter Bar
+  Row 1: genre filter chips (auto-sized rounded pills).
+  Row 2: a bordered "toggle module" of iOS-style switches (FESTS, PRE-ORDER,
+         SLOP 3-state slider, SELECTS) — matches the tvOS toggle box exactly
+         (track 88x42 / thumb 34x34; SLOP track 122x32 / thumb 24x24).
+  Focus = orange ring (tvOS). All geometry is computed in FilterBar.brs after
+  the bundled font loads (LayoutChips), so nothing is hard-sized here.
 -->
 <component name="FilterBar" extends="Group">
   <interface>
@@ -25,13 +26,11 @@
   <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
 
   <children>
-    <!-- Re-layout timer: fires until the custom font has loaded and labels can
-         be measured, then positions every chip. -->
     <Timer id="layoutTimer" duration="0.1" repeat="true" />
 
     <Group id="filterRow" translation="[100, 0]">
 
-      <!-- Orange focus ring (behind chips; sized/positioned in BrightScript) -->
+      <!-- Orange focus ring (positioned in BrightScript over the focused item) -->
       <Poster id="focusRing" uri="pkg:/images/ui/pill.9.png" visible="false" />
 
       <!-- Genre chips -->
@@ -45,14 +44,31 @@
       <Group id="chip_documentary"><Poster id="chipBg_documentary" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_documentary" text="Docs" horizAlign="center" vertAlign="center" /></Group>
       <Group id="chip_restorations"><Poster id="chipBg_restorations" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_restorations" text="Reissues" horizAlign="center" vertAlign="center" /></Group>
 
-      <!-- Divider (repositioned in BrightScript) -->
-      <Rectangle id="filterDivider" width="2" height="28" color="0x444444FF" />
+      <!-- Toggle module (row 2): bordered box + 4 switches -->
+      <Group id="toggleBox" translation="[0, 62]">
+        <Poster id="toggleBoxBorder" uri="pkg:/images/ui/rrect.9.png" blendColor="0xFFFFFF29" />
+        <Poster id="toggleBoxBg" uri="pkg:/images/ui/rrect.9.png" blendColor="0x12121AFF" />
 
-      <!-- Toggle chips (text set dynamically in UpdateChipStyles) -->
-      <Group id="chip_hide_fest"><Poster id="chipBg_hide_fest" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_hide_fest" text="NO FEST" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_show_preorders"><Poster id="chipBg_show_preorders" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_show_preorders" text="NO PRE-ORDERS" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_slop_free"><Poster id="chipBg_slop_free" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_slop_free" text="SLOP FREE" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_show_highlights"><Poster id="chipBg_show_highlights" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_show_highlights" text="SELECTS" horizAlign="center" vertAlign="center" /></Group>
+        <!-- FESTS -->
+        <Label id="swLabel_hide_fest" text="FESTS" vertAlign="center" horizAlign="right" />
+        <Poster id="swTrack_hide_fest" uri="pkg:/images/ui/pill.9.png" />
+        <Poster id="swThumb_hide_fest" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
+
+        <!-- PRE-ORDER -->
+        <Label id="swLabel_show_preorders" text="PRE-ORDER" vertAlign="center" horizAlign="right" />
+        <Poster id="swTrack_show_preorders" uri="pkg:/images/ui/pill.9.png" />
+        <Poster id="swThumb_show_preorders" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
+
+        <!-- SLOP (3-state slider) -->
+        <Label id="swLabel_slop_free" text="SLOP FREE" vertAlign="center" horizAlign="right" />
+        <Poster id="swTrack_slop_free" uri="pkg:/images/ui/pill.9.png" />
+        <Poster id="swThumb_slop_free" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
+
+        <!-- SELECTS -->
+        <Label id="swLabel_show_highlights" text="SELECTS" vertAlign="center" horizAlign="right" />
+        <Poster id="swTrack_show_highlights" uri="pkg:/images/ui/pill.9.png" />
+        <Poster id="swThumb_show_highlights" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
+      </Group>
 
     </Group>
   </children>
