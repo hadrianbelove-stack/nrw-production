@@ -36,13 +36,14 @@
 
       <!-- Poster container with border -->
       <Group id="posterGroup">
-        <!-- Focus border (behind poster) -->
+        <!-- Focus border (behind poster). Slightly larger than the SELECT/screening
+             borders so the orange focus ring shows even on those cards. -->
         <Rectangle id="focusBorder"
-          width="330"
-          height="499"
-          color="0x00D4AAFF"
+          width="336"
+          height="505"
+          color="0xFF9500FF"
           visible="false"
-          translation="[-5, -5]" />
+          translation="[-8, -8]" />
 
         <!-- Staff pick border (behind poster, red) -->
         <Rectangle id="staffPickBorder"

@@ -26,6 +26,17 @@ Sub Init()
     m.searchButton = m.top.FindNode("searchButton")
     m.searchButtonBg = m.top.FindNode("searchButtonBg")
     m.searchButtonLabel = m.top.FindNode("searchButtonLabel")
+    m.sloganLabel = m.top.FindNode("sloganLabel")
+
+    ' Bundled Lato fonts (match tvOS) — replaces Roku built-in system fonts
+    m.fonts = Fonts()
+    m.titleLabel.font = m.fonts.wordmark
+    if m.sloganLabel <> invalid then m.sloganLabel.font = m.fonts.slogan
+    m.dateHudDay.font = m.fonts.sectionDay
+    m.dateHudRest.font = m.fonts.sectionDate
+    if m.searchButtonLabel <> invalid then m.searchButtonLabel.font = m.fonts.filterChip
+    ' In-grid date dividers use Lato too
+    m.movieGrid.sectionDividerFont = m.fonts.sectionDay
 
     ' State
     m.allMovies = []
@@ -346,11 +357,11 @@ Sub UpdateDateHud(index as Integer)
     ' uniform style on Roku, so the focus HUD carries the size distinction.)
     isSection = (key = "FEST" OR key = "PRE-ORDER" OR key = "HIGHLIGHTS")
     if isSection
-        m.dateHudDay.font = "font:LargeBoldSystemFont"
-        m.dateHudRest.font = "font:LargeSystemFont"
+        m.dateHudDay.font = GetFont("black", 40)
+        m.dateHudRest.font = GetFont("light", 40)
     else
-        m.dateHudDay.font = "font:MediumBoldSystemFont"
-        m.dateHudRest.font = "font:MediumSystemFont"
+        m.dateHudDay.font = m.fonts.sectionDay
+        m.dateHudRest.font = m.fonts.sectionDate
     end if
 
     m.dateHudDay.color = color
@@ -630,7 +641,7 @@ Sub SetSearchButtonActive(active as Boolean)
     if m.searchButtonBg = invalid then return
     if active
         m.searchButtonBg.color = "0x00D4AAFF"
-        m.searchButtonLabel.text = "▲ Search"
+        m.searchButtonLabel.text = "Search"
         m.searchButtonLabel.color = "0x0A0A0AFF"
     else
         m.searchButtonBg.color = "0x333333FF"

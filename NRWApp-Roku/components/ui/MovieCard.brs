@@ -423,12 +423,12 @@ Sub onFocusChanged()
         ' Focused state
         m.focusBorder.visible = true
 
-        ' Scale the card
-        scale = 1.0 + (0.1 * focusPercent)  ' Max scale 1.1
+        ' Scale the card (1.12, matches tvOS)
+        scale = 1.0 + (0.12 * focusPercent)
         m.cardContainer.scale = [scale, scale]
 
-        ' Animate border color (pulse effect could be added here)
-        m.focusBorder.color = colors.primary
+        ' Orange focus highlight (tvOS-style; distinct from the teal SELECT border)
+        m.focusBorder.color = "0xFF9500FF"
     else
         ' Unfocused state
         m.focusBorder.visible = false
