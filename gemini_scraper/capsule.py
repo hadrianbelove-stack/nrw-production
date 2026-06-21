@@ -904,6 +904,10 @@ VERIFICATION:"""
 
         Uses already-fetched sources + Google Search grounding for interviews
         and press coverage not captured by the scraping phase.
+
+        Returns (primer_text, notability) where notability is the parsed
+        {festival, awards, yearend_lists, press_volume} block (reused for the
+        notability Buzz score) — or {} if absent/unparseable.
         """
         if not self._init_gemini():
             return ''
@@ -943,13 +947,17 @@ Using the sources above AND Google Search, dig up everything interesting and use
 - Production: how was it made, where shot, budget scale, production company, any unusual conditions or creative choices
 - Development and script: source material, how long in development, who wrote it, any interesting origin story
 - Direct quotes from interviews with the director, writer, or cast — include the speaker, the outlet, and the year when known. Go find them.
-- Festival run: every significant festival, awards won or nominated, how it performed critically at premiere
+- Festival run: every significant festival, awards won or nominated, how it performed critically at premiere, and any year-end critic "best of <year>" list inclusions
 - Distribution: who acquired it, theatrical run details, how it's being released, any interesting release strategy
 - Cultural, historical, or social context the film engages with — what's the film in conversation with?
 - Anything surprising, counterintuitive, or that a well-read cinephile would find genuinely interesting
 - COMPARABLES (required): One dedicated bullet identifying 2–3 specific films, TV shows, books, bands, or other cultural works this film resembles in tone, style, subject, or sensibility — and briefly why. Ground these in what critics or audiences have actually said where possible. Start this bullet with "COMPARABLES:"
 
-Output ONLY a bullet list using • characters. Write 10–15 bullets. This is a research dump — go long. Each bullet should be as detailed as the material warrants: 2–4 sentences is normal, more if needed. Do NOT truncate interesting information into a terse one-liner. If you have a direct quote, include it verbatim and in full with attribution. Prioritize specific, surprising, or non-obvious details over generic biography. Do not number the bullets. No headers, no sections — just the bullets.
+Output the bullet list using • characters. Write 10–15 bullets. This is a research dump — go long. Each bullet should be as detailed as the material warrants: 2–4 sentences is normal, more if needed. Do NOT truncate interesting information into a terse one-liner. If you have a direct quote, include it verbatim and in full with attribution. Prioritize specific, surprising, or non-obvious details over generic biography. Do not number the bullets. No headers, no sections — just the bullets.
+
+Then, after the bullets, output ONE machine-readable block on its own line and nothing after it, exactly:
+<NOTABILITY>{"festival": "major festivals played + prizes, or 'none found'", "awards": "named awards/nominations, or 'none found'", "yearend_lists": "critic year-end 'best of <year>' inclusions, or 'none found'", "press_volume": "heavy|moderate|light|minimal"}</NOTABILITY>
+Use "none found" rather than guessing; never invent an award, festival, or list. press_volume = your read of how much trade/news/online coverage this film has.
 
 FACTOID PRIMER:"""
 
@@ -962,9 +970,19 @@ FACTOID PRIMER:"""
             response = self._generate(prompt, config=config)
             return response.text.strip() if response.text else None
 
+        notability = {}
         try:
             raw = self._retry_with_backoff(_make_request)
             if raw:
+                # Extract the machine-readable notability block, then strip it
+                # from the primer so it never renders as a bullet.
+                m = re.search(r'<NOTABILITY>\s*(\{.*?\})\s*</NOTABILITY>', raw, re.DOTALL)
+                if m:
+                    try:
+                        notability = json.loads(m.group(1))
+                    except Exception:
+                        notability = {}
+                    raw = raw[:m.start()] + raw[m.end():]
                 lines = [l.strip() for l in raw.split('\n') if l.strip()]
                 bullets = []
                 for line in lines:
@@ -973,13 +991,13 @@ FACTOID PRIMER:"""
                         continue
                     if line.startswith(('•', '-', '*')):
                         bullets.append('• ' + line.lstrip('•-* ').strip())
-                    elif line and not line.startswith('#'):
+                    elif line and not line.startswith(('#', '<')):
                         bullets.append('• ' + line)
-                return '\n'.join(bullets)
+                return '\n'.join(bullets), notability
         except Exception as e:
             logger.warning(f"Factoid primer failed for {title}: {e}")
 
-        return ''
+        return '', notability
 
     def write_capsule(
         self,
@@ -1044,6 +1062,7 @@ FACTOID PRIMER:"""
                                 'capsules': cached_data.get('capsules', [cached_data['capsule']]),
                                 'verification': cached_data.get('verification', []),
                                 'factoid_primer': cached_data.get('factoid_primer', ''),
+                                'notability': cached_data.get('notability', {}),
                                 'sources_used': cached_data.get('sources_used', {})
                             }
                     except (ValueError, TypeError):
@@ -1105,7 +1124,7 @@ FACTOID PRIMER:"""
 
         # --- Phase 4: Factoid Primer ---
         logger.info(f"  Generating factoid primer...")
-        factoid_primer = self._generate_factoid_primer(
+        factoid_primer, notability = self._generate_factoid_primer(
             sources, context, title, year, director=director
         )
 
@@ -1119,6 +1138,7 @@ FACTOID PRIMER:"""
             'word_count': word_count,
             'verification': verification,
             'factoid_primer': factoid_primer,
+            'notability': notability,
             'sources_used': {
                 k: (v[:200] if isinstance(v, str) else v) if v else ''
                 for k, v in sources.items()
@@ -1134,6 +1154,7 @@ FACTOID PRIMER:"""
             'capsules': capsules,
             'verification': verification,
             'factoid_primer': factoid_primer,
+            'notability': notability,
             'sources_used': sources
         }
 

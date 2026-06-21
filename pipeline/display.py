@@ -125,6 +125,50 @@ class DisplayGenerator:
         if injected:
             print(f"\U0001f4dd Restored capsules from bank for {injected} movies")
 
+    def inject_notability(self, movies_list):
+        """Attach a 0-100 Buzz score + notability block to each movie.
+
+        Reuses the capsule factoid pass's `notability` facts (festival/awards/
+        year-end/press_volume) from the capsule cache, combined with the record's
+        numeric signals (IMDb votes from enrichment, TMDB popularity, Wikipedia
+        language count). Only touches movies that have notability facts — i.e.
+        recently researched arrivals — so it never web-scans the whole wall.
+        """
+        from pipeline import notability as notab
+        cap_path = 'cache/capsule_cache.json'
+        if not os.path.exists(cap_path):
+            return
+        try:
+            with open(cap_path) as f:
+                cap = json.load(f)
+        except (ValueError, OSError):
+            return
+
+        facts = {}
+        for entry in (cap.values() if isinstance(cap, dict) else cap):
+            if isinstance(entry, dict) and entry.get('notability'):
+                key = ((entry.get('title') or '').lower(), str(entry.get('year', '')))
+                facts[key] = entry['notability']
+
+        injected = 0
+        for movie in movies_list:
+            key = ((movie.get('title') or '').lower(), str(movie.get('year', '')))
+            qual = facts.get(key)
+            if not qual:
+                continue
+            if movie.get('_wiki_language_count') is None:
+                wiki = (movie.get('links') or {}).get('wikipedia')
+                movie['_wiki_language_count'] = notab.wikipedia_language_count(wiki)
+            if movie.get('_tmdb_popularity') is None:
+                movie['_tmdb_popularity'] = movie.get('popularity')
+            block = notab.build(movie, qual)
+            movie['buzz_score'] = block['buzz_score']
+            movie['notability'] = block
+            injected += 1
+
+        if injected:
+            print(f"\U0001f4ca Injected notability (Buzz) for {injected} movies")
+
     def apply_cached_watch_links(self, movies_list):
         """Apply cached watch links to movies with empty watch_links.
 

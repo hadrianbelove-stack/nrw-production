@@ -148,6 +148,7 @@ class DataGenerator:
         # IMDB rating cache (persistent across pipeline runs)
         self._imdb_rating_cache = None
         self._imdb_dataset = None  # Lazy-loaded IMDb bulk dataset
+        self._imdb_votes = None    # Parallel {tt_id: numVotes} from the same dataset (buzz signal)
 
         # Wikipedia usage statistics
         self.wikipedia_stats = {
@@ -864,6 +865,7 @@ class DataGenerator:
 
         dataset_url = 'https://datasets.imdbws.com/title.ratings.tsv.gz'
         self._imdb_dataset = {}
+        self._imdb_votes = {}  # parallel {tt_id: numVotes} — buzz signal (notability)
 
         try:
             self.logger.info("Downloading IMDb ratings dataset (~5MB)...")
@@ -879,6 +881,8 @@ class DataGenerator:
                     parts = line.strip().split('\t')
                     if len(parts) >= 2:
                         self._imdb_dataset[parts[0]] = parts[1]  # {tt_id: "7.4"}
+                    if len(parts) >= 3 and parts[2].isdigit():
+                        self._imdb_votes[parts[0]] = int(parts[2])  # {tt_id: 12345}
 
             self.logger.info(f"IMDb dataset loaded: {len(self._imdb_dataset)} ratings")
 
@@ -955,6 +959,14 @@ class DataGenerator:
                 self.logger.debug(f"Gemini IMDb error for {imdb_id}: {e}")
 
         return None
+
+    def get_imdb_votes(self, imdb_id):
+        """IMDb vote count from the bulk dataset (free; notability buzz signal).
+        None if the title isn't in the dump. Loads the dataset on first use."""
+        if not imdb_id:
+            return None
+        self._load_imdb_dataset()  # populates self._imdb_votes as a side effect
+        return (self._imdb_votes or {}).get(imdb_id)
 
     def find_wikipedia_url(self, title, year, imdb_id, movie_id=None, director=None, original_title=None, skip_playwright=False, skip_gemini=False):
         """Find Wikipedia URL using Playwright-based scraper with waterfall approach
@@ -1930,6 +1942,10 @@ class DataGenerator:
         """Delegate to DisplayGenerator."""
         return self._display.inject_approved_capsules(movies_list)
 
+    def _inject_notability(self, movies_list):
+        """Delegate to DisplayGenerator."""
+        return self._display.inject_notability(movies_list)
+
     def _apply_cached_watch_links(self, movies_list):
         """Delegate to DisplayGenerator."""
         return self._display.apply_cached_watch_links(movies_list)
@@ -1988,6 +2004,9 @@ class DataGenerator:
 
         # Restore approved capsules from the bank for movies missing one
         self._inject_approved_capsules(all_movies)
+
+        # Notability: 0-100 Buzz score + block, reusing capsule research
+        self._inject_notability(all_movies)
 
         # Apply cached watch links to movies with empty watch_links
         self._apply_cached_watch_links(all_movies)

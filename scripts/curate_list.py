@@ -65,8 +65,11 @@ def _trailer(m):
 
 _NOTAB = None
 def _buzz(m):
-    """0-100 internet-attention score from the notability dossier (keyed by id).
-    '--' when the film isn't in the dossier yet (run scripts/notability_sandbox.py)."""
+    """0-100 internet-attention score. Prefers the pipeline-set value on the
+    record (display.inject_notability); falls back to the dev sandbox dossier."""
+    b = m.get("buzz_score")
+    if b is not None:
+        return str(b)
     global _NOTAB
     if _NOTAB is None:
         _NOTAB = {}

@@ -421,6 +421,7 @@ class MovieEnricher:
             result['imdb_rating'] = imdb_rating
         if imdb_id:
             result['links']['imdb'] = f"https://www.imdb.com/title/{imdb_id}/"
+            result['_imdb_votes'] = self.host.get_imdb_votes(imdb_id)  # buzz signal (notability)
 
         # OMDb: authoritative score source + awards/box office.
         # Overwrites scraper scores. After overwrite, compare to detect scraper failures.
