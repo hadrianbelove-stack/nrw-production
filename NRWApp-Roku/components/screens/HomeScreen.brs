@@ -723,12 +723,14 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
             return true
         else if key = "down"
             SetSearchButtonActive(false)
+            m.filterBar.hasFocus = false   ' clear the orange focus ring
             m.movieGrid.SetFocus(true)
             m.focusedArea = "grid"
             return true
         else if key = "back"
             ' Go to grid
             SetSearchButtonActive(false)
+            m.filterBar.hasFocus = false   ' clear the orange focus ring
             m.movieGrid.SetFocus(true)
             m.focusedArea = "grid"
             return true
