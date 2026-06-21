@@ -218,7 +218,7 @@ class GeminiFinderBase:
             )
             self.types = types
             self.grounding_tool = types.Tool(google_search=types.GoogleSearch())
-            self.model_name = 'gemini-2.5-flash'
+            self.model_name = 'gemini-2.5-pro'  # all Gemini scrapers on Pro
 
             logger.info(f"Gemini {self._finder_name} finder initialized")
             return True
