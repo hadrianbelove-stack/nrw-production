@@ -45,8 +45,8 @@ End Function
 ' at FHD. See docs/STYLE_GUIDE.md.
 Function Fonts() as Object
     return {
-        wordmark:    GetFont("light", 90)   ' THE NEW RELEASE WALL (ultra-light)
-        slogan:      GetFont("light", 30)   ' tagline
+        wordmark:    GetFont("light", 56)   ' THE NEW RELEASE WALL (ultra-light; sized to Roku header)
+        slogan:      GetFont("light", 24)   ' tagline
         sectionDay:  GetFont("black", 30)   ' date strip DAY (e.g. THU)
         sectionDate: GetFont("light", 30)   ' date strip DATE (e.g. JUN 20)
         cardMeta:    GetFont("bold", 20)    ' director · genre · nation
