@@ -8587,7 +8587,7 @@
     "1280738": {
       "title": "The Furious",
       "premiere_date": "2025-09-07",
-      "has_providers": true,
+      "has_providers": false,
       "status": "tracking",
       "added": "2025-09-13T22:15:44.802099",
       "year": 2025,
@@ -17888,7 +17888,7 @@
         "streaming": []
       },
       "discovery_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
@@ -20846,7 +20846,6 @@
       "year": 2025,
       "_virtual_screening": true,
       "_discovery_source": "provider_availability_check",
-      "_is_preorder": true,
       "enriched": true,
       "enrichment_date": "2026-05-27",
       "_transitioned_at": "2026-05-27"
@@ -21901,11 +21900,21 @@
       "title": "Love with a Tail",
       "status": "tracking",
       "first_seen": "2025-10-26",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-21",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Takflix"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-21"
     },
     "1407548": {
       "title": "Illusione",
@@ -28311,7 +28320,7 @@
       "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-19"
     },
@@ -40655,10 +40664,10 @@
       "enriched": false,
       "enrichment_date": null,
       "_is_preorder": true,
-      "_transitioned_at": "2026-06-20",
-      "_jw_revert_count": 2,
+      "_transitioned_at": "2026-06-21",
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-20"
+      "_jw_reverted_at": "2026-06-21"
     },
     "1544405": {
       "title": "Der Rest ist Stille",
@@ -74803,7 +74812,8 @@
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-06-17"
+      "_jw_reverted_at": "2026-06-17",
+      "_skip_provider_discovery": true
     },
     "1244806": {
       "title": "Choir of God",
@@ -91459,7 +91469,7 @@
       "year": 2025,
       "premiere_date": "2025-02-02",
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-19"
     },
@@ -131353,11 +131363,17 @@
       "year": 2024,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
+      "digital_date": "2026-06-30",
       "providers": {},
       "intake_pass": "C",
       "festival": "Sitges",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-21",
+      "_jw_revert_count": 1
     },
     "1018990": {
       "title": "Continent",
@@ -131420,7 +131436,7 @@
       "festival": "Sitges",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-06-20"
     },
@@ -174371,7 +174387,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-06-20"
     },
@@ -228035,9 +228051,9 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-06-20",
+      "_transitioned_at": "2026-06-21",
       "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-06-20",
+      "_jw_reverted_at": "2026-06-21",
       "_jw_revert_count": 1
     },
     "1701604": {
@@ -228599,7 +228615,7 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-05-27",
-      "digital_date": "2026-06-15",
+      "digital_date": "2026-07-14",
       "providers": {
         "rent": [],
         "buy": [
@@ -228609,10 +228625,11 @@
       },
       "intake_pass": "B",
       "has_providers": false,
-      "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-06-15"
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-06-21"
     },
     "1702887": {
       "title": "Miles",
@@ -230750,15 +230767,22 @@
       "status": "tracking",
       "intake_date": "2026-06-01",
       "digital_date": "2026-06-21",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "_jw_revert_count": 11,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-01",
+      "_jw_revert_count": 12,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
-      "_is_preorder": true
+      "_is_preorder": true,
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null,
+      "_transitioned_at": "2026-06-21",
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-21"
     },
     "1646124": {
       "title": "Tiger's Rampage",
@@ -238014,7 +238038,7 @@
       "digital_date": "2026-06-18",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-18"
     },
@@ -238026,7 +238050,7 @@
       "digital_date": "2026-06-18",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-18"
     },
@@ -238056,7 +238080,7 @@
       "digital_date": "2026-06-18",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-18"
     },
@@ -238437,7 +238461,7 @@
       "digital_date": "2023-06-19",
       "providers": {},
       "intake_pass": "B",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-18",
       "has_providers": false
@@ -238623,7 +238647,7 @@
       "digital_date": "2026-03-30",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-19"
     },
@@ -239408,7 +239432,7 @@
       "digital_date": "2026-06-19",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-20"
     },
@@ -239539,7 +239563,9 @@
       "intake_date": "2026-06-20",
       "digital_date": "2026-06-20",
       "providers": {
-        "rent": [],
+        "rent": [
+          "Eventive"
+        ],
         "buy": [],
         "streaming": []
       },
@@ -239965,7 +239991,8 @@
       "_enrichment_attempts": 0,
       "_added_manually": true,
       "_added_at": "2026-06-20",
-      "_buyonly_preorder": true
+      "_buyonly_preorder": true,
+      "has_providers": false
     },
     "1734": {
       "title": "The Mummy Returns",
@@ -240118,6 +240145,287 @@
       "_enrichment_attempts": 0,
       "_added_manually": true,
       "_added_at": "2026-06-20"
+    },
+    "1717233": {
+      "title": "Married Alive",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-06-21",
+      "digital_date": "2026-06-21",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-06-21",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-06-21"
+    },
+    "1707411": {
+      "title": "TRADITIO III: A Work of Charity",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": "2026-06-21",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-21"
+    },
+    "1685867": {
+      "title": "Hypomania",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": "2026-06-21",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-21"
+    },
+    "1718210": {
+      "title": "A House Most Haunted",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": "2026-06-19",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-21"
+    },
+    "1718030": {
+      "title": "Bonnaroo 2026: The Moovie",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": "2026-06-19",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-21"
+    },
+    "1717508": {
+      "title": "Nativo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1716998": {
+      "title": "Hip Hop Caboclo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1714832": {
+      "title": "爸爸，让我再爱你一次",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1713721": {
+      "title": "1939-1940: A Strange Defeat",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1706726": {
+      "title": "Marilyn Monroe: The Rise of an Icon",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1621972": {
+      "title": "The Harpsichordist",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1598210": {
+      "title": "Lifeline",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "884437": {
+      "title": "The Orbit of Minor Satellites",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "610465": {
+      "title": "Sweden Porno: Blonde Animal",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1718459": {
+      "title": "Caminando y cantando mundos en peligro",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1718193": {
+      "title": "Detective McMan in the LABYRINTH OF LIES",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1693052": {
+      "title": "Everywhere and Nowhere",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1718366": {
+      "title": "Riakoi First Love",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1718195": {
+      "title": "Mateusz Socha – „Szur”",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1718350": {
+      "title": "Deerhead Video Prayers Vol. 1",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Dances With Films",
+      "has_providers": false
+    },
+    "1677102": {
+      "title": "Hamilton House",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-21",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Dances With Films",
+      "has_providers": false
+    },
+    "tv_323842": {
+      "title": "The Root of the Game",
+      "content_type": "limited_series",
+      "tmdb_id": 323842,
+      "status": "tracking",
+      "first_air_date": "2026-06-20",
+      "digital_date": "2026-06-20",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/br2HS3NZ3Hkvcg7AMryE0vUEMSs.jpg",
+      "synopsis": "Follows players and coaches competing in the Super Copa Pioneer, São Paulo's largest amateur soccer tournament, as they dream of changing their lives.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "pt",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-21",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": false
+    },
+    "tv_288603": {
+      "title": "Never-Ending Summer",
+      "content_type": "limited_series",
+      "tmdb_id": 288603,
+      "status": "tracking",
+      "first_air_date": "2026-06-16",
+      "digital_date": "2026-06-16",
+      "episode_count": 29,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/9bB4tJbjViEsQCMJ0qth7wuzpNA.jpg",
+      "synopsis": "To save her gravely ill grandmother, top student Zhou Wan approaches her mother's stepson, Lu Xixiao, for funds. They fall for each other over the summer after graduation but are torn apart by misunderstandings in reality. Ten years later, they reunite at work. Though Lu Xixiao harbors resentment, his love for Zhou Wan remains. As they uncover the truth behind a \"factory accident,\" they resolve their differences and reunite.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "zh",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-21",
+      "networks": [
+        "Hunan Television",
+        "Mango TV"
+      ],
+      "has_providers": false
     }
   }
 }
