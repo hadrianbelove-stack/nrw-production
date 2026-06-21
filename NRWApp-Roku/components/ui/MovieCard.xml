@@ -23,6 +23,7 @@
 
   <script type="text/brightscript" uri="MovieCard.brs" />
   <script type="text/brightscript" uri="pkg:/source/constants/Colors.brs" />
+  <script type="text/brightscript" uri="pkg:/source/constants/Fonts.brs" />
   <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
 
   <children>
@@ -59,11 +60,13 @@
           visible="false"
           translation="[-5, -5]" />
 
-        <!-- Card background -->
-        <Rectangle id="cardBackground"
+        <!-- Card background — rounded 9-patch so streaming cards become a
+             service-colored frame (tinted via blendColor in BrightScript). -->
+        <Poster id="cardBackground"
+          uri="pkg:/images/ui/rrect.9.png"
           width="320"
           height="490"
-          color="0x1A1A1AFF" />
+          blendColor="0x1A1A1AFF" />
 
         <!-- Movie poster -->
         <Poster id="poster"
@@ -127,11 +130,12 @@
           visible="false" />
 
         <!-- Restoration badge (top-right) -->
-        <Rectangle id="restorationBadgeBg"
+        <Poster id="restorationBadgeBg"
+          uri="pkg:/images/ui/rrect.9.png"
           width="102"
           height="35"
           translation="[212, 6]"
-          color="0xC8A951FF"
+          blendColor="0xC8A951FF"
           visible="false" />
         <Label id="restorationBadgeLabel"
           text="RESTORATION"
@@ -259,17 +263,19 @@
         <!-- SELECT pill (top-center): teal outline + dark glass + label.
              Built as outer/inner rects (Roku has no rounded/bordered rects),
              same pattern as the score badges. -->
-        <Rectangle id="staffPickPillBorder"
+        <Poster id="staffPickPillBorder"
+          uri="pkg:/images/ui/pill.9.png"
           width="250"
           height="36"
           translation="[35, 6]"
-          color="0x00D4AAFF"
+          blendColor="0x00D4AAFF"
           visible="false" />
-        <Rectangle id="staffPickPillBg"
+        <Poster id="staffPickPillBg"
+          uri="pkg:/images/ui/pill.9.png"
           width="246"
           height="32"
           translation="[37, 8]"
-          color="0x081412FF"
+          blendColor="0x081412FF"
           visible="false" />
         <Label id="staffPickCardLabel"
           text="★ NRW SELECT ★"

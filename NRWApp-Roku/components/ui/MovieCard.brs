@@ -47,6 +47,20 @@ Sub Init()
     m.originalWidth = 320
     m.originalHeight = 480
 
+    ' Bundled Lato fonts (exact sizes, match tvOS) — replaces Roku system fonts
+    m.fonts = Fonts()
+    m.serviceBadge.font = m.fonts.serviceName
+    m.serviceBadgeSubtext.font = m.fonts.nowStreaming
+    m.directorLabel.font = m.fonts.cardMeta
+    m.staffPickCardLabel.font = m.fonts.selectPill
+    m.restorationBadgeLabel.font = m.fonts.restoration
+    m.preOrderBadgeLabel.font = m.fonts.restoration
+    m.preOrderBadgeDate.font = m.fonts.nowStreaming
+    m.screeningTopBannerLabel.font = m.fonts.restoration
+    m.screeningFestivalLabel.font = m.fonts.restoration
+    m.rtBadge.font = m.fonts.scoreBadge
+    m.imdbBadge.font = m.fonts.scoreBadge
+    m.mcBadge.font = m.fonts.scoreBadge
 End Sub
 
 ' ============================================================================
@@ -109,12 +123,11 @@ Sub onMovieChanged()
 
     ' Set streaming service badge (hidden for pre-orders — pre-order badge takes that spot)
     streaming = GetStreamingService(movie)
-    if NOT isPreOrder AND streaming <> invalid AND streaming.service <> invalid
+    hasFrame = (NOT isPreOrder AND streaming <> invalid AND streaming.service <> invalid)
+    if hasFrame
         SetupServiceBadge(streaming.service)
     else
-        m.serviceBadge.visible = false
-        m.serviceBadgeBg.visible = false
-        m.serviceBadgeSubtext.visible = false
+        ClearServiceFrame()
     end if
 
     ' Pre-order badge (top-right, replaces streaming badge)
@@ -175,6 +188,15 @@ Sub onMovieChanged()
         m.screeningFestivalBg.visible = false
         m.screeningFestivalLabel.visible = false
         m.screeningDaysLabel.visible = false
+    end if
+
+    ' Score badges only show on plain posters — the streaming frame replaces them
+    ' (matches desktop/tvOS: scores are mutually exclusive with the service frame).
+    if hasFrame
+        m.rtBadge.visible = false : m.rtBadgeBg.visible = false : m.rtBadgeBorder.visible = false
+        m.imdbBadge.visible = false : m.imdbBadgeBg.visible = false : m.imdbBadgeBorder.visible = false
+        m.mcBadge.visible = false : m.mcBadgeBg.visible = false : m.mcBadgeBorder.visible = false
+        return
     end if
 
     ' Set RT score badge
@@ -247,21 +269,40 @@ End Sub
 ' ============================================================================
 Sub SetupServiceBadge(service as String)
     colors = GetServiceColors()
-    badgeText = GetServiceBadgeText(service)
+    badgeText = UCase(CleanServiceName(service))   ' full name, e.g. "NETFLIX"
     normalized = NormalizeServiceName(service)
 
-    ' Set badge text
+    ' --- Streaming "frame": the whole card becomes the service color, with a
+    ' 52px header (service name + NOW STREAMING) and the poster inset below.
+    ' Matches desktop/tvOS. ---
+    if colors.DoesExist(normalized)
+        svcColor = colors[normalized]
+    else
+        svcColor = "0xFF9500FF"   ' default VOD
+    end if
+    m.cardBackground.blendColor = svcColor
+
+    ' Inset the poster below the header
+    m.poster.translation = [10, 52]
+    m.poster.width = 300
+    m.poster.height = 428
+
+    ' Header text (centered over the service color)
     m.serviceBadge.text = badgeText
+    m.serviceBadge.width = 320
+    m.serviceBadge.height = 26
+    m.serviceBadge.translation = [0, 8]
+    m.serviceBadge.horizAlign = "center"
     m.serviceBadge.visible = true
+
+    m.serviceBadgeSubtext.width = 320
+    m.serviceBadgeSubtext.height = 16
+    m.serviceBadgeSubtext.translation = [0, 33]
+    m.serviceBadgeSubtext.horizAlign = "center"
     m.serviceBadgeSubtext.visible = true
 
-    ' Set badge color
-    if colors.DoesExist(normalized)
-        m.serviceBadgeBg.color = colors[normalized]
-    else
-        m.serviceBadgeBg.color = "0xFF9500FF"  ' Default VOD color
-    end if
-    m.serviceBadgeBg.visible = true
+    ' the old separate bar is unused; the card background provides the color
+    m.serviceBadgeBg.visible = false
 
     ' Light backgrounds (hulu, prime, pluto) need dark text
     if normalized = "hulu" OR normalized = "prime" OR normalized = "pluto"
@@ -271,12 +312,19 @@ Sub SetupServiceBadge(service as String)
         m.serviceBadge.color = "0xFFFFFFFF"
         m.serviceBadgeSubtext.color = "0xFFFFFFBF"
     end if
+End Sub
 
-    ' Full-width bar — always 320px wide at top
-    m.serviceBadge.width = 320
-    m.serviceBadgeBg.width = 320
-    m.serviceBadge.translation = [0, 3]
-    m.serviceBadgeBg.translation = [0, 0]
+' ============================================================================
+' Reset card to the plain (non-frame) poster: poster fills the card, dark bg.
+' ============================================================================
+Sub ClearServiceFrame()
+    m.cardBackground.blendColor = "0x1A1A1AFF"
+    m.poster.translation = [0, 0]
+    m.poster.width = 320
+    m.poster.height = 480
+    m.serviceBadge.visible = false
+    m.serviceBadgeSubtext.visible = false
+    m.serviceBadgeBg.visible = false
 End Sub
 
 ' ============================================================================
