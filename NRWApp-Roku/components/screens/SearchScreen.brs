@@ -14,6 +14,14 @@ Sub Init()
     m.resultCount = m.top.FindNode("resultCount")
     m.noResults = m.top.FindNode("noResults")
     m.hint = m.top.FindNode("searchHint")
+    m.searchTitle = m.top.FindNode("searchTitle")
+
+    ' Bundled Lato fonts (match tvOS)
+    f = Fonts()
+    if m.searchTitle <> invalid then m.searchTitle.font = f.detailTitle
+    m.resultCount.font = f.body
+    m.noResults.font = f.body
+    m.hint.font = f.body
 
     m.allMovies = []
     m.results = []

@@ -22,10 +22,10 @@ Sub Init()
     m.languageLabel = m.top.FindNode("languageLabel")
     m.synopsisLabel = m.top.FindNode("synopsisLabel")
     ' Synopsis renders **bold**/*italic* via MultiStyleLabel (see docs/STYLE_GUIDE.md).
-    ' default + bold use system fonts; italic uses bundled Lato (Roku has no system italic).
+    ' All three styles use bundled Lato so the synopsis matches the rest of the app.
     m.synopsisLabel.drawingStyles = {
-        "default": { fontUri: "font:MediumSystemFont", color: "#BBBBBBFF" }
-        "bold": { fontUri: "font:MediumBoldSystemFont", color: "#BBBBBBFF" }
+        "default": { fontUri: "pkg:/fonts/Lato-Regular.ttf", fontSize: 27, color: "#BBBBBBFF" }
+        "bold": { fontUri: "pkg:/fonts/Lato-Bold.ttf", fontSize: 27, color: "#BBBBBBFF" }
         "italic": { fontUri: "pkg:/fonts/Italic.ttf", fontSize: 27, color: "#BBBBBBFF" }
     }
     m.pullQuotesLabel = m.top.FindNode("pullQuotesLabel")
@@ -85,6 +85,21 @@ Sub Init()
     m.vodButton1.ObserveField("selected", "onVod1Selected")
     m.vodButton2.ObserveField("selected", "onVod2Selected")
     m.plexButton.ObserveField("selected", "onPlexSelected")
+
+    ' Bundled Lato fonts (match tvOS) across the detail screen
+    f = Fonts()
+    m.titleLabel.font = f.detailTitle
+    m.dateLabel.font = f.body
+    if m.directorLabel <> invalid then m.directorLabel.font = f.bodyBold
+    if m.directorName <> invalid then m.directorName.font = f.body
+    if m.castLabel <> invalid then m.castLabel.font = f.bodyBold
+    if m.castName <> invalid then m.castName.font = f.body
+    m.metadataLabel.font = f.body
+    m.languageLabel.font = f.body
+    if m.pullQuotesLabel <> invalid then m.pullQuotesLabel.font = GetFont("italic", 26)
+    if m.vodSectionLabel <> invalid then m.vodSectionLabel.font = f.bodyBold
+    if m.streamSectionLabel <> invalid then m.streamSectionLabel.font = f.bodyBold
+    if m.counterLabel <> invalid then m.counterLabel.font = f.body
 End Sub
 
 ' ============================================================================
