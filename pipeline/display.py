@@ -74,8 +74,10 @@ class DisplayGenerator:
             if selected:
                 movie['pull_quotes'] = selected
                 injected += 1
-            elif 'pull_quotes' in movie:
-                # Remove stale quotes if none are selected anymore
+            elif movie.get('pull_quotes'):
+                # Non-empty but nothing selected in cache → stale, remove it.
+                # An empty list [] is a deliberate "reviewed, skipped" marker
+                # (set by /curate skip) and must survive rebuilds, so leave it.
                 del movie['pull_quotes']
 
         if injected:
