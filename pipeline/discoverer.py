@@ -75,6 +75,42 @@ class ProviderDiscoverer:
         print("  🛑 JW_BREAKER: JustWatch appears blocked/down — suppressing reverts this run")
         return False
 
+    def _deferred_reissue_signal_changed(self, movie_id, movie):
+        """True if a deferred reissue has gained a NEW digital signal versus the baseline
+        captured at defer time — a Type-4 digital date that wasn't there before, or a watch
+        provider outside the baseline set (e.g. it lands on Criterion).
+
+        Read-only: the caller un-defers the film and lets the normal Type-4 / provider
+        discovery perform the actual transition. Both signals are compared against the same
+        TMDB endpoints used in normal discovery, so the baseline and the live read agree.
+        """
+        # Signal 1: new Type-4 digital date (baseline is usually None for an old film, so any
+        # real digital release is unambiguously new).
+        baseline_t4 = movie.get('_reissue_baseline_type4')
+        new_t4 = self.host.fetch_tmdb_type4_date(movie_id)
+        if new_t4 and (not baseline_t4 or new_t4 > baseline_t4):
+            return True
+
+        # Signal 2: a watch provider not present at defer time.
+        baseline = {p.lower() for p in movie.get('_reissue_baseline_providers', [])}
+        if str(movie_id).startswith('tv_'):
+            url = f"https://api.themoviedb.org/3/tv/{str(movie_id).replace('tv_', '')}/watch/providers"
+        else:
+            url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
+        try:
+            r = requests.get(url, params={'api_key': self.tmdb_key}, timeout=(5, 15))
+            if r.ok:
+                us = r.json().get('results', {}).get('US', {})
+                for kind in ('flatrate', 'rent', 'buy'):
+                    for p in us.get(kind, []):
+                        name = (p.get('provider_name') or '').lower()
+                        if name and name not in baseline:
+                            return True
+        except Exception as e:
+            self.logger.warning(f"Deferred reissue provider check failed for "
+                                f"{movie.get('title', movie_id)}: {e}")
+        return False
+
     def _verify_before_wall(self, movie_id, movie):
         """JustWatch pre-check before adding a movie to the wall.
 
@@ -308,6 +344,23 @@ class ProviderDiscoverer:
                     rate = checked / elapsed if elapsed > 0 else 0
                     remaining = (total_to_check - checked) / rate if rate > 0 else 0
                     print(f"  📊 Discovery: {checked}/{total_to_check} ({progress_pct:.1f}%) | {newly_digital} found | {int(elapsed//60)}m elapsed | ~{int(remaining//60)}m remaining")
+
+                # DEFERRED REISSUE: an OLD film parked in tracking until its RESTORATION gets
+                # a *new* digital release. Old films usually already carry stale VOD availability
+                # (Utena: already rentable on Amazon), so the normal binary checks would
+                # false-fire immediately. Only act when something CHANGED versus the baseline
+                # captured at defer time; if so, un-defer and fall through to the normal Type-4 /
+                # provider discovery below (which handles past/future/pre-order/JW correctly).
+                if movie.get('_reissue_deferred') and movie['status'] == 'tracking':
+                    if self._deferred_reissue_signal_changed(movie_id, movie):
+                        for k in ('_reissue_deferred', '_reissue_baseline_type4',
+                                  '_reissue_baseline_providers', '_skip_provider_discovery'):
+                            movie.pop(k, None)
+                        self.logger.info(f"Deferred reissue un-deferred (new digital signal): {movie.get('title', movie_id)}")
+                        print(f"  🎬 {movie.get('title', movie_id)} — reissue digital release detected, evaluating for wall")
+                        # fall through to normal discovery below (no continue)
+                    else:
+                        continue  # still no change — keep waiting, skip the normal binary checks
 
                 # PRIMARY: Type 4 digital release check (authoritative, gives accurate date)
                 type4_found = False

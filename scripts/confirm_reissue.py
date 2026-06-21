@@ -2,10 +2,19 @@
 """
 Confirm / reject reissue candidates from the "Confirm Reissues" curation stage.
 
-Confirmed candidates are intaked into the tracking DB (status='tracking') with the
-reissue flag + label so they surface on the wall via the normal discovery / virtual-screening
-flow and carry their restoration badge. Rejected candidates are marked so they don't re-appear
-in the pending list.
+Three actions on a pending candidate:
+  --confirm  Add to the WALL now (status=available, _added_manually) + enrich + not-slop.
+             For a reissue whose home release has already landed.
+  --defer    Intake into the tracking DB (status='tracking') with the reissue flag + label,
+             so NORMAL discovery surfaces it the day it hits VOD or a streamer — same rails
+             as every other tracked film. For a GENUINE reissue that is still theatrical-only
+             (no VOD yet). The durable badge + not-slop layers are written up front, so it
+             reads as a Restoration the moment it transitions. No memory note, no scheduled
+             check — the digital release itself is the trigger.
+  --reject   Not a real reissue (a plain re-run / re-screening). Marked so it never re-appears.
+
+Rejected candidates are permanently skipped by intake Pass D; deferred ones are skipped too
+(they're now in tracking), so neither re-queues.
 
 Row numbers refer to the table printed by scripts/reissue_table.py (same sort order).
 
@@ -14,6 +23,8 @@ Usage:
     python3 scripts/confirm_reissue.py --confirm 1,3 --drain
     # confirm with a custom label on row 2:
     python3 scripts/confirm_reissue.py --confirm 2 --label "2=New 4K Restoration"
+    # defer a theatrical-only reissue to tracking until its VOD/streaming release:
+    python3 scripts/confirm_reissue.py --defer 1 --label "1=Restoration"
     # reject specific rows only:
     python3 scripts/confirm_reissue.py --reject 4,5
 """
@@ -51,9 +62,130 @@ def _parse_labels(pairs):
     return out
 
 
+def _load_json(path, default):
+    if os.path.exists(path):
+        try:
+            with open(path) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return default
+
+
+def _save_json(path, obj):
+    tmp = path + '.tmp'
+    with open(tmp, 'w') as f:
+        json.dump(obj, f, indent=2, ensure_ascii=False)
+    os.replace(tmp, path)
+
+
+def _intake_deferred(deferred):
+    """Intake deferred reissues into the tracking DB (status='tracking') with the reissue
+    flag + label, so the normal daily discovery (TMDB Type-4 digital date OR watch/providers)
+    surfaces them the day they hit VOD/streaming — exactly like every other tracked film.
+
+    No _added_manually: we WANT discovery to validate availability before it transitions.
+    The durable badge (admin/reissue_labels.json) and not-slop (admin/overrides.json) layers
+    are written up front, so the film reads as a Restoration the moment it lands on the wall.
+    """
+    import requests
+    from pipeline.generator import DataGenerator
+    from pipeline.tracking_db import get_tracking_db
+
+    gen = DataGenerator(enrichment_enabled=False)
+    tdb = get_tracking_db()
+    db = tdb.load_all()
+    db.setdefault('movies', {})
+
+    labels = _load_json('admin/reissue_labels.json', {})
+    overrides = _load_json('admin/overrides.json', {})
+    today = datetime.date.today().strftime('%Y-%m-%d')
+
+    intaked = 0
+    for cand, label in deferred:
+        mid = str(cand['tmdb_id'])
+        is_tv = mid.startswith('tv_')
+
+        # Don't clobber a film that's already live or tracked under a different flow.
+        existing = db['movies'].get(mid)
+        if existing and existing.get('status') == 'available':
+            print(f"  ⚠ {cand['title']} ({mid}) already on the wall — skipping defer.")
+            continue
+
+        # Fetch TMDB metadata so the tracking entry is complete (mirrors add_movie.py).
+        tmdb_data = (gen.get_tv_details(mid.replace('tv_', '')) if is_tv
+                     else gen.get_movie_details(mid)) or {}
+        title = tmdb_data.get('title') or tmdb_data.get('name') or cand.get('title') or f'Unknown ({mid})'
+        rel = tmdb_data.get('release_date') or tmdb_data.get('first_air_date') or ''
+        year = int(rel[:4]) if rel[:4].isdigit() else cand.get('year')
+        poster = (f"https://image.tmdb.org/t/p/w500{tmdb_data['poster_path']}"
+                  if tmdb_data.get('poster_path') else None)
+        genres = [g['name'] for g in tmdb_data.get('genres', [])]
+
+        # Current providers (binary signal for discovery; refreshed daily thereafter).
+        rent_p = buy_p = stream_p = []
+        try:
+            base = ('tv/' + mid.replace('tv_', '')) if is_tv else ('movie/' + mid)
+            pr = requests.get(f"https://api.themoviedb.org/3/{base}/watch/providers",
+                              params={'api_key': gen.tmdb_key}, timeout=15)
+            us = pr.json().get('results', {}).get('US', {}) if pr.ok else {}
+            rent_p = [p['provider_name'] for p in us.get('rent', [])]
+            buy_p = [p['provider_name'] for p in us.get('buy', [])]
+            stream_p = [p['provider_name'] for p in us.get('flatrate', [])]
+        except Exception as e:
+            print(f"  ⚠ provider fetch failed for {title} ({mid}): {e}")
+
+        # Baseline for change-detection: an old film usually already carries stale VOD
+        # availability, so discovery must transition only when something NEW appears vs now —
+        # a Type-4 digital date that wasn't there before, or a provider outside this set.
+        baseline_t4 = gen.fetch_tmdb_type4_date(mid)
+        baseline_provs = rent_p + buy_p + stream_p
+
+        entry = existing or {}
+        entry.update({
+            'title': title,
+            'status': 'tracking',          # discovery transitions it when VOD/streaming lands
+            'digital_date': None,          # set by discovery on transition
+            'premiere_date': rel or None,
+            'enriched': False,
+            'enrichment_date': None,
+            'has_providers': bool(rent_p or buy_p or stream_p),
+            'providers': {'rent': rent_p, 'buy': buy_p, 'streaming': stream_p},
+            'poster': poster,
+            'year': year,
+            'genres': genres,
+            '_discovery_source': 'reissue_deferred',
+            '_reissue': True,              # read by display.py → Restoration badge + treat as arrival
+            'reissue_label': label,
+            '_reissue_deferred_at': today,
+            '_reissue_deferred': True,     # discovery branches on this → change-detection only
+            '_reissue_baseline_type4': baseline_t4,        # usually None for an old film
+            '_reissue_baseline_providers': baseline_provs, # stale availability to ignore
+        })
+        if is_tv:
+            entry['is_tv'] = True
+        db['movies'][mid] = entry
+        intaked += 1
+
+        # Durable layers (survive rebuilds / apply the moment it transitions).
+        if label:
+            labels[mid] = label
+        ov = overrides.get(mid, {})
+        ov.setdefault('set', {})['is_slop'] = False   # a reissue is never slop
+        overrides[mid] = ov
+
+    db['last_update'] = datetime.datetime.now().isoformat()
+    tdb.save_all(db, export_json=True)
+    _save_json('admin/reissue_labels.json', labels)
+    _save_json('admin/overrides.json', overrides)
+    print(f"Deferred {intaked} reissue(s) to tracking — discovery will surface them "
+          f"on VOD/streaming release (badge + not-slop already set).")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--confirm', default='', help='Comma-separated table row numbers to confirm')
+    ap.add_argument('--confirm', default='', help='Comma-separated table row numbers to confirm (add to wall now)')
+    ap.add_argument('--defer', default='', help='Comma-separated table row numbers to defer to tracking (watch for VOD/streaming)')
     ap.add_argument('--reject', default='', help='Comma-separated table row numbers to reject')
     ap.add_argument('--drain', action='store_true',
                     help='Reject all remaining shown pending candidates not confirmed/rejected')
@@ -79,6 +211,7 @@ def main():
         return
 
     confirm_nums = set(_parse_nums(args.confirm))
+    defer_nums = set(_parse_nums(args.defer))
     reject_nums = set(_parse_nums(args.reject))
     label_overrides = _parse_labels(args.label)
 
@@ -88,7 +221,7 @@ def main():
         print(f"  (row {n} out of range 1..{len(pending)} — skipped)")
         return None
 
-    confirmed, rejected = [], []
+    confirmed, deferred, rejected = [], [], []
 
     # Confirm
     for n in sorted(confirm_nums):
@@ -101,6 +234,17 @@ def main():
         cand['confirmed_at'] = datetime.date.today().strftime('%Y-%m-%d')
         confirmed.append((cand, label))
 
+    # Defer to tracking (genuine reissue, not yet on VOD/streaming)
+    for n in sorted(defer_nums):
+        cand = row(n)
+        if not cand:
+            continue
+        label = label_overrides.get(n) or _suggested_label(cand)
+        cand['status'] = 'deferred'
+        cand['deferred_label'] = label
+        cand['deferred_at'] = datetime.date.today().strftime('%Y-%m-%d')
+        deferred.append((cand, label))
+
     # Reject (explicit)
     for n in sorted(reject_nums):
         cand = row(n)
@@ -109,16 +253,18 @@ def main():
         cand['status'] = 'rejected'
         rejected.append(cand)
 
-    # Drain the rest
+    # Drain the rest (drain rejects — a deferral is always a deliberate choice)
     if args.drain:
         for cand in pending:
             if cand.get('status') == 'pending':
                 cand['status'] = 'rejected'
                 rejected.append(cand)
 
-    print(f"Confirming {len(confirmed)}, rejecting {len(rejected)}.")
+    print(f"Confirming {len(confirmed)}, deferring {len(deferred)}, rejecting {len(rejected)}.")
     for cand, label in confirmed:
         print(f"  ✅ {cand['title']} ({cand.get('year')}) — badge: “{label}”")
+    for cand, label in deferred:
+        print(f"  ⏳ {cand['title']} ({cand.get('year')}) → tracking — badge: “{label}” (waiting on VOD/streaming)")
     for cand in rejected:
         print(f"  ⨯  {cand['title']} ({cand.get('year')})")
 
@@ -219,6 +365,11 @@ def main():
                 print(f"Marked {n} reissue(s) not-slop (is_slop=false).")
             except Exception as e:
                 print(f"  ⚠ not-slop marking failed: {e}")
+
+    # Defer: intake into the tracking DB so normal discovery surfaces the film when its
+    # VOD/streaming release lands — same rails as every other tracked film.
+    if deferred:
+        _intake_deferred(deferred)
 
     # Persist candidate queue
     data['last_confirmed'] = datetime.datetime.now().isoformat()
