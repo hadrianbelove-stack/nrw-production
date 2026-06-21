@@ -22,6 +22,10 @@ Sub Init()
     m.errorGroup = m.top.FindNode("errorGroup")
     m.trailersButton = m.top.FindNode("trailersButton")
     m.detailScreen = m.top.FindNode("detailScreen")
+    m.searchScreen = m.top.FindNode("searchScreen")
+    m.searchButton = m.top.FindNode("searchButton")
+    m.searchButtonBg = m.top.FindNode("searchButtonBg")
+    m.searchButtonLabel = m.top.FindNode("searchButtonLabel")
 
     ' State
     m.allMovies = []
@@ -33,12 +37,25 @@ Sub Init()
     m.showHighlightsOnly = false
     m.itemStrips = []
     m.dateStripColor = "0x00D4AAFF"
-    m.focusedArea = "grid"  ' "filter", "grid", or "detail"
+    m.focusedArea = "grid"  ' "filter", "grid", "detail", or "search"
+    m.detailFromSearch = false  ' track so closing detail returns to search, not the wall
+
+    ' Infinite scroll: render the wall a page of date-sections at a time and append
+    ' more as focus nears the end. Append-only keeps grid focus stable (removing or
+    ' reordering items is what breaks Roku focus; adding below the user does not).
+    m.PAGE_SIZE = 60          ' target items per appended page (rounds up to a full section)
+    m.LOAD_AHEAD = 10         ' append the next page when focus is within ~2 rows of the end
+    m.grouped = invalid       ' full {dates, groups} for the current filter; source for paging
+    m.gridContent = invalid   ' the live ContentNode we append sections to
+    m.renderedSectionCount = 0
+    m.renderedCount = 0
 
     ' Set up observers
     m.filterBar.ObserveField("selectedFilter", "onFilterSelected")
     m.movieGrid.ObserveField("itemSelected", "onMovieSelected")
     m.movieGrid.ObserveField("itemFocused", "onMovieFocused")
+    m.searchScreen.ObserveField("closed", "onSearchClosed")
+    m.searchScreen.ObserveField("requestDetail", "onSearchRequestDetail")
 
     ' Load movies
     LoadMovies(false)
@@ -93,9 +110,13 @@ Sub onMoviesLoaded()
     m.movieGrid.visible = true
     m.trailersButton.visible = false  ' Trailers card temporarily disabled — set true to restore
 
-    ' Restore last focus position
+    ' Restore last focus position. Render enough pages to cover it first, since the
+    ' wall now starts at a single page.
     lastIndex = GetFocusIndex()
     if lastIndex > 0 AND lastIndex < m.filteredMovies.Count()
+        while m.renderedCount <= lastIndex AND m.renderedSectionCount < m.grouped.dates.Count()
+            BuildNextPage()
+        end while
         m.movieGrid.jumpToItem = lastIndex
     end if
 
@@ -228,8 +249,13 @@ Sub ApplyFilters()
     ' Date strips adopt the single active filter's color (HIGHLIGHTS mode goes crimson)
     UpdateSectionDividerColor()
 
-    ' Build content for grid
-    BuildGridContent(grouped)
+    ' Build the first page of grid content (rest is appended on scroll — see BuildNextPage)
+    m.grouped = grouped
+    m.gridContent = CreateObject("roSGNode", "ContentNode")
+    m.renderedSectionCount = 0
+    m.renderedCount = 0
+    BuildNextPage()
+    m.movieGrid.content = m.gridContent
 
     ' Sync the heads-up banner to the focused (or first) item
     UpdateDateHud(m.movieGrid.itemFocused)
@@ -307,11 +333,11 @@ Sub UpdateDateHud(index as Integer)
     m.dateHudDay.text = day
     m.dateHudRest.text = rest
     if rest = ""
-        m.dateHudDay.width = 1780
+        m.dateHudDay.width = 1720
         m.dateHudDay.horizAlign = "center"
         m.dateHudRest.visible = false
     else
-        m.dateHudDay.width = 876
+        m.dateHudDay.width = 846
         m.dateHudDay.horizAlign = "right"
         m.dateHudRest.visible = true
     end if
@@ -334,18 +360,24 @@ Sub UpdateDateHud(index as Integer)
 End Sub
 
 ' ============================================================================
-' Build Grid Content — date groups become native MarkupGrid sections, whose
-' dividers render as full-width strips (label + line) instead of poster cells
+' Build Next Page — append whole date-sections (label strip + poster cells) to the
+' live grid content until this page hits PAGE_SIZE items. Pages always end on a
+' section boundary so appending never touches an already-rendered section (the safe
+' grid op). Each date group becomes one MarkupGrid SECTION; its divider renders as a
+' full-width strip. m.renderedCount tracks how many items map onto m.filteredMovies.
 ' ============================================================================
-Sub BuildGridContent(groupedData as Object)
-    content = CreateObject("roSGNode", "ContentNode")
+Sub BuildNextPage()
+    if m.grouped = invalid OR m.gridContent = invalid then return
+    dates = m.grouped.dates
+    addedThisPage = 0
 
-    for each dateStr in groupedData.dates
-        section = content.CreateChild("ContentNode")
+    while m.renderedSectionCount < dates.Count() AND addedThisPage < m.PAGE_SIZE
+        dateStr = dates[m.renderedSectionCount]
+        section = m.gridContent.CreateChild("ContentNode")
         section.contentType = "SECTION"
         section.title = FormatSectionTitle(dateStr)
 
-        for each movie in groupedData.groups[dateStr]
+        for each movie in m.grouped.groups[dateStr]
             cardTitle = movie.title
             if movie.display_title <> invalid AND movie.display_title <> ""
                 cardTitle = movie.display_title
@@ -356,10 +388,12 @@ Sub BuildGridContent(groupedData as Object)
                 title: cardTitle
                 posterUrl: movie.poster
             })
+            addedThisPage = addedThisPage + 1
+            m.renderedCount = m.renderedCount + 1
         end for
-    end for
 
-    m.movieGrid.content = content
+        m.renderedSectionCount = m.renderedSectionCount + 1
+    end while
 End Sub
 
 ' ============================================================================
@@ -525,14 +559,29 @@ End Sub
 ' Movie Focused Callback
 ' ============================================================================
 Sub onMovieFocused()
-    UpdateDateHud(m.movieGrid.itemFocused)
+    idx = m.movieGrid.itemFocused
+    UpdateDateHud(idx)
+
+    ' Infinite scroll: when focus reaches within LOAD_AHEAD of the last rendered item,
+    ' append the next page. Loops in case a single page doesn't clear the threshold.
+    if idx >= 0
+        while idx >= m.renderedCount - m.LOAD_AHEAD AND m.renderedSectionCount < m.grouped.dates.Count()
+            BuildNextPage()
+        end while
+    end if
 End Sub
 
 ' ============================================================================
-' Show Detail Screen
+' Show Detail Screen (from the wall — uses the filtered wall list)
 ' ============================================================================
 Sub ShowDetailScreen(index as Integer)
-    m.detailScreen.movies = m.filteredMovies
+    ShowDetailScreenWith(m.filteredMovies, index)
+End Sub
+
+' Show detail over an arbitrary movie list (wall or search results), so the
+' detail screen's prev/next chevrons walk that same list.
+Sub ShowDetailScreenWith(movies as Object, index as Integer)
+    m.detailScreen.movies = movies
     m.detailScreen.currentIndex = index
     m.detailScreen.visible = true
     m.detailScreen.SetFocus(true)
@@ -544,12 +593,58 @@ Sub ShowDetailScreen(index as Integer)
 End Sub
 
 ' ============================================================================
-' Detail Screen Closed
+' Detail Screen Closed — return to search if that's where we came from
 ' ============================================================================
 Sub onDetailClosed()
     m.detailScreen.visible = false
+    if m.detailFromSearch
+        m.detailFromSearch = false
+        m.focusedArea = "search"
+        m.searchScreen.reactivate = true
+    else
+        m.movieGrid.SetFocus(true)
+        m.focusedArea = "grid"
+    end if
+End Sub
+
+' ============================================================================
+' Search overlay: open / close / open-detail-from-result
+' ============================================================================
+Sub OpenSearch()
+    m.searchScreen.allMovies = m.allMovies
+    m.searchScreen.visible = true
+    m.searchScreen.SetFocus(true)
+    m.focusedArea = "search"
+End Sub
+
+Sub onSearchClosed()
+    m.searchScreen.visible = false
+    SetSearchButtonActive(false)
     m.movieGrid.SetFocus(true)
     m.focusedArea = "grid"
+End Sub
+
+' Light up the header Search button while the filter row is focused, so the
+' "press ▲ to search" path is discoverable (it's the only way in).
+Sub SetSearchButtonActive(active as Boolean)
+    if m.searchButtonBg = invalid then return
+    if active
+        m.searchButtonBg.color = "0x00D4AAFF"
+        m.searchButtonLabel.text = "▲ Search"
+        m.searchButtonLabel.color = "0x0A0A0AFF"
+    else
+        m.searchButtonBg.color = "0x333333FF"
+        m.searchButtonLabel.text = "Search…"
+        m.searchButtonLabel.color = "0x888888FF"
+    end if
+End Sub
+
+Sub onSearchRequestDetail()
+    if NOT m.searchScreen.requestDetail then return
+    m.searchScreen.requestDetail = false
+    m.detailFromSearch = true
+    ' Detail draws over the (still-visible) search overlay; closing returns to search.
+    ShowDetailScreenWith(m.searchScreen.detailMovies, m.searchScreen.detailIndex)
 End Sub
 
 ' ============================================================================
@@ -606,17 +701,23 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
     end if
 
     ' Handle based on focused area
-    if m.focusedArea = "detail"
-        ' Detail screen handles its own keys
+    if m.focusedArea = "detail" OR m.focusedArea = "search"
+        ' Detail / search overlays handle their own keys
         return false
 
     else if m.focusedArea = "filter"
-        if key = "down"
+        if key = "up"
+            ' Up from the filter row opens Search (the lit-up header button)
+            OpenSearch()
+            return true
+        else if key = "down"
+            SetSearchButtonActive(false)
             m.movieGrid.SetFocus(true)
             m.focusedArea = "grid"
             return true
         else if key = "back"
             ' Go to grid
+            SetSearchButtonActive(false)
             m.movieGrid.SetFocus(true)
             m.focusedArea = "grid"
             return true
@@ -630,6 +731,7 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
                 m.filterBar.SetFocus(true)
                 m.filterBar.hasFocus = true
                 m.focusedArea = "filter"
+                SetSearchButtonActive(true)
                 return true
             end if
         else if key = "back"
@@ -644,6 +746,7 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
             m.filterBar.SetFocus(true)
             m.filterBar.hasFocus = true
             m.focusedArea = "filter"
+            SetSearchButtonActive(true)
             return true
         end if
     end if

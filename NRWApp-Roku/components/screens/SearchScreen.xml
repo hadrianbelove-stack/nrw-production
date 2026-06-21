@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  NRW Search Screen (overlay)
+  On-screen keyboard on the left, live results grid on the right.
+  Matches tvOS SearchScreen.tvos.js: search by title, director, or country.
+  Focus bubbles between keyboard (left) and results (right) at their shared edge.
+-->
+<component name="SearchScreen" extends="Group">
+  <interface>
+    <!-- Input: the full set of movies to search (parent passes m.allMovies) -->
+    <field id="allMovies" type="array" onChange="onAllMoviesChanged" />
+
+    <!-- Output: parent shows its DetailScreen when these fire -->
+    <field id="detailMovies" type="array" />
+    <field id="detailIndex" type="integer" value="0" />
+    <field id="requestDetail" type="boolean" value="false" alwaysNotify="true" />
+
+    <!-- Output: search closed (parent returns focus to the wall) -->
+    <field id="closed" type="boolean" value="false" alwaysNotify="true" />
+
+    <!-- Input: parent pokes this to re-focus the active pane (e.g. after a
+         detail page opened from a result closes and search is shown again). -->
+    <field id="reactivate" type="boolean" value="false" alwaysNotify="true" onChange="onReactivate" />
+  </interface>
+
+  <script type="text/brightscript" uri="SearchScreen.brs" />
+  <script type="text/brightscript" uri="pkg:/source/constants/Colors.brs" />
+  <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
+
+  <children>
+    <!-- Dim full-screen backdrop -->
+    <Rectangle id="searchBg" width="1920" height="1080" color="0x0A0A0AFF" />
+
+    <!-- Title -->
+    <Label id="searchTitle" text="SEARCH"
+      translation="[100, 48]"
+      font="font:LargeBoldSystemFont" color="0xFFFFFFFF" />
+
+    <!-- Result count (beside the title — visible in both modes) -->
+    <Label id="resultCount" text=""
+      translation="[400, 58]"
+      font="font:MediumBoldSystemFont" color="0x00D4AAFF" />
+
+    <!-- Hint (text set per mode in code) -->
+    <Label id="searchHint" text=""
+      translation="[100, 104]"
+      font="font:SmallSystemFont" color="0x888888FF" />
+
+    <!-- On-screen keyboard (TYPE mode only — it spans most of the width) -->
+    <Keyboard id="kbd" translation="[100, 150]" />
+
+    <!-- Results grid (BROWSE mode — hidden while typing, full screen while browsing) -->
+    <MarkupGrid id="resultsGrid"
+      translation="[100, 200]"
+      visible="false"
+      itemComponentName="MovieCard"
+      numColumns="5"
+      itemSize="[328, 516]"
+      itemSpacing="[20, 24]"
+      drawFocusFeedback="false"
+      vertFocusAnimationStyle="floatingFocus" />
+
+    <!-- Empty state -->
+    <Label id="noResults" text=""
+      translation="[100, 200]"
+      width="1400"
+      font="font:MediumSystemFont" color="0xBBBBBBFF"
+      wrap="true" />
+  </children>
+</component>

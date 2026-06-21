@@ -26,8 +26,12 @@
   <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
 
   <children>
-    <!-- Card container (for scaling on focus) -->
-    <LayoutGroup id="cardContainer" layoutDirection="vert" horizAlignment="center">
+    <!-- Card container (for scaling on focus).
+         horizAlignment must be "left": the grid places this card's ORIGIN at the
+         cell's left, and the poster/badges/caption are all authored from x=0. With
+         "center" the LayoutGroup re-centered everything on x=0 (i.e. pushed each
+         card left by half its width), which clipped column 0 off the left edge. -->
+    <LayoutGroup id="cardContainer" layoutDirection="vert" horizAlignment="left">
 
       <!-- Poster container with border -->
       <Group id="posterGroup">

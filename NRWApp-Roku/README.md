@@ -92,6 +92,27 @@ Colors match the web and other apps (from `docs/STYLE_GUIDE.md`):
 - Use Roku's debug console: `telnet <roku-ip>:8085`
 - View logs via BrightScript console
 
+### Live testing loop (no phone / no photos)
+
+Instead of photographing the TV, pull a real screenshot off the dev server and
+drive the app over the network. Two helpers in `../scripts/`:
+
+- `scripts/roku_shot.sh [out.jpg]` — captures the current screen to a JPEG
+  (default `/tmp/roku_shot.jpg`) via the dev server's `plugin_inspect` +
+  `dev.jpg`. Pixel-perfect, no glare.
+- `scripts/roku_key.sh KEY [KEY ...]` — sends d-pad/remote keypresses over ECP
+  (e.g. `Down Down Select`, or `Lit_a` to type a char), then auto-captures a
+  screenshot. `NOSHOT=1` skips the shot.
+
+Both default to `ROKU_IP=192.168.4.53` (DHCP — override with the env var). Dev
+server creds: user `rokudev`, password `2463`. If the IP changed, rescan:
+`for i in $(seq 1 254); do (curl -s -m1 http://192.168.4.$i:8060/query/device-info | grep -qi roku && echo 192.168.4.$i) & done; wait`
+
+Note: `roku_key.sh` needs remote control enabled on the device —
+**Settings → System → Advanced system settings → Control by mobile apps →
+Network access → Permissive**. Without it ECP returns HTTP 403. (Screenshots
+work regardless; that's a separate dev-server endpoint.)
+
 ## Dependencies
 
 No external dependencies - uses only Roku's native SceneGraph framework.

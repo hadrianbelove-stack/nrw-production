@@ -27,7 +27,7 @@
     <!-- Header -->
     <LayoutGroup id="header"
       layoutDirection="horiz"
-      translation="[60, 30]"
+      translation="[100, 48]"
       itemSpacings="[0]">
 
       <!-- Title + slogan -->
@@ -45,10 +45,10 @@
       <!-- Spacer -->
       <Rectangle width="800" height="1" color="0x00000000" />
 
-      <!-- Search button (placeholder) -->
+      <!-- Search button — lights up when the filter row is focused (▲ to open) -->
       <Group id="searchButton">
-        <Rectangle width="200" height="40" color="0x333333FF" />
-        <Label text="Search..."
+        <Rectangle id="searchButtonBg" width="200" height="40" color="0x333333FF" />
+        <Label id="searchButtonLabel" text="Search…"
           width="200"
           height="40"
           horizAlign="center"
@@ -60,7 +60,7 @@
 
     <!-- Filter bar -->
     <FilterBar id="filterBar"
-      translation="[0, 120]" />
+      translation="[0, 132]" />
 
     <!-- Loading indicator -->
     <LayoutGroup id="loadingGroup"
@@ -108,31 +108,31 @@
     </Group>
 
     <!-- Heads-up date banner: neon bar that tracks the focused row's date group -->
-    <Group id="dateHud" translation="[60, 240]" visible="false">
-      <Rectangle id="dateHudTop" width="1780" height="3" color="0x00D4AAFF" />
-      <Rectangle id="dateHudBg" width="1780" height="58" translation="[0, 3]" color="0x08080CF5" />
-      <Label id="dateHudDay" width="876" height="58" translation="[0, 3]"
+    <Group id="dateHud" translation="[100, 240]" visible="false">
+      <Rectangle id="dateHudTop" width="1720" height="3" color="0x00D4AAFF" />
+      <Rectangle id="dateHudBg" width="1720" height="58" translation="[0, 3]" color="0x08080CF5" />
+      <Label id="dateHudDay" width="846" height="58" translation="[0, 3]"
         horizAlign="right" vertAlign="center"
         font="font:MediumBoldSystemFont" color="0x00D4AAFF" />
-      <Label id="dateHudRest" width="876" height="58" translation="[904, 3]"
+      <Label id="dateHudRest" width="846" height="58" translation="[874, 3]"
         horizAlign="left" vertAlign="center"
         font="font:MediumSystemFont" color="0xFFFFFFFF" />
-      <Rectangle id="dateHudBottom" width="1780" height="3" translation="[0, 61]" color="0x00D4AAFF" />
+      <Rectangle id="dateHudBottom" width="1720" height="3" translation="[0, 61]" color="0x00D4AAFF" />
     </Group>
 
     <!-- Movie grid: date groups are sections; dividers render as full-width strips -->
     <MarkupGrid id="movieGrid"
-      translation="[60, 320]"
+      translation="[100, 320]"
       visible="false"
       itemComponentName="MovieCard"
       numColumns="5"
-      itemSize="[344, 516]"
+      itemSize="[328, 516]"
       itemSpacing="[20, 20]"
       sectionDividerFont="font:MediumBoldSystemFont"
       sectionDividerTextColor="0x00D4AAFF"
       sectionDividerHeight="72"
       sectionDividerSpacing="14"
-      sectionDividerMinWidth="1780"
+      sectionDividerMinWidth="1720"
       drawFocusFeedback="false"
       vertFocusAnimationStyle="floatingFocus" />
 
@@ -153,6 +153,10 @@
 
     <!-- Detail screen (overlay) -->
     <DetailScreen id="detailScreen"
+      visible="false" />
+
+    <!-- Search screen (overlay) -->
+    <SearchScreen id="searchScreen"
       visible="false" />
   </children>
 </component>

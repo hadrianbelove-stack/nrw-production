@@ -168,8 +168,8 @@ Sub UpdateFocusIndicator()
         focusedIndex = 0
     end if
 
-    ' Calculate X position
-    xPos = 60  ' Initial offset
+    ' Calculate X position (must match filterRow translation x in FilterBar.xml)
+    xPos = 100  ' Initial offset
     spacing = 12
 
     for i = 0 to focusedIndex - 1

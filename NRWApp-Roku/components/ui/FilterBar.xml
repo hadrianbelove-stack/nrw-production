@@ -38,7 +38,7 @@
     <LayoutGroup id="filterRow"
       layoutDirection="horiz"
       itemSpacings="[12]"
-      translation="[60, 0]">
+      translation="[100, 0]">
 
       <!-- Indie -->
       <Group id="chip_indie">
@@ -153,7 +153,7 @@
     <Rectangle id="focusIndicator"
       height="3"
       color="0x00D4AAFF"
-      translation="[60, 38]"
+      translation="[100, 38]"
       visible="false" />
   </children>
 </component>
