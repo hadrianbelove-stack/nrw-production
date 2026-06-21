@@ -97,9 +97,14 @@ if [ "$CI_DATE" = "$TODAY" ]; then
     ARTIFACT_OK=false
     TMP_ART="$PROJECT_DIR/cache/_ci_artifact"
     rm -rf "$TMP_ART" && mkdir -p "$TMP_ART"
-    RUN_ID=$(gh run list --repo hadrianbelove-stack/nrw-production \
-        --workflow daily-check.yml --status success --limit 1 \
-        --json databaseId -q '.[0].databaseId' 2>>"$LOG")
+    # Find the newest run that actually HAS a non-expired curation-caches
+    # artifact — NOT the newest "successful" run. The daily workflow uploads
+    # this artifact before the commit/push step, so a run can ship a perfectly
+    # good artifact yet still be marked "failure" on a data.json push conflict
+    # (which happens routinely). Filtering on run success would skip those and
+    # needlessly fall back to local generation.
+    RUN_ID=$(gh api "repos/hadrianbelove-stack/nrw-production/actions/artifacts?name=curation-caches&per_page=10" \
+        -q 'first(.artifacts[] | select(.expired==false)).workflow_run.id' 2>>"$LOG")
     if [ -n "$RUN_ID" ] && gh run download "$RUN_ID" \
             --repo hadrianbelove-stack/nrw-production \
             --name curation-caches --dir "$TMP_ART" >> "$LOG" 2>&1; then
