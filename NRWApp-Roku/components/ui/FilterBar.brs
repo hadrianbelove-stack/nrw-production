@@ -1,66 +1,102 @@
 ' ============================================================================
 ' NRW Filter Bar Component
-' BrightScript logic for filter chip row
+' Chips auto-size to their text (bundled Lato), use rounded 9-patch pill
+' backgrounds tinted via blendColor, and show an orange focus ring (tvOS-style).
+' Layout runs from a Timer because the custom font loads async — boundingRect()
+' only reports real text width once the TTF is ready.
 ' ============================================================================
 
 Sub Init()
-    m.filterRow = m.top.FindNode("filterRow")
-    m.focusIndicator = m.top.FindNode("focusIndicator")
+    m.PAD = 22         ' horizontal padding inside a chip
+    m.GAP = 14         ' gap between chips
+    m.CHIP_H = 46      ' chip height
+    m.DIVIDER_W = 2
 
-    ' Filter chip IDs in order
+    m.filterRow = m.top.FindNode("filterRow")
+    m.focusRing = m.top.FindNode("focusRing")
+    m.divider = m.top.FindNode("filterDivider")
+    m.layoutTimer = m.top.FindNode("layoutTimer")
+
     m.filterIds = ["indie", "horror", "action", "comedy", "family", "thriller", "foreign", "documentary", "restorations", "hide_fest", "show_preorders", "slop_free", "show_highlights"]
 
-    ' Chip widths for focus indicator positioning
-    m.chipWidths = {
-        indie: 60
-        horror: 80
-        action: 80
-        comedy: 80
-        family: 80
-        thriller: 80
-        foreign: 80
-        documentary: 60
-        restorations: 90
-        slop_free: 120
-        show_highlights: 110
-        hide_fest: 110
-        show_preorders: 130
-    }
-
-    ' Store chip references
     m.chips = {}
     m.chipBgs = {}
     m.chipLabels = {}
-
     for each filterId in m.filterIds
         m.chips[filterId] = m.top.FindNode("chip_" + filterId)
         m.chipBgs[filterId] = m.top.FindNode("chipBg_" + filterId)
         m.chipLabels[filterId] = m.top.FindNode("chipLabel_" + filterId)
     end for
 
-    ' Get colors
     m.colors = GetColors()
+    m.fonts = Fonts()
+    m.chipX = {}
+    m.chipW = {}
 
-    ' Initial state
+    ' Apply the chip font up front so measurement uses the real metrics
+    for each filterId in m.filterIds
+        m.chipLabels[filterId].font = m.fonts.filterChip
+    end for
+
     UpdateChipStyles()
+    StartLayout()
 End Sub
 
-' ============================================================================
-' Filter Selection Changed
-' ============================================================================
+' Kick the layout timer (used at init and whenever toggle text changes width)
+Sub StartLayout()
+    m.layoutTimer.ObserveField("fire", "LayoutChips")
+    m.layoutTimer.control = "start"
+End Sub
+
 Sub onFilterChanged()
     UpdateChipStyles()
+    StartLayout()   ' toggle labels change text → re-measure widths
 End Sub
 
-' ============================================================================
-' Focus State Changed
-' ============================================================================
 Sub onFocusChanged()
     UpdateFocusIndicator()
 End Sub
 
 ' ============================================================================
-' Update Chip Visual Styles
+' Measure each chip's text and lay the row out left-to-right. Repeats via the
+' timer until the font has loaded (boundingRect width > 1).
+' ============================================================================
+Sub LayoutChips()
+    for each filterId in m.filterIds
+        if m.chipLabels[filterId].boundingRect().width <= 1 then return   ' font not ready; timer fires again
+    end for
+    m.layoutTimer.control = "stop"
+
+    x = 0
+    for each filterId in m.filterIds
+        lbl = m.chipLabels[filterId]
+        bg = m.chipBgs[filterId]
+        tw = Int(lbl.boundingRect().width)
+        bw = tw + 2 * m.PAD
+
+        bg.width = bw
+        bg.height = m.CHIP_H
+        lbl.width = tw
+        lbl.height = m.CHIP_H
+        lbl.translation = [m.PAD, 0]
+        m.chips[filterId].translation = [x, 0]
+
+        m.chipX[filterId] = x
+        m.chipW[filterId] = bw
+        x = x + bw + m.GAP
+
+        ' Insert the divider after the genre chips
+        if filterId = "restorations"
+            m.divider.translation = [x, (m.CHIP_H - 28) / 2]
+            x = x + m.DIVIDER_W + m.GAP
+        end if
+    end for
+
+    UpdateFocusIndicator()
+End Sub
+
+' ============================================================================
+' Chip colors / text (active vs inactive, toggle identity colors)
 ' ============================================================================
 Sub UpdateChipStyles()
     activeFilters = m.top.activeFilters
@@ -73,138 +109,95 @@ Sub UpdateChipStyles()
         chipBg = m.chipBgs[filterId]
         chipLabel = m.chipLabels[filterId]
 
-        ' Slop toggle cycles: free → all → only
         if filterId = "slop_free"
             if slopMode = "free"
-                chipBg.color = "0x00342AFF"
-                chipLabel.color = "0x00D4AAFF"
-                chipLabel.text = "SLOP FREE"
+                chipBg.blendColor = "0x00342AFF" : chipLabel.color = "0x00D4AAFF" : chipLabel.text = "SLOP FREE"
             else if slopMode = "only"
-                chipBg.color = "0x2D1A00FF"
-                chipLabel.color = "0xFF9500FF"
-                chipLabel.text = "SLOP ONLY"
+                chipBg.blendColor = "0x2D1A00FF" : chipLabel.color = "0xFF9500FF" : chipLabel.text = "SLOP ONLY"
             else
-                chipBg.color = "0x0D0D0DFF"
-                chipLabel.color = "0x00D4AA73"
-                chipLabel.text = "ALL"
+                chipBg.blendColor = "0x1A1A1AFF" : chipLabel.color = "0x00D4AA73" : chipLabel.text = "ALL"
             end if
+            chipLabel.font = m.fonts.filterChipActive
             continue for
         end if
 
-        ' Selects toggle: crimson identity color when active (matches banner + strips)
         if filterId = "show_highlights"
             if showHighlights
-                chipBg.color = "0x2D040CFF"
-                chipLabel.color = "0x00D4AAFF"
+                chipBg.blendColor = "0x07261FFF" : chipLabel.color = "0x00D4AAFF"
             else
-                chipBg.color = "0x0D0D0DFF"
-                chipLabel.color = "0x00D4AA73"
+                chipBg.blendColor = "0x1A1A1AFF" : chipLabel.color = "0x00D4AA73"
             end if
+            chipLabel.font = m.fonts.filterChipActive
             continue for
         end if
 
-        ' Fest toggle: amber identity color when active (matches banner + strips)
         if filterId = "hide_fest"
             if hideFest = false
-                chipBg.color = "0x2D1D02FF"
-                chipLabel.color = "0xF59E0BFF"
-                chipLabel.text = "FESTS"
+                chipBg.blendColor = "0x2D1D02FF" : chipLabel.color = "0xF59E0BFF" : chipLabel.text = "FESTS"
             else
-                chipBg.color = "0x0D0D0DFF"
-                chipLabel.color = "0x00D4AA73"
-                chipLabel.text = "NO FEST"
+                chipBg.blendColor = "0x1A1A1AFF" : chipLabel.color = "0x00D4AA73" : chipLabel.text = "NO FEST"
             end if
+            chipLabel.font = m.fonts.filterChipActive
             continue for
         end if
 
-        ' Pre-orders toggle: purple identity color when active (matches banner + strips)
         if filterId = "show_preorders"
             if showPreorders
-                chipBg.color = "0x190C2FFF"
-                chipLabel.color = "0x7C3AEDFF"
-                chipLabel.text = "PRE-ORDERS"
+                chipBg.blendColor = "0x190C2FFF" : chipLabel.color = "0x7C3AEDFF" : chipLabel.text = "PRE-ORDERS"
             else
-                chipBg.color = "0x0D0D0DFF"
-                chipLabel.color = "0x00D4AA73"
-                chipLabel.text = "NO PRE-ORDERS"
+                chipBg.blendColor = "0x1A1A1AFF" : chipLabel.color = "0x00D4AA73" : chipLabel.text = "NO PRE-ORDERS"
             end if
+            chipLabel.font = m.fonts.filterChipActive
             continue for
         end if
 
+        ' Genre chips
         isActive = false
-        ' Check if this filter is in the active set
         for each af in activeFilters
-            if af = filterId
-                isActive = true
-                exit for
-            end if
+            if af = filterId then isActive = true : exit for
         end for
 
         if isActive
-            ' Selected state: teal background, dark text
-            chipBg.color = m.colors.primary
-            chipLabel.color = "0x000000FF"
-        else
-            ' Unselected state: dark background, white text
-            chipBg.color = "0x333333FF"
+            chipBg.blendColor = m.colors.primary
             chipLabel.color = "0xFFFFFFFF"
+            chipLabel.font = m.fonts.filterChipActive
+        else
+            chipBg.blendColor = "0xFFFFFF1A"   ' subtle white fill (matches desktop rgba(255,255,255,0.1))
+            chipLabel.color = "0xFFFFFFFF"
+            chipLabel.font = m.fonts.filterChip
         end if
     end for
-
-    UpdateFocusIndicator()
 End Sub
 
 ' ============================================================================
-' Update Focus Indicator Position
+' Orange focus ring around the focused chip
 ' ============================================================================
 Sub UpdateFocusIndicator()
     if NOT m.top.hasFocus
-        m.focusIndicator.visible = false
+        m.focusRing.visible = false
         return
     end if
 
     focusedIndex = m.top.focusedIndex
-    if focusedIndex < 0 OR focusedIndex >= m.filterIds.Count()
-        focusedIndex = 0
-    end if
+    if focusedIndex < 0 OR focusedIndex >= m.filterIds.Count() then focusedIndex = 0
+    filterId = m.filterIds[focusedIndex]
 
-    ' Calculate X position (must match filterRow translation x in FilterBar.xml)
-    xPos = 100  ' Initial offset
-    spacing = 12
+    if m.chipX[filterId] = invalid then return   ' not laid out yet
 
-    for i = 0 to focusedIndex - 1
-        filterId = m.filterIds[i]
-        xPos = xPos + m.chipWidths[filterId] + spacing
-    end for
-
-    ' Get width of focused chip
-    focusedFilterId = m.filterIds[focusedIndex]
-    indicatorWidth = m.chipWidths[focusedFilterId]
-
-    ' Update focus indicator
-    m.focusIndicator.translation = [xPos, 38]
-    m.focusIndicator.width = indicatorWidth
-    m.focusIndicator.visible = true
-
-    ' Scale focused chip slightly
-    for i = 0 to m.filterIds.Count() - 1
-        filterId = m.filterIds[i]
-        chip = m.chips[filterId]
-        if i = focusedIndex
-            chip.scale = [1.05, 1.05]
-        else
-            chip.scale = [1.0, 1.0]
-        end if
-    end for
+    x = m.chipX[filterId]
+    w = m.chipW[filterId]
+    m.focusRing.blendColor = "0xFF9500FF"   ' tvOS orange focus
+    m.focusRing.width = w + 6
+    m.focusRing.height = m.CHIP_H + 6
+    m.focusRing.translation = [x - 3, -3]
+    m.focusRing.visible = true
 End Sub
 
 ' ============================================================================
 ' Handle Key Events
 ' ============================================================================
 Function OnKeyEvent(key as String, press as Boolean) as Boolean
-    if NOT press
-        return false
-    end if
+    if NOT press then return false
 
     focusedIndex = m.top.focusedIndex
 
@@ -221,11 +214,9 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
             return true
         end if
     else if key = "OK"
-        ' Select the focused filter
         m.top.selectedFilter = m.filterIds[focusedIndex]
         return true
     end if
 
     return false
 End Function
-

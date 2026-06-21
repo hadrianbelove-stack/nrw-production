@@ -639,3 +639,21 @@ Function GetServiceBadgeText(service as String) as String
     ' Return first letter as fallback (of cleaned brand)
     return UCase(Left(CleanServiceName(service), 1))
 End Function
+
+' ============================================================================
+' Rounded-rectangle helper (the "rounded corners" trick)
+' Roku Rectangles can't round corners, so we tint a white rounded-rect 9-patch
+' PNG via Poster.blendColor. One asset, any color/size. radius: "pill" | "rrect".
+' ============================================================================
+Function MakeRoundRect(color as String, w as Integer, h as Integer, radius as String) as Object
+    p = CreateObject("roSGNode", "Poster")
+    if radius = "pill"
+        p.uri = "pkg:/images/ui/pill.9.png"
+    else
+        p.uri = "pkg:/images/ui/rrect.9.png"
+    end if
+    p.blendColor = color
+    p.width = w
+    p.height = h
+    return p
+End Function

@@ -1,159 +1,59 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
   NRW Filter Bar Component
-  Horizontal row of filter chips
-  Matches tvOS FilterSidebar and Android FilterChips
+  Horizontal row of filter chips. Chips auto-size to their text (Lato font via
+  Fonts.brs), backgrounds are rounded 9-patch pills (MakeRoundRect trick), and
+  focus is an orange ring (matches tvOS). Layout is computed in BrightScript
+  after the custom font loads (see LayoutChips), so nothing is hard-sized here.
+  Matches tvOS FilterSidebar and the desktop filter pills.
 -->
 <component name="FilterBar" extends="Group">
   <interface>
-    <!-- Current filter selection (signals which filter was just pressed) -->
     <field id="selectedFilter" type="string" value="" onChange="onFilterChanged" alwaysNotify="true" />
-
-    <!-- Active filters array (multi-select state) -->
     <field id="activeFilters" type="array" value="[]" onChange="onFilterChanged" />
-
-    <!-- Slop mode: "free" | "all" | "only" -->
     <field id="slopMode" type="string" value="free" onChange="onFilterChanged" />
-
-    <!-- Hide virtual screenings toggle state -->
     <field id="hideFest" type="boolean" value="true" onChange="onFilterChanged" />
-
-    <!-- Show pre-orders toggle state -->
     <field id="showPreorders" type="boolean" value="false" onChange="onFilterChanged" />
-
-    <!-- Highlights-only toggle state -->
     <field id="showHighlights" type="boolean" value="false" onChange="onFilterChanged" />
-
-    <!-- Focus -->
     <field id="hasFocus" type="boolean" value="false" onChange="onFocusChanged" />
     <field id="focusedIndex" type="integer" value="0" />
   </interface>
 
   <script type="text/brightscript" uri="FilterBar.brs" />
   <script type="text/brightscript" uri="pkg:/source/constants/Colors.brs" />
+  <script type="text/brightscript" uri="pkg:/source/constants/Fonts.brs" />
   <script type="text/brightscript" uri="pkg:/source/utils/MovieUtils.brs" />
 
   <children>
-    <!-- Filter chips row -->
-    <LayoutGroup id="filterRow"
-      layoutDirection="horiz"
-      itemSpacings="[12]"
-      translation="[100, 0]">
+    <!-- Re-layout timer: fires until the custom font has loaded and labels can
+         be measured, then positions every chip. -->
+    <Timer id="layoutTimer" duration="0.1" repeat="true" />
 
-      <!-- Indie -->
-      <Group id="chip_indie">
-        <Rectangle id="chipBg_indie" width="60" height="36" color="0x333333FF" />
-        <Label id="chipLabel_indie" text="Indie" width="60" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
+    <Group id="filterRow" translation="[100, 0]">
 
-      <!-- Horror -->
-      <Group id="chip_horror">
-        <Rectangle id="chipBg_horror" width="80" height="36" color="0x333333FF" />
-        <Label id="chipLabel_horror" text="Horror" width="80" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
+      <!-- Orange focus ring (behind chips; sized/positioned in BrightScript) -->
+      <Poster id="focusRing" uri="pkg:/images/ui/pill.9.png" visible="false" />
 
-      <!-- Action -->
-      <Group id="chip_action">
-        <Rectangle id="chipBg_action" width="80" height="36" color="0x333333FF" />
-        <Label id="chipLabel_action" text="Action" width="80" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
+      <!-- Genre chips -->
+      <Group id="chip_indie"><Poster id="chipBg_indie" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_indie" text="Indie" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_horror"><Poster id="chipBg_horror" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_horror" text="Horror" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_action"><Poster id="chipBg_action" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_action" text="Action" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_comedy"><Poster id="chipBg_comedy" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_comedy" text="Comedy" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_family"><Poster id="chipBg_family" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_family" text="Family" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_thriller"><Poster id="chipBg_thriller" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_thriller" text="Thriller" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_foreign"><Poster id="chipBg_foreign" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_foreign" text="Foreign" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_documentary"><Poster id="chipBg_documentary" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_documentary" text="Docs" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_restorations"><Poster id="chipBg_restorations" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_restorations" text="Reissues" horizAlign="center" vertAlign="center" /></Group>
 
-      <!-- Comedy -->
-      <Group id="chip_comedy">
-        <Rectangle id="chipBg_comedy" width="80" height="36" color="0x333333FF" />
-        <Label id="chipLabel_comedy" text="Comedy" width="80" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
+      <!-- Divider (repositioned in BrightScript) -->
+      <Rectangle id="filterDivider" width="2" height="28" color="0x444444FF" />
 
-      <!-- Family -->
-      <Group id="chip_family">
-        <Rectangle id="chipBg_family" width="80" height="36" color="0x333333FF" />
-        <Label id="chipLabel_family" text="Family" width="80" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
+      <!-- Toggle chips (text set dynamically in UpdateChipStyles) -->
+      <Group id="chip_hide_fest"><Poster id="chipBg_hide_fest" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_hide_fest" text="NO FEST" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_show_preorders"><Poster id="chipBg_show_preorders" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_show_preorders" text="NO PRE-ORDERS" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_slop_free"><Poster id="chipBg_slop_free" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_slop_free" text="SLOP FREE" horizAlign="center" vertAlign="center" /></Group>
+      <Group id="chip_show_highlights"><Poster id="chipBg_show_highlights" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_show_highlights" text="SELECTS" horizAlign="center" vertAlign="center" /></Group>
 
-      <!-- Thriller -->
-      <Group id="chip_thriller">
-        <Rectangle id="chipBg_thriller" width="80" height="36" color="0x333333FF" />
-        <Label id="chipLabel_thriller" text="Thriller" width="80" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
-
-      <!-- Foreign -->
-      <Group id="chip_foreign">
-        <Rectangle id="chipBg_foreign" width="80" height="36" color="0x333333FF" />
-        <Label id="chipLabel_foreign" text="Foreign" width="80" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
-
-      <!-- Docs -->
-      <Group id="chip_documentary">
-        <Rectangle id="chipBg_documentary" width="60" height="36" color="0x333333FF" />
-        <Label id="chipLabel_documentary" text="Docs" width="60" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
-
-      <!-- Reissues -->
-      <Group id="chip_restorations">
-        <Rectangle id="chipBg_restorations" width="90" height="36" color="0x333333FF" />
-        <Label id="chipLabel_restorations" text="Reissues" width="90" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0xFFFFFFFF" />
-      </Group>
-
-      <!-- Divider -->
-      <Rectangle id="filterDivider" width="1" height="28" color="0x444444FF"
-        translation="[0, 4]" />
-
-      <!-- Fest Toggle: dim = fests hidden (default), teal = fests shown -->
-      <Group id="chip_hide_fest">
-        <Rectangle id="chipBg_hide_fest" width="110" height="36" color="0x0D0D0DFF" />
-        <Label id="chipLabel_hide_fest" text="NO FEST" width="110" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0x00D4AA73" />
-      </Group>
-
-      <!-- Pre-Orders Toggle -->
-      <Group id="chip_show_preorders">
-        <Rectangle id="chipBg_show_preorders" width="130" height="36" color="0x0D0D0DFF" />
-        <Label id="chipLabel_show_preorders" text="NO PRE-ORDERS" width="130" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0x59595959" />
-      </Group>
-
-      <!-- Slop Toggle -->
-      <Group id="chip_slop_free">
-        <Rectangle id="chipBg_slop_free" width="120" height="36" color="0x00342AFF" />
-        <Label id="chipLabel_slop_free" text="SLOP FREE" width="120" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0x00D4AAFF" />
-      </Group>
-
-      <!-- Selects Toggle -->
-      <Group id="chip_show_highlights">
-        <Rectangle id="chipBg_show_highlights" width="110" height="36" color="0x0D0D0DFF" />
-        <Label id="chipLabel_show_highlights" text="SELECTS" width="110" height="36"
-          horizAlign="center" vertAlign="center"
-          font="font:SmallBoldSystemFont" color="0x00D4AA73" />
-      </Group>
-    </LayoutGroup>
-
-    <!-- Focus indicator -->
-    <Rectangle id="focusIndicator"
-      height="3"
-      color="0x00D4AAFF"
-      translation="[100, 38]"
-      visible="false" />
+    </Group>
   </children>
 </component>
