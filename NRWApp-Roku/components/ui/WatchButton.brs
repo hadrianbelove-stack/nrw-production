@@ -216,8 +216,10 @@ Sub UpdateButtonStyle()
     end if
 
     if isFocused
-        ' Brighten on focus — scale handles the visual feedback
+        ' Orange focus ring (tvOS-style) + brighten label
         m.buttonLabel.color = "0xFFFFFFFF"
+        m.buttonBorder.color = "0xFF9500FF"
+        m.buttonBorder.visible = true
     end if
 End Sub
 
