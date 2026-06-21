@@ -4,19 +4,28 @@ Referenced by `.claude/commands/curate.md`. **Read this file once** when you fir
 
 ## Selects table
 ```
-SELECTS — which movies are you vouching for?
+SELECTS — which are you vouching for?  ·  N new arrivals, sorted by notability
 
-| # | Title (Year) | RT | MC | IMDb | Available on | Trailer |
-|---|---|---|---|---|---|---|
-| 1 | [Title (Year)](wiki-url) | 85% | 72 | 7.2 | Netflix | [▶](trailer-url) |
-| 2 | Title (Year) | -- | -- | -- | Amazon, Apple TV | [▶](trailer-url) |
-| 3 | [Title (Year)](wiki-url) | 92% | 80 | 8.0 | MUBI | — |
+| # | Title (Year) | RT | MC | IMDb | Buzz | Available on | ▶ |
+|---|---|---|---|---|---|---|---|
+| 1 | [Title (Year)](wiki-url) | [100%](rt-url) | 78 | 7.0 | 73 | Amazon | [▶](trailer-url) |
+| 2 | [Title (Year)](wiki-url) | [100%](rt-url) | -- | 6.4 | 41 | Netflix | [▶](trailer-url) |
+| 3 | Title (Year) | -- | -- | 9.4* | 8 | MUBI | — |
 
-★ Recommended: 1 (strong RT/MC), 3 (RT 92%, critical darling)
+* fan-voted IMDb on a tiny sample — flagged, not counted as acclaim.
 
-Reply with numbers (e.g. "1, 7, 10") or "skip".
+★ Recommended:
+- **Title** — notable FACTS only: festivals, named awards, distributor/director, recognizable named entities (hyperlinked to Wikipedia). 2–4 per film. No plot, no editorializing ("the clearest…", "a must-see"). If a fact names a person/place/movement a viewer might not know, hyperlink it.
+- …
+
+Reply with numbers (e.g. "1, 3, 5") or "skip".
 ```
-Columns map to the `selects` row: title|year|rt|mc|imdb|services|wiki|trailer. `Available on` = deduped services (`—` if none).
+**Sort by notability** (Buzz + acclaim, descending) — there is no Notability column; the order carries it.
+Columns map to the `selects` row: `title|year|rt|mc|imdb|buzz|services|wiki|trailer|rt_url`.
+- **Title** → `wiki` (plain text if none). **RT %** → `rt_url`. **▶** → `trailer`. `--`/`—` when a field is absent.
+- **Buzz** = 0–100 internet-attention score, emitted by `curate_list.py` from `cache/notability_dossier_SANDBOX.json`. If it shows `--`, the film isn't in the dossier — run `python3 scripts/notability_sandbox.py`, then rebuild the list.
+- **Available on** = deduped services (`—` if none).
+- The **★ Recommended** fact-sheet (festivals/awards/named entities) also comes from the dossier (`films[].acclaim` + `explanation`) — it already web-searched, so do **not** hand-search here.
 
 ## Sections table
 ```

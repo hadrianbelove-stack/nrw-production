@@ -97,7 +97,8 @@ A confirmed reissue then behaves like a normal new arrival — it flows through 
 *(formerly "Staff Picks" — file is still `admin/staff_picks.json`)*
 
 1. Build the list: `curate_list.py --stage selects` (see *Shared blocks*). 0 rows → "Selects: all caught up", go to Stage 2.
-2. Render as **Templates → Selects table**, then add a `★ Recommended:` line with 2–4 picks and a short reason each (scores, notable director, awards, distributor signal). Base recommendations only on data already in the rows — **do not web search here**. If nothing stands out, say so.
+   - The rows carry a **Buzz** score (0–100). If Buzz shows `--` for the candidates, the notability dossier is stale/missing — run `python3 scripts/notability_sandbox.py` first, then rebuild the list so Buzz + the Recommended facts are available.
+2. Render as **Templates → Selects table**, **sorted by notability** (Buzz + acclaim, descending). Fill the `★ Recommended:` block from the dossier (`cache/notability_dossier_SANDBOX.json` → `films[].acclaim` + `explanation`): the genuine finds, **notable facts only** (festivals, named awards, distributor/director), hyperlinking recognizable named entities to Wikipedia — **no plot, no editorializing**. The dossier already web-searched, so **do not hand-search here**. If nothing stands out, say so.
 3. **On reply** (numbers, or "skip"):
    - Read `admin/staff_picks.json`, add the picked IDs (no duplicates), write back.
    - **Drain:** `curate_list.py --mark selects <every shown id>` (picks *and* skips).

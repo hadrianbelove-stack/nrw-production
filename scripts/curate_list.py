@@ -10,7 +10,7 @@ Usage:
   curate_list.py --mark STAGE ID [ID ...]        # watermark films as reviewed
 
 Pipe columns per stage (after a one-line header):
-  selects   i|title|year|rt|mc|imdb|services|wiki|trailer|id
+  selects   i|title|year|rt|mc|imdb|buzz|services|wiki|trailer|rt_url|id
   sections  i|title|year|sections|wiki|id
   slop      i|title|year|slop_status|rt|imdb|trailer|wiki|why|imdb_link|id
   capsule   i|title|year|rt|needs|wiki|trailer|id
@@ -61,6 +61,24 @@ def _services(m):
 def _trailer(m):
     L = m.get("links", {}) or {}
     return L.get("trailer_hosted") or L.get("trailer") or ""
+
+
+_NOTAB = None
+def _buzz(m):
+    """0-100 internet-attention score from the notability dossier (keyed by id).
+    '--' when the film isn't in the dossier yet (run scripts/notability_sandbox.py)."""
+    global _NOTAB
+    if _NOTAB is None:
+        _NOTAB = {}
+        p = os.path.join(os.path.dirname(__file__), "..", "cache", "notability_dossier_SANDBOX.json")
+        try:
+            with open(p) as f:
+                for film in json.load(f).get("films", []):
+                    _NOTAB[str(film.get("id"))] = film.get("buzz_score")
+        except Exception:
+            pass
+    b = _NOTAB.get(str(m.get("id")))
+    return str(b) if b is not None else "--"
 
 
 def _in_window(m, from_date, today):
@@ -143,8 +161,8 @@ def build(stage, window):
             if stage == "selects":
                 row = [str(m.get("id")), m.get("title", ""), str(m.get("year", "?")),
                        str(m.get("rt_score") or "--"), str(m.get("metacritic_score") or "--"),
-                       str(m.get("imdb_rating") or "--"),
-                       ", ".join(_services(m)) or "—", wiki, _trailer(m)]
+                       str(m.get("imdb_rating") or "--"), _buzz(m),
+                       ", ".join(_services(m)) or "—", wiki, _trailer(m), L.get("rt", "") or ""]
             elif stage == "sections":
                 row = [str(m.get("id")), m.get("title", ""), str(m.get("year", "?")),
                        _sections(m), wiki]
