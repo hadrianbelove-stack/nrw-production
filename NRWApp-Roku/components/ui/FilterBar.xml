@@ -30,9 +30,6 @@
 
     <Group id="filterRow" translation="[100, 0]">
 
-      <!-- Orange focus ring (positioned in BrightScript over the focused item) -->
-      <Poster id="focusRing" uri="pkg:/images/ui/pill.9.png" visible="false" />
-
       <!-- Genre chips -->
       <Group id="chip_indie"><Poster id="chipBg_indie" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_indie" text="Indie" horizAlign="center" vertAlign="center" /></Group>
       <Group id="chip_horror"><Poster id="chipBg_horror" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_horror" text="Horror" horizAlign="center" vertAlign="center" /></Group>
@@ -69,6 +66,10 @@
         <Poster id="swTrack_show_highlights" uri="pkg:/images/ui/pill.9.png" />
         <Poster id="swThumb_show_highlights" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
       </Group>
+
+      <!-- Orange focus ring — hollow outline rendered ON TOP of all items
+           (positioned in BrightScript over the focused item). -->
+      <Poster id="focusRing" uri="pkg:/images/ui/ring.9.png" visible="false" />
 
     </Group>
   </children>
