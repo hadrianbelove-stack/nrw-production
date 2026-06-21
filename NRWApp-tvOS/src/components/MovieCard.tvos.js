@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
   restorationCardBadge: {
     position: 'absolute',
     top: 8,
-    left: 8,
+    right: 8,
     backgroundColor: Colors.restoration,
     paddingHorizontal: 6,
     paddingVertical: 3,

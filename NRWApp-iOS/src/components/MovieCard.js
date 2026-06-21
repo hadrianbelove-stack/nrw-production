@@ -326,8 +326,8 @@ const styles = StyleSheet.create({
   },
   restorationBadge: {
     position: 'absolute',
-    bottom: 8,
-    left: 8,
+    top: 8,
+    right: 8,
     backgroundColor: Colors.restoration,
     paddingHorizontal: 6,
     paddingVertical: 2,

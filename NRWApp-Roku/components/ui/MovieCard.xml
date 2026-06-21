@@ -122,18 +122,18 @@
           color="0xFFFFFFFF"
           visible="false" />
 
-        <!-- Restoration badge (top-left) -->
+        <!-- Restoration badge (top-right) -->
         <Rectangle id="restorationBadgeBg"
           width="102"
           height="35"
-          translation="[6, 6]"
+          translation="[212, 6]"
           color="0xC8A951FF"
           visible="false" />
         <Label id="restorationBadgeLabel"
-          text="RESTORED"
+          text="RESTORATION"
           width="102"
           height="35"
-          translation="[6, 6]"
+          translation="[212, 6]"
           horizAlign="center"
           vertAlign="center"
           font="font:SmallBoldSystemFont"
