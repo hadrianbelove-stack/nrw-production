@@ -668,10 +668,10 @@ const NRWMobile = {
         }
         if (movie.filters?.is_restoration) {
             const badge = document.createElement('span');
-            badge.style.cssText = 'position:absolute;top:4px;left:4px;background:#4a7c3f;color:#fff;' +
+            badge.style.cssText = 'position:absolute;top:4px;right:4px;background:#4a7c3f;color:#fff;' +
                 'font-size:0.32rem;font-weight:700;letter-spacing:0.03em;padding:2px 4px;' +
                 'border-radius:2px;text-transform:uppercase;z-index:3;';
-            badge.textContent = (movie.reissue_label || 'RESTORED').toUpperCase();
+            badge.textContent = (movie.reissue_label || 'RESTORATION').toUpperCase();
             badgeTarget.appendChild(badge);
         }
         if (movie.rt_score || movie.imdb_rating) {

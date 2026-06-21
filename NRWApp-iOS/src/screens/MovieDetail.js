@@ -299,7 +299,7 @@ export default function MovieDetail({route}) {
           {/* Restoration badge */}
           {movie.filters?.is_restoration && (
             <View style={styles.restorationBadge}>
-              <Text style={styles.restorationBadgeText}>{(movie.reissue_label || 'RESTORED').toUpperCase()}</Text>
+              <Text style={styles.restorationBadgeText}>{(movie.reissue_label || 'RESTORATION').toUpperCase()}</Text>
             </View>
           )}
         </View>

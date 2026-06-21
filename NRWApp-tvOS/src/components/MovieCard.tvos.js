@@ -321,7 +321,7 @@ const MovieCard = forwardRef(({
               )}
               {(movie.filters?.is_restoration || movie.reissue_label) && (
                 <View style={[styles.restorationCardBadge, { top: 60 }]}>
-                  <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORED'}</Text>
+                  <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORATION'}</Text>
                 </View>
               )}
               {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ NRW SELECT ★</Text></View>}
@@ -346,7 +346,7 @@ const MovieCard = forwardRef(({
               {/* Overlays still apply */}
               {(movie.filters?.is_restoration || movie.reissue_label) && (
                 <View style={[styles.restorationCardBadge, { top: 60 }]}>
-                  <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORED'}</Text>
+                  <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORATION'}</Text>
                 </View>
               )}
               {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ NRW SELECT ★</Text></View>}
@@ -381,7 +381,7 @@ const MovieCard = forwardRef(({
               )}
               {(movie.filters?.is_restoration || movie.reissue_label) && (
                 <View style={styles.restorationCardBadge}>
-                  <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORED'}</Text>
+                  <Text style={styles.restorationCardBadgeText}>{movie.reissue_label?.toUpperCase() || 'RESTORATION'}</Text>
                 </View>
               )}
               {isStaffPick && <View style={styles.featuredStrip}><Text style={styles.featuredStripText}>★ NRW SELECT ★</Text></View>}

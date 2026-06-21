@@ -696,7 +696,7 @@ const NRW = {
             const { html: streamingBadgeHtml, isFrame: hasStreamingFrame, svcClass: streamingSvcClass } = getStreamingBadge(movie);
             const restorationBadge = movie.reissue_label
                 ? `<div class="restoration-badge">${movie.reissue_label.toUpperCase()}</div>`
-                : (movie.filters?.is_restoration ? '<div class="restoration-badge">RESTORED</div>' : '');
+                : (movie.filters?.is_restoration ? '<div class="restoration-badge">RESTORATION</div>' : '');
             const isScreening = movie.filters?.is_virtual_screening;
             const screeningClass = isScreening ? ' screening-movie' : '';
             const festivalName = movie.virtual_screening_info?.screening_name;
@@ -1252,7 +1252,9 @@ const NRW = {
         // Reissue label pill
         const reissueEl = document.getElementById('lightbox-reissue-label');
         if (reissueEl) {
-            const label = movie.reissue_label;
+            // Show the specific label (e.g. "4K RESTORATION"), falling back to a generic
+            // "RESTORATION" pill for restorations without a label — matching the card badge.
+            const label = movie.reissue_label || (movie.filters?.is_restoration ? 'RESTORATION' : '');
             if (label) {
                 reissueEl.textContent = label.toUpperCase();
                 reissueEl.style.display = 'inline-block';

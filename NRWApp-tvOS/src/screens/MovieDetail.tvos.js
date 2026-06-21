@@ -726,7 +726,7 @@ const MovieDetailTvOS = () => {
           {(movie.filters?.is_restoration || movie.reissue_label) && (
             <View style={styles.restorationBadge}>
               <Text style={styles.restorationBadgeText}>
-                {movie.reissue_label?.toUpperCase() || 'RESTORED'}
+                {movie.reissue_label?.toUpperCase() || 'RESTORATION'}
               </Text>
             </View>
           )}

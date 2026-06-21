@@ -744,7 +744,7 @@ header h1 {
 .restoration-badge {
     position: absolute;
     top: 8px;
-    left: 8px;
+    right: 8px;
     padding: 4px 8px;
     border-radius: 10px;
     font-size: 9px;
@@ -754,6 +754,20 @@ header h1 {
     z-index: 5;
     background: var(--svc-restoration);
     color: #000;
+}
+
+/* Reissue/restoration pill inside the lightbox (next to the Select badge).
+   Matches the staff-pick pill shape; uses the restoration service colour. */
+.lightbox-reissue-pill {
+    background: var(--svc-restoration);
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    transform: translateY(2px);
 }
 
 

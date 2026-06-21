@@ -186,7 +186,7 @@ export default function MovieCard({movie, onPress, isFeatured = false, width}) {
         {/* Restoration badge */}
         {movie.filters?.is_restoration && (
           <View style={styles.restorationBadge}>
-            <Text style={styles.restorationText}>{(movie.reissue_label || 'RESTORED').toUpperCase()}</Text>
+            <Text style={styles.restorationText}>{(movie.reissue_label || 'RESTORATION').toUpperCase()}</Text>
           </View>
         )}
 
