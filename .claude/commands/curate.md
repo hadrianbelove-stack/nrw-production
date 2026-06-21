@@ -3,572 +3,234 @@ description: Curate new arrivals — staff picks, sections, slop review, pull qu
 allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 ---
 
-Curate recent arrivals. Runs 5 stages in order (Stage 0 first), each with a user prompt. **State-based and cumulative** — every run shows everything from the **last 7 days** that still needs work (slop unconfirmed / no capsule / no quotes), newest first. There are no "sessions" to resume or finish: skip as many days as you want and the next run simply shows whatever is still outstanding in the window. Nothing goes stale.
+# /curate
 
-**Rhythm (user preference):** always curate **slop films too** — never skip or batch-drop them. Go **straight through from #1** in queue order unless the user redirects. In Stage 4, present each film's **capsule and pull quotes together in the same message** (one film at a time), then move to the next — never capsule-first-wait-then-quotes, and never as separate passes across all films.
+**Flow:** Stage 0 Reissues → 1 Selects → 2 Sections → 3 Slop → 4 Capsule+Quotes. Run in order.
 
-## Arguments — optional Stage 4 slice
+**Rhythm (user preference):** curate **slop films too** — never skip or batch-drop. Go **straight through from #1** in queue order unless the user redirects. In Stage 4, present each film's **capsule and pull quotes together in one message**, one film at a time — never capsule-first-then-quotes, never as separate passes.
 
-`/curate` with **no argument** runs all five stages in order (default — unchanged).
+**State-based, no sessions.** Each run rebuilds from current state. Window = **last 7 days** of `digital_date` (90-day wall is the hard ceiling). Every stage **drains** as films are handled, so each film is shown once then disappears — skip as many days as you want, nothing goes stale. There is no resume logic and no progress file. To change the window, pass `--window N` to the list script.
 
-`/curate` **followed by a number, range, or list** — e.g. `/curate 3`, `/curate 1-3`, `/curate 4,6,9` — is a parallel-window shortcut: **skip Stages 0–3 entirely and go straight to Stage 4**, curating only the requested queue positions. This lets you run several windows at once (`/curate 1-3` in one, `/curate 4-5` in another) and work the next title while a previous one is being saved.
+**How a stage drains:**
+- Stages **1/2/3** mark films in `admin/curate_reviewed.json` (the watermark) — see *Shared blocks → List + drain*.
+- Stage **0** drains its own queue `admin/reissue_candidates.json` (confirm/reject flips status).
+- Stage **4** has no watermark — a film drains when it gets a capsule (`cache/approved_capsules.json`) and a `pull_quotes` key in data.json.
 
-How it resolves:
-1. Build the Stage 4 queue exactly as normal (the script in Stage 4), numbered `#1 … #N`.
-2. Take only the requested positions and **immediately pin them to their titles** — from here on work those titles, not the live numbers, so renumbering in another window can't bump you onto the wrong film.
-3. **Print the pinned slice back** before starting, so overlap between windows is obvious at a glance:
-   ```
-   STAGE 4 (this window) — working #1–3 of 35:
-     #1  The Jealous Bride (2026)
-     #2  Double Happiness (2026)
-     #3  Kraken (2026)
-   ```
-4. Positions are counted against the queue **at launch** — open parallel windows close together so they share the same snapshot, and use the printed titles to confirm no two windows hold the same film.
+**Invocation:**
+- `/curate` (no arg) → all five stages in order.
+- `/curate N` / `N-M` / `N,M,…` (e.g. `3`, `1-3`, `4,6,9`) → **skip Stages 0–3, go straight to Stage 4** for those queue positions. Lets you run parallel windows. See *Stage 4 → Parallel-window slice*.
 
-Out-of-range positions are skipped with a note. Everything else in Stage 4 (presentation, saving, commit) is unchanged.
+---
 
-## Before You Start — pull latest
+## Shared blocks
 
-The daily CI rewrites `data.json` every morning. Start on fresh main so your edits don't conflict:
+Referenced by name throughout. Defined once here.
 
+### COMMIT(files, "msg")
+```bash
+git add <files> && NRW_ALLOW_DATA_COMMIT=1 git commit -m "<msg> APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && NRW_ALLOW_DATA_COMMIT=1 git push origin main))
+```
+`APPROVED: DELETE` clears the line-removal commit hook. If push is rejected, the rebase branch handles it — **never** resolve a data.json conflict by hand (`--ours`/`--theirs` loses transitions; see CLAUDE.md). `cache/*.json` is gitignored — never `git add` it.
+
+### List + drain (`scripts/curate_list.py`)
+One script builds every stage's list (filter + window + watermark live here, not in this file). Output is pipe-delimited rows (`i|||field|||…|||id`) after a one-line header — render as that stage's TEMPLATE.
+```bash
+/usr/bin/python3 scripts/curate_list.py --stage selects|sections|slop|capsule
+```
+If a stage prints 0 rows, report "<stage>: all caught up" and move to the next stage.
+
+**Drain (Stages 1/2/3 only):** after the user replies, mark **every film shown this run** — picks *and* skips, overrides *and* "looks good" all count as reviewed. This is what stops re-showing them next run:
+```bash
+/usr/bin/python3 scripts/curate_list.py --mark selects|sections|slop ID1 ID2 ...
+```
+(`curate_reviewed.json` maps `str(id)` → `{"selects": date, "sections": date, "slop": date}`. A new arrival has no entry, so it still appears.)
+
+### Link rules (every table)
+- **Title** → hyperlink to `movie.links.wikipedia` when present (Stage 3 uses `movie.links.imdb` instead); plain text if absent.
+- **Trailer** → `[▶](url)` using `movie.links.trailer_hosted`, falling back to `movie.links.trailer`; `—` if neither.
+- The list script already emits the wiki/imdb/trailer URLs per row — use them, don't re-derive.
+
+### Templates
+All table/output mockups live in **`.claude/curate_templates.md`** (loaded on demand, not inline). **Read that file once** when you first need to present a table this run, then render the block named in each stage (e.g. *Templates → Selects table*). Slice runs and "all caught up" stages that present nothing never need to read it.
+
+### Before you start — pull latest
+The daily CI rewrites `data.json` every morning. Start on fresh main:
 ```bash
 cd /Users/hadrianbelove/Downloads/nrw-production && git pull origin main
 ```
 
-If any `git push` in this session is rejected (CI or another writer pushed mid-session), run `git pull --rebase origin main` and push again — never resolve a data.json merge by hand (`--ours`/`--theirs` loses transitions; see CLAUDE.md).
-
-## The model — state-based, no sessions
-
-There is **no resume logic and no session/progress file**. Each run rebuilds everything from current state, so a film stays in the queue until it is actually handled — no matter how many days you skip. The rolling window is the **last 7 days** of `digital_date` (the 90-day wall is the hard ceiling). Every stage drains as it's handled, so a film is shown **once** and then not re-shown:
-
-- **Stage 0 (Confirm Reissues)** operates on its own queue, `admin/reissue_candidates.json` (written by intake Pass D), not the 7-day window or `curate_reviewed.json`. It shows every candidate with `status: pending`; confirming or rejecting flips that status, so the queue drains. Independent of the other stages.
-- **Stage 1 (Selects)** operates on in-window arrivals **not yet marked `selects`** in `admin/curate_reviewed.json`. Replying (picks *or* "skip") marks every film shown, so the queue drains.
-- **Stage 2 (Sections)** operates on in-window arrivals **not yet marked `sections`** in `admin/curate_reviewed.json`. Confirming ("looks good" or changes) marks every film shown, so the queue drains.
-- **Stage 3 (Slop)** operates on in-window films **not yet marked `slop`** in `admin/curate_reviewed.json`. The false-negative pass is done once per film; reviewing (confirm or correct) marks it, so the queue drains.
-- **Stage 4 (Capsule + Quotes)** operates on in-window films missing a capsule (`approved_capsules.json`) or missing a `pull_quotes` key.
-
-**`admin/curate_reviewed.json`** is the watermark for Stages 1, 2, and 3 (which otherwise re-show every in-window film each run). It maps `str(movie_id)` → which stages are signed off, e.g. `{"1398655": {"selects": "2026-06-18", "sections": "2026-06-18", "slop": "2026-06-18"}}`. Marking a film as reviewed for a stage = recording the date under its id. A genuinely new arrival has no entry and still appears. (Stage 4 needs no watermark — capsule/quote presence is its own drain.)
-
-To change the window, edit `WINDOW_DAYS` below.
-
-## Candidate List (shared by Stages 1, 2, and 3)
-
-Run this script to build the candidate list. Stages 1, 2, and 3 operate on this exact output — do not re-derive it:
-
-```bash
-/usr/bin/python3 -c "
-import json
-from datetime import date, timedelta
-
-WINDOW_DAYS = 7
-
-data = json.load(open('data.json'))
-today = str(date.today())
-from_date = str(date.today() - timedelta(days=WINDOW_DAYS))
-
-current_year = date.today().year
-candidates = []
-for m in data['movies']:
-    dd = m.get('digital_date', '')
-    if not (from_date <= dd <= today):
-        continue
-    cats = m.get('filters', {})
-    if cats.get('is_restoration'):
-        continue
-    title = m.get('title', '')
-    year = m.get('year', 0) or 0
-    if any(kw in title for kw in ('Remaster', 'Restoration', '4K')) or (year and current_year - int(year) >= 10):
-        continue
-    streaming = [s['service'] for s in m.get('watch_links', {}).get('streaming', [])]
-    vod = [v['service'] for v in m.get('watch_links', {}).get('vod', [])]
-    services = streaming + vod
-    rt = m.get('rt_score') or '--'
-    mc = m.get('metacritic_score') or '--'
-    svc = ', '.join(services) if services else '--'
-    candidates.append((dd, m.get('id'), title, m.get('year','?'), rt, mc, svc))
-
-candidates.sort(key=lambda x: x[0], reverse=True)
-print(f'{len(candidates)} candidate(s) in the last {WINDOW_DAYS} days (since {from_date}):')
-for i, (dd, mid, title, year, rt, mc, svc) in enumerate(candidates, 1):
-    print(f'  {i}. {title} ({year}) — RT:{rt} | MC:{mc} | {svc}  [id:{mid}]')
-"
-```
-
-If the output shows 0 candidates, report "No arrivals in the last 7 days to curate" and stop.
-
-**Note**: Stage 4 (Per-Movie Curation) re-derives its own list from current state (capsule / pull-quote presence) within the same 7-day window — see that stage.
-
 ---
 
-## Stage 0: Confirm Reissues
+## Stage 0 — Confirm Reissues
 
-Old films (original release 10+ years ago) that just got a new theatrical 4K restoration, anniversary re-release, festival revival, or alt cut. Intake **Pass D** finds them and holds them in `admin/reissue_candidates.json` — they do **not** reach the wall until you confirm them here. This stage is independent of the 7-day window and `curate_reviewed.json`; it drains as candidates are confirmed/rejected.
+Old films (original release 10+ years ago) with a new theatrical 4K restoration, anniversary re-release, festival revival, or alt cut. Intake **Pass D** holds them in `admin/reissue_candidates.json`; they reach the wall only when confirmed here. Independent of the 7-day window and the watermark — drains as candidates are confirmed/rejected.
 
-**Step 1 — research any stragglers.** The daily CI pipeline already researches new candidates (orchestrator Phase 1.2), so this is usually a fast no-op that just catches anything collected since the last CI run. Skips candidates already researched:
-
+**1 — research stragglers** (CI already researched the rest in orchestrator Phase 1.2; usually a fast no-op):
 ```bash
 cd /Users/hadrianbelove/Downloads/nrw-production && GEMINI_API_KEY=$(grep -rhoE "GEMINI_API_KEY[=:][^ ]*" .env* 2>/dev/null | head -1 | sed -E 's/.*[=:]//') /usr/bin/python3 pipeline/reissue_research.py
 ```
 
-**Step 2 — show the table** (every pending candidate, pre-sorted by Gemini confidence: 🟢 likely → 🟡 maybe → ⚪ unlikely; ⭐DIST = known reissue label like Kino Lorber/Janus/Criterion):
-
+**2 — show the table** (already link-dense and sorted 🟢 likely → 🟡 maybe → ⚪ unlikely; ⭐DIST = known reissue label like Kino Lorber/Janus/Criterion):
 ```bash
 /usr/bin/python3 scripts/reissue_table.py
 ```
+If it prints "all caught up", move to Stage 1. Otherwise present it as-is and recommend the 🟢/⭐DIST rows. The user replies with row numbers to confirm (and any label edits).
 
-If it prints "all caught up", report that and move to Stage 1. Otherwise present the table to the user as-is (it is already link-dense: 🔍 Google search, 📰 evidence article, W / IMDb / TMDB / ▶ trailer). Recommend the 🟢/⭐DIST rows. The user will reply with the row numbers to confirm (and any label edits).
-
-**Step 3 — apply the user's decision.** Confirm the chosen rows, drain the rest:
-
+**3 — apply the decision:**
 ```bash
-# Example: user said "confirm 1 and 3, custom label on 3"
+# Example: "confirm 1 and 3, custom label on 3"
 /usr/bin/python3 scripts/confirm_reissue.py --confirm 1,3 --label "3=New 4K Restoration" --drain
 ```
+- `--confirm N[,N]` adds those films to the **wall now** (like `/add-movie`: `status=available`, `_added_manually=True`, `_reissue` + badge label), **auto-enriches** (RT/Wikipedia/trailer/links), and marks them **not-slop**. Theatrical-only reissues stay on the wall because `_added_manually` skips the JustWatch revert.
+- `--label "N=Custom"` overrides the suggested badge for a confirmed row.
+- `--drain` marks every other shown candidate rejected. Omit to leave undecided ones pending.
+- `--no-enrich` only for a large batch where you want to defer enrichment (rare).
 
-- `--confirm N[,N]` does the whole thing in one shot: adds those films to the **wall now** (via `add_movie.py`: `status=available`, `_added_manually=True`, into `data.json`) with `_reissue` + badge label, **auto-enriches** them (RT/Wikipedia/trailer/watch links), and marks them **not-slop** (`is_slop=false`). Confirming is an editorial decision to feature the film immediately — like `/add-movie`. A theatrical-only reissue with no digital availability still stays on the wall because `_added_manually` skips the JustWatch revert.
-- `--label "N=Custom"` overrides the suggested badge for a confirmed row (otherwise the suggested label is used).
-- `--drain` marks every other shown pending candidate as rejected so they don't re-appear. Omit `--drain` to leave undecided ones pending for next run.
-- `--no-enrich` only if you're confirming a large batch and want to defer enrichment (rare).
+A confirmed reissue then behaves like a normal new arrival — it flows through Stage 4 like any wall film (only specials: its Reissues section + the not-slop lock). Reissues dated outside the 7-day window won't auto-appear in Stage 4 — curate those on demand with `/capsule` and `/enrich`.
 
-A confirmed reissue is then a **normal new arrival** — it flows through Stage 4 (capsule + quotes) like any wall film; the only special treatment is its Reissues section and the not-slop lock. (Films dated outside the 7-day window won't auto-appear in Stage 4 — curate those on demand with `/capsule` and `/enrich`.)
-
-**Step 4 — commit** the wall + queue (data.json is CI-authoritative, so verify additive before override):
-
-```bash
-git add admin/reissue_candidates.json admin/reissue_labels.json movie_tracking.json data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Confirm Reissues: N added, M rejected APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && NRW_ALLOW_DATA_COMMIT=1 git push origin main))
-```
-
-`data.json` + `movie_tracking.json` are CI-authoritative — before the override, confirm your change is purely additive (the N reissues), losing no CI discoveries/transitions. Then move to Stage 1.
+**4 — commit.** `data.json` + `movie_tracking.json` are CI-authoritative — first confirm your change is purely additive (the N reissues, losing no CI discoveries/transitions), then:
+> COMMIT(`admin/reissue_candidates.json admin/reissue_labels.json movie_tracking.json data.json`, `"Confirm Reissues: N added, M rejected"`)
 
 ---
 
-## Stage 1: Selects (formerly "Staff Picks" — file is still admin/staff_picks.json)
+## Stage 1 — Selects
+*(formerly "Staff Picks" — file is still `admin/staff_picks.json`)*
 
-**Filter first:** show only candidates **not yet marked `selects`** in `admin/curate_reviewed.json`. This script prints the Stage 1 list, already filtered and re-numbered for this run:
-
-```bash
-/usr/bin/python3 -c "
-import json, os
-from datetime import date, timedelta
-WINDOW_DAYS = 7
-data = json.load(open('data.json'))
-today = str(date.today()); from_date = str(date.today() - timedelta(days=WINDOW_DAYS))
-cy = date.today().year
-rev = json.load(open('admin/curate_reviewed.json')) if os.path.exists('admin/curate_reviewed.json') else {}
-rows = []
-for m in data['movies']:
-    dd = m.get('digital_date','')
-    if not (from_date <= dd <= today): continue
-    # Reissues (confirmed Pass D films, _reissue=true) are normal new arrivals — curate them.
-    # Only AUTO-detected restorations are skipped here.
-    if m.get('filters',{}).get('is_restoration') and not m.get('_reissue'): continue
-    t = m.get('title',''); y = m.get('year',0) or 0
-    if not m.get('_reissue') and (any(k in t for k in ('Remaster','Restoration','4K')) or (y and cy-int(y)>=10)): continue
-    if 'selects' in rev.get(str(m.get('id')), {}): continue   # already reviewed
-    L = m.get('links',{})
-    wl = m.get('watch_links',{}) or {}
-    def _aslist(v): return v if isinstance(v,list) else ([v] if v else [])
-    services = []
-    for x in _aslist(wl.get('streaming')) + _aslist(wl.get('vod')):
-        n = x.get('service') if isinstance(x,dict) else str(x)
-        if n and n not in services: services.append(n)   # dedupe, keep order
-    rows.append((dd, m.get('id'), t, m.get('year','?'), m.get('rt_score') or '--',
-                 m.get('metacritic_score') or '--', m.get('imdb_rating') or '--',
-                 ', '.join(services) or '—', L.get('wikipedia','') or '',
-                 L.get('trailer_hosted','') or L.get('trailer','') or ''))
-rows.sort(key=lambda x: x[0], reverse=True)
-print(f'Stage 1 Selects — {len(rows)} unreviewed candidate(s):')
-for i,(dd,mid,t,y,rt,mc,imdb,svc,w,tr) in enumerate(rows,1):
-    print(f'{i}|||{t}|||{y}|||{rt}|||{mc}|||{imdb}|||{svc}|||{w}|||{tr}|||{mid}')
-"
-```
-
-If the script prints 0 candidates, report "Selects: all caught up" and move to Stage 2. Otherwise show a numbered table of the remaining candidates, then recommend 2–4 picks with brief reasoning.
-
-```
-SELECTS — which movies are you vouching for?
-
-| # | Title (Year) | RT | MC | IMDb | Available on | Trailer |
-|---|---|---|---|---|---|---|
-| 1 | [Title (Year)](https://en.wikipedia.org/wiki/...) | 85% | 72 | 7.2 | Netflix | [▶](trailer-url) |
-| 2 | Title (Year) | -- | -- | -- | Amazon, Apple TV | [▶](trailer-url) |
-| 3 | [Title (Year)](https://en.wikipedia.org/wiki/...) | 92% | 80 | 8.0 | MUBI | — |
-
-★ Recommended: 1 (strong RT/MC), 3 (RT 92%, critical darling)
-
-Reply with numbers (e.g. "1, 7, 10") or "skip" to skip.
-```
-
-For each movie row show: title (hyperlinked to its Wikipedia page from `movie.links.wikipedia` when one exists; plain text if absent), year, RT score (or `--`), Metacritic score (or `--`), IMDb rating (`movie.imdb_rating`, or `--`), the **Available on** services (deduped watch-link service names — streaming + VOD, in order; `—` if none), and a Trailer link (`[▶](url)` using `movie.links.trailer_hosted`, falling back to `movie.links.trailer`; `—` if neither exists).
-
-**Recommendations**: After the list, add a `★ Recommended:` line with 2–4 suggested picks and a short reason for each (scores, notable director, awards, distributor quality signal, etc.). Base this only on data already in data.json — do not web search at this step. If nothing stands out, say so.
-
-**On user reply:**
-- Parse the numbers, map to movie IDs
-- Read `admin/staff_picks.json`, add new IDs (avoid duplicates), write back
-- **Mark every film shown this run** (picks *and* non-picks — "skip" still counts as reviewed) as `selects` in `admin/curate_reviewed.json`, using the script below. This is what drains the queue so these films aren't re-shown next run.
-- Commit + push: `git add admin/staff_picks.json admin/curate_reviewed.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Staff picks updated APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`
-
-```bash
-# Pass the str(id) of every film shown in the Stage 1 table (space-separated).
-cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
-import json, os, sys
-from datetime import date
-path = 'admin/curate_reviewed.json'
-rev = json.load(open(path)) if os.path.exists(path) else {}
-for mid in sys.argv[1:]:
-    rev.setdefault(mid, {})['selects'] = str(date.today())
-json.dump(rev, open(path,'w'), indent=2)
-print(f'Marked {len(sys.argv)-1} film(s) selects-reviewed')
-" ID1 ID2 ID3 ...
-```
+1. Build the list: `curate_list.py --stage selects` (see *Shared blocks*). 0 rows → "Selects: all caught up", go to Stage 2.
+2. Render as **Templates → Selects table**, then add a `★ Recommended:` line with 2–4 picks and a short reason each (scores, notable director, awards, distributor signal). Base recommendations only on data already in the rows — **do not web search here**. If nothing stands out, say so.
+3. **On reply** (numbers, or "skip"):
+   - Read `admin/staff_picks.json`, add the picked IDs (no duplicates), write back.
+   - **Drain:** `curate_list.py --mark selects <every shown id>` (picks *and* skips).
+   - COMMIT(`admin/staff_picks.json admin/curate_reviewed.json`, `"Staff picks updated"`)
 
 ---
 
-## Stage 2: Section Review
+## Stage 2 — Sections
 
-**Filter first:** show only candidates **not yet marked `sections`** in `admin/curate_reviewed.json` (same pattern as Stage 1 — swap `'selects'` for `'sections'` in the filter script). If 0 remain, report "Sections: all caught up" and move to Stage 3. Re-number the rest `1…N` for this run.
+1. Build the list: `curate_list.py --stage sections`. 0 rows → "Sections: all caught up", go to Stage 3. The `Sections` column is computed by the script from `movie.filters` (Indie/Foreign/Documentary/Virtual Screening/Restoration) and `movie.genres` (Horror/Action/Comedy/Family/Thriller); `(none)` if no filters. Selects is handled in Stage 1 — not shown here.
+2. Render as **Templates → Sections table**.
+3. **On reply** (changes, or "looks good"):
+   - Studio/indie overrides → read `admin/category_overrides.json`, add entries, write back.
+   - Restoration overrides → read `admin/restorations.json`, add IDs, write back.
+   - **Drain:** `curate_list.py --mark sections <every shown id>`.
+   - COMMIT(the override file(s) changed `+ admin/curate_reviewed.json`, `"Sections updated"`)
 
-Show each remaining candidate with its auto-detected filters (from TMDB genres, language, and distributor data). Review and correct any misses.
-
-Present as a markdown table with columns: `#`, `Title (Year)`, `Sections`. Hyperlink the title to the movie's Wikipedia page if one exists in `movie.links.wikipedia` (or found via WebSearch). If no Wikipedia page, plain text. Categories should all be in the same column so they scan cleanly vertically.
-
-```
-FILTERS — check auto-detected assignments
-
-| # | Title (Year) | Sections |
-|---|--------------|----------|
-| 1 | [Title (Year)](https://en.wikipedia.org/wiki/...) | Studio |
-| 2 | [Title (Year)](https://en.wikipedia.org/wiki/...) | Foreign, Documentary |
-| 3 | Title (Year) | Indie |
-| 4 | Title (Year) | (none) |
-
-Reply with changes (e.g. "2: remove foreign; 4: add indie") or "looks good" to confirm all.
-```
-
-For each movie, show **all active filters** — meaning everything a user could filter by on the site:
-
-- From `movie.filters`: Indie, Foreign, Documentary, Virtual Screening, Restoration (check `is_indie`, `is_foreign`, `is_documentary`, `is_virtual_screening`, `is_restoration`)
-- From `movie.genres`: Horror, Action, Comedy, Family, Thriller (check if genre name appears in the array)
-
-Show as human-readable names. If no filters are active, show "(none)". Selects is handled in Stage 1 — omit it here.
-
-**On user reply:**
-- For studio/indie overrides: read `admin/category_overrides.json`, add entries, write back
-- For restoration overrides: read `admin/restorations.json`, add IDs, write back
-- **Mark every film shown this run** (changes *and* unchanged — "looks good" still counts as reviewed) as `sections` in `admin/curate_reviewed.json` (use the Stage 1 marking script, but set the `'sections'` key instead of `'selects'`). This drains the queue.
-- Commit + push: include `admin/curate_reviewed.json` in the `git add` along with any override file changes.
-
-**Note**: All filters are auto-detected from TMDB data — genres (Comedy, Horror, Action, Thriller), language (Foreign), and distributor rules (Indie, Studio, Documentary). To improve detection logic (e.g. add indie distributor rules), update the pipeline code — not this command.
+**Note:** filters are auto-detected from TMDB (genres, language, distributor rules). To improve detection logic (e.g. new indie-distributor rules), update the **pipeline code** — not this command.
 
 ---
 
-## Stage 3: Slop Review
+## Stage 3 — Slop
 
-**Filter first:** show only candidates **not yet marked `slop`** in `admin/curate_reviewed.json` (same pattern as Stage 1 — filter on a `'slop'` key). This is the false-negative pass done **once per film**: a film you've already reviewed for slop (confirmed or corrected) is not re-shown. If 0 remain, report "Slop: all caught up" and move to Stage 4. Re-number the rest `1…N` for this run.
+The false-negative pass, done **once per film**. Shows **all** remaining candidates (not just slop-flagged ones) so the user can catch misclassifications either way. All films stay on the site regardless — the slop toggle is a view mode, never removal.
 
-Show each remaining candidate in a table so the user can confirm or correct the auto-classifier's slop determinations.
-
-Build the table by reading `movie.is_slop`, `movie._is_slop_guess`, and `movie._slop_reason` from `data.json` for each candidate. Show **all remaining candidates** — not just the ones flagged as slop — so the user can catch false negatives (real movies misclassified as not-slop, or vice versa).
-
-```
-SLOP REVIEW — confirm or correct auto-classifications
-
-| # | Title (Year) | Slop? | RT | IMDb | Trailer | Wiki | Why |
-|---|--------------|-------|----|------|---------|------|-----|
-| 1 | [Title (Year)](imdb-url) | ✅ Not slop | 85% | 7.2 | [▶](trailer-url) | [W](wiki-url) | score:1(good_imdb) |
-| 2 | [Title (Year)](imdb-url) | 🗑 SLOP (auto) | -- | -- | [▶](trailer-url) | — | score:5(no_wiki,no_rt) |
-
-"auto" = classifier made the call. Reply with overrides (e.g. "2: not slop; 5: slop") or "looks good" to confirm all.
-```
-
-**Table column rules:**
-- `Title` — hyperlink to the movie's IMDb page (`movie.links.imdb`); plain text if absent
-- `Slop?` column:
-  - `is_slop=True` + `_is_slop_guess=True` → `🗑 SLOP (auto)`
-  - `is_slop=True` + `_is_slop_guess=False` → `🗑 SLOP (manual)`
-  - `is_slop=False` → `✅ Not slop`
-- `RT` / `IMDb` — `movie.rt_score` and `movie.imdb_rating` (`--` if absent)
-- `Trailer` — clickable `[▶](url)` using `movie.links.trailer_hosted`, falling back to `movie.links.trailer`; `—` if neither exists
-- `Wiki` — clickable `[W](movie.links.wikipedia)` when present; `—` if absent
-- `Why` column: show `_slop_reason` if present; otherwise show RT/MC scores or "no classifier signal"
-
-**Flag contradictions** below the table: any slop-flagged movie that is also a **Select** — a film the user explicitly vouched for but the default slop-free view filters out. Do **not** flag capsules or pull quotes as contradictions: every film gets a capsule and quotes, so they carry no signal about slop and are irrelevant here. (All movies are on the site regardless of slop flag — the toggle is a view mode, never removal.)
-
-**On user reply:**
-
-For each override the user specifies:
-
-1. **Update `data.json`** — set `is_slop` and clear `_is_slop_guess`:
-```bash
-cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
-import json, sys
-title, is_slop_val = sys.argv[1], sys.argv[2] == 'true'
-with open('data.json') as f:
-    data = json.load(f)
-for m in data.get('movies', []):
-    if m.get('title', '').lower() == title.lower():
-        m['is_slop'] = is_slop_val
-        m['_is_slop_guess'] = False
-        break
-with open('data.json', 'w') as f:
-    json.dump(data, f, indent=2, ensure_ascii=False)
-print('done')
-" "MOVIE_TITLE" "true_or_false"
-```
-
-2. **Update `scripts/slop_classifier.py` MANUAL_OVERRIDES** — add a durable entry so rebuilds don't revert it. Read the file, find the `MANUAL_OVERRIDES` dict (around line 22), and add `numeric_int_id: True/False,  # Title`. The numeric ID must be an integer (not a string) — read `movie.id` from data.json and cast to int.
-
-3. **Mark every film shown this run** (overrides *and* "looks good" — confirming the auto-calls still counts as reviewed) as `slop` in `admin/curate_reviewed.json` (use the Stage 1 marking script, but set the `'slop'` key). This is what stops the false-negative pass from re-showing the same films every run.
-
-4. Commit + push after all overrides applied:
-```bash
-git add data.json scripts/slop_classifier.py admin/curate_reviewed.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Slop review APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
-```
-
-Even on "looks good" with no slop changes, still mark the films `slop`-reviewed and commit `admin/curate_reviewed.json` so they drain.
+1. Build the list: `curate_list.py --stage slop`. 0 rows → "Slop: all caught up", go to Stage 4. The script computes the `Slop?` and `Why` columns (`is_slop`/`_is_slop_guess` → `🗑 SLOP (auto)` / `🗑 SLOP (manual)` / `✅ Not slop`; `Why` = `_slop_reason`, or scores, or "no classifier signal").
+2. Render as **Templates → Slop table**. Below it, **flag contradictions:** any slop-flagged film that is also a **Select** (vouched-for but hidden by the default slop-free view). Do **not** flag capsules/quotes — every film has them, so they carry no slop signal.
+3. **On reply** (overrides, or "looks good") — for each override:
+   - **data.json** — set `is_slop`, clear `_is_slop_guess`:
+     ```bash
+     cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
+     import json, sys
+     title, is_slop_val = sys.argv[1], sys.argv[2] == 'true'
+     with open('data.json') as f: data = json.load(f)
+     for m in data.get('movies', []):
+         if m.get('title','').lower() == title.lower():
+             m['is_slop'] = is_slop_val; m['_is_slop_guess'] = False; break
+     with open('data.json','w') as f: json.dump(data, f, indent=2, ensure_ascii=False)
+     print('done')
+     " "MOVIE_TITLE" "true_or_false"
+     ```
+   - **`scripts/slop_classifier.py` MANUAL_OVERRIDES** (~line 22) — add a durable `numeric_int_id: True/False,  # Title` so rebuilds don't revert it. ID must be an **integer** (cast `movie.id`).
+   - **Drain:** `curate_list.py --mark slop <every shown id>` — even on "looks good" with no changes, so they don't re-show.
+   - COMMIT(`data.json scripts/slop_classifier.py admin/curate_reviewed.json`, `"Slop review"`)
 
 ---
 
-## Stage 4: Per-Movie Curation (Capsule + Pull Quotes together)
+## Stage 4 — Capsule + Pull Quotes
 
-Capsules and pull quotes are done together, movie by movie — not as separate passes.
+Capsule and quotes done **together, movie by movie** — not separate passes.
 
-**Find candidates** — state-based, same 7-day window as Stages 1–3 (no watermark). Build the union of:
-- Movies needing a capsule: `digital_date` within the last 7 days, **not** in `cache/approved_capsules.json` by title, not a restoration
-- Movies needing pull quotes: `digital_date` within the last 7 days, **no** `pull_quotes` **key** in `data.json` (check key presence — an empty array `[]` means "reviewed and skipped", not "needs quotes"), not a restoration
+1. Build the list: `curate_list.py --stage capsule`. This window includes films **missing a capsule** (not in `approved_capsules.json` by title) **or** missing a `pull_quotes` key. *(Note: `pull_quotes: []` = reviewed-and-skipped, drains; **no key** = never queued. Not the same.)* 0 rows → "nothing needs capsules or quotes in the last 7 days" and finish.
+2. Render the full queue as **Templates → Stage 4 queue** (numbered checklist, totals, wiki + trailer links + RT). Numbering is for this run only; if the user redirects ("go to #5", "skip to Kraken"), continue from there.
+3. Work each film in order. **Always lead with its position** — title every presentation `#N of TOTAL — Title (Year)`.
 
-```bash
-/usr/bin/python3 -c "
-import json
-from datetime import date, timedelta
-WINDOW_DAYS = 7
-data = json.load(open('data.json'))
-caps = json.load(open('cache/approved_capsules.json'))
-ct = set((c.get('title','') if isinstance(c,dict) else '').lower() for c in caps)
-today = str(date.today()); from_date = str(date.today() - timedelta(days=WINDOW_DAYS))
-rows = []
-for m in data['movies']:
-    dd = m.get('digital_date','') or ''
-    if not (from_date <= dd <= today): continue
-    # Reissues get a capsule + quotes like any new arrival; only auto-restorations are skipped.
-    if m.get('filters',{}).get('is_restoration') and not m.get('_reissue'): continue
-    needs = []
-    if m.get('title','').lower() not in ct: needs.append('capsule')
-    if 'pull_quotes' not in m: needs.append('quotes')
-    if not needs: continue
-    rows.append((dd, str(m.get('id')), m.get('title',''), m.get('year','?'), '+'.join(needs), m.get('rt_score') or '--'))
-rows.sort(key=lambda r: r[0], reverse=True)
-print(f'STAGE 4 — {len(rows)} movie(s) to curate')
-for i,(dd,mid,t,y,needs,rt) in enumerate(rows,1):
-    print(f'  #{i}  {t} ({y})  RT {rt}  — {needs}  [id:{mid}]')
-"
-```
+### Parallel-window slice (only when invoked with a number arg)
+For `/curate 1-3`, `4,6`, etc. — Stages 0–3 were skipped. Build the queue above, keep only the requested positions, **pin them to their titles immediately**, and print **Templates → Stage 4 slice header** instead of the full checklist. From then on work by **title, not live position**, so a parallel window draining films can't shift you onto the wrong one. Skip out-of-range positions with a one-line note. Everything else below is unchanged. (Open parallel windows close together so they share one queue snapshot; use the printed titles to confirm no overlap.)
 
-This list is **rebuilt fresh every run** from current state — there is no persisted queue file. Number the films `#1 … #N` in the printed order for this run only; if the user redirects ("go to #5", "skip to Kraken"), continue from there. A film that's already been handled simply won't appear next run.
+### Step A — Capsule
+1. `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --variants 3 --skip-verify` — the nightly run pre-generates 3 variants into `cache/capsule_cache.json`, so this returns from cache instantly. Films arriving after the nightly run generate live. No `--force` (a cache hit is what makes it fast) unless deliberately regenerating.
+2. **Read `.claude/commands/capsule.md` Step 2** — that file is the single source of truth for the presentation format (movie header, keyword/badge line, three variants with approach labels, FACTOID PRIMER, SUGGESTED LINKS, pick prompt). Use it exactly.
+3. **Do not wait** — go straight to Step B and append this film's quotes in the *same* message. Wait for the user only after both are shown. **Edited text the user pastes IS the final version.**
+4. **After the user replies** (one reply covers capsule *and* quote), if they picked/rewrote the capsule:
+   1. Format: **bold** director + cast names; *italicize* other film titles in the text.
+   2. Pre-embed Wikipedia links (Step A-Links), confirm with user.
+   3. Write final text to `cache/rewrite.txt`.
+   4. `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py approve "TITLE" --file cache/rewrite.txt`
+   5. Write cast wiki links to data.json (Step A-Links).
 
-Print the full queue once before starting, as a numbered checklist with the total. For each film show: **title hyperlinked to its Wikipedia page (`movie.links.wikipedia`) when one exists** (plain text if absent), **a trailer hyperlink (`movie.links.trailer_hosted`, falling back to `movie.links.trailer`)**, and the RT score so standouts are visible.
+### Step A-Links — Wikipedia links (inside Step A)
+**Pass 1 — Cast + Director (silent, auto-approved, NOT shown in SUGGESTED LINKS):** read `movie.links.cast_wiki` and `movie.links.director_wiki`; embed each wherever the name appears in the capsule. No URL → skip silently (many actors lack pages).
 
-```
-STAGE 4 — 35 movies to curate
-  #1  [The Jealous Bride (2026)](wiki-url) · [▶ trailer](trailer-url)   RT --   — capsule+quotes
-  #2  [Double Happiness (2026)](wiki-url) · [▶ trailer](trailer-url)    RT 73%  — capsule+quotes
-  ...
-  #35 Wetiko (2025) · [▶ trailer](trailer-url)                         RT --   — quotes   (no wiki page)
-```
+**Pass 2 — Other named entities (user reviews these):** non-cast/non-director people, places, movements, or works named in the capsule text (a manga creator, historical figure, referenced filmmaker — up to 3). WebSearch each for a Wikipedia page. If none exist, omit SUGGESTED LINKS entirely. Present only Pass 2, as **Templates → Suggested links**.
 
-If no candidates for either: report "nothing needs capsules or quotes in the last 7 days" and finish.
+**Pre-embedding (after the user picks/rewrites):**
+1. Scan the final text for any `**bold**` names not already listed; WebSearch each, add if found.
+2. Embed all links: `**Name**` → `**[Name](url)**`; plain `Name` → `[Name](url)`; name not in text → skip (still save to cast_wiki for the metadata line).
+3. Show the capsule with links visible. Ask: "Approve with these links — or say 'remove [Name]' to drop any." Strip and re-show on removal. On approval, this is final → write `cache/rewrite.txt`.
 
-**If invoked with a queue-slice argument** (see *Arguments* at the top — `/curate 1-3`, `/curate 4,6`, etc.): Stages 0–3 were skipped. Build this queue as above, then keep only the requested positions, **pin them to their titles immediately**, and print the slice header instead of the full checklist:
-
-```
-STAGE 4 (this window) — working #1–3 of 35:
-  #1  The Jealous Bride (2026)
-  #2  Double Happiness (2026)
-  #3  Kraken (2026)
-```
-
-Then curate only those titles, in order, exactly as below. Work by title (not live position) for the rest of the run so a parallel window draining films can't shift you onto the wrong one. Skip any out-of-range position with a one-line note.
-
-**For each movie, in order — always lead with its queue position:**
-
-Every time you present a movie (capsule variants *and* pull quotes), title the section **`#N of TOTAL — Title (Year)`** so the user always sees where they are. The user may redirect at any point — "go to #5", "jump to #5", "skip to Kraken" — in which case continue from that index. Progress isn't tracked in a file: a handled film (capsule written / `pull_quotes` key set) just won't reappear when the list is rebuilt next run.
-
-**Present capsule and pull quotes TOGETHER in the same message** (user preference) — run Step A *and* Step B, then post both in one turn: the three capsule variants + factoid primer + suggested links, immediately followed by that same film's pull quotes. Do **not** wait for the capsule pick before showing the quotes. The user replies to both at once (e.g. "capsule 2, quote 4"). Only then apply/save/commit.
-
-### Step A — Capsule (if needed)
-
-1. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --variants 3 --skip-verify` — the nightly run (`local_daily.sh` Step 5) pre-generates 3 variants into `cache/capsule_cache.json`, so this returns from cache instantly. No `--force`: a cache hit is what makes it fast. If the film arrived after the nightly run and isn't cached, it generates live (same as before). Only add `--force` if you deliberately want to regenerate a cached capsule.
-2. **Read `.claude/commands/capsule.md` Step 2** for the exact presentation format — that file is the single source of truth. Use it exactly: movie header (director/genres/runtime/country/platforms), keyword/badge line, three variants with approach labels, FACTOID PRIMER, SUGGESTED LINKS, pick prompt.
-3. **Do not wait yet** — go straight to Step B and append this film's pull quotes in the *same* message. Wait for the user only after both are shown. **When user provides edited text, that IS the final version.**
-4. **After the user replies** (their reply covers both capsule and quote — see Step B.3), if they picked or rewrote the capsule:
-   1. Apply standard formatting: **bold** the director's name and cast member names; *italicize* titles of other films mentioned in the text
-   2. **Pre-embed Wikipedia links** into the chosen text (see Step A-Links below), then confirm with user before continuing
-   3. Write final approved text to `cache/rewrite.txt`
-   4. Run: `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py approve "TITLE" --file cache/rewrite.txt`
-   5. Write cast wiki links to data.json (see Step A-Links below)
-
-### Step A-Links — Wikipedia Links (runs inside Step A)
-
-**Generating SUGGESTED LINKS (shown below the factoid primer):**
-
-Cast and director Wikipedia links are **auto-approved** — collect them silently for later embedding but do NOT list them in SUGGESTED LINKS for user review.
-
-**Pass 1 — Cast + Director (silent, no user review):**
-- Read `movie.links.cast_wiki` and `movie.links.director_wiki` from data.json.
-- Embed whatever is there wherever their names appear in the capsule text. If a name has no URL, skip it silently — many actors don't have Wikipedia pages.
-
-**Pass 2 — Other named entities in the capsule text (user reviews these):**
-- Identify non-cast/non-director people, places, movements, or works that are named in the capsule text itself (e.g. a manga creator, historical figure, referenced filmmaker). Up to 3.
-- WebSearch each for a Wikipedia page.
-- If none exist, omit the SUGGESTED LINKS section entirely.
-
-Present only Pass 2 results:
-```
-**SUGGESTED LINKS**
-1. [Lucian Freud](https://en.wikipedia.org/wiki/Lucian_Freud) — painter, subject of film
-```
-
-If a person has no Wikipedia page, skip them silently.
-
-**Pre-embedding links (after user picks a variant):**
-
-Once the user picks a variant or provides a rewrite:
-1. **Scan the final capsule text for any `**bold**` names not already in SUGGESTED LINKS.** WebSearch each unlisted bold name for a Wikipedia page and add to the list if found.
-2. Embed ALL links into the text:
-   - Entity name appears as `**bold**` → change to `**[Name](url)**`
-   - Entity name appears as plain text → change to `[Name](url)`
-   - Entity name not in the capsule text → skip (still save to cast_wiki for the metadata line)
-3. Show the modified capsule with links visible in the markdown
-4. Ask: "Approve with these links — or say 'remove [Name]' to drop any."
-5. If user removes any: strip that link, show updated capsule again
-6. When user approves: this is the final text — proceed to write cache/rewrite.txt
-
-**Saving cast wiki links (after approve script runs):**
-
-For each cast member that had a Wikipedia URL (from either data.json or WebSearch), write to `movie.links.cast_wiki` — merging with any existing entries, not overwriting:
-
+**Save cast wiki links (after the approve script runs)** — merge, don't overwrite; cast members only (not director/figures/events — those are text-only links). Encode `(`→`%28`, `)`→`%29` in URLs:
 ```bash
 cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
 import json, sys
 title, cast_wiki_json = sys.argv[1], sys.argv[2]
 cast_wiki = json.loads(cast_wiki_json)
-with open('data.json') as f:
-    data = json.load(f)
+with open('data.json') as f: data = json.load(f)
 movies = data if isinstance(data, list) else data.get('movies', [])
 for m in movies:
-    if m.get('title', '').lower() == title.lower():
+    if m.get('title','').lower() == title.lower():
         m.setdefault('links', {})
-        existing = m['links'].get('cast_wiki', {})
-        existing.update(cast_wiki)
-        m['links']['cast_wiki'] = existing
-        break
-with open('data.json', 'w') as f:
-    json.dump(data, f, indent=2, ensure_ascii=False)
-" "MOVIE_TITLE" '{"Ellie Bamber": "https://...", "Derek Jacobi": "https://..."}'
+        existing = m['links'].get('cast_wiki', {}); existing.update(cast_wiki)
+        m['links']['cast_wiki'] = existing; break
+with open('data.json','w') as f: json.dump(data, f, indent=2, ensure_ascii=False)
+" "MOVIE_TITLE" '{\"Ellie Bamber\": \"https://...\", \"Derek Jacobi\": \"https://...\"}'
 ```
 
-Only include cast members in cast_wiki (not director, historical figures, or events — those are capsule-text links only). Wikipedia URLs with parentheses: encode `(` as `%28` and `)` as `%29`.
+### Step B — Pull Quotes (SAME message as the capsule)
+Append this film's quotes to the message showing its capsule variants (Step A.3) — do **not** wait for the capsule pick. User reviews both and replies at once (e.g. "capsule 2, quote 4").
 
-### Step B — Pull Quotes (in the SAME message as the capsule)
+**⚙ Config:** Letterboxd quotes to show = **10** (max; show all if ≤10).
 
-Append this movie's pull quotes to the same message that shows its capsule variants (see Step A.3) — do **not** wait for the capsule pick first. The user reviews capsule and quotes together and replies to both at once.
-
-**⚙ Configuration** *(change these to adjust output)*
-- Letterboxd quotes to show: **10** (max; show all if 10 or fewer)
-
-**1. Get the quotes — read from cache**
-
-The morning launchagent (`scripts/batch_pull_quotes.py`) scrapes pull quotes for all new arrivals before curation runs. Read from `cache/pull_quotes_combined.json` using the cache key `"{title}_{year}"`.
-
-- If the movie **has quotes in cache**: use them. Do not re-scrape.
-- If the movie is **absent from cache entirely**: show this flag and skip pull quotes for this movie:
-  `⚠ No pull quotes in cache — morning batch may have missed this movie. Check Concerns in tomorrow's launchagent report.`
-
-Do not re-scrape. The morning batch is the canonical source.
-
-**2. Present — critics first, Letterboxd after**
-
-Show **all** RT/critic quotes, then up to **10** Letterboxd quotes (the Configuration number — show all if 10 or fewer). No pre-filtering, no reordering, no ranking markers. For spoiler-protected reviews (text starts with "This review may contain spoilers"), show the review URL as a clickable link so the user can read it: `— @username → [read review](url)`. Format exactly:
-
-```
-[Film Title] PULL QUOTES
-
-**Outlet Name**
-1. *"Quote text here."* — Critic Name, Outlet Name
-
-**Another Outlet**
-2. *"Another quote."* — Critic Name, Another Outlet
-3. *"Third quote from same outlet."* — Critic Name, Another Outlet
-
-**Letterboxd**
-4. *"Letterboxd quote."* — @username
-5. *"Another Letterboxd quote."* — @username
-
-Pick a number — paste a trim — or skip.
-```
-
-- Group RT/critic quotes by outlet; maintain cache order within each section
-- Each RT/critic quote line must show both critic name AND outlet: `— Critic Name, Outlet`
-- Letterboxd quotes: username only (`— @username`), no outlet suffix needed
-- Letterboxd section always comes last
-- All quote text in *italics*
-- **Wrap each quote to ~72 columns** — print via a script using `textwrap.fill` with a hanging indent and the attribution on its own line. The user reads this in the IDE's Bash-output side panel, which does **not** soft-wrap, so long single lines force horizontal scrolling. Use a single `@` for Letterboxd usernames (strip any leading `@` from the cache).
-
-**3. On the user's reply** (one reply covers both capsule and quote, e.g. "capsule 2, quote 4")
-
-Handle the capsule part via Step A.4, and the quote part here:
-
-- Number → use that quote verbatim
-- Pasted text → **that text IS the final version** (never revert to original)
-- "skip" → write `pull_quotes: []` (empty array) to `data.json` for this movie, then commit: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] skipped APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`. An empty array signals "reviewed, nothing selected" and prevents this film from reappearing in the queue. **Remember:** `pull_quotes: []` and no `pull_quotes` key are NOT the same. `[]` = the user reviewed this movie and rejected everything — do not re-queue it. No key = never been through the queue.
-
-**4. Verify the review URL** (for each chosen quote that has a `review_url`)
-
-```bash
-cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
-import sys
-sys.path.insert(0, '.')
-from gemini_scraper.pull_quotes import verify_quote_url
-result = verify_quote_url('REVIEW_URL', 'MOVIE_TITLE', 'CRITIC_NAME')
-print(result)
-"
-```
-
-- `ok` → proceed silently
-- `bad_link` → show inline before saving: `⚠ Review link doesn't appear to be this movie/critic ([url]) — saving quote without URL. Say "keep link" to save it anyway.` Then save with `review_url: null` unless user says "keep link"
-- `error` → show: `⚠ Review link couldn't be loaded ([url]) — saving without URL.` Save with `review_url: null`
-- `no_url` → proceed silently
-
-Run this for each selected quote. If the user selected multiple quotes, verify each one.
-
-**5. Save**
-
-Two writes required — both must happen:
-- `cache/pull_quotes_combined.json`: find the quote entry (by critic + outlet), set `selected: true`, update `text` to the final version (original or trimmed). If no matching entry exists, create one.
-- `data.json` `pull_quotes` array: inject the selected quote as `{text, critic, outlet, review_url}` (include `review_url` if available and verified — null if verification failed)
+1. **Read from cache** — the morning launchagent (`scripts/batch_pull_quotes.py`) scrapes all new arrivals before curation. Read `cache/pull_quotes_combined.json`, key `"{title}_{year}"`.
+   - Has quotes → use them, do not re-scrape.
+   - Absent entirely → show `⚠ No pull quotes in cache — morning batch may have missed this movie. Check Concerns in tomorrow's launchagent report.` and skip quotes for this film.
+   - Never re-scrape; the morning batch is canonical.
+2. **Present** as **Templates → Quotes block** — all RT/critic quotes (grouped by outlet, cache order) then up to 10 Letterboxd. No pre-filtering/ranking. **Wrap each quote to ~72 cols** via a `textwrap.fill` script (hanging indent, attribution on its own line) — the IDE side panel doesn't soft-wrap. Single `@` for Letterboxd usernames. Spoiler-protected reviews (text starts "This review may contain spoilers"): show `— @username → [read review](url)`.
+3. **On reply** (the quote part of the joint reply):
+   - Number → that quote verbatim.
+   - Pasted text → **that IS the final version** (never revert to original).
+   - "skip" → write `pull_quotes: []` to data.json for this film, then COMMIT(`data.json`, `"Pull quotes: [TITLE] skipped"`). `[]` = reviewed/rejected (don't re-queue); **no key** = never queued.
+4. **Verify each chosen quote's `review_url`:**
+   ```bash
+   cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
+   import sys; sys.path.insert(0, '.')
+   from gemini_scraper.pull_quotes import verify_quote_url
+   print(verify_quote_url('REVIEW_URL', 'MOVIE_TITLE', 'CRITIC_NAME'))
+   "
+   ```
+   - `ok` / `no_url` → proceed silently.
+   - `bad_link` → show `⚠ Review link doesn't appear to be this movie/critic ([url]) — saving quote without URL. Say "keep link" to save it anyway.` Save `review_url: null` unless user says keep.
+   - `error` → show `⚠ Review link couldn't be loaded ([url]) — saving without URL.` Save `review_url: null`.
+5. **Save** — both writes:
+   - `cache/pull_quotes_combined.json`: find the entry (critic + outlet), set `selected: true`, set `text` to the final version. Create the entry if none exists.
+   - `data.json` `pull_quotes`: inject `{text, critic, outlet, review_url}` (review_url null if verification failed).
 
 ### Step C — Commit (once per movie, after both steps)
-
-After both capsule and pull quote are resolved for a movie:
-
-- If capsule only: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`
-- If pull quote only: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Pull quotes: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`
-- If both: `git add data.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule + pull quote: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))`
-- If pull quotes skipped (capsule also skipped or not needed): commit the empty `pull_quotes: []` written in Step B rule 3 above
-
-(`cache/*.json` files are gitignored — do not `git add` them.)
+- Capsule only → COMMIT(`data.json`, `"Capsule: [TITLE]"`)
+- Pull quote only → COMMIT(`data.json`, `"Pull quotes: [TITLE]"`)
+- Both → COMMIT(`data.json`, `"Capsule + pull quote: [TITLE]"`)
+- Quotes skipped → the empty `pull_quotes: []` commit from Step B.3 already covers it.
 
 ---
 
 ## Completion
 
-After all 5 stages, report a summary:
-```
-CURATION COMPLETE
-- Reissues: N confirmed, M rejected
-- Staff picks: N added (M total)
-- Sections: N overrides applied
-- Slop review: N overrides (N→slop, N→not slop)
-- Capsules: N written | Pull quotes: N selected
-```
+After all 5 stages, render **Templates → Completion summary**.
