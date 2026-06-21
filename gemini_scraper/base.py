@@ -170,11 +170,15 @@ class GeminiFinderBase:
                     logger.error(f"All {max_attempts} {self._finder_name} attempts failed ({error_type}): {e}")
         return None
 
-    def _generate(self, contents, config=None):
+    def _generate(self, contents, config=None, model=None):
         """Call Gemini generate_content.
 
         All finders should use this instead of calling
         self.client.models.generate_content() directly.
+
+        `model` overrides self.model_name for a single call (e.g. the factoid
+        pass uses gemini-2.5-pro for richer research/notability while the rest
+        of the scraper stays on the default Flash model).
 
         The client carries a 120s request timeout (set in _init_gemini).
         Without it, a request Google never answers hangs forever — this froze
@@ -185,7 +189,7 @@ class GeminiFinderBase:
         if config is None:
             config = self.types.GenerateContentConfig()
         return self.client.models.generate_content(
-            model=self.model_name,
+            model=model or self.model_name,
             contents=contents,
             config=config,
         )

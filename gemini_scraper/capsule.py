@@ -967,7 +967,9 @@ FACTOID PRIMER:"""
                 tools=[self.grounding_tool],
                 temperature=0.5
             )
-            response = self._generate(prompt, config=config)
+            # Factoid + notability research runs on Pro (richer, less prone to
+            # fabricating awards); the rest of the capsule scraper stays on Flash.
+            response = self._generate(prompt, config=config, model='gemini-2.5-pro')
             return response.text.strip() if response.text else None
 
         notability = {}
