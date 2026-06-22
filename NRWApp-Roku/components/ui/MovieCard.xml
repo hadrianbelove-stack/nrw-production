@@ -278,15 +278,15 @@
           translation="[37, 8]"
           blendColor="0x081412FF"
           visible="false" />
-        <Label id="staffPickCardLabel"
-          text="★ NRW SELECT ★"
+        <!-- "★ NRW SELECT ★": baked image (Lato text + vector stars), tinted.
+             Roku's Lato lacks the ★ glyph, so the label is an image instead. -->
+        <Poster id="staffPickCardLabel"
+          uri="pkg:/images/ui/nrw_select.png"
           width="246"
           height="32"
           translation="[37, 8]"
-          horizAlign="center"
-          vertAlign="center"
-          font="font:SmallBoldSystemFont"
-          color="0x00FFBBFF"
+          loadDisplayMode="scaleToFit"
+          blendColor="0x00FFBBFF"
           visible="false" />
       </Group>
 

@@ -52,7 +52,6 @@ Sub Init()
     m.serviceBadge.font = m.fonts.serviceName
     m.serviceBadgeSubtext.font = m.fonts.nowStreaming
     m.directorLabel.font = m.fonts.cardMeta
-    m.staffPickCardLabel.font = m.fonts.selectPill
     m.restorationBadgeLabel.font = m.fonts.restoration
     m.preOrderBadgeLabel.font = m.fonts.restoration
     m.preOrderBadgeDate.font = m.fonts.nowStreaming

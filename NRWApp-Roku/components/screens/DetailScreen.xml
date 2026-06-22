@@ -96,15 +96,15 @@
           translation="[3, 8]"
           color="0x00D4AAFF"
           visible="false" />
-        <Label id="staffPickLabel"
-          text="★ NRW SELECT ★"
+        <!-- "★ NRW SELECT ★" as a baked image (Lato text + vector stars),
+             tinted white over the teal badge. -->
+        <Poster id="staffPickLabel"
+          uri="pkg:/images/ui/nrw_select.png"
           width="600"
           height="40"
           translation="[3, 8]"
-          horizAlign="center"
-          vertAlign="center"
-          font="font:SmallBoldSystemFont"
-          color="0xFFFFFFFF"
+          loadDisplayMode="scaleToFit"
+          blendColor="0xFFFFFFFF"
           visible="false" />
 
         <!-- Restoration badge -->
