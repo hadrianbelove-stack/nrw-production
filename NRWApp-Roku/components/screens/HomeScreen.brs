@@ -113,6 +113,7 @@ Sub onMoviesLoaded()
     m.filterBar.slopMode = m.slopMode
     m.filterBar.hideFest = m.hideFest
     m.filterBar.showHighlights = m.showHighlightsOnly
+    m.filterBar.showPreorders = m.showPreorders
 
     ' Apply initial filter
     ApplyFilters()
