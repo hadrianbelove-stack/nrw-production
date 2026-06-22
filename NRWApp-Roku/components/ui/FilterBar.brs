@@ -1,7 +1,9 @@
 ' ============================================================================
-' NRW Filter Bar
-' Row 1: genre chips (auto-sized rounded pills). Row 2: a bordered toggle module
-' of iOS-style switches (FESTS, PRE-ORDER, SLOP 3-state, SELECTS) matching tvOS.
+' NRW Filter Bar — tvOS layout
+' LEFT: bordered toggle module, 2x2 iOS-style switches (FESTS, PRE-ORDER /
+'       SLOP 3-state, SELECTS). RIGHT: genre pills in two rows.
+' Focus is 2-D spatial (up/down/left/right find the nearest item); at an edge
+' OnKeyEvent returns false so HomeScreen takes over (up=search, down=grid).
 ' Layout runs from a Timer because the bundled font loads async.
 ' ============================================================================
 
@@ -17,24 +19,33 @@ Sub Init()
     m.toggleBoxBg = m.top.FindNode("toggleBoxBg")
     m.layoutTimer = m.top.FindNode("layoutTimer")
 
-    m.genreIds = ["indie", "horror", "action", "comedy", "family", "thriller", "foreign", "documentary", "restorations"]
+    ' Genre rows (two rows, matching tvOS)
+    m.genreRow1 = ["indie", "horror", "action", "comedy", "family"]
+    m.genreRow2 = ["thriller", "foreign", "documentary", "restorations"]
+    m.genreIds = []
+    for each g in m.genreRow1 : m.genreIds.Push(g) : end for
+    for each g in m.genreRow2 : m.genreIds.Push(g) : end for
+
+    ' Toggle 2x2: row1 FESTS/PRE-ORDER, row2 SLOP/SELECTS
+    m.switchRow1 = ["hide_fest", "show_preorders"]
+    m.switchRow2 = ["slop_free", "show_highlights"]
     m.switchIds = ["hide_fest", "show_preorders", "slop_free", "show_highlights"]
+
+    ' Full focus order (index space for the public focusedIndex field)
     m.filterIds = []
-    for each g in m.genreIds : m.filterIds.Push(g) : end for
     for each s in m.switchIds : m.filterIds.Push(s) : end for
+    for each g in m.genreIds : m.filterIds.Push(g) : end for
 
     m.colors = GetColors()
     m.fonts = Fonts()
 
-    ' Accent color per switch (tvOS identity colors)
     m.switchAccent = {
-        hide_fest: "0xF59E0BFF"        ' amber
-        show_preorders: "0x7C3AEDFF"   ' purple
-        slop_free: "0x00D4AAFF"        ' teal (free)
-        show_highlights: "0x00D4AAFF"  ' teal
+        hide_fest: "0xF59E0BFF"
+        show_preorders: "0x7C3AEDFF"
+        slop_free: "0x00D4AAFF"
+        show_highlights: "0x00D4AAFF"
     }
 
-    ' Genre chip nodes
     m.chips = {} : m.chipBgs = {} : m.chipLabels = {}
     for each id in m.genreIds
         m.chips[id] = m.top.FindNode("chip_" + id)
@@ -43,7 +54,6 @@ Sub Init()
         m.chipLabels[id].font = m.fonts.filterChip
     end for
 
-    ' Switch nodes
     m.swLabels = {} : m.swTracks = {} : m.swThumbs = {}
     for each id in m.switchIds
         m.swLabels[id] = m.top.FindNode("swLabel_" + id)
@@ -52,8 +62,9 @@ Sub Init()
         m.swLabels[id].font = m.fonts.filterChipActive
     end for
 
-    m.itemBounds = {}   ' id -> { x, y, w, h } for the focus ring
-    m.swGeom = {}       ' id -> track/thumb geometry for thumb placement
+    m.itemBounds = {}   ' id -> {x,y,w,h}
+    m.itemCenter = {}   ' id -> {x,y}
+    m.swGeom = {}
 
     UpdateChipStyles()
     StartLayout()
@@ -74,8 +85,7 @@ Sub onFocusChanged()
 End Sub
 
 ' ============================================================================
-' Lay out chips (row 1) and the switch module (row 2). Repeats via the timer
-' until the font has loaded (label widths > 1).
+' Lay out the toggle module (left) and the two genre rows (right).
 ' ============================================================================
 Sub LayoutChips()
     for each id in m.genreIds
@@ -86,57 +96,80 @@ Sub LayoutChips()
     end for
     m.layoutTimer.control = "stop"
 
-    ' --- Row 1: genre pills ---
-    x = 0
-    for each id in m.genreIds
-        lbl = m.chipLabels[id]
-        bg = m.chipBgs[id]
-        tw = Int(lbl.boundingRect().width)
-        bw = tw + 2 * m.PAD
-        bg.width = bw : bg.height = m.CHIP_H
-        lbl.width = tw : lbl.height = m.CHIP_H : lbl.translation = [m.PAD, 0]
-        m.chips[id].translation = [x, 0]
-        m.itemBounds[id] = { x: x, y: 0, w: bw, h: m.CHIP_H }
-        x = x + bw + m.GAP
+    ' --- Toggle module (left), 2x2 ---
+    boxPadH = 20 : boxPadV = 12
+    rowH = 42 : rowVGap = 14 : swGap = 26
+    row1Y = boxPadV
+    row2Y = boxPadV + rowH + rowVGap
+
+    row1W = LayoutSwitchRow(m.switchRow1, boxPadH, row1Y, rowH, swGap)
+    row2W = LayoutSwitchRow(m.switchRow2, boxPadH, row2Y, rowH, swGap)
+    innerW = row1W : if row2W > innerW then innerW = row2W
+    boxW = innerW + boxPadH
+    boxH = boxPadV * 2 + rowH * 2 + rowVGap
+    m.toggleBoxBorder.width = boxW : m.toggleBoxBorder.height = boxH
+    m.toggleBoxBg.width = boxW - 2 : m.toggleBoxBg.height = boxH - 2 : m.toggleBoxBg.translation = [1, 1]
+
+    ' --- Genre pills (right), two rows, vertically centered against the box ---
+    genreX0 = boxW + 44
+    chipVGap = 14
+    blockH = m.CHIP_H * 2 + chipVGap
+    gTop = (boxH - blockH) / 2
+    LayoutGenreRow(m.genreRow1, genreX0, gTop)
+    LayoutGenreRow(m.genreRow2, genreX0, gTop + m.CHIP_H + chipVGap)
+
+    ' Centers for spatial nav
+    for each id in m.filterIds
+        b = m.itemBounds[id]
+        m.itemCenter[id] = { x: b.x + b.w / 2, y: b.y + b.h / 2 }
     end for
 
-    ' --- Row 2: toggle module (bordered box + switches) ---
-    boxPadH = 20
-    boxPadV = 12
-    swGap = 30
-    boxH = 42 + 2 * boxPadV   ' tallest track (42) + padding
-    cx = boxPadH
-    for each id in m.switchIds
+    UpdateSwitchVisuals()
+    UpdateFocusIndicator()
+End Sub
+
+' Lay one row of switches; returns the row's right edge (inner width)
+Function LayoutSwitchRow(ids as Object, startX as Integer, rowY as Integer, rowH as Integer, swGap as Integer) as Integer
+    x = startX
+    for each id in ids
         isSlop = (id = "slop_free")
         trackW = 88 : trackH = 42 : thumbSz = 34
         if isSlop
             trackW = 122 : trackH = 32 : thumbSz = 24
         end if
         lbl = m.swLabels[id]
-        lblW = Int(lbl.boundingRect().width)
-        lblH = Int(lbl.boundingRect().height)
         track = m.swTracks[id]
         thumb = m.swThumbs[id]
+        lblW = Int(lbl.boundingRect().width)
+        lblH = Int(lbl.boundingRect().height)
 
         lbl.width = lblW : lbl.height = lblH
-        lbl.translation = [cx, (boxH - lblH) / 2]
-        trackX = cx + lblW + 10
-        trackY = (boxH - trackH) / 2
+        lbl.translation = [x, rowY + (rowH - lblH) / 2]
+        trackX = x + lblW + 8
+        trackY = rowY + (rowH - trackH) / 2
         track.width = trackW : track.height = trackH : track.translation = [trackX, trackY]
         thumb.width = thumbSz : thumb.height = thumbSz
 
-        ' track is the focusable bound (filterRow coords: + toggleBox y offset 62)
-        m.itemBounds[id] = { x: trackX, y: 62 + trackY, w: trackW, h: trackH }
+        m.itemBounds[id] = { x: trackX, y: trackY, w: trackW, h: trackH }
         m.swGeom[id] = { trackX: trackX, trackY: trackY, trackW: trackW, trackH: trackH, thumbSz: thumbSz }
-
-        cx = trackX + trackW + swGap
+        x = trackX + trackW + swGap
     end for
-    boxW = cx - swGap + boxPadH
-    m.toggleBoxBorder.width = boxW : m.toggleBoxBorder.height = boxH
-    m.toggleBoxBg.width = boxW - 2 : m.toggleBoxBg.height = boxH - 2 : m.toggleBoxBg.translation = [1, 1]
+    return x - swGap
+End Function
 
-    UpdateSwitchVisuals()
-    UpdateFocusIndicator()
+Sub LayoutGenreRow(ids as Object, startX as Integer, rowY as Integer)
+    x = startX
+    for each id in ids
+        lbl = m.chipLabels[id]
+        bg = m.chipBgs[id]
+        tw = Int(lbl.boundingRect().width)
+        bw = tw + 2 * m.PAD
+        bg.width = bw : bg.height = m.CHIP_H
+        lbl.width = tw : lbl.height = m.CHIP_H : lbl.translation = [m.PAD, 0]
+        m.chips[id].translation = [x, rowY]
+        m.itemBounds[id] = { x: x, y: rowY, w: bw, h: m.CHIP_H }
+        x = x + bw + m.GAP
+    end for
 End Sub
 
 ' ============================================================================
@@ -144,7 +177,6 @@ End Sub
 ' ============================================================================
 Sub UpdateChipStyles()
     activeFilters = m.top.activeFilters
-
     for each id in m.genreIds
         isActive = false
         for each af in activeFilters
@@ -161,7 +193,6 @@ Sub UpdateChipStyles()
         end if
     end for
 
-    ' SLOP label text changes with state
     slopMode = m.top.slopMode
     if slopMode = "free"
         m.swLabels["slop_free"].text = "SLOP FREE"
@@ -175,16 +206,15 @@ Sub UpdateChipStyles()
 End Sub
 
 ' ============================================================================
-' Switch track colors, thumb positions, label colors
+' Switch visuals
 ' ============================================================================
 Sub UpdateSwitchVisuals()
-    if m.swGeom["hide_fest"] = invalid then return   ' not laid out yet
+    if m.swGeom["hide_fest"] = invalid then return
 
-    SetSwitch("hide_fest", m.top.hideFest = false)        ' ON when fests shown
+    SetSwitch("hide_fest", m.top.hideFest = false)
     SetSwitch("show_preorders", m.top.showPreorders = true)
     SetSwitch("show_highlights", m.top.showHighlights = true)
 
-    ' SLOP 3-state slider
     g = m.swGeom["slop_free"]
     track = m.swTracks["slop_free"]
     thumb = m.swThumbs["slop_free"]
@@ -226,7 +256,7 @@ Sub SetSwitch(id as String, isOn as Boolean)
 End Sub
 
 ' ============================================================================
-' Orange focus ring around the focused item (genre pill or switch track)
+' Orange focus ring (hollow, on top)
 ' ============================================================================
 Sub UpdateFocusIndicator()
     if NOT m.top.hasFocus
@@ -246,27 +276,64 @@ Sub UpdateFocusIndicator()
 End Sub
 
 ' ============================================================================
-' Keys: left/right across all items; OK activates the focused filter/toggle
+' Spatial navigation: find the nearest item in a direction
+' ============================================================================
+Function FindNeighbor(curId as String, dir as String) as Object
+    cur = m.itemCenter[curId]
+    if cur = invalid then return invalid
+    best = invalid : bestScore = 9999999
+    for each id in m.filterIds
+        if id <> curId
+            c = m.itemCenter[id]
+            dx = c.x - cur.x : dy = c.y - cur.y
+            ok = false
+            if dir = "right" AND dx > 6 then ok = true
+            if dir = "left" AND dx < -6 then ok = true
+            if dir = "down" AND dy > 6 then ok = true
+            if dir = "up" AND dy < -6 then ok = true
+            if ok
+                if dir = "left" OR dir = "right"
+                    score = Abs(dx) + Abs(dy) * 4
+                else
+                    score = Abs(dy) + Abs(dx) * 4
+                end if
+                if score < bestScore then bestScore = score : best = id
+            end if
+        end if
+    end for
+    return best
+End Function
+
+Function IndexOfId(id as Object) as Integer
+    for i = 0 to m.filterIds.Count() - 1
+        if m.filterIds[i] = id then return i
+    end for
+    return 0
+End Function
+
+' ============================================================================
+' Keys
 ' ============================================================================
 Function OnKeyEvent(key as String, press as Boolean) as Boolean
     if NOT press then return false
     idx = m.top.focusedIndex
+    if idx < 0 OR idx >= m.filterIds.Count() then idx = 0
+    curId = m.filterIds[idx]
 
-    if key = "left"
-        if idx > 0
-            m.top.focusedIndex = idx - 1
-            UpdateFocusIndicator()
-            return true
-        end if
-    else if key = "right"
-        if idx < m.filterIds.Count() - 1
-            m.top.focusedIndex = idx + 1
-            UpdateFocusIndicator()
-            return true
-        end if
-    else if key = "OK"
-        m.top.selectedFilter = m.filterIds[idx]
+    if key = "OK"
+        m.top.selectedFilter = curId
         return true
     end if
+
+    if key = "left" OR key = "right" OR key = "up" OR key = "down"
+        nb = FindNeighbor(curId, key)
+        if nb <> invalid
+            m.top.focusedIndex = IndexOfId(nb)
+            UpdateFocusIndicator()
+            return true
+        end if
+        return false   ' edge: let HomeScreen handle (up=search, down=grid)
+    end if
+
     return false
 End Function

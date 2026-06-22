@@ -41,8 +41,8 @@
       <Group id="chip_documentary"><Poster id="chipBg_documentary" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_documentary" text="Docs" horizAlign="center" vertAlign="center" /></Group>
       <Group id="chip_restorations"><Poster id="chipBg_restorations" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_restorations" text="Reissues" horizAlign="center" vertAlign="center" /></Group>
 
-      <!-- Toggle module (row 2): bordered box + 4 switches -->
-      <Group id="toggleBox" translation="[0, 62]">
+      <!-- Toggle module (LEFT): bordered box, 2x2 switches (matches tvOS) -->
+      <Group id="toggleBox" translation="[0, 0]">
         <Poster id="toggleBoxBorder" uri="pkg:/images/ui/rrect.9.png" blendColor="0xFFFFFF29" />
         <Poster id="toggleBoxBg" uri="pkg:/images/ui/rrect.9.png" blendColor="0x12121AFF" />
 
