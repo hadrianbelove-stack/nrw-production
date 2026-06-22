@@ -422,7 +422,15 @@ def verify_quote_url(url: str, movie_title: str, critic: str) -> str:
                     pass
                 return "error"
 
-        title_found = any(w in page_text for w in title_words)
+        if title_words:
+            title_found = any(w in page_text for w in title_words)
+        else:
+            # Title has no word >3 chars (e.g. "Eno"). The >3 filter left
+            # nothing to match, which would fail every URL. Fall back to
+            # exact-token matching on the full title — avoids substring
+            # false-positives ("eno" inside "phenomenon").
+            tokens = set(page_text.split())
+            title_found = all(w in tokens for w in _norm(movie_title).split())
         critic_found = any(w in page_text for w in critic_words)
 
         if title_found and critic_found:
