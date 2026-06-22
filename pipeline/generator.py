@@ -394,12 +394,31 @@ class DataGenerator:
             self.logger.debug(f"Type 4 date lookup failed for {movie_id}: {e}")
             return None
 
+    # CJK / Japanese / Korean (+ fullwidth) ranges — NRW does not show this
+    # lettering on any surface, and it renders as tofu boxes on Roku.
+    _CJK_RE = re.compile(
+        r'[ᄀ-ᇿ⺀-⿟　-ヿ㄰-㆏㐀-䶿'
+        r'一-鿿ꥠ-꥿가-퟿豈-﫿︰-﹏＀-￯]'
+    )
+
     @staticmethod
     def _compute_display_title(title, original_title, original_language):
-        """Compute display_title — foreign films always use 'English (Original)' format."""
+        """Compute display_title — foreign films use 'English (Original)', EXCEPT
+        the original is dropped when it's CJK (Chinese/Japanese/Korean), which NRW
+        does not display on any surface. Any residual CJK is stripped too."""
+        cjk = DataGenerator._CJK_RE
         if original_title and original_title != title and original_language != 'en':
-            return f"{title} ({original_title})"
-        return title or ''
+            if cjk.search(original_title):
+                base = title or original_title       # drop the CJK original
+            else:
+                base = f"{title} ({original_title})"
+        else:
+            base = title or ''
+        # Strip any remaining CJK and tidy the empty "()" / doubled spaces left behind
+        base = cjk.sub('', base)
+        base = re.sub(r'[\(\[]\s*[\)\]]', '', base)
+        base = re.sub(r'\s{2,}', ' ', base).strip()
+        return base
 
     def add_movie_to_site_immediately(self, movie_id, movie_data):
         """
