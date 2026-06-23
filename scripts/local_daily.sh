@@ -127,6 +127,13 @@ if [ "$CI_DATE" = "$TODAY" ]; then
         /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
             /usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 3 --skip-verify >> "$LOG" 2>&1 \
             || echo "  WARNING: capsule batch exited non-zero (timeout or error)" >> "$LOG"
+        # Buzz (Selects guesser) — the capsule research above just produced the
+        # facts, so compute it into data.json now (CI does the same after its
+        # capsule step). Normal artifact path needs no local run: the data.json
+        # pulled from CI already carries Buzz.
+        echo "Computing Buzz (Selects guesser)..." >> "$LOG"
+        /usr/bin/python3 scripts/inject_notability.py >> "$LOG" 2>&1 \
+            || echo "  WARNING: Buzz injection exited non-zero" >> "$LOG"
     fi
     echo "  Curation caches ready" >> "$LOG"
 

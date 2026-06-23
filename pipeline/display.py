@@ -12,6 +12,59 @@ import re
 from datetime import datetime, timedelta
 
 
+def inject_notability_into(movies_list):
+    """Attach a 0-100 Buzz score + notability block to every movie that has
+    notability facts cached. Returns the count injected.
+
+    Reuses the capsule factoid pass's `notability` facts (festival/awards/
+    year-end/press_volume) from cache/capsule_cache.json, combined with the
+    record's numeric signals (IMDb votes from enrichment, TMDB popularity,
+    Wikipedia language count). Only touches movies that have notability facts —
+    i.e. recently researched arrivals — so it never web-scans the whole wall.
+
+    Buzz feeds the Selects ("what's supposed to be good") ranking in /curate; it
+    never auto-selects anything and the slop classifier never reads it.
+
+    Module-level so the nightly post-capsule step (scripts/inject_notability.py)
+    can run it standalone on data.json, after the capsule research has produced
+    facts for the day's fresh arrivals — the in-build pass runs too early for them.
+    """
+    from pipeline import notability as notab
+    cap_path = 'cache/capsule_cache.json'
+    if not os.path.exists(cap_path):
+        return 0
+    try:
+        with open(cap_path) as f:
+            cap = json.load(f)
+    except (ValueError, OSError):
+        return 0
+
+    facts = {}
+    for entry in (cap.values() if isinstance(cap, dict) else cap):
+        if isinstance(entry, dict) and entry.get('notability'):
+            key = ((entry.get('title') or '').lower(), str(entry.get('year', '')))
+            facts[key] = entry['notability']
+
+    injected = 0
+    for movie in movies_list:
+        key = ((movie.get('title') or '').lower(), str(movie.get('year', '')))
+        qual = facts.get(key)
+        if not qual:
+            continue
+        # _wiki_language_count is set during enrichment (network stays out of
+        # the display pass); read it as-is, None is fine — buzz tolerates it.
+        if movie.get('_tmdb_popularity') is None:
+            movie['_tmdb_popularity'] = movie.get('popularity')
+        block = notab.build(movie, qual)
+        movie['buzz_score'] = block['buzz_score']
+        movie['notability'] = block
+        injected += 1
+
+    if injected:
+        print(f"\U0001f4ca Injected notability (Buzz) for {injected} movies")
+    return injected
+
+
 class DisplayGenerator:
     """Prepares movies for final display output in data.json.
 
@@ -128,45 +181,11 @@ class DisplayGenerator:
     def inject_notability(self, movies_list):
         """Attach a 0-100 Buzz score + notability block to each movie.
 
-        Reuses the capsule factoid pass's `notability` facts (festival/awards/
-        year-end/press_volume) from the capsule cache, combined with the record's
-        numeric signals (IMDb votes from enrichment, TMDB popularity, Wikipedia
-        language count). Only touches movies that have notability facts — i.e.
-        recently researched arrivals — so it never web-scans the whole wall.
+        Thin wrapper over the module-level inject_notability_into() so the same
+        logic can run both in-build (here) and standalone post-capsule
+        (scripts/inject_notability.py).
         """
-        from pipeline import notability as notab
-        cap_path = 'cache/capsule_cache.json'
-        if not os.path.exists(cap_path):
-            return
-        try:
-            with open(cap_path) as f:
-                cap = json.load(f)
-        except (ValueError, OSError):
-            return
-
-        facts = {}
-        for entry in (cap.values() if isinstance(cap, dict) else cap):
-            if isinstance(entry, dict) and entry.get('notability'):
-                key = ((entry.get('title') or '').lower(), str(entry.get('year', '')))
-                facts[key] = entry['notability']
-
-        injected = 0
-        for movie in movies_list:
-            key = ((movie.get('title') or '').lower(), str(movie.get('year', '')))
-            qual = facts.get(key)
-            if not qual:
-                continue
-            # _wiki_language_count is set during enrichment (network stays out of
-            # the display pass); read it as-is, None is fine — buzz tolerates it.
-            if movie.get('_tmdb_popularity') is None:
-                movie['_tmdb_popularity'] = movie.get('popularity')
-            block = notab.build(movie, qual)
-            movie['buzz_score'] = block['buzz_score']
-            movie['notability'] = block
-            injected += 1
-
-        if injected:
-            print(f"\U0001f4ca Injected notability (Buzz) for {injected} movies")
+        return inject_notability_into(movies_list)
 
     def apply_cached_watch_links(self, movies_list):
         """Apply cached watch links to movies with empty watch_links.

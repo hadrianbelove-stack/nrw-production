@@ -107,6 +107,18 @@ jobs:
           python3 scripts/write_capsule.py --batch --days 7 --variants 3 --skip-verify \
             || echo "Capsule pre-gen failed, continuing..."
 
+      # Compute the Selects-guesser Buzz score now that the capsule research has
+      # produced notability facts for today's fresh arrivals. The in-build pass
+      # ran before those facts existed, so without this step new films would have
+      # no Buzz in /curate until tomorrow. Writes buzz_score into data.json before
+      # the commit step below. Non-critical: never block the publish.
+      - name: Compute Buzz (Selects guesser) for new arrivals
+        if: always()
+        continue-on-error: true
+        run: |
+          python3 scripts/inject_notability.py \
+            || echo "Buzz injection failed, continuing..."
+
       - name: Restore YouTube credentials
         env:
           YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}

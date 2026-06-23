@@ -23,9 +23,9 @@ Reply with numbers (e.g. "1, 3, 5") or "skip".
 **Sort by notability** (Buzz + acclaim, descending) — there is no Notability column; the order carries it.
 Columns map to the `selects` row: `title|year|rt|mc|imdb|buzz|services|wiki|trailer|rt_url`.
 - **Title** → `wiki` (plain text if none). **RT %** → `rt_url`. **▶** → `trailer`. `--`/`—` when a field is absent.
-- **Buzz** = 0–100 internet-attention score, emitted by `curate_list.py` from `cache/notability_dossier_SANDBOX.json`. If it shows `--`, the film isn't in the dossier — run `python3 scripts/notability_sandbox.py`, then rebuild the list.
+- **Buzz** = 0–100 Selects-guesser score, set on each `data.json` record (`buzz_score`) by the overnight notability injection. If it shows `--`, the nightly research didn't reach that film — note it and proceed (a pipeline gap, not curate-time work).
 - **Available on** = deduped services (`—` if none).
-- The **★ Recommended** fact-sheet (festivals/awards/named entities) also comes from the dossier (`films[].acclaim` + `explanation`) — it already web-searched, so do **not** hand-search here.
+- The **★ Recommended** fact-sheet (festivals/awards/named entities) comes from each film's `notability` block in `data.json` (`festival` / `awards` / `yearend_lists`) — already web-searched overnight, so do **not** hand-search here.
 
 ## Sections table
 ```

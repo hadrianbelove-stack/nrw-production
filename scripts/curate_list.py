@@ -63,24 +63,11 @@ def _trailer(m):
     return L.get("trailer_hosted") or L.get("trailer") or ""
 
 
-_NOTAB = None
 def _buzz(m):
-    """0-100 internet-attention score. Prefers the pipeline-set value on the
-    record (display.inject_notability); falls back to the dev sandbox dossier."""
+    """0-100 Selects-guesser score, set on the record by the nightly notability
+    injection (scripts/inject_notability.py). Single source — read-only here.
+    '--' means it wasn't computed; that's a pipeline gap to fix, not curate work."""
     b = m.get("buzz_score")
-    if b is not None:
-        return str(b)
-    global _NOTAB
-    if _NOTAB is None:
-        _NOTAB = {}
-        p = os.path.join(os.path.dirname(__file__), "..", "cache", "notability_dossier_SANDBOX.json")
-        try:
-            with open(p) as f:
-                for film in json.load(f).get("films", []):
-                    _NOTAB[str(film.get("id"))] = film.get("buzz_score")
-        except Exception:
-            pass
-    b = _NOTAB.get(str(m.get("id")))
     return str(b) if b is not None else "--"
 
 
