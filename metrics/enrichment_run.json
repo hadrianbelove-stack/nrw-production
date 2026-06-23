@@ -1,67 +1,52 @@
 {
-  "timestamp": "2026-06-22T22:26:35.958437",
-  "movies_requested": 10,
-  "movies_enriched": 5,
+  "timestamp": "2026-06-23T13:41:58.789207",
+  "movies_requested": 16,
+  "movies_enriched": 11,
   "movies_deferred": 5,
   "deferred_details": [
     {
       "title": "Tuner",
       "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-06-22",
-      "discovered_at": "2026-06-22T20:31:43.207141",
-      "discovery_source": "provider_availability_check",
+      "digital_date": "2026-06-23",
+      "discovered_at": "2026-06-23T12:05:28.775064",
+      "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-22",
+      "first_reverted_at": "2026-06-23",
       "tmdb_platforms": [
         "Amazon Video"
       ],
       "jw_platforms": [
         "Amazon Video"
-      ]
-    },
-    {
-      "title": "The Death of Robin Hood",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-06-22T20:31:44.914651",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-22",
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ],
-      "jw_platforms": [
-        "Fandango At Home"
       ]
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-06-22T20:31:45.972252",
+      "discovered_at": "2026-06-23T12:05:30.839768",
       "discovery_source": "tmdb_type4",
-      "revert_count": 14,
-      "first_reverted_at": "2026-06-22",
+      "revert_count": 15,
+      "first_reverted_at": "2026-06-23",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-06-22T20:31:49.932967",
+      "discovered_at": "2026-06-23T12:05:33.498445",
       "discovery_source": "tmdb_type4",
-      "revert_count": 5,
-      "first_reverted_at": "2026-06-22",
+      "revert_count": 6,
+      "first_reverted_at": "2026-06-23",
       "tmdb_platforms": []
     },
     {
       "title": "Pressure",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-06-16",
-      "discovered_at": "2026-06-22T20:31:53.608283",
+      "discovered_at": "2026-06-23T12:05:36.323438",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-22",
+      "first_reverted_at": "2026-06-23",
       "tmdb_platforms": [
         "Amazon Video"
       ],
@@ -72,31 +57,20 @@
       ]
     },
     {
-      "title": "Round the Decay",
-      "reason": "zero_watch_links",
-      "digital_date": "",
-      "discovered_at": "2026-05-23T10:40:52.109971",
-      "discovery_source": "provider_availability_check",
+      "title": "The Dangers in My Heart: The Movie",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-14",
+      "discovered_at": "2026-06-23T13:10:51.080675",
+      "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-22",
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
-    },
-    {
-      "title": "We Are Pat",
-      "reason": "zero_watch_links",
-      "digital_date": "",
-      "discovered_at": "2026-06-01T15:05:49.485180",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-22",
-      "tmdb_platforms": [
-        "Amazon Video"
+      "first_reverted_at": "2026-06-23",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Barnes & Noble"
       ]
     }
   ],
-  "enrichment_duration_seconds": 409.81,
+  "enrichment_duration_seconds": 744.79,
   "error_details": [],
   "total_errors": 0
 }
