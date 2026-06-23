@@ -264,7 +264,6 @@ def make_stub(m, out_path):
 def main():
     ap = argparse.ArgumentParser(description="Generate per-movie share cards + OG stub pages")
     ap.add_argument("--limit", type=int, default=0, help="only process the first N movies (testing)")
-    ap.add_argument("--skip-cards", action="store_true", help="write stubs only (skip image generation)")
     args = ap.parse_args()
 
     with open(DATA_JSON, encoding="utf-8") as f:
@@ -283,9 +282,8 @@ def main():
         try:
             make_stub(m, os.path.join(STUBS_DIR, f"{mid}.html"))
             stubs += 1
-            if not args.skip_cards:
-                make_card(m, os.path.join(CARDS_DIR, f"{mid}.png"))
-                cards += 1
+            make_card(m, os.path.join(CARDS_DIR, f"{mid}.png"))
+            cards += 1
         except Exception as e:
             errors += 1
             print(f"  ! {mid}: {e}", file=sys.stderr)

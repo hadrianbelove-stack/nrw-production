@@ -809,19 +809,14 @@ const NRWMobile = {
         if (!id) return;
         let idx = this.filteredMovies.findIndex(m => String(m.id) === String(id));
         if (idx === -1) {
-            // Filtered out (slop-hidden / fest / pre-order) — relax the right filter
-            // so a shared link always opens, matching the movie's type.
+            // Filtered out (slop-hidden / fest / pre-order). Surface just THIS one movie
+            // without changing the wall's filter mode (mirrors desktop). The injected
+            // movie is transient — the next applyFilter() rebuild drops it.
             const target = this.allMovies.find(m => String(m.id) === String(id));
             if (!target) return;
-            if (target._is_preorder) {
-                this.showPreorders = true;   // exclusive pre-order view includes it
-            } else {
-                this.slopMode = 'all';       // show slop titles too
-                this.hideFest = false;       // show virtual screenings too
-            }
-            this.applyFilter();
+            this.filteredMovies = [target, ...this.filteredMovies];
             this.buildGrid();
-            idx = this.filteredMovies.findIndex(m => String(m.id) === String(id));
+            idx = 0;
         }
         if (idx !== -1) {
             this.selectMovie(idx);
