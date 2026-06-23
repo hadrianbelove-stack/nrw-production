@@ -280,6 +280,7 @@ export function searchMovies(movies, query) {
 
   return movies.filter(movie => {
     const title = norm(movie.title || '');
+    const origTitle = norm(movie.original_title || '');
     const director = norm(movie.crew?.director || movie.director || '');
     const genres = (movie.genres || []).map(g => norm(g));
     const country = norm(movie.country || '');
@@ -288,6 +289,7 @@ export function searchMovies(movies, query) {
 
     return (
       title.includes(nq) ||
+      origTitle.includes(nq) ||
       director.includes(nq) ||
       genres.some(g => g.includes(nq)) ||
       country.includes(nq) ||

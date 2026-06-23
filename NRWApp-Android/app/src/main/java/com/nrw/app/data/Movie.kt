@@ -9,6 +9,8 @@ import com.nrw.app.util.formatShortDate
 data class Movie(
     val id: String,
     val title: String,
+    @SerializedName("original_title")
+    val originalTitle: String? = null,
     @SerializedName("display_title")
     val displayTitle: String? = null,
     val year: Int? = null,

@@ -179,6 +179,7 @@ class MovieRepository(private val context: Context) {
         val nq = norm(query.trim())
         return movies.filter { movie ->
             val title = norm(movie.title)
+            val origTitle = norm(movie.originalTitle ?: "")
             val director = norm(movie.getDirector() ?: "")
             val genres = movie.genres?.map { norm(it) } ?: emptyList()
             val country = norm(movie.country ?: "")
@@ -186,6 +187,7 @@ class MovieRepository(private val context: Context) {
             val year = movie.year?.toString() ?: ""
 
             title.contains(nq) ||
+                origTitle.contains(nq) ||
                 director.contains(nq) ||
                 genres.any { it.contains(nq) } ||
                 country.contains(nq) ||

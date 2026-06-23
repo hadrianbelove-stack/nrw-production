@@ -111,6 +111,7 @@ Function SearchMovies(query as String) as Object
 
         hay = ""
         if movie.title <> invalid then hay = hay + LCase(movie.title) + " "
+        if movie.original_title <> invalid then hay = hay + LCase(movie.original_title) + " "
         if movie.display_title <> invalid then hay = hay + LCase(movie.display_title) + " "
 
         director = GetDirector(movie)

@@ -46,11 +46,13 @@ const SearchScreen = ({ route }) => {
     const lowerQuery = query.toLowerCase();
     const filtered = movies.filter((movie) => {
       const title = (movie.title || '').toLowerCase();
+      const origTitle = (movie.original_title || '').toLowerCase();
       const director = (movie.crew?.director || movie.director || '').toLowerCase();
       const country = (movie.country || '').toLowerCase();
 
       return (
         title.includes(lowerQuery) ||
+        origTitle.includes(lowerQuery) ||
         director.includes(lowerQuery) ||
         country.includes(lowerQuery)
       );
