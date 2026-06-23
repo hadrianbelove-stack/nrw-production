@@ -35,6 +35,7 @@ Sub Init()
     m.filterIds = []
     for each s in m.switchIds : m.filterIds.Push(s) : end for
     for each g in m.genreIds : m.filterIds.Push(g) : end for
+    m.filterIds.Push("search")
 
     m.colors = GetColors()
     m.fonts = Fonts()
@@ -61,6 +62,12 @@ Sub Init()
         m.swThumbs[id] = m.top.FindNode("swThumb_" + id)
         m.swLabels[id].font = m.fonts.filterChipActive
     end for
+
+    ' Search box nodes
+    m.searchBar = m.top.FindNode("searchBar")
+    m.searchBarBg = m.top.FindNode("searchBarBg")
+    m.searchBarLabel = m.top.FindNode("searchBarLabel")
+    m.searchBarLabel.font = m.fonts.cardMeta
 
     m.itemBounds = {}   ' id -> {x,y,w,h}
     m.itemCenter = {}   ' id -> {x,y}
@@ -117,6 +124,21 @@ Sub LayoutChips()
     gTop = (boxH - blockH) / 2
     LayoutGenreRow(m.genreRow1, genreX0, gTop)
     LayoutGenreRow(m.genreRow2, genreX0, gTop + m.CHIP_H + chipVGap)
+
+    ' --- Search box: right of the genres, spanning both genre rows ---
+    genreRight = 0
+    for each id in m.genreIds
+        b = m.itemBounds[id]
+        r = b.x + b.w
+        if r > genreRight then genreRight = r
+    end for
+    searchX = genreRight + 44
+    searchW = 1600 - searchX
+    if searchW < 260 then searchW = 260
+    m.searchBar.translation = [searchX, gTop]
+    m.searchBarBg.width = searchW : m.searchBarBg.height = blockH
+    m.searchBarLabel.width = searchW : m.searchBarLabel.height = blockH : m.searchBarLabel.translation = [0, 0]
+    m.itemBounds["search"] = { x: searchX, y: gTop, w: searchW, h: blockH }
 
     ' Centers for spatial nav
     for each id in m.filterIds

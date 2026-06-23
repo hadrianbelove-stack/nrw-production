@@ -457,6 +457,12 @@ End Sub
 Sub onFilterSelected()
     filterId = m.filterBar.selectedFilter
 
+    ' Search box (lives in the filter row, right of the genres)
+    if filterId = "search"
+        OpenSearch()
+        return
+    end if
+
     ' Slop toggle cycles: free → all → only → free
     if filterId = "slop_free"
         if m.slopMode = "free"
@@ -719,8 +725,8 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
 
     else if m.focusedArea = "filter"
         if key = "up"
-            ' Up from the filter row opens Search (the lit-up header button)
-            OpenSearch()
+            ' Top of the filter row — nothing above it now (search moved into the
+            ' filter row). Stay put rather than opening Search by accident.
             return true
         else if key = "down"
             SetSearchButtonActive(false)

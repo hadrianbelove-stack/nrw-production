@@ -67,6 +67,13 @@
         <Poster id="swThumb_show_highlights" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
       </Group>
 
+      <!-- Search box — lives to the RIGHT of the genres, a focusable item in the
+           2-D nav (OK opens search). Sized/positioned in BrightScript. -->
+      <Group id="searchBar">
+        <Poster id="searchBarBg" uri="pkg:/images/ui/rrect.9.png" blendColor="0x1F1F26FF" />
+        <Label id="searchBarLabel" text="Search…" vertAlign="center" horizAlign="center" color="0x999999FF" />
+      </Group>
+
       <!-- Orange focus ring — hollow outline rendered ON TOP of all items
            (positioned in BrightScript over the focused item). -->
       <Poster id="focusRing" uri="pkg:/images/ui/ring.9.png" visible="false" />
