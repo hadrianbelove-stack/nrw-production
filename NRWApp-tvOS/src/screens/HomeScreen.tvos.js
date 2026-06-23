@@ -1170,8 +1170,11 @@ const HomeScreenTvOS = () => {
     );
   }
 
-  // Render empty state
-  if (!isLoading && listData.length === 0) {
+  // Render empty state — but NOT while a search is active. A search that matches
+  // nothing must keep the header + search box mounted (see the in-place "no results"
+  // message below); tearing the whole screen down here unmounts the focused search
+  // field mid-keyboard-session, which freezes the remote and can crash tvOS.
+  if (!isLoading && listData.length === 0 && !searchQuery) {
     return (
       <View style={styles.container}>
         <View style={styles.emptyContainer}>
@@ -1256,7 +1259,6 @@ const HomeScreenTvOS = () => {
               ))}
               {/* Search lives in the grid now — spans ~3 chip slots (right half of row 2) */}
               <View ref={setSearchRef} style={[styles.searchInGrid, searchFocused && styles.searchContainerFocused]}>
-                <Text style={styles.searchIcon}>⌕</Text>
                 <TextInput
                   style={styles.searchInput}
                   placeholder="Search..."
@@ -1297,28 +1299,37 @@ const HomeScreenTvOS = () => {
         style={styles.boundaryGuide}
       />
 
-      {/* Vertical scrolling grid - the wall */}
-      <FlatList
-        ref={flatListRef}
-        data={rowData}
-        renderItem={renderRow}
-        keyExtractor={keyExtractor}
-        extraData={itemNodeHandles}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-        // removeClippedSubviews intentionally omitted — it destroys native view registrations
-        // used for focus navigation, causing nextFocusUp/Down handles to go stale off-screen.
-        maxToRenderPerBatch={8}
-        windowSize={5}
-        initialNumToRender={8}
-        // UP boundary: when focus exits the top of the scroll view it crosses this 1px guide,
-        // which redirects to the filter chips. Insurance alongside natural spatial focus.
-        ListHeaderComponent={
-          headerRefObject.current
-            ? <TVFocusGuideView destinations={[headerRefObject.current]} style={styles.listHeaderGuide} />
-            : null
-        }
-      />
+      {/* Vertical scrolling grid - the wall. When a search matches nothing we show a
+          message in its place rather than an empty list, so the header + search box
+          stay mounted and the remote keeps a focus target. */}
+      {searchQuery && rowData.length === 0 ? (
+        <View style={styles.noResultsContainer}>
+          <Text style={styles.emptyText}>No results for "{searchQuery}"</Text>
+          <Text style={styles.emptyHint}>Try a different title, director, or country</Text>
+        </View>
+      ) : (
+        <FlatList
+          ref={flatListRef}
+          data={rowData}
+          renderItem={renderRow}
+          keyExtractor={keyExtractor}
+          extraData={itemNodeHandles}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          // removeClippedSubviews intentionally omitted — it destroys native view registrations
+          // used for focus navigation, causing nextFocusUp/Down handles to go stale off-screen.
+          maxToRenderPerBatch={8}
+          windowSize={5}
+          initialNumToRender={8}
+          // UP boundary: when focus exits the top of the scroll view it crosses this 1px guide,
+          // which redirects to the filter chips. Insurance alongside natural spatial focus.
+          ListHeaderComponent={
+            headerRefObject.current
+              ? <TVFocusGuideView destinations={[headerRefObject.current]} style={styles.listHeaderGuide} />
+              : null
+          }
+        />
+      )}
 
       {/* Refresh indicator overlay */}
       {isRefreshing && (
@@ -1420,11 +1431,6 @@ const styles = StyleSheet.create({
   searchContainerFocused: {
     borderColor: Colors.primary,
     borderWidth: 2,
-  },
-  searchIcon: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 18,
-    marginRight: 8,
   },
   searchInput: {
     flex: 1,
@@ -1733,6 +1739,20 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.tvos.body,
     textAlign: 'center',
+  },
+  // No-results message shown in place of the wall when a search matches nothing
+  noResultsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 60,
+    gap: 12,
+  },
+  emptyHint: {
+    color: Colors.textMuted,
+    fontSize: Typography.tvos.caption,
+    textAlign: 'center',
+    opacity: 0.7,
   },
 });
 
