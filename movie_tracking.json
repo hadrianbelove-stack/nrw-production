@@ -5733,11 +5733,24 @@
     "1265971": {
       "title": "Life of Mike",
       "premiere_date": "2025-07-25",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-06-22",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-06T16:48:02.874381",
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
+      "enriched": true,
+      "enrichment_date": "2026-06-22",
+      "_transitioned_at": "2026-06-22"
     },
     "1525716": {
       "title": "GULDIK!! GENJI'S LITTLE LIFE COACH",
@@ -8605,7 +8618,7 @@
       "status": "tracking",
       "added": "2025-09-13T22:15:44.802099",
       "year": 2025,
-      "_discovery_source": "provider_availability_check",
+      "_discovery_source": "tmdb_type4",
       "providers": {
         "rent": [],
         "buy": [
@@ -8613,14 +8626,13 @@
         ],
         "streaming": []
       },
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-06-22",
       "_is_preorder": true,
       "_transitioned_at": "2026-06-18",
       "_buyonly_preorder": true,
-      "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-06-18",
-      "_jw_revert_count": 1
+      "digital_date": "2026-07-14",
+      "_type4_pending": true
     },
     "1544763": {
       "title": "Les Cavaliers de chez moi",
@@ -21926,7 +21938,7 @@
       "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-06-21"
     },
@@ -28336,7 +28348,8 @@
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-19"
+      "_jw_reverted_at": "2026-06-19",
+      "_skip_provider_discovery": true
     },
     "1523482": {
       "title": "LA bête du Gévaudan 3",
@@ -40679,7 +40692,7 @@
       "enrichment_date": null,
       "_is_preorder": true,
       "_transitioned_at": "2026-06-22",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-22"
     },
@@ -58746,7 +58759,7 @@
       "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-06-22"
     },
@@ -91495,7 +91508,8 @@
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-19"
+      "_jw_reverted_at": "2026-06-19",
+      "_skip_provider_discovery": true
     },
     "1383592": {
       "title": "Soft Leaves",
@@ -92902,13 +92916,13 @@
       "year": 2025,
       "premiere_date": "2025-01-31",
       "_discovery_source": "provider_availability_check",
-      "enriched": true,
-      "enrichment_date": "2026-05-23",
-      "_transitioned_at": "2026-05-23",
+      "enriched": false,
+      "_transitioned_at": "2026-06-22",
       "digital_date": "2026-06-22",
-      "_jw_revert_count": 1,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-22"
+      "is_slop": true,
+      "_jw_revert_reason": "zero_watch_links",
+      "_jw_reverted_at": "2026-06-22",
+      "_jw_revert_count": 1
     },
     "1220334": {
       "title": "John Lilly and the Earth Coincidence Control Office",
@@ -122995,13 +123009,13 @@
       "festival": "Tribeca",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": true,
-      "enrichment_date": "2026-06-01",
-      "_transitioned_at": "2026-06-01",
+      "enriched": false,
+      "_transitioned_at": "2026-06-22",
       "digital_date": "2026-06-22",
-      "_jw_revert_count": 1,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-22"
+      "is_slop": false,
+      "_jw_revert_reason": "zero_watch_links",
+      "_jw_reverted_at": "2026-06-22",
+      "_jw_revert_count": 1
     },
     "1454469": {
       "title": "Monikondee",
@@ -131486,7 +131500,7 @@
       "festival": "Sitges",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-06-20"
     },
@@ -174457,7 +174471,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-06-20"
     },
@@ -218691,10 +218705,15 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-05-01",
-      "digital_date": null,
+      "digital_date": "2026-06-24",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-06-22"
     },
     "tv_319338": {
       "title": "Travis Japan Summer Vacation!! in the USA",
@@ -230844,7 +230863,7 @@
         "streaming": []
       },
       "intake_pass": "A",
-      "_jw_revert_count": 13,
+      "_jw_revert_count": 14,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
@@ -233749,11 +233768,21 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-06-05",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-22",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "fuboTV"
+        ]
+      },
       "intake_pass": "C",
       "festival": "Tribeca",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-22"
     },
     "1708239": {
       "title": "Stockings: Songbird",
@@ -236520,7 +236549,6 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-06-12",
-      "digital_date": "2026-06-22",
       "providers": {
         "rent": [],
         "buy": [
@@ -236532,9 +236560,13 @@
       "festival": "Tribeca",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-22"
+      "enriched": false,
+      "enrichment_date": null,
+      "_transitioned_at": "2026-06-22",
+      "_buyonly_preorder": true,
+      "_jw_revert_reason": "justwatch_theatrical_pvod",
+      "_jw_reverted_at": "2026-06-22",
+      "_jw_revert_count": 1
     },
     "tv_324744": {
       "title": "Ina",
@@ -238548,7 +238580,8 @@
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-18",
-      "has_providers": false
+      "has_providers": false,
+      "_skip_provider_discovery": true
     },
     "880067": {
       "title": "Strung",
@@ -238733,7 +238766,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-19"
+      "_jw_reverted_at": "2026-06-19",
+      "_skip_provider_discovery": true
     },
     "1717244": {
       "title": "Yene Semay",
@@ -240262,7 +240296,7 @@
       "digital_date": "2026-06-21",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-21"
     },
@@ -240274,7 +240308,7 @@
       "digital_date": "2026-06-21",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-21"
     },
@@ -240304,7 +240338,7 @@
       "digital_date": "2026-06-19",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-21"
     },
@@ -240744,6 +240778,134 @@
       "providers": {},
       "intake_pass": "C",
       "festival": "Tribeca",
+      "has_providers": false
+    },
+    "1719301": {
+      "title": "LINKIN PARK - Rock in Rio 2026",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1572116": {
+      "title": "Monster Mia",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Annecy",
+      "has_providers": false
+    },
+    "1482377": {
+      "title": "Microstar",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Annecy",
+      "has_providers": false
+    },
+    "1492288": {
+      "title": "La chaleur",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Annecy",
+      "has_providers": false
+    },
+    "1025388": {
+      "title": "Aro berria",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Annecy",
+      "has_providers": false
+    },
+    "tv_326158": {
+      "title": "Dit Leer Je Niet Op School!",
+      "content_type": "limited_series",
+      "tmdb_id": 326158,
+      "status": "tracking",
+      "first_air_date": "2026-06-01",
+      "digital_date": "2026-06-01",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": null,
+      "synopsis": "",
+      "genres": [],
+      "original_language": "nl",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-22",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_322067": {
+      "title": "Subscription Love",
+      "content_type": "limited_series",
+      "tmdb_id": 322067,
+      "status": "tracking",
+      "first_air_date": "2026-05-29",
+      "digital_date": "2026-05-29",
+      "episode_count": 7,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/y5OVIgU1c0wl6Q8lw9q7xLMHajv.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-22",
+      "networks": [
+        "YouTube"
+      ],
+      "has_providers": false
+    },
+    "tv_323850": {
+      "title": "BRAVO – Headlines, Hypes und Herzschmerz",
+      "content_type": "limited_series",
+      "tmdb_id": 323850,
+      "status": "tracking",
+      "first_air_date": "2026-05-23",
+      "digital_date": "2026-05-23",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/jx90qCZ1rl3xZ3feONXJCsX6Ez5.jpg",
+      "synopsis": "",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "de",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-22",
+      "networks": [
+        "ARD Mediathek"
+      ],
       "has_providers": false
     }
   }
