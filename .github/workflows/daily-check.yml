@@ -2,7 +2,7 @@ name: "Daily NRW Update"
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # 9 AM UTC daily
+    - cron: '30 7 * * *'  # 7:30 AM UTC = 12:30 AM PDT (start the night run earlier so GitHub's scheduling delay still lands capsules overnight, not mid-morning)
   workflow_dispatch:  # Manual trigger for testing
 
 concurrency:
