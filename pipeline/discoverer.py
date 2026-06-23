@@ -228,6 +228,108 @@ class ProviderDiscoverer:
     # Main discovery entry point
     # ------------------------------------------------------------------
 
+    def _fetch_providers(self, movie_id, movie):
+        """Fetch the TMDB watch/providers payload for ONE movie (the SECONDARY
+        discovery signal). Extracted verbatim from the old inline loop block so the
+        retry/backoff/error behaviour is byte-identical.
+
+        Thread-safe: uses module-level requests.get (no shared Session), so it is
+        safe to call from many prefetch workers at once.
+
+        Returns (data_or_None, errors_list, failed_count) — the caller merges these
+        into api_errors / failed exactly as the inline code used to.
+        """
+        if str(movie_id).startswith('tv_'):
+            numeric_id = str(movie_id).replace('tv_', '')
+            url = f"https://api.themoviedb.org/3/tv/{numeric_id}/watch/providers"
+        else:
+            url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
+        params = {'api_key': self.tmdb_key}
+
+        errors = []
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = requests.get(url, params=params, timeout=(5, 15))
+                if response.status_code == 200:
+                    return response.json(), errors, 0
+                elif response.status_code == 429:  # Rate limited
+                    wait_time = (2 ** attempt) + random.uniform(0, 1)
+                    errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': 'rate_limit', 'status_code': 429, 'timestamp': datetime.now().isoformat()})
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    self.logger.warning(f"HTTP {response.status_code} for {movie['title']}")
+                    errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': 'http_error', 'status_code': response.status_code, 'timestamp': datetime.now().isoformat()})
+                    return None, errors, 0
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+                wait_time = (2 ** attempt) + random.uniform(0, 1)
+                if attempt < max_retries - 1:
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    self.logger.warning(f"Failed after {max_retries} attempts for {movie['title']}: {type(e).__name__}")
+                    errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': type(e).__name__, 'status_code': None, 'timestamp': datetime.now().isoformat()})
+                    return None, errors, 1
+            except requests.exceptions.RequestException as e:
+                self.logger.warning(f"Request error for {movie['title']}: {type(e).__name__}")
+                errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': type(e).__name__, 'status_code': None, 'timestamp': datetime.now().isoformat()})
+                return None, errors, 1
+        return None, errors, 0
+
+    def _prefetch_discovery_data(self, tracking_movies, max_workers=8):
+        """Concurrently collect the per-movie TMDB payloads discovery needs — the
+        Type 4 digital date and (when there's no usable Type 4 date) the
+        watch/providers data. READ-ONLY: it mutates no state and makes no
+        decisions; check_tracking_movies still does every transition, exactly as
+        before, just reading these results instead of calling the network inline.
+        That is what turns the ~84-minute serial poll into a few minutes WITHOUT
+        changing a single discovery decision.
+
+        Correctness note: a missing entry (or missing key) makes the caller fall
+        back to a live fetch, so results never depend on prefetch coverage — an
+        un-deferred reissue, a malformed Type 4 date, etc. all still resolve.
+
+        Memory: holds one small JSON per movie (~tens of MB for the full ~14k
+        wall); released when this method returns.
+
+        Returns {movie_id: {'type4_date', 'provider_data', 'provider_errors',
+        'provider_failed'}} (provider_* present only when fetched).
+        """
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        def _work(item):
+            movie_id, movie = item
+            out = {}
+            # _type4_pending movies reuse a stored date — the loop makes no fresh
+            # Type 4 call for them, so don't spend one here either.
+            if not movie.get('_type4_pending'):
+                td = self.host.fetch_tmdb_type4_date(movie_id)
+                out['type4_date'] = td
+                # The loop consults providers only when there's no usable Type 4
+                # date (a valid past/future date short-circuits it). Mirror that so
+                # we never fetch payloads the loop won't read. (A malformed-but-
+                # non-empty date is rare and handled by the caller's live fallback.)
+                if not td:
+                    data, errors, failed = self._fetch_providers(movie_id, movie)
+                    out['provider_data'] = data
+                    out['provider_errors'] = errors
+                    out['provider_failed'] = failed
+            return movie_id, out
+
+        results = {}
+        total = len(tracking_movies)
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [executor.submit(_work, item) for item in tracking_movies]
+            done = 0
+            for fut in as_completed(futures):
+                movie_id, out = fut.result()
+                results[movie_id] = out
+                done += 1
+                if done % 1000 == 0 or done == total:
+                    print(f"  ⚡ Prefetch: {done}/{total} movies fetched")
+        return results
+
     def check_tracking_movies(self, max_to_check=None, priority_days=180):
         """
         PHASE 2: Discovery - Check tracking movies for provider availability.
@@ -336,6 +438,17 @@ class ProviderDiscoverer:
         print(f"\n🎬 Checking {total_to_check} movies for digital availability...\n")
         discovery_start_time = time.time()
 
+        # PARALLEL PREFETCH (read-only): collect every movie's TMDB Type 4 + provider
+        # payloads concurrently up front, so the decision loop below is pure in-memory
+        # logic. Same data → same decisions; the 14k serial waits + per-movie sleeps
+        # are gone. A missing entry falls back to a live fetch inside the loop.
+        max_workers = self.config.get('api', {}).get('tmdb_max_workers', 8)
+        prefetch_start = time.time()
+        print(f"  ⚡ Prefetching discovery data for {total_to_check} movies "
+              f"({max_workers} workers)...")
+        prefetched = self._prefetch_discovery_data(tracking_movies, max_workers=max_workers)
+        print(f"  ⚡ Prefetch complete in {int(time.time() - prefetch_start)}s")
+
         try:
             for movie_id, movie in tracking_movies:
                 checked += 1
@@ -406,8 +519,14 @@ class ProviderDiscoverer:
                             self.logger.warning(f"Cleared _type4_pending with no digital_date: {movie.get('title', movie_id)}")
 
                     else:
-                        # Fresh lookup — call TMDB Type 4 API
-                        type4_date = self.host.fetch_tmdb_type4_date(movie_id)
+                        # Fresh lookup — Type 4 date from the parallel prefetch.
+                        # Live fallback if this movie wasn't prefetched (e.g. an
+                        # un-deferred reissue), so results stay identical to serial.
+                        _pf = prefetched.get(movie_id)
+                        if _pf is not None and 'type4_date' in _pf:
+                            type4_date = _pf['type4_date']
+                        else:
+                            type4_date = self.host.fetch_tmdb_type4_date(movie_id)
                         if type4_date:
                             try:
                                 type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
@@ -442,47 +561,20 @@ class ProviderDiscoverer:
 
                 # SECONDARY: Provider availability check (for ~44% of movies without Type 4)
                 if not type4_found and movie['status'] == 'tracking' and not movie.get('_skip_provider_discovery'):
-                    if str(movie_id).startswith('tv_'):
-                        numeric_id = str(movie_id).replace('tv_', '')
-                        url = f"https://api.themoviedb.org/3/tv/{numeric_id}/watch/providers"
+                    # Provider payload from the parallel prefetch; live fallback when
+                    # absent (movie not prefetched, or a malformed Type 4 date left
+                    # the loop here without a prefetched provider payload). The
+                    # error/failed accounting is merged exactly as the inline code did.
+                    _pf = prefetched.get(movie_id)
+                    if _pf is not None and 'provider_data' in _pf:
+                        data = _pf['provider_data']
+                        if _pf.get('provider_errors'):
+                            api_errors.extend(_pf['provider_errors'])
+                        failed += _pf.get('provider_failed', 0)
                     else:
-                        url = f"https://api.themoviedb.org/3/movie/{movie_id}/watch/providers"
-                    params = {'api_key': self.tmdb_key}
-
-                    data = None
-                    max_retries = 3
-                    for attempt in range(max_retries):
-                        try:
-                            response = requests.get(url, params=params, timeout=(5, 15))
-                            if response.status_code == 200:
-                                data = response.json()
-                                break
-                            elif response.status_code == 429:  # Rate limited
-                                wait_time = (2 ** attempt) + random.uniform(0, 1)
-                                print(f"  Rate limited on {movie['title']}, waiting {wait_time:.1f}s")
-                                api_errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': 'rate_limit', 'status_code': 429, 'timestamp': datetime.now().isoformat()})
-                                time.sleep(wait_time)
-                                continue
-                            else:
-                                self.logger.warning(f"HTTP {response.status_code} for {movie['title']}")
-                                api_errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': 'http_error', 'status_code': response.status_code, 'timestamp': datetime.now().isoformat()})
-                                break
-                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
-                            wait_time = (2 ** attempt) + random.uniform(0, 1)
-                            if attempt < max_retries - 1:
-                                print(f"  Timeout/connection error for {movie['title']}, retrying in {wait_time:.1f}s")
-                                time.sleep(wait_time)
-                                continue
-                            else:
-                                self.logger.warning(f"Failed after {max_retries} attempts for {movie['title']}: {type(e).__name__}")
-                                api_errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': type(e).__name__, 'status_code': None, 'timestamp': datetime.now().isoformat()})
-                                failed += 1
-                                break
-                        except requests.exceptions.RequestException as e:
-                            self.logger.warning(f"Request error for {movie['title']}: {type(e).__name__}")
-                            api_errors.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'error_type': type(e).__name__, 'status_code': None, 'timestamp': datetime.now().isoformat()})
-                            failed += 1
-                            break
+                        data, _errs, _failed = self._fetch_providers(movie_id, movie)
+                        api_errors.extend(_errs)
+                        failed += _failed
 
                     if data:
                         us = data.get('results', {}).get('US', {})
@@ -656,15 +748,17 @@ class ProviderDiscoverer:
                             first_service = stream_names[0] if stream_names else rent_names[0] if rent_names else buy_names[0] if buy_names else '?'
                             print(f"  ✓ {movie['title']} now on {first_service}!")
 
-                # Incremental save every 100 movies
-                if checked % 100 == 0:
+                # Incremental save. The network now happens in the prefetch, so this
+                # loop is fast in-memory work — save in larger batches to avoid a rapid
+                # burst of full-DB writes (the finally-block still does a final save).
+                if checked % 2000 == 0:
                     if self.storage.atomic_write_json(db, 'movie_tracking.json'):
-                        print(f"  💾 Progress saved (batch {checked//100})")
+                        print(f"  💾 Progress saved (batch {checked//2000})")
                     else:
-                        print(f"  ⚠️ Progress save failed (batch {checked//100})")
+                        print(f"  ⚠️ Progress save failed (batch {checked//2000})")
 
-                # Rate limiting
-                time.sleep(self.config.get('api', {}).get('tmdb_rate_limit', 0.25))
+                # (No per-movie rate-limit sleep here anymore — rate limiting now lives
+                # in the concurrent prefetch above. This pass is pure in-memory logic.)
 
         except Exception as e:
             self.logger.error(f"Unexpected error during provider checking: {e}")
