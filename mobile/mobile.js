@@ -420,6 +420,7 @@ const NRWMobile = {
                 const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
                 const q = norm(this.searchQuery);
                 const title = norm(movie.title || '');
+                const origTitle = norm(movie.original_title || '');
                 const director = norm(movie.crew?.director || movie.director || '');
                 const synopsis = norm(movie.capsule || movie.synopsis || '');
                 const genres = norm((movie.genres || []).join(' '));
@@ -427,7 +428,7 @@ const NRWMobile = {
                 const year = String(movie.year || '');
                 const cast = norm((movie.crew?.cast || []).join(' '));
 
-                return title.includes(q) || director.includes(q) ||
+                return title.includes(q) || origTitle.includes(q) || director.includes(q) ||
                        synopsis.includes(q) || genres.includes(q) ||
                        country.includes(q) || year.includes(q) || cast.includes(q);
             }

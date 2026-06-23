@@ -380,6 +380,7 @@ const NRW = {
         const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
         const nq = norm(query);
         return norm(movie.title || '').includes(nq) ||
+               norm(movie.original_title || '').includes(nq) ||
                norm(movie.crew?.director || '').includes(nq) ||
                norm(movie.capsule || movie.synopsis || '').includes(nq) ||
                norm((movie.genres || []).join(' ')).includes(nq) ||
