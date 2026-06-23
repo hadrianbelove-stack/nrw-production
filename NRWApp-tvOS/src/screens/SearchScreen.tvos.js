@@ -1,6 +1,6 @@
 /**
  * New Release Wall - tvOS Search Screen
- * Allows searching movies by title, director, or country
+ * Allows searching movies by title, original title, director, or country
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';

@@ -103,7 +103,7 @@ Sub onQueryChanged()
     end if
 End Sub
 
-' Substring match across title / display_title / director / country / cast.
+' Substring match across title / original_title / display_title / director / country / cast.
 Function SearchMovies(query as String) as Object
     matches = []
     for each movie in m.allMovies

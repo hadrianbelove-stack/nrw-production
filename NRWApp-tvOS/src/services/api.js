@@ -217,7 +217,7 @@ export function filterMovies(movies, filters = []) {
 }
 
 /**
- * Search movies by title, director, genre, country, synopsis, or year
+ * Search movies by title, original title, director, genre, country, synopsis, or year
  */
 export function searchMovies(movies, query) {
   if (!movies || !Array.isArray(movies) || !query) return movies;
