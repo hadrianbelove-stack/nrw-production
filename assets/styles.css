@@ -290,6 +290,21 @@ header h1 {
     justify-self: stretch;
 }
 
+/* No-results / empty message — spans the full grid width, centered */
+.wall-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 5rem 1rem;
+    color: var(--text-secondary, #888);
+    font-size: 1.25rem;
+}
+.wall-empty-hint {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    opacity: 0.7;
+}
+
 .movie-container {
     display: flex;
     flex-direction: column;

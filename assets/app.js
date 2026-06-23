@@ -470,6 +470,16 @@ const NRW = {
     renderWall(movies) {
         const wall = document.getElementById('wall');
 
+        // Empty result set — show a message instead of a blank wall. The search box
+        // lives in the header (untouched here), so it stays put for the user to edit.
+        if (!movies || movies.length === 0) {
+            const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+            wall.innerHTML = this.searchQuery
+                ? `<div class="wall-empty">No results for &ldquo;${esc(this.searchQuery)}&rdquo;<span class="wall-empty-hint">Try a different title, director, or country</span></div>`
+                : `<div class="wall-empty">No movies found<span class="wall-empty-hint">Try a different filter</span></div>`;
+            return;
+        }
+
         // Separate into three buckets: fest, pre-orders, regular
         const festMovies = movies.filter(m => !m._is_preorder && m.filters?.is_virtual_screening);
         const preorderMovies = movies.filter(m => m._is_preorder);
