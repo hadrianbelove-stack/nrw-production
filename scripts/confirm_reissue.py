@@ -356,7 +356,6 @@ def main():
                 for m in movies:
                     if str(m.get('id')) in idset:
                         m['is_slop'] = False          # human override: never slop
-                        m['_is_slop_guess'] = False   # not a guess — a decision
                         n += 1
                 dtmp = 'data.json.tmp'
                 with open(dtmp, 'w') as f:

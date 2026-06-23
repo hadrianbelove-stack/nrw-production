@@ -469,9 +469,13 @@ if rt_failed or rt_conflict:
 # ── Section 5b: SLOP REVIEW QUEUE ───────────────────────────────────────────
 # Movies the classifier auto-committed as slop (weak confidence) — need human confirmation.
 
+try:
+    _slop_reviewed = json.load(open('admin/curate_reviewed.json'))
+except Exception:
+    _slop_reviewed = {}
 slop_queue = [
     m for m in movies
-    if m.get('is_slop') is True and m.get('_is_slop_guess') is True
+    if m.get('is_slop') is True and 'slop' not in _slop_reviewed.get(str(m.get('id')), {})
 ]
 slop_queue.sort(key=lambda m: m.get('digital_date', '') or '', reverse=True)
 
@@ -490,8 +494,8 @@ if slop_queue:
         t_url = tmdb_url(m.get('id', ''))
         print('  %-*s  %-12s  %-35s  %s' % (col_w, title[:col_w], fmt_date(dd), reason, t_url))
     print()
-    print('  Confirm slop: add ID to MANUAL_OVERRIDES in scripts/slop_classifier.py')
-    print('  Clear (not slop): set is_slop=False + _is_slop_guess=False, or add to MANUAL_OVERRIDES as False')
+    print('  Confirm/clear via /curate (Stage 3) — drains admin/curate_reviewed.json')
+    print('  Durable override: admin/overrides.json  {"<id>": {"set": {"is_slop": true|false}}}')
 else:
     print('  None — no pending slop confirmations')
 

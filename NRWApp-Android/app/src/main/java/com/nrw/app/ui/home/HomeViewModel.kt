@@ -149,13 +149,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             // Slop: fests/pre-orders are exempt when their view is on (matches tvOS/desktop).
             if (state.slopMode == "free") {
                 filtered = filtered.filter {
-                    (!it.isSlop && !it.isSlopGuess) ||
+                    (!it.isSlop) ||
                         (!state.hideFest && it.filters?.isVirtualScreening == true) ||
                         (state.showPreorders && it.isPreorder)
                 }
             } else if (state.slopMode == "only") {
                 filtered = filtered.filter {
-                    (it.isSlop || it.isSlopGuess) ||
+                    (it.isSlop) ||
                         (!state.hideFest && it.filters?.isVirtualScreening == true) ||
                         (state.showPreorders && it.isPreorder)
                 }

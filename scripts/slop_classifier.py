@@ -3,7 +3,6 @@ Slop classifier — determines whether a film on the NRW wall is "slop"
 (low-quality direct-to-digital content) or a legitimate film.
 
 Tiered logic:
-  0. Manual overrides (MANUAL_OVERRIDES) → human verdict wins
   1. Prestige streaming (Max/HBO/MUBI…) → NOT SLOP; slop streaming (Crunchyroll) → SLOP
   2. Studio veto lists → SLOP (Hallmark, True Story, asylum…) or NOT SLOP (A24, Skydance, Factory 25…)
   2c. Indian commercial cinema → SLOP unless a major crossover hit
@@ -50,106 +49,10 @@ def _festival_films():
             _festival_films_cache = {}
     return _festival_films_cache
 
-# ── Manual overrides (TMDB ID → bool) ────────────────────────────────────────
-# Films the classifier gets wrong that require human judgment.
-# is_slop: False = confirmed NOT slop regardless of signals.
-MANUAL_OVERRIDES = {
-    # Prestige/indie picked up by quality distributors, but studio field misleads
-    1422120: False,   # Mermaid (Bad Grey prod. / Utopia dist.)
-    1456667: False,   # Miles Away (Austin FF; Urbanworld Best Direction; Guzmán/Royo EPs)
-    1422101: False,   # Glorious Summer (SXSW 2025; Variety/Collider; Sapphire Lions)
-    # Documentaries by respected directors with low metadata coverage
-    1585266: False,   # Clairtone (Ron Mann)
-    1463432: False,   # Steve Schapiro: Being Everywhere
-    1354900: False,   # Ishiro Honda: Memoirs of a Film Director (Sitges; kaiju doc)
-    # Comedy specials — major comedians
-    1222518: False,   # Josh Johnson: Symphony (not slop despite Irwin Entertainment)
-    # Documentary series
-    1693906: False,   # Behind Bars - Shot in the Spotlight (Untold UK series)
-    1684240: False,   # Untold UK: Jamie Vardy
-    1684246: False,   # Untold UK: Vinnie Jones
-    # Art-house / festival films without RT/wiki yet
-    1000092: False,   # Nowhere / Invelle (Simone Massi; Venice Orizzonti; no EN wiki)
-    1484833: False,   # The Obsessed (Shin-Ei anime musical; Tokyo/Annecy; curator call)
-    1213025: False,   # Transcending Dimensions (Toshiaki Toyoda; Rotterdam/NYAFF/Fantasia)
-    1362365: False,   # This Is Buzz (Mark Pellington doc; Slamdance)
-    1303370: False,   # Ways to Traverse a Territory
-    1422627: False,   # Snow Leopard Sisters
-    1303498: False,   # $POSITIONS
-    1207622: False,   # Salt Along the Tongue (Yellow Veil)
-    # Films with Wikipedia pages that still score poorly
-    1368881: False,   # Ladies First
-    1425373: False,   # The Golden Spurtle (7.6 IMDb, no RT/wiki yet)
-    1535130: False,   # Kylie: Tension Tour Live
-    1380291: False,   # Tom Clancy's Jack Ryan: Ghost War
-    # HBO/PBS/MAX docs with sparse metadata
-    1559776: False,   # The A List: 15 Stories from Asian and Pacific Diasporas
-    1541658: False,   # One Golden Summer (MAX doc)
-    1620034: False,   # Marty, Life Is Short (Imagine Documentaries)
-    1658982: False,   # The Roast of Kevin Hart
-    1249271: False,   # Powwow People (6 RT critic reviews, real doc)
-    1265340: False,   # The Second Coming of John Cooper (curator call)
-    1556616: False,   # Summer House (curator call)
-    1477377: False,   # Real Couples (curator Select)
-    1276013: False,   # Color Book (Tribeca, NAACP nom, 8.0 IMDb - curator NOT slop)
-    1549609: True,    # Exes of Christmas Past (curator call)
-    614945:  False,   # Voicemails for Isabelle (Netflix, NYT/Variety reviews)
-    # Curator not-slop calls (June 15 2026)
-    1291659: False,   # The Wizard of the Kremlin
-    1331349: False,   # Two Pianos (Select)
-    1462322: False,   # The Last One for the Road (Select)
-    1541560: False,   # Stop! That! Train! (Select)
-    1400756: False,   # Mad Bills to Pay (Select)
-    1536559: False,   # Double Happiness
-    1398655: False,   # Blue Film (Select)
-    312493:  False,   # Viral Hit (tv_312493)
-    1560681: False,   # Colors of Evil: Black (Netflix global Top 10 Polish thriller)
-    1233354: False,   # Heads or Fails (Belgian arthouse, FIFIGROT/BAFICI winner)
-    # Curator slop sweep — June 18 2026
-    1443200: False,   # Burt (2025) — not slop (Cinequest Best Comedy, Phoenix Best Pic, DGG EP, 8.1 IMDb)
-    1715076: True,    # The Exhibitor (no wiki/RT/IMDb signal)
-    # Curator slop sweep — June 16 2026
-    1563190: False,   # La Scala: The Force of Destiny (theatrical doc, Tribeca-winning dir)
-    1463681: True,    # Southern Scares
-    1711959: True,    # Cheer Dad
-    1198439: True,    # Easy Girl
-    1501018: True,    # A Family of Bastards
-    1511549: True,    # Still Sexy
-    1639356: True,    # Sidosa
-    1662231: True,    # Jean-Louis Aubert - 50 ans avec vous (concert)
-    1711071: True,    # The Jealous Bride
-    1608277: True,    # Toh, Ti Ani Fuji
-    1477431: True,    # Time of Death (2025)
-    316178:  True,    # Chloe et Emma (tv_316178)
-    1465786: True,    # Just Kids
-    1699155: True,    # Maternal Instinct
-    1357544: True,    # Bizarrofilia
-    1490884: True,    # My Boyfriend's Wife Is Dead
-    1357922: True,    # Broken Land
-    1701450: True,    # Vick & Tarstar's Scarecrow Factory
-    1709198: True,    # Thou Shall Not Commit Adultery
-    1297201: True,    # Crosspoint (curator call)
-    # TV-movie mill thrillers — confirmed slop by curator (June 2026)
-    1708839: True,    # Her Husband's Double Life
-    1409853: True,    # Neglected
-    1110034: True,    # Kraken (curator call)
-    1226834: True,    # This Tempting Madness (curator call)
-    # Human-confirmed slop
-    1686326: True,    # Emi Martínez: The Kid Who Stops Time
-    934584:  True,    # Rich Flu (La fiebre de los ricos)
-    1424649: True,    # Sampung Utos Kay Josh
-    1174334: True,    # A Foggy Tale
-    1433117: True,    # Kara
-    959646:  True,    # Zombie Land Saga: Yumeginga Paradise (Crunchyroll)
-    # Human-confirmed NOT slop (curator call, June 2026) — no data signal to key on
-    1526220: False,   # Still Single
-    1086247: False,   # Moss & Freud
-    1353467: False,   # Mongrels
-    1078581: False,   # Giant
-    467914:  False,   # The Land of Sometimes (Factory 25 distributor)
-    845875:  False,   # The Champion of Auschwitz (historical drama)
-    1006024: False,   # Who'll Stop the Rain (Taiwan festival film)
-}
+# ── Manual overrides → RETIRED 2026-06-22 ───────────────────────────────────
+# Durable slop verdicts now live in admin/overrides.json (one override store,
+# applied last in pipeline/display.py). The 82 former entries were migrated there.
+MANUAL_OVERRIDES = {}
 
 # ── Prestige streaming platforms → instant NOT SLOP ──────────────────────────
 PRESTIGE_STREAMING = {
@@ -264,13 +167,6 @@ def classify_slop(movie):
       confidence: 'strong' (studio/streaming signal) or 'weak' (score-based)
     """
     tmdb_id = movie.get('id')
-    numeric_id = int(str(tmdb_id).replace('tv_', '')) if tmdb_id and str(tmdb_id).replace('tv_', '').isdigit() else None
-
-    # Tier 0: Manual overrides
-    if numeric_id in MANUAL_OVERRIDES:
-        verdict = MANUAL_OVERRIDES[numeric_id]
-        return verdict, 'manual_override', 'strong'
-
     # Tier 1: Prestige streaming platform → NOT SLOP
     for svc in _get_streaming_services(movie):
         for prestige in PRESTIGE_STREAMING:

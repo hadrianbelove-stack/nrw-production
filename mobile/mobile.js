@@ -358,7 +358,7 @@ const NRWMobile = {
                 if (this.showPreorders) return !!movie._is_preorder;
 
                 // Slop mode filter
-                const isSlop = movie.is_slop || movie._is_slop_guess;
+                const isSlop = !!movie.is_slop;
                 if (this.slopMode === 'free' && isSlop) return false;
                 if (this.slopMode === 'only' && !isSlop) return false;
 

@@ -741,6 +741,11 @@ class DisplayGenerator:
                 for key, val in (ov.get('set') or {}).items():
                     movie[key] = val
 
+            # Retire the legacy _is_slop_guess shadow flag: the slop verdict now
+            # lives solely in is_slop. Strip it on every build so the stale fields
+            # drain out of data.json through the pipeline (no direct data.json edit).
+            movie.pop('_is_slop_guess', None)
+
             # Set 'featured' field for backwards compatibility (true or false)
             movie['featured'] = categories['is_staff_pick']
 

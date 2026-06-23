@@ -126,23 +126,26 @@ The false-negative pass, done **once per film**. Shows **all** remaining candida
 
 1. Build the list: `curate_list.py --stage slop`. 0 rows → "Slop: all caught up", go to Stage 4. The script computes the `Slop?` and `Why` columns (`is_slop`/`_is_slop_guess` → `🗑 SLOP (auto)` / `🗑 SLOP (manual)` / `✅ Not slop`; `Why` = `_slop_reason`, or scores, or "no classifier signal").
 2. Render as **Templates → Slop table**. Below it, **flag contradictions:** any slop-flagged film that is also a **Select** (vouched-for but hidden by the default slop-free view). Do **not** flag capsules/quotes — every film has them, so they carry no slop signal.
-3. **On reply** (overrides, or "looks good") — for each override:
-   - **data.json** — set `is_slop`, clear `_is_slop_guess`:
+3. **On reply** (overrides, or "looks good"):
+   - **For each override** — write the durable verdict to `admin/overrides.json` (the
+     single override store, applied last in pipeline/display.py so rebuilds never
+     revert it) and to data.json for immediate effect. Key by **ID**:
      ```bash
      cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
      import json, sys
-     title, is_slop_val = sys.argv[1], sys.argv[2] == 'true'
-     with open('data.json') as f: data = json.load(f)
-     for m in data.get('movies', []):
-         if m.get('title','').lower() == title.lower():
-             m['is_slop'] = is_slop_val; m['_is_slop_guess'] = False; break
-     with open('data.json','w') as f: json.dump(data, f, indent=2, ensure_ascii=False)
+     mid, is_slop_val = sys.argv[1], sys.argv[2] == 'true'
+     ov = json.load(open('admin/overrides.json'))
+     ov.setdefault(mid, {}).setdefault('set', {})['is_slop'] = is_slop_val
+     json.dump(ov, open('admin/overrides.json','w'), indent=2, ensure_ascii=False)
+     data = json.load(open('data.json'))
+     for m in data['movies']:
+         if str(m.get('id')) == mid: m['is_slop'] = is_slop_val; break
+     json.dump(data, open('data.json','w'), indent=2, ensure_ascii=False)
      print('done')
-     " "MOVIE_TITLE" "true_or_false"
+     " "MOVIE_ID" "true_or_false"
      ```
-   - **`scripts/slop_classifier.py` MANUAL_OVERRIDES** (~line 22) — add a durable `numeric_int_id: True/False,  # Title` so rebuilds don't revert it. ID must be an **integer** (cast `movie.id`).
    - **Drain:** `curate_list.py --mark slop <every shown id>` — even on "looks good" with no changes, so they don't re-show.
-   - COMMIT(`data.json scripts/slop_classifier.py admin/curate_reviewed.json`, `"Slop review"`)
+   - COMMIT(`data.json admin/overrides.json admin/curate_reviewed.json`, `"Slop review"`)
 
 ---
 

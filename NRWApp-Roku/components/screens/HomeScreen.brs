@@ -153,7 +153,7 @@ Sub ApplyFilters()
             if movie.filters <> invalid
                 isVS = (movie.filters.is_virtual_screening = true)
             end if
-            keep = (movie.is_slop <> true AND movie._is_slop_guess <> true)
+            keep = (movie.is_slop <> true)
             if (NOT m.hideFest) AND isVS then keep = true
             if m.showPreorders AND movie._is_preorder = true then keep = true
             if keep
@@ -168,7 +168,7 @@ Sub ApplyFilters()
             if movie.filters <> invalid
                 isVS = (movie.filters.is_virtual_screening = true)
             end if
-            keep = (movie.is_slop = true OR movie._is_slop_guess = true)
+            keep = (movie.is_slop = true)
             if (NOT m.hideFest) AND isVS then keep = true
             if m.showPreorders AND movie._is_preorder = true then keep = true
             if keep

@@ -677,19 +677,17 @@ class MovieEnricher:
             try:
                 from scripts.slop_classifier import classify_slop
                 is_slop, reason, confidence = classify_slop(result)
-                if confidence == 'strong':
+                # The classifier's guess lives directly in is_slop — the one slop
+                # field the display filter reads. Strong + weak-slop both set it
+                # (slop hides by default); weak not-slop stays null (better to show
+                # than hide). "Needs human confirmation" is tracked by
+                # admin/curate_reviewed.json, not a second data.json flag.
+                if confidence == 'strong' or is_slop:
                     result['is_slop'] = is_slop
-                    result.pop('_is_slop_guess', None)
                 else:
-                    # Weak confidence: commit slop but flag for human review.
-                    # Weak not-slop stays null (better to show than hide).
-                    if is_slop:
-                        result['is_slop'] = True
-                        result['_is_slop_guess'] = True   # needs human confirmation
-                    else:
-                        result.pop('is_slop', None)
-                        result.pop('_is_slop_guess', None)
+                    result.pop('is_slop', None)
                 result['_slop_reason'] = reason
+                result['_slop_confidence'] = confidence
             except Exception as e:
                 self.ctx.logger.warning(f"Slop classifier failed for {title}: {e}")
 

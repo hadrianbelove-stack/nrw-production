@@ -10,8 +10,14 @@ Usage:
 """
 import argparse
 import json
+import os
 import signal
+import sys
 from datetime import date, timedelta
+
+# Reuse /curate's exact slop-candidate + reviewed logic so the two never disagree.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from curate_list import _skip_old, _load, REVIEWED
 
 signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
@@ -95,10 +101,17 @@ def backlog():
                 if from_date <= m.get("digital_date", "") <= today]
     arrivals.sort(key=lambda m: m.get("digital_date", ""), reverse=True)
 
+    rev = _load(REVIEWED, {})
+    cy = date.today().year
+
     # --- Curation backlog: state-based, mirrors /curate (NOT the raw arrivals count) ---
     def needs_work(m):
         needs = []
-        if m.get("_is_slop_guess") is True:
+        # Slop: mirror /curate Stage 3 exactly — needs review if it's a current
+        # candidate (not an auto-restoration / 10yr-old reissue) and hasn't been
+        # slop-reviewed yet (admin/curate_reviewed.json). Same source of truth as
+        # curate_list.py, so /morning and /curate never disagree.
+        if not _skip_old(m, cy) and "slop" not in rev.get(str(m.get("id")), {}):
             needs.append("slop?")
         # Reissues (confirmed Pass D, _reissue) are normal arrivals — they need capsule + quotes.
         # Only AUTO-detected restorations are skipped.

@@ -119,9 +119,9 @@ def _sections(m):
 
 
 def _slop_status(m):
-    if m.get("is_slop"):
-        return "🗑 SLOP (auto)" if m.get("_is_slop_guess") else "🗑 SLOP (manual)"
-    return "✅ Not slop"
+    # Slop is just a display label now. The slop stage only shows films not yet
+    # slop-reviewed, so every row here is an unconfirmed classifier verdict.
+    return "🗑 SLOP" if m.get("is_slop") else "✅ Not slop"
 
 
 def build(stage, window):

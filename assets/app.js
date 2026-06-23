@@ -406,13 +406,13 @@ const NRW = {
 
             if (this.showHighlightsOnly) return !!(movie.filters?.is_staff_pick || movie.featured);
             // Slop view = slop films on the regular wall; fests live only in the Fests view
-            if (this.slopMode === 'only') return !!(movie.is_slop || movie._is_slop_guess) && !movie.filters?.is_virtual_screening;
+            if (this.slopMode === 'only') return !!movie.is_slop && !movie.filters?.is_virtual_screening;
 
             // Genre view — every film with that tag, slop + fests included
             if (activeGenre) return this.movieMatchesGenre(movie, activeGenre);
 
             // Default wall: hide slop (unless slop toggle is on 'all'), hide fests
-            if (this.slopMode === 'free' && (movie.is_slop || movie._is_slop_guess)) return false;
+            if (this.slopMode === 'free' && movie.is_slop) return false;
             if (movie.filters?.is_virtual_screening) return false;
             return true;
         });

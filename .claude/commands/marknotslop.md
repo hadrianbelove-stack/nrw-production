@@ -44,7 +44,7 @@ data = json.load(open('data.json'))
 matches = [m for m in data['movies']
            if q in m.get('title','').lower() or q == str(m.get('id',''))]
 for m in matches:
-    print(f\"  {m['title']} ({m.get('year','?')}) — ID:{m.get('id')} is_slop:{m.get('is_slop')} guess:{m.get('_is_slop_guess',False)} reason:{m.get('_slop_reason','none')}\")
+    print(f\"  {m['title']} ({m.get('year','?')}) — ID:{m.get('id')} is_slop:{m.get('is_slop')} reason:{m.get('_slop_reason','none')}\")
 if not matches:
     print('No match found')
 "
@@ -67,7 +67,6 @@ if not matched:
     print('ERROR: movie not found')
     exit(1)
 matched['is_slop'] = False
-matched.pop('_is_slop_guess', None)
 matched.pop('_slop_reason', None)
 with open('data.json', 'w') as f:
     json.dump(data, f, indent=2, ensure_ascii=False)

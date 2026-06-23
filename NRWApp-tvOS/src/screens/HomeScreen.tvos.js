@@ -646,13 +646,13 @@ const HomeScreenTvOS = () => {
     // Fests and pre-orders are always exempt — if you turned them on, you want all of them
     if (slopMode === 'free') {
       movies = movies.filter(m =>
-        (!m.is_slop && !m._is_slop_guess) ||
+        (!m.is_slop) ||
         (!hideFest && m.filters?.is_virtual_screening) ||
         (showPreorders && m._is_preorder)
       );
     } else if (slopMode === 'only') {
       movies = movies.filter(m =>
-        (m.is_slop || m._is_slop_guess) ||
+        (m.is_slop) ||
         (!hideFest && m.filters?.is_virtual_screening) ||
         (showPreorders && m._is_preorder)
       );
