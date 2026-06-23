@@ -802,7 +802,7 @@ const NRWMobile = {
         this.setView(1);
     },
 
-    // On load, open the detail sheet for a movie if the URL carries ?m=<id>
+    // On load, open the poster view for a movie if the URL carries ?m=<id>
     // (from a shared link). Always opens, even if the movie is filtered out.
     handleDeepLink() {
         const id = new URLSearchParams(location.search).get('m');
@@ -820,7 +820,7 @@ const NRWMobile = {
         }
         if (idx !== -1) {
             this.selectMovie(idx);
-            this.setView(2);
+            this.setView(1);
         }
     },
 
