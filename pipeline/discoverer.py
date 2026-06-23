@@ -325,6 +325,9 @@ class ProviderDiscoverer:
         newly_digital = 0
         checked = 0
         failed = 0
+        rent_preorders_held = 0  # Amazon pre-order rentals held in tracking (JustWatch lists them as live RENT)
+        held_preorder_details = []  # Breadcrumb: which titles were held as pre-orders
+        self._captcha_blocks = []  # Titles where the store page hit a CAPTCHA wall (for the report)
         total_to_check = len(tracking_movies)
         newly_available_ids = []  # Track movie IDs that transition to available
         transition_details = []  # Breadcrumb: which movies transitioned and why
@@ -567,6 +570,9 @@ class ProviderDiscoverer:
                         # DISCOVERY IS STRICTLY BINARY.
                         # Transition provider-discovered movie
                         if has_providers and movie['status'] == 'tracking':
+                            # Preserve any pre-existing digital_date so a HOLD below can restore it
+                            # (the block further down sets digital_date=today in anticipation of transition).
+                            _orig_digital_date = movie.get('digital_date')
                             # Buy-only pre-order guard: only transition if rent/streaming appeared
                             if movie.get('_buyonly_preorder'):
                                 if not rent_names and not stream_names:
@@ -622,6 +628,26 @@ class ProviderDiscoverer:
                                 if jw_result is None:
                                     continue  # Stay in tracking
 
+                            # Pre-order guard: JustWatch lists store pre-order rentals (Amazon,
+                            # Apple, Fandango at Home) as ordinary RENT offers with a price. For
+                            # pre-orders the only accurate source is the store page, so verify every
+                            # rent-listed VOD transition there before going live; if the page reads
+                            # as a pre-order, hold in tracking and re-check next run (no fake price).
+                            if self._is_held_rent_preorder(movie_id, movie, jw_result):
+                                # Undo the speculative digital_date set above — real date comes at release
+                                if _orig_digital_date is None:
+                                    movie.pop('digital_date', None)
+                                else:
+                                    movie['digital_date'] = _orig_digital_date
+                                movie['_rent_preorder_held'] = datetime.now().strftime('%Y-%m-%d')
+                                rent_preorders_held += 1
+                                held_preorder_details.append({'movie_id': str(movie_id), 'title': movie.get('title', '')})
+                                self.logger.info(f"Rent pre-order held: {movie['title']} ({movie_id}) — Amazon page not yet available")
+                                print(f"  ⏳ {movie['title']} — rent-listed pre-order (Amazon not yet available), holding in tracking")
+                                continue  # stay in tracking
+
+                            # Genuine release — clear any stale hold flag and transition
+                            movie.pop('_rent_preorder_held', None)
                             self.host._transition_movie_to_available(
                                 movie_id, movie, 'provider_availability_check', newly_available_ids)
                             newly_digital += 1
@@ -657,7 +683,8 @@ class ProviderDiscoverer:
         else:
             scan_tag = ""
 
-        completion_msg = f"Polled {checked} tracking movies, found {newly_digital} changes{scan_tag}. {failed} failed."
+        held_tag = f", {rent_preorders_held} pre-order rental(s) held" if rent_preorders_held else ""
+        completion_msg = f"Polled {checked} tracking movies, found {newly_digital} changes{scan_tag}{held_tag}. {failed} failed."
         print(f"\n✅ {completion_msg}")
         self.logger.info(completion_msg)
 
@@ -682,11 +709,14 @@ class ProviderDiscoverer:
                     'polled': checked,
                     'transitions': newly_digital,
                     'failed': failed,
+                    'rent_preorders_held': rent_preorders_held,
                     'jw_healthy': self._jw_healthy,  # JW_BREAKER: None=not checked, False=outage detected
                     'scan_tag': scan_tag.strip() if scan_tag else None
                 },
                 'transition_details': transition_details[:100],
                 'total_transitions': len(transition_details),
+                'held_preorder_details': held_preorder_details[:100],
+                'captcha_block_titles': list(self._captcha_blocks)[:100],
                 'api_errors': api_errors[:100],
                 'total_api_errors': len(api_errors),
             }
@@ -847,7 +877,12 @@ class ProviderDiscoverer:
 
                 # Amazon CAPTCHA detection — default to pre-order if blocked
                 if is_amazon and ('captcha' in body_text or 'not a robot' in body_text or 'automated access' in body_text):
-                    self.logger.info(f"Pre-order page check for {title}: Amazon CAPTCHA detected → defaulting to pre-order")
+                    msg = f"Amazon CAPTCHA wall hit for '{title}' — store page unreadable, holding as pre-order this run"
+                    self.logger.warning(msg)
+                    print(f"  ⚠️ {msg}")
+                    # Record for the morning report so a real CAPTCHA event is visible
+                    if isinstance(getattr(self, '_captcha_blocks', None), list):
+                        self._captcha_blocks.append(title)
                     return 'pre-order'
 
                 has_preorder = any(signal in body_text for signal in preorder_signals)
@@ -946,6 +981,45 @@ class ProviderDiscoverer:
             print(f"  🏷️  {title} — buy-only, page check inconclusive → treating as pre-order")
 
         return result
+
+    def _is_held_rent_preorder(self, movie_id, movie, jw_result):
+        """
+        Hold a rent-listed VOD title in tracking if it's actually a store pre-order.
+
+        JustWatch reports store pre-order RENTALS (Amazon/Apple/Fandango at Home) as
+        ordinary RENT offers with a price, so the only accurate source is the store page.
+        We HOLD only on a positive pre-order signal: the scraper reads an explicit
+        "Pre-order" label reliably but can't confirm "available", so "hold unless available"
+        would freeze real rentals. (Buy-only pre-orders are handled by _detect_buyonly_preorder.)
+
+          - has streaming / no rent → False (transition; streaming has no pre-orders)
+          - preorder_overrides[id] False/True → forced genuine / forced hold
+          - page says 'pre-order' (or CAPTCHA) → True (hold); else → False (transition)
+
+        Held titles stay status='tracking', re-checked each run, go live once the page no
+        longer reads as a pre-order. Escape hatch: preorder_overrides[id] = false.
+        """
+        # Bypass results (manual add, override, virtual screening, JW fail-open) carry no
+        # offer metadata — never hold those.
+        if not isinstance(jw_result, dict) or jw_result.get('_bypass') or jw_result.get('_fail_open'):
+            return False
+
+        # Verify any rent-listed VOD transition with no subscription (streaming) home —
+        # that's where store pre-orders hide. Streaming services have no pre-order concept.
+        if not (jw_result.get('has_rent') and not jw_result.get('has_streaming')):
+            return False
+
+        # Manual override wins over the page check.
+        override = self.config.get('preorder_overrides', {}).get(str(movie_id))
+        if override is False:
+            return False
+        if override is True:
+            return True
+
+        # Confirm against the actual store page (Playwright; CAPTCHA → 'pre-order').
+        # Hold ONLY on a positive pre-order verdict — we can't reliably confirm 'available'.
+        verdict = self._check_preorder_page(jw_result, movie.get('title', ''))
+        return verdict == 'pre-order'
 
     # ------------------------------------------------------------------
     # Watch link gap fill and re-enrichment
