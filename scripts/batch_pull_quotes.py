@@ -85,8 +85,13 @@ def convert_to_combined_format(title, year, quotes):
 
 def main():
     parser = argparse.ArgumentParser(description='Batch scrape pull quotes for wall movies')
-    parser.add_argument('--limit', type=int, default=20, help='Number of movies to process (default: 20)')
-    parser.add_argument('--all', action='store_true', help='Process all wall movies')
+    parser.add_argument('--days', type=int, default=7,
+                        help='Scrape films whose digital_date is within the last N days (default: 7, matches the '
+                             'curate window). This is the normal limit — catches up across missed days, drops older films.')
+    parser.add_argument('--limit', type=int, default=None,
+                        help='Optional hard cap on movie count (default: none — the date window is the limit)')
+    parser.add_argument('--all', action='store_true',
+                        help='Ignore the date window — process every uncached wall movie')
     parser.add_argument('--force', action='store_true', help='Re-scrape even if cached')
     args = parser.parse_args()
 
@@ -100,10 +105,11 @@ def main():
         logger.error("Could not load movies from data.json")
         return
 
-    # Sort available movies first (digital_date <= today), then pre-orders after
-    # Prevents future-dated pre-orders from crowding out actual new arrivals
-    from datetime import date as _date
+    # Sort newest digital_date first (nice log order; the date window below is what
+    # actually gates which films get scraped).
+    from datetime import date as _date, timedelta as _timedelta
     _today = str(_date.today())
+    _window_start = str(_date.today() - _timedelta(days=args.days))
     movies.sort(key=lambda m: (
         1 if (m.get('digital_date') or '') <= _today else 0,
         m.get('digital_date', '') or ''
@@ -121,8 +127,9 @@ def main():
                 json.dump({}, open(cache_path, 'w'))
                 logger.info(f"--force: cleared {cache_path}")
 
-    # Determine which movies to process
-    limit = len(movies) if args.all else args.limit
+    # Determine which movies to process. Normal mode: every uncached film whose
+    # digital_date falls within the last --days days (catches up across a missed
+    # run, drops anything older). --all ignores the window. --limit is an optional cap.
     to_process = []
 
     for m in movies:
@@ -130,6 +137,13 @@ def main():
         year = m.get('year', 0)
         if not title or not year:
             continue
+
+        # Date window (skipped by --all): recent arrivals only — excludes old films
+        # AND future-dated pre-orders (which have no reviews yet).
+        if not args.all:
+            dd = m.get('digital_date') or ''
+            if not (_window_start <= dd <= _today):
+                continue
 
         cache_key = f"{title}_{year}"
 
@@ -150,7 +164,7 @@ def main():
                 continue
 
         to_process.append(m)
-        if len(to_process) >= limit:
+        if args.limit is not None and len(to_process) >= args.limit:
             break
 
     if not to_process:
