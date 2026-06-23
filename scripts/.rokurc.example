@@ -1,0 +1,5 @@
+# Copy to scripts/.rokurc and fill in your Roku's dev-mode password.
+# scripts/.rokurc is gitignored so the password never lands in the repo.
+export ROKU_IP=192.168.4.53        # your Roku's LAN IP (Settings > Network > About)
+export ROKU_USER=rokudev
+export ROKU_PASS=                   # the Developer Mode password you set on the Roku

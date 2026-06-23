@@ -16,6 +16,8 @@ NRWApp-tvOS/build/
 
 # /reviewsince marker — personal "last reviewed commit" pointer
 .claude/last_review_commit
+# /cleanupcatchup marker — personal "last caught-up commit" pointer
+.claude/last_catchup_commit
 cache/*
 !cache/.gitkeep
 !cache/screenshots/
@@ -171,3 +173,6 @@ hidden_gems_output/
 
 # Playwright MCP test artifacts
 /.playwright-mcp/
+
+# Roku dev creds (local only)
+scripts/.rokurc

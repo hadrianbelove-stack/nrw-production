@@ -23,9 +23,6 @@ Sub Init()
     m.trailersButton = m.top.FindNode("trailersButton")
     m.detailScreen = m.top.FindNode("detailScreen")
     m.searchScreen = m.top.FindNode("searchScreen")
-    m.searchButton = m.top.FindNode("searchButton")
-    m.searchButtonBg = m.top.FindNode("searchButtonBg")
-    m.searchButtonLabel = m.top.FindNode("searchButtonLabel")
     m.sloganLabel = m.top.FindNode("sloganLabel")
 
     ' Bundled Lato fonts (match tvOS) — replaces Roku built-in system fonts
@@ -34,7 +31,6 @@ Sub Init()
     if m.sloganLabel <> invalid then m.sloganLabel.font = m.fonts.slogan
     m.dateHudDay.font = m.fonts.sectionDay
     m.dateHudRest.font = m.fonts.sectionDate
-    if m.searchButtonLabel <> invalid then m.searchButtonLabel.font = m.fonts.filterChip
     ' In-grid date dividers use Lato too
     m.movieGrid.sectionDividerFont = m.fonts.sectionDay
 
@@ -637,24 +633,8 @@ End Sub
 
 Sub onSearchClosed()
     m.searchScreen.visible = false
-    SetSearchButtonActive(false)
     m.movieGrid.SetFocus(true)
     m.focusedArea = "grid"
-End Sub
-
-' Light up the header Search button while the filter row is focused, so the
-' "press ▲ to search" path is discoverable (it's the only way in).
-Sub SetSearchButtonActive(active as Boolean)
-    if m.searchButtonBg = invalid then return
-    if active
-        m.searchButtonBg.color = "0x00D4AAFF"
-        m.searchButtonLabel.text = "Search"
-        m.searchButtonLabel.color = "0x0A0A0AFF"
-    else
-        m.searchButtonBg.color = "0x333333FF"
-        m.searchButtonLabel.text = "Search…"
-        m.searchButtonLabel.color = "0x888888FF"
-    end if
 End Sub
 
 Sub onSearchRequestDetail()
@@ -729,14 +709,12 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
             ' filter row). Stay put rather than opening Search by accident.
             return true
         else if key = "down"
-            SetSearchButtonActive(false)
             m.filterBar.hasFocus = false   ' clear the orange focus ring
             m.movieGrid.SetFocus(true)
             m.focusedArea = "grid"
             return true
         else if key = "back"
             ' Go to grid
-            SetSearchButtonActive(false)
             m.filterBar.hasFocus = false   ' clear the orange focus ring
             m.movieGrid.SetFocus(true)
             m.focusedArea = "grid"
@@ -751,7 +729,6 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
                 m.filterBar.SetFocus(true)
                 m.filterBar.hasFocus = true
                 m.focusedArea = "filter"
-                SetSearchButtonActive(true)
                 return true
             end if
         else if key = "back"
@@ -766,7 +743,6 @@ Function OnKeyEvent(key as String, press as Boolean) as Boolean
             m.filterBar.SetFocus(true)
             m.filterBar.hasFocus = true
             m.focusedArea = "filter"
-            SetSearchButtonActive(true)
             return true
         end if
     end if

@@ -418,6 +418,10 @@ class DataGenerator:
         base = cjk.sub('', base)
         base = re.sub(r'[\(\[]\s*[\)\]]', '', base)
         base = re.sub(r'\s{2,}', ' ', base).strip()
+        # Never return blank: a film with ONLY a non-Latin title (no English) keeps
+        # its original rather than showing an empty title — curation can catch it.
+        if not base:
+            base = (title or original_title or '').strip()
         return base
 
     def add_movie_to_site_immediately(self, movie_id, movie_data):
