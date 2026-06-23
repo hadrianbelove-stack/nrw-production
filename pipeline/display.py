@@ -156,9 +156,8 @@ class DisplayGenerator:
             qual = facts.get(key)
             if not qual:
                 continue
-            if movie.get('_wiki_language_count') is None:
-                wiki = (movie.get('links') or {}).get('wikipedia')
-                movie['_wiki_language_count'] = notab.wikipedia_language_count(wiki)
+            # _wiki_language_count is set during enrichment (network stays out of
+            # the display pass); read it as-is, None is fine — buzz tolerates it.
             if movie.get('_tmdb_popularity') is None:
                 movie['_tmdb_popularity'] = movie.get('popularity')
             block = notab.build(movie, qual)

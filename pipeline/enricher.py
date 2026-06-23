@@ -283,6 +283,10 @@ class MovieEnricher:
             enrichment_results, title, year)
         if wiki_url:
             result['links']['wikipedia'] = wiki_url
+            # Interlanguage-link count — a notability buzz signal. Computed here
+            # (network belongs in enrichment) so the display pass stays offline.
+            from pipeline import notability as _notab
+            result['_wiki_language_count'] = _notab.wikipedia_language_count(wiki_url)
         # Store Wikidata distributors if found (for indie detection)
         wikidata_distributors = getattr(self.host, 'last_wikidata_distributors', [])
         if wikidata_distributors:

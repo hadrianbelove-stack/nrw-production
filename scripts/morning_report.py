@@ -71,6 +71,31 @@ def overnight():
         for d in other:
             print(f'  • {d.get("title")} — {d.get("reason")}')
 
+    # Pre-orders held off the wall this run (store page not yet "available")
+    held = disc.get("held_preorder_details", [])
+    if held:
+        print(f"\nHeld as pre-order (waiting on store availability): {len(held)}")
+        for d in held:
+            print(f'  • {d.get("title")}')
+
+    # Store-page CAPTCHA blocks — only appears if it actually happened
+    captchas = disc.get("captcha_block_titles", [])
+    if captchas:
+        print(f"\n⚠ Amazon CAPTCHA blocks (→ Concerns): {len(captchas)}")
+        for t in captchas:
+            print(f'  • {t} — store page blocked; held as pre-order this run (re-checked next run)')
+
+    # Capsule generation failures (CI batch) — only appears when some failed this run
+    try:
+        cap = json.load(open("metrics/capsule_run.json"))
+    except Exception:
+        cap = {}
+    cap_failed = cap.get("failed", 0)
+    if cap_failed and str(cap.get("timestamp", ""))[:10] == run_date:
+        print(f"\n⚠ Capsule generation failures (→ Concerns): {cap_failed}")
+        for fdet in cap.get("failures", []):
+            print(f'  • {fdet.get("title")} ({fdet.get("year")}) — {fdet.get("reason")}')
+
 
 def backlog():
     def svc_names(val):

@@ -277,6 +277,7 @@ def cmd_batch(args):
     ]
 
     stats = {'written': 0, 'failed': 0}
+    failures = []  # [{title, year, reason}] — surfaced in the morning report
 
     for i, movie in enumerate(to_process, 1):
         kwargs = extract_capsule_args(movie)
@@ -310,16 +311,31 @@ def cmd_batch(args):
                 review_lines.append(f"\n---\n\n")
             else:
                 stats['failed'] += 1
+                failures.append({'title': title, 'year': year,
+                                 'reason': 'no capsule produced (empty/verification)'})
                 logger.info(f"  -> FAILED")
 
         except Exception as e:
             stats['failed'] += 1
+            failures.append({'title': title, 'year': year, 'reason': str(e)})
             logger.error(f"  -> Error: {e}")
 
     # Write review file
     os.makedirs(os.path.dirname(review_file) or '.', exist_ok=True)
     with open(review_file, 'w') as f:
         f.writelines(review_lines)
+
+    # Persist a run metric so the morning report can surface failures (only when
+    # there are any). metrics/ is committed by CI and pulled to the local Mac.
+    from datetime import datetime
+    os.makedirs('metrics', exist_ok=True)
+    with open('metrics/capsule_run.json', 'w') as f:
+        json.dump({
+            'timestamp': datetime.now().isoformat(),
+            'written': stats['written'],
+            'failed': stats['failed'],
+            'failures': failures,
+        }, f, indent=2)
 
     print(f"\n{'='*60}")
     print(f"Done! Written: {stats['written']}, Failed: {stats['failed']}")

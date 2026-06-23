@@ -95,6 +95,10 @@ jobs:
           echo "✅ Build and tests completed"
 
       - name: Generate per-movie share pages
+        # Share previews are non-critical — never let a bad poster/font fetch
+        # take down the whole site deploy. The script already swallows per-movie
+        # errors; this guards a top-level failure too.
+        continue-on-error: true
         run: |
           echo "🔗 Generating per-movie OG stub pages + share cards..."
           # Writes m/<id>.html + assets/cards/<id>.png (gitignored — bundled into the

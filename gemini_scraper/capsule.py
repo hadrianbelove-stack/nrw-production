@@ -910,7 +910,7 @@ VERIFICATION:"""
         notability Buzz score) — or {} if absent/unparseable.
         """
         if not self._init_gemini():
-            return ''
+            return '', {}
 
         source_lines = []
         if sources.get('wikipedia'):
