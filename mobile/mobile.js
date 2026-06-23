@@ -111,6 +111,7 @@ const NRWMobile = {
             this.applyFilter();
             this.buildGrid();
             this.setView(0);
+            this.handleDeepLink();
 
         } catch (err) {
             console.error('Failed to load movies:', err);
@@ -800,6 +801,74 @@ const NRWMobile = {
         this.setView(1);
     },
 
+    // On load, open the detail sheet for a movie if the URL carries ?m=<id>
+    // (from a shared link). Always opens, even if the movie is filtered out.
+    handleDeepLink() {
+        const id = new URLSearchParams(location.search).get('m');
+        if (!id) return;
+        let idx = this.filteredMovies.findIndex(m => String(m.id) === String(id));
+        if (idx === -1) {
+            // Filtered out (slop-hidden / fest / pre-order) — relax the right filter
+            // so a shared link always opens, matching the movie's type.
+            const target = this.allMovies.find(m => String(m.id) === String(id));
+            if (!target) return;
+            if (target._is_preorder) {
+                this.showPreorders = true;   // exclusive pre-order view includes it
+            } else {
+                this.slopMode = 'all';       // show slop titles too
+                this.hideFest = false;       // show virtual screenings too
+            }
+            this.applyFilter();
+            this.buildGrid();
+            idx = this.filteredMovies.findIndex(m => String(m.id) === String(id));
+        }
+        if (idx !== -1) {
+            this.selectMovie(idx);
+            this.setView(2);
+        }
+    },
+
+    // The shareable per-movie URL — the OG stub page that yields a rich preview.
+    // Mobile lives in /mobile/, so the stub is one level up at ../m/<id>.html.
+    _shareUrlFor(id) {
+        return new URL('../m/' + encodeURIComponent(id) + '.html', location.href).href;
+    },
+
+    // Share the movie currently shown in the poster/sheet view.
+    shareCurrent() {
+        this.shareMovie(this.filteredMovies[this.currentMovieIndex]);
+    },
+
+    shareMovie(movie) {
+        if (!movie) return;
+        const url = this._shareUrlFor(String(movie.id));
+        const title = movie.display_title || movie.title || 'The New Release Wall';
+        const text = `${title}${movie.year ? ' (' + movie.year + ')' : ''} — on The New Release Wall`;
+        if (navigator.share) {
+            navigator.share({ title, text, url }).catch(() => {});
+        } else if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(url)
+                .then(() => this._showToast('Link copied'))
+                .catch(() => this._showToast(url));
+        } else {
+            window.prompt('Copy this link:', url);
+        }
+    },
+
+    _showToast(msg) {
+        const existing = document.getElementById('nrw-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'nrw-toast';
+        toast.className = 'nrw-toast';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 1600);
+    },
+
+    // Inline share glyph (reused by the sheet button + poster-view icon)
+    SHARE_SVG: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>',
+
     navigateMovie(dir) {
         const newIndex = this.currentMovieIndex + dir;
         if (newIndex < 0 || newIndex >= this.filteredMovies.length) return;
@@ -1062,6 +1131,10 @@ const NRWMobile = {
         // Synopsis (renders **bold**/*italic* markdown, bold film titles hyperlinked)
         html += '<div class="sheet-section-label">Synopsis</div>' +
             '<div class="sheet-synopsis">' + this._linkBoldTitles(NRWConfig.renderMarkdown(movie.capsule || movie.synopsis || 'No synopsis available.')) + '</div>';
+
+        // Share
+        html += '<button class="sheet-share-btn" onclick="NRWMobile.shareCurrent()">' +
+            this.SHARE_SVG + '<span>Share</span></button>';
 
         html += '<div style="height:50px"></div>';
 

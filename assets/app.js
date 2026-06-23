@@ -114,6 +114,7 @@ const NRW = {
                 this.setupDelegatedClickHandlers();
                 this.applyFilter();
                 this.renderWallWithMore();
+                this.handleDeepLink();
             } else {
                 document.getElementById('wall').innerHTML = '<p>No movies in database</p>';
             }
@@ -1089,6 +1090,64 @@ const NRW = {
         }
     },
 
+    // Open the lightbox by id even if the movie is filtered out or off-page —
+    // a shared link (?m=<id>) must always open, including slop-hidden/older titles.
+    openLightboxById(id) {
+        const target = this.allMovies.find(m => String(m.id) === String(id));
+        if (!target) return false;
+        let list = [...this.filteredMovies]
+            .sort((a, b) => new Date(b.digital_date) - new Date(a.digital_date))
+            .slice(0, this.displayedCount);
+        if (!list.some(m => String(m.id) === String(id))) list = [target, ...list];
+        this.lightboxMovies = list;
+        this.lightboxIndex = list.findIndex(m => String(m.id) === String(id));
+        this.updateLightbox();
+        const lightbox = document.getElementById('poster-lightbox');
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        return true;
+    },
+
+    // On load, open a movie if the URL carries ?m=<id> (from a shared link)
+    handleDeepLink() {
+        const id = new URLSearchParams(location.search).get('m');
+        if (id) this.openLightboxById(id);
+    },
+
+    // The shareable per-movie URL — the OG stub page that yields a rich link preview.
+    _shareUrlFor(id) {
+        return new URL('m/' + encodeURIComponent(id) + '.html', location.href).href;
+    },
+
+    // Share a movie via the native share sheet, falling back to copy-link.
+    shareMovie(movie) {
+        if (!movie) return;
+        const url = this._shareUrlFor(String(movie.id));
+        const title = movie.display_title || movie.title || 'The New Release Wall';
+        const text = `${title}${movie.year ? ' (' + movie.year + ')' : ''} — on The New Release Wall`;
+        if (navigator.share) {
+            navigator.share({ title, text, url }).catch(() => {});
+        } else if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(url)
+                .then(() => this._showToast('Link copied'))
+                .catch(() => this._showToast(url));
+        } else {
+            window.prompt('Copy this link:', url);
+        }
+    },
+
+    // Brief confirmation toast (used by the copy-link fallback)
+    _showToast(msg) {
+        const existing = document.getElementById('nrw-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'nrw-toast';
+        toast.className = 'nrw-toast';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 1600);
+    },
+
     // Navigate in lightbox (movie-level)
     // updateLightbox() sets default focus to TRAILER
     lightboxNav(direction) {
@@ -1121,6 +1180,9 @@ const NRW = {
             const btns = Array.from(vodRow.querySelectorAll('a.vod-btn'));
             if (btns.length > 0) grid.push(btns);
         }
+        // Row: SHARE button
+        const shareBtn = btnContainer?.querySelector('.lb-share-btn');
+        if (shareBtn) grid.push([shareBtn]);
         return grid;
     },
 
@@ -1203,7 +1265,9 @@ const NRW = {
         }
         // Links (scores, watch buttons, VOD cards)
         const link = el.tagName === 'A' ? el : el.querySelector('a');
-        if (link) link.click();
+        if (link) { link.click(); return; }
+        // Plain buttons (e.g. SHARE)
+        if (typeof el.click === 'function') el.click();
     },
 
     // --- Lightbox sub-renderers (extracted from updateLightbox) ---
@@ -1642,6 +1706,17 @@ const NRW = {
                 : 'Available TBD';
             container.appendChild(dateLabel);
         }
+
+        // === SHARE ROW ===
+        const shareRow = document.createElement('div');
+        shareRow.className = 'lb-share-row';
+        const shareBtn = document.createElement('button');
+        shareBtn.className = 'lb-share-btn';
+        shareBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg><span>SHARE</span>';
+        shareBtn.setAttribute('aria-label', 'Share this movie');
+        shareBtn.addEventListener('click', () => this.shareMovie(movie));
+        shareRow.appendChild(shareBtn);
+        container.appendChild(shareRow);
     },
 
     // Update lightbox content — delegates to sub-renderers

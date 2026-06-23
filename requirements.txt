@@ -21,6 +21,9 @@ google-genai>=1.47.0,<2.0
 # Newsletter generation (requires Jinja2)
 jinja2>=3.1,<4.0
 
+# Per-movie share-card image generation (scripts/generate_share_pages.py)
+Pillow>=10.0,<12.0
+
 # Trailer downloading and hosting for self-hosted playback
 yt-dlp>=2025.1,<2027.0
 b2sdk>=2.0,<3.0

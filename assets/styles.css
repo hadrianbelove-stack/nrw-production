@@ -1640,6 +1640,54 @@ header h1 {
 }
 .lb-vod-row > * { flex: 1; min-width: 0; }
 
+/* SHARE ROW: ghost button below watch options */
+.lb-share-row {
+    display: flex;
+    margin-top: 10px;
+}
+.lb-share-btn {
+    flex: 1;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1.5px solid rgba(0,212,170,0.5);
+    border-radius: 10px;
+    background: transparent;
+    color: #00d4aa;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.lb-share-btn:hover,
+.lb-share-btn.lb-focused {
+    background: rgba(0,212,170,0.12);
+    transform: translateY(-2px);
+}
+.lb-share-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* Copy-link confirmation toast (shared by lightbox + grid) */
+.nrw-toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(20,20,20,0.95);
+    color: #fff;
+    border: 1px solid rgba(0,212,170,0.5);
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    z-index: 10000;
+    opacity: 1;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
 /* === Streaming button: solid brand fill, logo only === */
 .stream-btn {
     display: flex;

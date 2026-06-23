@@ -94,6 +94,13 @@ jobs:
 
           echo "✅ Build and tests completed"
 
+      - name: Generate per-movie share pages
+        run: |
+          echo "🔗 Generating per-movie OG stub pages + share cards..."
+          # Writes m/<id>.html + assets/cards/<id>.png (gitignored — bundled into the
+          # Pages artifact below, never committed). Gives each movie a real link preview.
+          python scripts/generate_share_pages.py
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

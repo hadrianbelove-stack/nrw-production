@@ -164,3 +164,10 @@ hidden_gems_output/
 /movie_tracking.db
 /movie_tracking.db-wal
 /movie_tracking.db-shm
+
+# Per-movie share assets — regenerated in CI before deploy (never committed)
+/m/
+/assets/cards/
+
+# Playwright MCP test artifacts
+/.playwright-mcp/
