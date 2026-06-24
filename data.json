@@ -1,7 +1,842 @@
 {
-  "generated_at": "2026-06-23T13:47:06.603068",
-  "count": 770,
+  "generated_at": "2026-06-24T11:06:38.515588",
+  "count": 771,
   "movies": [
+    {
+      "id": "1675177",
+      "title": "Chris & Martina: The Final Set",
+      "digital_date": "2026-06-26",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Tennis legends Chris Evert and Martina Navratilova reflect on their parallel journeys to sports stardom while delving into their rivalry and friendship, especially as the duo continue to support each other through their shared experience of cancer treatment.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 93,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {},
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=qN_AE0LPthA",
+        "rt": "https://www.rottentomatoes.com/m/chris_and_martina_the_final_set",
+        "metacritic": "https://www.metacritic.com/movie/chris-martina-the-final-set/",
+        "imdb": "https://www.imdb.com/title/tt42037166/",
+        "letterboxd": "https://letterboxd.com/film/chris-martina-the-final-set"
+      },
+      "watch_links": {},
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-06-24T10:51:15.065016",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/m6XxbOjeDyHChXlJ7CVEolNCq2o.jpg",
+      "studio": "Unknown",
+      "budget": 0,
+      "country": "US",
+      "original_language": "en",
+      "original_title": "Chris & Martina: The Final Set",
+      "display_title": "Chris & Martina: The Final Set",
+      "crew": {
+        "director": "Rebecca Gitlitz",
+        "cast": [
+          "Chris Evert",
+          "Martina Navratilova"
+        ]
+      },
+      "_discovery_source": "tmdb_type4",
+      "_is_preorder": true,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-24",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [],
+      "_trailer_source": "tmdb_official",
+      "metacritic_score": null,
+      "_imdb_votes": null,
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "watch_links",
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1699970",
+      "title": "The Welcome Table",
+      "digital_date": "2026-06-23",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Tells the story of climate refugees across six continents, celebrating the voices and experiences of people living at the forefront of the climate crisis, displaced from their homes by climate disasters.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 0,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/The_Welcome_Table_(film)",
+        "trailer": "https://www.youtube.com/watch?v=NlogOxc8rXk",
+        "rt": "https://www.rottentomatoes.com/m/the_welcome_table",
+        "justwatch": "https://www.justwatch.com/us/movie/the-welcome-table",
+        "metacritic": "https://www.metacritic.com/movie/the-welcome-table/",
+        "imdb": "https://www.imdb.com/title/tt42907611/",
+        "letterboxd": "https://letterboxd.com/film/the-welcome-table",
+        "director_wiki": "https://en.wikipedia.org/wiki/Josh_Fox"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Max",
+            "link": "https://play.hbomax.com/show/81fe03bf-ca14-494d-95b8-083174552700?utm_source=universal_search"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-06-24T10:51:14.823476",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/mol1ZJek1rVHXmV4UKZIIfzgyLp.jpg",
+      "studio": "International WOW Company",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "The Welcome Table",
+      "display_title": "The Welcome Table",
+      "crew": {
+        "director": "Josh Fox",
+        "cast": []
+      },
+      "_discovery_source": "tmdb_type4",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-24",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [],
+      "_wiki_language_count": 1,
+      "_trailer_source": "gemini_playwright",
+      "metacritic_score": null,
+      "_imdb_votes": null,
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "is_slop": false,
+      "_slop_reason": "prestige_streaming:max",
+      "_slop_confidence": "strong",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 12,
+      "notability": {
+        "buzz_score": 12,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
+    },
+    {
+      "id": "1717756",
+      "title": "The Clash of Nations: Joe Louis vs. Max Schmeling",
+      "digital_date": "2026-06-24",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Follows the parallel lives and careers of American Joe Louis and German Max Schmeling as they overcome social and political obstacles while hurtling on a collision course to two historic matchups in the ring, and a pivotal place in history.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 70,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": "https://www.rottentomatoes.com/m/joe_louis_vs_schmeling",
+        "justwatch": "https://www.justwatch.com/us/movie/the-clash-of-nations-joe-louis-vs-max-schmeling",
+        "imdb": "https://www.imdb.com/title/tt39004545/",
+        "letterboxd": "https://letterboxd.com/film/the-clash-of-nations-joe-louis-vs-max-schmeling"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/The-Clash-of-Nations-Joe-Louis-vs-Max-Schmeling/4974950",
+            "rent_price": "$2.99",
+            "buy_price": "$4.99",
+            "price": "$2.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-06-24T10:51:14.500159",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/gQFEZ34oHvsxmbYwWRncLdrUxVW.jpg",
+      "studio": "History",
+      "budget": 0,
+      "country": "US",
+      "original_language": "en",
+      "original_title": "The Clash of Nations: Joe Louis vs. Max Schmeling",
+      "display_title": "The Clash of Nations: Joe Louis vs. Max Schmeling",
+      "crew": {
+        "director": "Nikki Spetseris",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-24",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [],
+      "_imdb_votes": null,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-06-24T11:05:38.709835",
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
+    },
+    {
+      "id": "1630307",
+      "title": "Charlie Shaw's Revenge",
+      "digital_date": "2026-06-24",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A group of workers preparing for the re-opening of a remote adventure park on the brink of bankruptcy, find themselves stalked by a silent killer. Cut off from any form of rescue, the survivors must band together to fight for their lives.",
+      "genres": [
+        "Horror"
+      ],
+      "runtime": 109,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=X3kyoulz2xo",
+        "rt": "https://www.rottentomatoes.com/m/charlie_shaws_revenge",
+        "justwatch": "https://www.justwatch.com/us/movie/charlie-shaws-revenge",
+        "cast_wiki": {
+          "Mark Benton": "https://en.wikipedia.org/wiki/Mark_Benton",
+          "Neil Burgess": "https://en.wikipedia.org/wiki/Neil_Burgess_(actor)"
+        },
+        "imdb": "https://www.imdb.com/title/tt38712491/",
+        "letterboxd": "https://letterboxd.com/film/charlie-shaws-revenge"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.0455fff0-19f5-4089-9d17-39b52ce4164a&tag=nrw04-20",
+            "rent_price": "$2.99",
+            "buy_price": "$9.99",
+            "price": "$2.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-06-24T10:51:09.935126",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/fVRD1OFTaMzEqC5ZENJEQ9Tq3Fm.jpg",
+      "studio": "Unknown",
+      "budget": 0,
+      "country": "GB",
+      "original_language": "en",
+      "original_title": "Charlie Shaw's Revenge",
+      "display_title": "Charlie Shaw's Revenge",
+      "crew": {
+        "director": "John Langridge",
+        "cast": [
+          "Shahla Ayamah",
+          "Mark Benton",
+          "Neil Burgess"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-24",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [],
+      "_trailer_source": "gemini_playwright",
+      "_imdb_votes": null,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "London Independent Film Festival (won Best Horror Feature), Romford Horror International Film Festival (closing night film), Crossing The Screen (opening night film, won Best Sussex Production), Made in Sussex Film Festival (won Best Narrative Feature)",
+        "awards": "Best Horror Feature (London Independent Film Festival), Best Narrative Feature Film (Made in Sussex Film Festival), Best Sussex Production (Crossing the Screen Film Festival)",
+        "yearend_lists": "none found"
+      }
+    },
+    {
+      "id": "1282774",
+      "title": "Magic Hour",
+      "digital_date": "2026-06-26",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Erin and Charlie escape to the desert to navigate an unexpected and challenging new phase of their relationship.",
+      "genres": [
+        "Drama",
+        "Mystery",
+        "Romance"
+      ],
+      "runtime": 89,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {},
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Magic_Hour_(2025_film)",
+        "trailer": "https://www.youtube.com/watch?v=R9rMYkjaPzw",
+        "rt": null,
+        "cast_wiki": {
+          "Katie Aselton": "https://en.wikipedia.org/wiki/Katie_Aselton",
+          "Daveed Diggs": "https://en.wikipedia.org/wiki/Daveed_Diggs",
+          "Susan Sullivan": "https://en.wikipedia.org/wiki/Susan_Sullivan"
+        },
+        "metacritic": "https://www.metacritic.com/movie/magic-hour/",
+        "imdb": "https://www.imdb.com/title/tt32134256/",
+        "letterboxd": "https://letterboxd.com/film/magic-hour-2025-1",
+        "director_wiki": "https://en.wikipedia.org/wiki/Katie_Aselton"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://www.amazon.com/gp/video/detail/B08LQWMBCK?tag=nrw04-20"
+          }
+        ]
+      },
+      "pre_order_links": [
+        {
+          "service": "Amazon",
+          "link": "https://www.amazon.com/gp/video/detail/B08LQWMBCK?tag=nrw04-20"
+        }
+      ],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-06-24T10:51:04.128793",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/h7rTMjq9h64IX7WSdR4pndFpzET.jpg",
+      "studio": "Duplass Brothers Productions",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Magic Hour",
+      "display_title": "Magic Hour",
+      "crew": {
+        "director": "Katie Aselton",
+        "cast": [
+          "Katie Aselton",
+          "Daveed Diggs",
+          "Susan Sullivan",
+          "D.J. 'Shangela' Pierce",
+          "Brad Garrett"
+        ]
+      },
+      "_discovery_source": "tmdb_type4",
+      "_is_preorder": true,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-24",
+      "imdb_rating": "5.0",
+      "letterboxd_score": "3.2",
+      "keywords": [],
+      "_wiki_language_count": 2,
+      "_trailer_source": "gemini_playwright",
+      "metacritic_score": "59",
+      "_imdb_votes": 92,
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,low_imdb,no_rt_link)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": true,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1588727",
+      "title": "High Water",
+      "digital_date": "2026-06-24",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "In an attempt to discover the truth about the mysterious death of his son, Journalist Vince Sand descends into a dangerous netherworld of drug-abuse and murder that forces him to confront his own demons.",
+      "genres": [
+        "Thriller"
+      ],
+      "runtime": 85,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=hcz6MNjTCE4",
+        "rt": "https://www.rottentomatoes.com/m/high_water",
+        "justwatch": "https://www.justwatch.com/us/movie/high-water",
+        "cast_wiki": {
+          "Jonathan Hansler": "https://en.wikipedia.org/wiki/Jonathan_Hansler"
+        },
+        "imdb": "https://www.imdb.com/title/tt8112638/",
+        "letterboxd": "https://letterboxd.com/film/high-water-2025"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.1d2d7ae5-3051-49f2-9324-5643f9bce5a9&tag=nrw04-20",
+            "rent_price": "$2.99",
+            "buy_price": "$9.99",
+            "price": "$2.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-06-24T10:51:03.544720",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/xA78fIsSQNlzQndtsVSFkPuiDvI.jpg",
+      "studio": "Black Rock Films UK",
+      "budget": 20,
+      "country": "GB",
+      "original_language": "en",
+      "original_title": "High Water",
+      "display_title": "High Water",
+      "crew": {
+        "director": "Ewan Gorman",
+        "cast": [
+          "Stewart James Barham",
+          "Jonathan Hansler"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-24",
+      "imdb_rating": "6.5",
+      "letterboxd_score": null,
+      "keywords": [
+        "brighton, england",
+        "drama"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "_imdb_votes": 12,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 15,
+      "notability": {
+        "buzz_score": 15,
+        "quadrant": "Hidden gem",
+        "festival": "Hastings Rocks International Film Festival, Lift-Off Film Festival",
+        "awards": "Best Performance for Stewart James Barham at Hastings Rocks International Film Festival",
+        "yearend_lists": "none found"
+      }
+    },
+    {
+      "id": "1301086",
+      "title": "Our Wolves: In a Landscape of Fear and Love",
+      "digital_date": "2026-06-24",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Professor Luca Rossi dedicates what remains of his university career to study wolves, but his findings conflict with his emotions as he navigates the contentious divide between wolf defenders and opponents. As Luca tries to be as close as possible to the wolves to understand them, he finds himself facing the sentiments of those who fear and love them.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 85,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": "https://www.rottentomatoes.com/m/lupi_nostri_in_a_landscape_of_fear_and_love",
+        "justwatch": "https://www.justwatch.com/us/movie/our-wolves-in-a-landscape-of-fear-and-love",
+        "imdb": "https://www.imdb.com/title/tt36461766/",
+        "letterboxd": "https://letterboxd.com/film/our-wolves-in-a-landscape-of-fear-and-love"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.f90bf782-aa4b-491b-a5a4-48b8f46ce60e&tag=nrw04-20",
+            "rent_price": "$2.99",
+            "price": "$2.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-06-24T10:50:59.426299",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/fiO1JZfypvaS8XydWqLgnDjAB0k.jpg",
+      "studio": "Angelone Film Production",
+      "budget": 0,
+      "country": "Switzerland",
+      "original_language": "it",
+      "original_title": "Lupi Nostri",
+      "display_title": "Our Wolves: In a Landscape of Fear and Love (Lupi Nostri)",
+      "crew": {
+        "director": "Samer Angelone",
+        "cast": [
+          "Luca Rossi",
+          "Giorgio Bergero",
+          "Mauro Fissore",
+          "Daniel Redondo Gómez",
+          "Germano Ferrando"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-24",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [
+        "wolf",
+        "wolves"
+      ],
+      "_imdb_votes": null,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_trailer_retry_count": 1,
+      "_trailer_last_retry": "2026-06-24T11:05:38.787425",
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Hidden gem",
+        "festival": "Docville, Cinehill Film Festival, Tallinn Black Nights Film Festival (PÖFF), and others",
+        "awards": "Best Film at SCINEMA International Science Film Festival, Best Nature & Environment Film at Autrans Film Festival, plus awards from Superdoc, EHO, and Ecozine",
+        "yearend_lists": "none found"
+      }
+    },
+    {
+      "id": "1020047",
+      "title": "In the Hand of Dante",
+      "digital_date": "2026-06-24",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A Vatican priest discovers Dante's original Divine Comedy manuscript. When asked to authenticate it, writer Nick Tosches steals it, while a parallel story follows Dante's quest to create his masterpiece.",
+      "genres": [
+        "Crime",
+        "Drama",
+        "Thriller"
+      ],
+      "runtime": 153,
+      "year": 2026,
+      "rt_score": "38%",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/In_the_Hand_of_Dante_(film)",
+        "trailer": "https://www.youtube.com/watch?v=cXA3Zgsky18",
+        "rt": "https://www.rottentomatoes.com/m/in_the_hand_of_dante",
+        "justwatch": "https://www.justwatch.com/us/movie/in-the-hand-of-dante",
+        "cast_wiki": {
+          "Oscar Isaac": "https://en.wikipedia.org/wiki/Oscar_Isaac",
+          "Gal Gadot": "https://en.wikipedia.org/wiki/Gal_Gadot",
+          "Gerard Butler": "https://en.wikipedia.org/wiki/Gerard_Butler"
+        },
+        "metacritic": "https://www.metacritic.com/movie/in-the-hand-of-dante/",
+        "imdb": "https://www.imdb.com/title/tt1333644/",
+        "letterboxd": "https://letterboxd.com/film/in-the-hand-of-dante",
+        "director_wiki": "https://en.wikipedia.org/wiki/Julian_Schnabel"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Netflix",
+            "link": "https://www.netflix.com/title/82623388"
+          },
+          {
+            "service": "Netflix",
+            "link": "https://www.netflix.com/title/82623388"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-06-24T10:50:51.944165",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/nPPIufTBnzEg0d7NoR5RLL1oPra.jpg",
+      "studio": "DreamCrew",
+      "budget": 25000000,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "In the Hand of Dante",
+      "display_title": "In the Hand of Dante",
+      "crew": {
+        "director": "Julian Schnabel",
+        "cast": [
+          "Oscar Isaac",
+          "Gal Gadot",
+          "Gerard Butler",
+          "John Malkovich",
+          "Louis Cancelmi"
+        ]
+      },
+      "_discovery_source": "tmdb_type4",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-06-24",
+      "imdb_rating": "4.5",
+      "letterboxd_score": "2.5",
+      "keywords": [
+        "based on novel or book",
+        "venice, italy",
+        "rome, italy",
+        "sicily, italy",
+        "manuscript",
+        "black and white",
+        "verona italy",
+        "dante",
+        "vatican"
+      ],
+      "_wiki_language_count": 13,
+      "_trailer_source": "gemini_playwright",
+      "metacritic_score": "0",
+      "_imdb_votes": 1218,
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "_slop_reason": "score:1(low_imdb,major_streamer:netflix)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 68,
+      "notability": {
+        "buzz_score": 68,
+        "quadrant": "Consensus must-watch",
+        "festival": "Venice International Film Festival (Out of Competition)",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
+    },
     {
       "id": "1285951",
       "title": "Chapter 51",
@@ -42,6 +877,20 @@
           {
             "service": "Amazon",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.2116593d-2224-4b4e-92c6-dec4e228872e&tag=nrw04-20",
+            "rent_price": "$4.99",
+            "buy_price": "$12.99",
+            "price": "$4.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/chapter-51/umc.cmc.27061p0ragdx4sl18j4bn22fh?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1896789615",
+            "rent_price": "$4.99",
+            "buy_price": "$12.99",
+            "price": "$4.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Chapter-51/4957567",
             "rent_price": "$4.99",
             "buy_price": "$12.99",
             "price": "$4.99"
@@ -111,12 +960,13 @@
       "notability": {
         "buzz_score": 10,
         "quadrant": "Obscure - skip",
-        "festival": "private screenings in New York and Los Angeles",
+        "festival": "none found",
         "awards": "none found",
         "yearend_lists": "none found"
       },
       "capsule": "Meta-Hollywood whodunit in the form of a true-crime documentary\nShot on literally every motion picture film format in existence—8mm, 16mm, 35mm, VistaVision, and 65mm IMAX—and using over 140 lenses.\nFrom controversial photographer-turned-director **[Tyler Shields](https://en.wikipedia.org/wiki/Tyler_Shields)**, who reteams with **[Abigail Breslin](https://en.wikipedia.org/wiki/Abigail_Breslin)** (*Little Miss Sunshine*, *Zombieland*) for the first time since his 2015 debut *Final Girl*.",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_watch_links_verified": "2026-06-24T11:02:43.940237"
     },
     {
       "id": "1708753",
@@ -145,7 +995,8 @@
         },
         "imdb": "https://www.imdb.com/title/tt37025793/",
         "letterboxd": "https://letterboxd.com/film/vision-quest-2025",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1708753.mp4"
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1708753.mp4",
+        "wikipedia": "https://en.wikipedia.org/wiki/Vision_Quest_(film)"
       },
       "watch_links": {
         "vod": [
@@ -215,9 +1066,9 @@
       },
       "featured": false,
       "_tmdb_popularity": null,
-      "buzz_score": 0,
+      "buzz_score": 5,
       "notability": {
-        "buzz_score": 0,
+        "buzz_score": 5,
         "quadrant": "Obscure - skip",
         "festival": "none found",
         "awards": "none found",
@@ -431,7 +1282,7 @@
         "available_start": "2026-07-14",
         "available_end": "2026-07-17",
         "discovered": "2026-06-23",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "filters": {
@@ -620,6 +1471,13 @@
             "rent_price": "$5.99",
             "buy_price": "$9.99",
             "price": "$5.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/we-are-pat/umc.cmc.r1bwmj036xbfplmc6oi5qynm?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1895414896",
+            "rent_price": "$5.99",
+            "buy_price": "$12.99",
+            "price": "$5.99"
           }
         ]
       },
@@ -681,13 +1539,13 @@
       },
       "featured": false,
       "_tmdb_popularity": null,
-      "buzz_score": 24,
+      "buzz_score": 29,
       "notability": {
-        "buzz_score": 24,
+        "buzz_score": 29,
         "quadrant": "Hidden gem",
-        "festival": "Tribeca Festival (World Premiere), IDFA (European Premiere), Frameline49, Chicago International Film Festival",
-        "awards": "Special Jury Mention for New Documentary Director (Tribeca)",
-        "yearend_lists": "none found"
+        "festival": "major festivals played + prizes, or 'none found'",
+        "awards": "named awards/nominations, or 'none found'",
+        "yearend_lists": "critic year-end 'best of <year>' inclusions, or 'none found'"
       },
       "capsule": "Trans filmmaker **Ro Haber** re-examines the 90s *[SNL](https://en.wikipedia.org/wiki/Saturday_Night_Live)* character.\nJoined by the character's creator, **[Julia Sweeney](https://en.wikipedia.org/wiki/Julia_Sweeney)**.\nPremiered at the 2025 **[Tribeca Film Festival](https://en.wikipedia.org/wiki/Tribeca_Festival)**, where it received a Special Jury Mention for New Documentary Director.",
       "pull_quotes": [
@@ -703,7 +1561,8 @@
           "outlet": "Letterboxd",
           "review_url": "https://letterboxd.com/alc1976/film/we-are-pat/"
         }
-      ]
+      ],
+      "_watch_links_verified": "2026-06-24T11:02:48.075409"
     },
     {
       "id": "1225202",
@@ -894,6 +1753,13 @@
             "rent_price": "$9.99",
             "buy_price": "$14.99",
             "price": "$9.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Hungry/4941204",
+            "rent_price": "$9.99",
+            "buy_price": "$14.99",
+            "price": "$9.99"
           }
         ]
       },
@@ -994,7 +1860,8 @@
           "outlet": "Letterboxd",
           "review_url": null
         }
-      ]
+      ],
+      "_watch_links_verified": "2026-06-24T11:02:49.041968"
     },
     {
       "id": "1481603",
@@ -1030,6 +1897,13 @@
           {
             "service": "Amazon",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.21b8a217-a7e0-4b59-b1bc-a47c11d20d3a&tag=nrw04-20",
+            "rent_price": "$5.99",
+            "buy_price": "$12.99",
+            "price": "$5.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/hold-the-fort/umc.cmc.2pvroiz2ff6z6s5nymkirxabf?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1896865221",
             "rent_price": "$5.99",
             "buy_price": "$12.99",
             "price": "$5.99"
@@ -1114,7 +1988,8 @@
           "outlet": "Dread Central",
           "review_url": "https://www.dreadcentral.com/reviews/538449/hold-the-fort-review-silly-monster-movie-fun-fantasia-2025/"
         }
-      ]
+      ],
+      "_watch_links_verified": "2026-06-24T11:02:49.527616"
     },
     {
       "id": "1220566",
@@ -1166,6 +2041,20 @@
             "link": "https://www.barnesandnoble.com/w/dvd-eagles-of-the-republic-tarik-saleh/1150043918",
             "buy_price": "$22.99",
             "price": "$22.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Eagles-of-the-Republic/4999080",
+            "rent_price": "$4.99",
+            "buy_price": "$14.99",
+            "price": "$4.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/eagles-of-the-republic/umc.cmc.6aaxzfqpilicfkn2j586hmxoy?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1896772348",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
           }
         ]
       },
@@ -1243,8 +2132,8 @@
       "notability": {
         "buzz_score": 44,
         "quadrant": "Hidden gem",
-        "festival": "Cannes Film Festival (Palme d'Or nomination), Toronto International Film Festival, Stockholm International Film Festival (Opening Film)",
-        "awards": "Won 6 Guldbagge Awards including Best Film, Best Screenplay, Best Actor; Nominated for 11 Guldbagge Awards",
+        "festival": "Cannes Film Festival (Palme d'Or nomination), Toronto International Film Festival (North American Premiere), Stockholm Film Festival (Opening Film)",
+        "awards": "6 Guldbagge Awards (including Best Film, Best Actor, Best Screenplay), Sweden's official submission for 98th Academy Awards",
         "yearend_lists": "none found"
       },
       "capsule": "Political thriller about an Egyptian movie star pressured into starring in a state-sanctioned propaganda film.\nThe final installment of director **[Tarik Saleh](https://en.wikipedia.org/wiki/Tarik_Saleh)**'s \"Cairo trilogy.\" Premiered in competition at the **[Cannes Film Festival](https://en.wikipedia.org/wiki/Cannes_Film_Festival)**.",
@@ -1255,7 +2144,8 @@
           "outlet": "The Hollywood Reporter",
           "review_url": "https://www.hollywoodreporter.com/movies/movie-reviews/eagles-of-the-republic-review-movies-collide-with-political-might-in-tarik-salehs-dark-and-clever-conspiracy-thriller-1236221497/"
         }
-      ]
+      ],
+      "_watch_links_verified": "2026-06-24T11:02:50.022119"
     },
     {
       "id": "1385773",
@@ -2685,7 +3575,7 @@
         "available_start": "2026-07-01",
         "available_end": "2026-07-30",
         "discovered": "2026-06-11",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "filters": {
@@ -2798,7 +3688,7 @@
         "available_start": "2026-07-01",
         "available_end": "2026-07-30",
         "discovered": "2026-06-10",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "filters": {
@@ -2907,7 +3797,7 @@
         "available_start": "2026-07-01",
         "available_end": "2026-07-30",
         "discovered": "2026-06-07",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "filters": {
@@ -3024,7 +3914,7 @@
         "available_start": "2026-07-01",
         "available_end": "2026-07-30",
         "discovered": "2026-06-07",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "filters": {
@@ -3137,7 +4027,7 @@
         "available_start": "2026-07-01",
         "available_end": "2026-07-30",
         "discovered": "2026-06-07",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "filters": {
@@ -3174,7 +4064,7 @@
       "providers": {},
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/The_Sheep_Detectives",
-        "trailer": "https://www.youtube.com/watch?v=pyZI5oM6hWk",
+        "trailer": "https://www.youtube.com/watch?v=826SRt1CFbg",
         "rt": "https://www.rottentomatoes.com/m/the_sheep_detectives",
         "cast_wiki": {
           "Hugh Jackman": "https://en.wikipedia.org/wiki/Hugh_Jackman",
@@ -3185,10 +4075,28 @@
         "imdb": "https://www.imdb.com/title/tt32565993/",
         "letterboxd": "https://letterboxd.com/film/the-sheep-detectives",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1301421.mp4",
-        "director_wiki": "https://en.wikipedia.org/wiki/Kyle_Balda"
+        "director_wiki": "https://en.wikipedia.org/wiki/Kyle_Balda",
+        "justwatch": "https://www.justwatch.com/us/movie/three-bags-full-a-sheep-detective-movie"
       },
-      "watch_links": {},
-      "pre_order_links": [],
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Amazon Prime Video",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.c78b3cef-7f5d-4cc9-907c-455e713d1649"
+          },
+          {
+            "service": "Amazon Prime Video",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.c78b3cef-7f5d-4cc9-907c-455e713d1649"
+          }
+        ]
+      },
+      "pre_order_links": [
+        {
+          "service": "Amazon",
+          "link": "https://www.amazon.com/gp/video/detail/B0GZ3FG6Q5",
+          "type": "pre_order"
+        }
+      ],
       "_enrichment_status": "completed",
       "_discovered_at": "2026-06-22T22:09:11.014216",
       "_tmdb_fetch_failed": false,
@@ -3211,10 +4119,9 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_is_preorder": true,
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-22",
-      "imdb_rating": "7.7",
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-06-24",
+      "imdb_rating": "7.6",
       "letterboxd_score": "3.8",
       "keywords": [
         "shepherd",
@@ -3239,17 +4146,14 @@
       ],
       "_trailer_source": "gemini_playwright",
       "metacritic_score": "72",
-      "_imdb_votes": 20507,
+      "_imdb_votes": 20589,
       "awards": "1 win total",
       "box_office": "$54,536,613",
       "_digital_date_source": "tmdb_type4",
       "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
+      "_slop_reason": "score:-2(good_imdb,major_streamer:amazon prime video)",
       "_slop_confidence": "weak",
       "status": "available",
-      "_enrichment_gaps": [
-        "watch_links"
-      ],
       "reissue_label": null,
       "_reissue": false,
       "filters": {
@@ -3263,7 +4167,17 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_wiki_language_count": 23,
+      "_tmdb_popularity": null,
+      "buzz_score": 74,
+      "notability": {
+        "buzz_score": 74,
+        "quadrant": "Consensus must-watch",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1265971",
@@ -3377,9 +4291,9 @@
       "capsule": "Indie thriller about a real estate tycoon whose life implodes over the course of his birthday.\nFeature debut from Atlanta-based black independent filmmaker **Derick Halliman**. **Halliman** also served as writer, producer, and cinematographer.",
       "pull_quotes": [],
       "_tmdb_popularity": null,
-      "buzz_score": 0,
+      "buzz_score": 5,
       "notability": {
-        "buzz_score": 0,
+        "buzz_score": 5,
         "quadrant": "Obscure - skip",
         "festival": "none found",
         "awards": "none found",
@@ -3642,6 +4556,13 @@
             "rent_price": "$5.99",
             "price": "$5.99",
             "buy_price": "$14.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/chao/umc.cmc.3a4kxswtuw31c66i4jfb3tzgw?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1890019769",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
           }
         ]
       },
@@ -3734,11 +4655,11 @@
       "notability": {
         "buzz_score": 52,
         "quadrant": "Hidden gem",
-        "festival": "Annecy International Animation Film Festival (Jury Award), Tokyo International Film Festival, Adelaide Film Festival, JAPAN CUTS",
-        "awards": "Annecy International Animation Film Festival - Jury Award, Asia Pacific Screen Awards - Best Animated Film (Nominee)",
+        "festival": "Annecy International Animation Film Festival (Jury Award), Fantasia International Film Festival, Animation is Film, Ottawa International Animation Festival, Tokyo International Film Festival",
+        "awards": "Annecy International Animation Film Festival - Jury Award; Asia Pacific Screen Awards - Nominee, Best Animated Film",
         "yearend_lists": "none found"
       },
-      "_watch_links_verified": "2026-06-23T13:42:34.440407"
+      "_watch_links_verified": "2026-06-24T11:03:01.692848"
     },
     {
       "id": "1166599",
@@ -3845,7 +4766,7 @@
       "notability": {
         "buzz_score": 27,
         "quadrant": "Obscure - skip",
-        "festival": "Screamfest Horror Film Festival (world premiere), Morbido Film Fest, Night Visions",
+        "festival": "Screamfest (World Premiere), Morbido Fest, Night Visions",
         "awards": "none found",
         "yearend_lists": "none found"
       },
@@ -3907,6 +4828,20 @@
             "rent_price": "$4.99",
             "price": "$4.99",
             "buy_price": "$12.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/bury-your-dead/umc.cmc.38j1sxll7rjx6b8b3fi9z864a?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1896843707",
+            "rent_price": "$4.99",
+            "buy_price": "$9.99",
+            "price": "$4.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Bury-Your-Dead/4861911",
+            "rent_price": "$4.99",
+            "buy_price": "$12.99",
+            "price": "$4.99"
           }
         ]
       },
@@ -3983,16 +4918,16 @@
       "notability": {
         "buzz_score": 32,
         "quadrant": "Hidden gem",
-        "festival": "Sitges Film Festival, BFI London Film Festival, Tokyo International Film Festival, Rio de Janeiro International Film Festival",
-        "awards": "Nominated for Best Picture at the Film Festival of Catalonia, Nominated for Best Adapted Script at the Cinema Brazil Grand Prize",
+        "festival": "Sitges Film Festival (Competition), BFI London Film Festival, Tokyo International Film Festival (Competition), Festival do Rio",
+        "awards": "2026 Cinema Brazil Grand Prize (Grande Prêmio do Cinema Brasileiro): nominated to Best Adapted Script",
         "yearend_lists": "none found"
       },
-      "_watch_links_verified": "2026-06-23T13:42:35.499433"
+      "_watch_links_verified": "2026-06-24T11:03:02.747443"
     },
     {
       "id": "1329471",
       "title": "Carolina Caroline",
-      "digital_date": "2026-06-23",
+      "digital_date": "2026-06-24",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "A young woman, desperate to leave her small town, runs away with a charming con man, embarking on a crime and passion-filled journey through the Southeast to find her estranged mother.",
@@ -4032,6 +4967,20 @@
           {
             "service": "Amazon",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.f15def41-a625-4176-a780-8f51a77043f9&tag=nrw04-20",
+            "rent_price": "$9.99",
+            "buy_price": "$19.99",
+            "price": "$9.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/carolina-caroline/umc.cmc.6o4woe78etkwjxe75n9hwcibd?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1896800454",
+            "rent_price": "$9.99",
+            "buy_price": "$19.99",
+            "price": "$9.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Carolina-Caroline/4969270",
             "rent_price": "$9.99",
             "buy_price": "$19.99",
             "price": "$9.99"
@@ -4114,11 +5063,11 @@
       "notability": {
         "buzz_score": 43,
         "quadrant": "Hidden gem",
-        "festival": "Toronto International Film Festival (World Premiere, Centrepiece Program), Sarasota Film Festival, Cleveland International Film Festival",
+        "festival": "Toronto International Film Festival (World Premiere, Centrepiece Program), Phoenix Film Festival, Cleveland International Film Festival, Calgary Underground Film Festival, Sarasota Film Festival",
         "awards": "none found",
         "yearend_lists": "none found"
       },
-      "_watch_links_verified": "2026-06-23T13:42:38.146945"
+      "_watch_links_verified": "2026-06-24T11:03:04.269724"
     },
     {
       "id": "1717233",
@@ -4239,7 +5188,16 @@
       "featured": false,
       "capsule": "Survival thriller. A father and son's bonding off-road trip turns deadly after a crash.\nTold in near \"real-time.\"",
       "pull_quotes": [],
-      "_watch_links_verified": "2026-06-23T13:42:38.660674"
+      "_watch_links_verified": "2026-06-23T13:42:38.660674",
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1456667",
@@ -4326,7 +5284,7 @@
         "available_start": "2026-06-21",
         "available_end": "2026-06-25",
         "discovered": "2026-05-27",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "featured": false,
@@ -4346,7 +5304,16 @@
       "_slop_confidence": "weak",
       "_reissue": false,
       "capsule": "Dramedy. A rideshare driver (played by director, **Jackie Quinones**) with fading Hollywood dreams navigates chaotic family demands and eccentric L.A. passengers.\nFeatures **[Luis Guzmán](https://en.wikipedia.org/wiki/Luis_Guzm%C3%A1n)** (*Wednesday*, *Oz*) as a passenger and **[Andre Royo](https://en.wikipedia.org/wiki/Andre_Royo)** (*The Wire*) as her ex. Both EP'd.\nWon Best Direction at Urbanworld.",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Hidden gem",
+        "festival": "Austin Film Festival, Urban World Film Festival (won Best Direction of a Narrative Feature Film), Alpine International Film Festival (won Best Feature)",
+        "awards": "Best Direction of a Narrative Feature Film at Urban World Film Festival, Best Feature at Alpine International Film Festival",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1480469",
@@ -4411,7 +5378,7 @@
         "available_start": "2026-06-21",
         "available_end": "2026-06-29",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -4444,7 +5411,16 @@
       "keywords": [],
       "_reissue": false,
       "capsule": "Doc about British singer **Dylan Holloway** embarking on a gender transition that could change his voice and risk his career.\n**Dylan Holloway** also gained viral fame with TikTok duets featuring his pre-transition self.\n**Holloway** was a finalist on the UK's *X-Factor*, and the first transgender winner of a BBC music show.",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Sheffield DocFest (World Premiere), Rhode Island International Film Festival (Award Winner), OUTshine Film Festival (Award Winner), Fayetteville Film Festival (Award Winner)",
+        "awards": "Best Documentary at Rhode Island International Film Festival, OUTshine Film Festival, and Fayetteville Film Festival",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1353086",
@@ -4514,7 +5490,7 @@
         "available_start": "2026-06-21",
         "available_end": "2026-06-29",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -4562,7 +5538,16 @@
           "source": "rt_critic",
           "review_url": ""
         }
-      ]
+      ],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Frameline (Audience Award), FilmFestival Cottbus (Best Film), Warsaw International Film Festival",
+        "awards": "Frameline49 Audience Award for Best Narrative Feature (tie), FilmFestival Cottbus - Best Film, FilmFestival Cottbus - Outstanding Individual Performance (Emir Hadžihafizbegović)",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1422101",
@@ -4687,7 +5672,16 @@
           "review_url": ""
         }
       ],
-      "hidden": true
+      "hidden": true,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "SXSW Film Festival (World Premiere), Gdynia Polish Film Festival (Sapphire Lions award winner)",
+        "awards": "Sapphire Lions at Gdynia Polish Film Festival",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1425485",
@@ -4756,7 +5750,7 @@
         "available_start": "2026-06-21",
         "available_end": "2026-06-29",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -4805,7 +5799,16 @@
           "source": "rt_critic",
           "review_url": ""
         }
-      ]
+      ],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "San Francisco International Film Festival, Jeonju International Film Festival (won 4 awards), London Korean Film Festival, San Diego Asian Film Festival, Vancouver International Film Festival",
+        "awards": "Korean Association of Film Critics Awards (Best New Actor, Best New Director), Jeonju International Film Festival (Distribution Support Prize, CGV Award, Watcha's Award, Best Actor), Nominated for Best New Director and Best New Actor at the 46th Blue Dragon Film Awards, Nominated for Best New Director at the 62nd Baeksang Arts Awards",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1503933",
@@ -4874,7 +5877,7 @@
         "available_start": "2026-06-21",
         "available_end": "2026-06-29",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -4977,7 +5980,7 @@
         "available_start": "2026-06-21",
         "available_end": "2026-06-29",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -5021,7 +6024,16 @@
       ],
       "_reissue": false,
       "capsule": "Queer immigrant love story set inside a UK immigration removal center.\nWorld premiere at Berlin.",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Berlin International Film Festival (Panorama), BFI London Film Festival (Sutherland Competition), São Paulo International Film Festival",
+        "awards": "GAZE International LGBTQIA Film Festival (Best Feature Winner), MIX CPH LGBTQIA+ Film Festival (Special Mention), NewFest LGBTQ+ Film Festival (Grand Jury Award Special Mention)",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1570913",
@@ -5089,7 +6101,7 @@
         "available_start": "2026-06-21",
         "available_end": "2026-06-29",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -5139,7 +6151,16 @@
           "source": "critic",
           "review_url": "https://movieplayer.it/articoli/eva-recensione-emanuela-rossi_37388/"
         }
-      ]
+      ],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "Torino Film Festival, or 'none found'",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1178620",
@@ -5256,7 +6277,16 @@
       ],
       "_reissue": false,
       "capsule": "53-year-old Chinese immigrant in Montreal discovers her queer identity\nStarring screen icon **[Joan Chen](https://en.wikipedia.org/wiki/Joan_Chen)** (*The Last Emperor*, *Twin Peaks*).",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Festival du Nouveau Cinéma (premiere), Windsor International Film Festival (won Prize in Canadian Film), Reelworld Film Festival, Toronto Reel Asian International Film Festival",
+        "awards": "Windsor International Film Festival - Prize in Canadian Film; Reelworld Film Festival - Outstanding Feature Actress (Joan Chen); Toronto Film Critics Association - Jay Scott Prize for emerging Canadian filmmaker (Xiaodan He)",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "tv_323842",
@@ -5360,9 +6390,9 @@
       "_trailer_last_retry": "2026-06-22T16:24:48.893605",
       "_wiki_language_count": null,
       "_tmdb_popularity": null,
-      "buzz_score": 21,
+      "buzz_score": 16,
       "notability": {
-        "buzz_score": 21,
+        "buzz_score": 16,
         "quadrant": "Obscure - skip",
         "festival": "none found",
         "awards": "none found",
@@ -5474,7 +6504,16 @@
       "is_slop": true,
       "capsule": "Telugu mystery crime thriller. A village girl claims a man has been murdered.",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1554631",
@@ -5587,7 +6626,16 @@
       "featured": false,
       "capsule": "Animated comedy. A family quests to break the \"quinto partido\" curse (losing in the fifth game of the World Cup) plaguing Mexico's national soccer team.\n\nBased on the popular *La Familia del Barrio* adult animated series, which began on YouTube before hitting MTV Latin America.",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1359005",
@@ -5710,7 +6758,16 @@
           "review_url": "https://screenspace.substack.com/p/is-maika-monroe-the-first-post-movie"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1520513",
@@ -5917,7 +6974,16 @@
       "display_title": "The Favor",
       "capsule": "South Korean occult horror.\nFamily's desperately desired miracle in a new village twists into a curse.",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "Asian World Film Festival (2025)",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1718210",
@@ -6230,7 +7296,7 @@
         "available_start": "2026-06-25",
         "available_end": "2026-06-28",
         "discovered": "2026-06-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "filters": {
@@ -6335,7 +7401,7 @@
         "available_start": "2026-06-20",
         "available_end": "2026-06-28",
         "discovered": "2026-06-20",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "filters": {
@@ -6353,7 +7419,16 @@
       "capsule": "Indie psychological horror flick.\nStruggling forensic photographer develops an unhealthy business relationship with a wealthy couple whose requests grow increasingly sinister.\nWorld premiere, Chattanooga Film Festival 2026.",
       "_reissue": false,
       "_watch_links_verified": "2026-06-21T13:17:41.149321",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "Chattanooga Film Festival (Centerpiece Selection)",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "959646",
@@ -6478,7 +7553,16 @@
           "review_url": "https://letterboxd.com/luxxa23/film/zombie-land-saga-yumeginga-paradise/"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Bucheon International Animation Film Festival (nominated for International Feature Film, won Audience Award and KOSCAS President's Award)",
+        "awards": "Audience Award and KOSCAS President's Award at Bucheon International Animation Film Festival",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1426755",
@@ -6572,7 +7656,7 @@
         "available_start": "2026-06-19",
         "available_end": "2026-06-28",
         "discovered": "2026-06-20",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "filters": {
@@ -6589,7 +7673,16 @@
       "featured": false,
       "capsule": "Spanish sci-fi comedy-horror. pilot and his trainee face an interdimensional invasion\nshot almost entirely inside a custom-built airplane cabin using LED screens.\nlove letter to '80s B-movie cinema, particularly the work of **[John Carpenter](https://en.wikipedia.org/wiki/John_Carpenter)**",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Miami International Science Fiction Film Festival (won 2 awards), Zed Fest Film Festival (won 5 awards), FANT Bilbao, Chattanooga Film Festival, Portland Horror Film Festival, Isla Calavera Festival de Cine Fantástico de Canarias",
+        "awards": "Miami International Science Fiction Film Festival: Best Horror Thriller, Best Sci Fi Comedy Thriller; Zed Fest Film Festival: Outstanding Screen Story, Outstanding Producing, Outstanding Directing, Outstanding Acting Performance (Martín Garabal), Outstanding Acting Performance (Elena de Lara)",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1655499",
@@ -6682,7 +7775,16 @@
       "featured": false,
       "capsule": "Indie doc by professional snake catcher **Luka Raubenheimer**.\na daring, three-month expedition across Indonesia to find an elusive Queen Cobra, while in pursuit of perfect surf breaks.\nPart wildlife doc, part fantasy surf film, and a blend of **[Wes Anderson](https://en.wikipedia.org/wiki/Wes_Anderson)** and *Crocodile Hunter* **[Steve Irwin](https://en.wikipedia.org/wiki/Steve_Irwin)**.",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "London Surf / Film Festival, Coast Film & Music Festival",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1429311",
@@ -6787,7 +7889,16 @@
       "is_slop": true,
       "capsule": "Malayalam action revenge drama. man returns from prison for a crime he didn't commit\nInspired by a real incident from coastal Vypin.",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1711953",
@@ -6911,7 +8022,16 @@
       "_slop_confidence": "weak",
       "capsule": "Australian Slasher.\nShot in Sydney, then surprisingly dubbed into Italian\nDirector plays the masked killer, in giallo tradition.",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "614945",
@@ -7027,7 +8147,16 @@
           "review_url": "https://letterboxd.com/syraa/film/voicemails-for-isabelle/"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Minor / unproven",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1359607",
@@ -7156,7 +8285,16 @@
           "review_url": "https://letterboxd.com/chiibiwan09/film/miss-kobayashis-dragon-maid-a-lonely-dragon/"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1413976",
@@ -7287,7 +8425,16 @@
         }
       ],
       "_watch_links_verified": "2026-06-21T13:17:47.950824",
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1451344",
@@ -7391,7 +8538,16 @@
       "_slop_confidence": "weak",
       "capsule": "South Korean action-comedy.\nAn ex-husband and a current husband are forced to join forces to rescue their kidnapped ex-wife.",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1468380",
@@ -7526,7 +8682,16 @@
       "_slop_confidence": "weak",
       "capsule": "Underdog family sports comedy about pickleball.\nStars **[Kevin Farley](https://en.wikipedia.org/wiki/Kevin_Farley)** (*Tommy Boy*, *The Waterboy*), whose real-life dog, Dougie, also appears in the film.",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1712326",
@@ -7631,7 +8796,16 @@
       "capsule": "Brutal underground death match movie.\nShot almost entirely by a two-person crew. **Tommy Jackson** was director, writer, editor, and VFX artist, with **Ivana Cipurko** handling makeup, sound, and costumes.",
       "_reissue": false,
       "_watch_links_verified": "2026-06-21T13:17:49.454328",
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1702960",
@@ -7733,7 +8907,16 @@
       "_slop_confidence": "weak",
       "capsule": "Indonesian stand-up comedy special.\nA comeback for **Pamungkas**, the \"comic with 1000 voices\"",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "847742",
@@ -7848,7 +9031,16 @@
           "review_url": "https://letterboxd.com/veslyrose/film/drishyam-3/"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 15,
+      "notability": {
+        "buzz_score": 15,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1679751",
@@ -7969,7 +9161,16 @@
           "review_url": "https://spectrumculture.com/2026/06/16/gregg-allman-the-music-of-my-soul-review/"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1354900",
@@ -8077,7 +9278,16 @@
       "_slop_confidence": "weak",
       "capsule": "Doc on the diverse career of Japanese filmmaker **[Ishiro Honda](https://en.wikipedia.org/wiki/Ishir%C5%8D_Honda)**, best known for *Godzilla*.\nPremiered at Sitges. Features **[Joe Dante](https://en.wikipedia.org/wiki/Joe_Dante)** and [Kurosawa](https://en.wikipedia.org/wiki/Akira_Kurosawa)'s son.",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Sitges International Fantastic Film Festival, G-Fest, Chicago Japan Film Collective",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1404184",
@@ -8196,7 +9406,16 @@
         }
       ],
       "_reissue": false,
-      "_watch_links_verified": "2026-06-22T16:21:19.527300"
+      "_watch_links_verified": "2026-06-22T16:21:19.527300",
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Berlinale (FIPRESCI Prize), IDFA, San Sebastián, Sheffield Doc/Fest, BAFICI (Grand Prize), Thessaloniki (Human Values Award)",
+        "awards": "FIPRESCI Prize (Berlinale), Grand International Prize (BAFICI), Human Values Award (Thessaloniki), Platino Awards (Nominee, Best Documentary), Paraguay's Official Oscar Submission (98th Academy Awards)",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1313006",
@@ -8306,7 +9525,16 @@
       "_slop_confidence": "weak",
       "capsule": "Gritty Italian drama-thriller.\nKEYWORDS: domestic violence, far-right radicalization, true story, Venice Best Actor\nBased on the true story of Luigi Celeste's memoir *Non sarà sempre così*.",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "81st Venice International Film Festival (Orizzonti), Busan Film Festival",
+        "awards": "Venice Film Festival: Orizzonti Award for Best Actor (Francesco Gheghi); David di Donatello Awards: Best Supporting Actor (Francesco Di Leva); Nastro d'Argento: Best Supporting Actor (Francesco Di Leva); Selected as the Italian entry for the 98th Academy Awards",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1549609",
@@ -8437,7 +9665,16 @@
       "_slop_confidence": "weak",
       "capsule": "Holiday rom-com\nhotel manager finds her three high school exes booked at the family B&B.\nSame B&B they filmed [*Groundhog Day*](https://en.wikipedia.org/wiki/Groundhog_Day_%28film%29).",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Hidden gem",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1213025",
@@ -8565,7 +9802,16 @@
           "review_url": "https://thehollywoodnews.com/2025/08/22/transcending-dimensions-review-dir-toshiaki-toyada-frightfest-2025/"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "International Film Festival Rotterdam, New York Asian Film Festival, Fantasia International Film Festival, Nippon Connection",
+        "awards": "none found",
+        "yearend_lists": "Sight and Sound"
+      }
     },
     {
       "id": "1172265",
@@ -8706,12 +9952,12 @@
       "_reissue": false,
       "_wiki_language_count": 10,
       "_tmdb_popularity": null,
-      "buzz_score": 35,
+      "buzz_score": 40,
       "notability": {
-        "buzz_score": 35,
+        "buzz_score": 40,
         "quadrant": "Hidden gem",
-        "festival": "Berlin International Film Festival (won Silver Bear Grand Jury Prize, Ecumenical Jury Prize, Berliner Morgenpost Readers' Jury Award), Toronto International Film Festival, Busan International Film Festival, Karlovy Vary International Film Festival, Guadalajara International Film Festival (won Ibero-American Special Jury Prize)",
-        "awards": "Silver Bear Grand Jury Prize (Berlinale), Ecumenical Jury Prize (Berlinale), Berliner Morgenpost Readers' Jury Award (Berlinale), Ibero-American Special Jury Prize (Guadalajara)",
+        "festival": "Berlin International Film Festival (won Silver Bear Grand Jury Prize), Toronto International Film Festival, Karlovy Vary International Film Festival, Busan International Film Festival, Guadalajara International Film Festival (won Ibero-American Special Jury Prize)",
+        "awards": "Silver Bear Grand Jury Prize, Ecumenical Jury Prize, Berliner Morgenpost Readers' Jury Award (all at Berlinale); Ibero-American Special Jury Prize (Guadalajara); Maguey Award for Best Performance for Denise Weinberg (Guadalajara)",
         "yearend_lists": "none found"
       }
     },
@@ -8834,7 +10080,16 @@
           "review_url": "https://bsidesbadlands.com/the-voices-of-our-mother-horror-film-2026-review/"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "Fantaspoa (world premiere), Panic Fest (North American premiere)",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1575438",
@@ -8966,7 +10221,16 @@
         }
       ],
       "_watch_links_verified": "2026-06-21T13:17:56.417841",
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Tribeca Festival",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1362365",
@@ -9055,7 +10319,7 @@
         "available_start": "2026-06-19",
         "available_end": "2026-06-28",
         "discovered": "2026-06-01",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "featured": false,
@@ -9093,7 +10357,16 @@
         }
       ],
       "_watch_links_verified": "2026-06-20T13:28:27.234347",
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "Slamdance Film Festival",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1258157",
@@ -9212,7 +10485,16 @@
           "review_url": "https://letterboxd.com/jeanne_fdb/film/lakeview/"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "Atlantic International Film Festival, BFI Flare, Inside Out, Frameline Film Festival",
+        "awards": "none found",
+        "yearend_lists": "Flaw in the Iris (Halifax Bloggers) Top 10 Films of 2024, The Best of 2025 (Brent Marchant)"
+      }
     },
     {
       "id": "1000092",
@@ -9323,7 +10605,16 @@
       "_slop_confidence": "weak",
       "capsule": "Italian animated war drama, charting a peasant family's journey across three generations of 20th-century history. From WWI and the Spanish Flu through Nazi occupation to the Years of Lead.\nDirector **Simone Massi**'s feature debut, meticulously crafted with 40,000 hand-drawn frames over twelve years. Its original title, *Invelle*, means \"nowhere\" in the Marche dialect, a nod to forgotten places.\nPremiered in the Orizzonti section at Venice. Features voices from a superb Italian cast, including **[Luigi Lo Cascio](https://en.wikipedia.org/wiki/Luigi_Lo_Cascio)** (*The Best of Youth*) and **[Neri Marcorè](https://en.wikipedia.org/wiki/Neri_Marcor%C3%A8)** (*The Tourist*).",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Hidden gem",
+        "festival": "Venice Film Festival (Orizzonti section), Thessaloniki Film Festival; won Carlo Lizzani Prize at Venice",
+        "awards": "Carlo Lizzani Prize (Venice 2023)",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1338972",
@@ -9410,7 +10701,7 @@
         "available_start": "2026-06-19",
         "available_end": "2026-06-28",
         "discovered": "2026-05-29",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "featured": false,
@@ -9442,7 +10733,16 @@
         }
       ],
       "_watch_links_verified": "2026-06-20T13:28:28.630609",
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Minor / unproven",
+        "festival": "Screamfest Horror Film Festival 2025, Panic Fest 2026",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1276013",
@@ -9548,7 +10848,16 @@
           "review_url": "https://letterboxd.com/bingyao/film/color-book/"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Tribeca Film Festival, AFI Fest, Austin Film Festival (Best Narrative Feature), Chicago International Film Festival (Audience Choice Award), Palm Springs International Film Festival (Directors to Watch Award), Denver Film Festival (American Independent Award for Best Feature Film), Deauville American Film Festival (Critics Prize Award), Pan African Film Festival (Best First Time Feature), RiverRun International Film Festival (Best Narrative Feature, Best Director)",
+        "awards": "NAACP Image Awards (Nomination: Outstanding Breakthrough Creative), AT&T Untold Stories Award ($1 million grant)",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1579893",
@@ -9612,7 +10921,7 @@
         "available_start": "2026-06-19",
         "available_end": "2026-06-28",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -9660,7 +10969,16 @@
         }
       ],
       "_watch_links_verified": "2026-06-20T13:28:29.440192",
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Hidden gem",
+        "festival": "major festivals played + prizes, or 'none found'",
+        "awards": "Best Animation - Arizona Underground Film Festival, Best Picture - Los Angeles Underground Film Forum",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1484833",
@@ -9733,7 +11051,7 @@
         "available_start": "2026-06-19",
         "available_end": "2026-06-28",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -9781,7 +11099,16 @@
         }
       ],
       "_watch_links_verified": "2026-06-20T13:28:29.917678",
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Tokyo International Film Festival, Annecy International Animation Film Festival (Contrechamp Competition), Nippon Connection",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "tv_278178",
@@ -9913,7 +11240,16 @@
           "review_url": "https://www.indiewire.com/criticism/shows/i-will-find-you-review-netflix-harlan-coben-series-bad-1235200485/"
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1535838",
@@ -9998,7 +11334,16 @@
       "_slop_confidence": "weak",
       "capsule": "Turkish short--only 27 minutes.\n**Hamdi Furkan Yıldırım** wrote, directed, edited, and co-produced this story of young Defne (**Lidya Akkuş**), whose search for a doctor for her grandmother leads her to witness a secret burial",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Hidden gem",
+        "festival": "major festivals played + prizes",
+        "awards": "Istanbul Medya Akademisi Young Talent Award (13th Boğaziçi Film Festival), Second Place Award (18th Rotary Kısa Film Festivali)",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1558796",
@@ -10112,7 +11457,16 @@
       ],
       "is_slop": false,
       "_slop_confidence": "weak",
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Hidden gem",
+        "festival": "Tribeca Festival",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1631572",
@@ -10210,7 +11564,16 @@
       "capsule": "Faith-forward rom-com. Book editor secretly pens her own novel, finding unexpected notes from a mysterious critic in the margins.\nBased on **Melissa Ferguson**'s bestselling novel\nShot entirely on location in Buffalo, New York.",
       "_slop_confidence": "weak",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1692417",
@@ -10325,7 +11688,16 @@
       "_keywords_generated": true,
       "_slop_confidence": "weak",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "FANT - Festival de Cine Fantástico de Bilbao",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1582296",
@@ -10435,7 +11807,16 @@
       "is_slop": false,
       "_slop_confidence": "weak",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Hidden gem",
+        "festival": "none found",
+        "awards": "Silver Crown Award for Best Limited Theatrical Release at the 2025 International Christian Visual Media (ICVM) awards",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1525426",
@@ -10546,7 +11927,16 @@
       "is_slop": true,
       "_slop_confidence": "weak",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 0,
+      "notability": {
+        "buzz_score": 0,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1477317",
@@ -10674,7 +12064,16 @@
       "_keywords_generated": true,
       "is_slop": false,
       "_slop_confidence": "weak",
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1715076",
@@ -10781,7 +12180,16 @@
       "capsule": "Crime thriller. Suspicion mounts around an enigmatic woman named Vi as murders plague hotels and expos.",
       "_slop_confidence": "strong",
       "_reissue": false,
-      "pull_quotes": []
+      "pull_quotes": [],
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1514056",
@@ -10854,7 +12262,7 @@
         "available_start": "2026-06-17",
         "available_end": "2026-06-28",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -10903,7 +12311,16 @@
           "review_url": ""
         }
       ],
-      "_reissue": false
+      "_reissue": false,
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "major festivals played + prizes, or 'none found'",
+        "awards": "Red Nation Film Festival (5 wins, including Best Picture), Santa Fe International Film Festival (Best Narrative Feature), Directors Guild of Canada (Nomination)",
+        "yearend_lists": "none found"
+      }
     },
     {
       "id": "1713962",
@@ -11233,7 +12650,7 @@
             "service": "Apple TV",
             "link": "https://tv.apple.com/us/movie/burt/umc.cmc.7dlscf08qk4gtqad1ysutbs31?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1888698719",
             "rent_price": "$4.99",
-            "buy_price": "$11.99",
+            "buy_price": "$9.99",
             "price": "$4.99"
           }
         ]
@@ -11311,7 +12728,8 @@
       ],
       "_keywords_generated": true,
       "_slop_confidence": "strong",
-      "_reissue": false
+      "_reissue": false,
+      "_watch_links_verified": "2026-06-24T11:03:36.564008"
     },
     {
       "id": "1463681",
@@ -13121,8 +14539,8 @@
         "letterboxd_score"
       ],
       "capsule": "French crime-comedy *Une Famille de Bâtards* twists mafia tropes into a story of family reconciliation.\n\nSet in the \"golden age\" of late-90s Paris.\n\nDirect to Amazon Prime.",
-      "_trailer_retry_count": 1,
-      "_trailer_last_retry": "2026-06-16T15:15:15.281526",
+      "_trailer_retry_count": 2,
+      "_trailer_last_retry": "2026-06-24T11:05:38.835701",
       "_slop_confidence": "strong",
       "_reissue": false,
       "pull_quotes": []
@@ -13234,8 +14652,8 @@
           "review_url": "https://letterboxd.com/marafo/film/still-sexy/"
         }
       ],
-      "_trailer_retry_count": 1,
-      "_trailer_last_retry": "2026-06-16T15:15:15.423541",
+      "_trailer_retry_count": 2,
+      "_trailer_last_retry": "2026-06-24T11:05:52.961099",
       "_slop_confidence": "strong",
       "_reissue": false
     },
@@ -22366,8 +23784,8 @@
         "status": "expired"
       },
       "featured": false,
-      "_trailer_retry_count": 4,
-      "_trailer_last_retry": "2026-06-16T15:15:15.564385",
+      "_trailer_retry_count": 5,
+      "_trailer_last_retry": "2026-06-24T11:06:11.986704",
       "reissue_label": null,
       "is_slop": true,
       "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
@@ -30996,7 +32414,7 @@
         "available_start": "2026-05-26",
         "available_end": "2026-06-30",
         "discovered": "2026-05-21",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "featured": false,
@@ -31094,7 +32512,7 @@
         "available_start": "2026-05-26",
         "available_end": "2026-06-30",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -31193,7 +32611,7 @@
         "available_start": "2026-05-26",
         "available_end": "2026-06-30",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -31296,7 +32714,7 @@
         "available_start": "2026-05-26",
         "available_end": "2026-06-30",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -31412,7 +32830,7 @@
         "available_start": "2026-05-26",
         "available_end": "2026-06-30",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -31519,7 +32937,7 @@
         "available_start": "2026-05-26",
         "available_end": "2026-06-30",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -31615,7 +33033,7 @@
         "available_start": "2026-05-26",
         "available_end": "2026-07-31",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -31702,7 +33120,7 @@
         "available_start": "2026-05-26",
         "available_end": "2026-06-30",
         "discovered": "2026-05-16",
-        "last_checked": "2026-06-23",
+        "last_checked": "2026-06-24",
         "status": "active"
       },
       "_enrichment_attempts": 1,
@@ -45543,9 +46961,9 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "ciwff2026",
-        "screening_name": "CASCADIA International Women&#x27;s Film Festival",
+        "screening_name": "CASCADIA \nInternational Women's Film Festival ",
         "available_start": "2026-05-07",
-        "available_end": "2026-06-24",
+        "available_end": "2026-05-18",
         "discovered": "2026-05-11",
         "last_checked": "2026-05-18",
         "status": "expired"
@@ -45645,9 +47063,9 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "ciwff2026",
-        "screening_name": "CASCADIA International Women&#x27;s Film Festival",
+        "screening_name": "CASCADIA \nInternational Women's Film Festival ",
         "available_start": "2026-05-07",
-        "available_end": "2026-06-24",
+        "available_end": "2026-05-18",
         "discovered": "2026-05-11",
         "last_checked": "2026-05-18",
         "status": "expired"
@@ -45758,9 +47176,9 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "ciwff2026",
-        "screening_name": "CASCADIA International Women&#x27;s Film Festival",
+        "screening_name": "CASCADIA \nInternational Women's Film Festival ",
         "available_start": "2026-05-07",
-        "available_end": "2026-06-24",
+        "available_end": "2026-05-18",
         "discovered": "2026-05-11",
         "last_checked": "2026-05-18",
         "status": "expired"
@@ -77211,7 +78629,7 @@
       "_slop_reason": "score:2(low_imdb)",
       "_slop_confidence": "weak",
       "filters": {
-        "is_indie": true,
+        "is_indie": false,
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
@@ -80510,461 +81928,6 @@
       "_reissue": false
     },
     {
-      "id": "1655021",
-      "title": "Breaking Glass: The Pat Summitt Story",
-      "digital_date": "2026-03-25",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Chronicles the life of the legendary Tennessee Lady Vols basketball coach.",
-      "genres": [
-        "Documentary"
-      ],
-      "runtime": 82,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=EJOKfZ05ARI",
-        "rt": null,
-        "imdb": "https://www.imdb.com/title/tt40930268/",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1655021.mp4",
-        "letterboxd": "https://letterboxd.com/film/breaking-glass-the-pat-summitt-story",
-        "director_wiki": "https://en.wikipedia.org/wiki/Dawn_Porter_(filmmaker)"
-      },
-      "watch_links": {
-        "streaming": []
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-03-25T22:47:21.066070",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": null,
-      "studio": "Rock’n Robin Productions",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "original_title": "Breaking Glass: The Pat Summitt Story",
-      "crew": {
-        "director": "Dawn Porter",
-        "cast": [
-          "Pat Summitt",
-          "Peyton Manning"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "featured": false,
-      "imdb_rating": "8.8",
-      "_digital_date_source": "tmdb_type4",
-      "_needs_review": false,
-      "_enrichment_gaps": [
-        "rt_score",
-        "wikipedia"
-      ],
-      "date_added": "2026-03-26",
-      "_enrichment_attempts": 3,
-      "_trailer_source": "cache",
-      "display_title": "Breaking Glass: The Pat Summitt Story",
-      "reissue_label": null,
-      "is_slop": true,
-      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": true,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "keywords": [
-        "alzheimer's disease",
-        "sports documentary",
-        "woman director",
-        "basketball coach",
-        "women's national basketball association (wnba)"
-      ],
-      "_reissue": false
-    },
-    {
-      "id": "1084187",
-      "title": "Pretty Lethal",
-      "digital_date": "2026-03-25",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "A troupe of ballerinas find themselves fighting for survival as they attempt to escape from a remote inn after their bus breaks down on the way to a dance competition.",
-      "genres": [
-        "Action",
-        "Thriller",
-        "Horror"
-      ],
-      "runtime": 88,
-      "year": 2026,
-      "rt_score": "59%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Pretty_Lethal",
-        "trailer": "https://www.youtube.com/watch?v=MpNobYCw0mg",
-        "rt": "https://www.rottentomatoes.com/m/pretty_lethal",
-        "imdb": "https://www.imdb.com/title/tt26678938/",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1084187.mp4",
-        "metacritic": "https://www.metacritic.com/movie/pretty-lethal/",
-        "letterboxd": "https://letterboxd.com/film/pretty-lethal",
-        "director_wiki": "https://en.wikipedia.org/wiki/Vicky_Jewson"
-      },
-      "watch_links": {
-        "streaming": []
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-03-25T22:47:20.174462",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/znTPnXCK3lEQJgqXCvP7e5FUz6f.jpg",
-      "studio": "87North Productions",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "original_title": "Pretty Lethal",
-      "crew": {
-        "director": "Vicky Jewson",
-        "cast": [
-          "Maddie Ziegler",
-          "Lana Condor"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "featured": false,
-      "imdb_rating": "5.7",
-      "_digital_date_source": "tmdb_type4",
-      "_needs_review": false,
-      "date_added": "2026-03-26",
-      "_enrichment_attempts": 1,
-      "_trailer_source": "tmdb_official",
-      "display_title": "Pretty Lethal",
-      "metacritic_score": "51",
-      "letterboxd_score": "2.6",
-      "distributor": "Amazon Prime Video",
-      "reissue_label": null,
-      "is_slop": false,
-      "_slop_reason": "score:2(low_imdb)",
-      "_slop_confidence": "weak",
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "keywords": [
-        "hungary",
-        "dance competition",
-        "ballerina",
-        "prima ballerina",
-        "remote inn",
-        "admiring",
-        "fight for survival",
-        "dance troupe"
-      ],
-      "_reissue": false
-    },
-    {
-      "id": "1182650",
-      "title": "Really Happy Someday",
-      "digital_date": "2026-03-25",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "A rising musical theatre star struggles with his changing voice during his gender transition. With the help of a singing coach, he learns to trust himself, reclaim his career, and reconnect with the people he loves.",
-      "genres": [
-        "Drama",
-        "Romance"
-      ],
-      "runtime": 89,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Really_Happy_Someday",
-        "trailer": "https://www.youtube.com/watch?v=YqUnd8bk2q4",
-        "rt": "https://www.rottentomatoes.com/m/really_happy_someday",
-        "imdb": "https://www.imdb.com/title/tt27993462/",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1182650.mp4",
-        "letterboxd": "https://letterboxd.com/film/really-happy-someday"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon Video",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a61b1281-d794-4e62-88d4-e8b2be0f76e2",
-            "price": "$4.99"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-03-25T22:47:19.686765",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/jrZREpXNoTxxNQD6noxwxL2U57X.jpg",
-      "studio": "Spindle Films",
-      "budget": 0,
-      "country": "Canada",
-      "original_language": "en",
-      "original_title": "Really Happy Someday",
-      "crew": {
-        "director": "J. Stevens",
-        "cast": [
-          "Breton Lalama",
-          "Katharine King So"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "featured": false,
-      "imdb_rating": null,
-      "_digital_date_source": "tmdb_type4",
-      "_needs_review": false,
-      "_enrichment_gaps": [
-        "imdb_rating"
-      ],
-      "date_added": "2026-03-26",
-      "_enrichment_attempts": 3,
-      "_trailer_source": "tmdb_official",
-      "display_title": "Really Happy Someday",
-      "letterboxd_score": "3.6",
-      "reissue_label": null,
-      "is_slop": true,
-      "_slop_reason": "score:4(no_rt,no_imdb)",
-      "_slop_confidence": "weak",
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "keywords": [
-        "self-discovery",
-        "identity",
-        "transformation",
-        "artist",
-        "singer",
-        "relationship",
-        "audition",
-        "lgbt",
-        "personal growth",
-        "musical theater",
-        "gender transition",
-        "voice training",
-        "resilience",
-        "personal journey",
-        "independent film",
-        "transgender",
-        "voice",
-        "queer cinema",
-        "romantic relationship",
-        "performance",
-        "transgender male",
-        "career struggles",
-        "mentorship"
-      ],
-      "_reissue": false
-    },
-    {
-      "id": "1101684",
-      "title": "Written & Directed by God",
-      "digital_date": "2026-03-25",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "A frustrated filmmaker meets God in person and goes on a transformative journey. When the deity appears to Jijo, they embark on an extraordinary road trip together.",
-      "genres": [
-        "Fantasy",
-        "Comedy"
-      ],
-      "runtime": 123,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Written_%26_Directed_by_God",
-        "trailer": "https://www.youtube.com/watch?v=kIXNLZA3A-M",
-        "rt": "https://www.rottentomatoes.com/m/written_and_directed_by_god",
-        "imdb": "https://www.imdb.com/title/tt27170332/",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1101684.mp4",
-        "letterboxd": "https://letterboxd.com/film/written-directed-by-god"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Google Play Movies",
-            "link": "https://play.google.com/store/movies/details/Written_and_Directed_by_God?gl=US&hl=en&id=yQ2NqMf2kL8.P",
-            "price": "$3.99"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-03-25T22:47:19.421822",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/vYCJihP5IQwUw9RMSmeGg7yU1FP.jpg",
-      "studio": "Nettooraan Films",
-      "budget": 0,
-      "country": "India",
-      "original_language": "ml",
-      "original_title": "എഴുതിയതും സംവിധാനം ചെയ്തതും ദൈവം",
-      "crew": {
-        "director": "Febi George Stonefield",
-        "cast": [
-          "Saiju Kurup",
-          "Sunny Wayne"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "featured": false,
-      "imdb_rating": null,
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "_enrichment_gaps": [
-        "imdb_rating"
-      ],
-      "date_added": "2026-03-26",
-      "_enrichment_attempts": 3,
-      "_trailer_source": "cache",
-      "display_title": "Written & Directed by God (എഴുതിയതും സംവിധാനം ചെയ്തതും ദൈവം)",
-      "letterboxd_score": "3.0",
-      "reissue_label": null,
-      "is_slop": true,
-      "_slop_reason": "indian_cinema_no_crossover:ml",
-      "_slop_confidence": "strong",
-      "filters": {
-        "is_indie": false,
-        "is_foreign": true,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "keywords": [],
-      "_reissue": false
-    },
-    {
-      "id": "662707",
-      "title": "Starbright",
-      "digital_date": "2026-03-25",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "A young woman becomes the guardian of a fallen star, which she must protect from dangerous forces with the help of a brave stranger.",
-      "genres": [
-        "Adventure",
-        "Action"
-      ],
-      "runtime": 148,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Starbright_(film)",
-        "trailer": "https://www.youtube.com/watch?v=hBxMbl2V3ZA",
-        "rt": null,
-        "imdb": "https://www.imdb.com/title/tt1742179/",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/662707.mp4",
-        "metacritic": "https://www.metacritic.com/movie/starbright/",
-        "letterboxd": "https://letterboxd.com/film/starbright"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon Video",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.4a2dc08a-5f51-44ee-baca-c4d5aab071a0",
-            "price": "$4.99"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-03-25T22:47:19.185701",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/m1Zl07DNYeSyNcz9hf8hDsS2oB5.jpg",
-      "studio": "Lucente Filmed Entertainment",
-      "budget": 30000000,
-      "country": "United States of America",
-      "original_language": "en",
-      "original_title": "Starbright",
-      "crew": {
-        "director": "Francesco Lucente",
-        "cast": [
-          "John Rhys-Davies",
-          "Ted Levine"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "featured": false,
-      "imdb_rating": null,
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "_enrichment_gaps": [
-        "rt_score",
-        "imdb_rating"
-      ],
-      "date_added": "2026-03-26",
-      "_enrichment_attempts": 3,
-      "_trailer_source": "tmdb_official",
-      "display_title": "Starbright",
-      "distributor": "Ruby Max Entertainment",
-      "reissue_label": null,
-      "is_slop": true,
-      "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "keywords": [
-        "fairy tale",
-        "condescending",
-        "disgusted"
-      ],
-      "_reissue": false
-    },
-    {
       "id": "13754",
       "title": "Tekkonkinkreet",
       "year": 2006,
@@ -82041,108 +83004,6 @@
       "_reissue": false
     },
     {
-      "id": "1245859",
-      "title": "Savage House",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Against the backdrop of 18th century England, a massive pox outbreak, and Jacobite uprising – Sir Chauncey Savage and Lady Savage blindly pursue a better life. It's not without a tinge of irony that their family name is the Savages, for this is a Savage House indeed, filled with duels, decadence, and bloodshed.",
-      "genres": [
-        "Drama",
-        "Comedy"
-      ],
-      "runtime": 114,
-      "year": 2026,
-      "rt_score": "71%",
-      "providers": {
-        "rent": [],
-        "buy": [
-          "Fandango At Home"
-        ],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Savage_House_(film)",
-        "trailer": "https://www.youtube.com/watch?v=dB9HuMcaEGM",
-        "rt": "https://www.rottentomatoes.com/m/savage_house",
-        "justwatch": "https://www.justwatch.com/us/movie/savage-house-2026",
-        "cast_wiki": {
-          "Richard E. Grant": "https://en.wikipedia.org/wiki/Richard_E._Grant",
-          "Claire Foy": "https://en.wikipedia.org/wiki/Claire_Foy",
-          "Sebastian Armesto": "https://en.wikipedia.org/wiki/Sebastian_Armesto"
-        },
-        "metacritic": "https://www.metacritic.com/movie/savage-house/",
-        "imdb": "https://www.imdb.com/title/tt31349852/",
-        "letterboxd": "https://letterboxd.com/film/savage-house"
-      },
-      "watch_links": {},
-      "pre_order_links": [
-        {
-          "service": "Fandango At Home",
-          "link": "https://athome.fandango.com/content/browse/details/Savage-House/4943898",
-          "buy_price": "$14.99",
-          "price": "$14.99"
-        }
-      ],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-07T12:20:55.457730",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/tFWewN33etDjCiteqEkgORNnqcF.jpg",
-      "studio": "Record Player Films",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "original_title": "Savage House",
-      "display_title": "Savage House",
-      "crew": {
-        "director": "Peter Glanz",
-        "cast": [
-          "Richard E. Grant",
-          "Claire Foy",
-          "Sebastian Armesto",
-          "Roger Ashton-Griffiths",
-          "Kíla Lord Cassidy"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-07",
-      "_is_preorder": true,
-      "_buyonly_preorder": true,
-      "imdb_rating": "6.8",
-      "letterboxd_score": null,
-      "keywords": [
-        "dark comedy",
-        "18th century"
-      ],
-      "_trailer_source": "gemini_playwright",
-      "metacritic_score": "52",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "_slop_reason": "score:1(mid_imdb)",
-      "status": "available",
-      "_enrichment_gaps": [
-        "watch_links",
-        "letterboxd_score"
-      ],
-      "reissue_label": null,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "is_slop": false,
-      "_slop_confidence": "weak",
-      "_reissue": false
-    },
-    {
       "id": "1184941",
       "title": "Blue Heron",
       "bootstrap_date": false,
@@ -83083,8 +83944,8 @@
   ],
   "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tF9w50iumYcQPYseQ6qL7X7",
   "_metadata": {
-    "last_discovery_write": "2026-06-23T13:29:31.247255",
-    "discovery_count": 799,
+    "last_discovery_write": "2026-06-24T10:51:15.065026",
+    "discovery_count": 783,
     "schema_version": "2.0"
   }
 }

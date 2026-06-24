@@ -1,52 +1,17 @@
 {
-  "timestamp": "2026-06-23T13:41:58.789207",
+  "timestamp": "2026-06-24T11:02:28.178728",
   "movies_requested": 16,
-  "movies_enriched": 11,
-  "movies_deferred": 5,
+  "movies_enriched": 10,
+  "movies_deferred": 6,
   "deferred_details": [
     {
       "title": "Tuner",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-06-23",
-      "discovered_at": "2026-06-23T12:05:28.775064",
+      "discovered_at": "2026-06-24T10:50:52.501720",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-23",
-      "tmdb_platforms": [
-        "Amazon Video"
-      ],
-      "jw_platforms": [
-        "Amazon Video"
-      ]
-    },
-    {
-      "title": "The Last Light",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-21",
-      "discovered_at": "2026-06-23T12:05:30.839768",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 15,
-      "first_reverted_at": "2026-06-23",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Love & Other Crimes",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-19",
-      "discovered_at": "2026-06-23T12:05:33.498445",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 6,
-      "first_reverted_at": "2026-06-23",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Pressure",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-06-16",
-      "discovered_at": "2026-06-23T12:05:36.323438",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-23",
+      "first_reverted_at": "2026-06-24",
       "tmdb_platforms": [
         "Amazon Video"
       ],
@@ -57,20 +22,69 @@
       ]
     },
     {
-      "title": "The Dangers in My Heart: The Movie",
+      "title": "The Last Light",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-21",
+      "discovered_at": "2026-06-24T10:50:53.356976",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 16,
+      "first_reverted_at": "2026-06-24",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Love & Other Crimes",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-19",
+      "discovered_at": "2026-06-24T10:50:53.546612",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 7,
+      "first_reverted_at": "2026-06-24",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Pressure",
       "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-06-23T13:10:51.080675",
+      "digital_date": "2026-06-16",
+      "discovered_at": "2026-06-24T10:50:53.923842",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-23",
+      "first_reverted_at": "2026-06-24",
+      "tmdb_platforms": [
+        "Amazon Video"
+      ],
+      "jw_platforms": [
+        "Amazon Video",
+        "Apple TV Store",
+        "Fandango At Home"
+      ]
+    },
+    {
+      "title": "Savage House",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "",
+      "discovered_at": "2026-06-07T12:20:55.457730",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "first_reverted_at": "2026-06-24",
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ]
+    },
+    {
+      "title": "The Devil Wears Prada 2",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-06-30",
+      "discovered_at": "2026-06-24T10:51:10.693863",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-06-24",
       "tmdb_platforms": [],
       "jw_platforms": [
-        "Barnes & Noble"
+        "Fandango At Home"
       ]
     }
   ],
-  "enrichment_duration_seconds": 744.79,
+  "enrichment_duration_seconds": 671.86,
   "error_details": [],
   "total_errors": 0
 }
