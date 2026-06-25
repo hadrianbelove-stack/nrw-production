@@ -1194,7 +1194,7 @@ const HomeScreenTvOS = () => {
         <View style={styles.headerTopRow}>
           <View>
             <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
-            <Text style={styles.headerSlogan}>Bringing back browsing. What came out, every day.</Text>
+            <Text style={styles.headerSlogan}>What came out, every day. Bringing back browsing.</Text>
           </View>
         </View>
         {/* Bottom row: 2x2 toggle module (lower-left) + filters as two rows filling the rest */}

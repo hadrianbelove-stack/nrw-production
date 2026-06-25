@@ -274,7 +274,7 @@ private fun Header(
                 letterSpacing = 3.sp
             )
             Text(
-                text = "Bringing back browsing. What came out, every day.",
+                text = "What came out, every day. Bringing back browsing.",
                 color = TextSecondary,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Light,

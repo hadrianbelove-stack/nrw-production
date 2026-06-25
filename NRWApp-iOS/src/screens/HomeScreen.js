@@ -299,7 +299,7 @@ export default function HomeScreen({navigation}) {
     <View style={[styles.container, {paddingTop: insets.top, paddingBottom: insets.bottom}]}>
       <View style={styles.appHeader}>
         <Text style={styles.appTitle}>THE NEW RELEASE WALL</Text>
-        <Text style={styles.slogan}>Bringing back browsing. What came out, every day.</Text>
+        <Text style={styles.slogan}>What came out, every day. Bringing back browsing.</Text>
       </View>
       <FilterBar activeFilters={activeFilters} onFilterChange={handleFilterChange} slopMode={slopMode} onSlopModeChange={handleSlopModeChange} hideFest={hideFest} onHideFestChange={handleHideFestChange} showPreorders={showPreorders} onShowPreordersChange={handleShowPreordersChange} showHighlightsOnly={showHighlightsOnly} onShowHighlightsChange={handleShowHighlightsChange} searchQuery={searchQuery} onSearchChange={handleSearch} />
 
