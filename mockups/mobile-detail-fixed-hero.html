@@ -40,8 +40,12 @@
 
   /* ---- HERO ---- */
   .hero{display:flex;gap:14px;align-items:flex-start;}
+  /* LOCK: poster + text box are one fixed-height unit (poster is 2:3 -> 84x126).
+     Nothing may grow past it, so the trailer always lands at the same Y. */
+  .hero.lock{height:126px;overflow:hidden;}
+  .hero.lock .hero-text{height:100%;overflow:hidden;}
   .hero-poster{width:84px;height:126px;border-radius:8px;object-fit:cover;flex-shrink:0;box-shadow:0 4px 14px rgba(0,0,0,.5);background:#222;}
-  .hero-text{flex:1;min-width:0;display:flex;flex-direction:column;height:126px;}
+  .hero-text{flex:1;min-width:0;display:flex;flex-direction:column;}
   .hero-title{font-size:1.18rem;font-weight:700;line-height:1.22;}
   .hero-dir{font-size:.76rem;font-weight:700;margin-top:5px;}
   .hero-dir .lab{color:var(--accent);}
@@ -203,11 +207,11 @@ function render(){
     h += `<div class="trailer-wrap"><button class="trailer">▶ Watch Trailer</button></div>`;
     h += provsHTML(m);
   } else {
-    // FIXED HERO: poster + title(clamp) + director [+ cast/meta in hero mode] + scores pinned bottom
-    const heroH = mode==='hero' ? 152 : 126;
-    h += `<div class="hero">
+    // FIXED HERO: poster + text box locked to ONE height (126). title clamps to 2 lines,
+    // director/cast/meta are single ellipsis lines, scores ride the bottom baseline.
+    h += `<div class="hero lock">
       <img class="hero-poster" src="${esc(m.poster)}" onerror="this.style.visibility='hidden'">
-      <div class="hero-text" style="height:${heroH}px">
+      <div class="hero-text">
         <div class="hero-title clamp2">${esc(m.title)}</div>
         ${m.director?`<div class="hero-dir"><span class="lab">D:</span> ${esc(m.director)}</div>`:''}
         ${mode==='hero'&&cast?`<div class="hero-cast">${esc(cast)}</div>`:''}
