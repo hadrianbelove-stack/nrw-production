@@ -41,7 +41,15 @@ BG = (10, 10, 10)          # #0a0a0a
 TEAL = (0, 212, 170)       # #00d4aa
 WHITE = (245, 245, 245)
 MUTED = (150, 150, 150)
+TAG = (212, 212, 212)      # tagline beneath the wordmark
+META = (182, 182, 182)     # year • director line
+CAP = (226, 226, 226)      # capsule body
 POSTER_BG = (26, 26, 46)   # placeholder fill when a movie has no poster
+
+# Brand tagline, locked directly under the wordmark as a masthead. The second
+# slogan line ("Bringing back browsing.") is intentionally omitted on the card —
+# the share image leads with the movie, not the brand.
+SLOGAN = "What came out, every day."
 
 CARD_W, CARD_H = 1200, 630
 
@@ -129,6 +137,24 @@ def fit_title(draw, text, max_w, max_lines=3):
     return font, lines
 
 
+def strip_md(text):
+    """Flatten the capsule's markdown subset to plain text for the card image."""
+    text = text.replace("//", " ")
+    text = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", text)   # [label](url) -> label
+    text = re.sub(r"\*\*([^*]+)\*\*", r"\1", text)          # **bold**
+    text = re.sub(r"\*([^*]+)\*", r"\1", text)              # *italic*
+    text = text.replace("\n", " ")
+    return " ".join(text.split())
+
+
+def capsule_snippet(m, limit=180):
+    """A short, plain-text taste of the NRW capsule (falls back to synopsis)."""
+    t = strip_md(m.get("capsule") or m.get("synopsis") or "")
+    if len(t) > limit:
+        t = t[:limit].rsplit(" ", 1)[0].rstrip(",.;:") + "…"
+    return t
+
+
 def make_card(m, out_path):
     img = Image.new("RGB", (CARD_W, CARD_H), BG)
     draw = ImageDraw.Draw(img)
@@ -152,12 +178,16 @@ def make_card(m, out_path):
 
     tx = px + poster_w + 56
     tw = CARD_W - 56 - tx
-    y = margin
+    y = margin + 4
 
-    # Wordmark
-    wm_font = get_font("bold", 26)
-    draw.text((tx, y), "THE NEW RELEASE WALL", font=wm_font, fill=TEAL)
-    y += 52
+    # Brand masthead — wordmark + tagline locked together, then a teal rule. Keeping
+    # the name and its tagline adjacent so they read as one unit (not a stray phrase).
+    draw.text((tx, y), "THE NEW RELEASE WALL", font=get_font("black", 28), fill=TEAL)
+    y += 38
+    draw.text((tx, y), SLOGAN, font=get_font("regular", 23), fill=TAG)
+    y += 40
+    draw.line([(tx, y), (tx + tw, y)], fill=TEAL, width=3)
+    y += 28
 
     # Title — drop a trailing non-Latin parenthetical (bilingual original title) so
     # the card doesn't render CJK as tofu boxes; Lato (and CI fonts) lack those glyphs.
@@ -165,15 +195,13 @@ def make_card(m, out_path):
     stripped = re.sub(r"\s*\([^)]*[^\x00-\x7f][^)]*\)\s*$", "", title).strip()
     if stripped:
         title = stripped
-    title_font, title_lines = fit_title(draw, title, tw)
-    line_h = title_font.size + 8
+    title_font, title_lines = fit_title(draw, title, tw, max_lines=2)
     for line in title_lines:
         draw.text((tx, y), line, font=title_font, fill=WHITE)
-        y += line_h
-    y += 8
+        y += title_font.size + 8
+    y += 6
 
     # Year + director
-    meta_font = get_font("regular", 30)
     bits = []
     if m.get("year"):
         bits.append(str(m["year"]))
@@ -181,25 +209,16 @@ def make_card(m, out_path):
     if director and director.strip().lower() != "unknown":
         bits.append(f"Dir. {director}")
     if bits:
-        draw.text((tx, y), "  •  ".join(bits), font=meta_font, fill=MUTED)
-        y += 44
+        draw.text((tx, y), "  •  ".join(bits), font=get_font("regular", 28), fill=META)
+        y += 46
 
-    # Scores
-    score_font = get_font("bold", 34)
-    tokens = []
-    if m.get("rt_score"):
-        tokens.append(f"RT {m['rt_score']}")
-    if m.get("imdb_rating"):
-        tokens.append(f"IMDb {m['imdb_rating']}")
-    if m.get("metacritic_score"):
-        tokens.append(f"MC {m['metacritic_score']}")
-    if tokens:
-        draw.text((tx, y + 6), "    ".join(tokens), font=score_font, fill=TEAL)
-
-    # Slogan pinned to the bottom of the text column
-    slogan_font = get_font("regular", 24)
-    draw.text((tx, CARD_H - margin - 24), "Bringing back browsing.",
-              font=slogan_font, fill=MUTED)
+    # Capsule (NRW editorial voice) — replaces the old RT/IMDb/MC scores row.
+    cap = capsule_snippet(m)
+    if cap:
+        cap_font = get_font("regular", 29)
+        for line in wrap_lines(draw, cap, cap_font, tw)[:3]:
+            draw.text((tx, y), line, font=cap_font, fill=CAP)
+            y += cap_font.size + 10
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     img.save(out_path, "PNG")
