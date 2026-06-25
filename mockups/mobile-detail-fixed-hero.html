@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>NRW · Mobile detail — fixed hero</title>
+<style>
+  :root{
+    --bg1:#0a0a0a; --bg2:#1a1a2e; --accent:#00d4aa;
+    --text:#fff; --muted:#bbb; --dim:#888;
+    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --pill:25px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;background:#000;font-family:var(--font);color:var(--text);}
+  body{display:flex;flex-direction:column;align-items:center;}
+  .phone{
+    width:100%;max-width:430px;height:100dvh;background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    display:flex;flex-direction:column;overflow:hidden;position:relative;
+  }
+
+  /* ---- demo control bar ---- */
+  .ctrl{flex-shrink:0;padding:10px 12px 8px;border-bottom:1px solid rgba(255,255,255,.07);}
+  .ctrl-title{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:8px;display:flex;justify-content:space-between;}
+  .ctrl-title b{color:var(--accent);}
+  .modes{display:flex;gap:6px;}
+  .mode{flex:1;text-align:center;font-size:.66rem;font-weight:700;padding:8px 4px;border-radius:10px;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--muted);cursor:pointer;line-height:1.2;}
+  .mode.on{background:rgba(0,212,170,.16);border-color:var(--accent);color:var(--accent);}
+
+  /* ---- sheet ---- */
+  .sheet{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+  .handle{display:flex;justify-content:center;padding:9px 0 5px;flex-shrink:0;}
+  .handle i{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.25);}
+  .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 22px 40px;position:relative;}
+
+  /* screening banner */
+  .scr-band{margin:0 0 12px;text-align:center;font-size:.7rem;font-weight:700;letter-spacing:.03em;
+    color:#f5c518;background:rgba(245,197,24,.1);border:1px solid rgba(245,197,24,.35);border-radius:8px;padding:7px;}
+
+  /* ---- HERO ---- */
+  .hero{display:flex;gap:14px;align-items:flex-start;}
+  .hero-poster{width:84px;height:126px;border-radius:8px;object-fit:cover;flex-shrink:0;box-shadow:0 4px 14px rgba(0,0,0,.5);background:#222;}
+  .hero-text{flex:1;min-width:0;display:flex;flex-direction:column;height:126px;}
+  .hero-title{font-size:1.18rem;font-weight:700;line-height:1.22;}
+  .hero-dir{font-size:.76rem;font-weight:700;margin-top:5px;}
+  .hero-dir .lab{color:var(--accent);}
+  .hero-cast{font-size:.74rem;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hero-meta{font-size:.7rem;color:var(--dim);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+  .scores{display:flex;gap:8px;flex-wrap:wrap;}
+  .score{display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;border:1.5px solid rgba(255,255,255,.2);font-size:.74rem;font-weight:700;}
+  .score .lg{font-size:.58rem;font-weight:800;letter-spacing:.02em;opacity:.85;}
+  .score.rt{border-color:rgba(255,107,107,.55);background:rgba(255,107,107,.08);color:#ff6b6b;}
+  .score.imdb{border-color:rgba(245,197,24,.55);background:rgba(245,197,24,.08);color:#f5c518;}
+  .score.mc{border-color:rgba(125,223,100,.55);background:rgba(125,223,100,.08);color:#7ddf64;}
+  .score.lb{border-color:rgba(0,224,84,.5);background:rgba(0,224,84,.08);color:#00e054;}
+  .scores.pin{margin-top:auto;}        /* fixed modes: scores ride the bottom baseline */
+
+  /* trailer button + locked guide */
+  .trailer-wrap{position:relative;margin-top:16px;}
+  .guide{position:absolute;left:-22px;right:-22px;top:-9px;border-top:1px dashed rgba(0,212,170,.5);}
+  .guide::after{content:'↕ locked';position:absolute;right:0;top:-15px;font-size:.55rem;letter-spacing:.08em;color:var(--accent);background:var(--bg2);padding:0 5px;}
+  .trailer{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:var(--pill);
+    background:linear-gradient(135deg,#e50914,#a00010);color:#fff;font-size:.82rem;font-weight:600;border:none;cursor:pointer;}
+
+  /* sections */
+  .label{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:18px 0 8px;}
+  .provs{display:flex;flex-wrap:wrap;gap:8px;}
+  .prov{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:7px 12px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);font-size:.74rem;font-weight:600;}
+  .prov .pr{font-size:.62rem;color:var(--dim);font-weight:500;}
+  .pq{margin:10px 0;padding-left:10px;border-left:2px solid rgba(255,255,255,.18);}
+  .pq q{font-size:.82rem;color:#e8e8e8;font-style:italic;}
+  .pq cite{display:block;font-size:.66rem;color:var(--dim);margin-top:3px;font-style:normal;}
+  .pq .b{display:inline-block;font-size:.55rem;font-weight:800;padding:1px 5px;border-radius:4px;margin-right:6px;vertical-align:middle;}
+  .pq .b.rt{background:rgba(255,107,107,.18);color:#ff6b6b;}
+  .pq .b.lb{background:rgba(0,224,84,.16);color:#00e054;}
+  .syn{font-size:.86rem;line-height:1.5;color:#ddd;}
+  .syn a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(0,212,170,.4);}
+  .infoline{font-size:.74rem;color:var(--muted);margin:6px 0;}
+  .infoline .lab{color:var(--accent);font-weight:700;}
+
+  /* nav */
+  .nav{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;
+    background:rgba(10,12,16,.55);border:1px solid rgba(0,212,170,.5);color:var(--accent);font-size:1.7rem;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:20;user-select:none;}
+  .nav.l{left:6px;} .nav.r{right:6px;}
+  .counter{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:.62rem;color:var(--dim);
+    background:rgba(0,0,0,.5);padding:3px 10px;border-radius:10px;z-index:20;}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="ctrl">
+    <div class="ctrl-title"><span>Mobile detail · <b>swipe ← →</b></span><span id="ttl"></span></div>
+    <div class="modes">
+      <div class="mode" data-m="before">Current<br>(bounces)</div>
+      <div class="mode on" data-m="below">Fixed ·<br>cast below</div>
+      <div class="mode" data-m="hero">Fixed ·<br>cast in hero</div>
+    </div>
+  </div>
+  <div class="sheet">
+    <div class="handle"><i></i></div>
+    <div class="content" id="content"></div>
+    <div class="nav l" id="prev">‹</div>
+    <div class="nav r" id="next">›</div>
+    <div class="counter" id="counter"></div>
+  </div>
+</div>
+<script>
+const MOVIES =[{"id": "744", "title": "Top Gun", "poster": "https://image.tmdb.org/t/p/w500/xUuHj3CgmZQ9P2cMaqQs4J0d4Zc.jpg", "director": "Tony Scott", "cast": ["Tom Cruise", "Kelly McGillis", "Val Kilmer", "Anthony Edwards"], "country": "United States of America", "year": 1986, "runtime": 110, "studio": "Paramount Pictures", "rt": "57%", "imdb": "7.0", "mc": "50", "lb": "3.5", "trailer": "https://www.youtube.com/watch?v=xa_z57UatDY", "streaming": [{"service": "Paramount+"}, {"service": "Paramount+"}, {"service": "YouTube"}, {"service": "Paramount+"}], "vod": [{"service": "FlixFling", "rent": "$3.99", "buy": null}, {"service": "Spectrum On Demand", "rent": "$3.99", "buy": null}, {"service": "Amazon", "rent": "$4.99", "buy": "$18.99"}, {"service": "Apple TV", "rent": "$4.99", "buy": "$16.99"}, {"service": "Fandango", "rent": "$4.99", "buy": "$16.99"}, {"service": "Barnes & Noble", "rent": null, "buy": "$9.99"}], "screening": false, "screening_name": null, "pull_quotes": [], "capsule": "For Lieutenant Pete 'Maverick' Mitchell and his friend and co-pilot Nick 'Goose' Bradshaw, being accepted into an elite training school for fighter pilots is a dream come true. But a tragedy, as well as personal demons, will threaten Pete's dreams of becoming an ace pilot."}, {"id": "1020047", "title": "In the Hand of Dante", "poster": "https://image.tmdb.org/t/p/w500/nPPIufTBnzEg0d7NoR5RLL1oPra.jpg", "director": "Julian Schnabel", "cast": ["Oscar Isaac", "Gal Gadot", "Gerard Butler", "John Malkovich"], "country": "United States of America", "year": 2026, "runtime": 153, "studio": "DreamCrew", "rt": "38%", "imdb": "4.5", "mc": "0", "lb": "2.5", "trailer": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1020047.mp4", "streaming": [{"service": "Netflix"}, {"service": "Netflix"}], "vod": [], "screening": false, "screening_name": null, "pull_quotes": [{"text": "Extravagant, furious, demented, verbose, elusive, and as hypnotic as, let's admit it, profoundly boring.", "critic": "Luis Martínez", "outlet": "El Mundo (Spain)", "source": null}, {"text": "Scorsese def back on cocaine with this and the AI-supportive shit", "critic": "@stefanzilla", "outlet": "Letterboxd", "source": null}], "capsule": "Passion project from painter-director **[Julian Schnabel](https://en.wikipedia.org/wiki/Julian_Schnabel)** (*The Diving Bell and the Butterfly*).\nCrime thriller about a stolen manuscript of Dante's *Divine Comedy*, intertwined with the story of Dante himself writing the masterpiece.\nIncredible ensemble — **[Oscar Isaac](https://en.wikipedia.org/wiki/Oscar_Isaac)** in a dual role, **[Gal Gadot](https://en.wikipedia.org/wiki/Gal_Gadot)**, **[Gerard Butler](https://en.wikipedia.org/wiki/Gerard_Butler)**, **Jason Momoa**, **Al Pacino**, and **Martin Scorsese** in a rare acting appearance."}, {"id": "1354301", "title": "You Had to Be There: How the Toronto Godspell Ignited the Comedy Revolution...", "poster": "https://image.tmdb.org/t/p/w500/cwc6k3QjqLc2yB23rAXYuVBbEvG.jpg", "director": "Nick Davis", "cast": ["Martin Short", "Eugene Levy", "Victor Garber", "Andrea Martin"], "country": "Canada", "year": 2025, "runtime": 98, "studio": "Open Door Co.", "rt": "92%", "imdb": "8.2", "mc": null, "lb": "3.7", "trailer": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1354301.mp4", "streaming": [], "vod": [{"service": "Eventive", "rent": null, "buy": null}], "screening": true, "screening_name": "Boulder Intl. Film Fest", "pull_quotes": [], "capsule": "A documentary about the legendary 1972 Toronto production of the musical about the life of Jesus, which launched many illustrious careers and ignited a comedy revolution."}, {"id": "1301086", "title": "Our Wolves: In a Landscape of Fear and Love (Lupi Nostri)", "poster": "https://image.tmdb.org/t/p/w500/fiO1JZfypvaS8XydWqLgnDjAB0k.jpg", "director": "Samer Angelone", "cast": ["Luca Rossi", "Giorgio Bergero", "Mauro Fissore", "Daniel Redondo Gómez"], "country": "Switzerland", "year": 2025, "runtime": 85, "studio": "Angelone Film Production", "rt": null, "imdb": null, "mc": null, "lb": null, "trailer": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1301086.mp4", "streaming": [], "vod": [{"service": "Amazon", "rent": "$2.99", "buy": null}], "screening": false, "screening_name": null, "pull_quotes": [], "capsule": "Swiss doc on the fierce debate whether the return of wolves to the Italian Alps.\nDirector **Samer Angelone** is a biologist-turned-filmmaker, and his subject, professor **Luca Rossi**, was his former doctoral supervisor.\nWon eight international awards, including Best Film at Australia’s [SCINEMA Science Film Festival](https://en.wikipedia.org/wiki/Scinema)."}, {"id": "1699970", "title": "The Welcome Table", "poster": "https://image.tmdb.org/t/p/w500/mol1ZJek1rVHXmV4UKZIIfzgyLp.jpg", "director": "Josh Fox", "cast": [], "country": "United States of America", "year": 2026, "runtime": 0, "studio": "International WOW Company", "rt": null, "imdb": null, "mc": null, "lb": null, "trailer": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1699970.mp4", "streaming": [{"service": "Max"}], "vod": [], "screening": false, "screening_name": null, "pull_quotes": [], "capsule": "Tells the story of climate refugees across six continents, celebrating the voices and experiences of people living at the forefront of the climate crisis, displaced from their homes by climate disasters."}, {"id": "1465978", "title": "Maintenance Artist", "poster": "https://image.tmdb.org/t/p/w500/VbYDDEw7RPdATftVrAboA0iuP.jpg", "director": "Toby Perl Freilich", "cast": ["Mierle Laderman Ukeles"], "country": "United States of America", "year": 2025, "runtime": 90, "studio": "Unknown", "rt": null, "imdb": "7.4", "mc": null, "lb": "3.5", "trailer": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1465978.mp4", "streaming": [], "vod": [{"service": "Eventive", "rent": null, "buy": null}, {"service": "Amazon", "rent": "$4.99", "buy": "$14.99"}], "screening": true, "screening_name": "Doxumentale", "pull_quotes": [{"text": "About the octogenarian conceptual artist who appointed herself artist-in-residence of the city's Department of Sanitation.", "critic": "Karen Chernick", "outlet": "The Art Newspaper", "source": "rt_critic"}], "capsule": "Since 1977, **Mierle Laderman Ukeles** has been the New York City Department of Sanitation's first — and only — artist-in-residence. **Toby Perl Freilich**'s (*Moynihan*) documentary dives into Ukeles' groundbreaking 'Maintenance Art' philosophy, transforming everyday labor into radical performance art. Premiered at Tribeca. Grasshopper Films (*Pacifiction*, *Ascension*)."}, {"id": "1560681", "title": "Colors of Evil: Black (Kolory zła: Czerń)", "poster": "https://image.tmdb.org/t/p/w500/wIubCZKpnTiQmlC5DehgU1LNFip.jpg", "director": "Adrian Panek", "cast": ["Jakub Gierszał", "Marianna Zydek", "Zdzisław Wardejn", "Andrzej Chyra"], "country": "Poland", "year": 2026, "runtime": 0, "studio": "Aurum Film", "rt": null, "imdb": null, "mc": null, "lb": null, "trailer": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1560681.mp4", "streaming": [{"service": "Netflix"}], "vod": [], "screening": false, "screening_name": null, "pull_quotes": [{"text": "Very complicated and confusing. Probably did not help that it was dubbed.", "critic": "@ccoones04", "outlet": "Letterboxd", "source": "letterboxd"}, {"text": "I thought I had the case solved 20 different times but I was completely wrong.", "critic": "@1234rich2", "outlet": "Letterboxd", "source": "letterboxd"}], "capsule": "Dark Polish crime thriller, based on the popular book series by Małgorzata Oliwia Sobczak.\nProsecutor investigates child disappearance in a remote Kashubian town.\nSequel to *Colors of Evil: Red*, which was a Netflix top 10 hit. The Polish *True Detective*."}, {"id": "1220566", "title": "Eagles of the Republic", "poster": "https://image.tmdb.org/t/p/w500/f9MzpMfbBL4PknhKqoQpIUdskTl.jpg", "director": "Tarik Saleh", "cast": ["Fares Fares", "Lyna Khoudri", "Zineb Triki", "Amr Waked"], "country": "Sweden", "year": 2025, "runtime": 128, "studio": "Unlimited Stories", "rt": "75%", "imdb": "6.6", "mc": "67", "lb": "3.3", "trailer": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1220566.mp4", "streaming": [], "vod": [{"service": "Amazon", "rent": "$4.99", "buy": "$14.99"}, {"service": "Barnes & Noble", "rent": null, "buy": "$22.99"}, {"service": "Fandango", "rent": "$4.99", "buy": "$14.99"}, {"service": "Apple TV", "rent": "$5.99", "buy": "$14.99"}], "screening": false, "screening_name": null, "pull_quotes": [{"text": "Navigating a labyrinth of corruption and bad behavior inside contemporary Egypt, writer-director Tarik Saleh delivers another solid, thought-provoking thriller.", "critic": "Jordan Mintzer", "outlet": "The Hollywood Reporter", "source": null}], "capsule": "Political thriller about an Egyptian movie star pressured into starring in a state-sanctioned propaganda film.\nThe final installment of director **[Tarik Saleh](https://en.wikipedia.org/wiki/Tarik_Saleh)**'s \"Cairo trilogy.\" Premiered in competition at the **[Cannes Film Festival](https://en.wikipedia.org/wiki/Cannes_Film_Festival)**."}, {"id": "1561978", "title": "The Ark", "poster": "https://image.tmdb.org/t/p/w500/fuOlMXRJldltxeHGiG1mYNWBVzg.jpg", "director": "Viacheslav Rakovskyi", "cast": ["Kyra Sedgwick"], "country": "Ukraine", "year": 2025, "runtime": 93, "studio": "Unknown", "rt": null, "imdb": null, "mc": null, "lb": null, "trailer": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1561978.mp4", "streaming": [], "vod": [{"service": "Eventive", "rent": null, "buy": null}], "screening": true, "screening_name": "Melbourne Documentary Film Festival Online", "pull_quotes": [], "capsule": "Zhenye and Anatoliy Pilipenko’s dream of a quiet place in the country is shattered overnight when Russia invades Ukraine. As rockets fall and fires rage, they face an impossible choice: flee the violence or stay and protect their home. When a soldier on his way to the frontline asks the couple if they can care for his goats – all 37 of them – while he fights in the trenches; their home transforms into the largest animal sanctuary in Eastern Ukraine. From rescued chickens, displaced donkeys, wandering horses and even emus, Anatoliy and Zhenye risk their lives and livelihoods to rescue any part of Ukraine they can. Told primarily through verité, amidst constant danger, heartbreaking loss and improbably an inextinguishable reservoir of hope, Zhenye and Anatoliy’s sanctuary stands as a defiant testament to the unbreakable bond between a nation, its people, and the land they refuse to surrender."}, {"id": "tv_324043", "title": "Big Girls Wanted: Escaping Pearadise", "poster": "https://image.tmdb.org/t/p/w500/M4T0ColVoLCGnxdyNsSEBOuMji.jpg", "director": "Unknown", "cast": [], "country": "US", "year": 2026, "runtime": null, "studio": "Investigation Discovery", "rt": null, "imdb": "5.0", "mc": null, "lb": null, "trailer": "https://f004.backblazeb2.com/file/NRW-TRAILERS/tv_324043.mp4", "streaming": [{"service": "Max"}, {"service": "YouTube"}, {"service": "Investigation Discovery"}, {"service": "Spectrum On Demand"}, {"service": "Discovery +"}], "vod": [{"service": "Amazon", "rent": null, "buy": "$5.99"}, {"service": "Apple TV", "rent": null, "buy": "$5.99"}, {"service": "Fandango", "rent": null, "buy": "$5.99"}], "screening": false, "screening_name": null, "pull_quotes": [], "capsule": "Pearadise promised safety and a utopia for plus‑size women. The sisterhood turns dark as allegations of assault and coercion spread among the women."}];
+
+let idx = 0;
+let mode = 'below';   // 'before' | 'below' | 'hero'
+
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// light markdown: **bold**, *italic*, [t](u), \n -> <br>
+function md(t){
+  if(!t) return '';
+  t = esc(t);
+  t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  t = t.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  t = t.replace(/\*([^*]+)\*/g,'<em>$1</em>');
+  t = t.replace(/\n/g,'<br>');
+  return t;
+}
+
+function scoreHTML(m){
+  const out=[];
+  if(m.rt)   out.push(`<span class="score rt"><span class="lg">RT</span>${esc(m.rt)}</span>`);
+  if(m.imdb) out.push(`<span class="score imdb"><span class="lg">IMDb</span>${esc(m.imdb)}</span>`);
+  if(m.mc && m.mc!=='0') out.push(`<span class="score mc"><span class="lg">MC</span>${esc(m.mc)}</span>`);
+  if(m.lb)   out.push(`<span class="score lb"><span class="lg">LB</span>${esc(m.lb)}</span>`);
+  return out.join('');
+}
+function castLine(m){ return m.cast && m.cast.length ? m.cast.join(', ') : ''; }
+function metaLine(m){
+  const p=[];
+  if(m.country) p.push(esc(m.country.replace('United States of America','USA').replace('United States','USA')));
+  if(m.year) p.push(m.year);
+  if(m.runtime) p.push(m.runtime+' min');
+  if(m.studio && m.studio!=='Unknown') p.push(esc(m.studio));
+  return p.join(' · ');
+}
+function provsHTML(m){
+  let h='';
+  if(m.vod && m.vod.length){
+    h += `<div class="label">Rent / Buy</div><div class="provs">` +
+      m.vod.map(v=>`<div class="prov">${esc(v.service)}${(v.rent||v.buy)?`<span class="pr">${[v.rent?'Rent '+v.rent:'',v.buy?'Buy '+v.buy:''].filter(Boolean).join(' · ')}</span>`:''}</div>`).join('') +
+      `</div>`;
+  }
+  if(m.streaming && m.streaming.length){
+    const uniq=[...new Set(m.streaming.map(s=>s.service))];
+    h += `<div class="label">Stream</div><div class="provs">` +
+      uniq.map(s=>`<div class="prov">${esc(s)}</div>`).join('') + `</div>`;
+  }
+  if(!h) h = `<div class="label">Availability</div><div class="syn" style="font-style:italic;color:#aaa">Coming soon</div>`;
+  return h;
+}
+function quotesHTML(m){
+  if(!m.pull_quotes || !m.pull_quotes.length) return '';
+  return `<div class="label">Critics</div>` + m.pull_quotes.map(q=>{
+    const lb = (q.source==='letterboxd' || /letterboxd/i.test(q.outlet||''));
+    const attribution=[q.critic,q.outlet].filter(Boolean).join(', ');
+    return `<div class="pq"><span class="b ${lb?'lb':'rt'}">${lb?'LB':'RT'}</span><q>${esc(q.text)}</q>${attribution?`<cite>${esc(attribution)}</cite>`:''}</div>`;
+  }).join('');
+}
+
+function render(){
+  const m = MOVIES[idx];
+  document.getElementById('ttl').textContent = mode==='before'?'CURRENT':'FIXED HERO';
+  const c = document.getElementById('content');
+  let h='';
+  if(m.screening && m.screening_name) h += `<div class="scr-band">▶ Virtual screening · ${esc(m.screening_name)}</div>`;
+
+  const scores = scoreHTML(m);
+  const cast = castLine(m);
+  const meta = metaLine(m);
+
+  if(mode==='before'){
+    // CURRENT: everything stacks in the header, no clamps -> trailer Y varies
+    h += `<div class="hero" style="align-items:flex-start">
+      <img class="hero-poster" src="${esc(m.poster)}" onerror="this.style.visibility='hidden'">
+      <div class="hero-text" style="height:auto">
+        <div class="hero-title">${esc(m.title)}</div>
+        ${m.director?`<div class="hero-dir"><span class="lab">D:</span> ${esc(m.director)}</div>`:''}
+        ${cast?`<div class="hero-cast" style="white-space:normal">${esc(cast)}</div>`:''}
+        ${meta?`<div class="hero-meta" style="white-space:normal">${meta}</div>`:''}
+        ${scores?`<div class="scores" style="margin-top:6px">${scores}</div>`:''}
+      </div></div>`;
+    h += `<div class="trailer-wrap"><button class="trailer">▶ Watch Trailer</button></div>`;
+    h += provsHTML(m);
+  } else {
+    // FIXED HERO: poster + title(clamp) + director [+ cast/meta in hero mode] + scores pinned bottom
+    const heroH = mode==='hero' ? 152 : 126;
+    h += `<div class="hero">
+      <img class="hero-poster" src="${esc(m.poster)}" onerror="this.style.visibility='hidden'">
+      <div class="hero-text" style="height:${heroH}px">
+        <div class="hero-title clamp2">${esc(m.title)}</div>
+        ${m.director?`<div class="hero-dir"><span class="lab">D:</span> ${esc(m.director)}</div>`:''}
+        ${mode==='hero'&&cast?`<div class="hero-cast">${esc(cast)}</div>`:''}
+        ${mode==='hero'&&meta?`<div class="hero-meta">${meta}</div>`:''}
+        <div class="scores pin">${scores||'<span style="font-size:.66rem;color:#666">no critic scores yet</span>'}</div>
+      </div></div>`;
+    h += `<div class="trailer-wrap"><div class="guide"></div><button class="trailer">▶ Watch Trailer</button></div>`;
+    h += provsHTML(m);
+    if(mode==='below'){
+      if(cast) h += `<div class="infoline"><span class="lab">Cast:</span> ${esc(cast)}</div>`;
+      if(meta) h += `<div class="infoline">${meta}</div>`;
+    }
+  }
+
+  h += quotesHTML(m);
+  h += `<div class="label">Synopsis</div><div class="syn">${md(m.capsule)}</div>`;
+  h += `<div style="height:30px"></div>`;
+  c.innerHTML = h;
+  c.scrollTop = 0;
+  document.getElementById('counter').textContent = (idx+1)+' / '+MOVIES.length;
+}
+
+function go(d){ idx=(idx+d+MOVIES.length)%MOVIES.length; render(); }
+document.getElementById('prev').onclick=()=>go(-1);
+document.getElementById('next').onclick=()=>go(1);
+document.querySelectorAll('.mode').forEach(el=>el.onclick=()=>{
+  mode=el.dataset.m;
+  document.querySelectorAll('.mode').forEach(x=>x.classList.toggle('on',x===el));
+  render();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft')go(-1); if(e.key==='ArrowRight')go(1); });
+
+// swipe
+let sx=0,sy=0;
+const sheet=document.querySelector('.sheet');
+sheet.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+sheet.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+  if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)) go(dx<0?1:-1);
+},{passive:true});
+
+render();
+</script>
+</body>
+</html>
