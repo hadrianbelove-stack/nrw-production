@@ -64,6 +64,10 @@
   .guide::after{content:'↕ locked';position:absolute;right:0;top:-15px;font-size:.55rem;letter-spacing:.08em;color:var(--accent);background:var(--bg2);padding:0 5px;}
   .trailer{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:var(--pill);
     background:linear-gradient(135deg,#e50914,#a00010);color:#fff;font-size:.82rem;font-weight:600;border:none;cursor:pointer;}
+  .action-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .ticket{display:inline-flex;align-items:center;gap:6px;padding:11px 18px;border-radius:var(--pill);
+    background:rgba(245,197,24,.14);border:1px solid rgba(245,197,24,.55);color:#f5c518;font-size:.8rem;font-weight:700;cursor:pointer;text-decoration:none;}
+  .vs-line{font-size:.82rem;color:#f5c518;background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.3);border-radius:8px;padding:9px 12px;line-height:1.4;}
 
   /* sections */
   .label{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:18px 0 8px;}
@@ -146,6 +150,11 @@ function metaLine(m){
 }
 function provsHTML(m){
   let h='';
+  // Virtual screening: no top banner — surface it here as the availability line.
+  if(m.screening){
+    h += `<div class="label">Availability</div><div class="vs-line">▶ Virtual screening · ${esc(m.screening_name||'festival')}<br><span style="opacity:.7">Limited run — buy ticket above</span></div>`;
+    return h;
+  }
   if(m.vod && m.vod.length){
     h += `<div class="label">Rent / Buy</div><div class="provs">` +
       m.vod.map(v=>`<div class="prov">${esc(v.service)}${(v.rent||v.buy)?`<span class="pr">${[v.rent?'Rent '+v.rent:'',v.buy?'Buy '+v.buy:''].filter(Boolean).join(' · ')}</span>`:''}</div>`).join('') +
@@ -173,7 +182,8 @@ function render(){
   document.getElementById('ttl').textContent = mode==='before'?'CURRENT':'FIXED HERO';
   const c = document.getElementById('content');
   let h='';
-  if(m.screening && m.screening_name) h += `<div class="scr-band">▶ Virtual screening · ${esc(m.screening_name)}</div>`;
+  // Top banner ONLY in the "Current" mode (this is the before — it's the jump).
+  if(mode==='before' && m.screening && m.screening_name) h += `<div class="scr-band">▶ Virtual screening · ${esc(m.screening_name)}</div>`;
 
   const scores = scoreHTML(m);
   const cast = castLine(m);
@@ -204,7 +214,8 @@ function render(){
         ${mode==='hero'&&meta?`<div class="hero-meta">${meta}</div>`:''}
         <div class="scores pin">${scores||'<span style="font-size:.66rem;color:#666">no critic scores yet</span>'}</div>
       </div></div>`;
-    h += `<div class="trailer-wrap"><div class="guide"></div><button class="trailer">▶ Watch Trailer</button></div>`;
+    const ticket = m.screening ? `<a class="ticket">🎟 Buy Ticket</a>` : '';
+    h += `<div class="trailer-wrap"><div class="guide"></div><div class="action-row"><button class="trailer">▶ Trailer</button>${ticket}</div></div>`;
     h += provsHTML(m);
     if(mode==='below'){
       if(cast) h += `<div class="infoline"><span class="lab">Cast:</span> ${esc(cast)}</div>`;
