@@ -3346,11 +3346,22 @@
     "1316409": {
       "title": "Darwish",
       "premiere_date": "2025-08-13",
-      "digital_date": null,
-      "has_providers": false,
+      "digital_date": "2026-06-25",
+      "has_providers": true,
       "status": "tracking",
       "added": "2025-09-06T16:47:50.252670",
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Shahid VIP"
+        ]
+      },
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-25"
     },
     "1303356": {
       "title": "L'Épreuve du feu",
@@ -40707,10 +40718,10 @@
       "enriched": false,
       "enrichment_date": null,
       "_is_preorder": true,
-      "_transitioned_at": "2026-06-24",
-      "_jw_revert_count": 7,
+      "_transitioned_at": "2026-06-25",
+      "_jw_revert_count": 8,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-24"
+      "_jw_reverted_at": "2026-06-25"
     },
     "1544405": {
       "title": "Der Rest ist Stille",
@@ -58803,7 +58814,8 @@
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-06-22"
+      "_jw_reverted_at": "2026-06-22",
+      "_skip_provider_discovery": true
     },
     "1597042": {
       "title": "Season’s Creepings",
@@ -79584,12 +79596,18 @@
       "title": "The Sinking of the Lisbon Maru",
       "status": "tracking",
       "first_seen": "2026-01-04",
-      "digital_date": null,
+      "digital_date": "2026-06-30",
       "providers": {},
       "intake_pass": "backfill",
       "has_providers": false,
       "year": 2024,
-      "premiere_date": "2024-08-31"
+      "premiere_date": "2024-08-31",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-25",
+      "_jw_revert_count": 1
     },
     "1279407": {
       "title": "John Kearns: The Varnishing Days",
@@ -111086,7 +111104,7 @@
       "enriched": true,
       "enrichment_date": "2026-06-22",
       "_transitioned_at": "2026-06-22",
-      "digital_date": "2026-06-24"
+      "digital_date": "2026-06-25"
     },
     "1318418": {
       "title": "Steal Away",
@@ -113189,7 +113207,7 @@
         "streaming": []
       },
       "intake_pass": "backfill",
-      "has_providers": true,
+      "has_providers": false,
       "year": 2025,
       "premiere_date": "2025-08-30",
       "_discovery_source": "provider_availability_check",
@@ -113245,10 +113263,10 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-06-24",
+      "_transitioned_at": "2026-06-25",
       "digital_date": "2026-06-23",
       "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-06-24",
+      "_jw_reverted_at": "2026-06-25",
       "_jw_revert_count": 1
     },
     "1189794": {
@@ -124446,7 +124464,7 @@
       },
       "intake_pass": "C",
       "festival": "Toronto/TIFF",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-06-02",
@@ -179992,8 +180010,9 @@
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "_buyonly_preorder": true,
+      "_type4_pending": true,
       "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-06-23",
+      "_jw_reverted_at": "2026-06-25",
       "_jw_revert_count": 1
     },
     "1316398": {
@@ -202653,7 +202672,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-06-23"
     },
@@ -217509,9 +217528,8 @@
       "first_seen": "2026-04-29",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false,
-      "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "_jw_revert_reason": "justwatch_theatrical_pvod",
@@ -222230,11 +222248,17 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-05-10",
-      "digital_date": null,
+      "digital_date": "2026-12-11",
       "providers": {},
       "intake_pass": "C",
       "festival": "Cannes",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-25",
+      "_jw_revert_count": 1
     },
     "9799": {
       "title": "The Fast and the Furious",
@@ -223193,11 +223217,17 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-05-10",
-      "digital_date": null,
+      "digital_date": "2026-12-04",
       "providers": {},
       "intake_pass": "C",
       "festival": "Cannes",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-25",
+      "_jw_revert_count": 1
     },
     "1383287": {
       "title": "Ulysse",
@@ -228278,9 +228308,9 @@
       "_discovery_source": "tmdb_type4",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-06-24",
+      "_transitioned_at": "2026-06-25",
       "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-06-24",
+      "_jw_reverted_at": "2026-06-25",
       "_jw_revert_count": 1
     },
     "1701604": {
@@ -231000,16 +231030,16 @@
         "streaming": []
       },
       "intake_pass": "A",
-      "_jw_revert_count": 16,
+      "_jw_revert_count": 17,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-06-24",
+      "_transitioned_at": "2026-06-25",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-24"
+      "_jw_reverted_at": "2026-06-25"
     },
     "1646124": {
       "title": "Tiger's Rampage",
@@ -233919,7 +233949,7 @@
       },
       "intake_pass": "C",
       "festival": "Tribeca",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
@@ -234733,7 +234763,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-24"
     },
@@ -239778,10 +239808,20 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-06-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-25",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "fuboTV"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-25"
     },
     "1710781": {
       "title": "The Troll",
@@ -241124,7 +241164,7 @@
       "digital_date": "2026-06-22",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-23"
     },
@@ -241523,6 +241563,361 @@
       "intake_date": "2026-06-24",
       "networks": [
         "BBC Scotland"
+      ],
+      "has_providers": false
+    },
+    "1720206": {
+      "title": "Rik Mayall: Magnificent B'stard",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1719639": {
+      "title": "Remembering Jimbuli Gording: The Mission for Intercourse: An Introspective: A Review",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1714841": {
+      "title": "关索岭",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1710752": {
+      "title": "Brotherhood of the Court: Beginning",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1707874": {
+      "title": "After-School Exorcism Club: Girls' Night",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1701331": {
+      "title": "Rescue",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1689006": {
+      "title": "Because of you Ka Kui",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1667697": {
+      "title": "Tanah Sengketa",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1632563": {
+      "title": "If You had Stayed",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1631619": {
+      "title": "Return to Your Dreams",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1611111": {
+      "title": "Meeting the Buddha",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1610606": {
+      "title": "Летом всякое бывает. Побег из Сколбора",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1570931": {
+      "title": "Avemmaria",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1560020": {
+      "title": "Piccolo miracolo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1519340": {
+      "title": "Jangan Buang Ibu",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1492810": {
+      "title": "Где ты?",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1477087": {
+      "title": "Ingeborg Bachmann – Jemand, der einmal ich war",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1476994": {
+      "title": "Unboxing",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1469229": {
+      "title": "The Djinn's Curse 2",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1418982": {
+      "title": "A Matter of Life and Death",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1408709": {
+      "title": "Not So Perfect Stranger",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-06-25",
+      "digital_date": "2026-06-25",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Fandango At Home",
+          "Plex"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-06-25",
+      "_transitioned_at": "2026-06-25"
+    },
+    "1386771": {
+      "title": "Azart Come Make Art",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1368376": {
+      "title": "Berlin Kills Me",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1326891": {
+      "title": "Ananthan Kaadu",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1169516": {
+      "title": "Welcome to the Jungle",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1720619": {
+      "title": "El Albacete Balompié y el sueño de la Copa del Rey",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1720307": {
+      "title": "Road to God",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1720261": {
+      "title": "Deniz Göktaş: Ölü Deniz",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1709134": {
+      "title": "Horrorcane",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1165369": {
+      "title": "De Gaulle: Liberté",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Annecy",
+      "has_providers": false
+    },
+    "1212763": {
+      "title": "Evil Dead Burn",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-25",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Dances With Films",
+      "has_providers": false
+    },
+    "tv_322055": {
+      "title": "The Prosecutor's Proposal",
+      "content_type": "limited_series",
+      "tmdb_id": 322055,
+      "status": "tracking",
+      "first_air_date": "2026-06-25",
+      "digital_date": "2026-06-25",
+      "episode_count": 10,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/lK6DrnFecG0AsA8O5UqEYOrOArd.jpg",
+      "synopsis": "A victim’s son and a killer’s son reunite as a prosecutor and investigator, fighting systemic corruption while becoming each other's salvation.",
+      "genres": [
+        "Mystery",
+        "Crime",
+        "Drama"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-25",
+      "networks": [
+        "wavve"
       ],
       "has_providers": false
     }

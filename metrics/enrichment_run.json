@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-06-24T11:02:28.178728",
-  "movies_requested": 16,
-  "movies_enriched": 10,
-  "movies_deferred": 6,
+  "timestamp": "2026-06-25T10:53:57.694582",
+  "movies_requested": 9,
+  "movies_enriched": 1,
+  "movies_deferred": 8,
   "deferred_details": [
     {
       "title": "Tuner",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-06-23",
-      "discovered_at": "2026-06-24T10:50:52.501720",
+      "discovered_at": "2026-06-25T10:49:38.682551",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-24",
+      "first_reverted_at": "2026-06-25",
       "tmdb_platforms": [
         "Amazon Video"
       ],
@@ -25,30 +25,30 @@
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-06-24T10:50:53.356976",
+      "discovered_at": "2026-06-25T10:49:39.339287",
       "discovery_source": "tmdb_type4",
-      "revert_count": 16,
-      "first_reverted_at": "2026-06-24",
+      "revert_count": 17,
+      "first_reverted_at": "2026-06-25",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-06-24T10:50:53.546612",
+      "discovered_at": "2026-06-25T10:49:39.659431",
       "discovery_source": "tmdb_type4",
-      "revert_count": 7,
-      "first_reverted_at": "2026-06-24",
+      "revert_count": 8,
+      "first_reverted_at": "2026-06-25",
       "tmdb_platforms": []
     },
     {
       "title": "Pressure",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-06-16",
-      "discovered_at": "2026-06-24T10:50:53.923842",
+      "discovered_at": "2026-06-25T10:49:40.130230",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-24",
+      "first_reverted_at": "2026-06-25",
       "tmdb_platforms": [
         "Amazon Video"
       ],
@@ -59,32 +59,50 @@
       ]
     },
     {
-      "title": "Savage House",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "",
-      "discovered_at": "2026-06-07T12:20:55.457730",
-      "discovery_source": "provider_availability_check",
+      "title": "The Sinking of the Lisbon Maru",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-30",
+      "discovered_at": "2026-06-25T10:49:41.009673",
+      "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-24",
-      "tmdb_platforms": [
-        "Fandango At Home"
+      "first_reverted_at": "2026-06-25",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Dangers in My Heart: The Movie",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-14",
+      "discovered_at": "2026-06-25T10:49:43.111285",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-06-25",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Barnes & Noble"
       ]
     },
     {
-      "title": "The Devil Wears Prada 2",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-06-30",
-      "discovered_at": "2026-06-24T10:51:10.693863",
+      "title": "In Waves",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-12-11",
+      "discovered_at": "2026-06-25T10:49:43.956368",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-24",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Fandango At Home"
-      ]
+      "first_reverted_at": "2026-06-25",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "La Bola Negra",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-12-04",
+      "discovered_at": "2026-06-25T10:49:44.220522",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-06-25",
+      "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 671.86,
+  "enrichment_duration_seconds": 251.14,
   "error_details": [],
   "total_errors": 0
 }
