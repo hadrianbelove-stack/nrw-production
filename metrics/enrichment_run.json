@@ -1,119 +1,54 @@
 {
-  "timestamp": "2026-06-26T11:15:38.288786",
-  "movies_requested": 24,
-  "movies_enriched": 15,
-  "movies_deferred": 9,
+  "timestamp": "2026-06-27T10:10:32.369090",
+  "movies_requested": 14,
+  "movies_enriched": 10,
+  "movies_deferred": 4,
   "deferred_details": [
-    {
-      "title": "Strung",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-26",
-      "discovered_at": "2026-06-26T11:02:20.025193",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 2,
-      "first_reverted_at": "2026-06-26",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Chris & Martina: The Final Set",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-26",
-      "discovered_at": "2026-06-24T10:51:15.065016",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-26",
-      "tmdb_platforms": []
-    },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-06-26T11:02:22.326119",
+      "discovered_at": "2026-06-27T10:01:10.526571",
       "discovery_source": "tmdb_type4",
-      "revert_count": 18,
-      "first_reverted_at": "2026-06-26",
+      "revert_count": 19,
+      "first_reverted_at": "2026-06-27",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-06-26T11:02:22.634908",
+      "discovered_at": "2026-06-27T10:01:10.785948",
       "discovery_source": "tmdb_type4",
-      "revert_count": 9,
-      "first_reverted_at": "2026-06-26",
+      "revert_count": 10,
+      "first_reverted_at": "2026-06-27",
       "tmdb_platforms": []
     },
     {
-      "title": "Brexit: A Very British Civil War",
-      "reason": "under_60min",
-      "digital_date": "2026-06-08",
-      "discovered_at": "2026-06-26T11:02:23.483456",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 0,
-      "first_reverted_at": "",
-      "tmdb_platforms": [
-        "Britbox Apple TV Channel ",
-        "BritBox",
-        "BBC Select Apple Tv channel"
-      ]
-    },
-    {
-      "title": "Nightmare Hospital",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-10-08",
-      "discovered_at": "2026-06-26T11:02:23.730313",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 11,
-      "first_reverted_at": "2026-05-10",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Forelock",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-01",
-      "discovered_at": "2026-06-26T11:02:27.082412",
+      "title": "The Birthday Party",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-08-14",
+      "discovered_at": "2026-06-27T10:01:11.001338",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-26",
+      "first_reverted_at": "2026-06-27",
       "tmdb_platforms": []
     },
     {
-      "title": "She's the He!",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-30",
-      "discovered_at": "2026-06-26T11:02:28.866227",
+      "title": "The Dangers in My Heart: The Movie",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-14",
+      "discovered_at": "2026-06-27T10:01:14.123545",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-26",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Nightborn",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-31",
-      "discovered_at": "2026-06-26T11:02:38.084431",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-26",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Blue Heron",
-      "reason": "zero_watch_links",
-      "digital_date": "",
-      "discovered_at": "2026-06-02T13:20:48.830474",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-26",
-      "tmdb_platforms": [
-        "Fandango At Home",
-        "Amazon Video",
-        "Apple TV Store"
+      "first_reverted_at": "2026-06-27",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Barnes & Noble"
       ]
     }
   ],
-  "enrichment_duration_seconds": 775.66,
+  "enrichment_duration_seconds": 555.25,
   "error_details": [],
   "total_errors": 0
 }
