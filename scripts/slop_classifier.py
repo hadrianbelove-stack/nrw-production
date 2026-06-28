@@ -144,7 +144,6 @@ SLOP_STUDIOS = {
     'syfy', 'sci fi channel',
     'ion television', 'insp films',
     'entertainment studios',
-    'blumhouse productions', 'blumhouse television',
     'johnson production group',  # prolific Hallmark-style producer
 }
 
