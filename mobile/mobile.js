@@ -78,6 +78,7 @@ const NRWMobile = {
             posterScores: document.getElementById('poster-scores'),
             bottomSheet: document.getElementById('bottom-sheet'),
             sheetContent: document.getElementById('sheet-content'),
+            sheetBtnbar: document.getElementById('sheet-btnbar'),
             chevronLeft: document.getElementById('chevron-left'),
             chevronRight: document.getElementById('chevron-right'),
             viewDots: document.querySelectorAll('.view-dot'),
@@ -927,6 +928,7 @@ const NRWMobile = {
     // ===== BOTTOM SHEET (View 2) =====
     updateSheetContent(movie, direction) {
         const content = this.dom.sheetContent;
+        const btnbar = this.dom.sheetBtnbar;
 
         if (direction) {
             const cls = direction === 'left' ? 'slide-left-enter' : 'slide-right-enter';
@@ -938,204 +940,182 @@ const NRWMobile = {
         const isScreening = movie.filters?.is_virtual_screening;
         const screeningInfo = movie.virtual_screening_info || {};
 
-        // Line 1: Director (label teal, name white)
+        // ---- LOCKED HERO: poster + fixed-height info box ----
+        // Line 1: Director (label teal, name = wiki link, one line)
         const dirName = movie.crew?.director || movie.director || '';
         const dirWikiUrl = movie.links?.director_wiki;
         const dirLine = dirName
-            ? '<span class="crew-label">D:</span> ' + (dirWikiUrl
+            ? '<div class="hero-crew"><span class="crew-label">Dir:</span> ' + (dirWikiUrl
                 ? '<a href="' + dirWikiUrl + '" target="_blank" rel="noopener" class="crew-link">' + this.esc(dirName) + '</a>'
-                : '<span class="crew-name">' + this.esc(dirName) + '</span>')
+                : '<span class="crew-name">' + this.esc(dirName) + '</span>') + '</div>'
             : '';
 
-        // Line 2: Cast (label teal, name white)
+        // Line 2: Cast (label teal, names = wiki links, one line)
         const cast = movie.crew?.cast;
         let castLine = '';
         if (cast?.length) {
             const castWiki = movie.links?.cast_wiki || {};
-            const castParts = cast.slice(0, 2).map(name => {
+            const castParts = cast.map(name => {
                 const url = castWiki[name];
                 return url
                     ? '<a href="' + url + '" target="_blank" rel="noopener" class="crew-link">' + this.esc(name) + '</a>'
                     : this.esc(name);
             });
-            castLine = '<span class="crew-label">Cast:</span> <span class="crew-name">' + castParts.join(', ') + '</span>';
+            castLine = '<div class="hero-crew hero-cast"><span class="crew-label">Cast:</span> ' +
+                '<span class="crew-name">' + castParts.join(', ') + '</span></div>';
         }
 
-        // Line 3 (gray): Country • Year • Runtime • Studio
+        // Line 3 (gray): Country · Year · Runtime · Studio (one line)
         const detailParts = [];
         if (movie.country) detailParts.push(this.esc(NRWConfig.abbreviateCountry(movie.country) || movie.country));
         if (movie.year) detailParts.push(this.esc(movie.year));
         if (movie.runtime) detailParts.push(this.esc(this.formatRuntime(movie.runtime)));
-        if (movie.studio) detailParts.push(this.esc(movie.studio));
+        if (movie.studio && movie.studio !== 'Unknown') detailParts.push(this.esc(movie.studio));
 
-        // Inline scores
+        // Score badges (pinned to bottom of the box, tappable)
         let scoresHtml = '';
         const hasScores = movie.rt_score || movie.imdb_rating ||
             (movie.metacritic_score && movie.metacritic_score !== '0') || movie.letterboxd_score;
         if (hasScores) {
+            const scoreEl = (link, inner) => link
+                ? '<a class="sheet-score" href="' + link + '" target="_blank" rel="noopener">' + inner + '</a>'
+                : '<div class="sheet-score">' + inner + '</div>';
             scoresHtml += '<div class="sheet-scores">';
             if (movie.rt_score) {
-                scoresHtml += '<div class="sheet-score">' +
+                scoresHtml += scoreEl(movie.links?.rt,
                     '<img class="sheet-score-logo" src="../assets/logos/rt.png" alt="RT">' +
-                    '<span class="sheet-score-value rt">' + movie.rt_score + '</span></div>';
+                    '<span class="sheet-score-value rt">' + movie.rt_score + '</span>');
             }
             if (movie.imdb_rating) {
-                scoresHtml += '<div class="sheet-score">' +
+                scoresHtml += scoreEl(movie.links?.imdb,
                     '<img class="sheet-score-logo" src="../assets/logos/imdb.png" alt="IMDb">' +
-                    '<span class="sheet-score-value imdb">' + movie.imdb_rating + '</span></div>';
+                    '<span class="sheet-score-value imdb">' + movie.imdb_rating + '</span>');
             }
             if (movie.metacritic_score && movie.metacritic_score !== '0') {
-                scoresHtml += '<div class="sheet-score">' +
+                scoresHtml += scoreEl(movie.links?.metacritic,
                     '<img class="sheet-score-logo mc-logo" src="../assets/logos/metacritic.png" alt="MC">' +
-                    '<span class="sheet-score-value meta">' + movie.metacritic_score + '</span></div>';
+                    '<span class="sheet-score-value meta">' + movie.metacritic_score + '</span>');
             }
             if (movie.letterboxd_score) {
-                scoresHtml += '<div class="sheet-score">' +
+                scoresHtml += scoreEl(movie.links?.letterboxd,
                     '<img class="sheet-score-logo" src="../assets/logos/services/letterboxd-dots.svg" alt="Letterboxd">' +
-                    '<span class="sheet-score-value lb">' + movie.letterboxd_score + '</span></div>';
+                    '<span class="sheet-score-value lb">' + movie.letterboxd_score + '</span>');
             }
             scoresHtml += '</div>';
         }
 
-        // Virtual screening banner
-        let screeningBanner = '';
-        if (isScreening && screeningInfo.screening_name) {
-            screeningBanner = '<div class="sheet-screening-banner">' +
-                this.esc(screeningInfo.screening_name) + '</div>';
-        }
-
-        // Build HTML
-        let html = screeningBanner;
-
-        // Header row: poster thumb + text
-        html += '<div class="sheet-header-row">' +
-            '<img class="sheet-thumb" src="' + this.esc(movie.poster || '') + '" alt="' +
-            this.esc(movie.title || '') + '" onerror="this.style.display=\'none\'">' +
-            '<div class="sheet-header-text">' +
-            '<div class="sheet-title">' + this.esc(movie.display_title || movie.title || 'Untitled') +
-            (isStaffPick ? ' <span style="color:#00ffbb;font-size:0.7rem">\u2605 NRW SELECT \u2605</span>' : '') +
+        // Build scrolling content: locked hero
+        let html = '<div class="sheet-hero">' +
+            '<img class="sheet-hero-poster" src="' + this.esc(movie.poster || '') + '" alt="' +
+            this.esc(movie.title || '') + '" onerror="this.style.visibility=\'hidden\'">' +
+            '<div class="sheet-hero-text">' +
+            '<div class="sheet-hero-title">' + this.esc(movie.display_title || movie.title || 'Untitled') +
+            (isStaffPick ? ' <span style="color:#00ffbb;font-size:0.7rem">★ NRW SELECT ★</span>' : '') +
             '</div>' +
-            (dirLine ? '<div class="sheet-crew">' + dirLine + '</div>' : '') +
-            (castLine ? '<div class="sheet-crew">' + castLine + '</div>' : '') +
-            (detailParts.length ? '<div class="sheet-meta"><span>' + detailParts.join(' \u00b7 ') + '</span></div>' : '') +
+            dirLine + castLine +
+            (detailParts.length ? '<div class="hero-meta">' + detailParts.join(' · ') + '</div>' : '') +
             scoresHtml +
             '</div></div>';
 
-        // Trailer button
+        // Pull quotes — teal debadged (no RT/LB badge), still tappable
+        if (movie.pull_quotes?.length) {
+            html += '<div class="sheet-pq-wrap">';
+            movie.pull_quotes.forEach(q => {
+                const attribution = [q.critic, q.outlet].filter(Boolean).join(', ');
+                const quoteInner = '<q class="sheet-pq-text">' + this.esc(q.text || '') + '</q>' +
+                    (attribution ? '<cite class="sheet-pq-cite">' + this.esc(attribution) + '</cite>' : '');
+                html += '<div class="sheet-pq">' + (q.review_url
+                    ? '<a href="' + this.esc(q.review_url) + '" target="_blank" rel="noopener" class="sheet-pq-link">' + quoteInner + '</a>'
+                    : quoteInner) + '</div>';
+            });
+            html += '</div>';
+        }
+
+        // Synopsis (no label; renders **bold**/*italic*, bold film titles hyperlinked)
+        html += '<div class="sheet-synopsis">' +
+            this._linkBoldTitles(NRWConfig.renderMarkdown(movie.capsule || movie.synopsis || 'No synopsis available.')) +
+            '</div>';
+
+        // Virtual screening — quiet gold-italic note at the END of the capsule
+        if (isScreening) {
+            let note = 'Virtual screening via <span class="vs-fest">' +
+                this.esc(screeningInfo.screening_name || 'festival') + '</span>';
+            if (screeningInfo.available_end) {
+                const [, m, d] = screeningInfo.available_end.split('-');
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                note += ' · through ' + months[parseInt(m, 10) - 1] + ' ' + parseInt(d, 10);
+            }
+            html += '<div class="sheet-vs-note">' + note + '.</div>';
+        }
+
+        content.innerHTML = html;
+        content.scrollTop = 0;
+
+        // ---- FIXED BOTTOM BUTTON BAR ----
+        let bar = '';
+
+        // Trailer: hosted mp4 -> in-app player, else open YouTube link
         const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
         if (trailerUrl) {
             const isMP4 = (() => {
                 try { return new URL(trailerUrl).pathname.endsWith('.mp4'); }
                 catch { return trailerUrl.endsWith('.mp4'); }
             })();
-            if (isMP4) {
-                html += '<button class="trailer-btn" onclick="NRWMobile.showTrailer(\'' +
-                    movie.id + '\')">\u25B6 Watch Trailer</button>';
-            } else {
-                html += '<a href="' + trailerUrl + '" target="_blank" rel="noopener" ' +
-                    'class="trailer-btn">\u25B6 Watch Trailer</a>';
-            }
+            bar += isMP4
+                ? '<button class="btn-trailer" onclick="NRWMobile.showTrailer(\'' + movie.id + '\')">TRAILER</button>'
+                : '<a class="btn-trailer" href="' + trailerUrl + '" target="_blank" rel="noopener">TRAILER</a>';
         }
 
-        // Virtual screening ticket + callout
+        // Watch buttons: VOD price cards + streaming badges (full-width via CSS)
+        const streamingList = this.getStreamingProviders(movie);
+        const vodList = this.getVODList(movie);
+        const rentVod = isScreening
+            ? vodList.filter(v => v.resolvedKey !== 'screening')
+            : vodList;
+        rentVod.forEach(v => { bar += this.renderVODPriceCard(v); });
+        const seenStream = new Set();
+        streamingList.forEach(s => {
+            const k = (s.serviceKey || s.resolvedKey || s.name || '').toLowerCase();
+            if (seenStream.has(k)) return;
+            seenStream.add(k);
+            bar += this.renderStreamButton(s);
+        });
+
+        // Pre-order fallback (no other watch links)
+        if (!rentVod.length && !streamingList.length && !isScreening) {
+            const preOrderLinks = Array.isArray(movie.pre_order_links) ? movie.pre_order_links : [];
+            preOrderLinks.forEach(pl => {
+                const resolved = this.resolveVODService(pl.service, pl.link);
+                if (resolved && pl.link) {
+                    bar += this.renderProviderBadge({
+                        name: 'Pre-Order',
+                        wideLogo: resolved.wideLogo,
+                        serviceKey: resolved.key,
+                        link: pl.link,
+                        resolvedKey: resolved.key
+                    });
+                }
+            });
+        }
+
+        // Gold "Buy Tickets" button for virtual screenings
         if (isScreening) {
-            const vodEntries = this.getVODEntries(movie);
-            const screeningVod = vodEntries.find(v => {
+            const screeningVod = this.getVODEntries(movie).find(v => {
                 const resolved = this.resolveVODService(v.service, v.link);
                 return resolved?.key === 'screening';
             });
-            if (screeningVod) {
-                html += '<a href="' + screeningVod.link + '" target="_blank" rel="noopener" ' +
-                    'class="sheet-screening-ticket">\uD83C\uDF9F Buy Ticket</a>';
-            }
-            let callout = 'Virtual screening via ' + this.esc(screeningInfo.screening_name || 'festival');
-            if (screeningInfo.available_end) {
-                const [y, m, d] = screeningInfo.available_end.split('-');
-                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                callout += '. Ends ' + months[parseInt(m, 10) - 1] + ' ' + parseInt(d, 10);
-            }
-            html += '<div class="sheet-screening-callout">' + callout + '</div>';
-        }
-
-        // Providers
-        const streamingList = this.getStreamingProviders(movie);
-        const vodList = this.getVODList(movie);
-
-        if (streamingList.length > 0 || vodList.length > 0) {
-            // Filter out screening VODs (already shown as ticket button above)
-            const rentVod = isScreening
-                ? vodList.filter(v => v.resolvedKey !== 'screening')
-                : vodList;
-            if (rentVod.length > 0) {
-                html += '<div class="sheet-section-label">Rent/Buy:</div>' +
-                    '<div class="sheet-providers">' +
-                    rentVod.map(v => this.renderVODPriceCard(v)).join('') + '</div>';
-            }
-            if (streamingList.length > 0) {
-                html += '<div class="sheet-section-label">Stream:</div>' +
-                    '<div class="sheet-providers">' +
-                    streamingList.map(s => this.renderProviderBadge(s)).join('') + '</div>';
-            }
-        } else if (!isScreening) {
-            // Pre-order links
-            const preOrderLinks = Array.isArray(movie.pre_order_links) ? movie.pre_order_links : [];
-            if (preOrderLinks.length > 0) {
-                html += '<div class="sheet-section-label">Pre-Order</div>' +
-                    '<div class="sheet-providers">';
-                preOrderLinks.forEach(pl => {
-                    const resolved = this.resolveVODService(pl.service, pl.link);
-                    if (resolved && pl.link) {
-                        html += this.renderProviderBadge({
-                            name: 'Pre-Order',
-                            wideLogo: resolved.wideLogo,
-                            serviceKey: resolved.key,
-                            link: pl.link,
-                            resolvedKey: resolved.key
-                        });
-                    }
-                });
-                html += '</div>';
-                if (movie.digital_date) {
-                    html += '<div style="color:var(--text-muted);font-size:0.7rem;margin-top:4px">' +
-                        'Available ' + this.formatShortDate(movie.digital_date) + '</div>';
-                }
-            } else {
-                html += '<div class="sheet-section-label">Availability</div>' +
-                    '<div class="sheet-synopsis" style="font-style:italic">Coming soon</div>';
+            if (screeningVod?.link) {
+                bar += '<a class="btn-tickets" href="' + screeningVod.link +
+                    '" target="_blank" rel="noopener">Buy Tickets</a>';
             }
         }
 
-        // Pull quotes
-        if (movie.pull_quotes?.length) {
-            html += '<div class="sheet-section-label">Critics</div>';
-            movie.pull_quotes.forEach(q => {
-                const badgeClass = q.source === 'letterboxd' ? 'pq-badge-lb' : 'pq-badge-rt';
-                const badgeText = q.source === 'letterboxd' ? 'LB' : 'RT';
-                const attribution = [q.critic, q.outlet].filter(Boolean).join(', ');
-                const quoteInner = '<q class="sheet-pq-text">' + this.esc(q.text || '') + '</q>';
-                const quoteEl = q.review_url
-                    ? '<a href="' + this.esc(q.review_url) + '" target="_blank" rel="noopener" class="sheet-pq-link">' + quoteInner + '</a>'
-                    : quoteInner;
-                html += '<div class="sheet-pq">' +
-                    '<span class="sheet-pq-badge ' + badgeClass + '">' + badgeText + '</span>' +
-                    quoteEl +
-                    (attribution ? '<cite class="sheet-pq-cite">' + this.esc(attribution) + '</cite>' : '') +
-                    '</div>';
-            });
-        }
-
-        // Synopsis (renders **bold**/*italic* markdown, bold film titles hyperlinked)
-        html += '<div class="sheet-section-label">Synopsis</div>' +
-            '<div class="sheet-synopsis">' + this._linkBoldTitles(NRWConfig.renderMarkdown(movie.capsule || movie.synopsis || 'No synopsis available.')) + '</div>';
-
-        // Share
-        html += '<button class="sheet-share-btn" onclick="NRWMobile.shareCurrent()">' +
+        // Share (teal outline)
+        bar += '<button class="btn-share" onclick="NRWMobile.shareCurrent()">' +
             this.SHARE_SVG + '<span>Share</span></button>';
 
-        html += '<div style="height:50px"></div>';
-
-        content.innerHTML = html;
-        content.scrollTop = 0;
+        btnbar.innerHTML = bar;
+        btnbar.scrollTop = 0;
     },
 
     _linkBoldTitles(html) {
@@ -1298,6 +1278,28 @@ const NRWMobile = {
             : '';
         return '<' + tag + ' class="provider-pill-text"' + linkAttrs + '>' +
             this.esc(provider.name) + '</' + tag + '>';
+    },
+
+    // Streaming button for the bottom bar — brand-colored fill + service name,
+    // matching the desktop/mockup .btn-stream (no oversized wide-logo images).
+    STREAM_COLORS: {
+        netflix:'#E50914', max:'#B537F2', disney:'#113CCF', prime:'#00A8E1', amazon:'#00A8E1',
+        hulu:'#1CE783', paramount:'#0064FF', youtube:'#FF0000', hoopla:'#FC4F08',
+        fandango:'#FF6600', apple:'#333333', appletv:'#333333', peacock:'#111111', tubi:'#FA382F',
+        pluto:'#00B4E4', plex:'#1a1a1a', mubi:'#DA2128', shudder:'#8B0000', criterion:'#000000',
+        kanopy:'#1B7A43', crackle:'#FF6600', roku:'#6C3A97', amc:'#1B6FE0'
+    },
+
+    renderStreamButton(provider) {
+        const key = (provider.serviceKey || provider.resolvedKey || '').toLowerCase();
+        const bg = this.STREAM_COLORS[key] || '#2a2a3a';
+        const text = (bg === '#1CE783') ? '#000' : '#fff';
+        const label = this.esc((provider.name || key).toUpperCase());
+        const style = 'background:' + bg + ';color:' + text;
+        return provider.link
+            ? '<a class="btn-stream" style="' + style + '" href="' + provider.link +
+                '" target="_blank" rel="noopener">' + label + '</a>'
+            : '<div class="btn-stream" style="' + style + '">' + label + '</div>';
     },
 
     renderVODPriceCard(provider) {

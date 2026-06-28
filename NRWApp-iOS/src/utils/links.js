@@ -107,6 +107,19 @@ export async function openWikipedia(url) {
 }
 
 /**
+ * Open IMDb link
+ */
+export async function openImdb(url) {
+  if (!url) return;
+
+  try {
+    await Linking.openURL(url);
+  } catch (error) {
+    console.error('[Links] Error opening IMDb:', error);
+  }
+}
+
+/**
  * Share movie (iOS share sheet)
  */
 export async function shareMovie(movie) {
@@ -144,6 +157,7 @@ export default {
   openMetacritic,
   openLetterboxd,
   openWikipedia,
+  openImdb,
   shareMovie,
   extractYouTubeId,
 };

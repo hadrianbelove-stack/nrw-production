@@ -120,7 +120,7 @@ function adjustBrightness(hex, factor) {
   return `rgb(${r},${g},${b})`;
 }
 
-export default function WatchButton({link, onPress, size = 'medium'}) {
+export default function WatchButton({link, onPress, size = 'medium', fullWidth = false}) {
   if (!link || !link.url) return null;
 
   const config = SERVICE_CONFIG[link.service] || SERVICE_CONFIG.vod;
@@ -132,8 +132,9 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
     styles.button,
     size === 'small' && styles.buttonSmall,
     size === 'large' && styles.buttonLarge,
+    fullWidth && styles.buttonFull,
     isScreeningButton
-      ? {backgroundColor: 'transparent', borderWidth: 2, borderColor: '#FFD700'}
+      ? {backgroundColor: '#FFD700'}  // gold fill, matches mockup .btn-tickets
       : {backgroundColor: config.color},
     !isScreeningButton && config.borderColor && {borderWidth: 1, borderColor: config.borderColor},
   ];
@@ -142,7 +143,7 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
     styles.buttonText,
     size === 'small' && styles.buttonTextSmall,
     size === 'large' && styles.buttonTextLarge,
-    {color: isScreeningButton ? '#FFD700' : config.textColor},
+    {color: isScreeningButton ? '#000000' : config.textColor},
   ];
 
   // Determine label
@@ -166,8 +167,8 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
   if (hasPrice) {
     // V2: Logo left, prices stacked right
     return (
-      <View>
-        <View style={styles.vcardWrap}>
+      <View style={fullWidth && styles.fullWidthWrap}>
+        <View style={[styles.vcardWrap, fullWidth && styles.vcardWrapFull]}>
           <TouchableOpacity
             style={[styles.vcardLogo, {backgroundColor: config.color}, config.borderColor && {borderWidth: 1, borderColor: config.borderColor}]}
             onPress={() => onPress?.(link)}
@@ -214,7 +215,7 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
   }
 
   return (
-    <View>
+    <View style={fullWidth && styles.fullWidthWrap}>
       <TouchableOpacity
         style={buttonStyle}
         onPress={() => onPress?.(link)}
@@ -249,7 +250,7 @@ export default function WatchButton({link, onPress, size = 'medium'}) {
 /**
  * Render multiple watch buttons
  */
-export function WatchButtonGroup({links, onPress, maxButtons = 3}) {
+export function WatchButtonGroup({links, onPress, maxButtons = 3, stacked = false}) {
   if (!links || links.length === 0) {
     return (
       <View style={styles.noLinks}>
@@ -262,13 +263,14 @@ export function WatchButtonGroup({links, onPress, maxButtons = 3}) {
   const displayLinks = links.slice(0, maxButtons);
 
   return (
-    <View style={styles.buttonGroup}>
+    <View style={stacked ? styles.buttonGroupStacked : styles.buttonGroup}>
       {displayLinks.map((link, index) => (
         <WatchButton
           key={`${link.service}-${index}`}
           link={link}
           onPress={onPress}
-          size={displayLinks.length > 2 ? 'small' : 'medium'}
+          size={stacked ? 'large' : (displayLinks.length > 2 ? 'small' : 'medium')}
+          fullWidth={stacked}
         />
       ))}
       {links.length > maxButtons && (
@@ -297,6 +299,16 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
     minWidth: 160,
+  },
+  buttonFull: {
+    width: '100%',
+    minWidth: 0,
+    marginBottom: 0,
+    minHeight: 46,
+    justifyContent: 'center',
+  },
+  fullWidthWrap: {
+    width: '100%',
   },
   buttonContent: {
     flexDirection: 'row',
@@ -339,6 +351,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: Spacing.sm,
   },
+  buttonGroupStacked: {
+    flexDirection: 'column',
+    gap: Spacing.sm,
+  },
   noLinks: {
     paddingVertical: Spacing.lg,
     alignItems: 'center',
@@ -366,6 +382,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     minWidth: 140,
+  },
+  vcardWrapFull: {
+    width: '100%',
+    minWidth: 0,
+    minHeight: 50,
   },
   vcardLogo: {
     width: '50%',

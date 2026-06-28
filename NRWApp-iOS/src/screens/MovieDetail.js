@@ -2,6 +2,15 @@
  * New Release Wall - Movie Detail Screen
  * Full movie info with watch buttons
  * Supports swipe left/right to navigate between movies
+ *
+ * Layout (ported from mockups/mobile-detail-fixed-hero.html):
+ *  - Locked hero: poster + info box are one fixed-height unit (poster height).
+ *    Title clamps to 2 lines; director/cast/meta one line each; score badges
+ *    pinned to the bottom of the box. Layout below never shifts between films.
+ *  - Scrolling content: teal pull quotes, then label-less synopsis (with the
+ *    quiet gold screening note appended at the end of the capsule).
+ *  - Fixed bottom button bar (outside the ScrollView): TRAILER, watch buttons,
+ *    Buy Tickets (virtual screenings), Share.
  */
 
 import React, {useCallback, useState, useRef, useEffect} from 'react';
@@ -21,78 +30,39 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {WatchButtonGroup} from '../components/WatchButton';
 import {Colors, Typography, Spacing} from '../constants/colors';
 import {getWatchLinks} from '../services/api';
-import {openWatchLink, openRottenTomatoes, openMetacritic, openLetterboxd, openWikipedia} from '../utils/links';
+import {
+  openWatchLink,
+  openRottenTomatoes,
+  openMetacritic,
+  openLetterboxd,
+  openWikipedia,
+  openImdb,
+  shareMovie,
+} from '../utils/links';
 import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
 import TrailerPlayer from '../components/TrailerPlayer';
 import {renderMarkdownSpans} from '../utils/markdown';
 
-const LANGUAGE_NAMES = {
-  en: 'English', es: 'Spanish', fr: 'French', de: 'German', it: 'Italian', pt: 'Portuguese',
-  ja: 'Japanese', ko: 'Korean', zh: 'Chinese', hi: 'Hindi', ru: 'Russian', ar: 'Arabic',
-  nl: 'Dutch', sv: 'Swedish', da: 'Danish', no: 'Norwegian', fi: 'Finnish', pl: 'Polish',
-  tr: 'Turkish', th: 'Thai', he: 'Hebrew', fa: 'Persian', el: 'Greek', cs: 'Czech',
-  hu: 'Hungarian', ro: 'Romanian', uk: 'Ukrainian', id: 'Indonesian', vi: 'Vietnamese',
-  ta: 'Tamil', te: 'Telugu', is: 'Icelandic', ga: 'Irish', ca: 'Catalan',
-};
-const languageName = (code) => code ? (LANGUAGE_NAMES[code.toLowerCase()] || code.toUpperCase()) : null;
-
 const COUNTRY_ABBREV = {
   'United States of America': 'USA', 'United States': 'USA', 'US': 'USA', 'USA': 'USA',
   'United Kingdom': 'UK', 'Great Britain': 'UK', 'GB': 'UK',
-  'Germany': 'GER', 'DE': 'GER',
-  'France': 'FRA', 'FR': 'FRA',
-  'South Korea': 'KOR', 'KR': 'KOR',
-  'Netherlands': 'NED', 'NL': 'NED',
-  'Switzerland': 'SUI', 'CH': 'SUI',
-  'South Africa': 'RSA', 'ZA': 'RSA',
-  'Chile': 'CHL', 'CL': 'CHL',
-  'Japan': 'JPN', 'JP': 'JPN',
-  'Italy': 'ITA', 'IT': 'ITA',
-  'Spain': 'ESP', 'ES': 'ESP',
-  'Sweden': 'SWE', 'SE': 'SWE',
-  'Denmark': 'DEN', 'DK': 'DEN',
-  'Norway': 'NOR', 'NO': 'NOR',
-  'Poland': 'POL', 'PL': 'POL',
-  'Australia': 'AUS', 'AU': 'AUS',
-  'Canada': 'CAN', 'CA': 'CAN',
-  'Mexico': 'MEX', 'MX': 'MEX',
-  'Brazil': 'BRA', 'BR': 'BRA',
-  'Argentina': 'ARG', 'AR': 'ARG',
-  'Belgium': 'BEL', 'BE': 'BEL',
-  'Portugal': 'POR', 'PT': 'POR',
-  'Romania': 'ROM', 'RO': 'ROM',
-  'Hungary': 'HUN', 'HU': 'HUN',
-  'Czech Republic': 'CZE', 'CZ': 'CZE',
-  'Austria': 'AUT', 'AT': 'AUT',
-  'Ireland': 'IRL', 'IE': 'IRL',
-  'China': 'CHN', 'CN': 'CHN',
-  'Hong Kong': 'HKG', 'HK': 'HKG',
-  'Taiwan': 'TPE', 'TW': 'TPE',
-  'India': 'IND', 'IN': 'IND',
-  'Iran': 'IRI', 'IR': 'IRI',
-  'Israel': 'ISR', 'IL': 'ISR',
-  'Turkey': 'TUR', 'TR': 'TUR',
-  'Greece': 'GRE', 'GR': 'GRE',
-  'Finland': 'FIN', 'FI': 'FIN',
-  'New Zealand': 'NZL', 'NZ': 'NZL',
-  'Bosnia and Herzegovina': 'BIH', 'Saudi Arabia': 'KSA',
 };
 
 const formatCountry = (country) => {
   if (!country) return null;
-  return COUNTRY_ABBREV[country] || country.slice(0, 3).toUpperCase();
-};
-
-const lbStars = (score) => {
-  const n = Math.round(parseFloat(score));
-  return '\u2605'.repeat(n) + '\u2606'.repeat(5 - n);
+  return COUNTRY_ABBREV[country] || country;
 };
 
 const formatShortDate = (dateStr) => {
+  if (!dateStr) return null;
   const [y, m, d] = dateStr.split('-');
   const dt = new Date(y, m - 1, d);
   return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
+
+// Wikipedia search fallback when no curated wiki link exists.
+const wikiSearchUrl = (name) =>
+  'https://en.wikipedia.org/wiki/Special:Search?search=' + encodeURIComponent(name);
 
 const screenWidth = RNDimensions.get('window').width;
 const posterWidth = screenWidth * 0.45;
@@ -202,9 +172,8 @@ export default function MovieDetail({route}) {
   }, []);
 
   const handleRTPress = useCallback(() => {
-    if (movie.links?.rotten_tomatoes) {
-      openRottenTomatoes(movie.links.rotten_tomatoes);
-    }
+    const url = movie.links?.rt || movie.links?.rotten_tomatoes;
+    if (url) openRottenTomatoes(url);
   }, [movie]);
 
   const handleMCPress = useCallback(() => {
@@ -219,15 +188,34 @@ export default function MovieDetail({route}) {
     }
   }, [movie]);
 
-  const handleWikiPress = useCallback(() => {
-    if (movie.links?.wikipedia) {
-      openWikipedia(movie.links.wikipedia);
+  const handleIMDbPress = useCallback(() => {
+    if (movie.links?.imdb) {
+      openImdb(movie.links.imdb);
     }
+  }, [movie]);
+
+  const handleDirectorPress = useCallback(() => {
+    const dir = movie.director || movie.crew?.director;
+    if (!dir) return;
+    openWikipedia(movie.links?.director_wiki || wikiSearchUrl(dir));
+  }, [movie]);
+
+  const handleCastPress = useCallback(
+    (name) => {
+      const url = movie.links?.cast_wiki?.[name] || wikiSearchUrl(name);
+      openWikipedia(url);
+    },
+    [movie],
+  );
+
+  const handleSharePress = useCallback(() => {
+    shareMovie(movie);
   }, [movie]);
 
   const posterUrl = movie.poster_url || movie.poster;
   const director = movie.director || movie.crew?.director;
-  const cast = movie.cast || movie.crew?.cast || [];
+  const castRaw = movie.cast || movie.crew?.cast || [];
+  const cast = Array.isArray(castRaw) ? castRaw : (castRaw ? [castRaw] : []);
   const runtime = movie.runtime;
   const year = movie.year || (movie.release_date ? movie.release_date.split('-')[0] : null);
 
@@ -239,7 +227,26 @@ export default function MovieDetail({route}) {
     return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
   };
 
+  // Meta line: country · year · runtime · studio (one line, ellipsized)
+  const metaParts = [];
+  if (movie.country) metaParts.push(formatCountry(movie.country));
+  if (year) metaParts.push(year);
+  if (runtime) metaParts.push(formatRuntime(runtime));
+  if (movie.studio && movie.studio !== 'Unknown') metaParts.push(movie.studio);
+
+  const isVirtualScreening = !!movie.filters?.is_virtual_screening;
+  const screeningName = movie.virtual_screening_info?.screening_name;
+  const screeningEnd = movie.virtual_screening_info?.available_end;
+
   const hasNavigation = movieList.length > 1;
+  const hasTrailer = !!(movie.links?.trailer_hosted || movie.links?.trailer);
+
+  // Score badges (rendered inside the hero box, pinned to bottom).
+  const hasScores =
+    movie.rt_score ||
+    movie.imdb_rating ||
+    (movie.metacritic_score && movie.metacritic_score !== '0') ||
+    movie.letterboxd_score;
 
   return (
     <View style={styles.container} {...panResponder.panHandlers}>
@@ -261,227 +268,190 @@ export default function MovieDetail({route}) {
 
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={{paddingBottom: insets.bottom + Spacing.xl}}>
-        {/* Hero section with poster and basic info */}
+        contentContainerStyle={styles.scrollContent}>
+        {/* ---- LOCKED HERO: poster + info box are one fixed-height unit ---- */}
         <View style={styles.heroSection}>
-        <View style={styles.posterContainer}>
-          {posterUrl ? (
-            <Image
-              source={{uri: posterUrl}}
-              style={styles.poster}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.posterPlaceholder}>
-              <Text style={styles.placeholderText}>No Poster</Text>
-            </View>
-          )}
-          {/* Trailer overlay (#5: white circle + red banner) */}
-          {(movie.links?.trailer_hosted || movie.links?.trailer) && posterUrl && (
-            <TouchableOpacity
-              style={styles.trailerOverlay}
-              onPress={handleTrailerPress}
-              activeOpacity={0.8}>
-              <View style={styles.trailerOverlayCircle}>
-                <View style={styles.trailerOverlayTriangle} />
+          <View style={styles.posterContainer}>
+            {posterUrl ? (
+              <Image
+                source={{uri: posterUrl}}
+                style={styles.poster}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.posterPlaceholder}>
+                <Text style={styles.placeholderText}>No Poster</Text>
               </View>
-              <View style={styles.trailerOverlayBanner}>
-                <Text style={styles.trailerOverlayText}>TRAILER</Text>
+            )}
+            {/* Staff Pick badge */}
+            {(movie.featured || movie.filters?.is_staff_pick) && (
+              <View style={styles.staffPickBadge}>
+                <Text style={styles.staffPickText}>★ NRW SELECT ★</Text>
               </View>
-            </TouchableOpacity>
-          )}
-          {/* Staff Pick badge */}
-          {(movie.featured || movie.filters?.is_staff_pick) && (
-            <View style={styles.staffPickBadge}>
-              <Text style={styles.staffPickText}>★ NRW SELECT ★</Text>
-            </View>
-          )}
-          {/* Restoration badge */}
-          {movie.filters?.is_restoration && (
-            <View style={styles.restorationBadge}>
-              <Text style={styles.restorationBadgeText}>{(movie.reissue_label || 'RESTORATION').toUpperCase()}</Text>
-            </View>
-          )}
-        </View>
-
-        <View style={styles.heroInfo}>
-          <View style={styles.titleRow}>
-            <Text style={styles.title}>{movie.display_title || movie.title}</Text>
-            {(() => {
-              const hp = [];
-              if (movie.country) hp.push(formatCountry(movie.country) || movie.country);
-              if (movie.genres?.[0]) hp.push(movie.genres[0]);
-              if (movie.digital_date) hp.push(formatShortDate(movie.digital_date));
-              return hp.length > 0 ? <Text style={styles.titleDate}>{hp.join(' · ')}</Text> : null;
-            })()}
+            )}
+            {/* Restoration badge */}
+            {movie.filters?.is_restoration && (
+              <View style={styles.restorationBadge}>
+                <Text style={styles.restorationBadgeText}>{(movie.reissue_label || 'RESTORATION').toUpperCase()}</Text>
+              </View>
+            )}
           </View>
 
-          {/* Virtual screening badge */}
-          {movie.filters?.is_virtual_screening && (
-            <Text style={styles.screeningName}>
-              {movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING'}
+          <View style={styles.heroInfo}>
+            <Text style={styles.title} numberOfLines={2}>
+              {movie.display_title || movie.title}
             </Text>
-          )}
 
-          {/* Meta block — 3 lines */}
-          {director && <Text style={styles.metaCrewLine}><Text style={styles.metaCrewLabel}>Director: </Text><Text style={styles.metaCrewName}>{director}</Text></Text>}
-          {cast.length > 0 && <Text style={styles.metaCrewLine}><Text style={styles.metaCrewLabel}>Cast: </Text><Text style={styles.metaCrewName}>{Array.isArray(cast) ? cast.slice(0, 3).join(', ') : cast}</Text></Text>}
-          <View style={styles.metaRow}>
-            {year && <Text style={styles.metaText}>{year}</Text>}
-            {runtime && (
-              <>
-                <Text style={styles.metaDot}>•</Text>
-                <Text style={styles.metaText}>{formatRuntime(runtime)}</Text>
-              </>
+            {director && (
+              <Text style={styles.heroDir} numberOfLines={1}>
+                <Text style={styles.heroLabel}>Dir: </Text>
+                <Text style={styles.heroLink} onPress={handleDirectorPress}>{director}</Text>
+              </Text>
             )}
-            {movie.studio && (
-              <>
-                <Text style={styles.metaDot}>•</Text>
-                <Text style={styles.metaText}>{movie.studio}</Text>
-              </>
-            )}
-          </View>
-        </View>
-      </View>
 
-      {/* Scores row — RT + IMDb + MC + LB + Wiki */}
-      {(movie.links?.wikipedia || movie.rt_score || (movie.metacritic_score && movie.metacritic_score !== "0") || movie.imdb_rating || movie.letterboxd_score) && (
-        <View style={styles.section}>
-          <View style={styles.infoRow}>
-            {movie.rt_score && (
-              <TouchableOpacity
-                style={styles.infoBtnColored}
-                onPress={handleRTPress}
-                disabled={!movie.links?.rotten_tomatoes}>
-                <View style={styles.infoBtnContent}>
-                  <Image source={require('../assets/logos/rt.png')} style={styles.infoBtnLogo} />
-                  <Text style={[styles.infoBtnColoredText, { color: '#ff6b6b' }]}>{movie.rt_score}</Text>
-                </View>
-              </TouchableOpacity>
+            {cast.length > 0 && (
+              <Text style={styles.heroCast} numberOfLines={1}>
+                <Text style={styles.heroLabel}>Cast: </Text>
+                {cast.slice(0, 4).map((name, i) => (
+                  <Text key={name + i}>
+                    {i > 0 ? ', ' : ''}
+                    <Text style={styles.heroLink} onPress={() => handleCastPress(name)}>{name}</Text>
+                  </Text>
+                ))}
+              </Text>
             )}
-            {movie.imdb_rating && (
-              <View style={styles.infoBtnColored}>
-                <View style={styles.infoBtnContent}>
-                  <Image source={require('../assets/logos/imdb.png')} style={styles.infoBtnLogo} />
-                  <Text style={[styles.infoBtnColoredText, { color: '#f5c518' }]}>{movie.imdb_rating}</Text>
-                </View>
-              </View>
-            )}
-            {movie.metacritic_score && movie.metacritic_score !== "0" && (
-              <TouchableOpacity
-                style={styles.infoBtnColored}
-                onPress={handleMCPress}
-                disabled={!movie.links?.metacritic}>
-                <View style={styles.infoBtnContent}>
-                  <Image source={require('../assets/logos/metacritic.png')} style={[styles.infoBtnLogo, { tintColor: '#7ddf64' }]} />
-                  <Text style={[styles.infoBtnColoredText, { color: '#7ddf64' }]}>{movie.metacritic_score}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-            {movie.letterboxd_score && (
-              <TouchableOpacity
-                style={styles.infoBtnColored}
-                onPress={handleLBPress}
-                disabled={!movie.links?.letterboxd}>
-                <View style={styles.infoBtnContent}>
-                  <Image source={require('../assets/logos/letterboxd.png')} style={[styles.infoBtnLogo, { tintColor: '#00E054' }]} />
-                  <Text style={[styles.infoBtnColoredText, { color: '#00E054' }]}>{lbStars(movie.letterboxd_score)}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-            {movie.links?.wikipedia && (
-              <TouchableOpacity style={styles.infoBtnGlass} onPress={handleWikiPress}>
-                <Text style={styles.infoBtnGlassText}>Wiki</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      )}
 
-      {/* Trailer is now a poster overlay (see posterContainer above) */}
+            {metaParts.length > 0 && (
+              <Text style={styles.heroMeta} numberOfLines={1}>{metaParts.join(' · ')}</Text>
+            )}
 
-      {/* Watch buttons — VOD first, then streaming */}
-      {watchLinks.length > 0 && (
-        <View style={styles.section}>
-          {watchLinks.filter(l => l.type === 'purchase').length > 0 && (
-            <>
-              <Text style={styles.watchSectionLabel}>Rent/Buy:</Text>
-              <WatchButtonGroup links={watchLinks.filter(l => l.type === 'purchase')} onPress={handleWatchPress} maxButtons={3} />
-            </>
-          )}
-          {watchLinks.filter(l => l.type === 'streaming').length > 0 && (
-            <>
-              <Text style={styles.watchSectionLabel}>Stream:</Text>
-              <WatchButtonGroup links={watchLinks.filter(l => l.type === 'streaming')} onPress={handleWatchPress} maxButtons={6} />
-            </>
-          )}
-          {watchLinks.filter(l => l.type === 'plex').length > 0 && (
-            <WatchButtonGroup links={watchLinks.filter(l => l.type === 'plex')} onPress={handleWatchPress} maxButtons={1} />
-          )}
-        </View>
-      )}
-
-      {/* Pull Quotes */}
-      {movie.pull_quotes?.length > 0 && (
-        <View style={styles.section}>
-          {movie.pull_quotes.map((pq, i) => {
-            const content = (
-              <View key={i} style={styles.pullQuoteCard}>
-                <Text style={styles.pqText}>{'\u201C'}{pq.text}{'\u201D'}</Text>
-                {(pq.critic || pq.outlet) && (
-                  <Text style={styles.pqAttribution}>{'\u2014'} {[pq.critic, pq.outlet].filter(Boolean).join(', ')}</Text>
+            {/* Score badges pinned to the bottom of the box */}
+            {hasScores && (
+              <View style={styles.scores}>
+                {movie.rt_score && (
+                  <TouchableOpacity
+                    style={[styles.score, styles.scoreRT]}
+                    onPress={handleRTPress}
+                    disabled={!(movie.links?.rt || movie.links?.rotten_tomatoes)}
+                    activeOpacity={0.7}>
+                    <Text style={[styles.scoreLabel, styles.scoreTextRT]}>RT</Text>
+                    <Text style={[styles.scoreValue, styles.scoreTextRT]}>{movie.rt_score}</Text>
+                  </TouchableOpacity>
+                )}
+                {movie.imdb_rating && (
+                  <TouchableOpacity
+                    style={[styles.score, styles.scoreIMDb]}
+                    onPress={handleIMDbPress}
+                    disabled={!movie.links?.imdb}
+                    activeOpacity={0.7}>
+                    <Text style={[styles.scoreLabel, styles.scoreTextIMDb]}>IMDb</Text>
+                    <Text style={[styles.scoreValue, styles.scoreTextIMDb]}>{movie.imdb_rating}</Text>
+                  </TouchableOpacity>
+                )}
+                {movie.metacritic_score && movie.metacritic_score !== '0' && (
+                  <TouchableOpacity
+                    style={[styles.score, styles.scoreMC]}
+                    onPress={handleMCPress}
+                    disabled={!movie.links?.metacritic}
+                    activeOpacity={0.7}>
+                    <Text style={[styles.scoreLabel, styles.scoreTextMC]}>MC</Text>
+                    <Text style={[styles.scoreValue, styles.scoreTextMC]}>{movie.metacritic_score}</Text>
+                  </TouchableOpacity>
+                )}
+                {movie.letterboxd_score && (
+                  <TouchableOpacity
+                    style={[styles.score, styles.scoreLB]}
+                    onPress={handleLBPress}
+                    disabled={!movie.links?.letterboxd}
+                    activeOpacity={0.7}>
+                    <Text style={[styles.scoreLabel, styles.scoreTextLB]}>LB</Text>
+                    <Text style={[styles.scoreValue, styles.scoreTextLB]}>{movie.letterboxd_score}</Text>
+                  </TouchableOpacity>
                 )}
               </View>
-            );
-            return pq.review_url ? (
-              <TouchableOpacity key={i} onPress={() => openWatchLink(pq.review_url)} activeOpacity={0.7}>
-                {content}
-              </TouchableOpacity>
-            ) : content;
-          })}
+            )}
+          </View>
         </View>
-      )}
 
-      {/* Synopsis */}
-      {(movie.capsule || movie.synopsis) && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Synopsis</Text>
+        {/* Teal pull quotes (no label, no badge) */}
+        {movie.pull_quotes?.length > 0 && (
+          <View style={styles.pqWrap}>
+            {movie.pull_quotes.map((pq, i) => {
+              const attribution = [pq.critic, pq.outlet].filter(Boolean).join(', ');
+              const content = (
+                <View style={styles.pullQuoteCard}>
+                  <Text style={styles.pqText}>{'“'}{pq.text}{'”'}</Text>
+                  {attribution ? (
+                    <Text style={styles.pqAttribution}>{attribution}</Text>
+                  ) : null}
+                </View>
+              );
+              return pq.review_url ? (
+                <TouchableOpacity key={i} onPress={() => openWatchLink(pq.review_url)} activeOpacity={0.7}>
+                  {content}
+                </TouchableOpacity>
+              ) : (
+                <View key={i}>{content}</View>
+              );
+            })}
+          </View>
+        )}
+
+        {/* Synopsis — no label; gold screening note appended at the end */}
+        {(movie.capsule || movie.synopsis) && (
           <Text style={styles.synopsis}>
             {renderMarkdownSpans(movie.capsule || movie.synopsis)}
-            {movie.filters?.is_virtual_screening && movie.virtual_screening_info?.screening_name && (
+            {isVirtualScreening && screeningName && (
               <Text style={styles.screeningCallout}>
-                {` Virtual screening available as part of the ${movie.virtual_screening_info.screening_name}.${movie.virtual_screening_info?.available_end ? ` Ends ${formatShortDate(movie.virtual_screening_info.available_end)}.` : ''}`}
+                {` Virtual screening via ${screeningName}${screeningEnd ? ` · through ${formatShortDate(screeningEnd)}` : ''}.`}
               </Text>
             )}
           </Text>
-        </View>
-      )}
+        )}
+      </ScrollView>
 
-      {/* Additional info */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Details</Text>
-        {movie.country && (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Country</Text>
-            <Text style={styles.detailValue}>{movie.country}</Text>
-          </View>
-        )}
-        {movie.original_language && (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Language</Text>
-            <Text style={styles.detailValue}>
-              {languageName(movie.original_language)}
-            </Text>
-          </View>
-        )}
-        {movie.digital_date && (
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Available</Text>
-            <Text style={styles.detailValue}>{movie.digital_date}</Text>
-          </View>
-        )}
+      {/* ---- FIXED BOTTOM BUTTON BAR (outside ScrollView) ---- */}
+      <View style={[styles.btnBar, {paddingBottom: insets.bottom + 12}]}>
+        <ScrollView
+          style={styles.btnBarScroll}
+          contentContainerStyle={styles.btnBarContent}
+          showsVerticalScrollIndicator={false}>
+          {hasTrailer && (
+            <TouchableOpacity style={styles.btnTrailer} onPress={handleTrailerPress} activeOpacity={0.85}>
+              <Text style={styles.btnTrailerText}>TRAILER</Text>
+            </TouchableOpacity>
+          )}
+
+          {watchLinks.filter(l => l.type === 'purchase').length > 0 && (
+            <WatchButtonGroup
+              links={watchLinks.filter(l => l.type === 'purchase')}
+              onPress={handleWatchPress}
+              maxButtons={4}
+              stacked
+            />
+          )}
+          {watchLinks.filter(l => l.type === 'streaming').length > 0 && (
+            <WatchButtonGroup
+              links={watchLinks.filter(l => l.type === 'streaming')}
+              onPress={handleWatchPress}
+              maxButtons={6}
+              stacked
+            />
+          )}
+          {watchLinks.filter(l => l.type === 'plex').length > 0 && (
+            <WatchButtonGroup
+              links={watchLinks.filter(l => l.type === 'plex')}
+              onPress={handleWatchPress}
+              maxButtons={1}
+              stacked
+            />
+          )}
+
+          <TouchableOpacity style={styles.btnShare} onPress={handleSharePress} activeOpacity={0.85}>
+            <Text style={styles.btnShareText}>⤴ SHARE</Text>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
-    </ScrollView>
 
       {/* Trailer player overlay */}
       {trailerVisible && movieList.length > 0 && (
@@ -509,6 +479,11 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    paddingHorizontal: Spacing.screenPadding,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.xl,
+  },
   navArrowLeft: {
     position: 'absolute',
     left: 8,
@@ -530,10 +505,11 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: '300',
   },
+
+  // ---- Locked hero ----
   heroSection: {
     flexDirection: 'row',
-    padding: Spacing.screenPadding,
-    paddingTop: Spacing.md,
+    height: posterHeight,        // poster + info box are one fixed-height unit
   },
   posterContainer: {
     width: posterWidth,
@@ -545,6 +521,17 @@ const styles = StyleSheet.create({
   poster: {
     width: '100%',
     height: '100%',
+  },
+  posterPlaceholder: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.backgroundTertiary,
+  },
+  placeholderText: {
+    color: Colors.textMuted,
+    fontSize: Typography.caption,
   },
   staffPickBadge: {
     position: 'absolute',
@@ -578,244 +565,171 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5,
   },
-  posterPlaceholder: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.backgroundTertiary,
-  },
-  placeholderText: {
-    color: Colors.textMuted,
-    fontSize: Typography.caption,
-  },
   heroInfo: {
     flex: 1,
     marginLeft: Spacing.md,
-    justifyContent: 'flex-start',
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomWidth: 2,
-    borderBottomColor: 'rgba(0, 212, 170, 0.4)',
-    paddingBottom: 8,
-    marginBottom: 8,
+    height: posterHeight,
+    overflow: 'hidden',
   },
   title: {
     color: Colors.textPrimary,
     fontSize: Typography.subtitle,
     fontWeight: '700',
-    lineHeight: 26,
-    flex: 1,
+    lineHeight: 24,
   },
-  titleDate: {
-    color: Colors.primary,
-    fontSize: Typography.subtitle - 2,
+  heroDir: {
+    color: Colors.textPrimary,
+    fontSize: 13,
     fontWeight: '700',
-    marginLeft: 8,
+    marginTop: 5,
   },
-  screeningName: {
-    backgroundColor: '#FFD700',
-    color: '#000',
-    fontSize: Typography.caption,
+  heroCast: {
+    color: Colors.textSecondary,
+    fontSize: 13,
+    marginTop: 3,
+  },
+  heroLabel: {
+    color: Colors.primary,
+    fontWeight: '700',
+  },
+  heroLink: {
+    textDecorationLine: 'underline',
+    textDecorationColor: 'rgba(255,255,255,0.32)',
+  },
+  heroMeta: {
+    color: Colors.textMuted,
+    fontSize: 12,
+    marginTop: 3,
+  },
+  scores: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 'auto',   // pin to bottom of the hero box
+  },
+  score: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    marginRight: 8,
+    marginTop: 6,
+  },
+  scoreLabel: {
+    fontSize: 9,
     fontWeight: '800',
-    letterSpacing: 1.5,
-    textAlign: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginBottom: Spacing.sm,
+    letterSpacing: 0.2,
+  },
+  scoreValue: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  scoreRT: {
+    borderColor: 'rgba(255,107,107,0.55)',
+    backgroundColor: 'rgba(255,107,107,0.08)',
+  },
+  scoreTextRT: { color: '#ff6b6b' },
+  scoreIMDb: {
+    borderColor: 'rgba(245,197,24,0.55)',
+    backgroundColor: 'rgba(245,197,24,0.08)',
+  },
+  scoreTextIMDb: { color: '#f5c518' },
+  scoreMC: {
+    borderColor: 'rgba(125,223,100,0.55)',
+    backgroundColor: 'rgba(125,223,100,0.08)',
+  },
+  scoreTextMC: { color: '#7ddf64' },
+  scoreLB: {
+    borderColor: 'rgba(0,224,84,0.5)',
+    backgroundColor: 'rgba(0,224,84,0.08)',
+  },
+  scoreTextLB: { color: '#00e054' },
+
+  // ---- Pull quotes (teal, debadged) ----
+  pqWrap: {
+    marginTop: Spacing.md,
+    paddingTop: Spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.08)',
+  },
+  pullQuoteCard: {
+    backgroundColor: 'rgba(0,212,170,0.07)',
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.primary,
+    borderRadius: 6,
+    paddingVertical: 9,
+    paddingHorizontal: 11,
+    marginVertical: 5,
+  },
+  pqText: {
+    color: Colors.primary,
+    fontSize: 14,
+    fontStyle: 'italic',
+    lineHeight: 20,
+  },
+  pqAttribution: {
+    color: 'rgba(0,212,170,0.6)',
+    fontSize: 11,
+    marginTop: 4,
+  },
+
+  // ---- Synopsis ----
+  synopsis: {
+    color: '#cccccc',
+    fontSize: Typography.body - 1,
+    lineHeight: 24,
+    marginTop: Spacing.md,
   },
   screeningCallout: {
     color: '#FFD700',
     fontWeight: '700',
     fontStyle: 'italic',
   },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: Spacing.xs,
+
+  // ---- Fixed bottom button bar ----
+  btnBar: {
+    backgroundColor: 'rgba(12,12,24,0.92)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.06)',
+    paddingHorizontal: Spacing.md,
+    paddingTop: 10,
   },
-  metaText: {
-    color: Colors.textSecondary,
-    fontSize: Typography.caption,
+  btnBarScroll: {
+    maxHeight: RNDimensions.get('window').height * 0.42,
   },
-  metaCrewLine: {
-    fontSize: Typography.caption,
+  btnBarContent: {
+    gap: 8,
   },
-  metaCrewLabel: {
-    color: Colors.primary,
-    fontWeight: 'bold',
-  },
-  metaCrewName: {
-    color: Colors.textPrimary,
-    fontWeight: 'bold',
-  },
-  metaDot: {
-    color: Colors.textMuted,
-    marginHorizontal: 6,
-  },
-  trailerOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 5,
-  },
-  trailerOverlayCircle: {
-    width: 50,
+  btnTrailer: {
     height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(255,255,255,0.95)',
+    borderRadius: 10,
+    backgroundColor: '#E50914',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.25)',
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
   },
-  trailerOverlayTriangle: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 16,
-    borderTopWidth: 9,
-    borderBottomWidth: 9,
-    borderLeftColor: '#E50914',
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    marginLeft: 4,
-  },
-  trailerOverlayBanner: {
-    width: '100%',
-    paddingVertical: 7,
-    backgroundColor: 'rgba(229,9,20,0.85)',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  trailerOverlayText: {
+  btnTrailerText: {
     color: '#fff',
-    fontSize: 13,
     fontWeight: '800',
     letterSpacing: 3,
+    fontSize: 15,
   },
-  infoRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  infoBtnGlass: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-    paddingVertical: Spacing.sm,
-    borderRadius: 6,
+  btnShare: {
+    height: 46,
+    borderRadius: 10,
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: 'rgba(0,212,170,0.5)',
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  infoBtnGlassText: {
-    color: '#fff',
-    fontSize: Typography.caption,
-    fontWeight: '600',
-  },
-  infoBtnColored: {
-    flex: 1,
-    paddingVertical: Spacing.sm,
-    borderRadius: 6,
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  infoBtnContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  infoBtnLogo: {
-    width: 24,
-    height: 18,
-    resizeMode: 'contain',
-  },
-  infoBtnColoredText: {
-    color: '#fff',
-    fontSize: Typography.caption,
-    fontWeight: '700',
-  },
-  section: {
-    paddingHorizontal: Spacing.screenPadding,
-    paddingTop: Spacing.lg,
-  },
-  sectionTitle: {
-    color: Colors.textPrimary,
-    fontSize: Typography.body,
-    fontWeight: '600',
-    marginBottom: Spacing.sm,
-  },
-  watchSectionLabel: {
-    color: '#00d4aa',
-    fontSize: Typography.caption - 1,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    marginBottom: 4,
-    marginTop: 8,
-  },
-  infoButton: {
-    backgroundColor: Colors.backgroundSecondary,
-    paddingVertical: Spacing.sm + 2,
-    paddingHorizontal: Spacing.md,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  infoButtonText: {
+  btnShareText: {
     color: Colors.primary,
-    fontSize: Typography.button,
-    fontWeight: '600',
-  },
-  synopsis: {
-    color: Colors.textPrimary,
-    fontSize: Typography.body,
-    lineHeight: 24,
-  },
-  crewText: {
-    color: Colors.textSecondary,
-    fontSize: Typography.body,
-    lineHeight: 22,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.backgroundSecondary,
-  },
-  detailLabel: {
-    color: Colors.textMuted,
-    fontSize: Typography.body,
-  },
-  detailValue: {
-    color: Colors.textSecondary,
-    fontSize: Typography.body,
-  },
-  pullQuoteCard: {
-    marginBottom: Spacing.sm,
-    paddingLeft: 10,
-    borderLeftWidth: 2,
-    borderLeftColor: 'rgba(255,255,255,0.15)',
-  },
-  pqText: {
-    color: Colors.textSecondary,
-    fontSize: Typography.caption,
-    fontStyle: 'italic',
-    lineHeight: 18,
-  },
-  pqAttribution: {
-    color: Colors.textMuted,
-    fontSize: Typography.caption - 1,
-    marginTop: 2,
+    fontWeight: '700',
+    letterSpacing: 2,
+    fontSize: 13,
   },
 });
