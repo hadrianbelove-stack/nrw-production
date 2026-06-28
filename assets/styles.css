@@ -1313,10 +1313,11 @@ header h1 {
     position: relative;
 }
 
-/* Large poster */
+/* Large poster — locked to a 2:3 box so off-ratio posters keep a constant
+   width and never shift the info panel beside them (object-fit crops the rest) */
 .lightbox-poster {
     height: 96vh;
-    width: auto;
+    width: calc(96vh * 0.667);
     border-radius: 12px;
     object-fit: cover;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
