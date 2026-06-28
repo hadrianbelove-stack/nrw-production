@@ -29,6 +29,7 @@ Sub Init()
         "italic": { fontUri: "pkg:/fonts/Italic.ttf", fontSize: 27, color: "#BBBBBBFF" }
     }
     m.pullQuotesLabel = m.top.FindNode("pullQuotesLabel")
+    m.pullQuoteAccent = m.top.FindNode("pullQuoteAccent")
 
     m.staffPickBadge = m.top.FindNode("staffPickBadge")
     m.staffPickLabel = m.top.FindNode("staffPickLabel")
@@ -42,10 +43,8 @@ Sub Init()
 
     m.buttonsRow = m.top.FindNode("buttonsRow")
     m.trailerButton = m.top.FindNode("trailerButton")
-    m.vodSectionLabel = m.top.FindNode("vodSectionLabel")
     m.vodButton1 = m.top.FindNode("vodButton1")
     m.vodButton2 = m.top.FindNode("vodButton2")
-    m.streamSectionLabel = m.top.FindNode("streamSectionLabel")
     m.streamButton = m.top.FindNode("streamButton")
     m.streamButton2 = m.top.FindNode("streamButton2")
     m.plexButton = m.top.FindNode("plexButton")
@@ -97,8 +96,6 @@ Sub Init()
     m.metadataLabel.font = f.body
     m.languageLabel.font = f.body
     if m.pullQuotesLabel <> invalid then m.pullQuotesLabel.font = GetFont("italic", 26)
-    if m.vodSectionLabel <> invalid then m.vodSectionLabel.font = f.bodyBold
-    if m.streamSectionLabel <> invalid then m.streamSectionLabel.font = f.bodyBold
     if m.counterLabel <> invalid then m.counterLabel.font = f.body
 End Sub
 
@@ -252,11 +249,14 @@ Sub LoadMovie(index as Integer)
         if pqText <> ""
             m.pullQuotesLabel.text = pqText
             m.pullQuotesLabel.visible = true
+            if m.pullQuoteAccent <> invalid then m.pullQuoteAccent.visible = true
         else
             m.pullQuotesLabel.visible = false
+            if m.pullQuoteAccent <> invalid then m.pullQuoteAccent.visible = false
         end if
     else
         m.pullQuotesLabel.visible = false
+        if m.pullQuoteAccent <> invalid then m.pullQuoteAccent.visible = false
     end if
 
     ' Set synopsis — prefer editorial capsule over raw TMDB synopsis (see docs/STYLE_GUIDE.md)
@@ -309,19 +309,11 @@ Sub LoadMovie(index as Integer)
         end if
     end if
 
-    ' Virtual screening badge — show festival name if available
-    if movie.filters <> invalid AND movie.filters.is_virtual_screening = true
-        if movie.virtual_screening_info <> invalid AND movie.virtual_screening_info.screening_name <> invalid AND movie.virtual_screening_info.screening_name <> ""
-            m.screeningLabel.text = movie.virtual_screening_info.screening_name
-        else
-            m.screeningLabel.text = "VIRTUAL SCREENING"
-        end if
-        m.screeningBadge.visible = true
-        m.screeningLabel.visible = true
-    else
-        m.screeningBadge.visible = false
-        m.screeningLabel.visible = false
-    end if
+    ' Virtual screening: the loud gold poster banner is retired (demoted). The
+    ' screening is now surfaced only by the inline gold callout appended to the
+    ' synopsis above. Keep these nodes hidden on every film.
+    m.screeningBadge.visible = false
+    m.screeningLabel.visible = false
 
     ' Setup watch buttons
     SetupWatchButtons(movie)
@@ -449,7 +441,6 @@ Sub SetupWatchButtons(movie as Object)
     ' VOD buttons (rent/buy — before streaming)
     vodServices = GetVodServices(movie)
     vodButtons = [m.vodButton1, m.vodButton2]
-    hasVod = false
     for i = 0 to 1
         if i < vodServices.Count() AND vodServices[i].service <> invalid
             vodButtons[i].service = vodServices[i].service
@@ -469,17 +460,14 @@ Sub SetupWatchButtons(movie as Object)
             end if
             vodButtons[i].visible = true
             m.buttons.Push(vodButtons[i])
-            hasVod = true
         else
             vodButtons[i].visible = false
         end if
     end for
-    m.vodSectionLabel.visible = hasVod
 
     ' Streaming buttons (after VOD) — one per free stream (2 static nodes)
     streamingServices = GetStreamingServices(movie)
     streamButtons = [m.streamButton, m.streamButton2]
-    hasStream = false
     for i = 0 to 1
         if i < streamingServices.Count() AND streamingServices[i].service <> invalid
             streamButtons[i].service = streamingServices[i].service
@@ -487,12 +475,10 @@ Sub SetupWatchButtons(movie as Object)
             streamButtons[i].url = streamingServices[i].link
             streamButtons[i].visible = true
             m.buttons.Push(streamButtons[i])
-            hasStream = true
         else
             streamButtons[i].visible = false
         end if
     end for
-    m.streamSectionLabel.visible = hasStream
 
     ' Pre-order buttons (JustWatch buy offers for pre-order movies)
     preOrderLinks = GetPreOrderLinks(movie)

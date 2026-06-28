@@ -178,23 +178,25 @@
         itemSpacings="[16]"
         translation="[0, 40]">
 
-        <!-- Title row: title left, date right -->
-        <LayoutGroup id="titleRow"
-          layoutDirection="horiz"
-          horizAlignment="left"
-          itemSpacings="[16]">
+        <!-- Title row: title left, date right.
+             Fixed height = 2 title lines so a 1-line title doesn't pull the
+             underline / meta block up (layout above synopsis must not reflow). -->
+        <Group id="titleRow">
           <Label id="titleLabel"
             width="900"
+            height="120"
             font="font:LargeBoldSystemFont"
             color="0xFFFFFFFF"
             wrap="true"
             maxLines="2" />
           <Label id="dateLabel"
-            width="200"
+            width="184"
+            height="120"
+            translation="[916, 0]"
             font="font:LargeBoldSystemFont"
             color="0x00D4AAFF"
             horizAlign="right" />
-        </LayoutGroup>
+        </Group>
 
         <!-- Title underline -->
         <Rectangle id="titleUnderline"
@@ -202,39 +204,66 @@
           height="2"
           color="0x00D4AA66" />
 
-        <!-- Crew lines: Director + Cast (teal label, white name) -->
-        <LayoutGroup id="crewGroup" layoutDirection="vert" itemSpacings="[4]">
-          <LayoutGroup id="directorRow" layoutDirection="horiz">
-            <Label id="directorLabel" font="font:MediumBoldSystemFont" color="0x00D4AAFF" />
-            <Label id="directorName" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" />
+        <!-- Fixed-height region above the synopsis (crew + meta + pull quotes).
+             A Group reserves constant vertical space regardless of which children
+             are visible, so the synopsis + pinned buttons never reflow between films.
+             Children are absolutely positioned within this 300px-tall block. -->
+        <Group id="metaBlock" >
+
+          <!-- Invisible spacer pins the Group's bounding box to a constant size so
+               the synopsis below never moves, no matter which children are visible. -->
+          <Rectangle id="metaBlockSpacer"
+            width="1100"
+            height="300"
+            color="0x00000000" />
+
+          <!-- Crew lines: Director + Cast (teal label, white name) -->
+          <LayoutGroup id="crewGroup" layoutDirection="vert" itemSpacings="[4]" translation="[0, 0]">
+            <LayoutGroup id="directorRow" layoutDirection="horiz">
+              <Label id="directorLabel" font="font:MediumBoldSystemFont" color="0x00D4AAFF" />
+              <Label id="directorName" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" />
+            </LayoutGroup>
+            <LayoutGroup id="castRow" layoutDirection="horiz">
+              <Label id="castLabel" font="font:MediumBoldSystemFont" color="0x00D4AAFF" />
+              <Label id="castName" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" />
+            </LayoutGroup>
           </LayoutGroup>
-          <LayoutGroup id="castRow" layoutDirection="horiz">
-            <Label id="castLabel" font="font:MediumBoldSystemFont" color="0x00D4AAFF" />
-            <Label id="castName" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" />
-          </LayoutGroup>
-        </LayoutGroup>
 
-        <!-- Metadata line: Country • Year • Runtime • Studio -->
-        <Label id="metadataLabel"
-          width="1100"
-          font="font:MediumSystemFont"
-          color="0xBBBBBBFF" />
+          <!-- Metadata line: Country • Year • Runtime • Studio -->
+          <Label id="metadataLabel"
+            width="1100"
+            height="32"
+            translation="[0, 76]"
+            font="font:MediumSystemFont"
+            color="0xBBBBBBFF" />
 
-        <!-- Language (if not English) -->
-        <Label id="languageLabel"
-          width="1100"
-          font="font:SmallSystemFont"
-          color="0x666666FF"
-          visible="false" />
+          <!-- Language (if not English) -->
+          <Label id="languageLabel"
+            width="1100"
+            height="28"
+            translation="[0, 110]"
+            font="font:SmallSystemFont"
+            color="0x666666FF"
+            visible="false" />
 
-        <!-- Pull Quotes -->
-        <Label id="pullQuotesLabel"
-          width="1100"
-          font="font:SmallSystemFont"
-          color="0xAAAAAAFF"
-          wrap="true"
-          maxLines="6"
-          visible="false" />
+          <!-- Pull Quotes — teal italic with a teal left accent stripe (matches
+               desktop .pq: teal italic, teal left border, no source badge) -->
+          <Rectangle id="pullQuoteAccent"
+            width="4"
+            height="150"
+            translation="[0, 144]"
+            color="0x00D4AAFF"
+            visible="false" />
+          <Label id="pullQuotesLabel"
+            width="1080"
+            height="150"
+            translation="[20, 144]"
+            font="font:SmallSystemFont"
+            color="0x00D4AAFF"
+            wrap="true"
+            maxLines="4"
+            visible="false" />
+        </Group>
 
         <!-- Synopsis — MultiStyleLabel renders **bold**/*italic* (styles set in init via drawingStyles) -->
         <MultiStyleLabel id="synopsisLabel"
@@ -244,55 +273,56 @@
           maxLines="8"
           ellipsisText="..." />
 
-        <!-- Buttons row -->
-        <LayoutGroup id="buttonsRow"
-          layoutDirection="horiz"
-          itemSpacings="[16]"
-          translation="[0, 20]">
+      </LayoutGroup>
+    </LayoutGroup>
 
-          <!-- Trailer button -->
-          <WatchButton id="trailerButton"
-            service="youtube"
-            label="Trailer"
-            buttonType="filled" />
+    <!-- ====================================================================
+         PINNED BOTTOM AREA — buttons + scores anchored to a constant Y so they
+         sit in the same place on every film (no reflow from the panel above).
+         Pinned as siblings of contentLayout; the .brs drives focus manually via
+         the m.buttons array + focusPercent, so re-parenting is safe for nav.
+         X = 746 (poster 606 + 80 left margin + 60 gap) aligns with detailsPanel.
+         ==================================================================== -->
 
-          <!-- VOD label + buttons (rent/buy — before streaming) -->
-          <Label id="vodSectionLabel"
-            text="Rent/Buy:"
-            font="font:SmallSystemFont"
-            color="0x00D4AAFF"
-            visible="false" />
-          <WatchButton id="vodButton1"
-            visible="false" />
-          <WatchButton id="vodButton2"
-            visible="false" />
+    <!-- Buttons row -->
+    <LayoutGroup id="buttonsRow"
+      layoutDirection="horiz"
+      itemSpacings="[16]"
+      translation="[746, 856]">
 
-          <!-- Stream label + buttons (one per free stream) -->
-          <Label id="streamSectionLabel"
-            text="Stream:"
-            font="font:SmallSystemFont"
-            color="0x00D4AAFF"
-            visible="false" />
-          <WatchButton id="streamButton"
-            visible="false" />
-          <WatchButton id="streamButton2"
-            visible="false" />
+      <!-- Trailer button -->
+      <WatchButton id="trailerButton"
+        service="youtube"
+        label="Trailer"
+        buttonType="filled" />
 
-          <!-- Plex button -->
-          <WatchButton id="plexButton"
-            service="plex"
-            label="Plex"
-            visible="false" />
-        </LayoutGroup>
+      <!-- VOD buttons (rent/buy — before streaming) -->
+      <WatchButton id="vodButton1"
+        visible="false" />
+      <WatchButton id="vodButton2"
+        visible="false" />
 
-        <!-- Scores row: RT + MC + IMDb (display-only, no Wiki on TV) -->
-        <LayoutGroup id="infoRow"
-          layoutDirection="horiz"
-          itemSpacings="[24]"
-          translation="[0, 10]"
-          visible="false">
+      <!-- Stream buttons (one per free stream) -->
+      <WatchButton id="streamButton"
+        visible="false" />
+      <WatchButton id="streamButton2"
+        visible="false" />
 
-          <!-- RT: tomato icon + score + freshness label -->
+      <!-- Plex button -->
+      <WatchButton id="plexButton"
+        service="plex"
+        label="Plex"
+        visible="false" />
+    </LayoutGroup>
+
+    <!-- Scores row: RT + MC + IMDb (display-only, no Wiki on TV) -->
+    <LayoutGroup id="infoRow"
+      layoutDirection="horiz"
+      itemSpacings="[24]"
+      translation="[746, 936]"
+      visible="false">
+
+      <!-- RT: tomato icon + score + freshness label -->
           <LayoutGroup id="rtGroup"
             layoutDirection="horiz"
             itemSpacings="[8]"
@@ -372,8 +402,6 @@
               color="0x00E054FF" />
           </LayoutGroup>
         </LayoutGroup>
-      </LayoutGroup>
-    </LayoutGroup>
 
     <!-- Navigation chevrons -->
     <Label id="leftChevron"

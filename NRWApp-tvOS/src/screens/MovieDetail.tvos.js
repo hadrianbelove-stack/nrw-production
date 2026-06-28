@@ -50,10 +50,6 @@ const formatShortDate = (dateStr) => {
   return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-// Decode HTML entities (e.g. &#x27; → ')
-const decodeHtml = (str) => str.replace(/&#x27;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"');
-
-
 // Full-width stream button matching site's .stream-btn — forwardRef for focus wiring
 const StreamButton = forwardRef(({
   service, onPress, hasTVPreferredFocus = false, testID,
@@ -768,13 +764,6 @@ const MovieDetailTvOS = () => {
               })()}
             </View>
 
-            {/* 2. Virtual screening badge */}
-            {movie.filters?.is_virtual_screening && (
-              <Text style={styles.screeningName}>
-                {decodeHtml(movie.virtual_screening_info?.screening_name || 'VIRTUAL SCREENING')}
-              </Text>
-            )}
-
             {/* 3 + 5. Meta block and scores side-by-side — scores float in the negative space right of director/cast */}
             <View style={styles.metaAndScoresRow}>
               {/* Left: Director, Cast, year/runtime, language */}
@@ -1094,19 +1083,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '600',
     marginTop: 4,
-  },
-  screeningName: {
-    backgroundColor: Colors.screeningGold,
-    color: Colors.screeningGoldText,
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textAlign: 'center',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    marginBottom: Spacing.tvos.sm,
-    overflow: 'hidden',
-    borderRadius: 4,
   },
   screeningCallout: {
     color: Colors.screeningGold,

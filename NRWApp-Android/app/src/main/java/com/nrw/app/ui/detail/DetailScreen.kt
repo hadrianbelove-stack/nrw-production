@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -346,11 +347,14 @@ private fun MovieDetail(
             Spacer(modifier = Modifier.width(40.dp))
 
             // Right side - Compact Details
+            // Top-aligned (no Center) so the hero block keeps a stable height and
+            // nothing below it shifts as you move between films.
             Column(
                 modifier = Modifier
                     .weight(1f)
+                    .fillMaxHeight()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Top
             ) {
                 // Title row with Staff Pick badge and date
                 Column {
@@ -368,7 +372,10 @@ private fun MovieDetail(
                                 color = TextPrimary,
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
-                                lineHeight = 32.sp
+                                lineHeight = 32.sp,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f)
                             )
                             if (movie.isStaffPick()) {
                                 Box(
@@ -402,20 +409,8 @@ private fun MovieDetail(
                                     )
                                 }
                             }
-                            if (movie.filters?.isVirtualScreening == true) {
-                                Text(
-                                    text = movie.screeningInfo?.screeningName ?: "VIRTUAL SCREENING",
-                                    color = Color.Black,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = 1.5.sp,
-                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(Color(0xFFFFD700))
-                                        .padding(vertical = 8.dp, horizontal = 12.dp)
-                                )
-                            }
+                            // Loud full-width gold screening banner removed — the screening
+                            // is surfaced only via the inline gold-italic synopsis callout below.
                         }
                         movie.digitalDate?.let { date ->
                             Text(
@@ -448,7 +443,9 @@ private fun MovieDetail(
                                 append(director)
                             }
                         },
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 movie.crew?.cast?.takeIf { it.isNotEmpty() }?.let { cast ->
@@ -462,7 +459,9 @@ private fun MovieDetail(
                                 append(cast.take(3).joinToString(", "))
                             }
                         },
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
@@ -499,36 +498,44 @@ private fun MovieDetail(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Pull quotes
+                // Pull quotes \u2014 teal italic with a teal left accent stripe (mockup .pq)
                 if (!movie.pullQuotes.isNullOrEmpty()) {
-                    val pqContext = LocalContext.current
                     movie.pullQuotes!!.forEach { pq ->
                         pq.text?.let { quoteText ->
-                            Column(
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = 8.dp)
-                                    .then(
-                                        if (pq.reviewUrl != null) Modifier.clickable {
-                                            DeepLinkHelper.openUrl(pqContext, pq.reviewUrl, "review")
-                                        } else Modifier
-                                    )
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Primary.copy(alpha = 0.07f))
+                                    .height(IntrinsicSize.Min)
                             ) {
-                                Text(
-                                    text = "\u201C$quoteText\u201D",
-                                    color = TextSecondary,
-                                    fontSize = 12.sp,
-                                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                                    lineHeight = 16.sp
+                                // Teal left border / accent stripe
+                                Box(
+                                    modifier = Modifier
+                                        .width(3.dp)
+                                        .fillMaxHeight()
+                                        .background(Primary)
                                 )
-                                val attribution = listOfNotNull(pq.critic, pq.outlet).joinToString(", ")
-                                if (attribution.isNotEmpty()) {
+                                Column(
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
+                                ) {
                                     Text(
-                                        text = "\u2014 $attribution",
-                                        color = TextMuted,
-                                        fontSize = 10.sp,
-                                        modifier = Modifier.padding(start = 10.dp, top = 2.dp)
+                                        text = "\u201C$quoteText\u201D",
+                                        color = Primary,
+                                        fontSize = 12.sp,
+                                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                                        lineHeight = 16.sp
                                     )
+                                    val attribution = listOfNotNull(pq.critic, pq.outlet).joinToString(", ")
+                                    if (attribution.isNotEmpty()) {
+                                        Text(
+                                            text = "\u2014 $attribution",
+                                            color = Primary.copy(alpha = 0.6f),
+                                            fontSize = 10.sp,
+                                            modifier = Modifier.padding(top = 2.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -573,14 +580,6 @@ private fun MovieDetail(
                 val plexOptions = watchOptions.filter { it.type == WatchType.PLEX }
 
                 if (vodOptions.isNotEmpty()) {
-                    Text(
-                        text = "Rent/Buy:",
-                        color = Primary,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 0.5.sp
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -634,14 +633,6 @@ private fun MovieDetail(
                 }
 
                 if (streamOptions.isNotEmpty()) {
-                    Text(
-                        text = "Stream:",
-                        color = Primary,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 0.5.sp
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
