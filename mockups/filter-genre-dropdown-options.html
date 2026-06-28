@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW — Filter Bar (exact): search placement + filled bar</title>
+<style>
+  :root{
+    --accent:#00d4aa; --accent-primary:#00d4aa; --accent-hover:#00ffbb; --accent-glow:rgba(0,212,170,0.4);
+    --orange:#ff9500; --purple:#7c3aed; --amber:#f59e0b; --bg0:#0a0a0a; --bg1:#1a1a2e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:linear-gradient(160deg,var(--bg0),var(--bg1)); color:#fff; min-height:100vh; padding-bottom:60px;}
+
+  .page-intro{max-width:1500px; margin:0 auto; padding:24px 26px 0;}
+  .page-intro h1{font-weight:100; letter-spacing:0.3em; font-size:1.4rem; margin:0 0 6px;}
+  .page-intro p{color:#888; margin:0; font-size:0.9rem; max-width:860px; line-height:1.6;}
+  .page-intro p b{color:var(--accent);}
+
+  .opt-banner{max-width:1500px; margin:40px auto 0; padding:10px 26px; display:flex; align-items:baseline; gap:12px;
+    border-top:1px solid rgba(255,255,255,0.08);}
+  .opt-tag{background:var(--accent); color:#000; font-weight:700; font-size:0.78rem; padding:3px 10px; border-radius:6px; flex:0 0 auto;}
+  .opt-title{font-weight:600; font-size:1.02rem;}
+  .opt-note{max-width:1500px; margin:0 auto; padding:0 26px 6px; color:#888; font-size:0.85rem; line-height:1.55;}
+  .opt-note b{color:#bbb;}
+
+  /* ====== real site chrome ====== */
+  .cwide-hdr{padding:18px 26px 0; max-width:1500px; margin:0 auto;}
+  .masthead{display:flex; align-items:center; gap:24px;}
+  .mh-word{font-weight:100; letter-spacing:0.24em; font-size:3.3rem; line-height:1; white-space:nowrap; flex-shrink:0; margin:0;}
+  .mh-spacer{flex:1 1 auto;}
+  .mh-slogan{font-weight:300; font-size:1.12rem; letter-spacing:0.05em; margin:6px 0 0;
+    background:linear-gradient(45deg,#fff,var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;}
+
+  /* ====== components ====== */
+  .toggle{display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none; flex:0 0 auto;}
+  .toggle .label{font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(0,212,170,0.75); transition:color .25s; white-space:nowrap;}
+  .toggle .track{width:52px; height:30px; border-radius:15px; background:#1a1a1a; border:1px solid rgba(0,212,170,0.45); position:relative; flex:0 0 auto; transition:.25s;}
+  .toggle .thumb{position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:rgba(0,212,170,0.55); transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s;}
+  .toggle.on .track{border-color:rgba(0,0,0,0.35);} .toggle.on .thumb{transform:translateX(22px); background:#fff;} .toggle.on .label{color:var(--accent);}
+  .toggle.preorder.on .track{background:var(--purple);} .toggle.preorder.on .label{color:var(--purple);}
+  .toggle.fests.on .track{background:var(--amber);} .toggle.fests.on .label{color:var(--amber);}
+  .toggle.selects.on .track{background:var(--accent);} .toggle.selects.on .label{color:var(--accent);}
+
+  .slop{display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none; flex:0 0 auto;}
+  .slop .label{font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; width:88px; display:inline-block; color:var(--accent); white-space:nowrap; transition:color .25s;}
+  .slop .track{width:74px; height:30px; border-radius:15px; background:#1a1a1a; border:1px solid rgba(0,212,170,0.45); position:relative; flex:0 0 auto; transition:.25s;}
+  .slop .thumb{position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:rgba(0,212,170,0.6); transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s;}
+  .slop[data-state="all"] .track{background:rgba(0,212,170,0.10); border-color:var(--accent);} .slop[data-state="all"] .thumb{transform:translateX(0); background:var(--accent);} .slop[data-state="all"] .label{color:var(--accent);}
+  .slop[data-state="free"] .track{background:var(--accent); border-color:rgba(0,0,0,0.35);} .slop[data-state="free"] .thumb{transform:translateX(22px); background:#fff;} .slop[data-state="free"] .label{color:var(--accent);}
+  .slop[data-state="only"] .track{background:var(--orange); border-color:rgba(0,0,0,0.35);} .slop[data-state="only"] .thumb{transform:translateX(44px); background:#fff;} .slop[data-state="only"] .label{color:var(--orange);}
+
+  .genre-control{font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(0,212,170,0.75);
+    background:transparent; border:1px solid rgba(0,212,170,0.35); border-radius:25px; padding:0.34rem 0.85rem;
+    display:inline-flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap; flex:0 0 auto; transition:.25s;}
+  .genre-control .caret{font-size:0.6rem; opacity:0.7;}
+  .genre-control:hover,.genre-control.open{color:var(--accent); border-color:rgba(0,212,170,0.7); background:rgba(0,212,170,0.08);}
+  .genre-control.has-active{color:var(--accent); border-color:rgba(0,212,170,0.55);}
+  .genre-control .count{background:rgba(0,212,170,0.85); color:#000; font-size:0.62rem; font-weight:700; border-radius:9px; padding:0 6px; letter-spacing:0;}
+
+  .genre-pop{position:absolute; z-index:30; margin-top:10px; min-width:360px; background:#14141f; border:1px solid rgba(255,255,255,0.16);
+    border-radius:14px; padding:14px; box-shadow:0 16px 48px rgba(0,0,0,0.55); display:none;}
+  .genre-pop.open{display:block;}
+  .genre-pop .pop-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .genre-pop .pop-head span{color:#888; font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase;}
+  .genre-pop .pop-clear{color:var(--accent); font-size:0.78rem; cursor:pointer; background:none; border:none;}
+  .chip-wrap{display:flex; flex-wrap:wrap; gap:9px;}
+  .chip{padding:0.5rem 0.95rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; cursor:pointer; border-radius:25px; font-size:0.95rem; transition:all .2s; white-space:nowrap;}
+  .chip:hover{border-color:var(--accent); transform:translateY(-1px);}
+  .chip.active{background:var(--accent); border-color:var(--accent); color:#000; font-weight:600;}
+
+  .search{position:relative; display:flex; align-items:center;}
+  .search .mag{position:absolute; left:14px; pointer-events:none; color:var(--accent); font-size:1rem;}
+  .search input{width:100%; padding:0.62rem 1rem 0.62rem 2.3rem; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2);
+    border-radius:25px; color:#fff; font-size:0.95rem; outline:none; transition:border-color .22s;}
+  .search input::placeholder{color:#888;} .search input:focus{border-color:var(--accent);}
+
+  /* filled control bar */
+  .barstrip{display:flex; align-items:center; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.12);
+    border-radius:16px; padding:14px 26px; margin-top:16px;}
+  .barstrip .divider{width:1px; height:30px; background:rgba(255,255,255,0.12); flex:0 0 auto;}
+  .barstrip.spread{justify-content:space-between;}
+  .barstrip.even > *{flex:0 0 auto;}
+  .barstrip.even .search{flex:1 1 auto; min-width:0; margin-left:4px;}
+  .genre-slot{position:relative; display:flex; align-items:center;}
+
+  /* ====== EXACT wall ====== */
+  .wall{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:2rem 1rem; padding:1.5rem 2rem; max-width:1500px; margin:0 auto;}
+  .movie-container{display:flex; flex-direction:column; align-items:center; position:relative;}
+  .movie-card{width:100%; aspect-ratio:2/3; border-radius:15px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+  .movie-card img{width:100%; height:100%; object-fit:cover; display:block;}
+  .movie-info{margin-top:0.4rem; height:2.5rem; display:flex; align-items:center; justify-content:center; width:100%;}
+  .movie-meta{display:flex; justify-content:center; white-space:nowrap; color:var(--accent-primary); font-size:1.1rem; font-weight:700; max-width:100%;}
+  .m-dir{overflow:hidden; text-overflow:ellipsis; min-width:0;}
+  .m-rest{flex-shrink:0;}
+
+  @media (max-width:980px){
+    .masthead{flex-direction:column; align-items:flex-start; gap:14px;}
+    .mh-word{font-size:2.2rem; white-space:normal;}
+    .barstrip{flex-wrap:wrap; gap:14px;} .barstrip .divider{display:none;}
+    .wall{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+    .movie-meta{font-size:0.8rem;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page-intro">
+  <h1>SEARCH PLACEMENT + FILLED BAR — exact wall</h1>
+  <p>Now rendered as the real site: full-size masthead, the actual poster grid + teal <b>Director · Genre · Nation</b>
+     caption, real movies. Two layouts: search <b>beside the wordmark</b> (L1) or search <b>filling the rail</b> (L2). The
+     filter row is a filled control bar so there's no empty negative space. Live — click toggles, GENRE, chips.</p>
+</div>
+
+<!-- ===== L1 ===== -->
+<div class="opt-banner"><span class="opt-tag">L1</span><span class="opt-title">Search beside the wordmark · filters in a filled bar below</span></div>
+<p class="opt-note"><b>Your idea.</b> Search rides the masthead line, right of the wordmark. The bar below is a filled strip with the four toggles + GENRE spread evenly across the full width, separated by hairline dividers — no dead space.</p>
+<div class="cwide-hdr">
+  <div class="masthead">
+    <div><h1 class="mh-word">THE&nbsp;NEW RELEASE&nbsp;WALL</h1><p class="mh-slogan">What came out, every day. Bringing back browsing.</p></div>
+    <div class="mh-spacer"></div>
+    <div class="search" style="width:360px; flex:0 0 auto;"><span class="mag">⌕</span><input type="text" placeholder="Search title, director, genre…"></div>
+  </div>
+  <div class="barstrip spread">
+    <div class="slop" data-slop data-state="all"><div class="track"><div class="thumb"></div></div><span class="label">SLOP FILTER</span></div>
+    <div class="divider"></div>
+    <div class="toggle preorder" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">PRE-ORDER</span></div>
+    <div class="divider"></div>
+    <div class="toggle fests" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">FESTS</span></div>
+    <div class="divider"></div>
+    <div class="toggle selects" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">SELECTS</span></div>
+    <div class="divider"></div>
+    <div class="genre-slot" data-genreslot></div>
+  </div>
+</div>
+<div class="wall" data-wall></div>
+
+<!-- ===== L2 ===== -->
+<div class="opt-banner"><span class="opt-tag">L2</span><span class="opt-title">One filled bar · search grows to fill the leftover width</span></div>
+<p class="opt-note"><b>If you'd rather keep search in the row.</b> Everything lives in one filled bar; the search field stretches to eat the leftover width to the right edge — the old empty gap becomes the search box.</p>
+<div class="cwide-hdr">
+  <div class="masthead">
+    <div><h1 class="mh-word">THE&nbsp;NEW RELEASE&nbsp;WALL</h1><p class="mh-slogan">What came out, every day. Bringing back browsing.</p></div>
+  </div>
+  <div class="barstrip even">
+    <div class="slop" data-slop data-state="all"><div class="track"><div class="thumb"></div></div><span class="label">SLOP FILTER</span></div>
+    <div class="divider" style="margin:0 22px;"></div>
+    <div class="toggle preorder" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">PRE-ORDER</span></div>
+    <div class="divider" style="margin:0 22px;"></div>
+    <div class="toggle fests" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">FESTS</span></div>
+    <div class="divider" style="margin:0 22px;"></div>
+    <div class="toggle selects" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">SELECTS</span></div>
+    <div class="divider" style="margin:0 22px;"></div>
+    <div class="genre-slot" data-genreslot></div>
+    <div class="divider" style="margin:0 22px;"></div>
+    <div class="search"><span class="mag">⌕</span><input type="text" placeholder="Search title, director, genre…"></div>
+  </div>
+</div>
+<div class="wall" data-wall></div>
+
+<script>
+  const GENRE = `
+    <button class="genre-control" data-genre><span class="g-text">GENRE</span><span class="caret">▼</span></button>
+    <div class="genre-pop" data-pop>
+      <div class="pop-head"><span>Filter by genre</span><button class="pop-clear" data-clear>Clear</button></div>
+      <div class="chip-wrap" data-chips></div>
+    </div>`;
+  const GENRES = ["Indie","Horror","Action","Comedy","Family","Thriller","Foreign","Docs","Reissues"];
+  const MOVIES = [
+    {poster:"https://image.tmdb.org/t/p/w500/AnNTum4rFvxKY61ETqXzIg8uo6v.jpg",dir:"Jimmie Lee Ward Jr.",genre:"Drama",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/ho824aZtnBzE6FuJRn2znQCq4qQ.jpg",dir:"Subash K Raj",genre:"Drama",nation:"IND"},
+    {poster:"https://image.tmdb.org/t/p/w500/zunzC4tXgfl4Hz9JJN5sHngnXKJ.jpg",dir:"Rachel Israel",genre:"Comedy",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/1DIxgyAaZK0MPOourVhQ3Q4nzGw.jpg",dir:"Amilcar Infante",genre:"Documentary",nation:"CHL"},
+    {poster:"https://image.tmdb.org/t/p/w500/hIJpXb7Xaje2mebN9ylsS7blQzP.jpg",dir:"Matt Spicer",genre:"Comedy",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/l1iPPZHjqx798orkqGDI7kVvRBg.jpg",dir:"Jake Trevaskis",genre:"Science Fiction",nation:"AUS"},
+    {poster:"https://image.tmdb.org/t/p/w500/m6XxbOjeDyHChXlJ7CVEolNCq2o.jpg",dir:"Rebecca Gitlitz",genre:"Documentary",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/lWdpUOhnJ8uWWO1G1vbyUsCliov.jpg",dir:"Malcolm D. Lee",genre:"Mystery",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/4hfMbVbYc2gsMnSE1K8Oc9LQH4j.jpg",dir:"Sophy Romvari",genre:"Drama",nation:"CAN"},
+    {poster:"https://image.tmdb.org/t/p/w500/8MUeQysvrFpAVmT8eotD81Kq78Y.jpg",dir:"Jeffrey Scott Collins",genre:"Action",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/iLkTJe0ze5h9Z0Rs9IJMfXnuZU8.jpg",dir:"Ryan Ebert",genre:"Horror",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/xTI42pmsP5EDnvsNJPEDubwWBQO.jpg",dir:"David Frankel",genre:"Comedy",nation:"USA"},
+  ];
+
+  function cardHTML(m){
+    return `<div class="movie-container"><div class="movie-card"><img src="${m.poster}" onerror="this.style.display='none'"></div>
+      <div class="movie-info"><div class="movie-meta"><span class="m-dir">${m.dir}</span><span class="m-rest"> · ${m.genre} · ${m.nation}</span></div></div></div>`;
+  }
+  document.querySelectorAll('[data-wall]').forEach(w=>w.innerHTML=MOVIES.map(cardHTML).join(''));
+  document.querySelectorAll('[data-genreslot]').forEach(el=>el.innerHTML=GENRE);
+
+  document.querySelectorAll('[data-toggle]').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+  const SLOP={all:{next:'free',text:'SLOP FILTER'},free:{next:'only',text:'SLOP FREE'},only:{next:'all',text:'SLOP ONLY'}};
+  document.querySelectorAll('[data-slop]').forEach(s=>s.addEventListener('click',()=>{const n=SLOP[s.getAttribute('data-state')].next; s.setAttribute('data-state',n); s.querySelector('.label').textContent=SLOP[n].text;}));
+
+  document.querySelectorAll('[data-genre]').forEach(btn=>{
+    const pop=btn.parentElement.querySelector('[data-pop]'); const chips=pop.querySelector('[data-chips]');
+    GENRES.forEach(g=>{const c=document.createElement('div'); c.className='chip'; c.textContent=g; c.addEventListener('click',()=>{c.classList.toggle('active'); refresh(btn,pop);}); chips.appendChild(c);});
+    pop.querySelector('[data-clear]').addEventListener('click',()=>{pop.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); refresh(btn,pop);});
+    btn.addEventListener('click',e=>{e.stopPropagation(); closeAll(pop); pop.classList.toggle('open'); btn.classList.toggle('open');});
+    pop.addEventListener('click',e=>e.stopPropagation());
+  });
+  function refresh(btn,pop){const n=pop.querySelectorAll('.chip.active').length; btn.classList.toggle('has-active',n>0);
+    let b=btn.querySelector('.count'); if(n>0){if(!b){b=document.createElement('span'); b.className='count'; btn.insertBefore(b,btn.querySelector('.caret'));} b.textContent=n;} else if(b) b.remove();}
+  function closeAll(except){document.querySelectorAll('.genre-pop.open').forEach(p=>{if(p!==except){p.classList.remove('open'); const b=p.parentElement.querySelector('[data-genre]'); b&&b.classList.remove('open');}});}
+  document.addEventListener('click',()=>document.querySelectorAll('.genre-pop.open').forEach(p=>{p.classList.remove('open'); const b=p.parentElement.querySelector('[data-genre]'); b&&b.classList.remove('open');}));
+</script>
+</body>
+</html>

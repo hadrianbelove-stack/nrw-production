@@ -96,6 +96,39 @@ body {
   color: #000;
   font-weight: 700;
 }
+/* GENRE control — quiet pill that opens the genre bottom sheet */
+.genre-control {
+  display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto;
+  background: transparent; border: 1px solid rgba(0,212,170,0.35);
+  border-radius: var(--radius-pill); padding: 4px 11px;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(0,212,170,0.75); font-family: var(--font); cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: all 0.2s ease; white-space: nowrap;
+}
+.genre-control .caret { font-size: 0.45rem; opacity: 0.7; }
+.genre-control.has-active { color: var(--accent); border-color: rgba(0,212,170,0.55); }
+
+/* GENRE bottom sheet */
+.genre-backdrop {
+  position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.6);
+  display: none; opacity: 0; transition: opacity 0.2s;
+}
+.genre-backdrop.open { display: block; opacity: 1; }
+.genre-sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; max-width: 480px; margin: 0 auto;
+  background: #14141f; border-radius: 18px 18px 0 0; border: 1px solid rgba(255,255,255,0.12);
+  border-bottom: none; padding: 8px 16px calc(22px + env(safe-area-inset-bottom));
+  transform: translateY(100%); transition: transform 0.26s cubic-bezier(.4,0,.2,1);
+}
+.genre-backdrop.open .genre-sheet { transform: translateY(0); }
+.genre-sheet-handle { width: 38px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.25); margin: 6px auto 12px; }
+.genre-sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.genre-sheet-head span { color: var(--text-muted); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.genre-sheet-clear { color: var(--accent); font-size: 0.74rem; background: none; border: none; cursor: pointer; }
+.genre-sheet-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.genre-sheet-chips .filter-pill { font-size: 0.8rem; padding: 7px 13px; color: #fff; }
+.genre-sheet-chips .filter-pill.active { color: #000; }
+.genre-sheet-done { margin-top: 16px; width: 100%; padding: 10px; background: var(--accent); color: #000; font-weight: 700; border: none; border-radius: var(--radius-pill); font-size: 0.8rem; cursor: pointer; letter-spacing: 0.04em; }
 .filter-pill-divider {
   width: 1px;
   background: rgba(255,255,255,0.15);
@@ -128,7 +161,7 @@ body {
   color: #00d4aa;
 }
 #slop-state-label {
-  width: 56px;
+  width: 64px;
   display: inline-block;
 }
 .slop-track {
@@ -159,25 +192,26 @@ body {
   transform: translateX(16px);
   background: #ffffff;
 }
-/* 3-state slop toggle */
-#slop-free-toggle[data-state="free"] .slop-track {
-  background: #00d4aa;
-  border-color: rgba(0,0,0,0.35);
-}
-#slop-free-toggle[data-state="free"] .slop-thumb {
-  transform: translateX(0);
-  background: #ffffff;
-}
-#slop-free-toggle[data-state="free"] #slop-state-label { color: #00d4aa; }
+/* 3-state slop toggle — resting "all" (SLOP FILTER) sits left; thumb moves
+   left→middle→right as SLOP FILTER → SLOP FREE → SLOP ONLY. */
 #slop-free-toggle[data-state="all"] .slop-track {
   background: rgba(0,212,170,0.1);
   border-color: #00d4aa;
 }
 #slop-free-toggle[data-state="all"] .slop-thumb {
-  transform: translateX(8px);
+  transform: translateX(0);
   background: #00d4aa;
 }
 #slop-free-toggle[data-state="all"] #slop-state-label { color: #00d4aa; }
+#slop-free-toggle[data-state="free"] .slop-track {
+  background: #00d4aa;
+  border-color: rgba(0,0,0,0.35);
+}
+#slop-free-toggle[data-state="free"] .slop-thumb {
+  transform: translateX(8px);
+  background: #ffffff;
+}
+#slop-free-toggle[data-state="free"] #slop-state-label { color: #00d4aa; }
 #slop-free-toggle[data-state="only"] .slop-track {
   background: #ff9500;
   border-color: rgba(0,0,0,0.35);

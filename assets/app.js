@@ -10,7 +10,7 @@ const NRW = {
     staffPicks: [],  // Renamed from featuredMovies
     latestPlaylistUrl: null,  // YouTube trailers playlist URL
     activeFilters: new Set(),  // Multi-select: Set of active filter IDs
-    slopMode: 'free',          // 'free' = hide slop, 'all' = show all, 'only' = show only slop
+    slopMode: 'all',           // 'all' = SLOP FILTER (show everything, resting), 'free' = hide slop, 'only' = show only slop
     showFest: false,           // When true, show virtual screening movies
     showPreorders: false,      // When true, show pre-order movies at the top
     showHighlightsOnly: false, // When true, show only staff picks (HIGHLIGHTS toggle)
@@ -106,6 +106,7 @@ const NRW = {
                 });
 
                 this.setupFilterEventListeners();
+                this.setupGenreDropdown();
                 this.setupSearchEventListeners();
                 this.setupCardFlipHandler();
                 this.setupLightboxKeyboardHandler();
@@ -186,7 +187,7 @@ const NRW = {
         // Slop toggle (3-state: free / all / only) — part of the exclusive view group
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
-            const SLOP_STATES = ['free', 'all', 'only'];
+            const SLOP_STATES = ['all', 'free', 'only'];  // SLOP FILTER (rest) → SLOP FREE → SLOP ONLY → back
             this.syncSlopToggle();
             slopToggle.addEventListener('click', () => {
                 const idx = SLOP_STATES.indexOf(this.slopMode);
@@ -274,7 +275,7 @@ const NRW = {
         if (winner !== 'selects')   { this.showHighlightsOnly = false; document.getElementById('highlights-toggle')?.classList.remove('active'); }
         if (winner !== 'fests')     { this.showFest = false;           document.getElementById('fest-toggle')?.classList.remove('active'); }
         if (winner !== 'preorders') { this.showPreorders = false;      document.getElementById('preorder-toggle')?.classList.remove('active'); }
-        if (winner !== 'slop')      { this.slopMode = 'free';          this.syncSlopToggle(); }
+        if (winner !== 'slop')      { this.slopMode = 'all';           this.syncSlopToggle(); }
     },
 
     // Sync the 3-state slop toggle's data-state + label to this.slopMode.
@@ -283,7 +284,7 @@ const NRW = {
         if (!toggle) return;
         toggle.dataset.state = this.slopMode;
         const label = document.getElementById('slop-state-label');
-        const SLOP_LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
+        const SLOP_LABELS = { free: 'SLOP FREE', all: 'SLOP FILTER', only: 'SLOP ONLY' };
         if (label) label.textContent = SLOP_LABELS[this.slopMode];
     },
 
@@ -293,6 +294,41 @@ const NRW = {
         if (!el) return;
         // Filter description blurbs removed (matches tvOS — no genre/view descriptions).
         el.classList.remove('active');
+    },
+
+    // GENRE dropdown — opens/closes the chip menu and reflects the active genre
+    // on the quiet GENRE control. The chips are .filter-btn elements, so the
+    // existing genre-filter logic (setupFilterEventListeners) wires them as-is;
+    // this only manages the dropdown UI and the control's label/highlight.
+    setupGenreDropdown() {
+        const toggle = document.getElementById('genre-toggle');
+        const pop = document.getElementById('genre-pop');
+        const clearBtn = document.getElementById('genre-clear');
+        if (!toggle || !pop) return;
+        const text = toggle.querySelector('.genre-text');
+
+        const close = () => { pop.classList.remove('open'); toggle.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); };
+        const open  = () => { pop.classList.add('open');    toggle.classList.add('open');    toggle.setAttribute('aria-expanded', 'true'); };
+        const reflect = () => {
+            const active = pop.querySelector('.filter-btn.active');
+            toggle.classList.toggle('has-active', !!active);
+            if (text) text.textContent = active ? active.textContent.toUpperCase() : 'GENRE';
+        };
+
+        toggle.addEventListener('click', (e) => { e.stopPropagation(); pop.classList.contains('open') ? close() : open(); });
+        pop.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // A chip's own .filter-btn handler runs first; defer so we read the
+            // post-click .active state, then mirror it onto the control and close.
+            if (e.target.classList.contains('filter-btn')) setTimeout(() => { reflect(); close(); }, 0);
+        });
+        if (clearBtn) clearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const active = pop.querySelector('.filter-btn.active');
+            if (active) active.click();   // re-click clears it through the existing logic
+            reflect(); close();
+        });
+        document.addEventListener('click', close);
     },
 
     setupSearchEventListeners() {

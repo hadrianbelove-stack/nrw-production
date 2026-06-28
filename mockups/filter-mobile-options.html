@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW Mobile — Filter Redesign Options</title>
+<style>
+  :root{
+    --accent:#00d4aa; --orange:#ff9500; --purple:#7c3aed; --amber:#f59e0b;
+    --bg0:#0a0a0a; --bg1:#1a1a2e; --muted:#888; --radius-pill:25px;
+  }
+  *,*::before,*::after{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:#08080d; color:#fff; padding:24px 12px 120px; -webkit-tap-highlight-color:transparent;
+  }
+  .intro{max-width:420px; margin:0 auto 6px; text-align:center;}
+  .intro h1{font-weight:100; letter-spacing:0.18em; font-size:1.1rem; margin-bottom:8px;}
+  .intro p{color:var(--muted); font-size:0.8rem; line-height:1.55;}
+  .intro p b{color:var(--accent);}
+
+  .opt-label{max-width:390px; margin:34px auto 10px; display:flex; align-items:baseline; gap:10px;}
+  .opt-tag{background:var(--accent); color:#000; font-weight:700; font-size:0.7rem; padding:2px 8px; border-radius:5px; flex:0 0 auto;}
+  .opt-title{font-weight:600; font-size:0.92rem;}
+  .opt-note{max-width:390px; margin:10px auto 0; color:var(--muted); font-size:0.78rem; line-height:1.5;}
+  .opt-note b{color:#bbb;} .opt-note .warn{color:var(--orange);}
+
+  /* ---- phone frame ---- */
+  .phone{
+    width:390px; max-width:100%; margin:0 auto; background:linear-gradient(160deg,var(--bg0),var(--bg1));
+    border:1px solid rgba(255,255,255,0.12); border-radius:22px; overflow:hidden; box-shadow:0 18px 50px rgba(0,0,0,0.5);
+  }
+  .ph-header{padding:12px 14px 10px; border-bottom:1px solid rgba(255,255,255,0.06);}
+  .ph-title{font-weight:300; letter-spacing:0.04em; font-size:0.78rem; text-align:center;
+    background:linear-gradient(45deg,#fff,var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;}
+  .ph-slogan{color:var(--muted); font-size:0.56rem; text-align:center; margin:3px 0 9px;}
+
+  .controls{display:flex; flex-direction:column; gap:7px;}
+
+  /* toggle row */
+  .toggle-row{display:flex; align-items:center; justify-content:space-between; gap:4px;}
+  .tog{display:flex; align-items:center; gap:4px; cursor:pointer; flex:0 0 auto;}
+  .tog .label{font-size:0.5rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase;
+    color:rgba(0,212,170,0.75); white-space:nowrap; transition:color .25s;}
+  .tog .track{width:32px; height:18px; border-radius:9px; background:#1a1a1a; border:1px solid rgba(0,212,170,0.45);
+    position:relative; flex:0 0 auto; transition:.25s;}
+  .tog .thumb{position:absolute; top:2px; left:2px; width:12px; height:12px; border-radius:50%;
+    background:rgba(0,212,170,0.55); transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s;}
+  .tog.on .track{border-color:rgba(0,0,0,0.35);} .tog.on .thumb{transform:translateX(14px); background:#fff;} .tog.on .label{color:var(--accent);}
+  .tog.preorder.on .track{background:var(--purple);} .tog.preorder.on .label{color:var(--purple);}
+  .tog.fests.on .track{background:var(--amber);} .tog.fests.on .label{color:var(--amber);}
+  .tog.selects.on .track{background:var(--accent);} .tog.selects.on .label{color:var(--accent);}
+
+  /* 3-state slop */
+  .slop{display:flex; align-items:center; gap:4px; cursor:pointer; flex:0 0 auto;}
+  .slop .label{font-size:0.5rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+    width:60px; display:inline-block; color:var(--accent); white-space:nowrap; transition:color .25s;}
+  .slop .track{width:34px; height:18px; border-radius:9px; background:#1a1a1a; border:1px solid rgba(0,212,170,0.45);
+    position:relative; flex:0 0 auto; transition:.25s;}
+  .slop .thumb{position:absolute; top:2px; left:2px; width:12px; height:12px; border-radius:50%;
+    background:rgba(0,212,170,0.6); transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s;}
+  .slop[data-state="all"] .track{background:rgba(0,212,170,0.1); border-color:var(--accent);}
+  .slop[data-state="all"] .thumb{transform:translateX(0); background:var(--accent);} .slop[data-state="all"] .label{color:var(--accent);}
+  .slop[data-state="free"] .track{background:var(--accent); border-color:rgba(0,0,0,0.35);}
+  .slop[data-state="free"] .thumb{transform:translateX(9px); background:#fff;} .slop[data-state="free"] .label{color:var(--accent);}
+  .slop[data-state="only"] .track{background:var(--orange); border-color:rgba(0,0,0,0.35);}
+  .slop[data-state="only"] .thumb{transform:translateX(18px); background:#fff;} .slop[data-state="only"] .label{color:var(--orange);}
+
+  /* GENRE — quiet, de-emphasized peer of the toggle labels */
+  .genre{font-size:0.5rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+    color:rgba(0,212,170,0.75); background:transparent; border:1px solid rgba(0,212,170,0.35); border-radius:var(--radius-pill);
+    padding:4px 11px; display:inline-flex; align-items:center; gap:5px; cursor:pointer; white-space:nowrap; flex:0 0 auto; transition:.2s;}
+  .genre .caret{font-size:0.45rem; opacity:0.7;}
+  .genre.has-active{color:var(--accent); border-color:rgba(0,212,170,0.55);}
+  .genre .count{background:rgba(0,212,170,0.85); color:#000; font-size:0.5rem; font-weight:700; border-radius:8px; padding:0 5px; letter-spacing:0;}
+
+  /* search variants */
+  .row2{display:flex; align-items:center; gap:8px;}
+  .srch{flex:1; position:relative; display:flex; align-items:center;}
+  .srch .mag{position:absolute; left:11px; font-size:0.7rem; pointer-events:none; color:var(--accent);}
+  .srch input{width:100%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:var(--radius-pill);
+    padding:5px 12px 5px 26px; font-size:0.62rem; color:#fff; outline:none; font-family:inherit;}
+  .srch input::placeholder{color:var(--muted);} .srch input:focus{border-color:var(--accent);}
+
+  .srch-icon{width:32px; height:32px; border-radius:50%; background:transparent; border:1px solid rgba(255,255,255,0.18);
+    color:var(--muted); font-size:0.85rem; display:flex; align-items:center; justify-content:center; cursor:pointer; flex:0 0 auto; transition:.2s;}
+  .srch-icon:hover,.srch-icon.active{border-color:var(--accent); color:var(--accent);}
+
+  .lane{position:relative; display:flex; align-items:center;}
+  .lane .mag{position:absolute; left:12px; font-size:0.7rem; color:var(--muted); pointer-events:none;}
+  .lane input{width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); border-radius:var(--radius-pill);
+    padding:6px 12px 6px 28px; font-size:0.62rem; color:#fff; outline:none; font-family:inherit;}
+  .lane input::placeholder{color:var(--muted);} .lane input:focus{border-color:var(--accent);}
+
+  /* EXACT mobile wall grid */
+  .grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px 8px; padding:8px;}
+  .grid-item{position:relative;}
+  .grid-item-poster{aspect-ratio:2/3; border-radius:4px; overflow:hidden;}
+  .grid-item-poster img{width:100%; height:100%; object-fit:cover; display:block;}
+  .grid-item-info{height:2rem; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:0 2px;}
+  .grid-item-meta{font-size:0.6rem; font-weight:700; color:var(--accent); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center;}
+
+  /* shared bottom sheet (constrained to phone width) */
+  .sheet-back{position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.6); display:none; opacity:0; transition:opacity .2s;}
+  .sheet-back.open{display:block; opacity:1;}
+  .sheet{position:fixed; left:50%; bottom:0; transform:translateX(-50%) translateY(100%); width:min(390px,100%);
+    background:#14141f; border-radius:18px 18px 0 0; border:1px solid rgba(255,255,255,0.12); border-bottom:none;
+    padding:8px 16px 22px; transition:transform .26s cubic-bezier(.4,0,.2,1); z-index:201;}
+  .sheet-back.open .sheet{transform:translateX(-50%) translateY(0);}
+  .sheet .handle{width:38px; height:4px; border-radius:2px; background:rgba(255,255,255,0.25); margin:6px auto 12px;}
+  .sheet .sh-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .sheet .sh-head span{color:var(--muted); font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase;}
+  .sheet .sh-clear{color:var(--accent); font-size:0.74rem; background:none; border:none; cursor:pointer;}
+  .sheet .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .sheet .chip{padding:7px 13px; background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.18);
+    border-radius:var(--radius-pill); font-size:0.72rem; color:#fff; cursor:pointer; transition:.2s;}
+  .sheet .chip.active{background:var(--accent); border-color:var(--accent); color:#000; font-weight:600;}
+  .sheet .sh-done{margin-top:16px; width:100%; padding:10px; background:var(--accent); color:#000; font-weight:700;
+    border:none; border-radius:var(--radius-pill); font-size:0.8rem; cursor:pointer; letter-spacing:0.04em;}
+
+  /* shared full-screen search overlay (constrained to phone width) */
+  .fs-search{position:fixed; left:50%; top:0; transform:translateX(-50%); width:min(390px,100%); height:100%;
+    background:rgba(8,8,13,0.97); backdrop-filter:blur(4px); z-index:210; display:none; padding:16px 14px;}
+  .fs-search.open{display:block;}
+  .fs-top{display:flex; align-items:center; gap:10px;}
+  .fs-field{flex:1; position:relative; display:flex; align-items:center;}
+  .fs-field .mag{position:absolute; left:13px; color:var(--accent); font-size:0.85rem; pointer-events:none;}
+  .fs-field input{width:100%; background:#1a1a2e; border:1px solid var(--accent); border-radius:var(--radius-pill);
+    padding:9px 14px 9px 32px; font-size:0.85rem; color:#fff; outline:none; box-shadow:0 0 18px rgba(0,212,170,0.3); font-family:inherit;}
+  .fs-cancel{color:var(--accent); font-size:0.82rem; background:none; border:none; cursor:pointer; flex:0 0 auto;}
+  .fs-hint{color:var(--muted); font-size:0.72rem; text-align:center; margin-top:24px;}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>MOBILE — FILTER REDESIGN</h1>
+  <p>Same moves as desktop, adapted to the phone: <b>SLOP FILTER</b> first, the 8 genre pills collapse into one quiet
+     <b>GENRE</b> control (opens a bottom sheet), freeing the ~2 wrapped rows they used to take. Three ways to handle
+     search below. Everything's live — tap the toggles, GENRE, search.</p>
+</div>
+
+<!-- ===== M1 ===== -->
+<div class="opt-label"><span class="opt-tag">M1</span><span class="opt-title">Genre + inline search on one row</span></div>
+<div class="phone">
+  <div class="ph-header">
+    <div class="ph-title">THE&nbsp;NEW RELEASE&nbsp;WALL</div>
+    <div class="ph-slogan">What came out, every day. Bringing back browsing.</div>
+    <div class="controls">
+      <div class="toggle-row" data-toggles></div>
+      <div class="row2">
+        <span class="genre-slot" data-genreslot></span>
+        <div class="srch"><span class="mag">⌕</span><input type="text" placeholder="Search…"></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid" data-grid></div>
+</div>
+<p class="opt-note"><b>Search always visible.</b> Row 1 = toggles, row 2 = the quiet GENRE control plus a search field that
+   fills the rest. Two tidy rows instead of toggles + two wrapped pill rows + search. Safest, nothing hidden.</p>
+
+<!-- ===== M2 ===== -->
+<div class="opt-label"><span class="opt-tag">M2</span><span class="opt-title">Search icon → full-screen search</span></div>
+<div class="phone">
+  <div class="ph-header">
+    <div class="ph-title">THE&nbsp;NEW RELEASE&nbsp;WALL</div>
+    <div class="ph-slogan">What came out, every day. Bringing back browsing.</div>
+    <div class="controls">
+      <div class="toggle-row" data-toggles></div>
+      <div class="row2">
+        <span class="genre-slot" data-genreslot></span>
+        <div style="flex:1"></div>
+        <button class="srch-icon" data-fssearch aria-label="Search">⌕</button>
+      </div>
+    </div>
+  </div>
+  <div class="grid" data-grid></div>
+</div>
+<p class="opt-note"><b>Most compact.</b> Search shrinks to a single tap-target; tapping it opens a full-screen search
+   (the native iOS pattern). Row 2 is almost empty — just GENRE and the magnifier. <span class="warn">Tradeoff:</span>
+   search is one tap away rather than always on screen.</p>
+
+<!-- ===== M3 ===== -->
+<div class="opt-label"><span class="opt-tag">M3</span><span class="opt-title">Search on its own quiet row</span></div>
+<div class="phone">
+  <div class="ph-header">
+    <div class="ph-title">THE&nbsp;NEW RELEASE&nbsp;WALL</div>
+    <div class="ph-slogan">What came out, every day. Bringing back browsing.</div>
+    <div class="controls">
+      <div class="toggle-row" data-toggles></div>
+      <div class="row2"><span class="genre-slot" data-genreslot></span></div>
+      <div class="lane"><span class="mag">⌕</span><input type="text" placeholder="Search title, director, genre…"></div>
+    </div>
+  </div>
+  <div class="grid" data-grid></div>
+</div>
+<p class="opt-note"><b>Clearest separation.</b> Filters and search never share space — GENRE sits alone, search gets its own
+   full-width recessed lane below. Most legible, costs one extra short row of height.</p>
+
+<!-- shared bottom sheet -->
+<div class="sheet-back" data-sheetback>
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sh-head"><span>Filter by genre</span><button class="sh-clear" data-shclear>Clear</button></div>
+    <div class="chips" data-shchips></div>
+    <button class="sh-done" data-shdone>Done</button>
+  </div>
+</div>
+
+<!-- shared full-screen search -->
+<div class="fs-search" data-fsoverlay>
+  <div class="fs-top">
+    <div class="fs-field"><span class="mag">⌕</span><input type="text" placeholder="Search the wall…" data-fsinput></div>
+    <button class="fs-cancel" data-fscancel>Cancel</button>
+  </div>
+  <div class="fs-hint">Type to filter the wall by title, director or genre.</div>
+</div>
+
+<script>
+  const TOGGLES = `
+    <div class="slop" data-slop data-state="all"><div class="track"><div class="thumb"></div></div><span class="label">SLOP FILTER</span></div>
+    <div class="tog preorder" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">PRE-ORDER</span></div>
+    <div class="tog fests" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">FESTS</span></div>
+    <div class="tog selects" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">SELECTS</span></div>`;
+  const GENRE = `<button class="genre" data-genre><span class="g-text">GENRE</span><span class="caret">▼</span></button>`;
+  const GENRES = ["Indie","Horror","Action","Comedy","Family","Thriller","Foreign","Docs","Reissues"];
+  const MOVIES = [
+    {poster:"https://image.tmdb.org/t/p/w500/AnNTum4rFvxKY61ETqXzIg8uo6v.jpg",dir:"Jimmie Lee Ward Jr.",genre:"Drama",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/ho824aZtnBzE6FuJRn2znQCq4qQ.jpg",dir:"Subash K Raj",genre:"Drama",nation:"IND"},
+    {poster:"https://image.tmdb.org/t/p/w500/zunzC4tXgfl4Hz9JJN5sHngnXKJ.jpg",dir:"Rachel Israel",genre:"Comedy",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/1DIxgyAaZK0MPOourVhQ3Q4nzGw.jpg",dir:"Amilcar Infante",genre:"Documentary",nation:"CHL"},
+    {poster:"https://image.tmdb.org/t/p/w500/hIJpXb7Xaje2mebN9ylsS7blQzP.jpg",dir:"Matt Spicer",genre:"Comedy",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/l1iPPZHjqx798orkqGDI7kVvRBg.jpg",dir:"Jake Trevaskis",genre:"Sci-Fi",nation:"AUS"},
+  ];
+
+  function cardHTML(m){
+    return `<div class="grid-item"><div class="grid-item-poster"><img src="${m.poster}" onerror="this.style.display='none'"></div>
+      <div class="grid-item-info"><div class="grid-item-meta">${m.dir} · ${m.genre} · ${m.nation}</div></div></div>`;
+  }
+  document.querySelectorAll('[data-toggles]').forEach(el=>el.innerHTML=TOGGLES);
+  document.querySelectorAll('[data-genreslot]').forEach(el=>el.innerHTML=GENRE);
+  document.querySelectorAll('[data-grid]').forEach(g=>g.innerHTML=MOVIES.map(cardHTML).join(''));
+
+  document.querySelectorAll('[data-toggle]').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+  const SLOP={all:{next:'free',text:'SLOP FILTER'},free:{next:'only',text:'SLOP FREE'},only:{next:'all',text:'SLOP ONLY'}};
+  document.querySelectorAll('[data-slop]').forEach(s=>s.addEventListener('click',()=>{
+    const n=SLOP[s.getAttribute('data-state')].next; s.setAttribute('data-state',n); s.querySelector('.label').textContent=SLOP[n].text;
+  }));
+
+  // genre -> bottom sheet (shared). Track which control opened it.
+  const back=document.querySelector('[data-sheetback]');
+  const chipsWrap=back.querySelector('[data-shchips]');
+  GENRES.forEach(g=>{ const c=document.createElement('div'); c.className='chip'; c.textContent=g; c.dataset.g=g;
+    c.addEventListener('click',()=>{c.classList.toggle('active');}); chipsWrap.appendChild(c); });
+  let activeGenreBtn=null;
+  function openSheet(btn){ activeGenreBtn=btn; back.classList.add('open'); }
+  function closeSheet(){ back.classList.remove('open'); syncGenre(); }
+  function syncGenre(){
+    const n=chipsWrap.querySelectorAll('.chip.active').length;
+    document.querySelectorAll('[data-genre]').forEach(btn=>{
+      btn.classList.toggle('has-active',n>0);
+      let badge=btn.querySelector('.count');
+      if(n>0){ if(!badge){badge=document.createElement('span'); badge.className='count'; btn.insertBefore(badge,btn.querySelector('.caret'));} badge.textContent=n; }
+      else if(badge) badge.remove();
+    });
+  }
+  document.querySelectorAll('[data-genre]').forEach(b=>b.addEventListener('click',()=>openSheet(b)));
+  back.querySelector('[data-shclear]').addEventListener('click',()=>{chipsWrap.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); syncGenre();});
+  back.querySelector('[data-shdone]').addEventListener('click',closeSheet);
+  back.addEventListener('click',e=>{ if(e.target===back) closeSheet(); });
+
+  // full-screen search (shared)
+  const fs=document.querySelector('[data-fsoverlay]');
+  const fsInput=fs.querySelector('[data-fsinput]');
+  let fsTrigger=null;
+  document.querySelectorAll('[data-fssearch]').forEach(b=>b.addEventListener('click',()=>{
+    fsTrigger=b; fs.classList.add('open'); setTimeout(()=>fsInput.focus(),120);
+  }));
+  fs.querySelector('[data-fscancel]').addEventListener('click',()=>{
+    fs.classList.remove('open'); if(fsTrigger) fsTrigger.classList.toggle('active',fsInput.value.length>0);
+  });
+</script>
+</body>
+</html>

@@ -21,7 +21,7 @@
     <meta name="twitter:title" content="The New Release Wall">
     <meta name="twitter:description" content="What came out, every day. Bringing back browsing.">
     <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="mobile.css?v=93">
+    <link rel="stylesheet" href="mobile.css?v=94">
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="../favicon.png">
@@ -35,11 +35,11 @@
         <p class="site-slogan">What came out, every day. Bringing back browsing.</p>
         <div class="header-controls">
             <div class="toggle-row">
-                <div class="slop-toggle-wrap" id="fest-toggle">
+                <div class="slop-toggle-wrap" id="slop-free-toggle" data-state="all">
                     <div class="slop-track">
                         <div class="slop-thumb"></div>
                     </div>
-                    <span class="slop-label">FESTS</span>
+                    <span class="slop-label" id="slop-state-label">SLOP FILTER</span>
                 </div>
                 <div class="filter-pill-divider"></div>
                 <div class="slop-toggle-wrap" id="preorder-toggle">
@@ -49,11 +49,11 @@
                     <span class="slop-label">PRE-ORDER</span>
                 </div>
                 <div class="filter-pill-divider"></div>
-                <div class="slop-toggle-wrap" id="slop-free-toggle" data-state="free">
+                <div class="slop-toggle-wrap" id="fest-toggle">
                     <div class="slop-track">
                         <div class="slop-thumb"></div>
                     </div>
-                    <span class="slop-label" id="slop-state-label">SLOP FREE</span>
+                    <span class="slop-label">FESTS</span>
                 </div>
                 <div class="filter-pill-divider"></div>
                 <div class="slop-toggle-wrap" id="highlights-toggle">
@@ -64,14 +64,7 @@
                 </div>
             </div>
             <div class="filter-row" id="filters">
-                <button class="filter-pill" data-filter="indie">Indie</button>
-                <button class="filter-pill" data-filter="horror">Horror</button>
-                <button class="filter-pill" data-filter="action">Action</button>
-                <button class="filter-pill" data-filter="comedy">Comedy</button>
-                <button class="filter-pill" data-filter="family">Family</button>
-                <button class="filter-pill" data-filter="foreign">Foreign</button>
-                <button class="filter-pill" data-filter="documentary">Docs</button>
-                <button class="filter-pill" data-filter="restorations">Reissues</button>
+                <button class="genre-control" id="genre-control" type="button"><span class="genre-text">GENRE</span><span class="caret">▼</span></button>
                 <div class="search-container">
                     <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
                     <button id="search-clear" class="search-clear" aria-label="Clear">&times;</button>
@@ -84,6 +77,25 @@
             </div>
         </div>
     </header>
+
+    <!-- GENRE bottom sheet -->
+    <div class="genre-backdrop" id="genre-backdrop">
+        <div class="genre-sheet" id="genre-sheet">
+            <div class="genre-sheet-handle"></div>
+            <div class="genre-sheet-head"><span>Filter by genre</span><button class="genre-sheet-clear" id="genre-sheet-clear" type="button">Clear</button></div>
+            <div class="genre-sheet-chips">
+                <button class="filter-pill" data-filter="indie">Indie</button>
+                <button class="filter-pill" data-filter="horror">Horror</button>
+                <button class="filter-pill" data-filter="action">Action</button>
+                <button class="filter-pill" data-filter="comedy">Comedy</button>
+                <button class="filter-pill" data-filter="family">Family</button>
+                <button class="filter-pill" data-filter="foreign">Foreign</button>
+                <button class="filter-pill" data-filter="documentary">Docs</button>
+                <button class="filter-pill" data-filter="restorations">Reissues</button>
+            </div>
+            <button class="genre-sheet-done" id="genre-sheet-done" type="button">Done</button>
+        </div>
+    </div>
 
     <!-- Filter description (shown when a single filter is active) -->
     <div id="filter-desc" class="filter-desc"></div>
@@ -121,6 +133,6 @@
     <div class="chevron chevron-right" id="chevron-right">&#8250;</div>
 
     <script src="../assets/shared-config.js?v=3"></script>
-    <script src="mobile.js?v=95"></script>
+    <script src="mobile.js?v=96"></script>
 </body>
 </html>

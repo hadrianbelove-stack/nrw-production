@@ -13,7 +13,7 @@ const NRWMobile = {
 
     // UI state
     activeFilters: new Set(),
-    slopMode: 'free',
+    slopMode: 'all',  // 'all' = SLOP FILTER (show everything, resting), 'free' = hide slop, 'only' = show only slop
     hideFest: true,
     showPreorders: false,
     showHighlightsOnly: false,
@@ -168,8 +168,21 @@ const NRWMobile = {
 
     // ===== FILTERS =====
     setupFilters() {
-        const filtersEl = document.getElementById('filters');
-        filtersEl.addEventListener('click', (e) => {
+        // GENRE control opens a bottom sheet of genre chips. The chips are
+        // .filter-pill elements driving the same single-select genre logic; this
+        // only manages the sheet UI + the quiet GENRE control's label/highlight.
+        const genreControl = document.getElementById('genre-control');
+        const genreBackdrop = document.getElementById('genre-backdrop');
+        const genreSheet = document.getElementById('genre-sheet');
+        const closeSheet = () => genreBackdrop?.classList.remove('open');
+        genreControl?.addEventListener('click', () => genreBackdrop?.classList.add('open'));
+        genreBackdrop?.addEventListener('click', (e) => { if (e.target === genreBackdrop) closeSheet(); });
+        document.getElementById('genre-sheet-done')?.addEventListener('click', closeSheet);
+        document.getElementById('genre-sheet-clear')?.addEventListener('click', () => {
+            const active = genreSheet?.querySelector('.filter-pill.active');
+            if (active) active.click();   // clears via the same handler below
+        });
+        genreSheet?.addEventListener('click', (e) => {
             const pill = e.target.closest('.filter-pill');
             if (!pill) return;
 
@@ -180,24 +193,26 @@ const NRWMobile = {
             const wasActive = this.activeFilters.has(filter);
             this.setExclusiveView('genre');
             this.activeFilters.clear();
-            document.querySelectorAll('#filters .filter-pill.active').forEach(p => p.classList.remove('active'));
+            genreSheet.querySelectorAll('.filter-pill.active').forEach(p => p.classList.remove('active'));
             if (!wasActive) {
                 this.activeFilters.add(filter);
                 pill.classList.add('active');
             }
+            this.syncGenreControl();
 
             this.applyFilter();
             this.updateFilterDesc();
             this.buildGrid();
             this.setView(0);
             this.dom.gridView.scrollTop = 0;
+            closeSheet();
         });
 
         // Slop toggle (3-state: free / all / only)
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
-            const SLOP_STATES = ['free', 'all', 'only'];
-            const SLOP_LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
+            const SLOP_STATES = ['all', 'free', 'only'];  // SLOP FILTER (rest) → SLOP FREE → SLOP ONLY → back
+            const SLOP_LABELS = { free: 'SLOP FREE', all: 'SLOP FILTER', only: 'SLOP ONLY' };
             const updateSlopToggle = () => {
                 slopToggle.dataset.state = this.slopMode;
                 const label = document.getElementById('slop-state-label');
@@ -207,7 +222,7 @@ const NRWMobile = {
             slopToggle.addEventListener('click', () => {
                 const idx = SLOP_STATES.indexOf(this.slopMode);
                 this.slopMode = SLOP_STATES[(idx + 1) % 3];
-                if (this.slopMode !== 'free') this.setExclusiveView('slop'); // clear the other views
+                this.setExclusiveView('slop'); // clear genres + other toggles
                 updateSlopToggle();
                 this.applyFilter();
                 this.buildGrid();
@@ -265,6 +280,17 @@ const NRWMobile = {
         }
     },
 
+    // Reflect the active genre (if any) on the quiet GENRE control: highlight it
+    // and show the chosen genre's name, else reset to "GENRE".
+    syncGenreControl() {
+        const control = document.getElementById('genre-control');
+        if (!control) return;
+        const active = document.querySelector('#genre-sheet .filter-pill.active');
+        control.classList.toggle('has-active', !!active);
+        const text = control.querySelector('.genre-text');
+        if (text) text.textContent = active ? active.textContent.toUpperCase() : 'GENRE';
+    },
+
     // View toggles (Selects / Fests / Pre-Orders) are mutually exclusive.
     // The caller turns its own toggle on; this clears the other two —
     // both the state flag and the button highlight.
@@ -272,18 +298,19 @@ const NRWMobile = {
         // Picking a toggle clears genre filters (one filter OR one toggle at a time).
         if (winner !== 'genre') {
             this.activeFilters.clear();
-            document.querySelectorAll('#filters .filter-pill.active').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('#genre-sheet .filter-pill.active').forEach(p => p.classList.remove('active'));
+            this.syncGenreControl();
         }
         const others = {
             selects:   () => { this.showHighlightsOnly = false; document.getElementById('highlights-toggle')?.classList.remove('active'); },
             fests:     () => { this.hideFest = true;            document.getElementById('fest-toggle')?.classList.remove('active'); },
             preorders: () => { this.showPreorders = false;      document.getElementById('preorder-toggle')?.classList.remove('active'); },
             slop:      () => {
-                this.slopMode = 'free';
+                this.slopMode = 'all';
                 const st = document.getElementById('slop-free-toggle');
-                if (st) st.dataset.state = 'free';
+                if (st) st.dataset.state = 'all';
                 const lbl = document.getElementById('slop-state-label');
-                if (lbl) lbl.textContent = 'SLOP FREE';
+                if (lbl) lbl.textContent = 'SLOP FILTER';
             },
         };
         for (const name in others) {

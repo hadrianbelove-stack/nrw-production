@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NRW Mobile — Filter Bar (final: M1)</title>
+<style>
+  :root{
+    --accent:#00d4aa; --orange:#ff9500; --purple:#7c3aed; --amber:#f59e0b;
+    --bg0:#0a0a0a; --bg1:#1a1a2e; --muted:#888; --radius-pill:25px;
+  }
+  *,*::before,*::after{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:linear-gradient(160deg,var(--bg0),var(--bg1)); color:#fff; -webkit-tap-highlight-color:transparent;
+    max-width:430px; margin:0 auto; min-height:100vh;}
+
+  .ph-header{padding:12px 14px 10px; border-bottom:1px solid rgba(255,255,255,0.06);}
+  .ph-title{font-weight:100; letter-spacing:0.18em; font-size:0.9rem; text-align:center; color:var(--accent);}
+  .ph-slogan{font-size:0.6rem; text-align:center; margin:4px 0 10px;
+    background:linear-gradient(45deg,#fff,var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;}
+  .controls{display:flex; flex-direction:column; gap:7px;}
+
+  .toggle-row{display:flex; align-items:center; justify-content:space-between; gap:4px;}
+  .tog{display:flex; align-items:center; gap:4px; cursor:pointer; flex:0 0 auto;}
+  .tog .label{font-size:0.5rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:rgba(0,212,170,0.75); white-space:nowrap; transition:color .25s;}
+  .tog .track{width:32px; height:18px; border-radius:9px; background:#1a1a1a; border:1px solid rgba(0,212,170,0.45); position:relative; flex:0 0 auto; transition:.25s;}
+  .tog .thumb{position:absolute; top:2px; left:2px; width:12px; height:12px; border-radius:50%; background:rgba(0,212,170,0.55); transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s;}
+  .tog.on .track{border-color:rgba(0,0,0,0.35);} .tog.on .thumb{transform:translateX(14px); background:#fff;} .tog.on .label{color:var(--accent);}
+  .tog.preorder.on .track{background:var(--purple);} .tog.preorder.on .label{color:var(--purple);}
+  .tog.fests.on .track{background:var(--amber);} .tog.fests.on .label{color:var(--amber);}
+  .tog.selects.on .track{background:var(--accent);} .tog.selects.on .label{color:var(--accent);}
+
+  .slop{display:flex; align-items:center; gap:4px; cursor:pointer; flex:0 0 auto;}
+  .slop .label{font-size:0.5rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; width:60px; display:inline-block; color:var(--accent); white-space:nowrap; transition:color .25s;}
+  .slop .track{width:34px; height:18px; border-radius:9px; background:#1a1a1a; border:1px solid rgba(0,212,170,0.45); position:relative; flex:0 0 auto; transition:.25s;}
+  .slop .thumb{position:absolute; top:2px; left:2px; width:12px; height:12px; border-radius:50%; background:rgba(0,212,170,0.6); transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s;}
+  .slop[data-state="all"] .track{background:rgba(0,212,170,0.1); border-color:var(--accent);} .slop[data-state="all"] .thumb{transform:translateX(0); background:var(--accent);} .slop[data-state="all"] .label{color:var(--accent);}
+  .slop[data-state="free"] .track{background:var(--accent); border-color:rgba(0,0,0,0.35);} .slop[data-state="free"] .thumb{transform:translateX(9px); background:#fff;} .slop[data-state="free"] .label{color:var(--accent);}
+  .slop[data-state="only"] .track{background:var(--orange); border-color:rgba(0,0,0,0.35);} .slop[data-state="only"] .thumb{transform:translateX(18px); background:#fff;} .slop[data-state="only"] .label{color:var(--orange);}
+
+  .row2{display:flex; align-items:center; gap:8px;}
+  .genre{font-size:0.5rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:rgba(0,212,170,0.75);
+    background:transparent; border:1px solid rgba(0,212,170,0.35); border-radius:var(--radius-pill); padding:4px 11px;
+    display:inline-flex; align-items:center; gap:5px; cursor:pointer; white-space:nowrap; flex:0 0 auto; transition:.2s;}
+  .genre .caret{font-size:0.45rem; opacity:0.7;}
+  .genre.has-active{color:var(--accent); border-color:rgba(0,212,170,0.55);}
+  .genre .count{background:rgba(0,212,170,0.85); color:#000; font-size:0.5rem; font-weight:700; border-radius:8px; padding:0 5px; letter-spacing:0;}
+
+  .srch{flex:1; position:relative; display:flex; align-items:center;}
+  .srch .mag{position:absolute; left:11px; font-size:0.7rem; pointer-events:none; color:var(--accent);}
+  .srch input{width:100%; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:var(--radius-pill);
+    padding:5px 12px 5px 26px; font-size:0.62rem; color:#fff; outline:none; font-family:inherit;}
+  .srch input::placeholder{color:var(--muted);} .srch input:focus{border-color:var(--accent);}
+
+  /* exact mobile wall */
+  .grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px 8px; padding:8px;}
+  .grid-item{position:relative;}
+  .grid-item-poster{aspect-ratio:2/3; border-radius:4px; overflow:hidden;}
+  .grid-item-poster img{width:100%; height:100%; object-fit:cover; display:block;}
+  .grid-item-info{height:2rem; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:0 2px;}
+  .grid-item-meta{font-size:0.6rem; font-weight:700; color:var(--accent); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:center;}
+
+  /* bottom sheet */
+  .sheet-back{position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.6); display:none; opacity:0; transition:opacity .2s;}
+  .sheet-back.open{display:block; opacity:1;}
+  .sheet{position:fixed; left:50%; bottom:0; transform:translateX(-50%) translateY(100%); width:min(430px,100%);
+    background:#14141f; border-radius:18px 18px 0 0; border:1px solid rgba(255,255,255,0.12); border-bottom:none;
+    padding:8px 16px 22px; transition:transform .26s cubic-bezier(.4,0,.2,1); z-index:201;}
+  .sheet-back.open .sheet{transform:translateX(-50%) translateY(0);}
+  .sheet .handle{width:38px; height:4px; border-radius:2px; background:rgba(255,255,255,0.25); margin:6px auto 12px;}
+  .sheet .sh-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .sheet .sh-head span{color:var(--muted); font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase;}
+  .sheet .sh-clear{color:var(--accent); font-size:0.74rem; background:none; border:none; cursor:pointer;}
+  .sheet .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .sheet .chip{padding:7px 13px; background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.18); border-radius:var(--radius-pill); font-size:0.72rem; color:#fff; cursor:pointer; transition:.2s;}
+  .sheet .chip.active{background:var(--accent); border-color:var(--accent); color:#000; font-weight:600;}
+  .sheet .sh-done{margin-top:16px; width:100%; padding:10px; background:var(--accent); color:#000; font-weight:700; border:none; border-radius:var(--radius-pill); font-size:0.8rem; cursor:pointer; letter-spacing:0.04em;}
+</style>
+</head>
+<body>
+  <div class="ph-header">
+    <div class="ph-title">THE&nbsp;NEW RELEASE&nbsp;WALL</div>
+    <div class="ph-slogan">What came out, every day. Bringing back browsing.</div>
+    <div class="controls">
+      <div class="toggle-row">
+        <div class="slop" data-slop data-state="all"><div class="track"><div class="thumb"></div></div><span class="label">SLOP FILTER</span></div>
+        <div class="tog preorder" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">PRE-ORDER</span></div>
+        <div class="tog fests" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">FESTS</span></div>
+        <div class="tog selects" data-toggle><div class="track"><div class="thumb"></div></div><span class="label">SELECTS</span></div>
+      </div>
+      <div class="row2">
+        <button class="genre" data-genre><span class="g-text">GENRE</span><span class="caret">▼</span></button>
+        <div class="srch"><span class="mag">⌕</span><input type="text" placeholder="Search…"></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid" data-grid></div>
+
+  <div class="sheet-back" data-sheetback>
+    <div class="sheet">
+      <div class="handle"></div>
+      <div class="sh-head"><span>Filter by genre</span><button class="sh-clear" data-shclear>Clear</button></div>
+      <div class="chips" data-shchips></div>
+      <button class="sh-done" data-shdone>Done</button>
+    </div>
+  </div>
+
+<script>
+  const GENRES = ["Indie","Horror","Action","Comedy","Family","Thriller","Foreign","Docs","Reissues"];
+  const MOVIES = [
+    {poster:"https://image.tmdb.org/t/p/w500/AnNTum4rFvxKY61ETqXzIg8uo6v.jpg",dir:"Jimmie Lee Ward Jr.",genre:"Drama",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/ho824aZtnBzE6FuJRn2znQCq4qQ.jpg",dir:"Subash K Raj",genre:"Drama",nation:"IND"},
+    {poster:"https://image.tmdb.org/t/p/w500/zunzC4tXgfl4Hz9JJN5sHngnXKJ.jpg",dir:"Rachel Israel",genre:"Comedy",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/1DIxgyAaZK0MPOourVhQ3Q4nzGw.jpg",dir:"Amilcar Infante",genre:"Documentary",nation:"CHL"},
+    {poster:"https://image.tmdb.org/t/p/w500/hIJpXb7Xaje2mebN9ylsS7blQzP.jpg",dir:"Matt Spicer",genre:"Comedy",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/l1iPPZHjqx798orkqGDI7kVvRBg.jpg",dir:"Jake Trevaskis",genre:"Sci-Fi",nation:"AUS"},
+    {poster:"https://image.tmdb.org/t/p/w500/m6XxbOjeDyHChXlJ7CVEolNCq2o.jpg",dir:"Rebecca Gitlitz",genre:"Documentary",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/lWdpUOhnJ8uWWO1G1vbyUsCliov.jpg",dir:"Malcolm D. Lee",genre:"Mystery",nation:"USA"},
+    {poster:"https://image.tmdb.org/t/p/w500/4hfMbVbYc2gsMnSE1K8Oc9LQH4j.jpg",dir:"Sophy Romvari",genre:"Drama",nation:"CAN"},
+  ];
+  document.querySelector('[data-grid]').innerHTML = MOVIES.map(m=>`<div class="grid-item"><div class="grid-item-poster"><img src="${m.poster}" onerror="this.style.display='none'"></div><div class="grid-item-info"><div class="grid-item-meta">${m.dir} · ${m.genre} · ${m.nation}</div></div></div>`).join('');
+
+  document.querySelectorAll('[data-toggle]').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+  const SLOP={all:{next:'free',text:'SLOP FILTER'},free:{next:'only',text:'SLOP FREE'},only:{next:'all',text:'SLOP ONLY'}};
+  document.querySelectorAll('[data-slop]').forEach(s=>s.addEventListener('click',()=>{const n=SLOP[s.getAttribute('data-state')].next; s.setAttribute('data-state',n); s.querySelector('.label').textContent=SLOP[n].text;}));
+
+  const back=document.querySelector('[data-sheetback]'); const chipsWrap=back.querySelector('[data-shchips]');
+  GENRES.forEach(g=>{const c=document.createElement('div'); c.className='chip'; c.textContent=g; c.addEventListener('click',()=>c.classList.toggle('active')); chipsWrap.appendChild(c);});
+  function syncGenre(){const n=chipsWrap.querySelectorAll('.chip.active').length; document.querySelectorAll('[data-genre]').forEach(btn=>{btn.classList.toggle('has-active',n>0); let b=btn.querySelector('.count'); if(n>0){if(!b){b=document.createElement('span'); b.className='count'; btn.insertBefore(b,btn.querySelector('.caret'));} b.textContent=n;} else if(b) b.remove();});}
+  document.querySelectorAll('[data-genre]').forEach(b=>b.addEventListener('click',()=>back.classList.add('open')));
+  back.querySelector('[data-shclear]').addEventListener('click',()=>{chipsWrap.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); syncGenre();});
+  back.querySelector('[data-shdone]').addEventListener('click',()=>{back.classList.remove('open'); syncGenre();});
+  back.addEventListener('click',e=>{if(e.target===back){back.classList.remove('open'); syncGenre();}});
+</script>
+</body>
+</html>
