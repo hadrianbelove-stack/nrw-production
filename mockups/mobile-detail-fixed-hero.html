@@ -62,10 +62,9 @@
   /* synopsis — no label */
   .syn{font-size:.9rem;line-height:1.6;color:#ccc;margin-top:14px;}
   .syn a{color:inherit;text-decoration:underline;text-decoration-color:rgba(255,255,255,.35);text-underline-offset:2px;}
-  .vs-note{margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);
-    font-size:.82rem;color:var(--muted);line-height:1.55;}
-  .vs-note .vs-fest{color:#e8c14a;font-weight:600;}
-  .vs-note a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;white-space:nowrap;}
+  /* screening note — desktop .screening-callout: gold, italic, one color, fest name bold */
+  .vs-note{margin-top:12px;color:#FFD700;font-style:italic;font-size:.88rem;line-height:1.5;}
+  .vs-note .vs-fest{font-weight:700;}
 
   /* ---- FIXED BOTTOM BUTTON BAR ---- */
   .btnbar{flex-shrink:0;display:flex;flex-direction:column;gap:8px;
@@ -85,6 +84,9 @@
   .btn-vod.screening .price-half{width:100%;background:transparent;color:#f5c518;}
   .btn-stream{display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:10px;
     font-weight:700;text-transform:uppercase;font-size:.8rem;color:#fff;text-decoration:none;letter-spacing:.02em;}
+  /* ticket button — same filled style as a streaming button, gold for the screening */
+  .btn-tickets{display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:10px;
+    background:#FFD700;color:#000;font-weight:700;text-transform:uppercase;font-size:.8rem;text-decoration:none;letter-spacing:.04em;}
   .btn-share{height:46px;border-radius:10px;background:transparent;border:1.5px solid rgba(0,212,170,.5);
     color:var(--accent);font-weight:700;letter-spacing:.12em;font-size:.82rem;
     display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;}
@@ -188,6 +190,7 @@ const txtColor = bg => bg==='#1CE783' ? '#000' : '#fff';
 
 function buttonsHTML(m){
   let h = `<button class="btn-trailer">TRAILER</button>`;
+  if(m.screening) h += `<a class="btn-tickets" href="${tix(m)}" target="_blank" rel="noopener">Buy Tickets</a>`;
   (m.vod||[]).forEach(v=>{
     if(/spectrum|eventive/i.test(v.service||'')) return;
     const bg=svcColor(v.service);
@@ -210,7 +213,7 @@ function render(){
   h += `<div class="syn">${md(m.capsule)}</div>`;
   if(m.screening){
     const end = m.screening_end ? ' \u00b7 through '+fmtDate(m.screening_end) : '';
-    h += `<div class="vs-note">Virtual screening via <span class="vs-fest">${esc(m.screening_name||'festival')}</span>${end}. <a href="${tix(m)}" target="_blank" rel="noopener">Get tickets \u2192</a></div>`;
+    h += `<div class="vs-note">Virtual screening via <span class="vs-fest">${esc(m.screening_name||'festival')}</span>${end}.</div>`;
   }
   content.innerHTML = h;
   content.scrollTop = 0;
