@@ -93,14 +93,6 @@ header h1 {
     .site-slogan { font-size: 0.95rem; margin: -4px 0 12px; }
 }
 
-/* Boxed control module — the four view toggles, 2×2 */
-.view-module {
-    flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 16px;
-    padding: 14px 20px 16px;
-}
 /* Small screens: let the wordmark wrap and shrink so it never overflows */
 @media (max-width: 760px) {
     header h1 { font-size: 2rem; white-space: normal; }

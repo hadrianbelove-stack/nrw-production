@@ -271,11 +271,25 @@ const NRW = {
         if (winner !== 'genre') {
             this.activeFilters.clear();
             document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active'));
+            this.syncGenreControl();   // re-sync the GENRE control's label/highlight after clearing chips
         }
         if (winner !== 'selects')   { this.showHighlightsOnly = false; document.getElementById('highlights-toggle')?.classList.remove('active'); }
         if (winner !== 'fests')     { this.showFest = false;           document.getElementById('fest-toggle')?.classList.remove('active'); }
         if (winner !== 'preorders') { this.showPreorders = false;      document.getElementById('preorder-toggle')?.classList.remove('active'); }
         if (winner !== 'slop')      { this.slopMode = 'all';           this.syncSlopToggle(); }
+    },
+
+    // Sync the quiet GENRE control's label + highlight to whichever genre chip
+    // is active (or reset it to "GENRE" when none is). Mirrors the dropdown's
+    // own reflect() so toggles that clear the genre also clear the control.
+    syncGenreControl() {
+        const toggle = document.getElementById('genre-toggle');
+        const pop = document.getElementById('genre-pop');
+        if (!toggle || !pop) return;
+        const active = pop.querySelector('.filter-btn.active');
+        toggle.classList.toggle('has-active', !!active);
+        const text = toggle.querySelector('.genre-text');
+        if (text) text.textContent = active ? active.textContent.toUpperCase() : 'GENRE';
     },
 
     // Sync the 3-state slop toggle's data-state + label to this.slopMode.

@@ -19,7 +19,7 @@ import json
 import time
 import logging
 import requests
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 from pathlib import Path
 from urllib.parse import quote
 
@@ -898,7 +898,7 @@ VERIFICATION:"""
         return capsule
 
     def _generate_factoid_primer(self, sources: Dict, context: str,
-                                title: str, year: int, director: str = None) -> str:
+                                title: str, year: int, director: str = None) -> Tuple[str, dict]:
         """Generate a rich factoid primer — bullet list of production context,
         interview quotes, and behind-the-scenes details for the capsule editor.
 

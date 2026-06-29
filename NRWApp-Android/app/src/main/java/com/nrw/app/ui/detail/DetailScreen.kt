@@ -508,6 +508,12 @@ private fun MovieDetail(
                                     .padding(bottom = 8.dp)
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(Primary.copy(alpha = 0.07f))
+                                    .let { base ->
+                                        // Tap opens the source review (parity with iOS); inert if no URL.
+                                        pq.reviewUrl?.takeIf { it.isNotBlank() }?.let { url ->
+                                            base.clickable { DeepLinkHelper.openUrl(context, url, "review") }
+                                        } ?: base
+                                    }
                                     .height(IntrinsicSize.Min)
                             ) {
                                 // Teal left border / accent stripe

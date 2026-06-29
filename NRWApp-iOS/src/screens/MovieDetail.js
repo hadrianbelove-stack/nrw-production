@@ -37,7 +37,6 @@ import {
   openLetterboxd,
   openWikipedia,
   openImdb,
-  shareMovie,
 } from '../utils/links';
 import {trackMovieView, trackWatchButtonTap} from '../services/analytics';
 import TrailerPlayer from '../components/TrailerPlayer';
@@ -207,10 +206,6 @@ export default function MovieDetail({route}) {
     },
     [movie],
   );
-
-  const handleSharePress = useCallback(() => {
-    shareMovie(movie);
-  }, [movie]);
 
   const posterUrl = movie.poster_url || movie.poster;
   const director = movie.director || movie.crew?.director;
@@ -446,10 +441,6 @@ export default function MovieDetail({route}) {
               stacked
             />
           )}
-
-          <TouchableOpacity style={styles.btnShare} onPress={handleSharePress} activeOpacity={0.85}>
-            <Text style={styles.btnShareText}>⤴ SHARE</Text>
-          </TouchableOpacity>
         </ScrollView>
       </View>
 
@@ -716,20 +707,5 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 3,
     fontSize: 15,
-  },
-  btnShare: {
-    height: 46,
-    borderRadius: 10,
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: 'rgba(0,212,170,0.5)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  btnShareText: {
-    color: Colors.primary,
-    fontWeight: '700',
-    letterSpacing: 2,
-    fontSize: 13,
   },
 });
