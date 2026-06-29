@@ -3361,7 +3361,8 @@
       },
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-06-25"
+      "_jw_reverted_at": "2026-06-25",
+      "_skip_provider_discovery": true
     },
     "1303356": {
       "title": "L'Épreuve du feu",
@@ -40745,10 +40746,10 @@
       "enriched": false,
       "enrichment_date": null,
       "_is_preorder": true,
-      "_transitioned_at": "2026-06-28",
-      "_jw_revert_count": 11,
+      "_transitioned_at": "2026-06-29",
+      "_jw_revert_count": 12,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-28"
+      "_jw_reverted_at": "2026-06-29"
     },
     "1544405": {
       "title": "Der Rest ist Stille",
@@ -66652,11 +66653,21 @@
       "title": "Gurram Paapi Reddy",
       "status": "tracking",
       "first_seen": "2025-12-19",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-29",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "fuboTV"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-06-29"
     },
     "1516391": {
       "title": "Cover-Up",
@@ -73313,13 +73324,25 @@
     },
     "1323095": {
       "title": "Fish Bone",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-29",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-29",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-06-29",
+      "_transitioned_at": "2026-06-29"
     },
     "1318710": {
       "title": "The Book of Joy",
@@ -105080,7 +105103,8 @@
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-05-19"
+      "_jw_reverted_at": "2026-05-19",
+      "_skip_provider_discovery": true
     },
     "1387797": {
       "title": "Guitar Man",
@@ -111196,7 +111220,7 @@
       "enriched": true,
       "enrichment_date": "2026-06-22",
       "_transitioned_at": "2026-06-22",
-      "digital_date": "2026-06-28"
+      "digital_date": "2026-06-29"
     },
     "1318418": {
       "title": "Steal Away",
@@ -139839,7 +139863,7 @@
       "festival": "SXSW Sydney",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-06-28"
     },
@@ -168046,15 +168070,21 @@
       "status": "tracking",
       "first_seen": "2026-01-26",
       "digital_date": "2026-06-29",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
       "_is_preorder": true,
+      "_jw_revert_count": 2,
+      "enriched": false,
+      "enrichment_date": null,
+      "_transitioned_at": "2026-06-29",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-20",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-06-29"
     },
     "1511515": {
       "title": "Imagine",
@@ -180169,8 +180199,9 @@
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "_buyonly_preorder": true,
+      "_type4_pending": true,
       "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-06-27",
+      "_jw_reverted_at": "2026-06-29",
       "_jw_revert_count": 1
     },
     "1316398": {
@@ -217711,12 +217742,11 @@
       "providers": {},
       "intake_pass": "B",
       "has_providers": true,
-      "_discovery_source": "tmdb_type4",
+      "_discovery_source": "provider_availability_check",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "enriched": true,
       "enrichment_date": "2026-06-26",
-      "_type4_pending": true,
       "_jw_revert_reason": "justwatch_theatrical_pvod",
       "_jw_reverted_at": "2026-06-28",
       "_jw_revert_count": 1
@@ -218960,12 +218990,23 @@
     "1247165": {
       "title": "Raja Shivaji",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-05-01",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-29",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-06-29",
+      "_transitioned_at": "2026-06-29"
     },
     "1171094": {
       "title": "Ek Din",
@@ -231225,16 +231266,16 @@
         "streaming": []
       },
       "intake_pass": "A",
-      "_jw_revert_count": 20,
+      "_jw_revert_count": 21,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-06-28",
+      "_transitioned_at": "2026-06-29",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-28"
+      "_jw_reverted_at": "2026-06-29"
     },
     "1646124": {
       "title": "Tiger's Rampage",
@@ -236946,14 +236987,14 @@
       "intake_pass": "C",
       "festival": "Tribeca",
       "has_providers": false,
-      "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "enrichment_date": null,
+      "_discovery_source": "tmdb_type4",
+      "enriched": true,
+      "enrichment_date": "2026-06-29",
       "_transitioned_at": "2026-06-22",
       "_buyonly_preorder": true,
-      "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-06-22",
-      "_jw_revert_count": 1
+      "digital_date": "2026-07-21",
+      "_type4_pending": true,
+      "_is_preorder": true
     },
     "tv_324744": {
       "title": "Ina",
@@ -242150,7 +242191,7 @@
       "digital_date": "2026-06-26",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-26"
     },
@@ -242175,14 +242216,20 @@
     "1717589": {
       "title": "Paul Simon: The Quiet Celebration Concert",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-06-26",
       "digital_date": "2026-06-26",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "_jw_revert_count": 3,
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-06-26"
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-06-29",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-06-29"
     },
     "1711175": {
       "title": "Summerween",
@@ -242210,7 +242257,7 @@
       "digital_date": "2026-06-26",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-26"
     },
@@ -242258,7 +242305,7 @@
       "digital_date": "2026-06-25",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-26"
     },
@@ -242270,7 +242317,7 @@
       "digital_date": "2026-06-25",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-26"
     },
@@ -242638,7 +242685,7 @@
       ],
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-26"
     },
@@ -242646,7 +242693,7 @@
       "title": "Life, Larry and the Pursuit of Unhappiness",
       "content_type": "limited_series",
       "tmdb_id": 295780,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-06-26",
       "digital_date": "2026-06-26",
       "episode_count": 7,
@@ -242658,15 +242705,22 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "HBO Max Amazon Channel",
+          "HBO Max"
+        ]
       },
       "intake_date": "2026-06-26",
       "networks": [
         "HBO"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-06-29",
+      "_transitioned_at": "2026-06-29"
     },
     "tv_286360": {
       "title": "Notes from the Last Row",
@@ -242736,7 +242790,7 @@
       "digital_date": "2026-06-27",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-27"
     },
@@ -242753,12 +242807,22 @@
     "1721405": {
       "title": "Single Black Tenant",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-06-27",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-06-29",
+      "providers": {
+        "rent": [
+          "Plex"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-06-29",
+      "_transitioned_at": "2026-06-29"
     },
     "1721352": {
       "title": "Shattered Silence: Imitation of a Perfect Life",
@@ -242964,7 +243028,7 @@
       "digital_date": "2026-06-26",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-06-28"
     },
@@ -243109,6 +243173,193 @@
       "intake_date": "2026-06-28",
       "networks": [
         "Prime Video"
+      ],
+      "has_providers": false
+    },
+    "1722819": {
+      "title": "Unbreakable Me - The Gabrielle Daleman Story",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": "2026-06-27",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-06-29"
+    },
+    "1722860": {
+      "title": "Tavvai",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1717742": {
+      "title": "Declarations: Black Americans and the Revolutionary War",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1707658": {
+      "title": "Pitico - Hermes Ayres Azevedo (1881-1959) - Historiador Da Província",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1686800": {
+      "title": "Roots and Wings",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1722628": {
+      "title": "Wilma, Wu, and a Stripper Named Lorraine",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1722871": {
+      "title": "Breaths Of Rhymes",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1722443": {
+      "title": "谢霆锋2026进化演唱会西安站",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1720684": {
+      "title": "Tales of the Bizarre: 2026 Summer Special",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1686834": {
+      "title": "A Castle of Our Own",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1561459": {
+      "title": "Mind Games",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1722494": {
+      "title": "Soul Shift",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Annecy",
+      "has_providers": false
+    },
+    "1061799": {
+      "title": "Julián",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-06-29",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Annecy",
+      "has_providers": false
+    },
+    "tv_325578": {
+      "title": "물가의 밤",
+      "content_type": "limited_series",
+      "tmdb_id": 325578,
+      "status": "tracking",
+      "first_air_date": "2026-06-29",
+      "digital_date": "2026-06-29",
+      "episode_count": 5,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/ooQPZ62APeKooyn5aYkJ7DA3gLh.jpg",
+      "synopsis": "",
+      "genres": [
+        "Animation"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-29",
+      "networks": [
+        "Soyomo"
+      ],
+      "has_providers": false
+    },
+    "tv_326477": {
+      "title": "Roklue: Music",
+      "content_type": "limited_series",
+      "tmdb_id": 326477,
+      "status": "tracking",
+      "first_air_date": "2026-06-01",
+      "digital_date": "2026-06-01",
+      "episode_count": 5,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/1QtfyGlG4rUBw9Z7v2IwOre3h9M.jpg",
+      "synopsis": "Roklue is pop culture trivia that turns the greatest moments in film and TV into an entertaining puzzle. Answer five questions to get clues. Connect them all to uncover a mystery movie or show. Your new pop culture fix is now streaming!",
+      "genres": [
+        "Family",
+        "Mystery"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-06-29",
+      "networks": [
+        "The Roku Channel"
       ],
       "has_providers": false
     }

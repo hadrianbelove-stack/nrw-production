@@ -1,54 +1,54 @@
 {
-  "timestamp": "2026-06-28T10:44:51.694494",
+  "timestamp": "2026-06-29T12:48:46.979568",
   "movies_requested": 10,
   "movies_enriched": 6,
   "movies_deferred": 4,
   "deferred_details": [
     {
+      "title": "A Super Progressive Movie",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-29",
+      "discovered_at": "2026-06-29T12:39:01.933638",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "first_reverted_at": "2026-06-29",
+      "tmdb_platforms": []
+    },
+    {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-06-28T10:35:42.838878",
+      "discovered_at": "2026-06-29T12:39:04.230816",
       "discovery_source": "tmdb_type4",
-      "revert_count": 20,
-      "first_reverted_at": "2026-06-28",
+      "revert_count": 21,
+      "first_reverted_at": "2026-06-29",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-06-28T10:35:43.094851",
+      "discovered_at": "2026-06-29T12:39:04.444480",
       "discovery_source": "tmdb_type4",
-      "revert_count": 11,
-      "first_reverted_at": "2026-06-28",
+      "revert_count": 12,
+      "first_reverted_at": "2026-06-29",
       "tmdb_platforms": []
     },
     {
-      "title": "Last Chance To Save",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-18",
-      "discovered_at": "2026-06-28T10:35:54.891643",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-28",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "The Devil Wears Prada 2",
+      "title": "The Dangers in My Heart: The Movie",
       "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-06-30",
-      "discovered_at": "2026-06-26T11:02:38.811434",
+      "digital_date": "2026-07-14",
+      "discovered_at": "2026-06-29T12:39:19.663508",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-28",
+      "first_reverted_at": "2026-06-29",
       "tmdb_platforms": [],
       "jw_platforms": [
-        "Fandango At Home"
+        "Barnes & Noble"
       ]
     }
   ],
-  "enrichment_duration_seconds": 533.2,
+  "enrichment_duration_seconds": 563.87,
   "error_details": [],
   "total_errors": 0
 }
