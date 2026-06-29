@@ -207,7 +207,7 @@ const SlopToggle = forwardRef(({ slopMode, onPress, nextFocusUp, nextFocusLeft, 
     outputRange: [0, 45, 90],
   });
 
-  const LABELS = { free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY' };
+  const LABELS = { free: 'SLOP FREE', all: 'SLOP FILTER', only: 'SLOP ONLY' };
   const labelColor = slopMode === 'only' ? '#ff9500' : slopMode === 'free' ? '#00d4aa' : 'rgba(0,212,170,0.45)';
   const trackStyle = slopMode === 'free'
     ? { backgroundColor: '#00d4aa', borderColor: '#00d4aa' }
@@ -491,7 +491,7 @@ const HomeScreenTvOS = () => {
 
   // Local state - multi-select filters (Set of active filter IDs)
   const [activeFilters, setActiveFilters] = useState(new Set());
-  const [slopMode, setSlopMode] = useState('free'); // 'free' | 'all' | 'only' — matches desktop 3-state
+  const [slopMode, setSlopMode] = useState('all'); // 'all' (SLOP FILTER, resting) | 'free' | 'only' — matches desktop 3-state
   const [hideFest, setHideFest] = useState(true); // default: hide fests (matches desktop default)
   const [showPreorders, setShowPreorders] = useState(false);
   const [showHighlightsOnly, setShowHighlightsOnly] = useState(false);
@@ -503,23 +503,22 @@ const HomeScreenTvOS = () => {
     setShowHighlightsOnly(view === 'selects');
     setHideFest(view !== 'fests');
     setShowPreorders(view === 'preorders');
-    setSlopMode('free'); // slop is part of the same exclusive group (matches desktop)
+    setSlopMode('all'); // slop resets to its resting default when another view wins (matches desktop)
     setActiveFilters(new Set()); // view toggles are mutually exclusive with genre filters
   }, []);
   const toggleShowHighlights = useCallback(() => showExclusiveView(showHighlightsOnly ? 'none' : 'selects'), [showHighlightsOnly, showExclusiveView]);
   const toggleHideFest = useCallback(() => showExclusiveView(hideFest ? 'fests' : 'none'), [hideFest, showExclusiveView]);
   const toggleShowPreorders = useCallback(() => showExclusiveView(showPreorders ? 'none' : 'preorders'), [showPreorders, showExclusiveView]);
-  // Slop toggle cycles free → all → only → free. Entering a non-free state clears
-  // the Selects/Fests/Pre-Orders views so only one thing is ever active (matches desktop).
+  // Slop toggle cycles all → free → only → all. Every click makes slop the exclusive
+  // view: it clears the active genre AND the Selects/Fests/Pre-Orders toggles on every
+  // click, regardless of the resulting state (matches desktop setExclusiveView('slop')).
   const cycleSlopMode = useCallback(() => {
-    const next = slopMode === 'free' ? 'all' : slopMode === 'all' ? 'only' : 'free';
+    const next = slopMode === 'all' ? 'free' : slopMode === 'free' ? 'only' : 'all';
     setSlopMode(next);
     setActiveFilters(new Set()); // slop toggle is mutually exclusive with genre filters
-    if (next !== 'free') {
-      setShowHighlightsOnly(false);
-      setHideFest(true);
-      setShowPreorders(false);
-    }
+    setShowHighlightsOnly(false);
+    setHideFest(true);
+    setShowPreorders(false);
   }, [slopMode]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -635,7 +634,7 @@ const HomeScreenTvOS = () => {
     setShowHighlightsOnly(false);
     setHideFest(true);
     setShowPreorders(false);
-    setSlopMode('free');
+    setSlopMode('all'); // slop resets to its resting default when a genre wins (matches desktop)
   }, []);
 
   // Get movies based on active filters (multi-select with OR logic - cumulative)
@@ -1200,8 +1199,13 @@ const HomeScreenTvOS = () => {
         {/* Bottom row: 2x2 toggle module (lower-left) + filters as two rows filling the rest */}
         <View style={styles.bottomRow}>
           <View style={styles.toggleModule}>
-            {/* Top row: section views (FESTS / PRE-ORDER); bottom row: SLOP / SELECTS */}
+            {/* SLOP is first; top row: SLOP / FESTS; bottom row: PRE-ORDER / SELECTS */}
             <View style={styles.toggleModuleRow}>
+              <SlopToggle
+                ref={setFirstToggleRef}
+                slopMode={slopMode}
+                onPress={cycleSlopMode}
+              />
               <MetaToggle
                 isActive={!hideFest}
                 label="FESTS"
@@ -1209,6 +1213,8 @@ const HomeScreenTvOS = () => {
                 accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
                 onPress={toggleHideFest}
               />
+            </View>
+            <View style={styles.toggleModuleRow}>
               <MetaToggle
                 ref={setLastToggleRef}
                 isActive={showPreorders}
@@ -1216,13 +1222,6 @@ const HomeScreenTvOS = () => {
                 accentColor="#7c3aed"
                 accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
                 onPress={toggleShowPreorders}
-              />
-            </View>
-            <View style={styles.toggleModuleRow}>
-              <SlopToggle
-                ref={setFirstToggleRef}
-                slopMode={slopMode}
-                onPress={cycleSlopMode}
               />
               <MetaToggle
                 isActive={showHighlightsOnly}

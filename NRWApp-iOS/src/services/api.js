@@ -186,7 +186,7 @@ export function filterMovies(movies, filter = null) {
 /**
  * Filter movies by multiple categories (OR logic - cumulative)
  */
-export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopMode = 'free', hideFest = false, showPreorders = false) {
+export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopMode = 'all', hideFest = false, showPreorders = false) {
   if (!movies || !Array.isArray(movies)) return [];
   // Exclude reverted movies (failed JustWatch verification, no watch links)
   movies = movies.filter(m => m._enrichment_status !== 'reverted');

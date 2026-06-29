@@ -60,7 +60,7 @@ export default function HomeScreen({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [activeFilters, setActiveFilters] = useState(new Set());
-  const [slopMode, setSlopMode] = useState('free');
+  const [slopMode, setSlopMode] = useState('all');
   const [hideFest, setHideFest] = useState(true);
   const [showPreorders, setShowPreorders] = useState(false);
   const [showHighlightsOnly, setShowHighlightsOnly] = useState(false);
@@ -197,7 +197,7 @@ export default function HomeScreen({navigation}) {
     setShowHighlightsOnly(false);
     setHideFest(true);
     setShowPreorders(false);
-    setSlopMode('free');
+    setSlopMode('all');
   }, []);
 
   // View toggles (Selects / Fests / Pre-Orders) are mutually exclusive: at most
@@ -208,20 +208,19 @@ export default function HomeScreen({navigation}) {
     setShowHighlightsOnly(view === 'selects');
     setHideFest(view !== 'fests');
     setShowPreorders(view === 'preorders');
-    setSlopMode('free');
+    setSlopMode('all');
     setActiveFilters(new Set());
   }, []);
 
-  // Slop toggle is part of the same exclusive group: entering a non-free state
-  // clears genre filters and the other view toggles.
+  // Slop toggle is part of the same exclusive group: clicking it ALWAYS makes it
+  // the exclusive view (clears genre filters and the other view toggles) on every
+  // click, regardless of the resulting state (matches web).
   const handleSlopModeChange = useCallback(next => {
     setSlopMode(next);
     setActiveFilters(new Set());
-    if (next !== 'free') {
-      setShowHighlightsOnly(false);
-      setHideFest(true);
-      setShowPreorders(false);
-    }
+    setShowHighlightsOnly(false);
+    setHideFest(true);
+    setShowPreorders(false);
   }, []);
 
   const handleShowHighlightsChange = useCallback(v => showExclusiveView(v ? 'selects' : 'none'), [showExclusiveView]);

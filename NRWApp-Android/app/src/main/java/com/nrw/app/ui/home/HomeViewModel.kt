@@ -21,7 +21,7 @@ data class HomeUiState(
     val movies: List<Movie> = emptyList(),
     val filteredMovies: List<Movie> = emptyList(),
     val activeFilters: Set<FilterCategory> = emptySet(),
-    val slopMode: String = "free",
+    val slopMode: String = "all",
     val hideFest: Boolean = true,
     val showPreorders: Boolean = false,
     val showHighlightsOnly: Boolean = false,
@@ -82,7 +82,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             showHighlightsOnly = false,
             hideFest = true,
             showPreorders = false,
-            slopMode = "free",
+            slopMode = "all",
         )
         applyFilters()
     }
@@ -96,21 +96,23 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Cycle slop mode: free → all → only → free (matches desktop 3-state)
+     * Cycle slop mode: all → free → only → all (matches desktop 3-state)
      */
     fun cycleSlopMode() {
         val next = when (_uiState.value.slopMode) {
-            "free" -> "all"
-            "all" -> "only"
-            else -> "free"
+            "all" -> "free"
+            "free" -> "only"
+            else -> "all"
         }
-        // Slop is part of the exclusive group: clear genre filters, and (for a non-free
-        // state) the other view toggles, so only one thing is ever active.
-        var s = _uiState.value.copy(slopMode = next, activeFilters = emptySet())
-        if (next != "free") {
-            s = s.copy(showHighlightsOnly = false, hideFest = true, showPreorders = false)
-        }
-        _uiState.value = s
+        // Slop is exclusive: every click clears the genre filter AND the other view
+        // toggles, regardless of the resulting state, so only slop is ever active.
+        _uiState.value = _uiState.value.copy(
+            slopMode = next,
+            activeFilters = emptySet(),
+            showHighlightsOnly = false,
+            hideFest = true,
+            showPreorders = false,
+        )
         applyFilters()
     }
 
@@ -123,7 +125,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             showHighlightsOnly = view == "selects",
             hideFest = view != "fests",
             showPreorders = view == "preorders",
-            slopMode = "free",
+            slopMode = "all",
             activeFilters = emptySet(),
         )
         applyFilters()

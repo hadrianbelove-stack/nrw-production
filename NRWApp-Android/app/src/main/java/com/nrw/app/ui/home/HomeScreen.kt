@@ -194,7 +194,7 @@ fun HomeScreen(
 /**
  * Create grid items with trailers card and date strips inserted
  */
-private fun createGridItems(movies: List<Movie>, playlistUrl: String?, showHighlightsOnly: Boolean = false, slopMode: String = "free"): List<GridItem> {
+private fun createGridItems(movies: List<Movie>, playlistUrl: String?, showHighlightsOnly: Boolean = false, slopMode: String = "all"): List<GridItem> {
     val items = mutableListOf<GridItem>()
     var currentDate: String? = null
     var addedTrailers = false

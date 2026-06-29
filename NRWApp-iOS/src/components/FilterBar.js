@@ -1,6 +1,6 @@
 /**
  * New Release Wall - Filter Bar Component
- * Mirrors the approved mobile layout: a toggle row (FESTS · PRE-ORDER · SLOP FREE
+ * Mirrors the approved mobile layout: a toggle row (SLOP FILTER · FESTS · PRE-ORDER
  * · SELECTS) above a row of genre pills + search.
  */
 
@@ -20,8 +20,8 @@ const FILTERS = [
   {id: 'restorations', label: 'Reissues'},
 ];
 
-const SLOP_STATES = ['free', 'all', 'only'];
-const SLOP_LABELS = {free: 'SLOP FREE', all: 'ALL', only: 'SLOP ONLY'};
+const SLOP_STATES = ['all', 'free', 'only'];
+const SLOP_LABELS = {all: 'SLOP FILTER', free: 'SLOP FREE', only: 'SLOP ONLY'};
 
 const AMBER = '#f59e0b';
 const PURPLE = '#7c3aed';
@@ -40,7 +40,7 @@ function Toggle({label, active, color, onPress}) {
   );
 }
 
-// 3-state slop slider (free → all → only), matching mobile
+// 3-state slop slider (all → free → only), matching mobile
 function SlopToggle({mode, onPress}) {
   const isAll = mode === 'all';
   const isOnly = mode === 'only';
@@ -66,11 +66,11 @@ export default function FilterBar({
 }) {
   return (
     <View style={styles.container}>
-      {/* Toggle row — all four fit without scrolling */}
+      {/* Toggle row — all four fit without scrolling; SLOP is first (matches web) */}
       <View style={styles.toggleRow}>
+        <SlopToggle mode={slopMode} onPress={() => onSlopModeChange(SLOP_STATES[(SLOP_STATES.indexOf(slopMode) + 1) % 3])} />
         <Toggle label="FESTS" active={!hideFest} color={AMBER} onPress={() => onHideFestChange(!hideFest)} />
         <Toggle label="PRE-ORDER" active={showPreorders} color={PURPLE} onPress={() => onShowPreordersChange(!showPreorders)} />
-        <SlopToggle mode={slopMode} onPress={() => onSlopModeChange(SLOP_STATES[(SLOP_STATES.indexOf(slopMode) + 1) % 3])} />
         <Toggle label="SELECTS" active={showHighlightsOnly} color={TEAL} onPress={() => onShowHighlightsChange(!showHighlightsOnly)} />
       </View>
 

@@ -12,7 +12,7 @@
   <interface>
     <field id="selectedFilter" type="string" value="" onChange="onFilterChanged" alwaysNotify="true" />
     <field id="activeFilters" type="array" value="[]" onChange="onFilterChanged" />
-    <field id="slopMode" type="string" value="free" onChange="onFilterChanged" />
+    <field id="slopMode" type="string" value="all" onChange="onFilterChanged" />
     <field id="hideFest" type="boolean" value="true" onChange="onFilterChanged" />
     <field id="showPreorders" type="boolean" value="false" onChange="onFilterChanged" />
     <field id="showHighlights" type="boolean" value="false" onChange="onFilterChanged" />
@@ -57,7 +57,7 @@
         <Poster id="swThumb_show_preorders" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
 
         <!-- SLOP (3-state slider) -->
-        <Label id="swLabel_slop_free" text="SLOP FREE" vertAlign="center" horizAlign="right" />
+        <Label id="swLabel_slop_free" text="SLOP FILTER" vertAlign="center" horizAlign="right" />
         <Poster id="swTrack_slop_free" uri="pkg:/images/ui/pill.9.png" />
         <Poster id="swThumb_slop_free" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
 

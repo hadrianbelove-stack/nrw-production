@@ -26,10 +26,10 @@ Sub Init()
     for each g in m.genreRow1 : m.genreIds.Push(g) : end for
     for each g in m.genreRow2 : m.genreIds.Push(g) : end for
 
-    ' Toggle 2x2: row1 FESTS/PRE-ORDER, row2 SLOP/SELECTS
-    m.switchRow1 = ["hide_fest", "show_preorders"]
-    m.switchRow2 = ["slop_free", "show_highlights"]
-    m.switchIds = ["hide_fest", "show_preorders", "slop_free", "show_highlights"]
+    ' Toggle 2x2: SLOP is first. row1 SLOP/FESTS, row2 PRE-ORDER/SELECTS
+    m.switchRow1 = ["slop_free", "hide_fest"]
+    m.switchRow2 = ["show_preorders", "show_highlights"]
+    m.switchIds = ["slop_free", "hide_fest", "show_preorders", "show_highlights"]
 
     ' Full focus order (index space for the public focusedIndex field)
     m.filterIds = []
@@ -221,7 +221,7 @@ Sub UpdateChipStyles()
     else if slopMode = "only"
         m.swLabels["slop_free"].text = "SLOP ONLY"
     else
-        m.swLabels["slop_free"].text = "ALL"
+        m.swLabels["slop_free"].text = "SLOP FILTER"
     end if
 
     UpdateSwitchVisuals()

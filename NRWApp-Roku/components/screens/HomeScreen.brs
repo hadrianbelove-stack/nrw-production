@@ -38,7 +38,7 @@ Sub Init()
     m.allMovies = []
     m.filteredMovies = []
     m.activeFilters = []
-    m.slopMode = "free"
+    m.slopMode = "all"
     m.showPreorders = false
     m.hideFest = true
     m.showHighlightsOnly = false
@@ -436,7 +436,8 @@ Sub SetExclusiveView(winner as String)
     m.hideFest = (winner <> "fests")
     m.showPreorders = (winner = "preorders")
     ' Toggles clear genre filters + slop so only one thing is ever active.
-    m.slopMode = "free"
+    ' Slop resets to its resting default ("all"), NOT "free".
+    m.slopMode = "all"
     m.activeFilters = []
     m.filterBar.showHighlights = m.showHighlightsOnly
     m.filterBar.hideFest = m.hideFest
@@ -459,26 +460,24 @@ Sub onFilterSelected()
         return
     end if
 
-    ' Slop toggle cycles: free → all → only → free
+    ' Slop toggle cycles: all → free → only → all
     if filterId = "slop_free"
-        if m.slopMode = "free"
-            m.slopMode = "all"
-        else if m.slopMode = "all"
+        if m.slopMode = "all"
+            m.slopMode = "free"
+        else if m.slopMode = "free"
             m.slopMode = "only"
         else
-            m.slopMode = "free"
+            m.slopMode = "all"
         end if
-        ' Slop is part of the exclusive group: clear genre filters, and (for a
-        ' non-free state) the other view toggles.
+        ' Slop is always the exclusive view: every click clears the active genre AND
+        ' the other view toggles, regardless of the resulting state.
         m.activeFilters = []
-        if m.slopMode <> "free"
-            m.showHighlightsOnly = false
-            m.hideFest = true
-            m.showPreorders = false
-            m.filterBar.showHighlights = m.showHighlightsOnly
-            m.filterBar.hideFest = m.hideFest
-            m.filterBar.showPreorders = m.showPreorders
-        end if
+        m.showHighlightsOnly = false
+        m.hideFest = true
+        m.showPreorders = false
+        m.filterBar.showHighlights = m.showHighlightsOnly
+        m.filterBar.hideFest = m.hideFest
+        m.filterBar.showPreorders = m.showPreorders
         m.filterBar.slopMode = m.slopMode
         m.filterBar.activeFilters = m.activeFilters
         UpdateFilterDescription()
@@ -524,7 +523,8 @@ Sub onFilterSelected()
     end if
 
     ' Picking a genre clears the view toggles — only one filter OR one toggle at a time.
-    m.slopMode = "free"
+    ' Slop resets to its resting default ("all"), NOT "free".
+    m.slopMode = "all"
     m.showHighlightsOnly = false
     m.hideFest = true
     m.showPreorders = false
