@@ -3,7 +3,7 @@
  * Uses iOS Universal Links for seamless app/web transitions
  */
 
-import {Linking, Alert} from 'react-native';
+import {Linking, Alert, Share} from 'react-native';
 
 /**
  * Open a watch link using iOS Universal Links
@@ -126,9 +126,11 @@ export async function shareMovie(movie) {
   if (!movie) return;
 
   try {
-    const message = `Check out "${movie.title}" on New Release Wall`;
-    // Future: Add share functionality with react-native-share
-    console.log('[Links] Share:', message);
+    const id = encodeURIComponent(String(movie.id));
+    const title = movie.display_title || movie.title || 'The New Release Wall';
+    const url = `https://hadrianbelove-stack.github.io/nrw-production/m/${id}.html`;
+    const text = `${title}${movie.year ? ` (${movie.year})` : ''} — on The New Release Wall`;
+    await Share.share({message: `${text}\n${url}`, url, title});
   } catch (error) {
     console.error('[Links] Error sharing:', error);
   }
