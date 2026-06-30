@@ -1100,13 +1100,7 @@ const NRWMobile = {
             ? vodList.filter(v => v.resolvedKey !== 'screening')
             : vodList;
         rentVod.forEach(v => { bar += this.renderVODPriceCard(v); });
-        const seenStream = new Set();
-        streamingList.forEach(s => {
-            const k = (s.serviceKey || s.resolvedKey || s.name || '').toLowerCase();
-            if (seenStream.has(k)) return;
-            seenStream.add(k);
-            bar += this.renderStreamButton(s);
-        });
+        streamingList.forEach(s => { bar += this.renderStreamButton(s); });
 
         // Pre-order fallback (no other watch links)
         if (!rentVod.length && !streamingList.length && !isScreening) {

@@ -603,19 +603,19 @@ class EnrichmentService:
 
         # Build streaming links
         if not skip_streaming:
-            streaming = self._build_streaming_links(
+            streaming = self._dedupe_by_service(self._build_streaming_links(
                 movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
                 title_variants=title_variants
-            )
+            ))
             if streaming:
                 watch_links['streaming'] = streaming
 
         # Build VOD links
         if not (skip_rent and skip_buy):
-            watch_links['vod'] = self._build_vod_links(
+            watch_links['vod'] = self._dedupe_by_service(self._build_vod_links(
                 movie_id, title, year, providers, tmdb_rent, tmdb_buy, has_vod_scraper,
                 title_variants=title_variants
-            )
+            ))
 
         # Overlay admin overrides
         for category, override_data in validated_overrides.items():
@@ -630,6 +630,24 @@ class EnrichmentService:
             return True
         except ImportError:
             return False
+
+    @staticmethod
+    def _dedupe_by_service(entries):
+        """One offer per service. Merges from JustWatch + the scraper can list the
+        same service twice (e.g. Netflix x2, Amazon x2); keep the first (VOD's first
+        carries the merged prices)."""
+        if not isinstance(entries, list):
+            return entries
+        seen = set()
+        deduped = []
+        for entry in entries:
+            key = (entry.get('service') or '').strip().lower()
+            if key and key in seen:
+                continue
+            if key:
+                seen.add(key)
+            deduped.append(entry)
+        return deduped
 
     def _build_streaming_links(self, movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
                                title_variants=None):
