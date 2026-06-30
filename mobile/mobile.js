@@ -1715,12 +1715,6 @@ const NRWMobile = {
         const m = min % 60;
         return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
     },
-
-    formatShortDate(dateStr) {
-        const [y, m, d] = dateStr.split('-');
-        const dt = new Date(y, m - 1, d);
-        return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    },
 };
 
 // Initialize when DOM is ready
