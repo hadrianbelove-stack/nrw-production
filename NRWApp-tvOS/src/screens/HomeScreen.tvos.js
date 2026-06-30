@@ -61,7 +61,7 @@ const STRIP_COLORS = {
 };
 
 // Filter Button Component - forwardRef to allow focus navigation from grid
-const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus, nextFocusDown, nextFocusUp, style }, ref) => {
+const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus, nextFocusDown, nextFocusUp, style, hasTVPreferredFocus }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -98,6 +98,7 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus, nextFocus
       accessibilityState={{ selected: isActive }}
       nextFocusDown={nextFocusDown}
       nextFocusUp={nextFocusUp}
+      hasTVPreferredFocus={hasTVPreferredFocus}
     >
       <Animated.View
         style={[
@@ -115,6 +116,45 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus, nextFocus
         >
           {filter.label}
         </Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+});
+
+// GENRE pulldown control — quiet teal-outline pill with a caret (matches the
+// desktop .genre-control). Focusable; opens the genre overlay on select.
+const GenreControl = forwardRef(({ label, isActive, onPress }, ref) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.timing(scaleAnim, { toValue: 1.08, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+  return (
+    <TouchableOpacity
+      ref={ref}
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      activeOpacity={1}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel="Filter by genre"
+    >
+      <Animated.View
+        style={[
+          styles.genreControl,
+          isActive && styles.genreControlActive,
+          isFocused && styles.genreControlFocused,
+          { transform: [{ scale: scaleAnim }] },
+        ]}
+      >
+        <Text style={[styles.genreControlText, isActive && styles.genreControlTextActive]}>{label}</Text>
+        <Text style={[styles.genreControlCaret, isActive && styles.genreControlTextActive]}>▾</Text>
       </Animated.View>
     </TouchableOpacity>
   );
@@ -439,6 +479,8 @@ const HomeScreenTvOS = () => {
   const [lastFilterNodeHandle, setLastFilterNodeHandle] = useState(null);
   const [lastToggleNodeHandle, setLastToggleNodeHandle] = useState(null);
   const [searchNodeHandle, setSearchNodeHandle] = useState(null);
+  // GENRE pulldown overlay (collapses the genre chips behind one control)
+  const [genreOverlay, setGenreOverlay] = useState(false);
   // Ref to first rendered movie card — used by the boundary TVFocusGuideView for DOWN from filters
   const [firstMovieRefState, setFirstMovieRefState] = useState(null);
 
@@ -980,6 +1022,11 @@ const HomeScreenTvOS = () => {
     [TV_EVENTS.PLAY_PAUSE]: () => {
       handleRefresh();
     },
+    // Back/Menu closes the GENRE overlay (HomeScreen is the stack root, so this
+    // doesn't fight navigation — there's nothing to pop here).
+    [TV_EVENTS.MENU]: () => {
+      setGenreOverlay((open) => (open ? false : open));
+    },
   });
 
   // Handle refresh
@@ -1143,6 +1190,12 @@ const HomeScreenTvOS = () => {
   // Key extractor
   const keyExtractor = useCallback((item) => item.id, []);
 
+  // GENRE pulldown: the single active genre (if any) and the control's label
+  const activeGenreId = activeFilters.size ? [...activeFilters][0] : null;
+  const genreControlLabel = activeGenreId
+    ? (FILTERS.find((f) => f.id === activeGenreId)?.label || 'Genre').toUpperCase()
+    : 'GENRE';
+
   // Render loading state
   if (isLoading && listData.length === 0) {
     return (
@@ -1189,94 +1242,77 @@ const HomeScreenTvOS = () => {
     <View style={styles.container}>
       {/* Header: top row = title + search; bottom row = 2x2 toggle module (lower-left) + filters (two rows) */}
       <View style={styles.header}>
-        {/* Top row: title + slogan (search now lives in the filter grid below) */}
+        {/* Top row: title + slogan (left), search beside the wordmark (right) — matches web */}
         <View style={styles.headerTopRow}>
           <View>
             <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
             <Text style={styles.headerSlogan}>What came out, every day. Bringing back browsing.</Text>
           </View>
-        </View>
-        {/* Bottom row: 2x2 toggle module (lower-left) + filters as two rows filling the rest */}
-        <View style={styles.bottomRow}>
-          <View style={styles.toggleModule}>
-            {/* SLOP is first; top row: SLOP / FESTS; bottom row: PRE-ORDER / SELECTS */}
-            <View style={styles.toggleModuleRow}>
-              <SlopToggle
-                ref={setFirstToggleRef}
-                slopMode={slopMode}
-                onPress={cycleSlopMode}
-              />
-              <MetaToggle
-                isActive={!hideFest}
-                label="FESTS"
-                accentColor="#f59e0b"
-                accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
-                onPress={toggleHideFest}
-              />
-            </View>
-            <View style={styles.toggleModuleRow}>
-              <MetaToggle
-                ref={setLastToggleRef}
-                isActive={showPreorders}
-                label="PRE-ORDER"
-                accentColor="#7c3aed"
-                accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
-                onPress={toggleShowPreorders}
-              />
-              <MetaToggle
-                isActive={showHighlightsOnly}
-                label="SELECTS"
-                accentColor="#00d4aa"
-                accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
-                onPress={toggleShowHighlights}
-              />
-            </View>
+          <View ref={setSearchRef} style={[styles.searchBox, searchFocused && styles.searchContainerFocused]}>
+            <Text style={styles.searchIcon}>⌕</Text>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search title, director, genre…"
+              placeholderTextColor="rgba(255,255,255,0.4)"
+              value={searchQuery}
+              onChangeText={updateSearchQuery}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="search"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
+                <Text style={styles.searchClearText}>✕</Text>
+              </TouchableOpacity>
+            )}
           </View>
-          <View style={styles.filterColumn}>
-            <View style={styles.filterRow}>
-              {FILTERS.slice(0, 6).map((filter, idx) => (
-                <FilterButton
-                  key={filter.id}
-                  ref={idx === 0 ? setFirstFilterRef : undefined}
-                  filter={filter}
-                  isActive={activeFilters.has(filter.id)}
-                  onPress={() => handleFilterChange(filter.id)}
-                  style={{ flex: 1 }}
-                />
-              ))}
-            </View>
-            <View style={styles.filterRow}>
-              {FILTERS.slice(6).map((filter, idx, arr) => (
-                <FilterButton
-                  key={filter.id}
-                  ref={idx === arr.length - 1 ? setLastFilterRef : undefined}
-                  filter={filter}
-                  isActive={activeFilters.has(filter.id)}
-                  onPress={() => handleFilterChange(filter.id)}
-                  style={{ flex: 1 }}
-                />
-              ))}
-              {/* Search lives in the grid now — spans ~3 chip slots (right half of row 2) */}
-              <View ref={setSearchRef} style={[styles.searchInGrid, searchFocused && styles.searchContainerFocused]}>
-                <TextInput
-                  style={styles.searchInput}
-                  placeholder="Search..."
-                  placeholderTextColor="rgba(255,255,255,0.4)"
-                  value={searchQuery}
-                  onChangeText={updateSearchQuery}
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setSearchFocused(false)}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  returnKeyType="search"
-                />
-                {searchQuery.length > 0 && (
-                  <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
-                    <Text style={styles.searchClearText}>✕</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </View>
+        </View>
+        {/* One clean control row: SLOP FILTER · PRE-ORDER · FESTS · SELECTS · GENRE (matches web) */}
+        <View style={styles.controlBar}>
+          <View style={styles.barCell}>
+            <SlopToggle ref={setFirstToggleRef} slopMode={slopMode} onPress={cycleSlopMode} />
+          </View>
+          <View style={styles.barDivider} />
+          <View style={styles.barCell}>
+            <MetaToggle
+              isActive={showPreorders}
+              label="PRE-ORDER"
+              accentColor="#7c3aed"
+              accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
+              onPress={toggleShowPreorders}
+            />
+          </View>
+          <View style={styles.barDivider} />
+          <View style={styles.barCell}>
+            <MetaToggle
+              isActive={!hideFest}
+              label="FESTS"
+              accentColor="#f59e0b"
+              accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
+              onPress={toggleHideFest}
+            />
+          </View>
+          <View style={styles.barDivider} />
+          <View style={styles.barCell}>
+            <MetaToggle
+              ref={setLastToggleRef}
+              isActive={showHighlightsOnly}
+              label="SELECTS"
+              accentColor="#00d4aa"
+              accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
+              onPress={toggleShowHighlights}
+            />
+          </View>
+          <View style={styles.barDivider} />
+          <View style={styles.barCell}>
+            <GenreControl
+              ref={setLastFilterRef}
+              label={genreControlLabel}
+              isActive={!!activeGenreId}
+              onPress={() => setGenreOverlay(true)}
+            />
           </View>
         </View>
       </View>
@@ -1345,6 +1381,30 @@ const HomeScreenTvOS = () => {
         onClose={() => setFullscreenVisible(false)}
         plexLibrary={{}}
       />
+
+      {/* GENRE pulldown overlay — chips for the genre filter (Back/Menu closes it) */}
+      {genreOverlay && (
+        <View style={styles.genreOverlayBackdrop}>
+          <View style={styles.genrePanel}>
+            {FILTERS.map((filter, idx) => (
+              <FilterButton
+                key={filter.id}
+                filter={filter}
+                isActive={activeFilters.has(filter.id)}
+                hasTVPreferredFocus={idx === 0}
+                onPress={() => { handleFilterChange(filter.id); setGenreOverlay(false); }}
+                style={styles.genreChip}
+              />
+            ))}
+            <FilterButton
+              filter={{ id: '__clear', label: '✕ Clear' }}
+              isActive={false}
+              onPress={() => { if (activeGenreId) handleFilterChange(activeGenreId); setGenreOverlay(false); }}
+              style={styles.genreClear}
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -1471,13 +1531,114 @@ const styles = StyleSheet.create({
     color: '#ffffff', // white on teal — matches desktop (body color: #fff)
     fontWeight: '700',
   },
+  // GENRE pulldown control (sits at the end of the one control row) — quiet teal
+  // outline pill + caret, matching the desktop .genre-control.
+  genreControl: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 26,
+    borderRadius: 24,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(0,212,170,0.35)',
+  },
+  genreControlActive: { borderColor: 'rgba(0,212,170,0.55)' },
+  genreControlFocused: { borderColor: '#00d4aa', borderWidth: 2 },
+  genreControlText: { fontSize: 22, fontWeight: '700', letterSpacing: 2, color: 'rgba(0,212,170,0.75)' },
+  genreControlTextActive: { color: '#00d4aa' },
+  genreControlCaret: { fontSize: 16, color: 'rgba(0,212,170,0.75)' },
+  // Search beside the wordmark — fixed, modest width (not full-bleed)
+  searchBox: {
+    width: 420,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+  },
+  searchIcon: { color: '#00d4aa', fontSize: 18, marginRight: 10 },
+  // One filled control row (toggles + GENRE), distributed across the width
+  controlBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255,255,255,0.035)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    marginTop: 4,
+  },
+  barDivider: {
+    width: 1,
+    height: 36,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+  },
+  // Each toggle/genre occupies an equal cell so they fill the bar evenly
+  // (no clumped negative space between pills).
+  barCell: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // GENRE overlay — dropdown panel anchored under the GENRE control (top-right),
+  // matching the desktop .genre-pop.
+  genreOverlayBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  // Horizontal strip just below the bar — one row of chips, short, blocks
+  // minimal posters.
+  genrePanel: {
+    position: 'absolute',
+    top: 232,
+    left: 60,
+    right: 60,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#14141f',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 22,
+  },
+  genreChip: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 11,
+    paddingHorizontal: 22,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+  },
+  genreClear: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 11,
+    paddingHorizontal: 22,
+    borderRadius: 22,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
+  },
   metaToggleWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
   metaToggleLabel: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     letterSpacing: 1.4,
     color: 'rgba(0,212,170,0.45)',

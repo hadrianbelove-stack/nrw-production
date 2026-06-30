@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal} from 'react-native';
 import {Colors, Typography, Spacing} from '../constants/colors';
 
 const FILTERS = [
@@ -64,6 +64,9 @@ export default function FilterBar({
   showHighlightsOnly, onShowHighlightsChange,
   searchQuery, onSearchChange,
 }) {
+  const [genreSheet, setGenreSheet] = React.useState(false);
+  const activeGenreId = activeFilters.size ? [...activeFilters][0] : null;
+  const activeGenre = FILTERS.find(f => f.id === activeGenreId);
   return (
     <View style={styles.container}>
       {/* Toggle row — all four fit without scrolling; SLOP is first (matches web) */}
@@ -74,38 +77,66 @@ export default function FilterBar({
         <Toggle label="SELECTS" active={showHighlightsOnly} color={TEAL} onPress={() => onShowHighlightsChange(!showHighlightsOnly)} />
       </View>
 
-      {/* Genre pills */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.pillRow}>
-        {FILTERS.map(filter => {
-          const sel = activeFilters.has(filter.id);
-          return (
-            <TouchableOpacity
-              key={filter.id}
-              style={[styles.pill, sel && styles.pillSelected]}
-              onPress={() => onFilterChange(filter.id)}
-              activeOpacity={0.7}>
-              <Text style={[styles.pillText, sel && styles.pillTextSelected]}>{filter.label}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-
-      {/* Search */}
-      <View style={styles.searchWrap}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search title, director, genre..."
-          placeholderTextColor={Colors.textMuted}
-          value={searchQuery}
-          onChangeText={onSearchChange}
-          returnKeyType="search"
-          autoCorrect={false}
-          autoCapitalize="none"
-        />
+      {/* Row 2: quiet GENRE control (opens a bottom sheet) + inline search */}
+      <View style={styles.row2}>
+        <TouchableOpacity
+          style={[styles.genreControl, activeGenre && styles.genreControlActive]}
+          onPress={() => setGenreSheet(true)}
+          activeOpacity={0.8}>
+          <Text style={[styles.genreText, activeGenre && styles.genreTextActive]} numberOfLines={1}>
+            {activeGenre ? activeGenre.label.toUpperCase() : 'GENRE'}
+          </Text>
+          <Text style={[styles.genreCaret, activeGenre && styles.genreTextActive]}>▾</Text>
+        </TouchableOpacity>
+        <View style={styles.searchWrap}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search..."
+            placeholderTextColor={Colors.textMuted}
+            value={searchQuery}
+            onChangeText={onSearchChange}
+            returnKeyType="search"
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
+        </View>
       </View>
+
+      {/* GENRE bottom sheet */}
+      <Modal
+        visible={genreSheet}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setGenreSheet(false)}>
+        <TouchableOpacity style={styles.sheetBackdrop} activeOpacity={1} onPress={() => setGenreSheet(false)}>
+          <TouchableOpacity style={styles.sheet} activeOpacity={1} onPress={() => {}}>
+            <View style={styles.sheetHandle} />
+            <View style={styles.sheetHead}>
+              <Text style={styles.sheetHeadText}>FILTER BY GENRE</Text>
+              <TouchableOpacity onPress={() => { if (activeGenreId) onFilterChange(activeGenreId); }}>
+                <Text style={styles.sheetClear}>Clear</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.sheetChips}>
+              {FILTERS.map(filter => {
+                const sel = activeFilters.has(filter.id);
+                return (
+                  <TouchableOpacity
+                    key={filter.id}
+                    style={[styles.pill, sel && styles.pillSelected]}
+                    onPress={() => { onFilterChange(filter.id); setGenreSheet(false); }}
+                    activeOpacity={0.7}>
+                    <Text style={[styles.pillText, sel && styles.pillTextSelected]}>{filter.label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            <TouchableOpacity style={styles.sheetDone} onPress={() => setGenreSheet(false)} activeOpacity={0.85}>
+              <Text style={styles.sheetDoneText}>Done</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -158,13 +189,42 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
     color: 'rgba(0,212,170,0.6)',
   },
-  // genre pills
-  pillRow: {
+  // row 2: GENRE control + inline search
+  row2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
     paddingHorizontal: Spacing.screenPadding,
     paddingTop: Spacing.sm,
-    gap: Spacing.sm,
-    alignItems: 'center',
   },
+  genreControl: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(0,212,170,0.35)',
+    backgroundColor: 'transparent',
+  },
+  genreControlActive: {
+    borderColor: 'rgba(0,212,170,0.55)',
+  },
+  genreText: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.6,
+    color: 'rgba(0,212,170,0.75)',
+  },
+  genreTextActive: {
+    color: '#00d4aa',
+  },
+  genreCaret: {
+    fontSize: 8,
+    color: 'rgba(0,212,170,0.75)',
+  },
+  // genre chips (reused inside the bottom sheet)
   pill: {
     paddingVertical: 6,
     paddingHorizontal: 14,
@@ -186,10 +246,9 @@ const styles = StyleSheet.create({
     color: Colors.featuredBadgeText || '#06231d',
     fontWeight: '700',
   },
-  // search
+  // search — inline beside the GENRE control
   searchWrap: {
-    paddingHorizontal: Spacing.screenPadding,
-    paddingTop: Spacing.sm,
+    flex: 1,
   },
   searchInput: {
     backgroundColor: Colors.backgroundSecondary,
@@ -200,5 +259,66 @@ const styles = StyleSheet.create({
     fontSize: Typography.body,
     borderWidth: 1,
     borderColor: Colors.backgroundTertiary,
+  },
+  // GENRE bottom sheet
+  sheetBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    backgroundColor: '#14141f',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderColor: 'rgba(255,255,255,0.12)',
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 34,
+  },
+  sheetHandle: {
+    width: 38,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    alignSelf: 'center',
+    marginTop: 6,
+    marginBottom: 12,
+  },
+  sheetHead: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sheetHeadText: {
+    color: Colors.textMuted,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  sheetClear: {
+    color: '#00d4aa',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  sheetChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  sheetDone: {
+    marginTop: 16,
+    paddingVertical: 11,
+    borderRadius: 20,
+    backgroundColor: '#00d4aa',
+    alignItems: 'center',
+  },
+  sheetDoneText: {
+    color: '#000',
+    fontWeight: '700',
+    letterSpacing: 1,
+    fontSize: 14,
   },
 });
