@@ -1,54 +1,87 @@
 {
-  "timestamp": "2026-06-29T12:48:46.979568",
-  "movies_requested": 10,
-  "movies_enriched": 6,
-  "movies_deferred": 4,
+  "timestamp": "2026-06-30T11:13:40.798361",
+  "movies_requested": 14,
+  "movies_enriched": 7,
+  "movies_deferred": 7,
   "deferred_details": [
+    {
+      "title": "She's the He!",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-30",
+      "discovered_at": "2026-06-30T11:06:57.345127",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "first_reverted_at": "2026-06-30",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Blades of the Guardians",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "",
+      "discovered_at": "2026-06-30T11:06:57.805729",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-06-30",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Amazon Video"
+      ]
+    },
+    {
+      "title": "Bang My Box: The Robin Byrd Story",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-06-30",
+      "discovered_at": "2026-06-30T11:06:58.000362",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "first_reverted_at": "2026-06-30",
+      "tmdb_platforms": []
+    },
     {
       "title": "A Super Progressive Movie",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-29",
-      "discovered_at": "2026-06-29T12:39:01.933638",
+      "discovered_at": "2026-06-30T11:06:58.763105",
       "discovery_source": "tmdb_type4",
-      "revert_count": 2,
-      "first_reverted_at": "2026-06-29",
+      "revert_count": 3,
+      "first_reverted_at": "2026-06-30",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-06-29T12:39:04.230816",
+      "discovered_at": "2026-06-30T11:07:00.109318",
       "discovery_source": "tmdb_type4",
-      "revert_count": 21,
-      "first_reverted_at": "2026-06-29",
+      "revert_count": 22,
+      "first_reverted_at": "2026-06-30",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-06-29T12:39:04.444480",
+      "discovered_at": "2026-06-30T11:07:00.362894",
       "discovery_source": "tmdb_type4",
-      "revert_count": 12,
-      "first_reverted_at": "2026-06-29",
+      "revert_count": 13,
+      "first_reverted_at": "2026-06-30",
       "tmdb_platforms": []
     },
     {
-      "title": "The Dangers in My Heart: The Movie",
+      "title": "The Devil Wears Prada 2",
       "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-06-29T12:39:19.663508",
+      "digital_date": "2026-06-30",
+      "discovered_at": "2026-06-30T11:07:04.212780",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-29",
+      "first_reverted_at": "2026-06-30",
       "tmdb_platforms": [],
       "jw_platforms": [
-        "Barnes & Noble"
+        "Amazon Video"
       ]
     }
   ],
-  "enrichment_duration_seconds": 563.87,
+  "enrichment_duration_seconds": 394.09,
   "error_details": [],
   "total_errors": 0
 }

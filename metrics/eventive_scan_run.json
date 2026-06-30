@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-06-29T12:23:17.890504",
+  "timestamp": "2026-06-30T10:50:48.690864",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 121,
     "festivals_with_films": 116,
     "festivals_failed": 48,
-    "total_films_indexed": 2239,
+    "total_films_indexed": 2252,
     "expired_filtered": 0,
-    "unique_active": 1655,
-    "tracking_matches": 66,
+    "unique_active": 1657,
+    "tracking_matches": 68,
     "wall_matches": 20,
-    "new_cached": 48,
+    "new_cached": 50,
     "skipped_undated": 38
   },
   "tracking_matches": [
@@ -70,18 +70,6 @@
       "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a8cc7b413a91640095e22",
       "start": "2026-06-13T11:07:00.000Z",
       "end": "2026-09-24T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1195113",
-      "nrw_title": "Carissa",
-      "eventive_title": "Carissa",
-      "festival": "South African Film Festival 2026",
-      "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
-      "start": "2026-06-25T14:15:00.000Z",
-      "end": "2026-07-26T13:45:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
@@ -243,6 +231,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1195113",
+      "nrw_title": "Carissa",
+      "eventive_title": "Carissa",
+      "festival": "South African Film Festival 2026",
+      "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
+      "start": "2026-06-25T14:15:00.000Z",
+      "end": "2026-07-26T13:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1583348",
       "nrw_title": "The Finale",
       "eventive_title": "The Finale",
@@ -262,6 +262,42 @@
       "link": "https://watch.eventive.org/ischiaglobalfestival/play/6a32849063e85ceceb841ba5",
       "start": "2026-07-16T18:00:00.000Z",
       "end": "2026-07-19T18:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "removed"
+    },
+    {
+      "movie_id": "1226046",
+      "nrw_title": "Inheritance",
+      "eventive_title": "Inheritance",
+      "festival": "Film of the Month",
+      "link": "https://watch.eventive.org/rmwf/play/6a429bb535d588831018b90f",
+      "start": "2026-07-01T06:00:00.000Z",
+      "end": "2026-08-01T05:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1677549",
+      "nrw_title": "Inheritance",
+      "eventive_title": "Inheritance",
+      "festival": "Film of the Month",
+      "link": "https://watch.eventive.org/rmwf/play/6a429bb535d588831018b90f",
+      "start": "2026-07-01T06:00:00.000Z",
+      "end": "2026-08-01T05:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1012180",
+      "nrw_title": "Identity",
+      "eventive_title": "Identity",
+      "festival": "Indy Shorts Film Festival",
+      "link": "https://watch.eventive.org/indyshorts2026/play/6a271c38c4695759a133db89",
+      "start": "2026-07-21T16:00:00.000Z",
+      "end": "2026-07-27T03:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "removed"
@@ -289,30 +325,6 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1306368",
-      "nrw_title": "The Rip",
-      "eventive_title": "RIP",
-      "festival": "ICFF at Home",
-      "link": "https://watch.eventive.org/icff/play/6a3191f15b2b7f7a6adbf593",
-      "start": "2026-07-03T16:00:00.000Z",
-      "end": "2026-07-14T07:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1127674",
-      "nrw_title": "The Forbidden City",
-      "eventive_title": "The Forbidden City",
-      "festival": "ICFF at Home",
-      "link": "https://watch.eventive.org/icff/play/6a318fd127d255ee974c1de1",
-      "start": "2026-07-03T16:00:00.000Z",
-      "end": "2026-07-14T07:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
     },
     {
       "movie_id": "1561978",
@@ -687,6 +699,30 @@
       "nrw_status": "tracking"
     },
     {
+      "movie_id": "1306368",
+      "nrw_title": "The Rip",
+      "eventive_title": "RIP",
+      "festival": "ICFF at Home",
+      "link": "https://watch.eventive.org/icff/play/6a3191f15b2b7f7a6adbf593",
+      "start": "2026-07-03T16:00:00.000Z",
+      "end": "2026-07-14T07:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1127674",
+      "nrw_title": "The Forbidden City",
+      "eventive_title": "The Forbidden City",
+      "festival": "ICFF at Home",
+      "link": "https://watch.eventive.org/icff/play/6a318fd127d255ee974c1de1",
+      "start": "2026-07-03T16:00:00.000Z",
+      "end": "2026-07-14T07:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1162053",
       "nrw_title": "Out of Order",
       "eventive_title": "Out of Order",
@@ -793,18 +829,6 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
-    },
-    {
-      "movie_id": "1012180",
-      "nrw_title": "Identity",
-      "eventive_title": "Identity",
-      "festival": "Indy Shorts Film Festival",
-      "link": "https://watch.eventive.org/indyshorts2026/play/6a271c38c4695759a133db89",
-      "start": "2026-07-21T16:00:00.000Z",
-      "end": "2026-07-27T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "removed"
     }
   ],
   "wall_matches": [
@@ -828,18 +852,6 @@
       "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a962917178824a3beb905",
       "start": "2026-06-19T23:00:00.000Z",
       "end": "2026-09-24T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1195113",
-      "nrw_title": "Carissa",
-      "eventive_title": "Carissa",
-      "festival": "South African Film Festival 2026",
-      "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
-      "start": "2026-06-25T14:15:00.000Z",
-      "end": "2026-07-26T13:45:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
@@ -948,6 +960,18 @@
       "link": "https://watch.eventive.org/doxumentale/play/69e7e1d734ea8d41e24978d9",
       "start": "2026-05-26T22:00:00.000Z",
       "end": "2026-06-30T21:59:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1195113",
+      "nrw_title": "Carissa",
+      "eventive_title": "Carissa",
+      "festival": "South African Film Festival 2026",
+      "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
+      "start": "2026-06-25T14:15:00.000Z",
+      "end": "2026-07-26T13:45:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
