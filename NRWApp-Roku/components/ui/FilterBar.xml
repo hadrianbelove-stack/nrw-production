@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
   NRW Filter Bar
-  Row 1: genre filter chips (auto-sized rounded pills).
-  Row 2: a bordered "toggle module" of iOS-style switches (FESTS, PRE-ORDER,
-         SLOP 3-state slider, SELECTS) — matches the tvOS toggle box exactly
-         (track 88x42 / thumb 34x34; SLOP track 122x32 / thumb 24x24).
-  Focus = orange ring (tvOS). All geometry is computed in FilterBar.brs after
-  the bundled font loads (LayoutChips), so nothing is hard-sized here.
+  One clean row (matches web/tvOS): SLOP FILTER · PRE-ORDER · FESTS · SELECTS
+  · GENRE. The 9 genre chips are collapsed behind the GENRE control, which
+  opens a horizontal overlay strip below the bar (OK on a chip applies + closes,
+  Back closes). Search sits to the right. All geometry is computed in
+  FilterBar.brs after the bundled font loads (LayoutChips).
 -->
 <component name="FilterBar" extends="Group">
   <interface>
@@ -30,36 +29,25 @@
 
     <Group id="filterRow" translation="[100, 0]">
 
-      <!-- Genre chips -->
-      <Group id="chip_indie"><Poster id="chipBg_indie" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_indie" text="Indie" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_horror"><Poster id="chipBg_horror" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_horror" text="Horror" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_action"><Poster id="chipBg_action" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_action" text="Action" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_comedy"><Poster id="chipBg_comedy" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_comedy" text="Comedy" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_family"><Poster id="chipBg_family" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_family" text="Family" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_thriller"><Poster id="chipBg_thriller" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_thriller" text="Thriller" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_foreign"><Poster id="chipBg_foreign" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_foreign" text="Foreign" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_documentary"><Poster id="chipBg_documentary" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_documentary" text="Docs" horizAlign="center" vertAlign="center" /></Group>
-      <Group id="chip_restorations"><Poster id="chipBg_restorations" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_restorations" text="Reissues" horizAlign="center" vertAlign="center" /></Group>
-
-      <!-- Toggle module (LEFT): bordered box, 2x2 switches (matches tvOS) -->
+      <!-- Filled control bar (spans the switch row + GENRE) -->
       <Group id="toggleBox" translation="[0, 0]">
         <Poster id="toggleBoxBorder" uri="pkg:/images/ui/rrect.9.png" blendColor="0xFFFFFF29" />
         <Poster id="toggleBoxBg" uri="pkg:/images/ui/rrect.9.png" blendColor="0x12121AFF" />
 
-        <!-- FESTS -->
-        <Label id="swLabel_hide_fest" text="FESTS" vertAlign="center" horizAlign="right" />
-        <Poster id="swTrack_hide_fest" uri="pkg:/images/ui/pill.9.png" />
-        <Poster id="swThumb_hide_fest" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
+        <!-- SLOP (3-state slider) — first -->
+        <Label id="swLabel_slop_free" text="SLOP FILTER" vertAlign="center" horizAlign="right" />
+        <Poster id="swTrack_slop_free" uri="pkg:/images/ui/pill.9.png" />
+        <Poster id="swThumb_slop_free" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
 
         <!-- PRE-ORDER -->
         <Label id="swLabel_show_preorders" text="PRE-ORDER" vertAlign="center" horizAlign="right" />
         <Poster id="swTrack_show_preorders" uri="pkg:/images/ui/pill.9.png" />
         <Poster id="swThumb_show_preorders" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
 
-        <!-- SLOP (3-state slider) -->
-        <Label id="swLabel_slop_free" text="SLOP FILTER" vertAlign="center" horizAlign="right" />
-        <Poster id="swTrack_slop_free" uri="pkg:/images/ui/pill.9.png" />
-        <Poster id="swThumb_slop_free" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
+        <!-- FESTS -->
+        <Label id="swLabel_hide_fest" text="FESTS" vertAlign="center" horizAlign="right" />
+        <Poster id="swTrack_hide_fest" uri="pkg:/images/ui/pill.9.png" />
+        <Poster id="swThumb_hide_fest" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
 
         <!-- SELECTS -->
         <Label id="swLabel_show_highlights" text="SELECTS" vertAlign="center" horizAlign="right" />
@@ -67,15 +55,34 @@
         <Poster id="swThumb_show_highlights" uri="pkg:/images/ui/pill.9.png" blendColor="0xFFFFFFFF" />
       </Group>
 
-      <!-- Search box — lives to the RIGHT of the genres, a focusable item in the
-           2-D nav (OK opens search). Sized/positioned in BrightScript. -->
+      <!-- GENRE control — quiet teal-outline pill that opens the genre overlay -->
+      <Group id="chip_genre">
+        <Poster id="chipBg_genre" uri="pkg:/images/ui/pill.9.png" blendColor="0x00D4AA59" />
+        <Label id="chipLabel_genre" text="GENRE" horizAlign="center" vertAlign="center" color="0x00D4AABF" />
+      </Group>
+
+      <!-- Search box — right of GENRE, a focusable item in the nav (OK opens search) -->
       <Group id="searchBar">
         <Poster id="searchBarBg" uri="pkg:/images/ui/rrect.9.png" blendColor="0x1F1F26FF" />
         <Label id="searchBarLabel" text="Search…" vertAlign="center" horizAlign="center" color="0x999999FF" />
       </Group>
 
-      <!-- Orange focus ring — hollow outline rendered ON TOP of all items
-           (positioned in BrightScript over the focused item). -->
+      <!-- GENRE overlay — a horizontal strip of genre chips below the bar (hidden
+           until GENRE is opened). The chips live here so they show/hide as a group. -->
+      <Group id="genreOverlay" visible="false">
+        <Poster id="genreOverlayBg" uri="pkg:/images/ui/rrect.9.png" blendColor="0x14141FFF" />
+        <Group id="chip_indie"><Poster id="chipBg_indie" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_indie" text="Indie" horizAlign="center" vertAlign="center" /></Group>
+        <Group id="chip_horror"><Poster id="chipBg_horror" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_horror" text="Horror" horizAlign="center" vertAlign="center" /></Group>
+        <Group id="chip_action"><Poster id="chipBg_action" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_action" text="Action" horizAlign="center" vertAlign="center" /></Group>
+        <Group id="chip_comedy"><Poster id="chipBg_comedy" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_comedy" text="Comedy" horizAlign="center" vertAlign="center" /></Group>
+        <Group id="chip_family"><Poster id="chipBg_family" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_family" text="Family" horizAlign="center" vertAlign="center" /></Group>
+        <Group id="chip_thriller"><Poster id="chipBg_thriller" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_thriller" text="Thriller" horizAlign="center" vertAlign="center" /></Group>
+        <Group id="chip_foreign"><Poster id="chipBg_foreign" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_foreign" text="Foreign" horizAlign="center" vertAlign="center" /></Group>
+        <Group id="chip_documentary"><Poster id="chipBg_documentary" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_documentary" text="Docs" horizAlign="center" vertAlign="center" /></Group>
+        <Group id="chip_restorations"><Poster id="chipBg_restorations" uri="pkg:/images/ui/pill.9.png" /><Label id="chipLabel_restorations" text="Reissues" horizAlign="center" vertAlign="center" /></Group>
+      </Group>
+
+      <!-- Orange focus ring — hollow outline rendered ON TOP (positioned in BrightScript). -->
       <Poster id="focusRing" uri="pkg:/images/ui/ring.9.png" visible="false" />
 
     </Group>

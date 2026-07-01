@@ -19,23 +19,24 @@ Sub Init()
     m.toggleBoxBg = m.top.FindNode("toggleBoxBg")
     m.layoutTimer = m.top.FindNode("layoutTimer")
 
-    ' Genre rows (two rows, matching tvOS)
-    m.genreRow1 = ["indie", "horror", "action", "comedy", "family"]
-    m.genreRow2 = ["thriller", "foreign", "documentary", "restorations"]
-    m.genreIds = []
-    for each g in m.genreRow1 : m.genreIds.Push(g) : end for
-    for each g in m.genreRow2 : m.genreIds.Push(g) : end for
+    ' Genres — now collapsed behind the GENRE control; shown in a single
+    ' horizontal strip inside the overlay.
+    m.genreIds = ["indie", "horror", "action", "comedy", "family", "thriller", "foreign", "documentary", "restorations"]
 
-    ' Toggle 2x2: SLOP is first. row1 SLOP/FESTS, row2 PRE-ORDER/SELECTS
-    m.switchRow1 = ["slop_free", "hide_fest"]
-    m.switchRow2 = ["show_preorders", "show_highlights"]
-    m.switchIds = ["slop_free", "hide_fest", "show_preorders", "show_highlights"]
+    ' One switch row (matches web): SLOP FILTER · PRE-ORDER · FESTS · SELECTS
+    m.switchRow = ["slop_free", "show_preorders", "hide_fest", "show_highlights"]
+    m.switchIds = m.switchRow
 
-    ' Full focus order (index space for the public focusedIndex field)
+    ' Full focus order for the bar (index space for the public focusedIndex field):
+    ' switches, then the GENRE control, then search.
     m.filterIds = []
     for each s in m.switchIds : m.filterIds.Push(s) : end for
-    for each g in m.genreIds : m.filterIds.Push(g) : end for
+    m.filterIds.Push("genre")
     m.filterIds.Push("search")
+
+    ' GENRE overlay state
+    m.overlayOpen = false
+    m.overlayIndex = 0
 
     m.colors = GetColors()
     m.fonts = Fonts()
@@ -54,6 +55,14 @@ Sub Init()
         m.chipLabels[id] = m.top.FindNode("chipLabel_" + id)
         m.chipLabels[id].font = m.fonts.filterChip
     end for
+
+    ' GENRE control + overlay
+    m.genreControl = m.top.FindNode("chip_genre")
+    m.genreControlBg = m.top.FindNode("chipBg_genre")
+    m.genreControlLabel = m.top.FindNode("chipLabel_genre")
+    m.genreControlLabel.font = m.fonts.filterChipActive
+    m.genreOverlay = m.top.FindNode("genreOverlay")
+    m.genreOverlayBg = m.top.FindNode("genreOverlayBg")
 
     m.swLabels = {} : m.swTracks = {} : m.swThumbs = {}
     for each id in m.switchIds
@@ -92,61 +101,59 @@ Sub onFocusChanged()
 End Sub
 
 ' ============================================================================
-' Lay out the toggle module (left) and the two genre rows (right).
+' Lay out the one control row (switches + GENRE) and the genre overlay strip.
+' Gate only on VISIBLE labels being measured — the overlay chips may not report a
+' boundingRect while hidden, so requiring them here could stall the whole layout.
 ' ============================================================================
 Sub LayoutChips()
-    for each id in m.genreIds
-        if m.chipLabels[id].boundingRect().width <= 1 then return
-    end for
     for each id in m.switchIds
         if m.swLabels[id].boundingRect().width <= 1 then return
     end for
+    if m.genreControlLabel.boundingRect().width <= 1 then return
     m.layoutTimer.control = "stop"
 
-    ' --- Toggle module (left), 2x2 ---
+    ' --- One filled control row: SLOP · PRE-ORDER · FESTS · SELECTS · GENRE ---
     boxPadH = 20 : boxPadV = 12
-    rowH = 42 : rowVGap = 14 : swGap = 26
-    row1Y = boxPadV
-    row2Y = boxPadV + rowH + rowVGap
+    rowH = 46 : swGap = 26
+    rowY = boxPadV
+    rowRight = LayoutSwitchRow(m.switchRow, boxPadH, rowY, rowH, swGap)
 
-    row1W = LayoutSwitchRow(m.switchRow1, boxPadH, row1Y, rowH, swGap)
-    row2W = LayoutSwitchRow(m.switchRow2, boxPadH, row2Y, rowH, swGap)
-    innerW = row1W : if row2W > innerW then innerW = row2W
-    boxW = innerW + boxPadH
-    boxH = boxPadV * 2 + rowH * 2 + rowVGap
+    ' GENRE control at the end of the row
+    gcTextW = Int(m.genreControlLabel.boundingRect().width)
+    gcW = gcTextW + 2 * m.PAD
+    gcX = rowRight + swGap
+    gcY = rowY + (rowH - m.CHIP_H) / 2
+    m.genreControlBg.width = gcW : m.genreControlBg.height = m.CHIP_H
+    m.genreControlLabel.width = gcTextW : m.genreControlLabel.height = m.CHIP_H : m.genreControlLabel.translation = [m.PAD, 0]
+    m.genreControl.translation = [gcX, gcY]
+    m.itemBounds["genre"] = { x: gcX, y: gcY, w: gcW, h: m.CHIP_H }
+
+    ' Filled bar spans switches + GENRE
+    boxW = gcX + gcW + boxPadH
+    boxH = boxPadV * 2 + rowH
     m.toggleBoxBorder.width = boxW : m.toggleBoxBorder.height = boxH
     m.toggleBoxBg.width = boxW - 2 : m.toggleBoxBg.height = boxH - 2 : m.toggleBoxBg.translation = [1, 1]
 
-    ' --- Genre pills (right), two rows, vertically centered against the box ---
-    genreX0 = boxW + 44
-    chipVGap = 14
-    blockH = m.CHIP_H * 2 + chipVGap
-    gTop = (boxH - blockH) / 2
-    LayoutGenreRow(m.genreRow1, genreX0, gTop)
-    LayoutGenreRow(m.genreRow2, genreX0, gTop + m.CHIP_H + chipVGap)
-
-    ' --- Search box: right of the genres, spanning both genre rows ---
-    genreRight = 0
-    for each id in m.genreIds
-        b = m.itemBounds[id]
-        r = b.x + b.w
-        if r > genreRight then genreRight = r
-    end for
-    searchX = genreRight + 44
+    ' --- Search box: right of the bar ---
+    searchX = boxW + 44
     searchW = 1600 - searchX
     if searchW < 260 then searchW = 260
-    m.searchBar.translation = [searchX, gTop]
-    m.searchBarBg.width = searchW : m.searchBarBg.height = blockH
-    m.searchBarLabel.width = searchW : m.searchBarLabel.height = blockH : m.searchBarLabel.translation = [0, 0]
-    m.itemBounds["search"] = { x: searchX, y: gTop, w: searchW, h: blockH }
+    m.searchBar.translation = [searchX, 0]
+    m.searchBarBg.width = searchW : m.searchBarBg.height = boxH
+    m.searchBarLabel.width = searchW : m.searchBarLabel.height = boxH : m.searchBarLabel.translation = [0, 0]
+    m.itemBounds["search"] = { x: searchX, y: 0, w: searchW, h: boxH }
 
-    ' Centers for spatial nav
+    ' --- Genre overlay strip (below the bar), laid out but hidden until opened ---
+    LayoutGenreOverlay(boxH + 12)
+
+    ' Centers for spatial nav (bar items only)
     for each id in m.filterIds
         b = m.itemBounds[id]
         m.itemCenter[id] = { x: b.x + b.w / 2, y: b.y + b.h / 2 }
     end for
 
     UpdateSwitchVisuals()
+    UpdateChipStyles()
     UpdateFocusIndicator()
 End Sub
 
@@ -179,19 +186,26 @@ Function LayoutSwitchRow(ids as Object, startX as Integer, rowY as Integer, rowH
     return x - swGap
 End Function
 
-Sub LayoutGenreRow(ids as Object, startX as Integer, rowY as Integer)
-    x = startX
-    for each id in ids
+' Lay the genre chips as one horizontal strip inside the overlay. Chip
+' translations are relative to the overlay's origin; m.itemBounds stores the
+' ABSOLUTE position (for the focus ring, which lives in filterRow).
+Sub LayoutGenreOverlay(overlayY as Integer)
+    padH = 20 : padV = 14 : gap = 12
+    x = padH
+    for each id in m.genreIds
         lbl = m.chipLabels[id]
         bg = m.chipBgs[id]
         tw = Int(lbl.boundingRect().width)
         bw = tw + 2 * m.PAD
         bg.width = bw : bg.height = m.CHIP_H
         lbl.width = tw : lbl.height = m.CHIP_H : lbl.translation = [m.PAD, 0]
-        m.chips[id].translation = [x, rowY]
-        m.itemBounds[id] = { x: x, y: rowY, w: bw, h: m.CHIP_H }
-        x = x + bw + m.GAP
+        m.chips[id].translation = [x, padV]
+        m.itemBounds[id] = { x: x, y: overlayY + padV, w: bw, h: m.CHIP_H }
+        x = x + bw + gap
     end for
+    m.genreOverlayBg.width = x - gap + padH
+    m.genreOverlayBg.height = m.CHIP_H + padV * 2
+    m.genreOverlay.translation = [0, overlayY]
 End Sub
 
 ' ============================================================================
@@ -222,6 +236,26 @@ Sub UpdateChipStyles()
         m.swLabels["slop_free"].text = "SLOP ONLY"
     else
         m.swLabels["slop_free"].text = "SLOP FILTER"
+    end if
+
+    ' GENRE control — show the chosen genre's name (else "GENRE"); brighter when active
+    if m.genreControlLabel <> invalid
+        activeGenre = ""
+        for each id in m.genreIds
+            for each af in activeFilters
+                if af = id then activeGenre = id : exit for
+            end for
+            if activeGenre <> "" then exit for
+        end for
+        if activeGenre <> ""
+            m.genreControlLabel.text = UCase(m.chipLabels[activeGenre].text)
+            m.genreControlLabel.color = "0x00D4AAFF"
+            m.genreControlBg.blendColor = "0x00D4AA8C"
+        else
+            m.genreControlLabel.text = "GENRE"
+            m.genreControlLabel.color = "0x00D4AABF"
+            m.genreControlBg.blendColor = "0x00D4AA40"
+        end if
     end if
 
     UpdateSwitchVisuals()
@@ -285,9 +319,14 @@ Sub UpdateFocusIndicator()
         m.focusRing.visible = false
         return
     end if
-    idx = m.top.focusedIndex
-    if idx < 0 OR idx >= m.filterIds.Count() then idx = 0
-    id = m.filterIds[idx]
+    if m.overlayOpen
+        if m.overlayIndex < 0 OR m.overlayIndex >= m.genreIds.Count() then m.overlayIndex = 0
+        id = m.genreIds[m.overlayIndex]
+    else
+        idx = m.top.focusedIndex
+        if idx < 0 OR idx >= m.filterIds.Count() then idx = 0
+        id = m.filterIds[idx]
+    end if
     b = m.itemBounds[id]
     if b = invalid then return
     m.focusRing.blendColor = "0xFF9500FF"
@@ -295,6 +334,31 @@ Sub UpdateFocusIndicator()
     m.focusRing.height = b.h + 6
     m.focusRing.translation = [b.x - 3, b.y - 3]
     m.focusRing.visible = true
+End Sub
+
+' ============================================================================
+' GENRE overlay show / hide
+' ============================================================================
+Sub ShowGenreOverlay()
+    m.overlayOpen = true
+    m.overlayIndex = 0
+    activeFilters = m.top.activeFilters
+    for i = 0 to m.genreIds.Count() - 1
+        for each af in activeFilters
+            if af = m.genreIds[i] then m.overlayIndex = i
+        end for
+    end for
+    m.genreOverlay.visible = true
+    ' Re-run layout now that the chips are visible, in case they weren't measured
+    ' while hidden (LayoutChips is idempotent for the bar).
+    StartLayout()
+    UpdateFocusIndicator()
+End Sub
+
+Sub HideGenreOverlay()
+    m.overlayOpen = false
+    m.genreOverlay.visible = false
+    UpdateFocusIndicator()
 End Sub
 
 ' ============================================================================
@@ -338,12 +402,46 @@ End Function
 ' ============================================================================
 Function OnKeyEvent(key as String, press as Boolean) as Boolean
     if NOT press then return false
+
+    ' --- GENRE overlay mode: navigate the chip strip; OK applies, Back/up/down close ---
+    if m.overlayOpen
+        if key = "back"
+            HideGenreOverlay()
+            return true
+        else if key = "OK"
+            m.top.selectedFilter = m.genreIds[m.overlayIndex]
+            HideGenreOverlay()
+            return true
+        else if key = "left"
+            if m.overlayIndex > 0
+                m.overlayIndex = m.overlayIndex - 1
+                UpdateFocusIndicator()
+            end if
+            return true
+        else if key = "right"
+            if m.overlayIndex < m.genreIds.Count() - 1
+                m.overlayIndex = m.overlayIndex + 1
+                UpdateFocusIndicator()
+            end if
+            return true
+        else if key = "up" OR key = "down"
+            HideGenreOverlay()
+            return true
+        end if
+        return true   ' swallow everything else while the overlay is open
+    end if
+
+    ' --- Bar mode ---
     idx = m.top.focusedIndex
     if idx < 0 OR idx >= m.filterIds.Count() then idx = 0
     curId = m.filterIds[idx]
 
     if key = "OK"
-        m.top.selectedFilter = curId
+        if curId = "genre"
+            ShowGenreOverlay()   ' open the pulldown (handled internally, not a filter)
+        else
+            m.top.selectedFilter = curId
+        end if
         return true
     end if
 
