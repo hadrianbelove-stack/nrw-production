@@ -120,8 +120,14 @@ class LetterboxdScoreScraper:
         Returns:
             dict with url and score, or None if not found
         """
-        # Strip 'tv_' prefix — Letterboxd is film-only, TV IDs will 404
-        clean_id = str(tmdb_id).replace('tv_', '')
+        # TV ids must NOT use the movie-namespace redirect. letterboxd.com/tmdb/{id}/
+        # resolves in the MOVIE id space, and TMDB's movie/TV id spaces overlap — so a
+        # tv_ id's bare number silently resolves to an unrelated film rather than 404ing
+        # (e.g. tv_322427 -> letterboxd.com/film/womans-wail). Skip the redirect for TV
+        # and fall through to the year-verified slug lookup in _try_candidate_urls.
+        if str(tmdb_id).startswith('tv_'):
+            return None
+        clean_id = str(tmdb_id)
         if not clean_id.isdigit():
             return None
 
