@@ -1,87 +1,93 @@
 {
-  "timestamp": "2026-06-30T11:13:40.798361",
-  "movies_requested": 14,
-  "movies_enriched": 7,
+  "timestamp": "2026-07-01T11:27:11.112295",
+  "movies_requested": 16,
+  "movies_enriched": 9,
   "movies_deferred": 7,
   "deferred_details": [
     {
-      "title": "She's the He!",
+      "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-30",
-      "discovered_at": "2026-06-30T11:06:57.345127",
+      "digital_date": "2026-07-01",
+      "discovered_at": "2026-07-01T11:17:38.882814",
       "discovery_source": "tmdb_type4",
       "revert_count": 2,
-      "first_reverted_at": "2026-06-30",
+      "first_reverted_at": "2026-07-01",
       "tmdb_platforms": []
     },
     {
-      "title": "Blades of the Guardians",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-06-30T11:06:57.805729",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-06-30",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Amazon Video"
-      ]
-    },
-    {
-      "title": "Bang My Box: The Robin Byrd Story",
+      "title": "She's the He!",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-06-30",
-      "discovered_at": "2026-06-30T11:06:58.000362",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 2,
-      "first_reverted_at": "2026-06-30",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "A Super Progressive Movie",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-29",
-      "discovered_at": "2026-06-30T11:06:58.763105",
+      "discovered_at": "2026-07-01T11:17:39.060619",
       "discovery_source": "tmdb_type4",
       "revert_count": 3,
-      "first_reverted_at": "2026-06-30",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "The Last Light",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-21",
-      "discovered_at": "2026-06-30T11:07:00.109318",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 22,
-      "first_reverted_at": "2026-06-30",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Love & Other Crimes",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-19",
-      "discovered_at": "2026-06-30T11:07:00.362894",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 13,
-      "first_reverted_at": "2026-06-30",
+      "first_reverted_at": "2026-07-01",
       "tmdb_platforms": []
     },
     {
       "title": "The Devil Wears Prada 2",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-06-30",
-      "discovered_at": "2026-06-30T11:07:04.212780",
+      "discovered_at": "2026-07-01T11:17:39.291374",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-06-30",
+      "first_reverted_at": "2026-07-01",
       "tmdb_platforms": [],
       "jw_platforms": [
-        "Amazon Video"
+        "Amazon Video",
+        "Fandango At Home"
+      ]
+    },
+    {
+      "title": "The Last Light",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-21",
+      "discovered_at": "2026-07-01T11:17:40.863202",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 23,
+      "first_reverted_at": "2026-07-01",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Love & Other Crimes",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-19",
+      "discovered_at": "2026-07-01T11:17:41.057587",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 14,
+      "first_reverted_at": "2026-07-01",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Dangers in My Heart: The Movie",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-14",
+      "discovered_at": "2026-07-01T11:17:56.646913",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-01",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Barnes & Noble"
+      ]
+    },
+    {
+      "title": "Blades of the Guardians",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "",
+      "discovered_at": "2026-07-01T11:17:56.831367",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-01",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Amazon Video",
+        "Apple TV Store",
+        "Fandango At Home"
       ]
     }
   ],
-  "enrichment_duration_seconds": 394.09,
+  "enrichment_duration_seconds": 550.32,
   "error_details": [],
   "total_errors": 0
 }
