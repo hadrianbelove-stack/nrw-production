@@ -277,43 +277,50 @@ reality kept it.
 
 ---
 
-## The catch: detecting when a parked restoration reaches VOD (multi-signal)
+## The catch: detecting when a parked restoration reaches VOD (multiple discovery methods)
 
 Separate problem from the verification alert above. A parked restoration is
 tracked *before* it's watchable; the **catch** is knowing when its *specific new
-version* actually reaches US VOD. This is genuinely hard because JustWatch/TMDB
-report availability at the **film** level, not the **version** level — they can't
-tell a 2025 4K restoration from a 2009 transfer on the same title. Measured
-2026-06-30: **44% of parked restorations have an old transfer already streaming**
-while the restoration itself is not on VOD, so a presence check alone is wrong
-nearly half the time (see Empirical findings above).
+version* actually reaches US VOD.
 
-So the catch is a **research question, not a data lookup** — and it runs as
-**several parallel lanes, no one of them the sole catch:**
+The design intent is **several independent discovery methods, each a real avenue on
+its own** — built out deliberately for **coverage**, because no single method sees
+every release (mainstream vs boutique, disc vs digital, heavily-covered vs
+obscure). They **compound**: each catches releases the others miss. This is the
+*opposite* of one gatekeeper with subordinate helpers — a growing portfolio of
+peers, and we expect to keep adding methods as new avenues surface.
 
-- **Primary confirm — version-aware research verdict.** A grounded per-film web
-  research step (`gemini_scraper/restoration_vod.py`, per the catch plan under
-  `.claude/plans/`) that reads the restored cut's runtime, 4K/Dolby Vision specs,
-  and the distributor/lab credited in the listing to decide *restoration vs old
-  transfer*, with source URLs. **This is the decision.** Validated 2026-06-28/30:
-  it resolved every hard case (Gold Rush = old transfer streaming, restoration
-  theatrical-only; Fight Club = restoration on VOD since 2026-05-12; Yi Yi =
-  restoration on Apple 4K only, Criterion Channel still the old HD transfer).
-- **Cheap triggers — decide *when* to spend a research call (never surface alone):**
-  - Structured JustWatch change: a new provider, or a new digital `_4K` offer.
-  - Listing-description scan: Playwright-fetch the Amazon/Apple listing and scan
-    the synopsis for restoration credits (version-aware; absence is inconclusive).
-  - **News-gap "second cluster" (below).**
-  - The verification alert firing (a calendar promise came due).
-- **Backstop — periodic research sweep** of still-parked titles (monthly) — catches
-  silent/obscure releases no trigger fired on.
+One hazard cuts across all of them — **version-blindness:** JustWatch/TMDB report
+availability at the **film** level, not the **version** level, so they can't tell a
+2025 4K restoration from a 2009 transfer on the same title (measured 2026-06-30:
+**44% of parked restorations have an old transfer already streaming** while the
+restoration itself is not on VOD). So any method that keys on bare *availability*
+adds a version check before surfacing; a method that already reads the version
+doesn't. That's a per-method refinement — not a rule that routes everything through
+one catch.
 
-**Rule:** a trigger only *promotes* a title to a research call; the research
-verdict (plus a JustWatch cross-check for anti-hallucination) is what actually
-surfaces it. No single lane — not JW, not the news gap, not the listing scan — is
-trusted as the catch on its own.
+Methods so far (peers; the list will grow):
 
-### News-gap "second cluster" trigger (added 2026-06-30 — one lane, not the catch)
+- **News / press monitoring** — the news-gap "second cluster" (below) plus the
+  Google News keyword feed. Event-driven and cheap; catches well-covered releases
+  as they ship; blind on obscure titles.
+- **JustWatch / provider change detection** — a new provider or a new digital `_4K`
+  offer on a tracked title. Broad reach; version-blind, so it adds a version check.
+- **Listing-description scan** — Playwright-read the Amazon/Apple synopsis for
+  restoration credits. Version-aware when the listing spells it out (absence is
+  inconclusive).
+- **Grounded per-film research** — reads the restored cut's runtime, 4K/Dolby
+  Vision specs, and the credited lab to decide *restoration vs old transfer*, with
+  sources (`gemini_scraper/restoration_vod.py`, per the catch plan under
+  `.claude/plans/`). A strong standalone method — validated 2026-06-28/30 on every
+  hard case (Gold Rush, Fight Club, Yi Yi) — that also runs as a periodic sweep to
+  catch silent/obscure releases nothing else flagged.
+- **Verification alert** — a calendar promise coming due (see above).
+
+Each method has different coverage gaps (obscure vs mainstream, disc vs digital,
+cheap-continuous vs expensive-periodic) — which is the whole reason to run several.
+
+### News-gap "second cluster" method (added 2026-06-30 — one discovery method among several)
 Idea (user, 2026-06-30): a restoration that reaches VOD throws **two separated
 bursts** of press — an announcement cluster (Cannes Classics / "4K restoration
 premieres"), a gap of months, then a home-release cluster ("now on 4K UHD /
@@ -338,14 +345,15 @@ outcomes (`/tmp/news_timeline.py`, sandbox). Vocab buckets per month: **ANN**
 - **Caveat 2 — "digital" is leaky + version-blind.** It fires when a digital
   release is *announced*, not when it's live (Dogma: `DIG` in June, actual VOD
   December), and it fires for a disc-only title's *old transfer* being digital
-  (Return of the Living Dead). So the second cluster is a **trigger, not proof** —
-  it hands off to the version-aware research confirm.
+  (Return of the Living Dead). So a "digital" burst here isn't proof the
+  restoration is on VOD — this method adds the version check before surfacing, the
+  same safeguard the JW method uses.
 
-Role: a cheap trigger that fires the research verdict for the ~half of titles with
-real press; the periodic research sweep remains the backstop for the silent/obscure
-half. Reuse the Google News RSS windowed-sweep machinery already prototyped
-(`pipeline/distributors/googlenews.py`); per-title timeline + vocab tagging is
-`/tmp/news_timeline.py`.
+Role: a standalone, event-driven discovery method for the ~half of titles with real
+press coverage; it doesn't need to see everything — the obscure/silent half is
+covered by other methods (e.g. the periodic research sweep). Reuse the Google News
+RSS windowed-sweep machinery already prototyped (`pipeline/distributors/googlenews.py`);
+per-title timeline + vocab tagging is `/tmp/news_timeline.py`.
 
 ## Data model
 
