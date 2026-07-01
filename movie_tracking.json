@@ -243558,14 +243558,19 @@
     "162064": {
       "title": "Letty Lynton",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-06-30",
       "digital_date": "2026-06-30",
       "providers": {},
       "intake_pass": "A",
       "_jw_revert_count": 2,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-30"
+      "enriched": false,
+      "enrichment_date": null,
+      "_enrichment_attempts": 0,
+      "_added_manually": true,
+      "_added_at": "2026-07-01",
+      "_reissue": true,
+      "reissue_label": ""
     },
     "1723013": {
       "title": "Hibla 2",
@@ -244066,6 +244071,29 @@
         "YouTube"
       ],
       "has_providers": false
+    },
+    "26890": {
+      "title": "I Shot Andy Warhol",
+      "status": "available",
+      "digital_date": "2026-06-12",
+      "enriched": true,
+      "enrichment_date": "2026-07-01",
+      "has_providers": false,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "poster": "https://image.tmdb.org/t/p/w500/8BLETXcQDxooKo8NubmmJ1psIhb.jpg",
+      "year": 1996,
+      "genres": [
+        "Drama"
+      ],
+      "_discovery_source": "manual_add",
+      "_added_manually": true,
+      "_added_at": "2026-07-01",
+      "_reissue": true,
+      "reissue_label": "30th Anniversary 4K Restoration"
     }
   }
 }
