@@ -54,6 +54,7 @@ import com.nrw.app.data.Movie
 import com.nrw.app.data.getDisplayDate
 import com.nrw.app.ui.components.DateRowHeader
 import com.nrw.app.ui.components.FilterChips
+import com.nrw.app.ui.components.GenreOverlay
 import com.nrw.app.ui.components.MovieCard
 import com.nrw.app.ui.components.TrailersCard
 import com.nrw.app.ui.theme.Background
@@ -99,6 +100,12 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+
+    // GENRE pulldown: overlay open state + the control's label (active genre name, else "GENRE")
+    var genreOverlayOpen by remember { mutableStateOf(false) }
+    val activeGenre = uiState.activeFilters.firstOrNull()
+    val genreLabel = activeGenre?.displayName?.uppercase() ?: "GENRE"
+    val hasActiveGenre = uiState.activeFilters.isNotEmpty()
 
     // Create grid items with trailers card and date strips
     val gridItems = remember(uiState.filteredMovies, uiState.playlistUrl, uiState.showHighlightsOnly, uiState.slopMode) {
@@ -149,8 +156,6 @@ fun HomeScreen(
 
                     // Filter chips
                     FilterChips(
-                        activeFilters = uiState.activeFilters,
-                        onFilterToggled = { viewModel.toggleFilter(it) },
                         slopMode = uiState.slopMode,
                         onSlopModeToggle = { viewModel.cycleSlopMode() },
                         hideFest = uiState.hideFest,
@@ -158,7 +163,10 @@ fun HomeScreen(
                         showPreorders = uiState.showPreorders,
                         onShowPreordersToggle = { viewModel.toggleShowPreorders() },
                         showHighlightsOnly = uiState.showHighlightsOnly,
-                        onShowHighlightsToggle = { viewModel.toggleShowHighlights() }
+                        onShowHighlightsToggle = { viewModel.toggleShowHighlights() },
+                        genreLabel = genreLabel,
+                        hasActiveGenre = hasActiveGenre,
+                        onGenreClick = { genreOverlayOpen = true }
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
@@ -187,6 +195,15 @@ fun HomeScreen(
                     }
                 }
             }
+        }
+
+        // GENRE pulldown overlay (renders over the wall; collapses the genre chips)
+        if (genreOverlayOpen) {
+            GenreOverlay(
+                activeFilters = uiState.activeFilters,
+                onFilterToggled = { viewModel.toggleFilter(it) },
+                onDismiss = { genreOverlayOpen = false }
+            )
         }
     }
 }

@@ -1,15 +1,21 @@
 package com.nrw.app.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -45,8 +53,6 @@ private val FocusCyan = Color(0xFF00FFCC)
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun FilterChips(
-    activeFilters: Set<FilterCategory>,
-    onFilterToggled: (FilterCategory) -> Unit,
     slopMode: String = "all",
     onSlopModeToggle: () -> Unit = {},
     hideFest: Boolean = true,
@@ -55,6 +61,9 @@ fun FilterChips(
     onShowPreordersToggle: () -> Unit = {},
     showHighlightsOnly: Boolean = false,
     onShowHighlightsToggle: () -> Unit = {},
+    genreLabel: String = "GENRE",
+    hasActiveGenre: Boolean = false,
+    onGenreClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     TvLazyRow(
@@ -62,13 +71,48 @@ fun FilterChips(
         contentPadding = PaddingValues(horizontal = 32.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        items(FilterCategory.values().toList()) { category ->
-            val isSelected = activeFilters.contains(category)
+        // One clean row (matches web): SLOP FILTER · PRE-ORDER · FESTS · SELECTS · GENRE.
+        item {
+            // SLOP is first among the toggles (matches canonical web order).
+            val slopLabel = when (slopMode) { "only" -> "SLOP ONLY"; "free" -> "SLOP FREE"; else -> "SLOP FILTER" }
+            val slopAccent = if (slopMode == "only") Color(0xFFFF9500) else SlopTeal
+            MetaTogglePill(
+                isActive = slopMode != "all",
+                activeLabel = slopLabel,
+                inactiveLabel = slopLabel,
+                onClick = onSlopModeToggle,
+                accentColor = slopAccent
+            )
+        }
 
-            FilterPill(
-                text = category.displayName,
-                isSelected = isSelected,
-                onClick = { onFilterToggled(category) }
+        item {
+            MetaTogglePill(
+                isActive = showPreorders,
+                activeLabel = "PRE-ORDERS",
+                inactiveLabel = "NO PRE-ORDERS",
+                onClick = onShowPreordersToggle,
+                accentColor = if (showPreorders) Color(0xFF7C3AED) else SlopTeal
+            )
+        }
+
+        item {
+            MetaTogglePill(
+                isActive = !hideFest,
+                activeLabel = "FESTS",
+                inactiveLabel = "NO FEST",
+                onClick = onHideFestToggle,
+                accentColor = if (!hideFest) Color(0xFFF59E0B) else SlopTeal
+            )
+        }
+
+        item {
+            // Identity color when active (matches banners + date strips)
+            MetaTogglePill(
+                isActive = showHighlightsOnly,
+                activeLabel = "SELECTS",
+                inactiveLabel = "SELECTS",
+                onClick = onShowHighlightsToggle,
+                accentColor = if (showHighlightsOnly) Color(0xFF00D4AA) else SlopTeal
             )
         }
 
@@ -85,46 +129,11 @@ fun FilterChips(
         }
 
         item {
-            // SLOP is first among the toggles (matches canonical web order).
-            val slopLabel = when (slopMode) { "only" -> "SLOP ONLY"; "free" -> "SLOP FREE"; else -> "SLOP FILTER" }
-            val slopAccent = if (slopMode == "only") Color(0xFFFF9500) else SlopTeal
-            MetaTogglePill(
-                isActive = slopMode != "all",
-                activeLabel = slopLabel,
-                inactiveLabel = slopLabel,
-                onClick = onSlopModeToggle,
-                accentColor = slopAccent
-            )
-        }
-
-        item {
-            MetaTogglePill(
-                isActive = !hideFest,
-                activeLabel = "FESTS",
-                inactiveLabel = "NO FEST",
-                onClick = onHideFestToggle,
-                accentColor = if (!hideFest) Color(0xFFF59E0B) else SlopTeal
-            )
-        }
-
-        item {
-            MetaTogglePill(
-                isActive = showPreorders,
-                activeLabel = "PRE-ORDERS",
-                inactiveLabel = "NO PRE-ORDERS",
-                onClick = onShowPreordersToggle,
-                accentColor = if (showPreorders) Color(0xFF7C3AED) else SlopTeal
-            )
-        }
-
-        item {
-            // Identity color when active (matches banners + date strips)
-            MetaTogglePill(
-                isActive = showHighlightsOnly,
-                activeLabel = "SELECTS",
-                inactiveLabel = "SELECTS",
-                onClick = onShowHighlightsToggle,
-                accentColor = if (showHighlightsOnly) Color(0xFF00D4AA) else SlopTeal
+            // GENRE pulldown control (replaces the genre chips; opens the genre overlay)
+            GenreControl(
+                label = genreLabel,
+                hasActive = hasActiveGenre,
+                onClick = onGenreClick
             )
         }
     }
@@ -188,7 +197,8 @@ private fun MetaTogglePill(
 private fun FilterPill(
     text: String,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
@@ -212,7 +222,7 @@ private fun FilterPill(
 
     Surface(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .onFocusChanged { isFocused = it.isFocused },
         shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(14.dp)),
         colors = ClickableSurfaceDefaults.colors(
@@ -254,4 +264,111 @@ private fun FilterPill(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
         )
     }
+}
+
+/**
+ * GENRE pulldown control — quiet teal-outline pill + caret (matches the desktop
+ * .genre-control). Opens the genre overlay on click.
+ */
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun GenreControl(
+    label: String,
+    hasActive: Boolean,
+    onClick: () -> Unit
+) {
+    var isFocused by remember { mutableStateOf(false) }
+    val accent = SlopTeal
+    val borderColor = when {
+        isFocused -> accent
+        hasActive -> accent.copy(alpha = 0.55f)
+        else -> accent.copy(alpha = 0.35f)
+    }
+    val textColor = if (hasActive || isFocused) accent else accent.copy(alpha = 0.75f)
+
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.onFocusChanged { isFocused = it.isFocused },
+        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(14.dp)),
+        colors = ClickableSurfaceDefaults.colors(
+            containerColor = Color.Transparent,
+            focusedContainerColor = accent.copy(alpha = 0.08f),
+            pressedContainerColor = Color.Transparent
+        ),
+        border = ClickableSurfaceDefaults.border(
+            border = androidx.tv.material3.Border(
+                border = BorderStroke(1.dp, borderColor),
+                shape = RoundedCornerShape(14.dp)
+            ),
+            focusedBorder = androidx.tv.material3.Border(
+                border = BorderStroke(2.dp, accent),
+                shape = RoundedCornerShape(14.dp)
+            )
+        ),
+        scale = ClickableSurfaceDefaults.scale(focusedScale = 1.1f, pressedScale = 0.95f)
+    ) {
+        Text(
+            text = "$label  ▾",
+            color = textColor,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+        )
+    }
+}
+
+/**
+ * GENRE overlay — a compact horizontal strip of genre chips just below the bar
+ * (matches web/tvOS). Selecting a chip applies it and dismisses; Back dismisses.
+ */
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+fun GenreOverlay(
+    activeFilters: Set<FilterCategory>,
+    onFilterToggled: (FilterCategory) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val firstFocus = remember { FocusRequester() }
+    BackHandler(onBack = onDismiss)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.35f))
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // sit just below the header + filter bar
+            Spacer(modifier = Modifier.height(150.dp))
+            Surface(
+                onClick = {},
+                shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(16.dp)),
+                colors = ClickableSurfaceDefaults.colors(
+                    containerColor = Color(0xFF14141F),
+                    focusedContainerColor = Color(0xFF14141F),
+                    pressedContainerColor = Color(0xFF14141F)
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 40.dp)
+            ) {
+                TvLazyRow(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    val genres = FilterCategory.values().toList()
+                    items(genres) { category ->
+                        val isFirst = category == genres.first()
+                        FilterPill(
+                            text = category.displayName,
+                            isSelected = activeFilters.contains(category),
+                            onClick = { onFilterToggled(category); onDismiss() },
+                            modifier = if (isFirst) Modifier.focusRequester(firstFocus) else Modifier
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) { firstFocus.requestFocus() }
 }
