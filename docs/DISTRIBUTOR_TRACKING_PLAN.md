@@ -2,7 +2,7 @@
 
 > Status: **proposed subproject** (multi-session). Not yet started.
 > Owner: TBD (hand off to a dedicated agent window + branch).
-> Last updated: 2026-06-21.
+> Last updated: 2026-06-30.
 
 ## Goal
 Proactively surface new releases from a curated set of arthouse / restoration
@@ -141,6 +141,41 @@ leads just wait until something digital/theatrical confirms them.
   sneakers, ecology). New hard part: **title extraction from headlines** (titles are in prose,
   often quoted) — quoted-title-first + an LLM fallback; leans on the unmatched review sink.
 
+### Empirical findings — restoration → VOD conversion (measured 2026-06-30)
+Ran a grounded web-research agent over **50 genuine restorations that premiered
+10–30 months before 2026-06-30** (old enough to have converted if they were going
+to). Spreadsheet: `~/Downloads/restoration_conversion_study.xlsx`.
+
+- **Conversion is only 20/50 = 40%.** The rest as of today: 38% still
+  theatrical-touring, 20% disc-only, 2% announced-not-out. A theatrical/festival
+  premiere presages VOD **less than half the time** on this horizon — so a parked
+  restoration must never be treated as a guaranteed future arrival.
+- **When they do convert, it's fast: median 4 months** premiere→VOD (11 of 20
+  within 6 months, only 1 past 12). Conversion is bimodal — quick, or stalled
+  indefinitely; there's little slow trickle.
+- **Boutique/festival restorations — the lane's target — convert worst:** MoMA
+  To Save & Project 1/7 (14%), UCLA Festival of Preservation 3/8 (38%), Cannes
+  Classics 5/14 (36%); broader Google News 11/21 (52%). More time doesn't rescue
+  them — the oldest cohort (28-month UCLA) mostly landed disc-only.
+- **44% old-transfer false-positive rate.** 22 of 50 restorations have an *older
+  transfer* streaming on JustWatch while the restoration itself is NOT on VOD
+  (Gold Rush, Bend of the River, Pink Narcissus, Diva, Curse of Frankenstein…).
+  A naive "JW says available → surface it" catch would be **wrong 44% of the
+  time** — hard proof the catch must be *version-aware*, not a presence check.
+- **Festival-intake noise: 9 of 59 (15%)** queued titles were *new* films/docs
+  Cannes Classics programs alongside restorations (My Mom Jayne, Welcome to
+  Lynchland, I Love Peru…). Festival scrapers need an "is this actually a
+  restoration" filter at intake.
+
+**Design consequences:**
+- "Theatrical-only" is a **provisional, keep-watching** state, not a verdict —
+  store `{status, last_confirmed}` and re-check; never conclude a title will stall.
+- **Park clock ≈ 12 months.** Converters land within ~6 months, so a title still
+  theatrical-only after ~12 months is almost certainly disc-only-or-never →
+  downgrade to a low-priority list (don't drop — a late disc→digital move still
+  happens), rather than re-researching it at full cadence forever.
+- **Monthly re-check cadence** matches the 4-month median lag.
+
 ### What already exists (reuse, don't reinvent)
 - `admin/distributor_sources.json` — curated label → `{wikipedia_*page, tmdb_company_id}`.
   Already includes **Kino Lorber (39134)**, A24, NEON, IFC, Magnolia, Film Movement,
@@ -241,6 +276,76 @@ reality kept it.
   into the existing Concerns inputs). The morning skill already renders Concerns.
 
 ---
+
+## The catch: detecting when a parked restoration reaches VOD (multi-signal)
+
+Separate problem from the verification alert above. A parked restoration is
+tracked *before* it's watchable; the **catch** is knowing when its *specific new
+version* actually reaches US VOD. This is genuinely hard because JustWatch/TMDB
+report availability at the **film** level, not the **version** level — they can't
+tell a 2025 4K restoration from a 2009 transfer on the same title. Measured
+2026-06-30: **44% of parked restorations have an old transfer already streaming**
+while the restoration itself is not on VOD, so a presence check alone is wrong
+nearly half the time (see Empirical findings above).
+
+So the catch is a **research question, not a data lookup** — and it runs as
+**several parallel lanes, no one of them the sole catch:**
+
+- **Primary confirm — version-aware research verdict.** A grounded per-film web
+  research step (`gemini_scraper/restoration_vod.py`, per the catch plan under
+  `.claude/plans/`) that reads the restored cut's runtime, 4K/Dolby Vision specs,
+  and the distributor/lab credited in the listing to decide *restoration vs old
+  transfer*, with source URLs. **This is the decision.** Validated 2026-06-28/30:
+  it resolved every hard case (Gold Rush = old transfer streaming, restoration
+  theatrical-only; Fight Club = restoration on VOD since 2026-05-12; Yi Yi =
+  restoration on Apple 4K only, Criterion Channel still the old HD transfer).
+- **Cheap triggers — decide *when* to spend a research call (never surface alone):**
+  - Structured JustWatch change: a new provider, or a new digital `_4K` offer.
+  - Listing-description scan: Playwright-fetch the Amazon/Apple listing and scan
+    the synopsis for restoration credits (version-aware; absence is inconclusive).
+  - **News-gap "second cluster" (below).**
+  - The verification alert firing (a calendar promise came due).
+- **Backstop — periodic research sweep** of still-parked titles (monthly) — catches
+  silent/obscure releases no trigger fired on.
+
+**Rule:** a trigger only *promotes* a title to a research call; the research
+verdict (plus a JustWatch cross-check for anti-hallucination) is what actually
+surfaces it. No single lane — not JW, not the news gap, not the listing scan — is
+trusted as the catch on its own.
+
+### News-gap "second cluster" trigger (added 2026-06-30 — one lane, not the catch)
+Idea (user, 2026-06-30): a restoration that reaches VOD throws **two separated
+bursts** of press — an announcement cluster (Cannes Classics / "4K restoration
+premieres"), a gap of months, then a home-release cluster ("now on 4K UHD /
+digital / streaming"). Watching each parked title's Google News timeline for that
+**second cluster** is a cheap, event-driven "something shipped — look now" trigger.
+
+Tested 2026-06-30 — windowed monthly Google News RSS over 13 films spanning
+outcomes (`/tmp/news_timeline.py`, sandbox). Vocab buckets per month: **ANN**
+(restoration/Cannes/premiere), **THE** (theatrical/screening), **DISC**
+(Blu-ray/UHD/SteelBook), **DIG** (digital/VOD/streaming/rent/buy/platforms).
+
+- **Confirmed directionally.** Converters show announcement → gap → a late **DIG**
+  burst; disc-only show a late **DISC** burst with no digital; stallers show only
+  ANN/THE chatter, no second cluster. E.g. Gold Rush (staller): `ANN×8` at Cannes,
+  then 13 months of only ANN/THE. Hard Boiled (converter): `ANN×6` May → `DIG`
+  June = its actual VOD date. Second-cluster timing matched the ~4-month median
+  lag, so a **monthly** re-check is the right cadence.
+- **Caveat 1 — blind on obscure titles.** 7th Heaven, Shoulder Arms generate
+  `n≈1/month` — too little press for any cluster. These archival/boutique
+  restorations are exactly the lane's target, so news-gap has good precision but
+  **low recall on the obscure end**; it cannot be the sole catch.
+- **Caveat 2 — "digital" is leaky + version-blind.** It fires when a digital
+  release is *announced*, not when it's live (Dogma: `DIG` in June, actual VOD
+  December), and it fires for a disc-only title's *old transfer* being digital
+  (Return of the Living Dead). So the second cluster is a **trigger, not proof** —
+  it hands off to the version-aware research confirm.
+
+Role: a cheap trigger that fires the research verdict for the ~half of titles with
+real press; the periodic research sweep remains the backstop for the silent/obscure
+half. Reuse the Google News RSS windowed-sweep machinery already prototyped
+(`pipeline/distributors/googlenews.py`); per-title timeline + vocab tagging is
+`/tmp/news_timeline.py`.
 
 ## Data model
 
