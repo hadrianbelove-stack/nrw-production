@@ -84802,24 +84802,38 @@
       },
       "watch_links": {},
       "links": {
-        "wikipedia": null,
-        "trailer": null,
-        "rt": null
+        "wikipedia": "https://en.wikipedia.org/wiki/I_Shot_Andy_Warhol",
+        "trailer": "https://www.youtube.com/watch?v=qAQRCcQlXXE",
+        "rt": "https://www.rottentomatoes.com/m/i_shot_andy_warhol",
+        "cast_wiki": {
+          "Lili Taylor": "https://en.wikipedia.org/wiki/Lili_Taylor",
+          "Jared Harris": "https://en.wikipedia.org/wiki/Jared_Harris",
+          "Martha Plimpton": "https://en.wikipedia.org/wiki/Martha_Plimpton"
+        },
+        "metacritic": "https://www.metacritic.com/movie/i-shot-andy-warhol/",
+        "imdb": "https://www.imdb.com/title/tt0116594/",
+        "letterboxd": "https://letterboxd.com/film/i-shot-andy-warhol"
       },
       "bootstrap_date": false,
       "manually_corrected": false,
-      "runtime": null,
-      "rt_score": null,
-      "studio": null,
+      "runtime": 103,
+      "rt_score": "79%",
+      "studio": "BBC Arena",
       "budget": 0,
-      "country": null,
+      "country": "United States of America",
       "original_language": null,
       "original_title": "I Shot Andy Warhol",
       "crew": {
-        "director": null,
-        "cast": []
+        "director": "Mary Harron",
+        "cast": [
+          "Lili Taylor",
+          "Jared Harris",
+          "Martha Plimpton",
+          "Lothaire Bluteau",
+          "Anna Thomson"
+        ]
       },
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_minimal_entry": true,
       "_added_manually": true,
       "_discovered_at": "2026-07-01T22:11:09.751027",
@@ -84838,7 +84852,52 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-07-01",
+      "imdb_rating": "6.6",
+      "letterboxd_score": "3.5",
+      "keywords": [
+        "new york city",
+        "based on true story",
+        "radical",
+        "woman director",
+        "1960s",
+        "independent film"
+      ],
+      "_wiki_language_count": 19,
+      "wikidata_distributors": [
+        "Netflix",
+        "The Samuel Goldwyn Company"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "metacritic_score": "75",
+      "_imdb_votes": 7455,
+      "awards": "5 wins & 7 nominations",
+      "box_office": "$1,875,527",
+      "_digital_date_source": "manual_override",
+      "_needs_review": false,
+      "_slop_reason": "score:1(mid_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "watch_links"
+      ],
+      "reissue_label": "30th Anniversary 4K Restoration",
+      "_reissue": true,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": null,
+        "is_staff_pick": false,
+        "is_restoration": true,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "display_title": "I Shot Andy Warhol",
+      "is_slop": false
     },
     {
       "id": "162064",
@@ -84857,24 +84916,37 @@
       },
       "watch_links": {},
       "links": {
-        "wikipedia": null,
+        "wikipedia": "https://en.wikipedia.org/wiki/Letty_Lynton",
         "trailer": null,
-        "rt": null
+        "rt": null,
+        "cast_wiki": {
+          "Joan Crawford": "https://en.wikipedia.org/wiki/Joan_Crawford",
+          "Robert Montgomery": "https://en.wikipedia.org/wiki/Robert_Montgomery_(actor)",
+          "Nils Asther": "https://en.wikipedia.org/wiki/Nils_Asther"
+        },
+        "imdb": "https://www.imdb.com/title/tt0023132/",
+        "letterboxd": "https://letterboxd.com/film/letty-lynton"
       },
       "bootstrap_date": false,
       "manually_corrected": false,
-      "runtime": null,
+      "runtime": 84,
       "rt_score": null,
-      "studio": null,
+      "studio": "Metro-Goldwyn-Mayer",
       "budget": 0,
-      "country": null,
+      "country": "United States of America",
       "original_language": null,
       "original_title": "Letty Lynton",
       "crew": {
-        "director": null,
-        "cast": []
+        "director": "Clarence Brown",
+        "cast": [
+          "Joan Crawford",
+          "Robert Montgomery",
+          "Nils Asther",
+          "Lewis Stone",
+          "May Robson"
+        ]
       },
-      "_enrichment_status": "pending",
+      "_enrichment_status": "completed",
       "_minimal_entry": true,
       "_added_manually": true,
       "_discovered_at": "2026-07-01T22:11:11.422035",
@@ -84893,7 +84965,45 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "reissue_label": "4K Restoration",
+      "_reissue": true,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": null,
+        "is_staff_pick": false,
+        "is_restoration": true,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "display_title": "Letty Lynton",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-07-01",
+      "imdb_rating": "6.7",
+      "letterboxd_score": "3.5",
+      "keywords": [
+        "pre-code"
+      ],
+      "_wiki_language_count": 13,
+      "wikidata_distributors": [
+        "Metro-Goldwyn-Mayer"
+      ],
+      "_imdb_votes": 669,
+      "_digital_date_source": "manual_override",
+      "_needs_review": false,
+      "is_slop": false,
+      "_slop_reason": "score:4(no_rt,mid_imdb,no_rt_link)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "watch_links",
+        "rt_score",
+        "trailer",
+        "metacritic_score"
+      ]
     }
   ],
   "staff_picks": [

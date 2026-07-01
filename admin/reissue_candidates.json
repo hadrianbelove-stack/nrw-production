@@ -500,7 +500,7 @@
         "country": "US"
       },
       "note_keyword_hit": false,
-      "status": "pending",
+      "status": "confirmed",
       "first_seen": "2026-06-30",
       "research": {
         "verdict": "maybe",
@@ -509,7 +509,9 @@
         "summary": "(research error: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Lightning dunning decision is deny for project: projects/1028095276103', 'status': 'PERMISSION_DENIED'}})",
         "source_url": "",
         "error": true
-      }
+      },
+      "confirmed_label": "",
+      "confirmed_at": "2026-07-01"
     },
     "26890": {
       "tmdb_id": "26890",
@@ -522,7 +524,7 @@
         "country": "US"
       },
       "note_keyword_hit": true,
-      "status": "pending",
+      "status": "confirmed",
       "first_seen": "2026-06-30",
       "research": {
         "verdict": "maybe",
@@ -531,8 +533,11 @@
         "summary": "(research error: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Lightning dunning decision is deny for project: projects/1028095276103', 'status': 'PERMISSION_DENIED'}})",
         "source_url": "",
         "error": true
-      }
+      },
+      "confirmed_label": "30th Anniversary 4K Restoration",
+      "confirmed_at": "2026-07-01"
     }
   },
-  "last_researched": "2026-06-30T10:44:25.226959"
+  "last_researched": "2026-06-30T10:44:25.226959",
+  "last_confirmed": "2026-07-01T15:16:22.877558"
 }
