@@ -230,6 +230,7 @@ private fun MovieDetail(
     // Find trailer URL (only info option we use on TV)
     val trailerOption = infoOptions.find { it.type == "trailer" }
     val rtInfo = movie.getRtInfo()
+    val context = LocalContext.current  // for tappable pull-quote review links below
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Backdrop image with gradient overlay
