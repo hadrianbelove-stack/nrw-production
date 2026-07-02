@@ -52,18 +52,7 @@ const NRWMobile = {
         mgmplus: { color: '#000000', textColor: '#fff' },
     },
 
-    // Date strips adopt the active filter's color when exactly one filter is on
-    STRIP_COLORS: {
-        'indie': '#00d4aa',
-        'horror': '#ff5e57',
-        'action': '#ff9500',
-        'comedy': '#ffd32a',
-        'family': '#2ed573',
-        'thriller': '#d63031',
-        'foreign': '#e84393',
-        'documentary': '#4A90D9',
-        'restorations': '#C8A951'
-    },
+    STRIP_COLORS: NRWConfig.STRIP_COLORS,
 
     // DOM references (populated in init)
     dom: {},
@@ -163,8 +152,8 @@ const NRWMobile = {
             if (dateB.getTime() !== dateA.getTime()) return dateB - dateA;
 
             // Same date: staff picks first
-            const aStaff = a.filters?.is_staff_pick || this.staffPicks.includes(String(a.id));
-            const bStaff = b.filters?.is_staff_pick || this.staffPicks.includes(String(b.id));
+            const aStaff = NRWConfig.isStaffPick(a, this.staffPicks);
+            const bStaff = NRWConfig.isStaffPick(b, this.staffPicks);
             if (aStaff && !bStaff) return -1;
             if (!aStaff && bStaff) return 1;
             return 0;
@@ -392,13 +381,10 @@ const NRWMobile = {
                 if (this.showPreorders) return !!movie._is_preorder;
 
                 // Slop mode filter
-                const isSlop = !!movie.is_slop;
-                if (this.slopMode === 'free' && isSlop) return false;
-                if (this.slopMode === 'only' && !isSlop) return false;
+                if (!NRWConfig.matchesSlopMode(movie, this.slopMode)) return false;
 
                 // Highlights mode: only staff picks
-                if (this.showHighlightsOnly &&
-                    !(movie.filters?.is_staff_pick || movie.featured || this.staffPicks.includes(String(movie.id)))) return false;
+                if (this.showHighlightsOnly && !NRWConfig.isStaffPick(movie, this.staffPicks)) return false;
 
                 // Hide-fest mode: hide virtual screenings
                 if (this.hideFest && movie.filters?.is_virtual_screening) return false;
@@ -409,61 +395,15 @@ const NRWMobile = {
             if (movie._is_preorder && !this.showPreorders && !this.searchQuery
                 && !(!this.hideFest && movie.filters?.is_virtual_screening)) return false;
 
-            // Category filters (OR logic) — bypassed when search is active
+            // Category filters (OR logic) — bypassed when search is active.
+            // Tag tests live in shared-config.js (single source of truth with desktop).
             if (filters.size > 0 && !this.searchQuery) {
-                let matchesAny = false;
-                for (const filter of filters) {
-                    switch (filter) {
-                        case 'indie':
-                            if (movie.filters?.is_indie) matchesAny = true;
-                            break;
-                        case 'foreign':
-                            if (movie.filters?.is_foreign ||
-                                (movie.original_language && movie.original_language !== 'en')) matchesAny = true;
-                            break;
-                        case 'restorations':
-                            if (movie.filters?.is_restoration === true) matchesAny = true;
-                            break;
-                        case 'documentary':
-                            if (movie.filters?.is_documentary === true) matchesAny = true;
-                            break;
-                        case 'horror':
-                            if ((movie.genres || []).some(g => g.toLowerCase().includes('horror'))) matchesAny = true;
-                            break;
-                        case 'action':
-                            if ((movie.genres || []).some(g => g.toLowerCase().includes('action'))) matchesAny = true;
-                            break;
-                        case 'comedy':
-                            if ((movie.genres || []).some(g => g.toLowerCase().includes('comedy'))) matchesAny = true;
-                            break;
-                        case 'family':
-                            if ((movie.genres || []).some(g => g.toLowerCase().includes('family'))) matchesAny = true;
-                            break;
-                        case 'thriller':
-                            if ((movie.genres || []).some(g => g.toLowerCase().includes('thriller'))) matchesAny = true;
-                            break;
-                    }
-                    if (matchesAny) break;
-                }
-                if (!matchesAny) return false;
+                if (![...filters].some(f => NRWConfig.movieMatchesGenre(movie, f))) return false;
             }
 
-            // Search filter
+            // Search filter — shared with desktop
             if (this.searchQuery) {
-                const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-                const q = norm(this.searchQuery);
-                const title = norm(movie.title || '');
-                const origTitle = norm(movie.original_title || '');
-                const director = norm(movie.crew?.director || movie.director || '');
-                const synopsis = norm(movie.capsule || movie.synopsis || '');
-                const genres = norm((movie.genres || []).join(' '));
-                const country = norm(movie.country || '');
-                const year = String(movie.year || '');
-                const cast = norm((movie.crew?.cast || []).join(' '));
-
-                return title.includes(q) || origTitle.includes(q) || director.includes(q) ||
-                       synopsis.includes(q) || genres.includes(q) ||
-                       country.includes(q) || year.includes(q) || cast.includes(q);
+                return NRWConfig.matchesSearch(movie, this.searchQuery);
             }
 
             return true;
@@ -629,7 +569,7 @@ const NRWMobile = {
     },
 
     createGridItem(movie, index) {
-        const isStaffPick = movie.filters?.is_staff_pick || this.staffPicks.includes(String(movie.id));
+        const isStaffPick = NRWConfig.isStaffPick(movie, this.staffPicks);
         const isScreening = movie.filters?.is_virtual_screening;
         const streamingSvc = this.getGridStreamingService(movie);
 
@@ -968,7 +908,7 @@ const NRWMobile = {
             setTimeout(() => content.classList.remove(cls), 250);
         }
 
-        const isStaffPick = movie.filters?.is_staff_pick || this.staffPicks.includes(String(movie.id));
+        const isStaffPick = NRWConfig.isStaffPick(movie, this.staffPicks);
         const isScreening = movie.filters?.is_virtual_screening;
         const screeningInfo = movie.virtual_screening_info || {};
 

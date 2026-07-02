@@ -24,18 +24,7 @@ const NRW = {
     abbreviateCountry: NRWConfig.abbreviateCountry,
     lightboxCountry: NRWConfig.lightboxCountry,
 
-    // Date strips adopt the active filter's color when exactly one filter is on
-    STRIP_COLORS: {
-        'indie': '#00d4aa',
-        'horror': '#ff5e57',
-        'action': '#ff9500',
-        'comedy': '#ffd32a',
-        'family': '#2ed573',
-        'thriller': '#d63031',
-        'foreign': '#e84393',
-        'documentary': '#4A90D9',
-        'restorations': '#C8A951'
-    },
+    STRIP_COLORS: NRWConfig.STRIP_COLORS,
 
     resolveService: NRWConfig.resolveService,
     resolveVODService: NRWConfig.resolveVODService,
@@ -407,36 +396,9 @@ const NRW = {
         });
     },
 
-    // True if a movie carries a given genre/category tag. Genre views show
-    // EVERY film with the tag — slop and fests included — so this is tag-only,
-    // with no slop/fest gating.
-    movieMatchesGenre(movie, filter) {
-        switch (filter) {
-            case 'indie':        return !!movie.filters?.is_indie;
-            case 'foreign':      return !!(movie.filters?.is_foreign ??
-                                     (movie.original_language && movie.original_language !== 'en'));
-            case 'restorations': return !!movie.filters?.is_restoration;
-            case 'documentary':  return !!movie.filters?.is_documentary;
-            case 'horror':
-            case 'action':
-            case 'comedy':
-            case 'family':
-            case 'thriller':     return (movie.genres || []).some(g => g.toLowerCase().includes(filter));
-            default:             return false;
-        }
-    },
-
-    matchesSearch(movie, query) {
-        const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-        const nq = norm(query);
-        return norm(movie.title || '').includes(nq) ||
-               norm(movie.original_title || '').includes(nq) ||
-               norm(movie.crew?.director || '').includes(nq) ||
-               norm(movie.capsule || movie.synopsis || '').includes(nq) ||
-               norm((movie.genres || []).join(' ')).includes(nq) ||
-               norm(movie.country || '').includes(nq) ||
-               String(movie.year || '').includes(query);
-    },
+    // Shared with mobile — single source of truth in shared-config.js
+    movieMatchesGenre: NRWConfig.movieMatchesGenre,
+    matchesSearch: NRWConfig.matchesSearch,
 
     applyFilter() {
         const query = this.searchQuery;
@@ -456,15 +418,15 @@ const NRW = {
             if (this.showFest) return !!movie.filters?.is_virtual_screening;
             if (movie._is_preorder) return false;
 
-            if (this.showHighlightsOnly) return !!(movie.filters?.is_staff_pick || movie.featured);
+            if (this.showHighlightsOnly) return NRWConfig.isStaffPick(movie, this.staffPicks);
             // Slop view = slop films on the regular wall; fests live only in the Fests view
-            if (this.slopMode === 'only') return !!movie.is_slop && !movie.filters?.is_virtual_screening;
+            if (this.slopMode === 'only') return NRWConfig.matchesSlopMode(movie, 'only') && !movie.filters?.is_virtual_screening;
 
             // Genre view — every film with that tag, slop + fests included
             if (activeGenre) return this.movieMatchesGenre(movie, activeGenre);
 
             // Default wall: hide slop (unless slop toggle is on 'all'), hide fests
-            if (this.slopMode === 'free' && movie.is_slop) return false;
+            if (!NRWConfig.matchesSlopMode(movie, this.slopMode)) return false;
             if (movie.filters?.is_virtual_screening) return false;
             return true;
         });
@@ -543,8 +505,8 @@ const NRW = {
                 return dateB - dateA;  // Newest first
             }
             // Same date: staff picks first
-            const aStaffPick = a.filters?.is_staff_pick || this.staffPicks.includes(a.id);
-            const bStaffPick = b.filters?.is_staff_pick || this.staffPicks.includes(b.id);
+            const aStaffPick = NRWConfig.isStaffPick(a, this.staffPicks);
+            const bStaffPick = NRWConfig.isStaffPick(b, this.staffPicks);
             if (aStaffPick && !bStaffPick) return -1;
             if (!aStaffPick && bStaffPick) return 1;
             return 0;
@@ -700,7 +662,7 @@ const NRW = {
             const title = movie.title || 'Untitled';
             const year = movie.year || new Date(movie.digital_date).getFullYear();
             
-            const isStaffPick = movie.filters?.is_staff_pick || this.staffPicks.includes(movie.id);
+            const isStaffPick = NRWConfig.isStaffPick(movie, this.staffPicks);
             const staffPickClass = isStaffPick ? ' staff-pick-movie' : '';
 
             const formatShortDate = NRW.formatShortDate;

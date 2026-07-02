@@ -42,6 +42,19 @@ const NRWConfig = {
         plex:      { key: 'plex',      matches: ['plex'],            label: 'PLEX',       btnLabel: 'Watch on Plex', logo: null, wideLogo: 'services/plex_wide.png', fallback: true },
     },
 
+    // Date strips adopt the active filter's color when exactly one filter is on
+    STRIP_COLORS: {
+        'indie': '#00d4aa',
+        'horror': '#ff5e57',
+        'action': '#ff9500',
+        'comedy': '#ffd32a',
+        'family': '#2ed573',
+        'thriller': '#d63031',
+        'foreign': '#e84393',
+        'documentary': '#4A90D9',
+        'restorations': '#C8A951'
+    },
+
     // Country abbreviations — 3-letter Olympic codes (except UK stays UK)
     countryAbbrev: {
         // USA & UK kept as recognizable exceptions; everything else 3-letter (IOC-style).
@@ -173,6 +186,53 @@ const NRWConfig = {
             }
         }
         return null;
+    },
+
+    // True if a movie carries a given genre/category tag. Genre views show
+    // EVERY film with the tag — slop and fests included — so this is tag-only,
+    // with no slop/fest gating.
+    movieMatchesGenre(movie, filter) {
+        switch (filter) {
+            case 'indie':        return !!movie.filters?.is_indie;
+            case 'foreign':      return !!(movie.filters?.is_foreign ??
+                                     (movie.original_language && movie.original_language !== 'en'));
+            case 'restorations': return !!movie.filters?.is_restoration;
+            case 'documentary':  return !!movie.filters?.is_documentary;
+            case 'horror':
+            case 'action':
+            case 'comedy':
+            case 'family':
+            case 'thriller':     return (movie.genres || []).some(g => g.toLowerCase().includes(filter));
+            default:             return false;
+        }
+    },
+
+    // Accent-insensitive substring search across the fields users actually type
+    matchesSearch(movie, query) {
+        const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+        const nq = norm(query);
+        return norm(movie.title || '').includes(nq) ||
+               norm(movie.original_title || '').includes(nq) ||
+               norm(movie.crew?.director || movie.director || '').includes(nq) ||
+               norm((movie.crew?.cast || []).join(' ')).includes(nq) ||
+               norm(movie.capsule || movie.synopsis || '').includes(nq) ||
+               norm((movie.genres || []).join(' ')).includes(nq) ||
+               norm(movie.country || '').includes(nq) ||
+               String(movie.year || '').includes(query);
+    },
+
+    // Slop visibility: 'free' hides slop, 'only' shows only slop, 'all' lets everything through
+    matchesSlopMode(movie, mode) {
+        if (mode === 'free') return !movie.is_slop;
+        if (mode === 'only') return !!movie.is_slop;
+        return true;
+    },
+
+    // Staff pick ("Selects"): pipeline flag, featured, or the staff-picks list.
+    // IDs are mixed int/string in data.json — always compare as strings.
+    isStaffPick(movie, staffPicks) {
+        return !!(movie.filters?.is_staff_pick || movie.featured ||
+                  (staffPicks || []).some(id => String(id) === String(movie.id)));
     },
 
     // Render a tiny markdown subset (**bold**, *italic*) to safe HTML.
