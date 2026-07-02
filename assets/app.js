@@ -804,8 +804,10 @@ const NRW = {
                         <div class="card-front${hasStreamingFrame ? ' streaming-frame' : ''}"${hasStreamingFrame ? ` style="background:var(--svc-${streamingSvcClass},#444);padding:0 12px 12px;"` : ''}>
                             ${streamingBadgeHtml}
                             ${restorationBadge}
-                            <div class="poster-fallback"><span class="poster-fallback-title">${title}</span></div>
+                            <div class="poster-fallback" aria-hidden="true"><span class="poster-fallback-title">${title}</span></div>
                             <img src="${movie.poster || ''}"
+                                 alt="${title.replace(/"/g, '&quot;')} poster"
+                                 loading="lazy"
                                  onerror="this.style.display='none';"
                                  ${movie.poster ? '' : 'style="display:none"'}>
                             ${cardScoreHtml}
@@ -1889,6 +1891,22 @@ const NRW = {
                 this._lightboxGridNav(dirMap[e.key]);
             } else if (e.key === 'Enter' || e.key === ' ') {
                 this._lightboxActivateFocused(e);
+            } else if (e.key === 'Tab') {
+                // Focus trap — Tab must not escape to the header/wall behind the modal
+                const focusables = lightbox.querySelectorAll('a[href], button:not([disabled]), video, [tabindex]:not([tabindex="-1"])');
+                if (!focusables.length) { e.preventDefault(); return; }
+                const first = focusables[0];
+                const last = focusables[focusables.length - 1];
+                if (!lightbox.contains(document.activeElement)) {
+                    e.preventDefault();
+                    first.focus();
+                } else if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
             }
         }, true);  // capture phase — fires before video/iframe controls
     },
