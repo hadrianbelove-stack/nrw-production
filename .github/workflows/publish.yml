@@ -105,6 +105,15 @@ jobs:
           # Pages artifact below, never committed). Gives each movie a real link preview.
           python scripts/generate_share_pages.py
 
+      - name: Regenerate hero share card
+        # The site-level og:image (assets/share-card.png). Regenerated each deploy so
+        # the poster-wall collage stays current. Non-critical, same as above — a poster
+        # fetch failure must never break the deploy (the committed card is the fallback).
+        continue-on-error: true
+        run: |
+          echo "🖼  Regenerating hero share card (assets/share-card.png)..."
+          python scripts/generate_hero_card.py
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

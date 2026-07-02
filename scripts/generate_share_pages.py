@@ -46,9 +46,9 @@ META = (182, 182, 182)     # year • director line
 CAP = (226, 226, 226)      # capsule body
 POSTER_BG = (26, 26, 46)   # placeholder fill when a movie has no poster
 
-# Brand tagline, locked directly under the wordmark as a masthead. The second
-# slogan line ("Bringing back browsing.") is intentionally omitted on the card —
-# the share image leads with the movie, not the brand.
+# Brand tagline, locked directly under the wordmark as a masthead. (An older second
+# slogan line was retired site-wide 2026-07; the tagline is now this single line
+# everywhere — web, native apps, and the hero share card.)
 SLOGAN = "What came out, every day."
 
 CARD_W, CARD_H = 1200, 630
