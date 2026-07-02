@@ -687,3 +687,22 @@ trailer_hosting:
   trailer_gap_batch_size: 30         # Max movies to retry per trailer gap fill run
   trailer_gap_max_retries: 5         # Stop retrying after N failed attempts per movie
   trailer_gap_cooldown_days: 7       # Days between retry attempts for the same movie
+# Slop classifier Tier-3 scoring — read by scripts/slop_classifier.py.
+# These values MATCH the code's built-in defaults, so this section is
+# documentation-as-config: edit a number here to retune the classifier
+# without touching code. Missing keys fall back to the same defaults.
+# (Tier 1/2 studio + streaming lists still live in slop_classifier.py;
+# the prestige-festival list lives in scripts/detect_festivals.py.)
+slop_classifier:
+  score_threshold: 4        # score >= threshold -> slop
+  weights:
+    no_wiki: 2              # no Wikipedia article
+    no_rt: 2                # no Rotten Tomatoes score
+    no_imdb: 2              # no IMDb rating at all
+    low_imdb: 2             # IMDb <= 6.0
+    mid_imdb: 1             # IMDb 6.1 - 6.9
+    good_imdb: -1           # IMDb >= 7.0
+    tv_movie: 3             # TMDB content_type == tv_movie
+    no_rt_link: 1           # no RT page link (score may still exist via OMDb)
+    festival: -1            # listed in admin/festival_films.json
+    major_streamer: -1      # licensed on Netflix/Prime/Disney+/HBO/Max/Shudder

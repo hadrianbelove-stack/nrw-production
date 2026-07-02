@@ -6,10 +6,12 @@ Tiered logic:
   1. Prestige streaming (Max/HBO/MUBI…) → NOT SLOP; slop streaming (Crunchyroll) → SLOP
   2. Studio veto lists → SLOP (Hallmark, True Story, asylum…) or NOT SLOP (A24, Skydance, Factory 25…)
   2c. Indian commercial cinema → SLOP unless a major crossover hit
-  3. Score-based signals → SLOP if score >= 4. Signals:
+  3. Score-based signals → SLOP if score >= threshold (default 4). Weights are
+     tunable via the `slop_classifier:` section of config.yaml. Defaults:
        +2 no Wikipedia, +2 no RT score, +1 no RT link
-       IMDb: +2 if <=6.0, +1 if 6.1-6.9, -1 if >=7.0
-       -1 prestige festival (admin/festival_films.json)
+       IMDb: +2 missing or <=6.0, +1 if 6.1-6.9, -1 if >=7.0
+       +3 TV movie
+       -1 prestige festival (admin/festival_films.json, fed by detect_festivals.py)
        -1 major streamer (Netflix/Prime/Disney+/HBO/Max/Shudder; Tubi neutral)
 
 Run directly to apply is_slop to all films in data.json:
@@ -24,15 +26,8 @@ import os
 # ── Prestige festivals → -1 score signal (Tier 3) ────────────────────────────
 # Selection at a top festival is a quality signal that offsets the no-RT penalty
 # many arthouse/foreign films incur. Membership lives in admin/festival_films.json
-# (movie_id -> festival name), seeded manually and auto-fed from Wikipedia.
-PRESTIGE_FESTIVALS = {
-    'cannes', 'berlinale', 'berlin international film festival',
-    'international film festival rotterdam', 'iffr', 'rotterdam',
-    'sundance', 'telluride',
-    'new york film festival', 'nyff',
-    'venice film festival', 'venice international film festival', 'venezia',
-    'locarno',
-}
+# (movie_id -> festival name), seeded manually and auto-fed from Wikipedia by
+# scripts/detect_festivals.py — which owns the canonical prestige-festival list.
 
 _FESTIVAL_FILMS_PATH = 'admin/festival_films.json'
 _festival_films_cache = None
@@ -148,6 +143,32 @@ SLOP_STUDIOS = {
 }
 
 
+# ── Tier 3 scoring weights — tunable via config.yaml `slop_classifier:` ──────
+# The built-in defaults below ARE the shipped behavior; values in config.yaml
+# override them key-by-key, so a missing section or key changes nothing.
+DEFAULT_WEIGHTS = {
+    'no_wiki': 2, 'no_rt': 2, 'no_imdb': 2, 'low_imdb': 2, 'mid_imdb': 1,
+    'good_imdb': -1, 'tv_movie': 3, 'no_rt_link': 1,
+    'festival': -1, 'major_streamer': -1,
+}
+DEFAULT_THRESHOLD = 4
+
+_config_cache = None
+
+def _classifier_config():
+    """`slop_classifier:` section of config.yaml. Cached; tolerates a missing file."""
+    global _config_cache
+    if _config_cache is None:
+        try:
+            import yaml
+            with open('config.yaml') as f:
+                _config_cache = (yaml.safe_load(f) or {}).get('slop_classifier') or {}
+        except Exception as e:
+            print(f'slop_classifier: using built-in defaults (config.yaml unavailable: {e})')
+            _config_cache = {}
+    return _config_cache
+
+
 def _get_streaming_services(movie):
     """Return list of lowercase streaming service names."""
     wl = movie.get('watch_links') or {}
@@ -215,53 +236,55 @@ def classify_slop(movie):
             return True, f'indian_cinema_no_crossover:{lang}', 'strong'
         return False, f'indian_crossover_hit:{lang}', 'strong'
 
-    # Tier 3: Score-based signals
+    # Tier 3: Score-based signals (weights tunable in config.yaml `slop_classifier:`)
+    cfg = _classifier_config()
+    weights = {**DEFAULT_WEIGHTS, **(cfg.get('weights') or {})}
     score = 0
     reasons = []
     has_wiki = bool(links.get('wikipedia'))
 
     if not has_wiki:
-        score += 2
+        score += weights['no_wiki']
         reasons.append('no_wiki')
     if not movie.get('rt_score'):
-        score += 2
+        score += weights['no_rt']
         reasons.append('no_rt')
     imdb = movie.get('imdb_rating')
     if not imdb:
-        score += 2
+        score += weights['no_imdb']
         reasons.append('no_imdb')
     elif float(imdb) <= 6.0:
-        score += 2
+        score += weights['low_imdb']
         reasons.append('low_imdb')
     elif float(imdb) < 7.0:  # 6.1 - 6.9
-        score += 1
+        score += weights['mid_imdb']
         reasons.append('mid_imdb')
     else:  # imdb >= 7.0
-        score -= 1
+        score += weights['good_imdb']
         reasons.append('good_imdb')
     if movie.get('content_type') == 'tv_movie':
-        score += 3
+        score += weights['tv_movie']
         reasons.append('tv_movie')
     if not links.get('rt') and not links.get('rotten_tomatoes'):
-        score += 1
+        score += weights['no_rt_link']
         reasons.append('no_rt_link')
 
-    # Prestige festival selection → -1 (offsets the no-RT penalty arthouse films incur)
+    # Prestige festival selection (offsets the no-RT penalty arthouse films incur)
     fest = _festival_films().get(str(tmdb_id))
     if fest:
-        score -= 1
+        score += weights['festival']
         reasons.append(f'festival:{fest}')
 
-    # Major streamer (Netflix/Prime/HBO/Max) → -1 (licensing legitimacy signal)
+    # Major streamer (Netflix/Prime/HBO/Max) — licensing legitimacy signal
     for svc in _get_streaming_services(movie):
         if any(s in svc for s in MAJOR_STREAMING):
-            score -= 1
+            score += weights['major_streamer']
             reasons.append(f'major_streamer:{svc}')
             break
 
-    # Fixed threshold. Missing Wikipedia is already one signal (+2 above) —
+    # Missing Wikipedia is already one signal (+2 above) —
     # it is NOT also used to lower the bar (that double-counted it).
-    threshold = 4
+    threshold = cfg.get('score_threshold', DEFAULT_THRESHOLD)
 
     is_slop = score >= threshold
     return is_slop, f'score:{score}({",".join(reasons)})', 'weak'
