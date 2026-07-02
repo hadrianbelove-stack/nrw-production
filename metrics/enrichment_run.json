@@ -1,40 +1,31 @@
 {
-  "timestamp": "2026-07-01T11:27:11.112295",
-  "movies_requested": 16,
-  "movies_enriched": 9,
-  "movies_deferred": 7,
+  "timestamp": "2026-07-02T11:00:25.370776",
+  "movies_requested": 20,
+  "movies_enriched": 14,
+  "movies_deferred": 6,
   "deferred_details": [
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-01T11:17:38.882814",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 2,
-      "first_reverted_at": "2026-07-01",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "She's the He!",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-06-30",
-      "discovered_at": "2026-07-01T11:17:39.060619",
+      "discovered_at": "2026-07-02T10:43:58.882963",
       "discovery_source": "tmdb_type4",
       "revert_count": 3,
-      "first_reverted_at": "2026-07-01",
+      "first_reverted_at": "2026-07-02",
       "tmdb_platforms": []
     },
     {
       "title": "The Devil Wears Prada 2",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-06-30",
-      "discovered_at": "2026-07-01T11:17:39.291374",
+      "discovered_at": "2026-07-02T10:44:01.058414",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-01",
+      "first_reverted_at": "2026-07-02",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
+        "Apple TV Store",
         "Fandango At Home"
       ]
     },
@@ -42,52 +33,57 @@
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-01T11:17:40.863202",
+      "discovered_at": "2026-07-02T10:44:02.317433",
       "discovery_source": "tmdb_type4",
-      "revert_count": 23,
-      "first_reverted_at": "2026-07-01",
+      "revert_count": 24,
+      "first_reverted_at": "2026-07-02",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-01T11:17:41.057587",
+      "discovered_at": "2026-07-02T10:44:02.604177",
       "discovery_source": "tmdb_type4",
-      "revert_count": 14,
-      "first_reverted_at": "2026-07-01",
+      "revert_count": 15,
+      "first_reverted_at": "2026-07-02",
       "tmdb_platforms": []
-    },
-    {
-      "title": "The Dangers in My Heart: The Movie",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-07-01T11:17:56.646913",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-01",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Barnes & Noble"
-      ]
     },
     {
       "title": "Blades of the Guardians",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "",
-      "discovered_at": "2026-07-01T11:17:56.831367",
+      "discovered_at": "2026-07-02T10:44:22.016400",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-01",
+      "first_reverted_at": "2026-07-02",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
         "Apple TV Store",
         "Fandango At Home"
       ]
+    },
+    {
+      "title": "The Get Out",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "",
+      "discovered_at": "2026-06-20T13:15:45.065258",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-02",
+      "tmdb_platforms": [
+        "Amazon Video",
+        "Fandango At Home",
+        "Plex"
+      ],
+      "jw_platforms": [
+        "Amazon Video",
+        "Fandango At Home"
+      ]
     }
   ],
-  "enrichment_duration_seconds": 550.32,
+  "enrichment_duration_seconds": 945.85,
   "error_details": [],
   "total_errors": 0
 }

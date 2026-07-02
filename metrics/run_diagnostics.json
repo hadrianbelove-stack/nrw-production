@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-07-01T11:31:04.666412",
-  "duration_seconds": 2126.421323,
+  "timestamp": "2026-07-02T11:05:56.185984",
+  "duration_seconds": 2778.670477,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,72 +8,72 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 8.688691,
+      "duration_seconds": 11.834087,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-06-29 to 2026-07-01 (incremental mode, 23 intaked)\n\u2705 Movie intake complete: 23 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-06-01 to 2026-07-01\n   \ud83d\udccb Ein Ort, der sich Zuhause nennt (6 eps)"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-06-30 to 2026-07-02 (incremental mode, 33 intaked)\n\u2705 Movie intake complete: 33 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-06-02 to 2026-07-02\n   \ud83d\udccb The Taylor Swift Years - Schicksalsjahr"
     },
     {
       "name": "Research reissue candidates (Pass D)",
       "success": true,
-      "duration_seconds": 0.11814,
+      "duration_seconds": 0.120464,
       "error": null,
       "output_preview": "Reissue research: nothing to do (all pending candidates already researched).\n"
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 376.616702,
+      "duration_seconds": 382.647316,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 167 festival slugs\nScanning 167 festivals for catalogs...\n  Progress: 75/167 slugs | 27 scanned | 614 films indexed\n  Progress: 100/167 slugs | 52 scanned | 1143 films indexed\n  Progress: 125/167 slugs | 77 scanned | 1537 films indexed\n  Progress: 150/167 slugs | 102 scanned | 2002 films indexed\n  Done: 119 festivals, 113 with films, 48 failed, 2213 total films\n  Active: 2213 | Expired: 0 | Unique: 161"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 166 festival slugs\nScanning 166 festivals for catalogs...\n  Progress: 75/166 slugs | 27 scanned | 823 films indexed\n  Progress: 100/166 slugs | 52 scanned | 1292 films indexed\n  Progress: 125/166 slugs | 77 scanned | 1548 films indexed\n  Progress: 150/166 slugs | 102 scanned | 2034 films indexed\n  Done: 118 festivals, 113 with films, 48 failed, 2213 total films\n  Active: 2213 | Expired: 0 | Unique: 161"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 956.465912,
+      "duration_seconds": 1106.721448,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 18382 total movies\n\ud83d\udd0d Raw tracking filter: 14408 movies\n\ud83d\udd0d Assigned tracking_movies list: 14408\n\ud83d\udd0d Found 14408 movies in tracking status\n  Priority queue (last 180 days): 735 movies\n  Older movies: 13673 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 14408 movies for digital availability...\n\n  \u26a1 Prefetching discovery data for 14408 movies (8 workers)...\n  \u26a1 Prefetch: 1000/14408 movies"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 18418 total movies\n\ud83d\udd0d Raw tracking filter: 14433 movies\n\ud83d\udd0d Assigned tracking_movies list: 14433\n\ud83d\udd0d Found 14433 movies in tracking status\n  Priority queue (last 180 days): 742 movies\n  Older movies: 13691 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 14433 movies for digital availability...\n\n  \u26a1 Prefetching discovery data for 14433 movies (8 workers)...\n  \u26a1 Prefetch: 1000/14433 movies"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 551.345403,
+      "duration_seconds": 946.859706,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 13 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u2713 Blades of the Guardians: Amazon found\n      \u00b7 Blades of the Guardians: Fandang"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 6 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u2713 Blades of the Guardians: Amazon found\n      \u00b7 Blades of the Guardians: Fandango"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.679145,
+      "duration_seconds": 1.240491,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 1034 trailers and 93 subtitle files in B2 bucket\nSaved data.json: 0 stamped, 0 stale cleaned, 2 subs stamped\n\nStamp results:\n  Stamped:          0\n  Already had URL:  688\n  Stale cleaned:    0\n  Not in B2:        89\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 1043 trailers and 96 subtitle files in B2 bucket\nSaved data.json: 0 stamped, 0 stale cleaned, 2 subs stamped\n\nStamp results:\n  Stamped:          0\n  Already had URL:  688\n  Stale cleaned:    0\n  Not in B2:        93\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 160.472121,
+      "duration_seconds": 232.259451,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 263 of 777 wall movies (last 30 days)\n  \ud83c\udfac A Crime Story \u2014 Director Wikipedia added (Brian A. Metcalf)\n  \ud83c\udfac Enola Holmes 3 \u2014 Director Wikipedia added (Philip Barantini)\n  \ud83c\udfac Molotov Cocktail \u2014 Director Wikipedia added (Hosein Amiri Doumari)\n  + Shadows of Willow Cabin \u2014 new services added\n  + 40 Dates and 40 Nights \u2014 new services added\n  + Two Strangers Trying Not to Kill Each Other \u2014 new services added\n  \ud83d\udcda The Mission \u2014 Wikipedia link"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 271 of 781 wall movies (last 30 days)\n  \ud83c\udfac Louis C.K.: Ridiculous \u2014 Director Wikipedia added (Louis C.K.)\n  \ud83c\udfac Silent Friend \u2014 Director Wikipedia added (Ildik\u00f3 Enyedi)\n  + A Crime Story \u2014 new services added\n  \ud83d\udcda Inheritance \u2014 Wikipedia link added\n  \ud83d\udcda Inheritance \u2014 Wikipedia link added\n  + 40 Dates and 40 Nights \u2014 new services added\n  + Isla Monstro \u2014 new services added\n  + Our Wolves: In a Landscape of Fear and Love \u2014 new services adde"
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 63.000333,
+      "duration_seconds": 89.702172,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 5 movies missing trailers:\n  \u2022 A Crime Story\n  \u2022 Molotov Cocktail\n  \u2022 The Clash of Nations: Joe Louis vs. Max Schmeling\n  \u2022 A Family of Bastards\n  \u2022 Still Sexy\n  \u2713 Cache hit: A Crime Story (2026)\n  \u25cb A Crime Story \u2014 no trailer found (attempt 1/5)\n  \u2713 Cache hit: Molotov Cocktail (2025)\n  \u25cb Molotov Cocktail \u2014 no trailer found (attempt 1/5)\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shar"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 3 movies missing trailers:\n  \u2022 The Ark\n  \u2022 Painting With Fire\n  \u2022 Letty Lynton\n  \u2713 Cache hit: The Ark (2025)\n  \u25cb The Ark \u2014 no trailer found (attempt 1/5)\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (hea"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 7.345527,
+      "duration_seconds": 6.581088,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 76 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 16 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 75 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 16 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.489156,
+      "duration_seconds": 0.501656,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 10 movies (>90 days old) \u2192 data_archive.json\n   data.json: 767 movies | archive: 858 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 6 movies (>90 days old) \u2192 data_archive.json\n   data.json: 775 movies | archive: 865 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -84,52 +84,43 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 18382,
-    "tracking": 14399,
-    "available": 3591,
-    "data_movies": 767,
-    "movies_with_links": 743,
-    "movies_with_rt": 496,
-    "movies_with_wikipedia": 387,
-    "movies_with_trailers": 732
+    "total": 18418,
+    "tracking": 14420,
+    "available": 3606,
+    "data_movies": 775,
+    "movies_with_links": 749,
+    "movies_with_rt": 500,
+    "movies_with_wikipedia": 389,
+    "movies_with_trailers": 738
   },
   "enrichment_metrics": {
-    "timestamp": "2026-07-01T11:27:11.112295",
-    "movies_requested": 16,
-    "movies_enriched": 9,
-    "movies_deferred": 7,
+    "timestamp": "2026-07-02T11:00:25.370776",
+    "movies_requested": 20,
+    "movies_enriched": 14,
+    "movies_deferred": 6,
     "deferred_details": [
       {
         "title": "Forelock",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-07-01",
-        "discovered_at": "2026-07-01T11:17:38.882814",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 2,
-        "first_reverted_at": "2026-07-01",
-        "tmdb_platforms": []
-      },
-      {
-        "title": "She's the He!",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-06-30",
-        "discovered_at": "2026-07-01T11:17:39.060619",
+        "discovered_at": "2026-07-02T10:43:58.882963",
         "discovery_source": "tmdb_type4",
         "revert_count": 3,
-        "first_reverted_at": "2026-07-01",
+        "first_reverted_at": "2026-07-02",
         "tmdb_platforms": []
       },
       {
         "title": "The Devil Wears Prada 2",
         "reason": "jw_revert:justwatch_theatrical_pvod",
         "digital_date": "2026-06-30",
-        "discovered_at": "2026-07-01T11:17:39.291374",
+        "discovered_at": "2026-07-02T10:44:01.058414",
         "discovery_source": "tmdb_type4",
         "revert_count": 1,
-        "first_reverted_at": "2026-07-01",
+        "first_reverted_at": "2026-07-02",
         "tmdb_platforms": [],
         "jw_platforms": [
           "Amazon Video",
+          "Apple TV Store",
           "Fandango At Home"
         ]
       },
@@ -137,52 +128,57 @@
         "title": "The Last Light",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-21",
-        "discovered_at": "2026-07-01T11:17:40.863202",
+        "discovered_at": "2026-07-02T10:44:02.317433",
         "discovery_source": "tmdb_type4",
-        "revert_count": 23,
-        "first_reverted_at": "2026-07-01",
+        "revert_count": 24,
+        "first_reverted_at": "2026-07-02",
         "tmdb_platforms": []
       },
       {
         "title": "Love & Other Crimes",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-19",
-        "discovered_at": "2026-07-01T11:17:41.057587",
+        "discovered_at": "2026-07-02T10:44:02.604177",
         "discovery_source": "tmdb_type4",
-        "revert_count": 14,
-        "first_reverted_at": "2026-07-01",
+        "revert_count": 15,
+        "first_reverted_at": "2026-07-02",
         "tmdb_platforms": []
-      },
-      {
-        "title": "The Dangers in My Heart: The Movie",
-        "reason": "jw_revert:justwatch_theatrical_pvod",
-        "digital_date": "2026-07-14",
-        "discovered_at": "2026-07-01T11:17:56.646913",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 1,
-        "first_reverted_at": "2026-07-01",
-        "tmdb_platforms": [],
-        "jw_platforms": [
-          "Barnes & Noble"
-        ]
       },
       {
         "title": "Blades of the Guardians",
         "reason": "jw_revert:justwatch_theatrical_pvod",
         "digital_date": "",
-        "discovered_at": "2026-07-01T11:17:56.831367",
+        "discovered_at": "2026-07-02T10:44:22.016400",
         "discovery_source": "tmdb_type4",
         "revert_count": 1,
-        "first_reverted_at": "2026-07-01",
+        "first_reverted_at": "2026-07-02",
         "tmdb_platforms": [],
         "jw_platforms": [
           "Amazon Video",
           "Apple TV Store",
           "Fandango At Home"
         ]
+      },
+      {
+        "title": "The Get Out",
+        "reason": "jw_revert:justwatch_theatrical_pvod",
+        "digital_date": "",
+        "discovered_at": "2026-06-20T13:15:45.065258",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 1,
+        "first_reverted_at": "2026-07-02",
+        "tmdb_platforms": [
+          "Amazon Video",
+          "Fandango At Home",
+          "Plex"
+        ],
+        "jw_platforms": [
+          "Amazon Video",
+          "Fandango At Home"
+        ]
       }
     ],
-    "enrichment_duration_seconds": 550.32,
+    "enrichment_duration_seconds": 945.85,
     "error_details": [],
     "total_errors": 0
   }
