@@ -112,7 +112,7 @@ Sub LayoutChips()
     if m.genreControlLabel.boundingRect().width <= 1 then return
     m.layoutTimer.control = "stop"
 
-    ' --- One filled control row: SLOP · PRE-ORDER · FESTS · SELECTS · GENRE ---
+    ' --- One filled control row: SLOP FILTER · SELECTS · FESTS · PRE-ORDER · GENRE ---
     boxPadH = 20 : boxPadV = 12
     rowH = 46 : swGap = 26
     rowY = boxPadV
