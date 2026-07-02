@@ -86,8 +86,8 @@ class StorageService:
             try:
                 os.unlink(filepath)
                 self.logger.warning(f"Removed corrupt file {filepath} after quarantine failure")
-            except:
-                pass
+            except OSError as unlink_err:
+                self.logger.error(f"Could not remove corrupt file {filepath} after quarantine failure: {unlink_err} — repeated load errors likely")
             return ""
 
     def _load_backup_config(self) -> Dict[str, Any]:
@@ -360,8 +360,8 @@ class StorageService:
                     if os.path.exists(temp_path):
                         try:
                             os.unlink(temp_path)
-                        except:
-                            pass
+                        except OSError as unlink_err:
+                            self.logger.warning(f"Could not remove temp file {temp_path}: {unlink_err}")
                     raise
 
         except Exception as e:
