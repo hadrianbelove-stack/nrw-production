@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW — Detail Density Redesign</title>
+<style>
+  :root{ --teal:#00d4aa; --bg:#0a0a0a; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#000;color:#e9e9e9;font-family:-apple-system,system-ui,sans-serif;padding:24px 14px 90px;}
+  .page-head{max-width:1150px;margin:0 auto 8px;}
+  .page-head h1{font-size:22px;font-weight:650;}
+  .page-head p{color:#9aa;font-size:15px;line-height:1.5;margin-top:8px;max-width:860px;}
+  .frame-label{max-width:1150px;margin:38px auto 10px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+  .tag{background:var(--teal);color:#04130f;font-weight:800;font-size:12px;letter-spacing:.6px;padding:4px 10px;border-radius:6px;}
+  .tag.dim{background:#333;color:#ccc;}
+  .frame-label h2{font-size:17px;font-weight:650;}
+  .frame-label .note{color:#8b8b93;font-size:13.5px;}
+  .sect{max-width:1150px;margin:40px auto 6px;font-size:20px;font-weight:700;color:#fff;border-bottom:1px solid #2a2a2a;padding-bottom:8px;}
+
+  /* Scaled frame: fixed-size canvas scaled to container width */
+  .frame{position:relative;width:100%;max-width:1150px;margin:0 auto;background:#07070d;border-radius:14px;overflow:hidden;border:1px solid #23232b;box-shadow:0 12px 40px rgba(0,0,0,.55);}
+  .canvas{position:absolute;top:0;left:0;transform-origin:top left;}
+
+  /* ============ DESKTOP LIGHTBOX (1440x900 canvas — real 96vh proportions) ============ */
+  .frame.desk{aspect-ratio:1440/900;}
+  .canvas.desk{width:1440px;height:900px;background:radial-gradient(ellipse at center,#101018 0%,#050508 100%);display:flex;align-items:center;justify-content:center;gap:24px;}
+  .lb-poster{height:864px;width:576px;border-radius:12px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .lb-panel{position:relative;width:578px;height:864px;background:rgba(12,12,24,.92);border-radius:12px;display:flex;flex-direction:column;overflow:hidden;}
+  .lb-close{position:absolute;top:12px;right:14px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font-size:19px;display:flex;align-items:center;justify-content:center;z-index:3;}
+  .lb-info{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+  .lb-fade{height:40px;margin-top:-40px;background:linear-gradient(to bottom,transparent,rgba(12,12,24,.95));position:relative;z-index:1;flex-shrink:0;}
+  .lb-buttons{flex-shrink:0;background:rgba(12,12,24,.6);display:flex;flex-direction:column;gap:8px;}
+  .btn-trailer{background:#e03131;color:#fff;font-weight:800;letter-spacing:3px;text-align:center;border-radius:8px;}
+  .vod-row3{display:flex;gap:8px;}
+  .vcard{flex:1;display:flex;border-radius:7px;overflow:hidden;font-weight:800;}
+  .vcard .lg{width:46%;display:flex;align-items:center;justify-content:center;font-size:.72rem;letter-spacing:.02em;}
+  .vcard .pr{width:54%;display:flex;flex-direction:column;}
+  .vcard .pr span{flex:1;display:flex;align-items:center;justify-content:center;font-size:.56rem;letter-spacing:.03em;text-transform:uppercase;}
+  .vcard.amazon{background:#f90;color:#111;} .vcard.amazon .pr span+span{border-top:1px solid rgba(0,0,0,.15);}
+  .vcard.apple{background:#111;color:#fff;border:1px solid #333;} .vcard.apple .pr span+span{border-top:1px solid rgba(255,255,255,.12);}
+  .vcard.fandango{background:#ff6600;color:#111;} .vcard.fandango .pr span+span{border-top:1px solid rgba(0,0,0,.15);}
+  .btn-share{border:1.5px solid rgba(0,212,170,.55);color:var(--teal);font-weight:700;letter-spacing:1px;text-align:center;border-radius:8px;}
+
+  /* --- CURRENT metrics --- */
+  .cur .lb-info{padding:32px 32px 8px;}
+  .cur .titlearea{min-height:88px;border-bottom:2px solid rgba(0,212,170,.4);padding-bottom:12px;margin-bottom:16px;display:flex;flex-direction:column;justify-content:space-between;}
+  .cur .titlerow{display:flex;align-items:baseline;gap:12px;}
+  .cur .t{font-size:2.3rem;font-weight:800;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .selectbadge{background:#081412;color:#00ffbb;border:1.5px solid var(--teal);font-size:.6rem;font-weight:800;letter-spacing:.12em;padding:4px 11px;border-radius:20px;text-transform:uppercase;white-space:nowrap;}
+  .cur .sub{display:flex;justify-content:space-between;align-items:center;min-height:29px;margin-top:4px;}
+  .cur .date{color:var(--teal);font-size:1.4rem;font-weight:700;}
+  .cur .meta{color:#888;margin-bottom:20px;font-size:1.1rem;line-height:1.6;}
+  .lbl{color:var(--teal);font-weight:700;} .nm{color:#fff;font-weight:700;border-bottom:1px solid rgba(255,255,255,.35);}
+  .scores{display:flex;gap:8px;margin-bottom:12px;}
+  .sb{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:6px;font-size:.85rem;font-weight:650;border:1.5px solid rgba(255,255,255,.2);}
+  .sb.rt{color:#ff6b6b;border-color:rgba(255,107,107,.55);background:rgba(255,107,107,.08);}
+  .sb.imdb{color:#f5c518;border-color:rgba(245,197,24,.55);background:rgba(245,197,24,.08);}
+  .sb.mc{color:#7ddf64;border-color:rgba(125,223,100,.55);background:rgba(125,223,100,.08);}
+  .sb.lb{color:#00e054;border-color:rgba(0,224,84,.55);background:rgba(0,224,84,.08);}
+  .cur .pqwrap{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);}
+  .pq{padding:10px 12px;background:rgba(0,212,170,.07);border-radius:6px;border-left:3px solid var(--teal);}
+  .cur .pq .qt{display:block;font-style:italic;color:var(--teal);font-size:1rem;line-height:1.5;}
+  .cur .pq .ct{display:block;font-size:.85rem;color:rgba(0,212,170,.55);margin-top:4px;}
+  .cur .syn{color:#ccc;font-size:1.05rem;line-height:1.7;}
+  .cur .lb-buttons{padding:12px 32px 24px;}
+  .cur .btn-trailer{padding:13px 0;font-size:1rem;}
+  .cur .vcard{height:52px;}
+  .cur .btn-share{padding:11px 0;font-size:.95rem;}
+
+  /* --- D1 "Tightened" metrics --- */
+  .d1 .lb-info{padding:22px 22px 6px;}
+  .d1 .titlearea{border-bottom:2px solid rgba(0,212,170,.4);padding-bottom:7px;margin-bottom:10px;}
+  .d1 .titlerow{display:flex;align-items:baseline;gap:10px;}
+  .d1 .t{font-size:2.05rem;font-weight:800;color:#fff;line-height:1.02;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .d1 .sub{display:flex;justify-content:space-between;align-items:center;margin-top:5px;}
+  .d1 .genre{color:var(--teal);font-size:.98rem;font-weight:600;}
+  .d1 .date{color:var(--teal);font-size:1.02rem;font-weight:750;}
+  .d1 .meta{color:#888;margin-bottom:10px;font-size:.95rem;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .d1 .scores{margin-bottom:9px;}
+  .d1 .pqwrap{display:flex;flex-direction:column;gap:7px;margin-bottom:11px;padding-top:7px;border-top:1px solid rgba(255,255,255,.08);}
+  .d1 .pq{padding:7px 10px;}
+  .d1 .pq .qt{display:block;font-style:italic;color:var(--teal);font-size:.95rem;line-height:1.45;}
+  .d1 .pq .ct{display:block;font-size:.8rem;color:rgba(0,212,170,.55);margin-top:3px;}
+  .d1 .syn{color:#ccc;font-size:.98rem;line-height:1.55;}
+  .d1 .lb-buttons{padding:10px 22px 18px;}
+  .d1 .btn-trailer{padding:11px 0;font-size:.95rem;}
+  .d1 .vcard{height:48px;}
+  .d1 .btn-share{padding:10px 0;font-size:.9rem;}
+
+  /* --- D2 "Compact header" metrics --- */
+  .d2 .lb-info{padding:20px 22px 6px;}
+  .d2 .titlerow{display:flex;align-items:baseline;gap:10px;}
+  .d2 .t{font-size:1.9rem;font-weight:800;color:#fff;line-height:1.02;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .d2 .oneline{color:var(--teal);font-size:.92rem;font-weight:600;margin-top:4px;}
+  .d2 .oneline b{font-weight:750;}
+  .d2 .titlearea{border-bottom:2px solid rgba(0,212,170,.4);padding-bottom:6px;margin-bottom:9px;}
+  .d2 .meta{color:#888;margin-bottom:7px;font-size:.95rem;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .d2 .scores{margin-bottom:9px;}
+  .d2 .pqwrap{display:flex;flex-direction:column;gap:7px;margin-bottom:11px;padding-top:7px;border-top:1px solid rgba(255,255,255,.08);}
+  .d2 .pq{padding:7px 10px;}
+  .d2 .pq .qt{display:block;font-style:italic;color:var(--teal);font-size:.95rem;line-height:1.45;}
+  .d2 .pq .ct{display:block;font-size:.8rem;color:rgba(0,212,170,.55);margin-top:3px;}
+  .d2 .syn{color:#ccc;font-size:.98rem;line-height:1.55;}
+  .d2 .lb-buttons{padding:10px 22px 18px;}
+  .d2 .btn-trailer{padding:11px 0;font-size:.95rem;}
+  .d2 .vcard{height:48px;}
+  .d2 .btn-share{padding:10px 0;font-size:.9rem;}
+
+  /* scroll affordance (D1/D2): thin teal scrollbar + "more" pill */
+  .scrollable{overflow-y:auto !important;scrollbar-width:thin;scrollbar-color:rgba(0,212,170,.5) transparent;}
+  .scrollable::-webkit-scrollbar{width:5px;}
+  .scrollable::-webkit-scrollbar-thumb{background:rgba(0,212,170,.45);border-radius:3px;}
+  .morepill{position:absolute;left:50%;transform:translateX(-50%);bottom:6px;z-index:2;background:rgba(0,212,170,.14);border:1px solid rgba(0,212,170,.5);color:var(--teal);font-size:.68rem;font-weight:700;letter-spacing:.08em;padding:3px 12px;border-radius:12px;pointer-events:none;}
+  .lb-fade-strong{height:52px;margin-top:-52px;background:linear-gradient(to bottom,transparent,rgba(12,12,24,1));position:relative;z-index:1;flex-shrink:0;}
+
+  /* ============ MOBILE FRAMES (390x800 canvas) ============ */
+  .mrow{max-width:1150px;margin:0 auto;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
+  .mcol{width:100%;max-width:365px;}
+  .mcol .mlab{display:flex;gap:8px;align-items:baseline;margin:0 0 8px 2px;}
+  .frame.mob{aspect-ratio:390/800;max-width:365px;}
+  .canvas.mob{width:390px;height:800px;background:#000;display:flex;flex-direction:column;}
+  .mhead{padding:10px 12px 6px;text-align:center;background:#000;}
+  .mhead .wm{color:#bfeee2;font-size:15px;letter-spacing:5px;font-weight:300;}
+  .mhead .sl{color:#cfd8d6;font-size:11px;margin-top:2px;}
+  .mhead .ctl{display:flex;justify-content:center;gap:10px;margin-top:8px;color:#22caa4;font-size:8.5px;font-weight:700;letter-spacing:.6px;align-items:center;}
+  .mhead .ctl .tg{width:24px;height:12px;border:1px solid #22caa4;border-radius:6px;position:relative;}
+  .sheet{flex:1;background:linear-gradient(180deg,#1a1a2e 0%,#0a0a0a 100%);border-radius:18px 18px 0 0;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(0,0,0,.5);overflow:hidden;position:relative;}
+  .handle{padding:7px 0 3px;display:flex;justify-content:center;}
+  .handle i{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.25);}
+  .mcontent{flex:1;overflow:hidden;padding:4px 18px 12px;position:relative;}
+  .hero{display:flex;gap:12px;}
+  .hero img{width:84px;height:126px;border-radius:8px;object-fit:cover;}
+  .hero .hx{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .ht{font-size:1.25rem;font-weight:800;color:#fff;line-height:1.1;}
+  .hsel{color:#00ffbb;font-size:.55rem;font-weight:800;letter-spacing:.1em;white-space:nowrap;display:inline-block;}
+  .hd{font-size:.78rem;color:#ddd;margin-top:3px;}
+  .hd .lbl{font-weight:700;}
+  .hmeta{font-size:.74rem;color:#999;margin-top:3px;}
+  .mscores{display:flex;gap:6px;margin-top:auto;}
+  .msb{display:inline-flex;align-items:center;gap:3px;border:1.5px solid rgba(255,255,255,.2);border-radius:6px;font-weight:700;}
+  .msb.rt{color:#ff6b6b;border-color:rgba(255,107,107,.55);}
+  .msb.imdb{color:#f5c518;border-color:rgba(245,197,24,.55);}
+  .msb.mc{color:#7ddf64;border-color:rgba(125,223,100,.55);}
+  .msb.lb{color:#00e054;border-color:rgba(0,224,84,.55);}
+  .mob-cur .mscores{flex-wrap:wrap;}
+  .mob-cur .msb{padding:3px 8px;font-size:.72rem;}
+  .mob-c .mscores{flex-wrap:nowrap;}
+  .mob-c .msb{padding:2px 6px;font-size:.62rem;}
+  .mpqw{border-top:1px solid rgba(255,255,255,.08);}
+  .mob-cur .mpqw{margin-top:14px;padding-top:11px;}
+  .mob-c .mpqw{margin-top:7px;padding-top:5px;}
+  .mpq{background:rgba(0,212,170,.07);border-left:3px solid var(--teal);border-radius:6px;}
+  .mob-cur .mpq{padding:9px 11px;margin:9px 0;}
+  .mob-c .mpq{padding:6px 9px;margin:6px 0;}
+  .mpq .qt{display:block;font-style:italic;color:var(--teal);}
+  .mob-cur .mpq .qt{font-size:.86rem;line-height:1.5;}
+  .mob-c .mpq .qt{font-size:.82rem;line-height:1.4;}
+  .mpq .ct{display:block;color:rgba(0,212,170,.55);}
+  .mob-cur .mpq .ct{font-size:.72rem;margin-top:3px;}
+  .mob-c .mpq .ct{font-size:.68rem;margin-top:2px;}
+  .msyn{color:#ccc;}
+  .mob-cur .msyn{font-size:.9rem;line-height:1.6;margin-top:14px;}
+  .mob-c .msyn{font-size:.86rem;line-height:1.5;margin-top:8px;}
+  .mfade{position:absolute;left:0;right:0;bottom:0;height:46px;background:linear-gradient(to bottom,transparent,#0d0d16);pointer-events:none;}
+  .mbtnbar{flex-shrink:0;display:flex;flex-direction:column;background:rgba(12,12,24,.65);border-top:1px solid rgba(255,255,255,.06);}
+  .mob-cur .mbtnbar{gap:8px;padding:10px 16px 14px;}
+  .mob-c .mbtnbar{gap:6px;padding:8px 14px 12px;}
+  .mtrailer{background:#e03131;color:#fff;font-weight:800;letter-spacing:3px;text-align:center;border-radius:10px;}
+  .mob-cur .mtrailer{padding:15px 0;font-size:.9rem;}
+  .mob-c .mtrailer{padding:11px 0;font-size:.82rem;}
+  .mshare{border:1.5px solid rgba(0,212,170,.55);color:var(--teal);font-weight:700;text-align:center;border-radius:10px;}
+  .mob-cur .mshare{padding:12px 0;font-size:.85rem;}
+  .mob-c .mshare{padding:9px 0;font-size:.8rem;}
+  /* CURRENT: full-width stacked vcards */
+  .mvcard{display:flex;border-radius:10px;overflow:hidden;min-height:50px;font-weight:800;}
+  .mvcard .lg{width:46%;display:flex;align-items:center;justify-content:center;font-size:.8rem;}
+  .mvcard .pr{width:54%;display:flex;flex-direction:column;}
+  .mvcard .pr span{flex:1;display:flex;align-items:center;justify-content:center;font-size:.6rem;text-transform:uppercase;letter-spacing:.04em;}
+  .mvcard.amazon{background:#f90;color:#111;} .mvcard.amazon .pr span+span{border-top:1px solid rgba(0,0,0,.15);}
+  .mvcard.apple{background:#111;color:#fff;border:1px solid #333;} .mvcard.apple .pr span+span{border-top:1px solid rgba(255,255,255,.12);}
+  .mvcard.fandango{background:#ff6600;color:#111;} .mvcard.fandango .pr span+span{border-top:1px solid rgba(0,0,0,.15);}
+  /* M1: three mini cards on one row */
+  .vrow1{display:flex;gap:6px;}
+  .mini{flex:1;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;font-weight:800;}
+  .mini .lg{padding:6px 0 3px;text-align:center;font-size:.72rem;}
+  .mini .pp{display:flex;border-top:1px solid rgba(0,0,0,.14);}
+  .mini .pp span{flex:1;text-align:center;font-size:.55rem;padding:4px 0;text-transform:uppercase;letter-spacing:.02em;}
+  .mini .pp span+span{border-left:1px solid rgba(0,0,0,.14);}
+  .mini.amazon{background:#f90;color:#111;}
+  .mini.apple{background:#111;color:#fff;border:1px solid #333;} .mini.apple .pp{border-top-color:rgba(255,255,255,.12);} .mini.apple .pp span+span{border-left-color:rgba(255,255,255,.12);}
+  .mini.fandango{background:#ff6600;color:#111;}
+  /* M2: transaction rows */
+  .txrow{display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);border-radius:9px;padding:7px 11px;}
+  .txrow .txlbl{font-size:.62rem;font-weight:800;letter-spacing:.1em;color:#cfd8d6;width:38px;}
+  .txrow .svc{display:flex;gap:6px;flex:1;}
+  .txrow .svc i{font-style:normal;font-weight:800;font-size:.66rem;padding:4px 8px;border-radius:6px;}
+  .txrow .svc i.amazon{background:#f90;color:#111;}
+  .txrow .svc i.apple{background:#111;color:#fff;border:1px solid #333;}
+  .txrow .svc i.fandango{background:#ff6600;color:#111;}
+  .txrow .prc{font-size:.78rem;font-weight:800;color:#fff;}
+</style>
+</head>
+<body>
+  <div class="page-head">
+    <h1>Detail view — density redesign samples</h1>
+    <p>Same movie (Carolina Caroline — real record) in every frame so the space savings are honest.
+       Desktop: CURRENT vs <b>D1</b> (tightened) vs <b>D2</b> (compact header).
+       Mobile: CURRENT vs <b>M1</b> (mini VOD cards, one row) vs <b>M2</b> (RENT/BUY transaction rows).
+       In all new variants: synopsis area gets a visible teal scrollbar + a “MORE ⌄” pill so scrolling is obvious,
+       and on mobile the sheet rises to just below the slogan. Pick one desktop + one mobile (mixing is fine).</p>
+  </div>
+
+  <!-- ================= DESKTOP ================= -->
+  <div class="sect">Desktop lightbox</div>
+
+  <div class="frame-label"><span class="tag dim">CURRENT</span><h2>What ships today</h2><span class="note">Dir/Cast on 2 lines, big date, 2rem padding — synopsis pushed below the fold, no visible scroll cue.</span></div>
+  <div class="frame desk"><div class="canvas desk">
+    <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/9Jkylw7Y5NQyi7C8IwXLBvVSrH2.jpg" alt="">
+    <div class="lb-panel cur">
+      <div class="lb-close">×</div>
+      <div class="lb-info">
+        <div class="titlearea">
+          <div class="titlerow"><span class="t">Carolina Caroline</span><span class="selectbadge">★ NRW Select ★</span></div>
+          <div class="sub"><span></span><span class="date">USA · Crime · Jul 2</span></div>
+        </div>
+        <div class="meta">
+          <span class="lbl">Dir: </span><span class="nm">Adam Rehmeier</span><br>
+          <span class="lbl">Cast: </span><span class="nm">Samara Weaving</span>, <span class="nm">Kyle Gallner</span>, <span class="nm">Kyra Sedgwick</span>
+        </div>
+        <div class="scores"><span class="sb rt">🍅 93%</span><span class="sb imdb">IMDb 7.1</span><span class="sb mc">MC 75</span><span class="sb lb">LB 3.5</span></div>
+        <div class="pqwrap">
+          <div class="pq"><span class="qt">“Reheated 'Bonnie and Clyde' nachos.”</span><span class="ct">Maxance Vincent, Film Speak</span></div>
+          <div class="pq"><span class="qt">“sharp, soulful, and unexpectedly affecting”</span><span class="ct">Rodrigo Perez, The Playlist</span></div>
+        </div>
+        <p class="syn">Southern Gothic romantic thriller in the tradition of <i>Bonnie and Clyde</i> and <i>True Romance</i>. A small-town woman (<b>Samara Weaving</b>) falls for a charismatic con man (<b>Kyle Gallner</b>) and joins him on a crime spree.<br><br>Reunion for director <b>Adam Rehmeier</b> and star <b>Kyle Gallner</b>, who worked together on <i>Dinner in America</i>.</p>
+      </div>
+      <div class="lb-fade"></div>
+      <div class="lb-buttons">
+        <div class="btn-trailer">TRAILER</div>
+        <div class="vod-row3">
+          <div class="vcard amazon"><span class="lg">amazon</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+          <div class="vcard apple"><span class="lg">tv+</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+          <div class="vcard fandango"><span class="lg">FANDANGO</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+        </div>
+        <div class="btn-share">⇧ Share</div>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="frame-label"><span class="tag">D1 · tightened</span><h2>Same layout, compressed</h2><span class="note">Dir + Cast merged to one line (2 names), date/genre line ~1rem, padding 2rem→1.4rem, quotes −25%, synopsis 0.98rem — plus teal scrollbar + MORE pill.</span></div>
+  <div class="frame desk"><div class="canvas desk">
+    <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/9Jkylw7Y5NQyi7C8IwXLBvVSrH2.jpg" alt="">
+    <div class="lb-panel d1">
+      <div class="lb-close">×</div>
+      <div class="lb-info scrollable">
+        <div class="titlearea">
+          <div class="titlerow"><span class="t">Carolina Caroline</span><span class="selectbadge">★ NRW Select ★</span></div>
+          <div class="sub"><span class="genre">USA · Crime · Thriller</span><span class="date">Jul 2</span></div>
+        </div>
+        <div class="meta"><span class="lbl">Dir: </span><span class="nm">Adam Rehmeier</span> &nbsp;·&nbsp; <span class="lbl">Cast: </span><span class="nm">Samara Weaving</span>, <span class="nm">Kyle Gallner</span></div>
+        <div class="scores"><span class="sb rt">🍅 93%</span><span class="sb imdb">IMDb 7.1</span><span class="sb mc">MC 75</span><span class="sb lb">LB 3.5</span></div>
+        <div class="pqwrap">
+          <div class="pq"><span class="qt">“Reheated 'Bonnie and Clyde' nachos.”</span><span class="ct">Maxance Vincent, Film Speak</span></div>
+          <div class="pq"><span class="qt">“sharp, soulful, and unexpectedly affecting”</span><span class="ct">Rodrigo Perez, The Playlist</span></div>
+        </div>
+        <p class="syn">Southern Gothic romantic thriller in the tradition of <i>Bonnie and Clyde</i> and <i>True Romance</i>. A small-town woman (<b>Samara Weaving</b>) falls for a charismatic con man (<b>Kyle Gallner</b>) and joins him on a crime spree.<br><br>Reunion for director <b>Adam Rehmeier</b> and star <b>Kyle Gallner</b>, who worked together on <i>Dinner in America</i>.</p>
+      </div>
+      <div class="lb-fade-strong"></div>
+      <div class="morepill" style="bottom:118px;">MORE ⌄</div>
+      <div class="lb-buttons">
+        <div class="btn-trailer">TRAILER</div>
+        <div class="vod-row3">
+          <div class="vcard amazon"><span class="lg">amazon</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+          <div class="vcard apple"><span class="lg">tv+</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+          <div class="vcard fandango"><span class="lg">FANDANGO</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+        </div>
+        <div class="btn-share">⇧ Share</div>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="frame-label"><span class="tag">D2 · compact header</span><h2>Header condensed to two rows</h2><span class="note">Date joins the country·genre line right under the title; divider hugs it; Dir·Cast + scores immediately after — most room for quotes + synopsis.</span></div>
+  <div class="frame desk"><div class="canvas desk">
+    <img class="lb-poster" src="https://image.tmdb.org/t/p/w500/9Jkylw7Y5NQyi7C8IwXLBvVSrH2.jpg" alt="">
+    <div class="lb-panel d2">
+      <div class="lb-close">×</div>
+      <div class="lb-info scrollable">
+        <div class="titlearea">
+          <div class="titlerow"><span class="t">Carolina Caroline</span><span class="selectbadge">★ NRW Select ★</span></div>
+          <div class="oneline">USA · Crime · Thriller · <b>Jul 2</b> · 1h 45m</div>
+        </div>
+        <div class="meta"><span class="lbl">Dir: </span><span class="nm">Adam Rehmeier</span> &nbsp;·&nbsp; <span class="lbl">Cast: </span><span class="nm">Samara Weaving</span>, <span class="nm">Kyle Gallner</span></div>
+        <div class="scores"><span class="sb rt">🍅 93%</span><span class="sb imdb">IMDb 7.1</span><span class="sb mc">MC 75</span><span class="sb lb">LB 3.5</span></div>
+        <div class="pqwrap">
+          <div class="pq"><span class="qt">“Reheated 'Bonnie and Clyde' nachos.”</span><span class="ct">Maxance Vincent, Film Speak</span></div>
+          <div class="pq"><span class="qt">“sharp, soulful, and unexpectedly affecting”</span><span class="ct">Rodrigo Perez, The Playlist</span></div>
+        </div>
+        <p class="syn">Southern Gothic romantic thriller in the tradition of <i>Bonnie and Clyde</i> and <i>True Romance</i>. A small-town woman (<b>Samara Weaving</b>) falls for a charismatic con man (<b>Kyle Gallner</b>) and joins him on a crime spree.<br><br>Reunion for director <b>Adam Rehmeier</b> and star <b>Kyle Gallner</b>, who worked together on <i>Dinner in America</i>.</p>
+      </div>
+      <div class="lb-fade-strong"></div>
+      <div class="morepill" style="bottom:118px;">MORE ⌄</div>
+      <div class="lb-buttons">
+        <div class="btn-trailer">TRAILER</div>
+        <div class="vod-row3">
+          <div class="vcard amazon"><span class="lg">amazon</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+          <div class="vcard apple"><span class="lg">tv+</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+          <div class="vcard fandango"><span class="lg">FANDANGO</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+        </div>
+        <div class="btn-share">⇧ Share</div>
+      </div>
+    </div>
+  </div></div>
+
+  <!-- ================= MOBILE ================= -->
+  <div class="sect">Mobile sheet</div>
+  <div class="frame-label"><span class="note" style="font-size:14.5px;">Three phones side by side (stack on your phone — scroll). CURRENT keeps the header controls visible and stacks 3 tall VOD rows; M1/M2 rise to just under the slogan, force the scores onto one line, halve the space above the quotes, and compress the button bar.</span></div>
+
+  <div class="mrow">
+    <!-- CURRENT -->
+    <div class="mcol">
+      <div class="mlab"><span class="tag dim">CURRENT</span></div>
+      <div class="frame mob"><div class="canvas mob mob-cur">
+        <div class="mhead">
+          <div class="wm">THE NEW RELEASE WALL</div>
+          <div class="sl">What came out, every day.</div>
+          <div class="ctl"><span class="tg"></span> SLOP FILTER <span class="tg"></span> SELECTS <span class="tg"></span> FESTS <span class="tg"></span> PRE-ORDER</div>
+          <div class="ctl" style="margin-top:6px;">GENRE ▾ &nbsp;&nbsp; ⌕ Search... &nbsp;&nbsp; ● ○ ○</div>
+        </div>
+        <div class="sheet">
+          <div class="handle"><i></i></div>
+          <div class="mcontent">
+            <div class="hero">
+              <img src="https://image.tmdb.org/t/p/w500/9Jkylw7Y5NQyi7C8IwXLBvVSrH2.jpg" alt="">
+              <div class="hx">
+                <div class="ht">Carolina Caroline <span class="hsel">★ NRW SELECT ★</span></div>
+                <div class="hd"><span class="lbl" style="color:var(--teal)">Dir:</span> Adam Rehmeier</div>
+                <div class="hd"><span class="lbl" style="color:var(--teal)">Cast:</span> Samara Weaving, Kyle Gallner, Kyra Sedgwi…</div>
+                <div class="hmeta">USA · 2026 · 1h 45m · Bee-Hive Productions</div>
+              </div>
+            </div>
+            <div class="mscores" style="margin-top:10px;">
+              <span class="msb rt">🍅 93%</span><span class="msb imdb">IMDb 7.1</span><span class="msb mc">Ⓜ 75</span><span class="msb lb">●●● 3.5</span>
+            </div>
+            <div class="mpqw">
+              <div class="mpq"><span class="qt">“Reheated 'Bonnie and Clyde' nachos.”</span><span class="ct">Maxance Vincent, Film Speak</span></div>
+              <div class="mpq"><span class="qt">“sharp, soulful, and unexpectedly affecting”</span><span class="ct">Rodrigo Perez, The Playlist</span></div>
+            </div>
+            <p class="msyn">Southern Gothic romantic thriller in the tradition of <i>Bonnie and Clyde</i> and <i>True Romance</i>. A small-town woman falls for a charismatic con man and joins him…</p>
+            <div class="mfade"></div>
+          </div>
+          <div class="mbtnbar">
+            <div class="mtrailer">TRAILER</div>
+            <div class="mvcard amazon"><span class="lg">amazon</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+            <div class="mvcard apple"><span class="lg">tv+</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+            <div class="mvcard fandango"><span class="lg">FANDANGO AT HOME</span><span class="pr"><span>Rent $9.99</span><span>Buy $19.99</span></span></div>
+            <div class="mshare">⇧ Share</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- M1 -->
+    <div class="mcol">
+      <div class="mlab"><span class="tag">M1 · mini cards</span><span class="note">VOD = one row of 3 mini cards</span></div>
+      <div class="frame mob"><div class="canvas mob mob-c">
+        <div class="mhead">
+          <div class="wm">THE NEW RELEASE WALL</div>
+          <div class="sl">What came out, every day.</div>
+        </div>
+        <div class="sheet">
+          <div class="handle"><i></i></div>
+          <div class="mcontent">
+            <div class="hero">
+              <img src="https://image.tmdb.org/t/p/w500/9Jkylw7Y5NQyi7C8IwXLBvVSrH2.jpg" alt="">
+              <div class="hx">
+                <div class="ht">Carolina Caroline <span class="hsel">★ NRW SELECT ★</span></div>
+                <div class="hd"><span class="lbl" style="color:var(--teal)">Dir:</span> Adam Rehmeier</div>
+                <div class="hd"><span class="lbl" style="color:var(--teal)">Cast:</span> Samara Weaving, Kyle Gallner</div>
+                <div class="hmeta">USA · 2026 · 1h 45m · Bee-Hive Productions</div>
+              </div>
+            </div>
+            <div class="mscores" style="margin-top:8px;">
+              <span class="msb rt">🍅 93%</span><span class="msb imdb">IMDb 7.1</span><span class="msb mc">Ⓜ 75</span><span class="msb lb">●●● 3.5</span>
+            </div>
+            <div class="mpqw">
+              <div class="mpq"><span class="qt">“Reheated 'Bonnie and Clyde' nachos.”</span><span class="ct">Maxance Vincent, Film Speak</span></div>
+              <div class="mpq"><span class="qt">“sharp, soulful, and unexpectedly affecting”</span><span class="ct">Rodrigo Perez, The Playlist</span></div>
+            </div>
+            <p class="msyn">Southern Gothic romantic thriller in the tradition of <i>Bonnie and Clyde</i> and <i>True Romance</i>. A small-town woman (<b>Samara Weaving</b>) falls for a charismatic con man (<b>Kyle Gallner</b>) and joins him on a crime spree.<br><br>Reunion for director <b>Adam Rehmeier</b> and star <b>Kyle Gallner</b>, who worked together on <i>Dinner in America</i>.</p>
+            <div class="mfade"></div>
+            <div class="morepill" style="bottom:8px;">MORE ⌄</div>
+          </div>
+          <div class="mbtnbar">
+            <div class="mtrailer">TRAILER</div>
+            <div class="vrow1">
+              <div class="mini amazon"><span class="lg">amazon</span><span class="pp"><span>Rent 9.99</span><span>Buy 19.99</span></span></div>
+              <div class="mini apple"><span class="lg">tv+</span><span class="pp"><span>Rent 9.99</span><span>Buy 19.99</span></span></div>
+              <div class="mini fandango"><span class="lg">FANDANGO</span><span class="pp"><span>Rent 9.99</span><span>Buy 19.99</span></span></div>
+            </div>
+            <div class="mshare">⇧ Share</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- M2 -->
+    <div class="mcol">
+      <div class="mlab"><span class="tag">M2 · rent/buy rows</span><span class="note">VOD = two slim transaction rows</span></div>
+      <div class="frame mob"><div class="canvas mob mob-c">
+        <div class="mhead">
+          <div class="wm">THE NEW RELEASE WALL</div>
+          <div class="sl">What came out, every day.</div>
+        </div>
+        <div class="sheet">
+          <div class="handle"><i></i></div>
+          <div class="mcontent">
+            <div class="hero">
+              <img src="https://image.tmdb.org/t/p/w500/9Jkylw7Y5NQyi7C8IwXLBvVSrH2.jpg" alt="">
+              <div class="hx">
+                <div class="ht">Carolina Caroline <span class="hsel">★ NRW SELECT ★</span></div>
+                <div class="hd"><span class="lbl" style="color:var(--teal)">Dir:</span> Adam Rehmeier</div>
+                <div class="hd"><span class="lbl" style="color:var(--teal)">Cast:</span> Samara Weaving, Kyle Gallner</div>
+                <div class="hmeta">USA · 2026 · 1h 45m · Bee-Hive Productions</div>
+              </div>
+            </div>
+            <div class="mscores" style="margin-top:8px;">
+              <span class="msb rt">🍅 93%</span><span class="msb imdb">IMDb 7.1</span><span class="msb mc">Ⓜ 75</span><span class="msb lb">●●● 3.5</span>
+            </div>
+            <div class="mpqw">
+              <div class="mpq"><span class="qt">“Reheated 'Bonnie and Clyde' nachos.”</span><span class="ct">Maxance Vincent, Film Speak</span></div>
+              <div class="mpq"><span class="qt">“sharp, soulful, and unexpectedly affecting”</span><span class="ct">Rodrigo Perez, The Playlist</span></div>
+            </div>
+            <p class="msyn">Southern Gothic romantic thriller in the tradition of <i>Bonnie and Clyde</i> and <i>True Romance</i>. A small-town woman (<b>Samara Weaving</b>) falls for a charismatic con man (<b>Kyle Gallner</b>) and joins him on a crime spree.<br><br>Reunion for director <b>Adam Rehmeier</b> and star <b>Kyle Gallner</b>, who worked together on <i>Dinner in America</i>.</p>
+            <div class="mfade"></div>
+            <div class="morepill" style="bottom:8px;">MORE ⌄</div>
+          </div>
+          <div class="mbtnbar">
+            <div class="mtrailer">TRAILER</div>
+            <div class="txrow"><span class="txlbl">RENT</span><span class="svc"><i class="amazon">amazon</i><i class="apple">tv+</i><i class="fandango">FANDANGO</i></span><span class="prc">$9.99</span></div>
+            <div class="txrow"><span class="txlbl">BUY</span><span class="svc"><i class="amazon">amazon</i><i class="apple">tv+</i><i class="fandango">FANDANGO</i></span><span class="prc">$19.99</span></div>
+            <div class="mshare">⇧ Share</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+<script>
+function rescale(){
+  document.querySelectorAll('.frame').forEach(f=>{
+    const c=f.querySelector('.canvas');
+    const w=c.classList.contains('mob')?390:1440;
+    c.style.transform='scale('+(f.clientWidth/w)+')';
+  });
+}
+window.addEventListener('resize',rescale);
+window.addEventListener('load',rescale);
+rescale();
+</script>
+</body>
+</html>
