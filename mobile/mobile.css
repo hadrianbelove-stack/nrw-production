@@ -618,7 +618,7 @@ body {
   font-size: 2.8rem;
   color: var(--accent);
   opacity: 0;
-  z-index: 950;
+  z-index: 958;
   pointer-events: none;
   transition: opacity 0.15s ease-out, transform 0.15s ease-out;
   font-weight: 300;
@@ -675,7 +675,7 @@ body {
 .bottom-sheet {
   position: fixed;
   left: 0; right: 0;
-  top: var(--header-height);
+  top: var(--sheet-top, var(--header-height));
   bottom: 0;
   background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0a 100%);
   border-radius: 18px 18px 0 0;
@@ -688,6 +688,9 @@ body {
 }
 .bottom-sheet.visible {
   transform: translateY(0);
+  /* Above the fixed header (950): the risen sheet covers the control rows;
+     the wordmark + slogan stay visible above the sheet's top edge. */
+  z-index: 955;
 }
 .sheet-handle {
   display: flex;
@@ -748,14 +751,48 @@ body {
   display: flex;
   flex-direction: column;
 }
+/* Title row: title + NRW SELECT badge horizontally aligned (desktop pattern) */
+.sheet-hero-titlerow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
 .sheet-hero-title {
-  font-size: 1.18rem;
+  font-size: 1.14rem;
   font-weight: 700;
-  line-height: 1.22;
+  line-height: 1.2;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+/* NRW SELECT — bordered pill like the desktop lightbox badge */
+.sheet-select-badge {
+  background: #081412;
+  color: #00ffbb;
+  border: 1px solid var(--accent);
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 2px 7px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transform: translateY(-1px);
+}
+/* Teal Country · Genre · Date line under the title (mirrors desktop) */
+.hero-genre {
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 650;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .hero-crew {
   font-size: 0.76rem;
@@ -808,15 +845,17 @@ body {
 /* Score badges in the locked hero (pinned to the bottom of the box) */
 .sheet-scores {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 5px;
+  flex-wrap: nowrap;
   margin-top: auto;
+  min-width: 0;
 }
 .sheet-score {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
+  gap: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
   border-radius: 6px;
   border: 1.5px solid rgba(255,255,255,0.2);
   background: transparent;
@@ -827,7 +866,7 @@ body {
 .sheet-score:has(.meta) { border-color: rgba(125,223,100,0.55); background: rgba(125,223,100,0.08); }
 .sheet-score:has(.lb)   { border-color: rgba(0,224,84,0.5);     background: rgba(0,224,84,0.08); }
 .sheet-score-logo {
-  height: 14px;
+  height: 12px;
   object-fit: contain;
   opacity: 0.85;
 }
@@ -835,7 +874,7 @@ body {
   filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1);
 }
 .sheet-score-value {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 700;
 }
 .sheet-score-value.rt   { color: #ff6b6b; }
@@ -1099,10 +1138,10 @@ body {
 
 /* Synopsis (no label) */
 .sheet-synopsis {
-  font-size: 0.9rem;
+  font-size: 0.87rem;
   color: #ccc;
-  line-height: 1.6;
-  margin-top: 14px;
+  line-height: 1.5;
+  margin-top: 8px;
   margin-bottom: 0;
 }
 .sheet-synopsis a {
@@ -1112,18 +1151,133 @@ body {
   text-underline-offset: 2px;
 }
 
+/* Year • Runtime • Studio — quiet line after the synopsis (desktop pattern) */
+.sheet-detail-line {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+/* Thin teal scrollbar so the scrollable synopsis is discoverable */
+.sheet-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,212,170,0.45) transparent;
+}
+.sheet-content::-webkit-scrollbar { width: 4px; }
+.sheet-content::-webkit-scrollbar-thumb { background: rgba(0,212,170,0.45); border-radius: 2px; }
+
+/* Bottom fade over the scroll edge (JS pins it above the button bar,
+   shown/hidden together with the MORE pill) */
+.sheet-scroll-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 42px;
+  bottom: 140px;
+  background: linear-gradient(to bottom, transparent, rgba(10,10,16,0.95));
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.sheet-scroll-fade.visible { opacity: 1; }
+
+/* "MORE ⌄" pill — visible while unscrolled overflow exists (JS toggles
+   .visible and pins it just above the button bar) */
+.sheet-more-pill {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 140px;
+  z-index: 3;
+  background: rgba(0,212,170,0.16);
+  border: 1px solid rgba(0,212,170,0.5);
+  color: var(--accent);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 11px;
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.sheet-more-pill.visible { opacity: 1; }
+
+/* ---- VOD mini-cards: all services on ONE row (density redesign) ----
+   Logo on top (tap = service page), Rent/Buy price cells beneath. */
+.vod-row {
+  display: flex;
+  gap: 6px;
+}
+.vmini {
+  flex: 1;
+  min-width: 0;
+  border-radius: 9px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #2a2a2e;
+}
+.vmini-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 4px 5px;
+  text-decoration: none;
+}
+.vmini-logo-img {
+  height: 16px;
+  max-width: 90%;
+  object-fit: contain;
+}
+.vmini-logo-img.invert { filter: invert(1); }
+.vmini-logo-text {
+  font-size: 0.66rem;
+  font-weight: 800;
+  color: #fff;
+}
+.vmini-prices {
+  display: flex;
+  border-top: 1px solid rgba(0,0,0,0.2);
+}
+.vmini-price {
+  flex: 1;
+  text-align: center;
+  font-size: 0.54rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 5px 2px;
+  text-decoration: none;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vmini-price + .vmini-price { border-left: 1px solid rgba(0,0,0,0.2); }
+/* Service brand backgrounds — reuse the shared service color vars */
+.vmini.amazon   { background: #f90; color: #111; }
+.vmini.apple    { background: #111; color: #fff; border: 1px solid #333; }
+.vmini.apple .vmini-prices { border-top-color: rgba(255,255,255,0.14); }
+.vmini.apple .vmini-price + .vmini-price { border-left-color: rgba(255,255,255,0.14); }
+.vmini.fandango { background: var(--svc-fandango, #FF6600); color: #111; }
+.vmini.youtube  { background: var(--svc-youtube, #FF0000); color: #fff; }
+.vmini.youtube .vmini-prices { border-top-color: rgba(255,255,255,0.2); }
+.vmini.youtube .vmini-price + .vmini-price { border-left-color: rgba(255,255,255,0.2); }
+
 /* Pull quotes — teal italic, teal left border, NO badge */
 .sheet-pq-wrap {
-  padding-top: 0.7rem;
-  margin-top: 14px;
+  padding-top: 0.35rem;
+  margin-top: 7px;
   border-top: 1px solid rgba(255,255,255,0.08);
 }
 .sheet-pq {
   background: rgba(0,212,170,0.07);
   border-left: 3px solid var(--accent);
   border-radius: 6px;
-  padding: 0.55rem 0.7rem;
-  margin: 9px 0;
+  padding: 0.45rem 0.6rem;
+  margin: 6px 0;
 }
 .sheet-pq-text {
   display: block;

@@ -124,6 +124,11 @@ const NRWMobile = {
     updateHeaderHeight() {
         const h = this.dom.siteHeader.offsetHeight;
         document.documentElement.style.setProperty('--header-height', h + 'px');
+        // Detail sheet rises to just below the slogan (covers the filter
+        // controls, which are inert behind it anyway)
+        const slogan = this.dom.siteHeader.querySelector('.site-slogan');
+        const sheetTop = slogan ? (slogan.offsetTop + slogan.offsetHeight + 2) : h;
+        document.documentElement.style.setProperty('--sheet-top', sheetTop + 'px');
         this.updateGridPadding();
     },
 
@@ -992,9 +997,18 @@ const NRWMobile = {
                 '<span class="crew-name">' + castParts.join(', ') + '</span></div>';
         }
 
-        // Line 3 (gray): Country · Year · Runtime · Studio (one line)
+        // Teal line under the title (mirrors desktop): Country · Genre · Date
+        const genreParts = [];
+        if (movie.country) genreParts.push(this.esc(NRWConfig.abbreviateCountry(movie.country) || movie.country));
+        if (movie.genres?.[0]) genreParts.push(this.esc(movie.genres[0]));
+        if (movie.digital_date) {
+            const [gy, gm, gd] = movie.digital_date.split('-');
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            genreParts.push(months[parseInt(gm, 10) - 1] + ' ' + parseInt(gd, 10));
+        }
+
+        // Gray detail line — now BELOW the synopsis (mirrors desktop's runtime line)
         const detailParts = [];
-        if (movie.country) detailParts.push(this.esc(NRWConfig.abbreviateCountry(movie.country) || movie.country));
         if (movie.year) detailParts.push(this.esc(movie.year));
         if (movie.runtime) detailParts.push(this.esc(this.formatRuntime(movie.runtime)));
         if (movie.studio && movie.studio !== 'Unknown') detailParts.push(this.esc(movie.studio));
@@ -1031,16 +1045,19 @@ const NRWMobile = {
             scoresHtml += '</div>';
         }
 
-        // Build scrolling content: locked hero
+        // Build scrolling content: locked hero. Title row = title + NRW SELECT
+        // badge horizontally aligned (desktop pattern — no badge, no hole);
+        // teal Country·Genre·Date line under it; scores pinned at the bottom.
         let html = '<div class="sheet-hero">' +
             '<img class="sheet-hero-poster" src="' + this.esc(movie.poster || '') + '" alt="' +
             this.esc(movie.title || '') + '" onerror="this.style.visibility=\'hidden\'">' +
             '<div class="sheet-hero-text">' +
-            '<div class="sheet-hero-title">' + this.esc(movie.display_title || movie.title || 'Untitled') +
-            (isStaffPick ? ' <span style="color:#00ffbb;font-size:0.7rem">★ NRW SELECT ★</span>' : '') +
+            '<div class="sheet-hero-titlerow">' +
+            '<div class="sheet-hero-title">' + this.esc(movie.display_title || movie.title || 'Untitled') + '</div>' +
+            (isStaffPick ? '<span class="sheet-select-badge">★ NRW SELECT ★</span>' : '') +
             '</div>' +
+            (genreParts.length ? '<div class="hero-genre">' + genreParts.join(' · ') + '</div>' : '') +
             dirLine + castLine +
-            (detailParts.length ? '<div class="hero-meta">' + detailParts.join(' · ') + '</div>' : '') +
             scoresHtml +
             '</div></div>';
 
@@ -1075,8 +1092,14 @@ const NRWMobile = {
             html += '<div class="sheet-vs-note">' + note + '.</div>';
         }
 
+        // Year • Runtime • Studio — quiet closing line (desktop pattern)
+        if (detailParts.length) {
+            html += '<div class="sheet-detail-line">' + detailParts.join(' • ') + '</div>';
+        }
+
         content.innerHTML = html;
         content.scrollTop = 0;
+        this._updateSheetScrollHint();
 
         // ---- FIXED BOTTOM BUTTON BAR ----
         let bar = '';
@@ -1093,13 +1116,18 @@ const NRWMobile = {
                 : '<a class="btn-trailer" href="' + trailerUrl + '" target="_blank" rel="noopener">TRAILER</a>';
         }
 
-        // Watch buttons: VOD price cards + streaming badges (full-width via CSS)
+        // Watch buttons: VOD mini-cards on ONE row (logo on top, Rent/Buy under)
+        // + streaming badges (full-width via CSS)
         const streamingList = this.getStreamingProviders(movie);
         const vodList = this.getVODList(movie);
         const rentVod = isScreening
             ? vodList.filter(v => v.resolvedKey !== 'screening')
             : vodList;
-        rentVod.forEach(v => { bar += this.renderVODPriceCard(v); });
+        if (rentVod.length) {
+            bar += '<div class="vod-row">' +
+                rentVod.map(v => this.renderVODMiniCard(v)).join('') +
+                '</div>';
+        }
         streamingList.forEach(s => { bar += this.renderStreamButton(s); });
 
         // Pre-order fallback (no other watch links)
@@ -1137,6 +1165,34 @@ const NRWMobile = {
 
         btnbar.innerHTML = bar;
         btnbar.scrollTop = 0;
+    },
+
+    // "MORE ⌄" pill: visible only while the sheet content has unscrolled
+    // overflow, so it's obvious the synopsis continues.
+    _updateSheetScrollHint() {
+        const content = this.dom.sheetContent;
+        const pill = document.getElementById('sheet-more-pill');
+        if (!content || !pill) return;
+        const fade = document.getElementById('sheet-scroll-fade');
+        const update = () => {
+            const overflow = content.scrollHeight - content.clientHeight;
+            const nearEnd = content.scrollTop >= overflow - 20;
+            const show = overflow > 12 && !nearEnd;
+            // Sit just above the button bar, whose height varies per movie
+            const bar = this.dom.sheetBtnbar;
+            if (bar) {
+                pill.style.bottom = (bar.offsetHeight + 8) + 'px';
+                if (fade) fade.style.bottom = bar.offsetHeight + 'px';
+            }
+            pill.classList.toggle('visible', show);
+            if (fade) fade.classList.toggle('visible', show);
+        };
+        if (!content._scrollHintBound) {
+            content._scrollHintBound = true;
+            content.addEventListener('scroll', update, { passive: true });
+        }
+        requestAnimationFrame(update);
+        setTimeout(update, 350); // sheet slide-in + reflow settle
     },
 
     _linkBoldTitles(html) {
@@ -1348,6 +1404,35 @@ const NRWMobile = {
         return '<div class="vcard-m ' + this.esc(svcKey) + '">' +
             '<a href="' + provider.link + '" target="_blank" rel="noopener" class="vcard-logo-m">' + logoHtml + '</a>' +
             '<div class="vcard-prices-m">' + pricesHtml + '</div>' +
+            '</div>';
+    },
+
+    // Compact VOD card for the one-row bottom bar (density redesign):
+    // service logo on top, Rent/Buy price cells side by side beneath.
+    renderVODMiniCard(provider) {
+        if (!provider.rentPrice && !provider.buyPrice) return this.renderProviderBadge(provider);
+        const svcKey = provider.serviceKey || '';
+        const invertClass = this.INVERT_KEYS.has(svcKey) ? ' invert' : '';
+        let logoHtml;
+        if (provider.wideLogo) {
+            const src = '../assets/logos/' + provider.wideLogo;
+            logoHtml = '<img class="vmini-logo-img' + invertClass + '" src="' + src +
+                '" alt="' + this.esc(provider.name) + '">';
+        } else {
+            logoHtml = '<span class="vmini-logo-text">' + this.esc(provider.name) + '</span>';
+        }
+        let pricesHtml = '';
+        if (provider.rentPrice) {
+            pricesHtml += '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
+                'class="vmini-price rent">Rent ' + this.esc(provider.rentPrice) + '</a>';
+        }
+        if (provider.buyPrice) {
+            pricesHtml += '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
+                'class="vmini-price buy">Buy ' + this.esc(provider.buyPrice) + '</a>';
+        }
+        return '<div class="vmini ' + this.esc(svcKey) + '">' +
+            '<a href="' + provider.link + '" target="_blank" rel="noopener" class="vmini-logo">' + logoHtml + '</a>' +
+            '<div class="vmini-prices">' + pricesHtml + '</div>' +
             '</div>';
     },
 

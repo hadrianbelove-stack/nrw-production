@@ -1419,11 +1419,11 @@ const NRW = {
     },
 
     _updateLightboxSynopsis(movie) {
-        // Meta block — 3 lines
+        // Meta block — ONE line: "Dir: Name · Cast: A, B" (density redesign; ellipsizes via CSS)
         const metaEl = document.getElementById('lightbox-meta');
         metaEl.textContent = '';
 
-        // Line 1: Director
+        // Director
         if (movie.crew?.director) {
             const dirLabel = document.createElement('span');
             dirLabel.className = 'lightbox-crew-label';
@@ -1445,16 +1445,21 @@ const NRW = {
             metaEl.appendChild(dirName);
         }
 
-        // Line 2: Cast
+        // Cast — same line, " · " separated, capped at 2 names
         if (movie.crew?.cast?.length) {
-            if (metaEl.childNodes.length) metaEl.appendChild(document.createElement('br'));
+            if (metaEl.childNodes.length) {
+                const sep = document.createElement('span');
+                sep.className = 'lightbox-crew-sep';
+                sep.textContent = '  ·  ';
+                metaEl.appendChild(sep);
+            }
             const castLabel = document.createElement('span');
             castLabel.className = 'lightbox-crew-label';
             castLabel.textContent = 'Cast: ';
             const castName = document.createElement('span');
             castName.className = 'lightbox-crew-name';
             const castWiki = movie.links?.cast_wiki || {};
-            movie.crew.cast.slice(0, 3).forEach((name, i) => {
+            movie.crew.cast.slice(0, 2).forEach((name, i) => {
                 if (i > 0) castName.appendChild(document.createTextNode(', '));
                 const url = castWiki[name];
                 if (url) {
@@ -1792,6 +1797,7 @@ const NRW = {
         this._updateLightboxScores(movie);
         this._updateLightboxPullQuotes(movie);
         this._buildLightboxButtons(movie);
+        this._updateLightboxScrollHint();
 
         // Default focus on TRAILER row, fallback to first row
         const grid = this._getLightboxGrid();
@@ -1799,6 +1805,31 @@ const NRW = {
         this.lbRow = trailerRowIdx >= 0 ? trailerRowIdx : 0;
         this.lbCol = 0;
         this._updateLightboxGridFocus(grid);
+    },
+
+    // "MORE ⌄" pill: visible only while the info column has unscrolled overflow,
+    // so it's obvious the synopsis continues. Hides once the user scrolls near
+    // the end (or when everything already fits).
+    _updateLightboxScrollHint() {
+        const info = document.querySelector('.lightbox-info');
+        const pill = document.getElementById('lightbox-more-pill');
+        if (!info || !pill) return;
+        const update = () => {
+            const overflow = info.scrollHeight - info.clientHeight;
+            const nearEnd = info.scrollTop >= overflow - 24;
+            // Sit just above the buttons bar, whose height varies per movie
+            const buttons = document.getElementById('lightbox-buttons');
+            if (buttons) pill.style.bottom = (buttons.offsetHeight + 8) + 'px';
+            pill.classList.toggle('visible', overflow > 12 && !nearEnd);
+        };
+        if (!info._scrollHintBound) {
+            info._scrollHintBound = true;
+            info.addEventListener('scroll', update, { passive: true });
+        }
+        info.scrollTop = 0; // new movie starts at the top
+        // content (poster/synopsis) may reflow — measure after layout settles
+        requestAnimationFrame(update);
+        setTimeout(update, 250);
     },
 
     // Setup lightbox + trailer keyboard navigation
