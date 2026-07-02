@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
@@ -101,6 +102,9 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
+    // Up from any filter/toggle jumps to the search box (matches tvOS)
+    val searchFocusRequester = remember { FocusRequester() }
+
     // GENRE pulldown: overlay open state + the control's label (active genre name, else "GENRE")
     var genreOverlayOpen by remember { mutableStateOf(false) }
     val activeGenre = uiState.activeFilters.firstOrNull()
@@ -151,11 +155,13 @@ fun HomeScreen(
                     // Header with title and search
                     Header(
                         searchQuery = uiState.searchQuery,
-                        onSearchChange = { viewModel.setSearchQuery(it) }
+                        onSearchChange = { viewModel.setSearchQuery(it) },
+                        searchFocusRequester = searchFocusRequester
                     )
 
-                    // Filter chips
+                    // Filter chips — Up from anywhere in the row goes to search
                     FilterChips(
+                        modifier = Modifier.focusProperties { up = searchFocusRequester },
                         slopMode = uiState.slopMode,
                         onSlopModeToggle = { viewModel.cycleSlopMode() },
                         hideFest = uiState.hideFest,
@@ -272,7 +278,8 @@ private fun createGridItems(movies: List<Movie>, playlistUrl: String?, showHighl
 @Composable
 private fun Header(
     searchQuery: String,
-    onSearchChange: (String) -> Unit
+    onSearchChange: (String) -> Unit,
+    searchFocusRequester: FocusRequester
 ) {
     Row(
         modifier = Modifier
@@ -303,6 +310,7 @@ private fun Header(
         SearchBar(
             query = searchQuery,
             onQueryChange = onSearchChange,
+            searchFocusRequester = searchFocusRequester,
             modifier = Modifier.width(140.dp)
         )
     }
@@ -312,6 +320,7 @@ private fun Header(
 private fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
+    searchFocusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -336,6 +345,7 @@ private fun SearchBar(
             onValueChange = onQueryChange,
             modifier = Modifier
                 .fillMaxWidth()
+                .focusRequester(searchFocusRequester)
                 .onFocusChanged { isFocused = it.isFocused },
             textStyle = TextStyle(
                 color = TextPrimary,
