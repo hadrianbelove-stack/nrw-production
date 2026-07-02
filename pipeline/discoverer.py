@@ -1588,17 +1588,34 @@ class ProviderDiscoverer:
                         movie.pop('_is_preorder', None)
                         movie.pop('_buyonly_preorder', None)
                         movie.pop('pre_order_links', None)
-                        movie['digital_date'] = today_str
+                        # Anchor the availability date to when the film FIRST became
+                        # available, not "today". A stale pre-order flag can otherwise
+                        # re-flag an already-released film every run; blindly stamping
+                        # today then re-stamps its date daily, so it perpetually looks
+                        # brand-new (Carolina Caroline, Jul 2026). Only a genuine pre-order
+                        # with no prior availability date should graduate to today.
+                        grad_date = today_str
+                        prior_dates = []
+                        existing_dd = movie.get('digital_date')
+                        if existing_dd and existing_dd < today_str:
+                            prior_dates.append(existing_dd)
+                        trec = (tracking_data or {}).get('movies', {}).get(movie_id) or {}
+                        prior_transition = (trec.get('_transitioned_at') or '')[:10]
+                        if prior_transition and prior_transition < today_str:
+                            prior_dates.append(prior_transition)
+                        if prior_dates:
+                            grad_date = min(prior_dates)
+                        movie['digital_date'] = grad_date
                         if new_links:
                             movie['watch_links'] = current_links
                         preorders_graduated += 1
                         unsaved_count += 1
-                        print(f"  🎓 {title} — pre-order graduated (now available)")
+                        print(f"  🎓 {title} — pre-order graduated (available {grad_date})")
 
                         # Sync tracking — mark as available so discovery doesn't re-process
                         if tracking_data and tracking_data.get('movies', {}).get(movie_id):
                             tracking_data['movies'][movie_id]['status'] = 'available'
-                            tracking_data['movies'][movie_id]['digital_date'] = today_str
+                            tracking_data['movies'][movie_id]['digital_date'] = grad_date
                             tracking_data['movies'][movie_id]['enriched'] = True
                             tracking_data['movies'][movie_id].pop('_buyonly_preorder', None)
                             tracking_changed = True

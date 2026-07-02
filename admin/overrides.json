@@ -1,8 +1,8 @@
 {
   "1329471": {
+    "note": "Carolina Caroline genuinely released ~Jun 22 2026 (theatrical Jun 5). Was force-flagged as a pre-order (config.yaml + this override) back when it was theatrical-only; that stale flag drove a daily gap-fill graduation loop that re-stamped digital_date to 'today' every run, so it perpetually looked brand-new. Flags removed; this pins the real first-available date (tracking _transitioned_at). Safe to delete once the film ages off the 90-day wall.",
     "set": {
-      "_is_preorder": true,
-      "watch_links": {}
+      "digital_date": "2026-06-22"
     }
   },
   "19738": {
