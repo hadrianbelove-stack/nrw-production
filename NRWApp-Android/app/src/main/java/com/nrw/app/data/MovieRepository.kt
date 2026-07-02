@@ -168,7 +168,7 @@ class MovieRepository(private val context: Context) {
     }
 
     /**
-     * Search movies by title, director, or genre
+     * Search movies by title, director, cast, or genre
      */
     fun searchMovies(movies: List<Movie>, query: String): List<Movie> {
         if (query.isBlank()) return movies
@@ -181,6 +181,7 @@ class MovieRepository(private val context: Context) {
             val title = norm(movie.title)
             val origTitle = norm(movie.originalTitle ?: "")
             val director = norm(movie.getDirector() ?: "")
+            val cast = norm(movie.crew?.cast?.joinToString(" ") ?: "")
             val genres = movie.genres?.map { norm(it) } ?: emptyList()
             val country = norm(movie.country ?: "")
             val synopsis = norm(movie.capsule ?: movie.synopsis ?: "")
@@ -189,6 +190,7 @@ class MovieRepository(private val context: Context) {
             title.contains(nq) ||
                 origTitle.contains(nq) ||
                 director.contains(nq) ||
+                cast.contains(nq) ||
                 genres.any { it.contains(nq) } ||
                 country.contains(nq) ||
                 synopsis.contains(nq) ||

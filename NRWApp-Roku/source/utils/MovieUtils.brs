@@ -310,10 +310,12 @@ Function IsStaffPick(movie as Object) as Boolean
     return false
 End Function
 
-' Check if movie is foreign (non-English)
+' Check if movie is foreign (non-English).
+' Language fallback fires only when the is_foreign flag is ABSENT —
+' an explicit is_foreign=false is an editorial override and wins.
 Function IsForeign(movie as Object) as Boolean
-    if movie.filters <> invalid AND movie.filters.is_foreign = true
-        return true
+    if movie.filters <> invalid AND movie.filters.is_foreign <> invalid
+        return movie.filters.is_foreign = true
     end if
     if movie.original_language <> invalid AND movie.original_language <> "en"
         return true

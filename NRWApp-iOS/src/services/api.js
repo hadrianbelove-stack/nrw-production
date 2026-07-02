@@ -141,7 +141,8 @@ export function filterMovies(movies, filter = null) {
       return movies.filter(
         movie =>
           !movie.hidden &&
-          (movie.filters?.is_foreign ||
+          // ?? not ||: an explicit is_foreign:false must suppress the language fallback
+          (movie.filters?.is_foreign ??
             (movie.original_language && movie.original_language !== 'en')),
       );
     case 'restorations':
@@ -239,7 +240,7 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopM
           if (movie.filters?.is_indie) return true;
           break;
         case 'foreign':
-          if (movie.filters?.is_foreign ||
+          if (movie.filters?.is_foreign ??
             (movie.original_language && movie.original_language !== 'en')) return true;
           break;
         case 'restorations':
@@ -270,7 +271,7 @@ export function filterMoviesMulti(movies, activeFilters, searchQuery = '', slopM
 }
 
 /**
- * Search movies by title, original title, director, genre, country, synopsis, or year
+ * Search movies by title, original title, director, cast, genre, country, synopsis, or year
  */
 export function searchMovies(movies, query) {
   if (!movies || !Array.isArray(movies) || !query) return movies;
@@ -282,6 +283,7 @@ export function searchMovies(movies, query) {
     const title = norm(movie.title || '');
     const origTitle = norm(movie.original_title || '');
     const director = norm(movie.crew?.director || movie.director || '');
+    const cast = norm((movie.crew?.cast || []).join(' '));
     const genres = (movie.genres || []).map(g => norm(g));
     const country = norm(movie.country || '');
     const synopsis = norm(movie.capsule || movie.synopsis || '');
@@ -291,6 +293,7 @@ export function searchMovies(movies, query) {
       title.includes(nq) ||
       origTitle.includes(nq) ||
       director.includes(nq) ||
+      cast.includes(nq) ||
       genres.some(g => g.includes(nq)) ||
       country.includes(nq) ||
       synopsis.includes(nq) ||

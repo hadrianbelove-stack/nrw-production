@@ -346,7 +346,9 @@ fun Movie.isStaffPick(): Boolean {
 }
 
 fun Movie.isForeign(): Boolean {
-    return filters?.isForeign == true || (originalLanguage != null && originalLanguage != "en")
+    // Language fallback only when the flag is absent — an explicit is_foreign=false wins
+    return filters?.isForeign
+        ?: (originalLanguage != null && originalLanguage != "en")
 }
 
 fun Movie.getDirector(): String? {

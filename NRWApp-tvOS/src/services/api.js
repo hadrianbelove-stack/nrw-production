@@ -217,7 +217,7 @@ export function filterMovies(movies, filters = []) {
 }
 
 /**
- * Search movies by title, original title, director, genre, country, synopsis, or year
+ * Search movies by title, original title, director, cast, genre, country, synopsis, or year
  */
 export function searchMovies(movies, query) {
   if (!movies || !Array.isArray(movies) || !query) return movies;
@@ -229,6 +229,7 @@ export function searchMovies(movies, query) {
     const title = norm(movie.title || '');
     const origTitle = norm(movie.original_title || '');
     const director = norm(movie.director || movie.crew?.director || '');
+    const cast = norm((movie.crew?.cast || []).join(' '));
     const genres = (movie.genres || []).map(g => norm(g));
     const country = norm(movie.country || '');
     const synopsis = norm(movie.capsule || movie.synopsis || '');
@@ -238,6 +239,7 @@ export function searchMovies(movies, query) {
       title.includes(nq) ||
       origTitle.includes(nq) ||
       director.includes(nq) ||
+      cast.includes(nq) ||
       genres.some(g => g.includes(nq)) ||
       country.includes(nq) ||
       synopsis.includes(nq) ||

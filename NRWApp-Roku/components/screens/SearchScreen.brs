@@ -103,7 +103,8 @@ Sub onQueryChanged()
     end if
 End Sub
 
-' Substring match across title / original_title / display_title / director / country / cast.
+' Substring match across title / original_title / display_title / director /
+' country / cast / capsule-synopsis / genres / year (same fields as the web sites).
 Function SearchMovies(query as String) as Object
     matches = []
     for each movie in m.allMovies
@@ -125,6 +126,20 @@ Function SearchMovies(query as String) as Object
                 if c <> invalid then hay = hay + LCase(c) + " "
             end for
         end if
+
+        if movie.capsule <> invalid AND movie.capsule <> ""
+            hay = hay + LCase(movie.capsule) + " "
+        else if movie.synopsis <> invalid
+            hay = hay + LCase(movie.synopsis) + " "
+        end if
+
+        if movie.genres <> invalid
+            for each g in movie.genres
+                if g <> invalid then hay = hay + LCase(g) + " "
+            end for
+        end if
+
+        if movie.year <> invalid then hay = hay + Str(movie.year).Trim() + " "
 
         if InStr(1, hay, query) > 0
             matches.Push(movie)
