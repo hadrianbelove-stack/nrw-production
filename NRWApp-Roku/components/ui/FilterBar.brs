@@ -1,7 +1,7 @@
 ' ============================================================================
 ' NRW Filter Bar — tvOS layout
-' LEFT: bordered toggle module, 2x2 iOS-style switches (FESTS, PRE-ORDER /
-'       SLOP 3-state, SELECTS). RIGHT: genre pills in two rows.
+' One filled control row (matches web): SLOP FILTER · SELECTS · FESTS ·
+' PRE-ORDER · GENRE, with the Search box at the far right.
 ' Focus is 2-D spatial (up/down/left/right find the nearest item); at an edge
 ' OnKeyEvent returns false so HomeScreen takes over (up=search, down=grid).
 ' Layout runs from a Timer because the bundled font loads async.
@@ -23,8 +23,8 @@ Sub Init()
     ' horizontal strip inside the overlay.
     m.genreIds = ["indie", "horror", "action", "comedy", "family", "thriller", "foreign", "documentary", "restorations"]
 
-    ' One switch row (matches web): SLOP FILTER · PRE-ORDER · FESTS · SELECTS
-    m.switchRow = ["slop_free", "show_preorders", "hide_fest", "show_highlights"]
+    ' One switch row (matches web): SLOP FILTER · SELECTS · FESTS · PRE-ORDER
+    m.switchRow = ["slop_free", "show_highlights", "hide_fest", "show_preorders"]
     m.switchIds = m.switchRow
 
     ' Full focus order for the bar (index space for the public focusedIndex field):

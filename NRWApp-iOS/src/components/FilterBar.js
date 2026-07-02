@@ -1,7 +1,7 @@
 /**
  * New Release Wall - Filter Bar Component
- * Mirrors the approved mobile layout: a toggle row (SLOP FILTER · FESTS · PRE-ORDER
- * · SELECTS) above a row of genre pills + search.
+ * Mirrors the approved mobile layout: a toggle row (SLOP FILTER · SELECTS · FESTS
+ * · PRE-ORDER, canonical web order) above a row with the GENRE control + search.
  */
 
 import React from 'react';
@@ -69,12 +69,13 @@ export default function FilterBar({
   const activeGenre = FILTERS.find(f => f.id === activeGenreId);
   return (
     <View style={styles.container}>
-      {/* Toggle row — all four fit without scrolling; SLOP is first (matches web) */}
+      {/* Toggle row — all four fit without scrolling; canonical web order:
+          SLOP FILTER · SELECTS · FESTS · PRE-ORDER */}
       <View style={styles.toggleRow}>
         <SlopToggle mode={slopMode} onPress={() => onSlopModeChange(SLOP_STATES[(SLOP_STATES.indexOf(slopMode) + 1) % 3])} />
+        <Toggle label="SELECTS" active={showHighlightsOnly} color={TEAL} onPress={() => onShowHighlightsChange(!showHighlightsOnly)} />
         <Toggle label="FESTS" active={!hideFest} color={AMBER} onPress={() => onHideFestChange(!hideFest)} />
         <Toggle label="PRE-ORDER" active={showPreorders} color={PURPLE} onPress={() => onShowPreordersChange(!showPreorders)} />
-        <Toggle label="SELECTS" active={showHighlightsOnly} color={TEAL} onPress={() => onShowHighlightsChange(!showHighlightsOnly)} />
       </View>
 
       {/* Row 2: quiet GENRE control (opens a bottom sheet) + inline search */}

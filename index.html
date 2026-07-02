@@ -18,23 +18,23 @@
     })();
     </script>
     <title>The New Release Wall</title>
-    <meta name="description" content="What came out, every day. Bringing back browsing.">
+    <meta name="description" content="What came out, every day.">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
     <!-- Link preview (Open Graph + Twitter) -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="The New Release Wall">
     <meta property="og:title" content="The New Release Wall">
-    <meta property="og:description" content="What came out, every day. Bringing back browsing.">
+    <meta property="og:description" content="What came out, every day.">
     <meta property="og:url" content="https://hadrianbelove-stack.github.io/nrw-production/">
     <meta property="og:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="The New Release Wall">
-    <meta name="twitter:description" content="What came out, every day. Bringing back browsing.">
+    <meta name="twitter:description" content="What came out, every day.">
     <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="assets/styles.css?v=100">
+    <link rel="stylesheet" href="assets/styles.css?v=101">
 </head>
 <body>
     <header>
@@ -42,14 +42,7 @@
             <div class="masthead-row">
                 <div class="mh-titles">
                     <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
-                    <p class="site-slogan">What came out, every day. Bringing back browsing.</p>
-                </div>
-                <div class="cwide-search">
-                    <div class="search-container">
-                        <span class="search-mag" aria-hidden="true">⌕</span>
-                        <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
-                        <button id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
-                    </div>
+                    <p class="site-slogan">What came out, every day.</p>
                 </div>
             </div>
             <div class="cwide-controls">
@@ -58,9 +51,9 @@
                     <span class="slop-label" id="slop-state-label">SLOP FILTER</span>
                 </div>
                 <div class="cwide-divider"></div>
-                <div class="slop-toggle-wrap" id="preorder-toggle">
+                <div class="slop-toggle-wrap" id="highlights-toggle">
                     <div class="slop-track"><div class="slop-thumb"></div></div>
-                    <span class="slop-label">PRE-ORDER</span>
+                    <span class="slop-label">SELECTS</span>
                 </div>
                 <div class="cwide-divider"></div>
                 <div class="slop-toggle-wrap" id="fest-toggle">
@@ -68,9 +61,9 @@
                     <span class="slop-label">FESTS</span>
                 </div>
                 <div class="cwide-divider"></div>
-                <div class="slop-toggle-wrap" id="highlights-toggle">
+                <div class="slop-toggle-wrap" id="preorder-toggle">
                     <div class="slop-track"><div class="slop-thumb"></div></div>
-                    <span class="slop-label">SELECTS</span>
+                    <span class="slop-label">PRE-ORDER</span>
                 </div>
                 <div class="cwide-divider"></div>
                 <div class="genre-slot">
@@ -88,6 +81,14 @@
                             <button class="filter-btn" data-filter="documentary">Docs</button>
                             <button class="filter-btn" data-filter="restorations">Reissues</button>
                         </div>
+                    </div>
+                </div>
+                <div class="cwide-divider"></div>
+                <div class="cwide-search">
+                    <div class="search-container">
+                        <svg class="search-mag" aria-hidden="true" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.8"/><line x1="12.8" y1="12.8" x2="18" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
+                        <button id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
                     </div>
                 </div>
             </div>

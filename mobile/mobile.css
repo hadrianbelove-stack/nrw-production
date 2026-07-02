@@ -232,12 +232,22 @@ body {
   flex: 1;
   position: relative;
 }
+.search-container .search-mag {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 11px;
+  height: 11px;
+  pointer-events: none;
+  color: var(--accent);
+}
 .search-container input {
   width: 100%;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: var(--radius-pill);
-  padding: 5px 28px 5px 12px;
+  padding: 5px 28px 5px 26px;
   font-size: 0.65rem;
   color: var(--text-primary);
   font-family: var(--font);

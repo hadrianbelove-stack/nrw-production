@@ -3,21 +3,16 @@ package com.nrw.app.ui.home
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,18 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,11 +46,11 @@ import com.nrw.app.ui.components.DateRowHeader
 import com.nrw.app.ui.components.FilterChips
 import com.nrw.app.ui.components.GenreOverlay
 import com.nrw.app.ui.components.MovieCard
+import com.nrw.app.ui.components.SearchOverlay
 import com.nrw.app.ui.components.TrailersCard
 import com.nrw.app.ui.theme.Background
 import com.nrw.app.ui.theme.BackgroundGradientEnd
 import com.nrw.app.ui.theme.Primary
-import com.nrw.app.ui.theme.TextMuted
 import com.nrw.app.ui.theme.TextPrimary
 import com.nrw.app.ui.theme.TextSecondary
 
@@ -102,8 +91,8 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // Up from any filter/toggle jumps to the search box (matches tvOS)
-    val searchFocusRequester = remember { FocusRequester() }
+    // Full-screen search overlay (SEARCH sits far right in the control bar — matches tvOS/Roku)
+    var searchOverlayOpen by remember { mutableStateOf(false) }
 
     // GENRE pulldown: overlay open state + the control's label (active genre name, else "GENRE")
     var genreOverlayOpen by remember { mutableStateOf(false) }
@@ -152,16 +141,11 @@ fun HomeScreen(
             }
             else -> {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    // Header with title and search
-                    Header(
-                        searchQuery = uiState.searchQuery,
-                        onSearchChange = { viewModel.setSearchQuery(it) },
-                        searchFocusRequester = searchFocusRequester
-                    )
+                    // Header — masthead is just the wordmark + slogan (search lives in the bar)
+                    Header()
 
-                    // Filter chips — Up from anywhere in the row goes to search
+                    // Control bar: SLOP · SELECTS · FESTS · PRE-ORDER · GENRE · SEARCH (matches web)
                     FilterChips(
-                        modifier = Modifier.focusProperties { up = searchFocusRequester },
                         slopMode = uiState.slopMode,
                         onSlopModeToggle = { viewModel.cycleSlopMode() },
                         hideFest = uiState.hideFest,
@@ -172,7 +156,8 @@ fun HomeScreen(
                         onShowHighlightsToggle = { viewModel.toggleShowHighlights() },
                         genreLabel = genreLabel,
                         hasActiveGenre = hasActiveGenre,
-                        onGenreClick = { genreOverlayOpen = true }
+                        onGenreClick = { genreOverlayOpen = true },
+                        onSearchClick = { searchOverlayOpen = true }
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
@@ -209,6 +194,15 @@ fun HomeScreen(
                 activeFilters = uiState.activeFilters,
                 onFilterToggled = { viewModel.toggleFilter(it) },
                 onDismiss = { genreOverlayOpen = false }
+            )
+        }
+
+        // Full-screen search overlay — searches the FULL list (bypasses wall filters)
+        if (searchOverlayOpen) {
+            SearchOverlay(
+                movies = uiState.movies,
+                onMovieClick = onMovieClick,
+                onDismiss = { searchOverlayOpen = false }
             )
         }
     }
@@ -276,96 +270,26 @@ private fun createGridItems(movies: List<Movie>, playlistUrl: String?, showHighl
 }
 
 @Composable
-private fun Header(
-    searchQuery: String,
-    onSearchChange: (String) -> Unit,
-    searchFocusRequester: FocusRequester
-) {
-    Row(
+private fun Header() {
+    // Masthead: wordmark + slogan only (smaller to match tvOS proportions)
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 32.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(horizontal = 32.dp, vertical = 8.dp)
     ) {
-        // Title + slogan (smaller to match tvOS proportions)
-        Column {
-            Text(
-                text = "THE NEW RELEASE WALL",
-                color = Primary,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                letterSpacing = 3.sp
-            )
-            Text(
-                text = "What came out, every day. Bringing back browsing.",
-                color = TextSecondary,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Light,
-                letterSpacing = 0.3.sp
-            )
-        }
-
-        // Search bar
-        SearchBar(
-            query = searchQuery,
-            onQueryChange = onSearchChange,
-            searchFocusRequester = searchFocusRequester,
-            modifier = Modifier.width(140.dp)
+        Text(
+            text = "THE NEW RELEASE WALL",
+            color = Primary,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 3.sp
         )
-    }
-}
-
-@Composable
-private fun SearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    searchFocusRequester: FocusRequester,
-    modifier: Modifier = Modifier
-) {
-    var isFocused by remember { mutableStateOf(false) }
-
-    val backgroundColor = if (isFocused) {
-        Color.White.copy(alpha = 0.15f)
-    } else {
-        Color.White.copy(alpha = 0.1f)
-    }
-
-    val borderColor = if (isFocused) Primary else Color.White.copy(alpha = 0.2f)
-
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(backgroundColor)
-            .border(1.dp, borderColor, RoundedCornerShape(20.dp))
-            .padding(horizontal = 16.dp, vertical = 10.dp)
-    ) {
-        BasicTextField(
-            value = query,
-            onValueChange = onQueryChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(searchFocusRequester)
-                .onFocusChanged { isFocused = it.isFocused },
-            textStyle = TextStyle(
-                color = TextPrimary,
-                fontSize = 14.sp
-            ),
-            singleLine = true,
-            cursorBrush = SolidColor(Primary),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            decorationBox = { innerTextField ->
-                Box {
-                    if (query.isEmpty()) {
-                        Text(
-                            text = "Search...",
-                            color = Color.White.copy(alpha = 0.5f),
-                            fontSize = 14.sp
-                        )
-                    }
-                    innerTextField()
-                }
-            }
+        Text(
+            text = "What came out, every day.",
+            color = TextSecondary,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Light,
+            letterSpacing = 0.3.sp
         )
     }
 }

@@ -1,6 +1,8 @@
 /**
  * New Release Wall - tvOS Search Screen
- * Allows searching movies by title, original title, director, or country
+ * Full-screen search destination (Apple TV / Netflix pattern): big query field
+ * up top, live-filtered results grid below, native tvOS keyboard.
+ * Searches movies by title, original title, director, or country.
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
@@ -11,22 +13,26 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Colors, Dimensions } from '../constants/colors';
+import { Colors } from '../constants/colors';
 import MovieCard from '../components/MovieCard.tvos';
+import SearchIcon from '../components/SearchIcon.tvos';
+import { getSearchMovieList, setSharedMovieList } from './sharedMovieList';
 
-const CARD_WIDTH = Dimensions.tvos.cardWidth;
-const CARD_HEIGHT = Dimensions.tvos.cardHeight;
 const CARD_GAP = 16;
 const NUM_COLUMNS = 5;
 
 const SearchScreen = ({ route }) => {
   const navigation = useNavigation();
-  const { movies = [] } = route.params || {};
+  // Full movie list seeded by HomeScreen via the shared store (route params can't
+  // carry the ~1.6MB list). route.params kept as a fallback for older callers.
+  const movies = getSearchMovieList().length
+    ? getSearchMovieList()
+    : (route.params?.movies || []);
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState([]);
+  const [inputFocused, setInputFocused] = useState(false);
   const inputRef = useRef(null);
 
   // Focus input on mount
@@ -67,10 +73,12 @@ const SearchScreen = ({ route }) => {
     performSearch(text);
   }, [performSearch]);
 
-  // Handle movie selection
-  const handleMovieSelect = useCallback((movie) => {
-    navigation.navigate('MovieDetail', { movie });
-  }, [navigation]);
+  // Handle movie selection — seed the shared list with the current results so
+  // MovieDetail's left/right arrows browse within the search results.
+  const handleMovieSelect = useCallback((movie, index) => {
+    setSharedMovieList(results);
+    navigation.navigate('MovieDetail', { movie, movieIndex: index });
+  }, [navigation, results]);
 
   // Handle back button
   const handleBack = useCallback(() => {
@@ -82,17 +90,17 @@ const SearchScreen = ({ route }) => {
     <View style={styles.cardWrapper}>
       <MovieCard
         movie={item}
-        onSelect={() => handleMovieSelect(item)}
+        onSelect={() => handleMovieSelect(item, index)}
         testID={`search-result-${index}`}
       />
     </View>
   ), [handleMovieSelect]);
 
-  const keyExtractor = useCallback((item) => item.id || item.tmdb_id || String(Math.random()), []);
+  const keyExtractor = useCallback((item, index) => String(item.id || item.tmdb_id || index), []);
 
   return (
     <View style={styles.container}>
-      {/* Header with back button and search input */}
+      {/* Header with back button and the big query field */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -101,18 +109,22 @@ const SearchScreen = ({ route }) => {
           accessibilityLabel="Go back"
           accessibilityRole="button"
         >
-          <Text style={styles.backIcon}>←</Text>
+          <Text style={styles.backIcon}>‹</Text>
         </TouchableOpacity>
 
-        <View style={styles.searchContainer}>
-          <Text style={styles.searchIcon}>⌕</Text>
+        <View style={[styles.searchContainer, inputFocused && styles.searchContainerFocused]}>
+          <View style={styles.searchIconWrap}>
+            <SearchIcon size={34} color={inputFocused ? '#00d4aa' : 'rgba(255,255,255,0.55)'} strokeWidth={1.8} />
+          </View>
           <TextInput
             ref={inputRef}
             style={styles.searchInput}
-            placeholder="Search movies, directors, countries..."
-            placeholderTextColor="#666"
+            placeholder="Search movies, directors, countries…"
+            placeholderTextColor="rgba(255,255,255,0.35)"
             value={searchQuery}
             onChangeText={handleSearchChange}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="search"
@@ -152,13 +164,15 @@ const SearchScreen = ({ route }) => {
         />
       ) : searchQuery.length > 0 ? (
         <View style={styles.emptyContainer}>
+          <SearchIcon size={72} color="rgba(255,255,255,0.18)" strokeWidth={1.4} />
           <Text style={styles.emptyText}>No movies found</Text>
-          <Text style={styles.emptyHint}>Try a different search term</Text>
+          <Text style={styles.emptyHint}>Try a different title, director, or country</Text>
         </View>
       ) : (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Search for movies</Text>
-          <Text style={styles.emptyHint}>Enter a title, director, or country</Text>
+          <SearchIcon size={72} color="rgba(0,212,170,0.35)" strokeWidth={1.4} />
+          <Text style={styles.emptyText}>Search the wall</Text>
+          <Text style={styles.emptyHint}>Results appear as you type — title, director, or country</Text>
         </View>
       )}
     </View>
@@ -173,52 +187,62 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 60,
-    paddingTop: 28,
-    paddingBottom: 16,
-    gap: 20,
+    paddingHorizontal: 68,
+    paddingTop: 40,
+    paddingBottom: 18,
+    gap: 24,
   },
   backButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   backIcon: {
     color: Colors.textPrimary,
-    fontSize: 28,
+    fontSize: 38,
+    lineHeight: 44,
   },
+  // Big query field — 10-foot sizing, teal focus treatment matching the app
   searchContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    paddingHorizontal: 20,
-    height: 60,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.16)',
+    paddingHorizontal: 26,
+    height: 88,
   },
-  searchIcon: {
-    color: '#666',
-    fontSize: 24,
-    marginRight: 12,
+  searchContainerFocused: {
+    borderColor: Colors.primary,
+    backgroundColor: 'rgba(0,212,170,0.06)',
+    shadowColor: Colors.primary,
+    shadowOpacity: 0.45,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 0 },
+  },
+  searchIconWrap: {
+    marginRight: 18,
   },
   searchInput: {
     flex: 1,
     color: Colors.textPrimary,
-    fontSize: 24,
+    fontSize: 30,
     height: '100%',
   },
   clearButton: {
-    width: 40,
-    height: 40,
+    width: 48,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
   },
   clearIcon: {
-    color: '#666',
-    fontSize: 20,
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 24,
   },
   resultsInfo: {
     paddingHorizontal: 68,
@@ -226,7 +250,7 @@ const styles = StyleSheet.create({
   },
   resultsText: {
     color: Colors.textSecondary,
-    fontSize: 18,
+    fontSize: 20,
   },
   listContent: {
     // Center the 5-column grid: (1920 - 5*344 - 4*16) / 2 = 68px
@@ -245,11 +269,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 14,
   },
   emptyText: {
     color: Colors.textPrimary,
-    fontSize: 28,
-    marginBottom: 10,
+    fontSize: 30,
+    marginTop: 8,
   },
   emptyHint: {
     color: Colors.textMuted,

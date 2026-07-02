@@ -7,7 +7,6 @@ import React, { useState, useCallback, useRef, useEffect, useMemo, forwardRef } 
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   StyleSheet,
   ActivityIndicator,
@@ -32,7 +31,8 @@ import {
   trackMovieSelect,
   trackFilterChange,
 } from '../services/analytics.tvos';
-import { setSharedMovieList } from './sharedMovieList';
+import { setSharedMovieList, setSearchMovieList } from './sharedMovieList';
+import SearchIcon from '../components/SearchIcon.tvos';
 
 // Filter options - matches web categories
 const FILTERS = [
@@ -156,6 +156,45 @@ const GenreControl = forwardRef(({ label, isActive, onPress, nextFocusUp }, ref)
       >
         <Text style={[styles.genreControlText, isActive && styles.genreControlTextActive]}>{label}</Text>
         <Text style={[styles.genreControlCaret, isActive && styles.genreControlTextActive]}>▾</Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+});
+
+// SEARCH button — far right of the control bar. Real magnifying-glass icon +
+// label, styled as a quiet teal pill like GenreControl. Select opens the
+// full-screen Search route (search is a destination, like Apple TV / Netflix).
+const SearchButton = forwardRef(({ onPress }, ref) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.timing(scaleAnim, { toValue: 1.08, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+  return (
+    <TouchableOpacity
+      ref={ref}
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      activeOpacity={1}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel="Search movies"
+    >
+      <Animated.View
+        style={[
+          styles.searchControl,
+          isFocused && styles.searchControlFocused,
+          { transform: [{ scale: scaleAnim }] },
+        ]}
+      >
+        <SearchIcon size={24} color={isFocused ? '#00d4aa' : 'rgba(0,212,170,0.75)'} strokeWidth={2} />
+        <Text style={[styles.searchControlText, isFocused && styles.searchControlTextFocused]}>SEARCH</Text>
       </Animated.View>
     </TouchableOpacity>
   );
@@ -476,10 +515,8 @@ const HomeScreenTvOS = () => {
   const initialFocusDone = useRef(false);  // Prevents hasTVPreferredFocus re-firing on listData changes
   const [headerNodeHandle, setHeaderNodeHandle] = useState(null);
   const headerRefObject = useRef(null);
-  const [toggleNodeHandle, setToggleNodeHandle] = useState(null);
   const [lastFilterNodeHandle, setLastFilterNodeHandle] = useState(null);
   const [lastToggleNodeHandle, setLastToggleNodeHandle] = useState(null);
-  const [searchNodeHandle, setSearchNodeHandle] = useState(null);
   // GENRE pulldown overlay (collapses the genre chips behind one control)
   const [genreOverlay, setGenreOverlay] = useState(false);
   // Ref to first rendered movie card — used by the boundary TVFocusGuideView for DOWN from filters
@@ -489,7 +526,8 @@ const HomeScreenTvOS = () => {
   // that toggles sit in the lower-left directly above the wall).
   const setFirstFilterRef = useCallback((ref) => {}, []);
 
-  // Callback ref for last filter button (Reissues)
+  // Callback ref for the last control in the bar (SEARCH) — LEFT from the first
+  // row's leftmost poster wraps up to it.
   const setLastFilterRef = useCallback((ref) => {
     if (ref) {
       const handle = findNodeHandle(ref);
@@ -497,20 +535,13 @@ const HomeScreenTvOS = () => {
     }
   }, []);
 
-  // Slop toggle (first toggle) — the wall's UP target AND the toggle handle, so a
-  // poster pressing UP lands on the toggles.
+  // Slop toggle (first toggle) — the wall's UP target, so a poster pressing UP
+  // lands on the toggles.
   const setFirstToggleRef = useCallback((ref) => {
     if (ref) {
       headerRefObject.current = ref;
-      const handle = findNodeHandle(ref);
-      setHeaderNodeHandle(handle);
-      setToggleNodeHandle(handle);
+      setHeaderNodeHandle(findNodeHandle(ref));
     }
-  }, []);
-
-  // Search box — toggles/filters navigate UP to here; search goes DOWN to the toggles.
-  const setSearchRef = useCallback((ref) => {
-    if (ref) setSearchNodeHandle(findNodeHandle(ref));
   }, []);
 
   // Callback ref for last toggle (pre-order) — leftmost first-row poster LEFT target
@@ -523,14 +554,20 @@ const HomeScreenTvOS = () => {
 
   // Get shared state and actions
   const {
+    movies,
     filteredMovies,
     isLoading,
     error,
     refreshMovies,
     latestPlaylistUrl,
-    searchQuery,
-    updateSearchQuery,
   } = useHomeScreen();
+
+  // SEARCH opens the full-screen Search route over the FULL movie list
+  // (search covers everything, bypassing wall view filters — matches desktop).
+  const handleOpenSearch = useCallback(() => {
+    setSearchMovieList(movies);
+    navigation.navigate('Search');
+  }, [navigation, movies]);
 
   // Local state - multi-select filters (Set of active filter IDs)
   const [activeFilters, setActiveFilters] = useState(new Set());
@@ -564,7 +601,6 @@ const HomeScreenTvOS = () => {
     setShowPreorders(false);
   }, [slopMode]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   // When set, the movie card with this mIdx claims focus on its next render
   // (used by "MORE" to land on the first newly-loaded film, and by app re-entry
@@ -574,7 +610,7 @@ const HomeScreenTvOS = () => {
   // Reset to first page whenever filters change
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly, searchQuery]);
+  }, [activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly]);
 
   // Release the one-shot preferred-focus flag once the target card has had a
   // chance to claim focus, so it won't keep stealing focus on later re-renders.
@@ -710,19 +746,17 @@ const HomeScreenTvOS = () => {
     // Pre-order view is exclusive: ON => only pre-orders; OFF => hide them everywhere
     // else (incl. ones also flagged as screenings, so they never bleed into the Fests
     // view). Matches desktop.
-    if (!searchQuery) {
-      movies = showPreorders
-        ? movies.filter(m => m._is_preorder)
-        : movies.filter(m => !m._is_preorder);
-    }
+    movies = showPreorders
+      ? movies.filter(m => m._is_preorder)
+      : movies.filter(m => !m._is_preorder);
 
     // Highlights mode: only staff picks
     if (showHighlightsOnly) {
       movies = movies.filter(m => m.filters?.is_staff_pick || m.featured);
     }
 
-    // If no filters selected OR search is active, show all (search bypasses category filters — matches desktop)
-    if (activeFilters.size === 0 || searchQuery) {
+    // If no filters selected, show all
+    if (activeFilters.size === 0) {
       return movies;
     }
 
@@ -764,7 +798,7 @@ const HomeScreenTvOS = () => {
       }
       return false;
     });
-  }, [filteredMovies, activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly, searchQuery]);
+  }, [filteredMovies, activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly]);
 
   // Build flat list data with date markers interspersed
   // Each date marker takes one grid cell (same size as movie card)
@@ -1223,11 +1257,9 @@ const HomeScreenTvOS = () => {
     );
   }
 
-  // Render empty state — but NOT while a search is active. A search that matches
-  // nothing must keep the header + search box mounted (see the in-place "no results"
-  // message below); tearing the whole screen down here unmounts the focused search
-  // field mid-keyboard-session, which freezes the remote and can crash tvOS.
-  if (!isLoading && listData.length === 0 && !searchQuery) {
+  // Render empty state (search lives on its own full-screen route now, so an
+  // empty list here can only mean no data).
+  if (!isLoading && listData.length === 0) {
     return (
       <View style={styles.container}>
         <View style={styles.emptyContainer}>
@@ -1241,49 +1273,27 @@ const HomeScreenTvOS = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header: top row = title + search; bottom row = 2x2 toggle module (lower-left) + filters (two rows) */}
+      {/* Header: masthead = wordmark + slogan only; below it one control bar:
+          SLOP FILTER · SELECTS · FESTS · PRE-ORDER · GENRE · SEARCH (matches web) */}
       <View style={styles.header}>
-        {/* Top row: title + slogan (left), search beside the wordmark (right) — matches web */}
         <View style={styles.headerTopRow}>
           <View>
             <Text style={styles.headerTitle}>THE NEW RELEASE WALL</Text>
-            <Text style={styles.headerSlogan}>What came out, every day. Bringing back browsing.</Text>
-          </View>
-          <View ref={setSearchRef} style={[styles.searchBox, searchFocused && styles.searchContainerFocused]}>
-            <Text style={styles.searchIcon}>⌕</Text>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search title, director, genre…"
-              placeholderTextColor="rgba(255,255,255,0.4)"
-              value={searchQuery}
-              onChangeText={updateSearchQuery}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="search"
-            />
-            {searchQuery.length > 0 && (
-              <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
-                <Text style={styles.searchClearText}>✕</Text>
-              </TouchableOpacity>
-            )}
+            <Text style={styles.headerSlogan}>What came out, every day.</Text>
           </View>
         </View>
-        {/* One clean control row: SLOP FILTER · PRE-ORDER · FESTS · SELECTS · GENRE (matches web) */}
         <View style={styles.controlBar}>
           <View style={styles.barCell}>
-            <SlopToggle ref={setFirstToggleRef} slopMode={slopMode} onPress={cycleSlopMode} nextFocusUp={searchNodeHandle} />
+            <SlopToggle ref={setFirstToggleRef} slopMode={slopMode} onPress={cycleSlopMode} />
           </View>
           <View style={styles.barDivider} />
           <View style={styles.barCell}>
             <MetaToggle
-              isActive={showPreorders}
-              label="PRE-ORDER"
-              accentColor="#7c3aed"
-              accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
-              onPress={toggleShowPreorders}
-              nextFocusUp={searchNodeHandle}
+              isActive={showHighlightsOnly}
+              label="SELECTS"
+              accentColor="#00d4aa"
+              accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
+              onPress={toggleShowHighlights}
             />
           </View>
           <View style={styles.barDivider} />
@@ -1294,30 +1304,30 @@ const HomeScreenTvOS = () => {
               accentColor="#f59e0b"
               accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
               onPress={toggleHideFest}
-              nextFocusUp={searchNodeHandle}
             />
           </View>
           <View style={styles.barDivider} />
           <View style={styles.barCell}>
             <MetaToggle
               ref={setLastToggleRef}
-              isActive={showHighlightsOnly}
-              label="SELECTS"
-              accentColor="#00d4aa"
-              accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
-              onPress={toggleShowHighlights}
-              nextFocusUp={searchNodeHandle}
+              isActive={showPreorders}
+              label="PRE-ORDER"
+              accentColor="#7c3aed"
+              accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
+              onPress={toggleShowPreorders}
             />
           </View>
           <View style={styles.barDivider} />
           <View style={styles.barCell}>
             <GenreControl
-              ref={setLastFilterRef}
               label={genreControlLabel}
               isActive={!!activeGenreId}
               onPress={() => setGenreOverlay(true)}
-              nextFocusUp={searchNodeHandle}
             />
+          </View>
+          <View style={styles.barDivider} />
+          <View style={styles.barCell}>
+            <SearchButton ref={setLastFilterRef} onPress={handleOpenSearch} />
           </View>
         </View>
       </View>
@@ -1339,37 +1349,28 @@ const HomeScreenTvOS = () => {
         style={styles.boundaryGuide}
       />
 
-      {/* Vertical scrolling grid - the wall. When a search matches nothing we show a
-          message in its place rather than an empty list, so the header + search box
-          stay mounted and the remote keeps a focus target. */}
-      {searchQuery && rowData.length === 0 ? (
-        <View style={styles.noResultsContainer}>
-          <Text style={styles.emptyText}>No results for "{searchQuery}"</Text>
-          <Text style={styles.emptyHint}>Try a different title, director, or country</Text>
-        </View>
-      ) : (
-        <FlatList
-          ref={flatListRef}
-          data={rowData}
-          renderItem={renderRow}
-          keyExtractor={keyExtractor}
-          extraData={itemNodeHandles}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          // removeClippedSubviews intentionally omitted — it destroys native view registrations
-          // used for focus navigation, causing nextFocusUp/Down handles to go stale off-screen.
-          maxToRenderPerBatch={8}
-          windowSize={5}
-          initialNumToRender={8}
-          // UP boundary: when focus exits the top of the scroll view it crosses this 1px guide,
-          // which redirects to the filter chips. Insurance alongside natural spatial focus.
-          ListHeaderComponent={
-            headerRefObject.current
-              ? <TVFocusGuideView destinations={[headerRefObject.current]} style={styles.listHeaderGuide} />
-              : null
-          }
-        />
-      )}
+      {/* Vertical scrolling grid - the wall. */}
+      <FlatList
+        ref={flatListRef}
+        data={rowData}
+        renderItem={renderRow}
+        keyExtractor={keyExtractor}
+        extraData={itemNodeHandles}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContent}
+        // removeClippedSubviews intentionally omitted — it destroys native view registrations
+        // used for focus navigation, causing nextFocusUp/Down handles to go stale off-screen.
+        maxToRenderPerBatch={8}
+        windowSize={5}
+        initialNumToRender={8}
+        // UP boundary: when focus exits the top of the scroll view it crosses this 1px guide,
+        // which redirects to the filter chips. Insurance alongside natural spatial focus.
+        ListHeaderComponent={
+          headerRefObject.current
+            ? <TVFocusGuideView destinations={[headerRefObject.current]} style={styles.listHeaderGuide} />
+            : null
+        }
+      />
 
       {/* Refresh indicator overlay */}
       {isRefreshing && (
@@ -1479,36 +1480,6 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: 'center',
   },
-  // Search rendered inside the filter grid (row 2): spans ~3 chip slots and
-  // stretches to the chip height so it sits flush with the filter buttons.
-  searchInGrid: {
-    flex: 3,
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 18,
-  },
-  searchContainerFocused: {
-    borderColor: Colors.primary,
-    borderWidth: 2,
-  },
-  searchInput: {
-    flex: 1,
-    color: Colors.textPrimary,
-    fontSize: 16,
-    padding: 0,
-  },
-  searchClear: {
-    paddingLeft: 8,
-  },
-  searchClearText: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 16,
-  },
   filterButton: {
     alignSelf: 'stretch',
     alignItems: 'center',
@@ -1555,20 +1526,28 @@ const styles = StyleSheet.create({
   genreControlText: { fontSize: 22, fontWeight: '700', letterSpacing: 2, color: 'rgba(0,212,170,0.75)' },
   genreControlTextActive: { color: '#00d4aa' },
   genreControlCaret: { fontSize: 16, color: 'rgba(0,212,170,0.75)' },
-  // Search beside the wordmark — fixed, modest width (not full-bleed)
-  searchBox: {
-    width: 420,
+  // SEARCH button (far right of the control row) — glass icon + label, quiet teal
+  // pill matching the GENRE control. Select opens the full-screen Search route.
+  searchControl: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 22,
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 26,
+    borderRadius: 24,
+    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
+    borderColor: 'rgba(0,212,170,0.35)',
   },
-  searchIcon: { color: '#00d4aa', fontSize: 18, marginRight: 10 },
-  // One filled control row (toggles + GENRE), distributed across the width
+  searchControlFocused: {
+    borderColor: '#00d4aa',
+    borderWidth: 2,
+    backgroundColor: 'rgba(0,212,170,0.08)',
+  },
+  searchControlText: { fontSize: 22, fontWeight: '700', letterSpacing: 2, color: 'rgba(0,212,170,0.75)' },
+  searchControlTextFocused: { color: '#00d4aa' },
+  // One filled control row (toggles + GENRE + SEARCH), distributed across the width
   controlBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1904,20 +1883,6 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: Typography.tvos.body,
     textAlign: 'center',
-  },
-  // No-results message shown in place of the wall when a search matches nothing
-  noResultsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 60,
-    gap: 12,
-  },
-  emptyHint: {
-    color: Colors.textMuted,
-    fontSize: Typography.tvos.caption,
-    textAlign: 'center',
-    opacity: 0.7,
   },
 });
 

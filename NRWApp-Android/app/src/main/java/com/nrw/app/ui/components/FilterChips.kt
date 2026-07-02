@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -64,6 +65,7 @@ fun FilterChips(
     genreLabel: String = "GENRE",
     hasActiveGenre: Boolean = false,
     onGenreClick: () -> Unit = {},
+    onSearchClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     TvLazyRow(
@@ -71,7 +73,7 @@ fun FilterChips(
         contentPadding = PaddingValues(horizontal = 32.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // One clean row (matches web): SLOP FILTER · PRE-ORDER · FESTS · SELECTS · GENRE.
+        // One clean row (matches web): SLOP FILTER · SELECTS · FESTS · PRE-ORDER · GENRE · SEARCH.
         item {
             // SLOP is first among the toggles (matches canonical web order).
             val slopLabel = when (slopMode) { "only" -> "SLOP ONLY"; "free" -> "SLOP FREE"; else -> "SLOP FILTER" }
@@ -86,12 +88,13 @@ fun FilterChips(
         }
 
         item {
+            // Identity color when active (matches banners + date strips)
             MetaTogglePill(
-                isActive = showPreorders,
-                activeLabel = "PRE-ORDERS",
-                inactiveLabel = "NO PRE-ORDERS",
-                onClick = onShowPreordersToggle,
-                accentColor = if (showPreorders) Color(0xFF7C3AED) else SlopTeal
+                isActive = showHighlightsOnly,
+                activeLabel = "SELECTS",
+                inactiveLabel = "SELECTS",
+                onClick = onShowHighlightsToggle,
+                accentColor = if (showHighlightsOnly) Color(0xFF00D4AA) else SlopTeal
             )
         }
 
@@ -106,13 +109,12 @@ fun FilterChips(
         }
 
         item {
-            // Identity color when active (matches banners + date strips)
             MetaTogglePill(
-                isActive = showHighlightsOnly,
-                activeLabel = "SELECTS",
-                inactiveLabel = "SELECTS",
-                onClick = onShowHighlightsToggle,
-                accentColor = if (showHighlightsOnly) Color(0xFF00D4AA) else SlopTeal
+                isActive = showPreorders,
+                activeLabel = "PRE-ORDERS",
+                inactiveLabel = "NO PRE-ORDERS",
+                onClick = onShowPreordersToggle,
+                accentColor = if (showPreorders) Color(0xFF7C3AED) else SlopTeal
             )
         }
 
@@ -135,6 +137,11 @@ fun FilterChips(
                 hasActive = hasActiveGenre,
                 onClick = onGenreClick
             )
+        }
+
+        item {
+            // SEARCH — far right; opens the full-screen search overlay (matches tvOS/Roku)
+            SearchControl(onClick = onSearchClick)
         }
     }
 }
@@ -314,6 +321,54 @@ private fun GenreControl(
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
         )
+    }
+}
+
+/**
+ * SEARCH control — far right of the bar. Real magnifying-glass icon + label,
+ * quiet teal pill matching GenreControl. Opens the full-screen search overlay.
+ */
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun SearchControl(onClick: () -> Unit) {
+    var isFocused by remember { mutableStateOf(false) }
+    val accent = SlopTeal
+    val textColor = if (isFocused) accent else accent.copy(alpha = 0.75f)
+
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.onFocusChanged { isFocused = it.isFocused },
+        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(14.dp)),
+        colors = ClickableSurfaceDefaults.colors(
+            containerColor = Color.Transparent,
+            focusedContainerColor = accent.copy(alpha = 0.08f),
+            pressedContainerColor = Color.Transparent
+        ),
+        border = ClickableSurfaceDefaults.border(
+            border = androidx.tv.material3.Border(
+                border = BorderStroke(1.dp, accent.copy(alpha = 0.35f)),
+                shape = RoundedCornerShape(14.dp)
+            ),
+            focusedBorder = androidx.tv.material3.Border(
+                border = BorderStroke(2.dp, accent),
+                shape = RoundedCornerShape(14.dp)
+            )
+        ),
+        scale = ClickableSurfaceDefaults.scale(focusedScale = 1.1f, pressedScale = 0.95f)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+        ) {
+            SearchGlassIcon(size = 11.dp, color = textColor)
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "SEARCH",
+                color = textColor,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 

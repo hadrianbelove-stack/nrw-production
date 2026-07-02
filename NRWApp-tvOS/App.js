@@ -35,6 +35,7 @@ const linking = {
     screens: {
       Home: '',
       MovieDetail: 'movie/:id',
+      Search: 'search',
     },
   },
 };
