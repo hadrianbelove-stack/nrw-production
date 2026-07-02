@@ -123,7 +123,7 @@ const FilterButton = forwardRef(({ filter, isActive, onPress, onFocus, nextFocus
 
 // GENRE pulldown control — quiet teal-outline pill with a caret (matches the
 // desktop .genre-control). Focusable; opens the genre overlay on select.
-const GenreControl = forwardRef(({ label, isActive, onPress }, ref) => {
+const GenreControl = forwardRef(({ label, isActive, onPress, nextFocusUp }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const handleFocus = useCallback(() => {
@@ -144,6 +144,7 @@ const GenreControl = forwardRef(({ label, isActive, onPress }, ref) => {
       accessible={true}
       accessibilityRole="button"
       accessibilityLabel="Filter by genre"
+      nextFocusUp={nextFocusUp}
     >
       <Animated.View
         style={[
@@ -1261,6 +1262,7 @@ const HomeScreenTvOS = () => {
               autoCapitalize="none"
               autoCorrect={false}
               returnKeyType="search"
+              nextFocusDown={toggleNodeHandle}
             />
             {searchQuery.length > 0 && (
               <TouchableOpacity style={styles.searchClear} onPress={() => updateSearchQuery('')}>
@@ -1272,7 +1274,7 @@ const HomeScreenTvOS = () => {
         {/* One clean control row: SLOP FILTER · PRE-ORDER · FESTS · SELECTS · GENRE (matches web) */}
         <View style={styles.controlBar}>
           <View style={styles.barCell}>
-            <SlopToggle ref={setFirstToggleRef} slopMode={slopMode} onPress={cycleSlopMode} />
+            <SlopToggle ref={setFirstToggleRef} slopMode={slopMode} onPress={cycleSlopMode} nextFocusUp={searchNodeHandle} />
           </View>
           <View style={styles.barDivider} />
           <View style={styles.barCell}>
@@ -1282,6 +1284,7 @@ const HomeScreenTvOS = () => {
               accentColor="#7c3aed"
               accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
               onPress={toggleShowPreorders}
+              nextFocusUp={searchNodeHandle}
             />
           </View>
           <View style={styles.barDivider} />
@@ -1292,6 +1295,7 @@ const HomeScreenTvOS = () => {
               accentColor="#f59e0b"
               accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
               onPress={toggleHideFest}
+              nextFocusUp={searchNodeHandle}
             />
           </View>
           <View style={styles.barDivider} />
@@ -1303,6 +1307,7 @@ const HomeScreenTvOS = () => {
               accentColor="#00d4aa"
               accessibilityLabel={showHighlightsOnly ? 'Showing selects only' : 'Showing all movies'}
               onPress={toggleShowHighlights}
+              nextFocusUp={searchNodeHandle}
             />
           </View>
           <View style={styles.barDivider} />
@@ -1312,6 +1317,7 @@ const HomeScreenTvOS = () => {
               label={genreControlLabel}
               isActive={!!activeGenreId}
               onPress={() => setGenreOverlay(true)}
+              nextFocusUp={searchNodeHandle}
             />
           </View>
         </View>
