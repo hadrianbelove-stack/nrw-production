@@ -33,6 +33,7 @@ const SearchScreen = ({ route }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState([]);
   const [inputFocused, setInputFocused] = useState(false);
+  const [clearFocused, setClearFocused] = useState(false);
   const inputRef = useRef(null);
 
   // Focus input on mount
@@ -41,6 +42,22 @@ const SearchScreen = ({ route }) => {
       inputRef.current?.focus();
     }, 100);
   }, []);
+
+  // Progressive back (standard TV search pattern): Menu with a query showing
+  // clears the search back to its default state; Menu on an empty search exits
+  // to the wall. The preventDefault MUST stay conditional — an unconditional
+  // guard wedges tvOS navigation (see TrailerScreen header comment).
+  const queryRef = useRef('');
+  queryRef.current = searchQuery;
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      if (!queryRef.current) return;
+      e.preventDefault();
+      setSearchQuery('');
+      setResults([]);
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   // Search function
   const performSearch = useCallback((query) => {
@@ -131,12 +148,14 @@ const SearchScreen = ({ route }) => {
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity
-              style={styles.clearButton}
+              style={[styles.clearButton, clearFocused && styles.clearButtonFocused]}
               onPress={() => handleSearchChange('')}
+              onFocus={() => setClearFocused(true)}
+              onBlur={() => setClearFocused(false)}
               accessible={true}
               accessibilityLabel="Clear search"
             >
-              <Text style={styles.clearIcon}>✕</Text>
+              <Text style={[styles.clearIcon, clearFocused && styles.clearIconFocused]}>✕</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -235,14 +254,25 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   clearButton: {
-    width: 48,
-    height: 48,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  clearButtonFocused: {
+    backgroundColor: 'rgba(0,212,170,0.15)',
+    borderColor: Colors.primary,
   },
   clearIcon: {
     color: 'rgba(255,255,255,0.55)',
-    fontSize: 24,
+    fontSize: 30,
+  },
+  clearIconFocused: {
+    color: Colors.primary,
   },
   resultsInfo: {
     paddingHorizontal: 68,
