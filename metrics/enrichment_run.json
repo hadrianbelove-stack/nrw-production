@@ -1,27 +1,45 @@
 {
-  "timestamp": "2026-07-02T11:00:25.370776",
-  "movies_requested": 20,
-  "movies_enriched": 14,
-  "movies_deferred": 6,
+  "timestamp": "2026-07-03T10:46:00.847470",
+  "movies_requested": 12,
+  "movies_enriched": 5,
+  "movies_deferred": 7,
   "deferred_details": [
+    {
+      "title": "The Get Out",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-02",
+      "discovered_at": "2026-07-03T10:39:00.005089",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-03",
+      "tmdb_platforms": [
+        "Amazon Video",
+        "Fandango At Home",
+        "Plex"
+      ],
+      "jw_platforms": [
+        "Amazon Video",
+        "Fandango At Home"
+      ]
+    },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-02T10:43:58.882963",
+      "discovered_at": "2026-07-03T10:39:01.118522",
       "discovery_source": "tmdb_type4",
-      "revert_count": 3,
-      "first_reverted_at": "2026-07-02",
+      "revert_count": 4,
+      "first_reverted_at": "2026-07-03",
       "tmdb_platforms": []
     },
     {
       "title": "The Devil Wears Prada 2",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-06-30",
-      "discovered_at": "2026-07-02T10:44:01.058414",
+      "discovered_at": "2026-07-03T10:39:02.276235",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-02",
+      "first_reverted_at": "2026-07-03",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
@@ -33,57 +51,52 @@
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-02T10:44:02.317433",
+      "discovered_at": "2026-07-03T10:39:03.283236",
       "discovery_source": "tmdb_type4",
-      "revert_count": 24,
-      "first_reverted_at": "2026-07-02",
+      "revert_count": 25,
+      "first_reverted_at": "2026-07-03",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-02T10:44:02.604177",
+      "discovered_at": "2026-07-03T10:39:03.625099",
       "discovery_source": "tmdb_type4",
-      "revert_count": 15,
-      "first_reverted_at": "2026-07-02",
+      "revert_count": 16,
+      "first_reverted_at": "2026-07-03",
       "tmdb_platforms": []
+    },
+    {
+      "title": "The Dangers in My Heart: The Movie",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-14",
+      "discovered_at": "2026-07-03T10:39:15.348037",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-03",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Barnes & Noble"
+      ]
     },
     {
       "title": "Blades of the Guardians",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "",
-      "discovered_at": "2026-07-02T10:44:22.016400",
+      "discovered_at": "2026-07-03T10:39:15.618434",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-02",
+      "first_reverted_at": "2026-07-03",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
         "Apple TV Store",
         "Fandango At Home"
       ]
-    },
-    {
-      "title": "The Get Out",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-06-20T13:15:45.065258",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-02",
-      "tmdb_platforms": [
-        "Amazon Video",
-        "Fandango At Home",
-        "Plex"
-      ],
-      "jw_platforms": [
-        "Amazon Video",
-        "Fandango At Home"
-      ]
     }
   ],
-  "enrichment_duration_seconds": 945.85,
+  "enrichment_duration_seconds": 398.9,
   "error_details": [],
   "total_errors": 0
 }
