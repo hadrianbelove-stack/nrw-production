@@ -767,8 +767,14 @@ MOVIE METADATA:
 Use Google Search to look up anything interesting about this film — the director's
 other work, festival history, press coverage, interviews, distributor background,
 comparable films, cultural context, production backstory, audience reception.
-Follow whatever thread is most interesting.
+Research widely — but that breadth feeds your fact-finding, not the capsule's length.
+The capsule itself stays tight; surplus facts belong in the factoid primer, not here.
 {angle_block}
+HARD LENGTH RULE (overrides any urge to be thorough): 40–70 words, never exceed 80.
+Telegraphic — sentence fragments, facts stacked, no connective tissue ("Additionally",
+"What makes this remarkable…"). A hard, surprising 45-word capsule always beats a
+thorough 110-word one. If you wrote a flowing paragraph, cut it back to fragments.
+
 Write a capsule. Return ONLY the capsule text, no labels or formatting.
 
 CAPSULE:"""
@@ -864,7 +870,12 @@ VERIFICATION:"""
             self._enforce_rate_limit()
             config = self.types.GenerateContentConfig(
                 tools=[self.grounding_tool],
-                temperature=0.9
+                temperature=0.9,
+                # Maximal effort: run Pro's reasoning at the full 32768-token
+                # thinking budget for the capsule write (the marquee output).
+                # Default leaves thinking dynamic/low; this is the explicit "best
+                # model at max effort" the capsule deserves.
+                thinking_config=self.types.ThinkingConfig(thinking_budget=32768),
             )
             response = self._generate(prompt, config=config)
             return response.text.strip() if response.text else None

@@ -83,6 +83,14 @@ else
     echo "  No new trailers to stamp" >> "$LOG"
 fi
 
+# Step 3b: Back up the hand-curated curation banks to B2.
+# cache/approved_capsules.json + cache/taste_profile_pullquotes.json are
+# gitignored on purpose — this Mac has the ONLY copies. Uploads only when
+# file content changed (sha256 check), so most cycles are a no-op.
+echo "Backing up curation banks..." >> "$LOG"
+/opt/homebrew/bin/python3.11 scripts/backup_curation_banks.py >> "$LOG" 2>&1 \
+    || echo "  WARNING: curation bank backup failed" >> "$LOG"
+
 # Only create sentinel if we have today's CI data
 CI_DATE=$(/usr/bin/python3 -c "import json; print(json.load(open('metrics/run_diagnostics.json'))['timestamp'][:10])" 2>/dev/null)
 TODAY=$(date +%Y-%m-%d)
@@ -116,8 +124,8 @@ if [ "$CI_DATE" = "$TODAY" ]; then
     rm -rf "$TMP_ART"
 
     if [ "$ARTIFACT_OK" = false ]; then
-        # Fallback: CI artifact unavailable — generate locally (the old path).
-        # alarm(3600) hard-kills a hung run so it can't freeze later cycles.
+        # Fallback: CI artifact unavailable — generate the whole curate window
+        # locally (the old path). alarm(3600) hard-kills a hung run.
         echo "  Artifact unavailable — falling back to local generation" >> "$LOG"
         echo "Scraping pull quotes for new arrivals..." >> "$LOG"
         /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
@@ -127,14 +135,26 @@ if [ "$CI_DATE" = "$TODAY" ]; then
         /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
             /usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 3 --skip-verify >> "$LOG" 2>&1 \
             || echo "  WARNING: capsule batch exited non-zero (timeout or error)" >> "$LOG"
-        # Buzz (Selects guesser) — the capsule research above just produced the
-        # facts, so compute it into data.json now (CI does the same after its
-        # capsule step). Normal artifact path needs no local run: the data.json
-        # pulled from CI already carries Buzz.
-        echo "Computing Buzz (Selects guesser)..." >> "$LOG"
-        /usr/bin/python3 scripts/inject_notability.py >> "$LOG" 2>&1 \
-            || echo "  WARNING: Buzz injection exited non-zero" >> "$LOG"
+    else
+        # Artifact OK: CI gave us pull quotes + capsules — but CI's capsules are
+        # BANK-LESS. Only this Mac has cache/approved_capsules.json (the few-shot
+        # house-style bank); CI deliberately can't, so its capsules come out long
+        # and off-style. Regenerate the freshest arrivals locally WITH the bank
+        # (--force overwrites CI's cache entries) so /curate reads house-style
+        # variants. Tight window (--days 2: today + a 1-day outage buffer) because
+        # each capsule now runs Pro at max thinking budget — the full 7-day window
+        # would blow the 1h alarm; CI already covered the rest of the week on their
+        # arrival mornings. (See: capsule writing was good locally pre-CI.)
+        echo "Regenerating recent capsules locally with the approved bank..." >> "$LOG"
+        /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
+            /usr/bin/python3 scripts/write_capsule.py --batch --days 2 --variants 3 --skip-verify --force >> "$LOG" 2>&1 \
+            || echo "  WARNING: local capsule regen exited non-zero (timeout or error)" >> "$LOG"
     fi
+    # Buzz (Selects guesser) — recompute into data.json now that the capsule
+    # research (CI's or the local regen above) has produced notability facts.
+    echo "Computing Buzz (Selects guesser)..." >> "$LOG"
+    /usr/bin/python3 scripts/inject_notability.py >> "$LOG" 2>&1 \
+        || echo "  WARNING: Buzz injection exited non-zero" >> "$LOG"
     echo "  Curation caches ready" >> "$LOG"
 
     touch "$SENTINEL"
