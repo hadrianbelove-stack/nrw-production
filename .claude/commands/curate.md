@@ -201,31 +201,19 @@ with open('data.json','w') as f: json.dump(data, f, indent=2, ensure_ascii=False
 ### Step B — Pull Quotes (SAME message as the capsule)
 Append this film's quotes to the message showing its capsule variants (Step A.3) — do **not** wait for the capsule pick. User reviews both and replies at once (e.g. "capsule 2, quote 4").
 
-**⚙ Config:** Letterboxd quotes to show = **10** (max; show all if ≤10).
+All quote mechanics live in **`scripts/get_quotes.py`** — never read or edit `cache/pull_quotes_combined.json` directly (it's 3.5MB; the script extracts just this film). The Letterboxd cap (10) is `LB_MAX` in that script.
 
-1. **Read from cache** — the morning launchagent (`scripts/batch_pull_quotes.py`) scrapes all new arrivals before curation. Read `cache/pull_quotes_combined.json`, key `"{title}_{year}"`.
-   - Has quotes → use them, do not re-scrape.
-   - Absent entirely → show `⚠ No pull quotes in cache — morning batch may have missed this movie. Check Concerns in tomorrow's launchagent report.` and skip quotes for this film.
-   - Never re-scrape; the morning batch is canonical.
-2. **Present** as **Templates → Quotes block** — all RT/critic quotes (grouped by outlet, cache order) then up to 10 Letterboxd. No pre-filtering/ranking. **Wrap each quote to ~72 cols** via a `textwrap.fill` script (hanging indent, attribution on its own line) — the IDE side panel doesn't soft-wrap. Single `@` for Letterboxd usernames. Spoiler-protected reviews (text starts "This review may contain spoilers"): show `— @username → [read review](url)`.
-3. **On reply** (the quote part of the joint reply):
-   - Number → that quote verbatim.
-   - Pasted text → **that IS the final version** (never revert to original).
-   - "skip" → write `pull_quotes: []` to data.json for this film, then COMMIT(`data.json`, `"Pull quotes: [TITLE] skipped"`). `[]` = reviewed/rejected (don't re-queue); **no key** = never queued.
-4. **Verify each chosen quote's `review_url`:**
+1. **Print the quotes:**
    ```bash
-   cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
-   import sys; sys.path.insert(0, '.')
-   from gemini_scraper.pull_quotes import verify_quote_url
-   print(verify_quote_url('REVIEW_URL', 'MOVIE_TITLE', 'CRITIC_NAME'))
-   "
+   cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/get_quotes.py "TITLE" YEAR
    ```
-   - `ok` / `no_url` → proceed silently.
-   - `bad_link` → show `⚠ Review link doesn't appear to be this movie/critic ([url]) — saving quote without URL. Say "keep link" to save it anyway.` Save `review_url: null` unless user says keep.
-   - `error` → show `⚠ Review link couldn't be loaded ([url]) — saving without URL.` Save `review_url: null`.
-5. **Save** — both writes:
-   - `cache/pull_quotes_combined.json`: find the entry (critic + outlet), set `selected: true`, set `text` to the final version. Create the entry if none exists.
-   - `data.json` `pull_quotes`: inject `{text, critic, outlet, review_url}` (review_url null if verification failed).
+   Present its output **verbatim** — it already renders **Templates → Quotes block** (all RT/critic quotes grouped by outlet in cache order, then up to 10 Letterboxd, 72-col wrapped, spoiler-protected reviews as `— @username → [read review](url)`). No pre-filtering/ranking. If it prints a `⚠` line (no cache entry / 0 quotes), relay it and skip quotes for this film. Never re-scrape; the morning batch (`scripts/batch_pull_quotes.py`) is canonical.
+2. **On reply** (the quote part of the joint reply), one command does the whole save — verifies the `review_url` (bad/unloadable links saved as `review_url: null` with a `⚠` line), sets `selected: true` + final text in the cache, and injects `{text, critic, outlet, review_url}` into the movie's `pull_quotes` in data.json:
+   - Number N → `/usr/bin/python3 scripts/get_quotes.py --select "TITLE" YEAR --num N`
+   - Pasted trim → **that IS the final version** (never revert to original): write it to `cache/quote_trim.txt`, add `--text-file cache/quote_trim.txt` to the command above.
+   - A quote not in the list → `--select "TITLE" YEAR --custom --critic "Name" --outlet "Outlet" --text-file cache/quote_trim.txt [--url URL]`
+   - "skip" → `/usr/bin/python3 scripts/get_quotes.py --skip "TITLE" YEAR`, then COMMIT(`data.json`, `"Pull quotes: [TITLE] skipped"`). `[]` = reviewed/rejected (don't re-queue); **no key** = never queued.
+3. **Relay any `⚠` the script prints.** If it dropped a link and the user says "keep link", re-run the same `--select` command with `--keep-url` (also the fix for short titles, where the verifier false-flags — see memory). Re-selecting the same critic+outlet replaces the saved quote, so re-trims are safe.
 
 ### Step C — Commit (once per movie, after both steps)
 - Capsule only → COMMIT(`data.json`, `"Capsule: [TITLE]"`)

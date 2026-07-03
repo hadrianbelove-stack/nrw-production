@@ -15,8 +15,10 @@ Write an editorial capsule for a movie on the NRW wall. This is an interactive w
 Run the capsule writer to generate 3 variants:
 
 ```bash
-cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "$ARGUMENTS" --force --variants 3 --skip-verify 2>&1
+cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "$ARGUMENTS" --variants 3 --skip-verify 2>&1
 ```
+
+No `--force` — the nightly run pre-generates variants into `cache/capsule_cache.json`, so this usually returns instantly. A live generation (cache miss) takes 1–3 minutes: web scraping + 4 Gemini calls. Add `--force` only when the user asks for fresh variants ("try again", "regenerate") or the cached ones are unusable.
 
 If "No movie found" or "Multiple matches": report and stop.
 
@@ -140,7 +142,7 @@ Tell the user:
 
 ## Important Notes
 
-- ALWAYS generate with `--force` so the user gets fresh variants every time
+- Generate WITHOUT `--force` by default — the nightly cache is what makes /capsule fast. Use `--force` only when the user asks for fresh variants or the cached ones are unusable.
 - ALWAYS use `--skip-verify` during the interactive flow (faster iteration)
 - The style guide at `gemini_scraper/capsule_style_guide.txt` governs voice. If the user gives feedback about tone, update the style guide.
 - Names should be **bold**, film titles should be *italic* in the capsule text (markdown formatting).

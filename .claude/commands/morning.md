@@ -12,11 +12,18 @@ Start the day. Read the overnight report, then curate new arrivals film by film.
 Read all of the following before presenting anything:
 
 1. `logs/launchagent.log` — last 150 lines. **Use `tail -150` via Bash** (the Read tool reads from the top; log files can be 30k+ lines so offset=0 will return stale entries from months ago)
-2. `metrics/run_diagnostics.json` — CI pipeline summary
-3. `metrics/discovery_run.json` — discovery results
-4. `metrics/enrichment_run.json` — enrichment results
-5. `metrics/intake_run.json` — intake results
-6. `cache/pull_quotes_combined.json` — quote scrape coverage
+2. `metrics/run_diagnostics.json` — CI pipeline summary (overall status, failures, stall)
+3. `metrics/intake_run.json` — intake results
+4. JustWatch breaker health — one field, don't read the whole file:
+   ```bash
+   /usr/bin/python3 -c "import json; print('jw_healthy:', json.load(open('metrics/discovery_run.json')).get('results',{}).get('jw_healthy'))"
+   ```
+5. Quote scrape coverage — **never read `cache/pull_quotes_combined.json`** (it's 3.5MB); the script prints cache size, scraped-today count, and any curation candidate with no entry:
+   ```bash
+   /usr/bin/python3 scripts/morning_report.py --section quotes
+   ```
+
+Discovery/enrichment detail (New Releases, Reverted, deferrals) comes from `morning_report.py --section overnight` below — do **not** read `discovery_run.json` or `enrichment_run.json` in full; only dig into them when the script or `run_diagnostics.json` flags a failure.
 
 Then present this report in order:
 
@@ -26,8 +33,7 @@ Then present this report in order:
 - Did it run last night? (look for most recent date in log)
 - Git pull: was CI data current when it ran?
 - Trailers: how many hosted / failed / skipped — title + reason for each failure
-- Pull quotes: did the overnight scrape run? How many movies now have quote entries in `pull_quotes_combined.json`?
-  - Cross-reference against curation candidates (movies needing capsules or quotes) — flag any that have no quote entry: "⚠ No quotes yet: [Title]"
+- Pull quotes: present the `--section quotes` output from above (cache size, scraped-today count, `⚠ No quotes yet:` flags). Its `⚠` lines become Concerns.
 
 ---
 
@@ -63,9 +69,9 @@ Present the output directly. Lead with the backlog count. Any `⚠` flags become
 
 ### Code Catch-up (report-only)
 
-Run `/cleanupcatchup --report-only` — a quality pass over every *code* commit since the last manual catch-up (review bugs/NRW-rule fails + dead-code candidates). This is **report-only**: it makes no edits and does **not** advance the catch-up marker, so the findings stay waiting for a real `/cleanupcatchup` run.
+Run `/cleanupcatchup --report-only` — a quality pass over *code* commits **not yet shown in a previous morning report** (review bugs/NRW-rule fails + dead-code candidates). It makes no edits and never advances the real catch-up marker; it advances only its own reported marker, so the same commits aren't re-reviewed every morning. Findings accumulate in `.claude/catchup_findings.md` until a real `/cleanupcatchup` clears them.
 
-- If it reports "only data/curation commits" → say "No new code since last catch-up" and move on.
+- If it reports "only data/curation commits" or "no new code commits since yesterday's report" → say so and move on (relay any still-pending count it mentions).
 - Otherwise present a 1-line-per-item summary. Any **behavior findings (bugs / rule violations)** become Concerns below. Mechanical cleanup items are listed here but are not Concerns.
 - Do **not** offer to fix anything in `/morning` — point the user to `/cleanupcatchup` for that.
 
@@ -79,7 +85,7 @@ Bullet list of anything actionable. Stall and JustWatch health live here — the
 - Any `⚠ NO TRAILER` from the Curation Backlog script above
 - Any `⚠ NO LINKS` or `⚠ PLEX ONLY` from the Curation Backlog script above
 - Enrichment errors, plus any "Other enrichment deferrals" (timeout/error) flagged by the New Releases & Reverted script
-- Pull quote gaps (films in curation queue with no entry in `pull_quotes_combined.json`)
+- Pull quote gaps — any `⚠ No quotes yet:` line from `morning_report.py --section quotes`
 
 If nothing: "No concerns."
 

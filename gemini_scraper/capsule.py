@@ -19,6 +19,7 @@ import json
 import time
 import logging
 import requests
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, Dict, List, Tuple
 from pathlib import Path
 from urllib.parse import quote
@@ -1085,14 +1086,26 @@ FACTOID PRIMER:"""
         self.stats['gemini_attempts'] += 1
 
         # --- Phase 1: Fact Gathering (once) ---
-        sources = {
-            'wikipedia': self._fetch_wikipedia_summary(wiki_url),
-            'wiki_sections': self._fetch_wikipedia_sections(wiki_url),
-            'letterboxd': self._fetch_letterboxd_reactions(title, year),
-            'rt_consensus': self._fetch_rt_consensus(rt_url),
-            'amazon': self._fetch_amazon_synopsis(amazon_url),
-            'imdb_trivia': self._fetch_imdb_trivia(imdb_url),
+        # The six fetches are independent (each Playwright fetch opens its own
+        # sync_playwright in its own thread), so run them concurrently —
+        # sequentially they dominated wall-clock at 30-60s per capsule.
+        fetch_jobs = {
+            'wikipedia': lambda: self._fetch_wikipedia_summary(wiki_url),
+            'wiki_sections': lambda: self._fetch_wikipedia_sections(wiki_url),
+            'letterboxd': lambda: self._fetch_letterboxd_reactions(title, year),
+            'rt_consensus': lambda: self._fetch_rt_consensus(rt_url),
+            'amazon': lambda: self._fetch_amazon_synopsis(amazon_url),
+            'imdb_trivia': lambda: self._fetch_imdb_trivia(imdb_url),
         }
+        sources = {}
+        with ThreadPoolExecutor(max_workers=len(fetch_jobs)) as pool:
+            futures = {name: pool.submit(fn) for name, fn in fetch_jobs.items()}
+            for name, fut in futures.items():
+                try:
+                    sources[name] = fut.result()
+                except Exception as e:
+                    logger.warning(f"{name} fetch failed for {title} ({year}): {e}")
+                    sources[name] = {} if name == 'wiki_sections' else ''
 
         # --- Phase 2: Capsule Writing ---
         context = self._build_context(

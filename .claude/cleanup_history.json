@@ -114,5 +114,21 @@
     "items_found": 27,
     "items_fixed": 27,
     "notes": "Cycle1 (24): removed superseded desktop header layout CSS (.title-row/.header-left/.hl-top/.view-module-head/.toggle-grid/.header-bottom/.filters + media), .screening-top-banner, lightbox awards/box-office/trailer-overlay block, .badge-bar.gold, --svc-amazon/--svc-plex; slop_classifier unused 'import sys'; discoverer stale 10->4 revert comment; mobile dead .filter-row-spacer/.poster-trailer*/.score-badge imdb+meta/.filter-desc-inner/.filter-desc.visible/.grid-desc-row + dead createDescRow chain (FILTER_DESCRIPTIONS ~46 lines); 9 orphaned tvOS StyleSheet entries. Cycle2 (3, desktop twins): app.js FILTER_DESCRIPTIONS object (unread), .filter-description.active dead state rule, dead .lightbox-trailer-overlay cleanup in _updateLightboxPoster. Cycle3 probe surfaced Roku dead filter-description subsystem + Android Movie.kt unused 'awards' field -> deferred to user (Roku untestable here, Android JSON-parse risk). iOS trailerOverlay confirmed LIVE (not dead). All JS node --check + Python ast pass; CSS braces balanced."
+  },
+  {
+    "timestamp": "2026-06-22T23:47:03",
+    "target": "this (original-title search work)",
+    "files_scanned": [
+      "assets/app.js",
+      "mobile/mobile.js",
+      "NRWApp-iOS/src/services/api.js",
+      "NRWApp-tvOS/src/services/api.js",
+      "NRWApp-tvOS/src/screens/SearchScreen.tvos.js",
+      "NRWApp-Android/app/src/main/java/com/nrw/app/data/Movie.kt",
+      "NRWApp-Android/app/src/main/java/com/nrw/app/data/MovieRepository.kt",
+      "NRWApp-Roku/components/screens/SearchScreen.brs"
+    ],
+    "items_found": 4,
+    "items_fixed": 4
   }
 ]

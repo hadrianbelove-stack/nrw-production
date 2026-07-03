@@ -18,6 +18,9 @@ NRWApp-tvOS/build/
 .claude/last_review_commit
 # /cleanupcatchup marker — personal "last caught-up commit" pointer
 .claude/last_catchup_commit
+# /cleanupcatchup --report-only marker + pending-findings ledger (advanced daily by /morning)
+.claude/last_reported_commit
+.claude/catchup_findings.md
 cache/*
 !cache/.gitkeep
 !cache/screenshots/
