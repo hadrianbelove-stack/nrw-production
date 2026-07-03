@@ -203,7 +203,12 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
   }, [movieList, currentIndex]);
 
   return (
-    <View style={styles.container}>
+    // focusable + preferred focus: on real hardware the screen must contain a
+    // focused view or remote presses bypass the app entirely — Menu then suspends
+    // the app instead of popping this route. (Simulator delivers Esc differently,
+    // so the bug never reproduces there.) Remote events themselves arrive via the
+    // app-wide useTVEventHandler above, not via this view's focus.
+    <View style={styles.container} focusable={true} hasTVPreferredFocus={true}>
       {/* Video player — kept in tree during close so AVPlayer can drain audio cleanly.
           paused={closing || paused} stops audio immediately via prop (imperative pause()
           is absent in modern react-native-video). Unmount happens when parent removes
