@@ -194,6 +194,12 @@ export default function MovieDetail({route}) {
     }
   }, [movie]);
 
+  const handleWikiPress = useCallback(() => {
+    if (movie.links?.wikipedia) {
+      openWikipedia(movie.links.wikipedia);
+    }
+  }, [movie]);
+
   const handleDirectorPress = useCallback(() => {
     const dir = movie.director || movie.crew?.director;
     if (!dir) return;
@@ -243,6 +249,7 @@ export default function MovieDetail({route}) {
 
   // Score badges (rendered inside the hero box, pinned to bottom).
   const hasScores =
+    movie.links?.wikipedia ||
     movie.rt_score ||
     movie.imdb_rating ||
     (movie.metacritic_score && movie.metacritic_score !== '0') ||
@@ -328,6 +335,14 @@ export default function MovieDetail({route}) {
             {/* Score badges pinned to the bottom of the box */}
             {hasScores && (
               <View style={styles.scores}>
+                {movie.links?.wikipedia && (
+                  <TouchableOpacity
+                    style={[styles.score, styles.scoreWiki]}
+                    onPress={handleWikiPress}
+                    activeOpacity={0.7}>
+                    <Text style={[styles.scoreValue, styles.scoreTextWiki]}>W</Text>
+                  </TouchableOpacity>
+                )}
                 {movie.rt_score && (
                   <TouchableOpacity
                     style={[styles.score, styles.scoreRT]}
@@ -646,6 +661,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,224,84,0.08)',
   },
   scoreTextLB: { color: '#00e054' },
+  scoreWiki: {
+    borderColor: 'rgba(255,255,255,0.45)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  scoreTextWiki: { color: '#e8e8e8' },
 
   // ---- Pull quotes (teal, debadged) ----
   pqWrap: {

@@ -42,10 +42,10 @@ def _links(c):
     tmdb = f"https://www.themoviedb.org/movie/{tid}"
     trailer = f"https://www.youtube.com/results?search_query={_q(f'{title} {year} trailer')}"
     evidence = research.get('source_url') or ''
-    parts = []
+    parts = [f"[W]({wiki})"]
     if evidence:
         parts.append(f"[📰 Evidence]({evidence})")
-    parts += [f"[W]({wiki})", f"[IMDb]({imdb})", f"[TMDB]({tmdb})", f"[▶]({trailer})"]
+    parts += [f"[IMDb]({imdb})", f"[TMDB]({tmdb})", f"[▶]({trailer})"]
     return " · ".join(parts)
 
 

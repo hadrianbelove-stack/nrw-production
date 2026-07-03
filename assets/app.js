@@ -1495,6 +1495,9 @@ const NRW = {
             return el;
         };
 
+        if (movie.links?.wikipedia) {
+            container.appendChild(makeBadge(movie.links.wikipedia, 'wiki', '', 'assets/logos/wikipedia_PNG40.png'));
+        }
         if (movie.rt_score && movie.links?.rt) {
             container.appendChild(makeBadge(movie.links.rt, 'rt', movie.rt_score, 'assets/logos/rt.png'));
         }
@@ -1507,9 +1510,6 @@ const NRW = {
         if (movie.links?.letterboxd) {
             const lbText = movie.letterboxd_score ? NRW.lbStars(movie.letterboxd_score) : 'LB';
             container.appendChild(makeBadge(movie.links.letterboxd, 'lb', lbText, 'assets/logos/services/letterboxd-dots.svg'));
-        }
-        if (movie.links?.wikipedia) {
-            container.appendChild(makeBadge(movie.links.wikipedia, 'wiki', '', 'assets/logos/wikipedia_PNG40.png'));
         }
     },
 

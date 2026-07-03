@@ -46,14 +46,14 @@ All categories in one column so they scan vertically.
 ```
 SLOP REVIEW — confirm or correct auto-classifications
 
-| # | Title (Year) | Slop? | RT | IMDb | Trailer | Wiki | Why |
-|---|--------------|-------|----|------|---------|------|-----|
-| 1 | [Title (Year)](imdb-url) | ✅ Not slop | 85% | 7.2 | [▶](trailer-url) | [W](wiki-url) | score:1(good_imdb) |
-| 2 | [Title (Year)](imdb-url) | 🗑 SLOP (auto) | -- | -- | [▶](trailer-url) | — | score:5(no_wiki,no_rt) |
+| # | Title (Year) | Slop? | Wiki | RT | IMDb | Trailer | Why |
+|---|--------------|-------|------|----|------|---------|-----|
+| 1 | [Title (Year)](imdb-url) | ✅ Not slop | [W](wiki-url) | 85% | 7.2 | [▶](trailer-url) | score:1(good_imdb) |
+| 2 | [Title (Year)](imdb-url) | 🗑 SLOP (auto) | — | -- | -- | [▶](trailer-url) | score:5(no_wiki,no_rt) |
 
 "auto" = classifier made the call. Reply with overrides (e.g. "2: not slop; 5: slop") or "looks good".
 ```
-Title → `movie.links.imdb` (the row's imdb_link). `Wiki` → `[W](wiki-url)` or `—`.
+Title → `movie.links.imdb` (the row's imdb_link). `Wiki` → `[W](wiki-url)` or `—` (Wikipedia always the first link column).
 
 ## Stage 4 queue
 ```

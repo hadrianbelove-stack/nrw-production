@@ -873,6 +873,10 @@ body {
 .sheet-score-logo.mc-logo {
   filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1);
 }
+.sheet-score-logo.wiki-logo {
+  filter: brightness(0) invert(1);
+  height: 15px;
+}
 .sheet-score-value {
   font-size: 0.7rem;
   font-weight: 700;

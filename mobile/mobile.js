@@ -955,13 +955,17 @@ const NRWMobile = {
 
         // Score badges (pinned to bottom of the box, tappable)
         let scoresHtml = '';
-        const hasScores = movie.rt_score || movie.imdb_rating ||
+        const hasScores = movie.links?.wikipedia || movie.rt_score || movie.imdb_rating ||
             (movie.metacritic_score && movie.metacritic_score !== '0') || movie.letterboxd_score;
         if (hasScores) {
             const scoreEl = (link, inner) => link
                 ? '<a class="sheet-score" href="' + link + '" target="_blank" rel="noopener">' + inner + '</a>'
                 : '<div class="sheet-score">' + inner + '</div>';
             scoresHtml += '<div class="sheet-scores">';
+            if (movie.links?.wikipedia) {
+                scoresHtml += scoreEl(movie.links.wikipedia,
+                    '<img class="sheet-score-logo wiki-logo" src="../assets/logos/wikipedia_PNG40.png" alt="Wikipedia">');
+            }
             if (movie.rt_score) {
                 scoresHtml += scoreEl(movie.links?.rt,
                     '<img class="sheet-score-logo" src="../assets/logos/rt.png" alt="RT">' +
