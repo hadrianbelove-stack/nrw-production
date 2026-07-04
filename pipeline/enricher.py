@@ -516,11 +516,22 @@ class MovieEnricher:
             for category, link_obj in watch_links_raw.items():
                 # Handle array format (new)
                 if isinstance(link_obj, list):
+                    # Dedupe on SIMPLIFIED names: upstream dedup keys on raw
+                    # names, so tier variants ("Netflix" + "Netflix Standard
+                    # with Ads") both survive and collapse to the same name
+                    # here — keep the first (VOD's first carries merged prices)
                     simplified_array = []
+                    seen_services = set()
                     for item in link_obj:
                         if isinstance(item, dict) and 'service' in item:
+                            simplified_name = self.host.simplify_provider_name(item['service'])
+                            svc_key = (simplified_name or '').strip().lower()
+                            if svc_key and svc_key in seen_services:
+                                continue
+                            if svc_key:
+                                seen_services.add(svc_key)
                             simplified = {
-                                'service': self.host.simplify_provider_name(item['service']),
+                                'service': simplified_name,
                                 'link': item.get('link')
                             }
                             for price_key in ('rent_price', 'buy_price', 'price'):
