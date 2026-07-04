@@ -51,6 +51,42 @@ Each movie in data.json has two trailer-related fields:
 | Roku | native Video node (MP4 only) | No YouTube fallback |
 | Admin Panel | HTML5 `<video>` element | YouTube iframe embed |
 
+(Mobile's YouTube fallback is a plain link-out to the YouTube app/site, not an inline embed.)
+
+### Playback UX (upgraded Jul 2026)
+
+Shared language on all three upgraded surfaces (desktop, mobile, tvOS): movie title top-left,
+"x / y" reel counter top-right, teal accents, and errors show a brief "Trailer unavailable"
+toast then auto-skip to the next trailer.
+
+**Desktop** (`assets/app.js` trailer modal):
+- Keyboard: `Space` pause · `J`/`L` ±10s · `S` speed cycle (1×→2×→4×) · `M` mute ·
+  `F` fullscreen · `←`/`→` prev/next trailer · `Esc` close. **Tab is a focus trap, NOT
+  fullscreen** (changed from the old Tab-fullscreen binding). Esc inside fullscreen exits
+  fullscreen first; a second Esc closes.
+- Visible mute + fullscreen buttons and a one-line key-hints row in the modal.
+- Session resume: reopening a movie's trailer resumes near where you left it (memory only,
+  resets on reload).
+- YouTube-sourced trailers show a "Watch on YouTube ↗" header link; MP4-only key hints hide.
+- Subtitles: `.vtt` tracks now load via `crossorigin="anonymous"` (B2 sends CORS headers).
+
+**Mobile** (`mobile/mobile.js` overlay):
+- Gestures kept: swipe left/right = prev/next trailer, double-tap sides = ±10s seek,
+  rotate to landscape = fullscreen.
+- Browser back / iOS swipe-back closes the trailer, not the site (one pushState per session).
+- Poster frame while loading, buffering spinner, title + counter chrome bar,
+  "Next: <title>" toast on auto-advance; a solo trailer closes at the end instead of stalling.
+
+**tvOS** (`TrailerPlayer.tvos.js`):
+- Remote: playing — LEFT/RIGHT prev/next, SELECT/PLAY-PAUSE pauses; paused — LEFT/RIGHT
+  scrub 5s, SELECT/PLAY-PAUSE commits + resumes; MENU closes (handled in JS via
+  `TVEventControl.enableTVMenuKey` — see the build 28/29/30 saga in the component comments;
+  the trailer screen must contain NO focusable views).
+- Chrome auto-hides after 4s of playback; any remote press restores it AND performs its action.
+- Buffering spinner, dip-to-black transitions between trailers (single mounted `<Video>` —
+  never crossfade two players), "Up next" pill while paused or in the final 10s, and control
+  hints on both the playing chrome and the pause overlay.
+
 ## Key Files
 
 | File | Purpose |
