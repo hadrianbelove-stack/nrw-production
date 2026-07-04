@@ -1597,44 +1597,77 @@ const NRWMobile = {
         const url = movie.links?.trailer_hosted || movie.links?.trailer;
         if (!url) return;
 
+        // Rebuild-safe teardown: reel nav re-enters showTrailer with the overlay
+        // already up — swap overlay + listeners without touching history.
         const existing = document.getElementById('trailer-overlay');
+        const wasOpen = !!existing;
         if (existing) existing.remove();
         if (this._trailerOrient) { this._trailerOrient(); this._trailerOrient = null; }
+        if (this._trailerKey) { document.removeEventListener('keydown', this._trailerKey); this._trailerKey = null; }
+        if (this._trailerPop) { window.removeEventListener('popstate', this._trailerPop); this._trailerPop = null; }
+
+        // Reel: movies with hosted MP4 trailers (computed early — chrome bar needs it)
+        const isMp4 = (m) => { const u = m.links?.trailer_hosted; if (!u) return false; try { return new URL(u).pathname.endsWith('.mp4'); } catch { return u.endsWith('.mp4'); } };
+        const reel = this.filteredMovies.filter(isMp4);
+        const reelIdx = reel.findIndex(m => String(m.id) === String(movie.id));
 
         const overlay = document.createElement('div');
         overlay.id = 'trailer-overlay';
         overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);' +
-            'display:flex;align-items:center;justify-content:center;flex-direction:column';
+            'display:flex;align-items:center;justify-content:center;flex-direction:column;' +
+            'opacity:0;transition:opacity 180ms ease';
 
         const title = this.esc(movie.display_title || movie.title || '');
+        const counterEl = (reel.length > 1 && reelIdx >= 0)
+            ? '<span class="trailer-chrome-counter">' + (reelIdx + 1) + ' / ' + reel.length + '</span>'
+            : '';
         const subsUrl = movie.links?.trailer_hosted_subs;
         const trackEl = subsUrl
             ? '<track kind="subtitles" src="' + this.esc(subsUrl) + '" srclang="en" label="English" default>'
             : '';
+        // crossorigin only when subtitles exist: the <track> needs a CORS fetch
+        // from B2, but crossorigin also flips the poster to CORS mode, which can
+        // fail against Chrome's no-cors-cached copy of the same TMDB image.
         overlay.innerHTML =
+            '<div class="trailer-chrome"><span class="trailer-chrome-title">' + title + '</span>' + counterEl + '</div>' +
             '<button style="position:absolute;top:12px;right:16px;background:none;border:none;' +
             'color:white;font-size:2rem;cursor:pointer;z-index:10">&times;</button>' +
-            '<video controls autoplay playsinline style="max-width:95%;max-height:70vh;border-radius:8px">' +
+            '<div class="trailer-buf-spinner" style="display:none"></div>' +
+            '<video controls autoplay playsinline' + (subsUrl ? ' crossorigin="anonymous"' : '') +
+            ' poster="' + this.esc(movie.poster || '') + '"' +
+            ' src="' + this.esc(url) + '"' +
+            ' style="max-width:95%;max-height:70vh;border-radius:8px">' +
             trackEl +
-            '<source src="' + this.esc(url) + '" type="video/mp4"></video>' +
-            '<div style="color:#888;font-size:0.8rem;margin-top:10px">' + title + '</div>';
+            '</video>';
 
         document.body.appendChild(overlay);
+        if (wasOpen) overlay.style.opacity = '1'; // instant swap on reel nav
+        else requestAnimationFrame(() => { overlay.style.opacity = '1'; }); // fade on first open
 
-        const close = () => {
-            overlay.remove();
+        // One history entry per trailer session, so the iOS swipe-back / Android
+        // back button closes the trailer instead of leaving the site. Non-pop
+        // close paths consume the entry via history.back().
+        if (!wasOpen) history.pushState({ nrwTrailer: true }, '');
+
+        // close(fromPop): tears down ALL listeners first (incl. popstate, so the
+        // compensating history.back() can't double-close), then fades out.
+        const close = (fromPop) => {
+            if (this._trailerPop) { window.removeEventListener('popstate', this._trailerPop); this._trailerPop = null; }
+            if (this._trailerKey) { document.removeEventListener('keydown', this._trailerKey); this._trailerKey = null; }
             if (this._trailerOrient) { this._trailerOrient(); this._trailerOrient = null; }
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 200);
+            if (!fromPop) history.back();
         };
-        overlay.querySelector('button').addEventListener('click', close);
+        this._trailerPop = () => close(true);
+        window.addEventListener('popstate', this._trailerPop);
+        this._trailerKey = (e) => { if (e.key === 'Escape') close(); };
+        document.addEventListener('keydown', this._trailerKey);
+
+        overlay.querySelector('button').addEventListener('click', () => close());
         overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
-        document.addEventListener('keydown', function onKey(e) {
-            if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onKey); }
-        });
 
         // Reel navigation: manual prev/next through movies that have an MP4 trailer.
-        const isMp4 = (m) => { const u = m.links?.trailer_hosted; if (!u) return false; try { return new URL(u).pathname.endsWith('.mp4'); } catch { return u.endsWith('.mp4'); } };
-        const reel = this.filteredMovies.filter(isMp4);
-        const reelIdx = reel.findIndex(m => String(m.id) === String(movie.id));
         const goTo = (dir) => {
             if (reel.length < 2) return;
             const n = reel[(reelIdx + dir + reel.length) % reel.length];
@@ -1691,9 +1724,44 @@ const NRWMobile = {
                 else mql.removeListener(onOrient);
             };
 
-            // Auto-advance: when this trailer ends, roll to the next movie's hosted
-            // trailer (continuous reel). Only MP4s play in this overlay.
-            video.addEventListener('ended', () => goTo(1));
+            // Buffering spinner — visible while the network catches up
+            const spinner = overlay.querySelector('.trailer-buf-spinner');
+            const showSpin = () => { spinner.style.display = ''; };
+            const hideSpin = () => { spinner.style.display = 'none'; };
+            video.addEventListener('waiting', showSpin);
+            video.addEventListener('playing', hideSpin);
+            video.addEventListener('canplay', hideSpin);
+
+            // iOS may reject autoplay-with-sound on auto-advance (the rebuilt
+            // overlay loses the tap gesture) — degrade to poster + native play.
+            const p = video.play();
+            if (p && p.catch) p.catch(() => hideSpin());
+
+            // Broken/missing file: toast, then skip (or close if solo trailer).
+            // isConnected guards: events from an already-swapped/closed overlay
+            // must not fire toasts or navigation.
+            video.addEventListener('error', () => {
+                if (!overlay.isConnected) return;
+                hideSpin();
+                this._showToast('Trailer unavailable');
+                setTimeout(() => {
+                    if (!overlay.isConnected) return;
+                    if (reel.length > 1) goTo(1); else close();
+                }, 1200);
+            }, { once: true });
+
+            // Auto-advance with an up-next cue; a solo trailer closes instead of
+            // stalling on the ended frame (goTo no-ops when reel < 2).
+            video.addEventListener('ended', () => {
+                if (!overlay.isConnected) return;
+                if (reel.length > 1) {
+                    const nxt = reel[(reelIdx + 1) % reel.length];
+                    if (nxt) this._showToast('Next: ' + (nxt.display_title || nxt.title));
+                    goTo(1);
+                } else {
+                    close();
+                }
+            });
 
             let lastTap = 0, lastSide = null;
             video.addEventListener('touchend', (e) => {

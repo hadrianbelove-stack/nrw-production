@@ -60,6 +60,8 @@ const NRW = {
     trailerLightboxIndex: -1,  // Index in lightboxMovies of the movie whose trailer is playing (-1 = none)
     trailerReelMovies: [],     // Movies in the trailer reel (last 7 days with hosted trailers)
     isTrailerReel: false,      // true when playing the trailer reel (vs individual trailer from lightbox)
+    _trailerResume: new Map(), // movieId -> last currentTime this session (resume on reopen)
+    _trailerLoadedMovieId: null, // movie whose video is currently loaded in the trailer player
 
     // Convert Letterboxd score (0-5) to star glyphs: "3.8" → "★★★★☆"
     lbStars(score) {
@@ -840,9 +842,14 @@ const NRW = {
         const container = document.getElementById('trailer-video-container');
         if (!container) return;
 
-        // Stop any existing video/iframe first
+        // Stop any existing video/iframe first (remember position for session resume).
+        // Teardown via removeAttribute+load — setting src='' fires a spurious error
+        // event on the dying video, whose listener would toast + schedule a skip.
         const existingVideo = container.querySelector('video');
-        if (existingVideo) { existingVideo.pause(); existingVideo.src = ''; }
+        if (existingVideo && this._trailerLoadedMovieId != null && existingVideo.currentTime > 0) {
+            this._trailerResume.set(this._trailerLoadedMovieId, existingVideo.currentTime);
+        }
+        if (existingVideo) { existingVideo.pause(); existingVideo.removeAttribute('src'); existingVideo.load(); }
         const existingIframe = container.querySelector('iframe');
         if (existingIframe) { existingIframe.src = ''; }
 
@@ -864,6 +871,7 @@ const NRW = {
                     controls
                     autoplay
                     preload="auto"
+                    crossorigin="anonymous"
                     style="background: #000;">
                     ${trackEl}
                     Your browser does not support video playback.
@@ -872,12 +880,27 @@ const NRW = {
             const video = document.getElementById('trailer-video');
             const loading = document.getElementById('trailer-loading');
             const error = document.getElementById('trailer-error');
+            // Stale guard: events from a torn-down/replaced video must not act
+            const live = () => video.isConnected &&
+                document.getElementById('trailer-modal')?.classList.contains('active') &&
+                !document.getElementById('trailer-modal')?.classList.contains('closing');
             video.addEventListener('canplay', () => { loading.style.display = 'none'; }, { once: true });
-            video.addEventListener('error', () => {
-                loading.style.display = 'none'; error.style.display = '';
-                if (this.isTrailerReel) setTimeout(() => this.trailerNav(1), 1500);
+            video.addEventListener('loadedmetadata', () => {
+                // Session resume — skip if barely watched or nearly finished
+                const t = this._trailerResume.get(movie?.id);
+                if (t > 5 && t < video.duration - 10) video.currentTime = t;
             }, { once: true });
-            video.addEventListener('ended', () => this.trailerNav(1), { once: true });
+            video.addEventListener('error', () => {
+                if (!live()) return;
+                loading.style.display = 'none'; error.style.display = '';
+                this._trailerToast('Trailer unavailable');
+                if (this.findNextTrailerIndex(this.trailerLightboxIndex, 1) >= 0) {
+                    setTimeout(() => { if (live()) this.trailerNav(1); }, 1200);
+                }
+            }, { once: true });
+            video.addEventListener('ended', () => { if (live()) this.trailerNav(1); }, { once: true });
+            this._trailerLoadedMovieId = movie?.id ?? null;
+            this._setTrailerYouTubeMode(null);
         } else {
             const videoId = this.extractYouTubeId(url);
             if (!videoId) {
@@ -892,6 +915,8 @@ const NRW = {
                     allowfullscreen>
                 </iframe>
             `;
+            this._trailerLoadedMovieId = null;
+            this._setTrailerYouTubeMode(videoId);
         }
     },
 
@@ -945,6 +970,9 @@ const NRW = {
                     <div class="trailer-header">
                         <span class="trailer-movie-title" id="trailer-movie-title"></span>
                         <span class="trailer-reel-counter" id="trailer-reel-counter" style="display:none;"></span>
+                        <a class="trailer-yt-link" id="trailer-yt-link" target="_blank" rel="noopener" style="display:none;">Watch on YouTube &#8599;</a>
+                        <button class="trailer-mute-btn" id="trailer-mute-btn" aria-label="Mute" title="Mute (M)">&#128266;</button>
+                        <button class="trailer-fs-btn" id="trailer-fs-btn" aria-label="Fullscreen" title="Fullscreen (F)">&#x26F6;</button>
                         <button class="trailer-close-btn" aria-label="Close trailer">&times;</button>
                     </div>
                     <div class="trailer-nav-wrapper">
@@ -952,6 +980,7 @@ const NRW = {
                         <div class="trailer-video-container" id="trailer-video-container"></div>
                         <button class="trailer-nav next" id="trailer-nav-next" aria-label="Next trailer">&rarr;</button>
                     </div>
+                    <div class="trailer-hints"><span class="hint-mp4">Space pause &middot; J/L &plusmn;10s &middot; S speed &middot; M mute &middot; F fullscreen &middot; </span>&larr;/&rarr; next trailer &middot; Esc close</div>
                 </div>
             `;
             document.body.appendChild(modal);
@@ -963,6 +992,10 @@ const NRW = {
             // Nav arrow clicks
             modal.querySelector('#trailer-nav-prev').addEventListener('click', () => this.trailerNav(-1));
             modal.querySelector('#trailer-nav-next').addEventListener('click', () => this.trailerNav(1));
+
+            // Mute / fullscreen buttons (share logic with the M / F keys)
+            modal.querySelector('#trailer-mute-btn').addEventListener('click', () => this._toggleTrailerMute());
+            modal.querySelector('#trailer-fs-btn').addEventListener('click', () => this._toggleTrailerFullscreen());
 
             // Escape handled by setupLightboxKeyboardHandler (capture phase)
         }
@@ -991,6 +1024,7 @@ const NRW = {
         }
 
         this.updateTrailerNavVisibility();
+        this.updateReelCounter();
         const currentMovie = this.trailerLightboxIndex >= 0 ? movies[this.trailerLightboxIndex] : null;
         this.loadTrailerVideo(url, currentMovie);
 
@@ -999,18 +1033,30 @@ const NRW = {
         document.body.style.overflow = 'hidden';
     },
 
-    // Close trailer modal
+    // Close trailer modal — two-phase: audio stops immediately, then a short
+    // fade-out (.closing) before the modal actually hides.
     closeTrailer() {
         const modal = document.getElementById('trailer-modal');
-        if (modal) {
-            modal.classList.remove('active');
-            const container = document.getElementById('trailer-video-container');
-            if (container) {
-                const video = container.querySelector('video');
-                if (video) { video.pause(); video.src = ''; }
-                const iframe = container.querySelector('iframe');
-                if (iframe) { iframe.src = ''; }
+        if (!modal || modal.classList.contains('closing')) return;
+
+        const container = document.getElementById('trailer-video-container');
+        if (container) {
+            const video = container.querySelector('video');
+            if (video) {
+                if (this._trailerLoadedMovieId != null && video.currentTime > 0) {
+                    this._trailerResume.set(this._trailerLoadedMovieId, video.currentTime);
+                }
+                video.pause(); video.removeAttribute('src'); video.load();
             }
+            const iframe = container.querySelector('iframe');
+            if (iframe) { iframe.src = ''; }
+        }
+        this._trailerLoadedMovieId = null;
+
+        modal.classList.add('closing');
+        setTimeout(() => {
+            modal.classList.remove('active');
+            modal.classList.remove('closing');
 
             // Sync lightbox to the movie whose trailer was playing (only when not in reel mode)
             if (!this.isTrailerReel && this.trailerLightboxIndex >= 0) {
@@ -1026,21 +1072,58 @@ const NRW = {
             if (!lightbox || !lightbox.classList.contains('active')) {
                 document.body.style.overflow = '';
             }
-        }
+        }, 180);
+    },
+
+    // Small toast pinned over the video (bottom-center) — speed, mute, errors
+    _trailerToast(text) {
+        const existing = document.getElementById('trailer-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'trailer-toast';
+        toast.textContent = text;
+        toast.style.cssText = 'position:absolute;bottom:16px;left:50%;transform:translateX(-50%);' +
+            'background:rgba(15,17,21,0.92);color:#fff;padding:6px 14px;border-radius:20px;' +
+            'border:1px solid rgba(0,212,170,0.5);font-size:0.9rem;pointer-events:none;z-index:10;transition:opacity 0.3s';
+        const container = document.getElementById('trailer-video-container');
+        if (container) container.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 1200);
     },
 
     _trailerSpeedToast(rate) {
-        const existing = document.getElementById('trailer-speed-toast');
-        if (existing) existing.remove();
-        const toast = document.createElement('div');
-        toast.id = 'trailer-speed-toast';
-        toast.textContent = rate === 1 ? '1× Speed' : rate + '× Speed';
-        toast.style.cssText = 'position:absolute;top:16px;left:50%;transform:translateX(-50%);' +
-            'background:rgba(0,0,0,0.7);color:#fff;padding:6px 14px;border-radius:20px;' +
-            'font-size:0.9rem;pointer-events:none;z-index:10;transition:opacity 0.3s';
+        this._trailerToast(rate === 1 ? '1× Speed' : rate + '× Speed');
+    },
+
+    _toggleTrailerFullscreen() {
+        const vid = document.getElementById('trailer-video');
+        if (!vid) return;
+        if (document.fullscreenElement) document.exitFullscreen();
+        else vid.requestFullscreen();
+    },
+
+    _toggleTrailerMute() {
+        const vid = document.getElementById('trailer-video');
+        if (!vid) return;
+        vid.muted = !vid.muted;
+        const btn = document.getElementById('trailer-mute-btn');
+        if (btn) btn.innerHTML = vid.muted ? '&#128263;' : '&#128266;';
+        this._trailerToast(vid.muted ? 'Muted' : 'Sound on');
+    },
+
+    // YouTube mode — header "Watch on YouTube" link + hiding MP4-only key hints.
+    // videoId null = hosted-MP4 mode.
+    _setTrailerYouTubeMode(videoId) {
         const modal = document.getElementById('trailer-modal');
-        if (modal) modal.appendChild(toast);
-        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 1200);
+        const link = document.getElementById('trailer-yt-link');
+        if (!modal || !link) return;
+        if (videoId) {
+            link.href = 'https://www.youtube.com/watch?v=' + videoId;
+            link.style.display = '';
+            modal.classList.add('yt-mode');
+        } else {
+            link.style.display = 'none';
+            modal.classList.remove('yt-mode');
+        }
     },
 
     // Open trailer reel — plays through hosted trailers from the last 7 days
@@ -1066,12 +1149,20 @@ const NRW = {
         this.updateReelCounter();
     },
 
-    // Update reel position counter (e.g. "3 of 12") — only visible in reel mode
+    // Update position counter "x / y" — shown whenever the active trailer list
+    // (reel or lightbox context) has 2+ movies with trailers
     updateReelCounter() {
         const counter = document.getElementById('trailer-reel-counter');
         if (!counter) return;
-        if (this.isTrailerReel && this.trailerLightboxIndex >= 0) {
-            counter.textContent = `${this.trailerLightboxIndex + 1} of ${this.trailerReelMovies.length}`;
+        const movies = this.isTrailerReel ? this.trailerReelMovies : this.lightboxMovies;
+        const hasTrailer = (m) => m.links?.trailer_hosted || m.links?.trailer;
+        const total = movies.filter(hasTrailer).length;
+        if (this.trailerLightboxIndex >= 0 && total > 1) {
+            let pos = 0;
+            for (let i = 0; i <= this.trailerLightboxIndex; i++) {
+                if (hasTrailer(movies[i])) pos++;
+            }
+            counter.textContent = `${pos} / ${total}`;
             counter.style.display = '';
         } else {
             counter.textContent = '';
@@ -1803,13 +1894,22 @@ const NRW = {
             // Handle trailer keyboard when trailer modal is active
             const trailerModal = document.getElementById('trailer-modal');
             if (trailerModal && trailerModal.classList.contains('active')) {
+                // YouTube-style keys: Space pause · J/L ±10s · S speed · M mute ·
+                // F fullscreen · ←/→ prev-next trailer · Esc close · Tab = focus trap
+                if (e.target && e.target.closest && e.target.closest('input, textarea, select')) return;
                 if (e.key === 'Escape') {
                     e.preventDefault();
                     e.stopPropagation();
+                    // In fullscreen, Esc only exits fullscreen; second Esc closes
+                    if (document.fullscreenElement) { document.exitFullscreen(); return; }
                     this.closeTrailer();
                 } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    e.stopPropagation();
                     this.trailerNav(-1);
                 } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    e.stopPropagation();
                     this.trailerNav(1);
                 } else if (e.key === ' ') {
                     e.preventDefault();
@@ -1822,21 +1922,37 @@ const NRW = {
                 } else if (e.key === 'l' || e.key === 'L') {
                     e.preventDefault();
                     const vid = document.getElementById('trailer-video');
+                    if (vid) vid.currentTime = Math.min(vid.duration || 1e9, vid.currentTime + 10);
+                } else if (e.key === 's' || e.key === 'S') {
+                    e.preventDefault();
+                    const vid = document.getElementById('trailer-video');
                     if (vid) {
                         const rates = [1, 2, 4];
                         const next = rates[(rates.indexOf(vid.playbackRate) + 1) % rates.length];
                         vid.playbackRate = next;
                         this._trailerSpeedToast(next);
                     }
-                } else if (e.key === 'Tab') {
+                } else if (e.key === 'f' || e.key === 'F') {
                     e.preventDefault();
-                    const vid = document.getElementById('trailer-video');
-                    if (vid) {
-                        if (document.fullscreenElement) {
-                            document.exitFullscreen();
-                        } else {
-                            vid.requestFullscreen();
-                        }
+                    this._toggleTrailerFullscreen();
+                } else if (e.key === 'm' || e.key === 'M') {
+                    e.preventDefault();
+                    this._toggleTrailerMute();
+                } else if (e.key === 'Tab') {
+                    // Focus trap — Tab must not escape the trailer modal
+                    const focusables = trailerModal.querySelectorAll('a[href], button:not([disabled]), video, [tabindex]:not([tabindex="-1"])');
+                    if (!focusables.length) { e.preventDefault(); return; }
+                    const first = focusables[0];
+                    const last = focusables[focusables.length - 1];
+                    if (!trailerModal.contains(document.activeElement)) {
+                        e.preventDefault();
+                        first.focus();
+                    } else if (e.shiftKey && document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    } else if (!e.shiftKey && document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
                     }
                 }
                 return;

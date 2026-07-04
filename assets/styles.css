@@ -16,6 +16,9 @@
     /* Sticky-header height — JS (updateHeaderOffset) overwrites with the exact
        measured value; this default just prevents banner overlap before JS runs. */
     --header-height: 160px;
+    /* Toggle-track width — fluid: 84px at full width, squeezing to 64px in
+       narrow windows. Thumb travel derives from this (see .slop-thumb rules). */
+    --trk: clamp(64px, calc(28px + 4vw), 84px);
 
     /* Service colors — single source of truth for badges + buttons */
     --svc-netflix: #E50914;
@@ -57,7 +60,8 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    padding: 1.5rem 1.5rem 1.1rem;
+    padding: 1.5rem 1.5rem 0.5rem;
+    transition: padding 0.28s ease;
     text-align: left;
     border-bottom: 1px solid #333;
     background: rgba(8, 8, 12, 0.88);
@@ -160,7 +164,7 @@ header h1 {
     display: inline-block;
 }
 .slop-track {
-    width: 108px;
+    width: var(--trk, 84px);
     height: 32px;
     border-radius: 16px;
     background: #1a1a1a;
@@ -184,7 +188,8 @@ header h1 {
     transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
 }
 .slop-toggle-wrap.active .slop-thumb {
-    transform: translateX(72px);
+    /* travel = track width - 24px thumb - 2×4px inset */
+    transform: translateX(calc(var(--trk, 84px) - 36px));
     background: #ffffff;
 }
 /* 3-state slop toggle — resting "all" (SLOP FILTER) sits left; cycle moves the
@@ -203,7 +208,7 @@ header h1 {
     border-color: rgba(0,0,0,0.35);
 }
 #slop-free-toggle[data-state="free"] .slop-thumb {
-    transform: translateX(38px);
+    transform: translateX(calc((var(--trk, 84px) - 32px) / 2));
     background: #ffffff;
 }
 #slop-free-toggle[data-state="free"] #slop-state-label { color: #00d4aa; }
@@ -212,7 +217,7 @@ header h1 {
     border-color: rgba(0,0,0,0.35);
 }
 #slop-free-toggle[data-state="only"] .slop-thumb {
-    transform: translateX(76px);
+    transform: translateX(calc(var(--trk, 84px) - 32px));
     background: #ffffff;
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
@@ -272,11 +277,11 @@ header h1 {
 }
 
 #wall {
-    padding: 1.5rem 2rem;
+    padding: 0.5rem 2rem 1.5rem;
     display: grid;
     /* Fluid gallery: fit as many ~260px posters as the window allows; they stretch to fill */
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem 1rem;
+    gap: 1.25rem 1rem;
 }
 
 #wall > * {
@@ -409,7 +414,7 @@ header h1 {
     border-top: 2px solid var(--strip-c, var(--accent-primary));
     border-bottom: 2px solid var(--strip-c, var(--accent-primary));
     border-radius: 4px;
-    padding: 10px 12px;
+    padding: 6px 12px;
     box-shadow: 0 0 28px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 55%, transparent),
                 inset 0 0 18px color-mix(in srgb, var(--strip-c, var(--accent-primary)) 22%, transparent);
 }
@@ -1057,7 +1062,7 @@ header h1 {
     /* Leave ~120px gutter each side for the edge-pinned cycle arrows. */
     max-width: min(1200px, calc(100vw - 240px));
     z-index: 1;
-    animation: trailerFadeIn 0.3s ease;
+    animation: trailerFadeIn 0.2s ease;
 }
 
 @keyframes trailerFadeIn {
@@ -1069,6 +1074,30 @@ header h1 {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* Entrance/exit fades — closeTrailer() adds .closing for 180ms before hiding */
+.trailer-modal.active .trailer-modal-backdrop {
+    animation: trailerBackdropIn 0.2s ease;
+}
+
+@keyframes trailerBackdropIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.trailer-modal.closing .trailer-modal-content {
+    animation: trailerFadeOut 0.18s ease forwards;
+}
+
+.trailer-modal.closing .trailer-modal-backdrop {
+    opacity: 0;
+    transition: opacity 0.18s ease;
+}
+
+@keyframes trailerFadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.97); }
 }
 
 .trailer-close-btn {
@@ -1157,7 +1186,8 @@ header h1 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: calc(100% - 60px);
+    /* leave room for counter + YT link + mute/fullscreen/close buttons */
+    max-width: calc(100% - 260px);
 }
 
 .trailer-reel-counter {
@@ -1167,7 +1197,55 @@ header h1 {
     white-space: nowrap;
     margin-left: 12px;
     flex-shrink: 0;
+    margin-right: auto; /* push YT link / buttons to the right edge */
 }
+
+/* Header controls: YouTube escape hatch + mute + fullscreen */
+.trailer-yt-link {
+    color: #00d4aa;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    margin-left: auto;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.trailer-yt-link:hover { color: #00ffbb; }
+
+.trailer-mute-btn,
+.trailer-fs-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.25rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s, transform 0.2s;
+    line-height: 1;
+    padding: 0;
+    width: 36px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+.trailer-mute-btn:hover,
+.trailer-fs-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* One-line keyboard hints under the player */
+.trailer-hints {
+    text-align: center;
+    color: #888;
+    font-size: 0.8rem;
+    margin-top: 10px;
+    letter-spacing: 0.02em;
+}
+
+.trailer-modal.yt-mode .hint-mp4 { display: none; }
 
 /* Trailer Navigation Arrows */
 .trailer-nav-wrapper {
@@ -1725,7 +1803,7 @@ header h1 {
     border-radius: 999px;
     font-size: 0.95rem;
     font-weight: 600;
-    z-index: 10000;
+    z-index: 10003; /* above the fixed trailer/lightbox nav arrows (10002) */
     opacity: 1;
     transition: opacity 0.3s;
     pointer-events: none;

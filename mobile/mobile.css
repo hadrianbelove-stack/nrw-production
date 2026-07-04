@@ -671,6 +671,53 @@ body {
 .trailer-cue-prev { left: 8px; animation: chevNudgeL 1.7s ease-in-out infinite; }
 .trailer-cue-next { right: 8px; animation: chevNudgeR 1.7s ease-in-out infinite; }
 
+/* Trailer chrome bar — title + "x / y" counter across the top of the overlay.
+   pointer-events none so the swipe/tap surface underneath is untouched. */
+.trailer-chrome {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  right: 64px; /* clear the × close button */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 10;
+  pointer-events: none;
+}
+.trailer-chrome-title {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.trailer-chrome-counter {
+  color: #888;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+/* Trailer buffering spinner — centered teal ring, shown on 'waiting' */
+.trailer-buf-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: trailer-spin 0.8s linear infinite;
+  pointer-events: none;
+  z-index: 9;
+}
+@keyframes trailer-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ===== VIEW 3: BOTTOM SHEET ===== */
 .bottom-sheet {
   position: fixed;
