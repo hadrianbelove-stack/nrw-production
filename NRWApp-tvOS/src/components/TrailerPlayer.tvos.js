@@ -10,7 +10,7 @@
  */
 
 import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Animated, TVEventControl } from 'react-native';
 import Video from 'react-native-video';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import { Colors } from '../constants/colors';
@@ -151,6 +151,18 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
     onIndexChange?.(currentIndex);
   }, [currentIndex, onIndexChange]);
 
+  // Own the Menu key in JS while a trailer is up. On real hardware this screen
+  // has no focused view, so without this the Menu press bypasses the app and
+  // suspends it (build 28), and giving the container focus instead double-handled
+  // the press and wedged navigation (build 29). enableTVMenuKey makes RN's
+  // recognizer swallow Menu and emit the 'menu' TV event; the handler below does
+  // exactly one JS-driven close. Scoped to the player's lifetime so Menu at the
+  // app root still suspends the app per Apple HIG.
+  useEffect(() => {
+    TVEventControl.enableTVMenuKey();
+    return () => TVEventControl.disableTVMenuKey();
+  }, []);
+
   // When a trailer finishes, roll forward to the next trailer ("play all").
   // No wrap: after the last hosted trailer the player closes, so the reel
   // never loops forever remounting AVPlayers. The `closing` guard stops an
@@ -183,8 +195,10 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
     [TV_EVENTS.RIGHT]: paused ? scrubForward : navigateNext,
     [TV_EVENTS.SWIPE_LEFT]: paused ? scrubBackward : navigatePrevious,
     [TV_EVENTS.SWIPE_RIGHT]: paused ? scrubForward : navigateNext,
-    // MENU is intentionally not handled here: the Trailer screen is its own route,
-    // so the tvOS Menu button natively pops back to the movie detail.
+    // MENU is handled HERE in JS (see the enableTVMenuKey effect above) — one
+    // deterministic close, independent of the tvOS focus engine. handleClose
+    // drains audio then onClose pops the route / dismisses the overlay host.
+    [TV_EVENTS.MENU]: handleClose,
     [TV_EVENTS.PLAY_PAUSE]: togglePlayPause,
     [TV_EVENTS.SELECT]: paused ? handleResume : handlePause,
   });
@@ -203,12 +217,10 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
   }, [movieList, currentIndex]);
 
   return (
-    // focusable + preferred focus: on real hardware the screen must contain a
-    // focused view or remote presses bypass the app entirely — Menu then suspends
-    // the app instead of popping this route. (Simulator delivers Esc differently,
-    // so the bug never reproduces there.) Remote events themselves arrive via the
-    // app-wide useTVEventHandler above, not via this view's focus.
-    <View style={styles.container} focusable={true} hasTVPreferredFocus={true}>
+    // Deliberately NO focusable views here: Menu is owned in JS via
+    // enableTVMenuKey (see effect above). A focusable container (build 29)
+    // double-handled the press on hardware and wedged navigation — don't re-add.
+    <View style={styles.container}>
       {/* Video player — kept in tree during close so AVPlayer can drain audio cleanly.
           paused={closing || paused} stops audio immediately via prop (imperative pause()
           is absent in modern react-native-video). Unmount happens when parent removes
