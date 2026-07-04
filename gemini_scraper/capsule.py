@@ -1219,20 +1219,21 @@ FACTOID PRIMER:"""
             logger.warning(f"Capsule for {title} ({year}) has an unmatched '*' "
                            f"(unbalanced italic). Markdown may render wrong. Approving anyway.")
 
-        # 1. Add to approved bank (training data)
-        bank = self._load_approved_bank()
-        bank.append({
-            'title': title,
-            'year': year,
-            'director': director or 'Unknown',
-            'capsule': capsule_text,
-            'approved_at': time.strftime('%Y-%m-%dT%H:%M:%S')
-        })
-
+        # 1. Add to approved bank (training data). Load-append-save happens
+        # under the shared lock — concurrent windows approve at the same time.
+        from pipeline.json_io import data_lock, atomic_dump
         try:
             os.makedirs(os.path.dirname(APPROVED_BANK_PATH) or '.', exist_ok=True)
-            with open(APPROVED_BANK_PATH, 'w') as f:
-                json.dump(bank, f, indent=2)
+            with data_lock():
+                bank = self._load_approved_bank()
+                bank.append({
+                    'title': title,
+                    'year': year,
+                    'director': director or 'Unknown',
+                    'capsule': capsule_text,
+                    'approved_at': time.strftime('%Y-%m-%dT%H:%M:%S')
+                })
+                atomic_dump(bank, APPROVED_BANK_PATH)
             logger.info(f"Approved capsule for {title} ({year}) — bank now has {len(bank)} entries")
         except Exception as e:
             logger.error(f"Failed to save approved capsule: {e}")
@@ -1242,24 +1243,28 @@ FACTOID PRIMER:"""
 
     def _publish_to_data_json(self, title: str, year: int, capsule_text: str):
         """Write approved capsule into data.json's capsule field (not synopsis — that's the TMDB fallback)."""
+        from pipeline.json_io import data_lock, load_json, atomic_dump
         data_path = 'data.json'
         try:
-            with open(data_path, 'r') as f:
-                data = json.load(f)
+            # Locked read-modify-write: another window saving from a stale copy
+            # was erasing freshly approved capsules (Jul 3 2026).
+            with data_lock():
+                data = load_json(data_path)
 
-            movies = data.get('movies', data) if isinstance(data, dict) else data
-            updated = False
+                movies = data.get('movies', data) if isinstance(data, dict) else data
+                updated = False
 
-            for m in movies:
-                if (m.get('title', '').lower() == title.lower() and
-                        m.get('year') == year):
-                    m['capsule'] = capsule_text
-                    updated = True
-                    break
+                for m in movies:
+                    if (m.get('title', '').lower() == title.lower() and
+                            m.get('year') == year):
+                        m['capsule'] = capsule_text
+                        updated = True
+                        break
+
+                if updated:
+                    atomic_dump(data, data_path)
 
             if updated:
-                with open(data_path, 'w') as f:
-                    json.dump(data, f, indent=2, ensure_ascii=False)
                 logger.info(f"Published capsule to data.json: {title} ({year})")
             else:
                 logger.warning(f"Could not find {title} ({year}) in data.json to publish capsule")

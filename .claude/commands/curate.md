@@ -132,18 +132,18 @@ The false-negative pass, done **once per film**. Shows **all** remaining candida
      revert it) and to data.json for immediate effect. Key by **ID**:
      ```bash
      cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
-     import json, sys
+     import sys; sys.path.insert(0, '.')
+     from pipeline.json_io import json_edit
      mid, is_slop_val = sys.argv[1], sys.argv[2] == 'true'
-     ov = json.load(open('admin/overrides.json'))
-     ov.setdefault(mid, {}).setdefault('set', {})['is_slop'] = is_slop_val
-     json.dump(ov, open('admin/overrides.json','w'), indent=2, ensure_ascii=False)
-     data = json.load(open('data.json'))
-     for m in data['movies']:
-         if str(m.get('id')) == mid: m['is_slop'] = is_slop_val; break
-     json.dump(data, open('data.json','w'), indent=2, ensure_ascii=False)
+     with json_edit('admin/overrides.json') as ov:
+         ov.setdefault(mid, {}).setdefault('set', {})['is_slop'] = is_slop_val
+     with json_edit('data.json') as data:
+         for m in data['movies']:
+             if str(m.get('id')) == mid: m['is_slop'] = is_slop_val; break
      print('done')
      " "MOVIE_ID" "true_or_false"
      ```
+     *(`json_edit` locks + writes atomically — never `json.dump` a shared file directly; concurrent windows erase each other's saves.)*
    - **Drain:** `curate_list.py --mark slop <every shown id>` — even on "looks good" with no changes, so they don't re-show.
    - COMMIT(`data.json admin/overrides.json admin/curate_reviewed.json`, `"Slop review"`)
 
@@ -184,19 +184,20 @@ For `/curate 1-3`, `4,6`, etc. — Stages 0–3 were skipped. Build the queue ab
 **Save cast wiki links (after the approve script runs)** — merge, don't overwrite; cast members only (not director/figures/events — those are text-only links). Encode `(`→`%28`, `)`→`%29` in URLs:
 ```bash
 cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
-import json, sys
+import json, sys; sys.path.insert(0, '.')
+from pipeline.json_io import json_edit
 title, cast_wiki_json = sys.argv[1], sys.argv[2]
 cast_wiki = json.loads(cast_wiki_json)
-with open('data.json') as f: data = json.load(f)
-movies = data if isinstance(data, list) else data.get('movies', [])
-for m in movies:
-    if m.get('title','').lower() == title.lower():
-        m.setdefault('links', {})
-        existing = m['links'].get('cast_wiki', {}); existing.update(cast_wiki)
-        m['links']['cast_wiki'] = existing; break
-with open('data.json','w') as f: json.dump(data, f, indent=2, ensure_ascii=False)
+with json_edit('data.json') as data:
+    movies = data if isinstance(data, list) else data.get('movies', [])
+    for m in movies:
+        if m.get('title','').lower() == title.lower():
+            m.setdefault('links', {})
+            existing = m['links'].get('cast_wiki', {}); existing.update(cast_wiki)
+            m['links']['cast_wiki'] = existing; break
 " "MOVIE_TITLE" '{\"Ellie Bamber\": \"https://...\", \"Derek Jacobi\": \"https://...\"}'
 ```
+*(`json_edit` locks + writes atomically — never `json.dump` data.json directly; concurrent windows erase each other's saves.)*
 
 ### Step B — Pull Quotes (SAME message as the capsule)
 Append this film's quotes to the message showing its capsule variants (Step A.3) — do **not** wait for the capsule pick. User reviews both and replies at once (e.g. "capsule 2, quote 4").

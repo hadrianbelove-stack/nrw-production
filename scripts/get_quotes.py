@@ -37,6 +37,9 @@ import signal
 import sys
 import textwrap
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from pipeline.json_io import data_lock, atomic_dump
+
 signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 CACHE = "cache/pull_quotes_combined.json"
@@ -47,13 +50,9 @@ SPOILER_PREFIX = "This review may contain spoilers"
 
 
 def _atomic_write(path, obj):
-    """Write JSON via a temp file, re-load to validate, then replace.
-    (Guards against the concurrent-write corruption we hit in Jun 2026.)"""
-    tmp = path + ".tmp"
-    with open(tmp, "w") as f:
-        json.dump(obj, f, indent=2, ensure_ascii=False)
-    json.load(open(tmp))  # must round-trip before it may replace the real file
-    os.replace(tmp, path)
+    """Torn-write guard; see pipeline/json_io.py. Callers that read-modify-write
+    must also hold data_lock() so concurrent windows can't erase each other."""
+    atomic_dump(obj, path)
 
 
 def _find_entry(cache, title, year):
@@ -155,58 +154,62 @@ def _verify_url(url, title, critic):
 
 def _write_to_data(title, year, picked):
     """Inject/replace the quote in the movie's pull_quotes in data.json."""
-    data = json.load(open(DATA))
-    movies = data if isinstance(data, list) else data.get("movies", [])
-    tl = title.lower()
-    for m in movies:
-        if m.get("title", "").lower() == tl and str(m.get("year", "")) == str(year):
-            quotes = m.get("pull_quotes") or []
-            # Re-picking the same critic+outlet replaces (a re-trim), else append.
-            quotes = [q for q in quotes
-                      if not (q.get("critic") == picked["critic"]
-                              and q.get("outlet") == picked["outlet"])]
-            quotes.append(picked)
-            m["pull_quotes"] = quotes
-            _atomic_write(DATA, data)
-            return True
+    with data_lock():
+        data = json.load(open(DATA))
+        movies = data if isinstance(data, list) else data.get("movies", [])
+        tl = title.lower()
+        for m in movies:
+            if m.get("title", "").lower() == tl and str(m.get("year", "")) == str(year):
+                quotes = m.get("pull_quotes") or []
+                # Re-picking the same critic+outlet replaces (a re-trim), else append.
+                quotes = [q for q in quotes
+                          if not (q.get("critic") == picked["critic"]
+                                  and q.get("outlet") == picked["outlet"])]
+                quotes.append(picked)
+                m["pull_quotes"] = quotes
+                _atomic_write(DATA, data)
+                return True
     return False
 
 
 def select(title, year, args):
-    cache = json.load(open(CACHE))
-    key = _find_entry(cache, title, year)
-
     final_text = None
     if args.text_file:
         final_text = open(args.text_file).read().strip()
 
-    if args.custom:
-        if not (args.critic and args.outlet and final_text):
-            print("--custom needs --critic, --outlet and --text-file")
-            sys.exit(1)
-        q = {"text": final_text, "critic": args.critic, "outlet": args.outlet,
-             "source": "manual", "verbatim": False, "selected": True,
-             "review_url": args.url or None}
-        if key is None:
-            key = f"{title}_{year}"
-            cache[key] = {"title": title, "year": year,
-                          "rt_quotes": [], "lb_quotes": []}
-        bucket = "lb_quotes" if args.outlet.lower() == "letterboxd" else "rt_quotes"
-        cache[key].setdefault(bucket, []).append(q)
-    else:
-        if key is None:
-            print("No cache entry for this movie — use --custom to add a quote by hand.")
-            sys.exit(1)
-        items, _ = _ordered_quotes(cache[key])
-        if not args.num or not (1 <= args.num <= len(items)):
-            print(f"--num must be 1–{len(items)} (as displayed by this script)")
-            sys.exit(1)
-        q = items[args.num - 1][1]
-        q["selected"] = True
-        if final_text:
-            q["text"] = final_text
+    # Cache read-modify-write happens under the lock; the (slow) URL
+    # verification below runs after release so other windows aren't blocked.
+    with data_lock():
+        cache = json.load(open(CACHE))
+        key = _find_entry(cache, title, year)
 
-    _atomic_write(CACHE, cache)
+        if args.custom:
+            if not (args.critic and args.outlet and final_text):
+                print("--custom needs --critic, --outlet and --text-file")
+                sys.exit(1)
+            q = {"text": final_text, "critic": args.critic, "outlet": args.outlet,
+                 "source": "manual", "verbatim": False, "selected": True,
+                 "review_url": args.url or None}
+            if key is None:
+                key = f"{title}_{year}"
+                cache[key] = {"title": title, "year": year,
+                              "rt_quotes": [], "lb_quotes": []}
+            bucket = "lb_quotes" if args.outlet.lower() == "letterboxd" else "rt_quotes"
+            cache[key].setdefault(bucket, []).append(q)
+        else:
+            if key is None:
+                print("No cache entry for this movie — use --custom to add a quote by hand.")
+                sys.exit(1)
+            items, _ = _ordered_quotes(cache[key])
+            if not args.num or not (1 <= args.num <= len(items)):
+                print(f"--num must be 1–{len(items)} (as displayed by this script)")
+                sys.exit(1)
+            q = items[args.num - 1][1]
+            q["selected"] = True
+            if final_text:
+                q["text"] = final_text
+
+        _atomic_write(CACHE, cache)
 
     real_title = cache[key].get("title", title)
     url = None if args.no_url else q.get("review_url")
@@ -235,19 +238,20 @@ def select(title, year, args):
 
 
 def skip(title, year, force):
-    data = json.load(open(DATA))
-    movies = data if isinstance(data, list) else data.get("movies", [])
-    tl = title.lower()
-    for m in movies:
-        if m.get("title", "").lower() == tl and str(m.get("year", "")) == str(year):
-            if m.get("pull_quotes") and not force:
-                print(f"⚠ {m['title']} already has {len(m['pull_quotes'])} quote(s) "
-                      "— skipping would delete them. Re-run with --force to wipe.")
-                sys.exit(1)
-            m["pull_quotes"] = []
-            _atomic_write(DATA, data)
-            print(f"{m['title']} ({year}): pull_quotes set to [] (reviewed, skipped).")
-            return
+    with data_lock():
+        data = json.load(open(DATA))
+        movies = data if isinstance(data, list) else data.get("movies", [])
+        tl = title.lower()
+        for m in movies:
+            if m.get("title", "").lower() == tl and str(m.get("year", "")) == str(year):
+                if m.get("pull_quotes") and not force:
+                    print(f"⚠ {m['title']} already has {len(m['pull_quotes'])} quote(s) "
+                          "— skipping would delete them. Re-run with --force to wipe.")
+                    sys.exit(1)
+                m["pull_quotes"] = []
+                _atomic_write(DATA, data)
+                print(f"{m['title']} ({year}): pull_quotes set to [] (reviewed, skipped).")
+                return
     print(f"⚠ No movie titled {title!r} ({year}) in data.json.")
     sys.exit(1)
 
