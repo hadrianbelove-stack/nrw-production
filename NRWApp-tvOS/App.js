@@ -140,6 +140,11 @@ const App = () => {
               component={SearchScreen}
               options={{
                 title: 'Search',
+                // tvOS: Menu must NOT natively pop this route — the screen owns
+                // the Menu key in JS for progressive back (clear query → exit).
+                // react-native-screens maps the tvOS menu-pop as its back
+                // "gesture", so this disables exactly that native path.
+                gestureEnabled: false,
               }}
             />
             <Stack.Screen

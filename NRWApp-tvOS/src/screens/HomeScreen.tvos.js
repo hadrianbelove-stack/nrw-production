@@ -1423,14 +1423,14 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'column',
     paddingHorizontal: 68,
-    paddingTop: 20,
-    paddingBottom: 8,
+    paddingTop: 18,
+    paddingBottom: 4,
   },
   headerTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   headerTitle: {
     color: Colors.textPrimary,
@@ -1439,11 +1439,13 @@ const styles = StyleSheet.create({
     letterSpacing: 9,
   },
   headerSlogan: {
-    color: Colors.primary,
-    fontSize: 30,
-    fontWeight: '300',
-    letterSpacing: 2,
-    marginTop: 2,
+    // Tracked caps echoing the wordmark's rhythm (matches web fused-strip design)
+    color: 'rgba(0,212,170,0.8)',
+    fontSize: 22,
+    fontWeight: '500',
+    letterSpacing: 6,
+    textTransform: 'uppercase',
+    marginTop: 6,
   },
   filterRow: {
     flexDirection: 'row',
@@ -1549,21 +1551,20 @@ const styles = StyleSheet.create({
   searchControlTextFocused: { color: '#00d4aa' },
   // One filled control row (toggles + GENRE + SEARCH), distributed across the width
   controlBar: {
+    // Open row (fused-strip design, matches web): no box — the first date
+    // strip below acts as the row's bottom line
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(255,255,255,0.035)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    marginTop: 4,
+    backgroundColor: 'transparent',
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+    marginTop: 2,
   },
   barDivider: {
-    width: 1,
+    width: 0,
     height: 36,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: 'transparent',
   },
   // Each toggle/genre occupies an equal cell so they fill the bar evenly
   // (no clumped negative space between pills).

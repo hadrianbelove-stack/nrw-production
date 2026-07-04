@@ -13,11 +13,13 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  TVEventControl,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { Colors } from '../constants/colors';
 import MovieCard from '../components/MovieCard.tvos';
 import SearchIcon from '../components/SearchIcon.tvos';
+import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import { getSearchMovieList, setSharedMovieList } from './sharedMovieList';
 
 const CARD_GAP = 16;
@@ -45,10 +47,43 @@ const SearchScreen = ({ route }) => {
 
   // Progressive back (standard TV search pattern): Menu with a query showing
   // clears the search back to its default state; Menu on an empty search exits
-  // to the wall. The preventDefault MUST stay conditional — an unconditional
-  // guard wedges tvOS navigation (see TrailerScreen header comment).
+  // to the wall.
+  //
+  // The hardware Menu press pops the native stack BEFORE beforeRemove can veto
+  // it (verified on-sim: preventDefault alone didn't hold), so while a query
+  // exists we own the Menu key in JS — same TVEventControl pattern TrailerPlayer
+  // proved out (its build-28/29 comments). Scoped tightly: enabled only while
+  // this screen has a non-empty query, disabled the moment it clears/unmounts,
+  // so Menu everywhere else keeps its native pop/suspend behavior.
+  // Menu is owned in JS for this whole screen (its route has gestureEnabled:
+  // false, so there is no native Menu-pop): query showing → clear it; empty →
+  // goBack. Scoped to THIS screen being focused: a movie opened from results
+  // pushes MovieDetail on top with Search still mounted below — without the
+  // focus gate, Search would keep owning Menu and hijack Detail's back press.
+  const isScreenFocused = useIsFocused();
   const queryRef = useRef('');
   queryRef.current = searchQuery;
+  const isFocusedRef = useRef(true);
+  isFocusedRef.current = isScreenFocused;
+  useEffect(() => {
+    if (!isScreenFocused) return;
+    TVEventControl.enableTVMenuKey();
+    return () => TVEventControl.disableTVMenuKey();
+  }, [isScreenFocused]);
+  useTVEventHandler({
+    [TV_EVENTS.MENU]: () => {
+      if (!isFocusedRef.current) return;
+      if (queryRef.current) {
+        setSearchQuery('');
+        setResults([]);
+      } else {
+        navigation.goBack();
+      }
+    },
+  });
+  // The on-screen ‹ button goes through JS goBack, which beforeRemove CAN veto:
+  // clear first, exit on the next press. Conditional only — an unconditional
+  // guard wedges tvOS navigation (see TrailerScreen header comment).
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
       if (!queryRef.current) return;
