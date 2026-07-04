@@ -1307,6 +1307,11 @@ class ProviderDiscoverer:
             if movie.get('links', {}).get('trailer'):
                 continue  # Already has a trailer
 
+            # Curator lock: film deliberately has no trailer (e.g. title-collision
+            # cleanup where the only online "trailer" is the wrong film). Never re-scrape.
+            if movie.get('_lock_trailer'):
+                continue
+
             # Only retry completed movies (pending ones will get enriched normally)
             status = movie.get('_enrichment_status', '')
             if status != 'completed':
@@ -1644,8 +1649,10 @@ class ProviderDiscoverer:
                                 unsaved_count += 1
 
                 # --- Wikipedia fill (only if missing) ---
+                # Curator lock: skip films whose Wikipedia was deliberately cleared
+                # (title-collision cleanup where title-matching keeps grabbing the wrong page).
                 links = movie.get('links', {})
-                if not links.get('wikipedia'):
+                if not links.get('wikipedia') and not movie.get('_lock_wikipedia'):
                     imdb_id = links.get('imdb', '').replace('https://www.imdb.com/title/', '').rstrip('/')
                     if not imdb_id:
                         imdb_id = movie.get('imdb_id', '')
