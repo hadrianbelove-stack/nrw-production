@@ -164,7 +164,7 @@ const GenreControl = forwardRef(({ label, isActive, onPress, nextFocusUp }, ref)
 // SEARCH button — far right of the control bar. Real magnifying-glass icon +
 // label, styled as a quiet teal pill like GenreControl. Select opens the
 // full-screen Search route (search is a destination, like Apple TV / Netflix).
-const SearchButton = forwardRef(({ onPress }, ref) => {
+const SearchButton = forwardRef(({ onPress, hasTVPreferredFocus }, ref) => {
   const [isFocused, setIsFocused] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const handleFocus = useCallback(() => {
@@ -182,6 +182,7 @@ const SearchButton = forwardRef(({ onPress }, ref) => {
       onFocus={handleFocus}
       onBlur={handleBlur}
       activeOpacity={1}
+      hasTVPreferredFocus={hasTVPreferredFocus}
       accessible={true}
       accessibilityRole="button"
       accessibilityLabel="Search movies"
@@ -565,9 +566,29 @@ const HomeScreenTvOS = () => {
   // SEARCH opens the full-screen Search route over the FULL movie list
   // (search covers everything, bypassing wall view filters — matches desktop).
   const handleOpenSearch = useCallback(() => {
+    returningFromSearchRef.current = true;
     setSearchMovieList(movies);
     navigation.navigate('Search');
   }, [navigation, movies]);
+
+  // Returning from the Search route drops tvOS focus entirely (nothing on the
+  // wall is focused, so the remote goes dead — "couldn't reselect search").
+  // Re-seed focus onto the SEARCH button itself, one-shot like pendingFocusMIdx.
+  const returningFromSearchRef = useRef(false);
+  const [searchBtnPreferredFocus, setSearchBtnPreferredFocus] = useState(false);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (!returningFromSearchRef.current) return;
+      returningFromSearchRef.current = false;
+      setSearchBtnPreferredFocus(true);
+    });
+    return unsubscribe;
+  }, [navigation]);
+  useEffect(() => {
+    if (!searchBtnPreferredFocus) return;
+    const t = setTimeout(() => setSearchBtnPreferredFocus(false), 400);
+    return () => clearTimeout(t);
+  }, [searchBtnPreferredFocus]);
 
   // Local state - multi-select filters (Set of active filter IDs)
   const [activeFilters, setActiveFilters] = useState(new Set());
@@ -1327,7 +1348,7 @@ const HomeScreenTvOS = () => {
           </View>
           <View style={styles.barDivider} />
           <View style={styles.barCell}>
-            <SearchButton ref={setLastFilterRef} onPress={handleOpenSearch} />
+            <SearchButton ref={setLastFilterRef} onPress={handleOpenSearch} hasTVPreferredFocus={searchBtnPreferredFocus} />
           </View>
         </View>
       </View>

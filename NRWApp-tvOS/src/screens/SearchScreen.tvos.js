@@ -13,13 +13,11 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  TVEventControl,
 } from 'react-native';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../constants/colors';
 import MovieCard from '../components/MovieCard.tvos';
 import SearchIcon from '../components/SearchIcon.tvos';
-import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import { getSearchMovieList, setSharedMovieList } from './sharedMovieList';
 
 const CARD_GAP = 16;
@@ -55,44 +53,17 @@ const SearchScreen = ({ route }) => {
   // proved out (its build-28/29 comments). Scoped tightly: enabled only while
   // this screen has a non-empty query, disabled the moment it clears/unmounts,
   // so Menu everywhere else keeps its native pop/suspend behavior.
-  // Menu is owned in JS for this whole screen (its route has gestureEnabled:
-  // false, so there is no native Menu-pop): query showing → clear it; empty →
-  // goBack. Scoped to THIS screen being focused: a movie opened from results
-  // pushes MovieDetail on top with Search still mounted below — without the
-  // focus gate, Search would keep owning Menu and hijack Detail's back press.
-  const isScreenFocused = useIsFocused();
-  const queryRef = useRef('');
-  queryRef.current = searchQuery;
-  const isFocusedRef = useRef(true);
-  isFocusedRef.current = isScreenFocused;
-  useEffect(() => {
-    if (!isScreenFocused) return;
-    TVEventControl.enableTVMenuKey();
-    return () => TVEventControl.disableTVMenuKey();
-  }, [isScreenFocused]);
-  useTVEventHandler({
-    [TV_EVENTS.MENU]: () => {
-      if (!isFocusedRef.current) return;
-      if (queryRef.current) {
-        setSearchQuery('');
-        setResults([]);
-      } else {
-        navigation.goBack();
-      }
-    },
-  });
-  // The on-screen ‹ button goes through JS goBack, which beforeRemove CAN veto:
-  // clear first, exit on the next press. Conditional only — an unconditional
-  // guard wedges tvOS navigation (see TrailerScreen header comment).
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      if (!queryRef.current) return;
-      e.preventDefault();
-      setSearchQuery('');
-      setResults([]);
-    });
-    return unsubscribe;
-  }, [navigation]);
+  // Hardware Menu exits this screen via the native-stack pop. That pop fires at
+  // the UIKit layer and is NOT interceptible (verified on-sim, three ways:
+  // beforeRemove preventDefault, TVEventControl menu ownership, and
+  // gestureEnabled:false all lost to it — TrailerPlayer's JS-menu trick only
+  // works because that screen has no focusable views). Worse, a beforeRemove
+  // preventDefault against the native pop DESYNCS react-navigation's JS state
+  // from the native stack, and navigate('Search') becomes a no-op afterward —
+  // the original "can't reselect search" bug. So: NO back-press interception of
+  // any kind on this screen. The UX contract instead: exiting unmounts the
+  // route (search always reopens fresh), HomeScreen re-seeds focus onto the
+  // SEARCH button on return, and the ✕ button clears in place.
 
   // Search function
   const performSearch = useCallback((query) => {
