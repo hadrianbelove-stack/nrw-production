@@ -1,102 +1,41 @@
 {
-  "timestamp": "2026-07-03T10:46:00.847470",
-  "movies_requested": 12,
+  "timestamp": "2026-07-04T10:09:26.474741",
+  "movies_requested": 8,
   "movies_enriched": 5,
-  "movies_deferred": 7,
+  "movies_deferred": 3,
   "deferred_details": [
-    {
-      "title": "The Get Out",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-02",
-      "discovered_at": "2026-07-03T10:39:00.005089",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-03",
-      "tmdb_platforms": [
-        "Amazon Video",
-        "Fandango At Home",
-        "Plex"
-      ],
-      "jw_platforms": [
-        "Amazon Video",
-        "Fandango At Home"
-      ]
-    },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-03T10:39:01.118522",
+      "discovered_at": "2026-07-04T10:03:16.551123",
       "discovery_source": "tmdb_type4",
-      "revert_count": 4,
-      "first_reverted_at": "2026-07-03",
+      "revert_count": 5,
+      "first_reverted_at": "2026-07-04",
       "tmdb_platforms": []
-    },
-    {
-      "title": "The Devil Wears Prada 2",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-06-30",
-      "discovered_at": "2026-07-03T10:39:02.276235",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-03",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Amazon Video",
-        "Apple TV Store",
-        "Fandango At Home"
-      ]
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-03T10:39:03.283236",
+      "discovered_at": "2026-07-04T10:03:18.401707",
       "discovery_source": "tmdb_type4",
-      "revert_count": 25,
-      "first_reverted_at": "2026-07-03",
+      "revert_count": 26,
+      "first_reverted_at": "2026-07-04",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-03T10:39:03.625099",
+      "discovered_at": "2026-07-04T10:03:18.763689",
       "discovery_source": "tmdb_type4",
-      "revert_count": 16,
-      "first_reverted_at": "2026-07-03",
+      "revert_count": 17,
+      "first_reverted_at": "2026-07-04",
       "tmdb_platforms": []
-    },
-    {
-      "title": "The Dangers in My Heart: The Movie",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-07-03T10:39:15.348037",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-03",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Barnes & Noble"
-      ]
-    },
-    {
-      "title": "Blades of the Guardians",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-07-03T10:39:15.618434",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-03",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Amazon Video",
-        "Apple TV Store",
-        "Fandango At Home"
-      ]
     }
   ],
-  "enrichment_duration_seconds": 398.9,
+  "enrichment_duration_seconds": 358.94,
   "error_details": [],
   "total_errors": 0
 }

@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-07-03T10:21:44.826067",
+  "timestamp": "2026-07-04T09:46:01.424151",
   "operation": "eventive_scan_pipeline",
   "stats": {
-    "festivals_scanned": 118,
-    "festivals_with_films": 113,
+    "festivals_scanned": 117,
+    "festivals_with_films": 112,
     "festivals_failed": 48,
-    "total_films_indexed": 2210,
+    "total_films_indexed": 2195,
     "expired_filtered": 0,
-    "unique_active": 1616,
+    "unique_active": 1612,
     "tracking_matches": 54,
     "wall_matches": 13,
     "new_cached": 29,
@@ -75,6 +75,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1195113",
+      "nrw_title": "Carissa",
+      "eventive_title": "Carissa",
+      "festival": "South African Film Festival 2026",
+      "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
+      "start": "2026-06-25T14:15:00.000Z",
+      "end": "2026-07-26T13:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1012180",
       "nrw_title": "Identity",
       "eventive_title": "Identity",
@@ -87,13 +99,25 @@
       "nrw_status": "removed"
     },
     {
-      "movie_id": "1195113",
-      "nrw_title": "Carissa",
-      "eventive_title": "Carissa",
-      "festival": "South African Film Festival 2026",
-      "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
-      "start": "2026-06-25T14:15:00.000Z",
-      "end": "2026-07-26T13:45:00.000Z",
+      "movie_id": "1306368",
+      "nrw_title": "The Rip",
+      "eventive_title": "RIP",
+      "festival": "ICFF at Home",
+      "link": "https://watch.eventive.org/icff/play/6a3191f15b2b7f7a6adbf593",
+      "start": "2026-07-03T16:00:00.000Z",
+      "end": "2026-07-14T07:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1127674",
+      "nrw_title": "The Forbidden City",
+      "eventive_title": "The Forbidden City",
+      "festival": "ICFF at Home",
+      "link": "https://watch.eventive.org/icff/play/6a318fd127d255ee974c1de1",
+      "start": "2026-07-03T16:00:00.000Z",
+      "end": "2026-07-14T07:00:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
@@ -505,30 +529,6 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1306368",
-      "nrw_title": "The Rip",
-      "eventive_title": "RIP",
-      "festival": "ICFF at Home",
-      "link": "https://watch.eventive.org/icff/play/6a3191f15b2b7f7a6adbf593",
-      "start": "2026-07-03T16:00:00.000Z",
-      "end": "2026-07-14T07:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1127674",
-      "nrw_title": "The Forbidden City",
-      "eventive_title": "The Forbidden City",
-      "festival": "ICFF at Home",
-      "link": "https://watch.eventive.org/icff/play/6a318fd127d255ee974c1de1",
-      "start": "2026-07-03T16:00:00.000Z",
-      "end": "2026-07-14T07:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
     },
     {
       "movie_id": "1162053",
