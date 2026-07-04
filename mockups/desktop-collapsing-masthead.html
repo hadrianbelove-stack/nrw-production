@@ -2,39 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>
-    // Phone users get the dedicated mobile site. Escape hatch: add ?desktop=1
-    (function () {
-        try {
-            if (location.search.indexOf('desktop=1') !== -1) return;
-            var ua = navigator.userAgent || '';
-            var isPhone = /Android|iPhone|iPod|Windows Phone|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua);
-            var isNarrow = window.matchMedia('(max-width: 768px)').matches;
-            if (isPhone || isNarrow) {
-                location.replace('mobile/' + location.search + location.hash);
-            }
-        } catch (e) {}
-    })();
-    </script>
-    <title>The New Release Wall</title>
-    <meta name="description" content="What came out, every day.">
+    <!-- Desktop-behavior demo: render desktop layout even on a phone -->
+    <meta name="viewport" content="width=1280">
+    <!-- Resolve all relative URLs (styles, app.js, data.json, posters) from repo root -->
+    <base href="../">
+    <title>MOCKUP — Collapsing Masthead (UI audit #1)</title>
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
-    <!-- Link preview (Open Graph + Twitter) -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="The New Release Wall">
-    <meta property="og:title" content="The New Release Wall">
-    <meta property="og:description" content="What came out, every day.">
-    <meta property="og:url" content="https://hadrianbelove-stack.github.io/nrw-production/">
-    <meta property="og:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="The New Release Wall">
-    <meta name="twitter:description" content="What came out, every day.">
-    <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="assets/styles.css?v=105">
+    <link rel="stylesheet" href="assets/styles.css?v=102">
+    <style>
+    /* ===== MOCKUP DELTA: collapse wordmark+slogan on scroll, keep control bar ===== */
+    .masthead-row {
+        max-height: 140px;
+        overflow: hidden;
+        transition: max-height 0.28s ease, opacity 0.18s ease, transform 0.28s ease;
+    }
+    header.nrw-collapsed .masthead-row {
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+    }
+    header {
+        transition: padding 0.28s ease;
+    }
+    header.nrw-collapsed {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+    /* A/B switch — mockup chrome only, not a design proposal */
+    #mock-ab {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 20000;
+        background: rgba(8, 8, 12, 0.92);
+        border: 1px solid #00d4aa;
+        color: #00d4aa;
+        border-radius: 25px;
+        padding: 0.55rem 1.1rem;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        font-family: inherit;
+    }
+    #mock-ab.off { border-color: #888; color: #888; }
+    </style>
 </head>
 <body>
     <header>
@@ -138,7 +151,56 @@
         </div>
     </div>
 
-    <script src="assets/shared-config.js?v=4"></script>
-    <script src="assets/app.js?v=89"></script>
+    <button id="mock-ab" type="button">COLLAPSE: ON</button>
+
+    <script src="assets/shared-config.js?v=3"></script>
+    <script src="assets/app.js?v=85"></script>
+    <script>
+    /* ===== MOCKUP DELTA: scroll-collapse driver ===== */
+    (function () {
+        var header = document.querySelector('header');
+        var abBtn = document.getElementById('mock-ab');
+        var enabled = true;
+
+        // Keep --header-height in sync while the header animates, so the
+        // sticky date strips glide with it (production sets it at app.js:228).
+        var syncUntil = 0;
+        function syncHeaderVar() {
+            document.documentElement.style.setProperty('--header-height', header.offsetHeight + 'px');
+            if (performance.now() < syncUntil) requestAnimationFrame(syncHeaderVar);
+        }
+        function startSync() {
+            syncUntil = performance.now() + 380;
+            requestAnimationFrame(syncHeaderVar);
+        }
+
+        // Hysteresis so the header doesn't flutter at the threshold
+        function onScroll() {
+            if (!enabled) return;
+            var y = window.scrollY;
+            var collapsed = header.classList.contains('nrw-collapsed');
+            if (!collapsed && y > 120) {
+                header.classList.add('nrw-collapsed');
+                startSync();
+            } else if (collapsed && y < 30) {
+                header.classList.remove('nrw-collapsed');
+                startSync();
+            }
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        abBtn.addEventListener('click', function () {
+            enabled = !enabled;
+            abBtn.textContent = 'COLLAPSE: ' + (enabled ? 'ON' : 'OFF');
+            abBtn.classList.toggle('off', !enabled);
+            if (!enabled) {
+                header.classList.remove('nrw-collapsed');
+                startSync();
+            } else {
+                onScroll();
+            }
+        });
+    })();
+    </script>
 </body>
 </html>

@@ -238,6 +238,52 @@ const NRW = {
             document.fonts.ready.then(updateHeaderOffset);
         }
 
+        // Masthead recedes on scroll: collapse the wordmark row past 120px,
+        // restore near the top (hysteresis so it never flutters at a threshold).
+        // The sticky date strips follow via --header-height, re-measured every
+        // frame while the header's 0.28s collapse transition runs.
+        const hdrEl = document.querySelector('header');
+        if (hdrEl) {
+            let syncUntil = 0;
+            const syncHeaderVar = () => {
+                updateHeaderOffset();
+                if (performance.now() < syncUntil) requestAnimationFrame(syncHeaderVar);
+            };
+            const startHeaderSync = () => {
+                syncUntil = performance.now() + 380;
+                requestAnimationFrame(syncHeaderVar);
+            };
+            window.addEventListener('scroll', () => {
+                const collapsed = hdrEl.classList.contains('nrw-collapsed');
+                if (!collapsed && window.scrollY > 120) {
+                    hdrEl.classList.add('nrw-collapsed');
+                    startHeaderSync();
+                } else if (collapsed && window.scrollY < 30) {
+                    hdrEl.classList.remove('nrw-collapsed');
+                    startHeaderSync();
+                }
+            }, { passive: true });
+        }
+
+        // Narrow windows: the lightbox poster becomes a corner thumbnail inside
+        // the info panel (mobile-sheet pattern); restored beside the panel when
+        // wide. CSS for both states lives in the 1100px media block.
+        const posterWrap = document.querySelector('.lightbox-poster-wrap');
+        const lbInfo = document.querySelector('.lightbox-info');
+        const lbContent = document.querySelector('.lightbox-content');
+        if (posterWrap && lbInfo && lbContent) {
+            const narrowLb = window.matchMedia('(max-width: 1100px)');
+            const placePoster = () => {
+                if (narrowLb.matches) {
+                    if (posterWrap.parentElement !== lbInfo) lbInfo.insertBefore(posterWrap, lbInfo.firstChild);
+                } else if (posterWrap.parentElement !== lbContent) {
+                    lbContent.insertBefore(posterWrap, lbContent.firstChild);
+                }
+            };
+            placePoster();
+            narrowLb.addEventListener('change', placePoster);
+        }
+
         // Pre-order toggle
         const preorderToggle = document.getElementById('preorder-toggle');
         if (preorderToggle) {

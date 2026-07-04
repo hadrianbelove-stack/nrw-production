@@ -2,41 +2,143 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>
-    // Phone users get the dedicated mobile site. Escape hatch: add ?desktop=1
-    (function () {
-        try {
-            if (location.search.indexOf('desktop=1') !== -1) return;
-            var ua = navigator.userAgent || '';
-            var isPhone = /Android|iPhone|iPod|Windows Phone|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua);
-            var isNarrow = window.matchMedia('(max-width: 768px)').matches;
-            if (isPhone || isNarrow) {
-                location.replace('mobile/' + location.search + location.hash);
-            }
-        } catch (e) {}
-    })();
-    </script>
-    <title>The New Release Wall</title>
-    <meta name="description" content="What came out, every day.">
+    <meta name="viewport" content="width=1280">
+    <!-- Resolve all relative URLs (styles, app.js, data.json, posters) from repo root -->
+    <base href="../">
+    <title>MOCKUP — Nav Bar Variants A/B/C/D</title>
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
-    <!-- Link preview (Open Graph + Twitter) -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="The New Release Wall">
-    <meta property="og:title" content="The New Release Wall">
-    <meta property="og:description" content="What came out, every day.">
-    <meta property="og:url" content="https://hadrianbelove-stack.github.io/nrw-production/">
-    <meta property="og:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="The New Release Wall">
-    <meta name="twitter:description" content="What came out, every day.">
-    <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="assets/styles.css?v=105">
+    <link rel="stylesheet" href="assets/styles.css?v=103">
+    <style>
+    /* ===== Common to all variants: approved density bits not yet in styles.css ===== */
+    .cwide-hdr { padding: 14px 26px 4px; }
+    .masthead-row { margin-bottom: 10px; }
+    /* Search shrinks when squeezed but never hogs the row's free space */
+    .cwide-controls .cwide-search { flex: 0 1 320px; min-width: 140px; }
+    /* No control ever touches its neighbor, even with dividers hidden */
+    .cwide-controls { gap: 14px; }
+
+    /* =====================================================================
+       VARIANT A — no box: open row with a teal hairline as the bottom edge
+       ===================================================================== */
+    body.v-a .cwide-controls {
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 4px 2px 12px;
+        border-bottom: 1px solid rgba(0, 212, 170, 0.35);
+    }
+    body.v-a .cwide-divider { display: none; }
+
+    /* =====================================================================
+       VARIANT B — the box survives but recedes: hairline, no fill, slim
+       ===================================================================== */
+    body.v-b .cwide-controls {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 10px;
+        padding: 6px 14px;
+    }
+    body.v-b .cwide-divider { height: 20px; }
+
+    /* =====================================================================
+       VARIANT C — fused: control row sits directly ON the first date strip;
+       the strip's top border is the row's bottom line
+       ===================================================================== */
+    body.v-c .cwide-controls {
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 4px 2px 10px;
+    }
+    body.v-c .cwide-divider { display: none; }
+    body.v-c header { padding-bottom: 0; border-bottom: none; }
+    body.v-c .cwide-hdr { padding-bottom: 0; }
+    body.v-c #wall { padding-top: 0; }
+
+    /* =====================================================================
+       VARIANT D — controls share the masthead row (wordmark left, bar right)
+       ⚠ reopens the "masthead = wordmark only" decision — comparison only
+       ===================================================================== */
+    body.v-d .cwide-hdr {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 10px 26px;
+        flex-wrap: wrap;
+    }
+    body.v-d .masthead-row { margin-bottom: 0; flex: 0 0 auto; }
+    body.v-d header h1 { font-size: 1.9rem; letter-spacing: 0.18em; }
+    body.v-d .site-slogan { font-size: 0.78rem; margin: 0; }
+    body.v-d .cwide-controls {
+        flex: 1 1 520px;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+    }
+    body.v-d .cwide-divider { display: none; }
+
+    /* =====================================================================
+       SLOGAN TREATMENTS (paired with variant C)
+       Production bug being fixed here: the slogan's 45° gradient is painted
+       across the full 817px masthead box while the text spans ~460px, so
+       its teal never arrives; and it sits 4px under the wordmark.
+       ===================================================================== */
+    /* S1 — caps, tracked out: echoes the wordmark's architecture */
+    body.s1 .site-slogan {
+        background: none;
+        -webkit-text-fill-color: currentColor;
+        color: rgba(0, 212, 170, 0.8);
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.3em;
+        margin: 10px 0 0;
+        width: fit-content;
+    }
+    /* S2 — sentence case kept, artifacts fixed: solid color, breathing room */
+    body.s2 .site-slogan {
+        background: none;
+        -webkit-text-fill-color: currentColor;
+        color: rgba(154, 223, 208, 0.9);
+        font-size: 1rem;
+        margin: 8px 0 0;
+        width: fit-content;
+    }
+    /* S3 — inline: slogan sits on the wordmark's baseline, saves the row */
+    body.s3 .mh-titles { display: flex; align-items: baseline; gap: 22px; }
+    body.s3 .site-slogan {
+        background: none;
+        -webkit-text-fill-color: currentColor;
+        color: rgba(0, 212, 170, 0.7);
+        text-transform: uppercase;
+        font-size: 0.95rem;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    /* Variant switcher — mockup chrome only */
+    #mock-variant {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 20000;
+        background: rgba(8, 8, 12, 0.92);
+        border: 1px solid #00d4aa;
+        color: #00d4aa;
+        border-radius: 25px;
+        padding: 0.55rem 1.1rem;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        font-family: inherit;
+    }
+    </style>
 </head>
-<body>
+<body class="v-a">
     <header>
         <div class="cwide-hdr">
             <div class="masthead-row">
@@ -138,7 +240,31 @@
         </div>
     </div>
 
-    <script src="assets/shared-config.js?v=4"></script>
-    <script src="assets/app.js?v=89"></script>
+    <button id="mock-variant" type="button">A — HAIRLINE</button>
+
+    <script src="assets/shared-config.js?v=3"></script>
+    <script src="assets/app.js?v=86"></script>
+    <script>
+    /* ===== Variant switcher ===== */
+    (function () {
+        var VARIANTS = [
+            { cls: 'v-c s1', label: 'C + SLOGAN CAPS' },
+            { cls: 'v-c s2', label: 'C + SLOGAN CLEAN' },
+            { cls: 'v-c s3', label: 'C + SLOGAN INLINE' },
+            { cls: 'v-c',    label: 'C (slogan as-is)' },
+            { cls: 'v-a', label: 'A — HAIRLINE' },
+            { cls: 'v-b', label: 'B — SLIM BOX' },
+            { cls: 'v-d', label: 'D — ONE ROW' },
+            { cls: '',    label: 'PROD (current)' },
+        ];
+        var i = 0;
+        var btn = document.getElementById('mock-variant');
+        btn.addEventListener('click', function () {
+            i = (i + 1) % VARIANTS.length;
+            document.body.className = VARIANTS[i].cls;
+            btn.textContent = VARIANTS[i].label;
+        });
+    })();
+    </script>
 </body>
 </html>

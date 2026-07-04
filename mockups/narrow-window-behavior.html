@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Narrow-window demo: phones render the interesting zone; on desktop just resize the window -->
+    <meta name="viewport" content="width=1000">
+    <!-- Resolve all relative URLs (styles, app.js, data.json, posters) from repo root -->
+    <base href="../">
+    <title>MOCKUP — Narrow-Window Behavior (UI audit #2 + control bar)</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="assets/styles.css?v=102">
+    <style>
+    /* =====================================================================
+       MOCKUP DELTA A — a tighter control bar at every width, and it adapts
+       as the window narrows. One custom property drives toggle-track width;
+       thumb travel derives from it, so all four toggles squeeze fluidly.
+       Tracks now top out at 84px (was a fixed 108px at all widths).
+       ===================================================================== */
+    body.nwfix { --trk: clamp(64px, calc(28px + 4vw), 84px); }
+
+    body.nwfix .slop-track { width: var(--trk); }
+    /* travel = track width - 24px thumb - 2×4px inset */
+    body.nwfix .slop-toggle-wrap.active .slop-thumb {
+        transform: translateX(calc(var(--trk) - 36px));
+    }
+    body.nwfix #slop-free-toggle[data-state="all"] .slop-thumb { transform: translateX(0); }
+    body.nwfix #slop-free-toggle[data-state="free"] .slop-thumb {
+        transform: translateX(calc((var(--trk) - 32px) / 2));
+    }
+    body.nwfix #slop-free-toggle[data-state="only"] .slop-thumb {
+        transform: translateX(calc(var(--trk) - 32px));
+    }
+
+    /* Less wasteful toggle-row chrome at every width */
+    body.nwfix .cwide-controls { padding: 10px 18px; }
+    body.nwfix .cwide-divider { height: 24px; }
+    body.nwfix #slop-state-label { width: 80px; }
+
+    /* Search yields instead of clipping: it can shrink well below its old
+       220px floor, and grows to soak up leftover width */
+    body.nwfix .cwide-controls .cwide-search { flex: 1 1 180px; min-width: 140px; }
+
+    /* Progressive tightening as the window narrows */
+    @media (max-width: 1280px) {
+        body.nwfix .cwide-hdr { padding-left: 18px; padding-right: 18px; }
+    }
+    @media (max-width: 1120px) {
+        body.nwfix .slop-toggle-wrap { gap: 7px; }
+        body.nwfix .slop-label { letter-spacing: 0.08em; }
+        body.nwfix .cwide-controls { padding: 10px 12px; }
+    }
+
+    /* =====================================================================
+       MOCKUP DELTA B — tighter vertical rhythm above the wall: less air
+       between masthead, control bar, date strip, and the first posters.
+       ===================================================================== */
+    body.nwfix header { padding-bottom: 0.5rem; }
+    body.nwfix .cwide-hdr { padding-top: 14px; padding-bottom: 4px; }
+    body.nwfix .masthead-row { margin-bottom: 10px; }
+    body.nwfix #wall { padding-top: 0.5rem; gap: 1.25rem 1rem; }
+    body.nwfix .date-row-header { padding: 6px 12px; }
+
+    /* =====================================================================
+       MOCKUP DELTA C — ≤1100px lightbox becomes a mobile-style sheet:
+       the poster shrinks to a corner thumbnail inside the panel (instead of
+       a giant cropped slab above it), the synopsis gets the room back, and
+       the trailer/VOD/share buttons compact. A small script floats the
+       poster node into the panel; production markup is unchanged.
+       ===================================================================== */
+    @media (max-width: 1100px) {
+        /* Fill the height — only a slim breathing margin remains, so the
+           sheet shows as much content as the window physically allows */
+        body.nwfix .lightbox-info-wrap {
+            max-height: calc(100vh - 24px);
+            width: min(92vw, 700px);
+        }
+        body.nwfix .poster-lightbox { padding: 12px; }
+        /* production panel is a flex column — flex items ignore floats,
+           so switch to block flow so the header text wraps beside the thumb */
+        body.nwfix .lightbox-info { display: block; }
+        body.nwfix .lightbox-info .lightbox-poster-wrap {
+            float: left;
+            width: 112px;
+            margin: 0 14px 8px 0;
+        }
+        body.nwfix .lightbox-info .lightbox-poster,
+        body.nwfix .lightbox-info .lightbox-poster-fallback {
+            width: 112px;
+            height: 168px;
+            max-height: none;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+        /* poster-corner mode: scores already render in the info panel */
+        body.nwfix .lightbox-info .lightbox-score-overlay { display: none; }
+
+        /* Compact action buttons */
+        body.nwfix .lb-trailer-btn { height: 40px; font-size: 0.92rem; }
+        body.nwfix .vod-btn { min-height: 40px; }
+        body.nwfix .vod-btn .logo-half,
+        body.nwfix .vod-btn .price-half { padding: 5px 6px; font-size: 0.74rem; }
+        body.nwfix .vod-btn .logo-half img { height: 15px; }
+        body.nwfix .lb-share-btn { height: 36px; font-size: 0.85rem; }
+    }
+
+    /* A/B switch — mockup chrome only, not a design proposal */
+    #mock-ab {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 20000;
+        background: rgba(8, 8, 12, 0.92);
+        border: 1px solid #00d4aa;
+        color: #00d4aa;
+        border-radius: 25px;
+        padding: 0.55rem 1.1rem;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        font-family: inherit;
+    }
+    #mock-ab.off { border-color: #888; color: #888; }
+    </style>
+</head>
+<body class="nwfix">
+    <header>
+        <div class="cwide-hdr">
+            <div class="masthead-row">
+                <div class="mh-titles">
+                    <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
+                    <p class="site-slogan">What came out, every day.</p>
+                </div>
+            </div>
+            <div class="cwide-controls">
+                <div class="slop-toggle-wrap" id="slop-free-toggle" data-state="all">
+                    <div class="slop-track"><div class="slop-thumb"></div></div>
+                    <span class="slop-label" id="slop-state-label">SLOP FILTER</span>
+                </div>
+                <div class="cwide-divider"></div>
+                <div class="slop-toggle-wrap" id="highlights-toggle">
+                    <div class="slop-track"><div class="slop-thumb"></div></div>
+                    <span class="slop-label">SELECTS</span>
+                </div>
+                <div class="cwide-divider"></div>
+                <div class="slop-toggle-wrap" id="fest-toggle">
+                    <div class="slop-track"><div class="slop-thumb"></div></div>
+                    <span class="slop-label">FESTS</span>
+                </div>
+                <div class="cwide-divider"></div>
+                <div class="slop-toggle-wrap" id="preorder-toggle">
+                    <div class="slop-track"><div class="slop-thumb"></div></div>
+                    <span class="slop-label">PRE-ORDER</span>
+                </div>
+                <div class="cwide-divider"></div>
+                <div class="genre-slot">
+                    <button class="genre-control" id="genre-toggle" type="button" aria-expanded="false"><span class="genre-text">GENRE</span><span class="caret">▼</span></button>
+                    <div class="genre-pop" id="genre-pop">
+                        <div class="genre-pop-head"><span>Filter by genre</span><button class="genre-clear" id="genre-clear" type="button">Clear</button></div>
+                        <div class="genre-chips">
+                            <button class="filter-btn" data-filter="indie">Indie</button>
+                            <button class="filter-btn" data-filter="horror">Horror</button>
+                            <button class="filter-btn" data-filter="action">Action</button>
+                            <button class="filter-btn" data-filter="comedy">Comedy</button>
+                            <button class="filter-btn" data-filter="family">Family</button>
+                            <button class="filter-btn" data-filter="thriller">Thriller</button>
+                            <button class="filter-btn" data-filter="foreign">Foreign</button>
+                            <button class="filter-btn" data-filter="documentary">Docs</button>
+                            <button class="filter-btn" data-filter="restorations">Reissues</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="cwide-divider"></div>
+                <div class="cwide-search">
+                    <div class="search-container">
+                        <svg class="search-mag" aria-hidden="true" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.8"/><line x1="12.8" y1="12.8" x2="18" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
+                        <button id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="filter-description" id="filter-description">
+        <h2 class="filter-description-title" id="filter-description-title"></h2>
+        <div class="filter-description-right">
+            <p id="filter-description-text"></p>
+        </div>
+    </div>
+    <main id="wall"></main>
+    <div id="load-more-container"></div>
+
+    <!-- Fullscreen Poster Lightbox -->
+    <div class="poster-lightbox" id="poster-lightbox">
+        <div class="lightbox-content">
+            <div class="lightbox-poster-wrap">
+                <div class="lightbox-poster-fallback" id="lightbox-poster-fallback"><span class="lightbox-poster-fallback-title" id="lightbox-poster-fallback-title"></span></div>
+                <img class="lightbox-poster" id="lightbox-poster" src="" alt="Movie poster">
+                <div class="lightbox-score-overlay" id="lightbox-score-overlay"></div>
+            </div>
+            <div class="lightbox-info-wrap">
+                <button class="lightbox-close" onclick="NRW.closeLightbox()" aria-label="Close">&times;</button>
+                <div class="lightbox-info">
+                    <div class="lightbox-screening-name" id="lightbox-screening-name" style="display:none;"></div>
+                    <div class="lightbox-title-area">
+                        <div class="lightbox-title-row">
+                            <h2 class="lightbox-title" id="lightbox-title"></h2>
+                            <span class="staff-pick-badge" id="lightbox-staff-pick" style="display:none;">★ NRW SELECT ★</span>
+                        </div>
+                        <div class="lightbox-title-sub">
+                            <span class="lightbox-reissue-pill" id="lightbox-reissue-label" style="display:none;"></span>
+                            <span class="lightbox-date" id="lightbox-date"></span>
+                        </div>
+                    </div>
+                    <div class="lightbox-meta" id="lightbox-meta"></div>
+                    <div class="lightbox-scores" id="lightbox-scores"></div>
+                    <div class="lightbox-pull-quotes" id="lightbox-pull-quotes" style="display:none;"></div>
+                    <p class="lightbox-synopsis" id="lightbox-synopsis"></p>
+                    <p class="lightbox-runtime" id="lightbox-runtime" style="display:none;"></p>
+                </div>
+                <div class="lightbox-scroll-fade"></div>
+                <div class="lightbox-more-pill" id="lightbox-more-pill">MORE ⌄</div>
+                <div class="lightbox-buttons" id="lightbox-buttons"></div>
+            </div>
+        </div>
+    </div>
+
+    <button id="mock-ab" type="button">NARROW FIX: ON</button>
+
+    <script src="assets/shared-config.js?v=3"></script>
+    <script src="assets/app.js?v=85"></script>
+    <script>
+    /* ===== MOCKUP DELTA: A/B switch + poster-corner relocation ===== */
+    (function () {
+        var abBtn = document.getElementById('mock-ab');
+        var wrap = document.querySelector('.lightbox-poster-wrap');
+        var info = document.querySelector('.lightbox-info');
+        var content = document.querySelector('.lightbox-content');
+        var mq = window.matchMedia('(max-width: 1100px)');
+
+        // In narrow+fix mode the poster lives inside the info panel (floated
+        // corner thumb); otherwise it sits beside/above the panel as shipped.
+        function placePoster() {
+            var corner = mq.matches && document.body.classList.contains('nwfix');
+            if (corner && wrap.parentElement !== info) {
+                info.insertBefore(wrap, info.firstChild);
+            } else if (!corner && wrap.parentElement !== content) {
+                content.insertBefore(wrap, content.firstChild);
+            }
+        }
+        placePoster();
+        mq.addEventListener('change', placePoster);
+
+        abBtn.addEventListener('click', function () {
+            var on = document.body.classList.toggle('nwfix');
+            abBtn.textContent = 'NARROW FIX: ' + (on ? 'ON' : 'OFF');
+            abBtn.classList.toggle('off', !on);
+            placePoster();
+        });
+    })();
+    </script>
+</body>
+</html>
