@@ -74,16 +74,17 @@ jobs:
           git config user.name "NRW Bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Hard guard: the hand-curated capsule bank must never be CI-managed.
-      # If it ever becomes git-tracked, CI could overwrite the user's curated
-      # capsules — fail loudly instead.
-      - name: Guard hand-curated capsule bank
+      # Sanity check: the hand-curated capsule bank must be present so capsule
+      # pre-generation runs WITH the house-style few-shot examples. CI only
+      # READS the bank (the local approve flow is the only writer — it must
+      # never appear in any git add below).
+      - name: Check capsule bank present
         run: |
-          if git ls-files --error-unmatch cache/approved_capsules.json >/dev/null 2>&1; then
-            echo "::error::cache/approved_capsules.json is tracked — CI must never manage the curated capsule bank"
+          if ! python3 -c "import json,sys; bank=json.load(open('admin/approved_capsules.json')); sys.exit(0 if isinstance(bank, list) and len(bank) > 0 else 1)" 2>/dev/null; then
+            echo "::error::admin/approved_capsules.json missing or empty — capsule pre-gen would run bank-less (off-style)"
             exit 1
           fi
-          echo "✅ approved_capsules.json is not tracked (correct)"
+          echo "✅ approved capsule bank present ($(python3 -c "import json; print(len(json.load(open('admin/approved_capsules.json'))))") entries)"
 
       - name: Run daily pipeline
         run: python3 daily_orchestrator.py | tee .local_run.log
@@ -312,7 +313,8 @@ jobs:
 
       # Hand the CI-generated curation caches back to the local Mac.
       # Stable artifact name so local_daily.sh can fetch the latest run's copy.
-      # Never includes approved_capsules.json (the curated bank stays local).
+      # Never includes admin/approved_capsules.json (git-tracked; local approve
+      # flow is its only writer — CI must not ship or commit it).
       - name: Upload curation caches (pull quotes + capsules)
         if: always()
         uses: actions/upload-artifact@v4

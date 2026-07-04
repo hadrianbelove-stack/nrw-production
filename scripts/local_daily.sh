@@ -84,9 +84,10 @@ else
 fi
 
 # Step 3b: Back up the hand-curated curation banks to B2.
-# cache/approved_capsules.json + cache/taste_profile_pullquotes.json are
-# gitignored on purpose — this Mac has the ONLY copies. Uploads only when
-# file content changed (sha256 check), so most cycles are a no-op.
+# admin/approved_capsules.json is git-tracked (CI reads it for house-style
+# generation), but B2 stays as belt-and-suspenders; taste_profile_pullquotes
+# is still local-only. Uploads only when file content changed (sha256 check),
+# so most cycles are a no-op.
 echo "Backing up curation banks..." >> "$LOG"
 /opt/homebrew/bin/python3.11 scripts/backup_curation_banks.py >> "$LOG" 2>&1 \
     || echo "  WARNING: curation bank backup failed" >> "$LOG"
@@ -136,22 +137,15 @@ if [ "$CI_DATE" = "$TODAY" ]; then
             /usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 3 --skip-verify >> "$LOG" 2>&1 \
             || echo "  WARNING: capsule batch exited non-zero (timeout or error)" >> "$LOG"
     else
-        # Artifact OK: CI gave us pull quotes + capsules — but CI's capsules are
-        # BANK-LESS. Only this Mac has cache/approved_capsules.json (the few-shot
-        # house-style bank); CI deliberately can't, so its capsules come out long
-        # and off-style. Regenerate the freshest arrivals locally WITH the bank
-        # (--force overwrites CI's cache entries) so /curate reads house-style
-        # variants. Tight window (--days 2: today + a 1-day outage buffer) because
-        # each capsule now runs Pro at max thinking budget — the full 7-day window
-        # would blow the 1h alarm; CI already covered the rest of the week on their
-        # arrival mornings. (See: capsule writing was good locally pre-CI.)
-        echo "Regenerating recent capsules locally with the approved bank..." >> "$LOG"
-        /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
-            /usr/bin/python3 scripts/write_capsule.py --batch --days 2 --variants 3 --skip-verify --force >> "$LOG" 2>&1 \
-            || echo "  WARNING: local capsule regen exited non-zero (timeout or error)" >> "$LOG"
+        # Artifact OK: CI's capsules are bank-aware now that the approved bank
+        # is git-tracked (admin/approved_capsules.json), so no local patch-up
+        # regen is needed. Entries stamp bank_size for provenance — a 0 there
+        # means a bank-less draft (shouldn't happen anymore; the workflow's
+        # "capsule bank present" check fails loudly if the bank goes missing).
+        echo "  CI capsules are bank-aware — no local regen needed" >> "$LOG"
     fi
     # Buzz (Selects guesser) — recompute into data.json now that the capsule
-    # research (CI's or the local regen above) has produced notability facts.
+    # research has produced notability facts.
     echo "Computing Buzz (Selects guesser)..." >> "$LOG"
     /usr/bin/python3 scripts/inject_notability.py >> "$LOG" 2>&1 \
         || echo "  WARNING: Buzz injection exited non-zero" >> "$LOG"

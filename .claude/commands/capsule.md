@@ -117,13 +117,13 @@ cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/wri
 ```
 
 This does TWO things automatically:
-- Adds to `cache/approved_capsules.json` (training bank — improves future generations)
+- Adds to `admin/approved_capsules.json` (training bank — git-tracked so CI's pre-generation uses it too; improves future generations)
 - Updates `data.json` **capsule** field (goes live on site — NOT synopsis, which is the TMDB fallback text and gets overwritten by the daily pipeline)
 
 3. Commit and push:
 
 ```bash
-cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json movie_tracking.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
+cd /Users/hadrianbelove/Downloads/nrw-production && git add data.json movie_tracking.json admin/approved_capsules.json && NRW_ALLOW_DATA_COMMIT=1 git commit -m "Capsule: [TITLE] APPROVED: DELETE" && (git push origin main || (git pull --rebase origin main && git push origin main))
 ```
 
 Commit `data.json` **and** `movie_tracking.json` together — they must never drift. A local run can transition films in both files; committing only `data.json` loses the tracking transition, and CI re-discovers and re-counts it the next day (inflating "new arrivals"). Cache files are gitignored — do not `git add` them.

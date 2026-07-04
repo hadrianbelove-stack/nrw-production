@@ -28,7 +28,7 @@ from gemini_scraper.base import GeminiFinderBase
 
 logger = logging.getLogger('gemini_scraper.capsule')
 
-APPROVED_BANK_PATH = 'cache/approved_capsules.json'
+APPROVED_BANK_PATH = 'admin/approved_capsules.json'
 
 class GeminiCapsuleWriter(GeminiFinderBase):
     """
@@ -1119,6 +1119,16 @@ FACTOID PRIMER:"""
             is_indie=is_indie
         )
 
+        # Log few-shot provenance — bank_size 0 means a bank-less generation
+        # (no admin/approved_capsules.json in this checkout), which produces
+        # long off-style capsules. Stamped into the cache entry below.
+        bank_size = len(self._load_approved_bank())
+        if bank_size:
+            logger.info(f"  Approved bank: {bank_size} entries "
+                        f"({min(bank_size, 30)} injected as few-shot examples)")
+        else:
+            logger.warning("  Approved bank: EMPTY — generating without house-style examples")
+
         # Generate N variants — each with a different angle for real variation
         capsules = []
         for i in range(variants):
@@ -1167,6 +1177,7 @@ FACTOID PRIMER:"""
                 k: (v[:200] if isinstance(v, str) else v) if v else ''
                 for k, v in sources.items()
             },
+            'bank_size': bank_size,  # 0/missing = bank-less draft (off-style)
             'scraped_at': time.strftime('%Y-%m-%dT%H:%M:%S')
         }
         self._save_cache()

@@ -44,7 +44,7 @@ def _needs_work(m, ct, rev, cy):
 def _capsule_titles():
     """Lowercased titles with an approved capsule — Stage 4's presence source."""
     try:
-        caps = json.load(open("cache/approved_capsules.json"))
+        caps = json.load(open("admin/approved_capsules.json"))
         return set(t.lower() for t in (caps.keys() if isinstance(caps, dict)
                    else [c.get("title", "") for c in caps]))
     except Exception:

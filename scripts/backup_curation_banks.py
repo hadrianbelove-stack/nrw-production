@@ -30,7 +30,7 @@ sys.path.insert(0, SCRIPT_DIR)
 from trailer_uploader import load_env, get_b2_api
 
 BANK_FILES = [
-    os.path.join(PROJECT_ROOT, 'cache', 'approved_capsules.json'),
+    os.path.join(PROJECT_ROOT, 'admin', 'approved_capsules.json'),
     os.path.join(PROJECT_ROOT, 'cache', 'taste_profile_pullquotes.json'),
 ]
 # sha256 of each bank at last successful upload (gitignored via cache/*.json)

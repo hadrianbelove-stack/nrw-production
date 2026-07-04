@@ -65,9 +65,9 @@ cache/*.json
 # Curation caches (pull_quotes_combined.json, capsule_cache.json) stay IGNORED:
 # CI generates them and ships them via the "curation-caches" artifact, which
 # local_daily.sh merges in. They are deliberately NOT tracked.
-# cache/approved_capsules.json is the hand-curated bank — it must ALSO stay
-# ignored so CI can never overwrite it (enforced by the "Guard hand-curated
-# capsule bank" step in .github/workflows/daily-check.yml).
+# The hand-curated capsule bank lives at admin/approved_capsules.json and IS
+# git-tracked (CI reads it for house-style few-shot generation; only the local
+# approve flow writes it). cache/approved_capsules.json is a transition symlink.
 cache/screenshots/*.png
 cache/screenshots/*.html
 # Legacy cache file locations (for backwards compatibility)

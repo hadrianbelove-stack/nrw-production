@@ -14,7 +14,7 @@ allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 **How a stage drains:**
 - Stages **1/2/3** mark films in `admin/curate_reviewed.json` (the watermark) — see *Shared blocks → List + drain*.
 - Stage **0** drains its own queue `admin/reissue_candidates.json` (confirm/reject flips status).
-- Stage **4** has no watermark — a film drains when it gets a capsule (`cache/approved_capsules.json`) and a `pull_quotes` key in data.json.
+- Stage **4** has no watermark — a film drains when it gets a capsule (`admin/approved_capsules.json`) and a `pull_quotes` key in data.json.
 
 **Invocation:**
 - `/curate` (no arg) → all five stages in order.
@@ -216,9 +216,10 @@ All quote mechanics live in **`scripts/get_quotes.py`** — never read or edit `
 3. **Relay any `⚠` the script prints.** If it dropped a link and the user says "keep link", re-run the same `--select` command with `--keep-url` (also the fix for short titles, where the verifier false-flags — see memory). Re-selecting the same critic+outlet replaces the saved quote, so re-trims are safe.
 
 ### Step C — Commit (once per movie, after both steps)
-- Capsule only → COMMIT(`data.json`, `"Capsule: [TITLE]"`)
+The approve script also appends to `admin/approved_capsules.json` (the git-tracked house-style bank CI reads) — commit it alongside data.json whenever a capsule was approved.
+- Capsule only → COMMIT(`data.json admin/approved_capsules.json`, `"Capsule: [TITLE]"`)
 - Pull quote only → COMMIT(`data.json`, `"Pull quotes: [TITLE]"`)
-- Both → COMMIT(`data.json`, `"Capsule + pull quote: [TITLE]"`)
+- Both → COMMIT(`data.json admin/approved_capsules.json`, `"Capsule + pull quote: [TITLE]"`)
 - Quotes skipped → the empty `pull_quotes: []` commit from Step B.3 already covers it.
 
 ---

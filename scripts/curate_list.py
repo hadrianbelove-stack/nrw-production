@@ -26,7 +26,7 @@ from datetime import date, timedelta
 signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 REVIEWED = "admin/curate_reviewed.json"
-CAPSULES = "cache/approved_capsules.json"
+CAPSULES = "admin/approved_capsules.json"
 
 # movie.filters key -> display name, and movie.genres values we surface
 FILTER_NAMES = [

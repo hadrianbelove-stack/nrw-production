@@ -146,7 +146,7 @@ class DisplayGenerator:
         never overwrites a live capsule and never deletes anything (unlike pull
         quotes, plenty of movies have capsules that predate the bank).
         """
-        bank_path = 'cache/approved_capsules.json'
+        bank_path = 'admin/approved_capsules.json'
         if not os.path.exists(bank_path):
             return
         try:

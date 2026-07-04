@@ -398,7 +398,7 @@ def cmd_approve(args):
 
 def cmd_bank(args):
     """Show the contents of the approved capsule bank."""
-    bank_path = 'cache/approved_capsules.json'
+    bank_path = 'admin/approved_capsules.json'
     if not os.path.exists(bank_path):
         print("No approved capsules yet. Generate and approve some first.")
         return
