@@ -10,7 +10,7 @@
  */
 
 import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, Animated, TVEventControl } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Animated, TVEventControl, ActivityIndicator } from 'react-native';
 import Video from 'react-native-video';
 import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import { Colors } from '../constants/colors';
@@ -34,10 +34,26 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
   // scrubPosition: where the user has moved the timeline cursor while paused.
   // null = not scrubbing. Committing (SELECT/PLAY_PAUSE while paused) seeks here and resumes.
   const [scrubPosition, setScrubPosition] = useState(null);
+  const [buffering, setBuffering] = useState(false);
+  // toastText: brief non-blocking notice ("Trailer unavailable"). Timers held
+  // in refs so unmount/close can cancel them.
+  const [toastText, setToastText] = useState(null);
   const videoRef = useRef(null);
   const leftArrowOpacity = useRef(new Animated.Value(0.4)).current;
   const rightArrowOpacity = useRef(new Animated.Value(0.4)).current;
   const seekBarOpacity = useRef(new Animated.Value(0)).current;
+  // Chrome (title/counter/arrows/hints) auto-hides after 4s of playback; any
+  // remote press brings it back via withPoke below.
+  const chromeOpacity = useRef(new Animated.Value(1)).current;
+  // Dip-to-black between trailers (single mounted <Video> — never crossfade
+  // two players; that resurrects the background-audio leak).
+  const transitionOpacity = useRef(new Animated.Value(0)).current;
+  const hideTimerRef = useRef(null);
+  const errorTimerRef = useRef(null);
+  const forceFadeTimerRef = useRef(null);
+  const firstMountRef = useRef(true);
+  const pausedRef = useRef(false);
+  const closingRef = useRef(false);
 
   // Show/hide seek bar when paused state changes
   useEffect(() => {
@@ -52,6 +68,52 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
   useEffect(() => {
     setScrubPosition(null);
   }, [currentIndex]);
+
+  // Chrome auto-hide: show now; while playing, re-arm a 4s hide timer.
+  // Timer callbacks read pausedRef/closingRef so they never act on stale state.
+  const showChrome = useCallback(() => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    Animated.timing(chromeOpacity, { toValue: 1, duration: 150, useNativeDriver: true }).start();
+    if (!pausedRef.current && !closingRef.current) {
+      hideTimerRef.current = setTimeout(() => {
+        if (!pausedRef.current && !closingRef.current) {
+          Animated.timing(chromeOpacity, { toValue: 0, duration: 300, useNativeDriver: true }).start();
+        }
+      }, 4000);
+    }
+  }, [chromeOpacity]);
+
+  // Every remote press shows chrome AND performs its action — poke-and-act,
+  // never poke-only (a hidden-chrome RIGHT must still advance the reel).
+  const withPoke = useCallback((fn) => () => { showChrome(); fn(); }, [showChrome]);
+
+  // Chrome pinned visible while paused; hide timer re-arms on resume.
+  useEffect(() => {
+    pausedRef.current = paused;
+    showChrome();
+  }, [paused, showChrome]);
+
+  // Show chrome on mount and on every trailer change; clean up all timers.
+  useEffect(() => {
+    showChrome();
+    return () => {
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+      if (forceFadeTimerRef.current) clearTimeout(forceFadeTimerRef.current);
+    };
+  }, [currentIndex, showChrome]);
+
+  // Dip-to-black on trailer change (skip the initial mount — the spinner covers
+  // first load). onReadyForDisplay fades it out; the 1500ms timer is a safety
+  // net in case that event never fires.
+  useEffect(() => {
+    if (firstMountRef.current) { firstMountRef.current = false; return; }
+    transitionOpacity.setValue(1);
+    if (forceFadeTimerRef.current) clearTimeout(forceFadeTimerRef.current);
+    forceFadeTimerRef.current = setTimeout(() => {
+      Animated.timing(transitionOpacity, { toValue: 0, duration: 250, useNativeDriver: true }).start();
+    }, 1500);
+  }, [currentIndex, transitionOpacity]);
 
   const currentMovie = movieList[currentIndex];
   const trailerUrl = currentMovie?.links?.trailer_hosted || '';
@@ -140,6 +202,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
   // AVPlayer drains, then let MovieDetail unmount the whole TrailerPlayer.
   const handleClose = useCallback(() => {
     if (closing) return;
+    closingRef.current = true;
     setClosing(true);
     setPaused(true);
     setTimeout(() => onClose(currentIndex), 400);
@@ -178,6 +241,28 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
     }
   }, [closing, currentIndex, findNextTrailerForward, handleClose]);
 
+  // Playback error: brief toast, then roll forward (forward-only, so a run of
+  // bad URLs terminates at close). Replaces the old silent handleClose.
+  const handleError = useCallback(() => {
+    if (closing) return;
+    setBuffering(false);
+    setToastText('Trailer unavailable');
+    if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+    errorTimerRef.current = setTimeout(() => {
+      setToastText(null);
+      handleTrailerEnd();
+    }, 1200);
+  }, [closing, handleTrailerEnd]);
+
+  // Defensive no-source guard: a movie without a hosted MP4 at currentIndex
+  // renders no <Video> and would otherwise sit on a frozen black screen.
+  useEffect(() => {
+    if (isMP4 || closing) return;
+    setToastText('Trailer unavailable');
+    const t = setTimeout(() => { setToastText(null); handleTrailerEnd(); }, 800);
+    return () => clearTimeout(t);
+  }, [isMP4, closing, currentIndex, handleTrailerEnd]);
+
   // Scrub cursor movement — moves the timeline position without seeking the video
   const scrubBackward = useCallback(() => {
     setScrubPosition(prev => Math.max(0, (prev ?? currentTime) - SEEK_STEP));
@@ -190,17 +275,18 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
   // Handle TV remote events
   // Playing:  LEFT/RIGHT navigate prev/next trailer
   // Paused:   LEFT/RIGHT move scrub cursor; SELECT/PLAY_PAUSE commits position and resumes
+  // All handlers wrapped in withPoke: chrome reappears AND the action fires.
   useTVEventHandler({
-    [TV_EVENTS.LEFT]: paused ? scrubBackward : navigatePrevious,
-    [TV_EVENTS.RIGHT]: paused ? scrubForward : navigateNext,
-    [TV_EVENTS.SWIPE_LEFT]: paused ? scrubBackward : navigatePrevious,
-    [TV_EVENTS.SWIPE_RIGHT]: paused ? scrubForward : navigateNext,
+    [TV_EVENTS.LEFT]: withPoke(paused ? scrubBackward : navigatePrevious),
+    [TV_EVENTS.RIGHT]: withPoke(paused ? scrubForward : navigateNext),
+    [TV_EVENTS.SWIPE_LEFT]: withPoke(paused ? scrubBackward : navigatePrevious),
+    [TV_EVENTS.SWIPE_RIGHT]: withPoke(paused ? scrubForward : navigateNext),
     // MENU is handled HERE in JS (see the enableTVMenuKey effect above) — one
     // deterministic close, independent of the tvOS focus engine. handleClose
     // drains audio then onClose pops the route / dismisses the overlay host.
-    [TV_EVENTS.MENU]: handleClose,
-    [TV_EVENTS.PLAY_PAUSE]: togglePlayPause,
-    [TV_EVENTS.SELECT]: paused ? handleResume : handlePause,
+    [TV_EVENTS.MENU]: withPoke(handleClose),
+    [TV_EVENTS.PLAY_PAUSE]: withPoke(togglePlayPause),
+    [TV_EVENTS.SELECT]: withPoke(paused ? handleResume : handlePause),
   });
 
   // Count trailers for the counter display
@@ -215,6 +301,12 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
     }
     return count;
   }, [movieList, currentIndex]);
+
+  // What auto-advance will play next — drives the "Up next" pill
+  const nextForwardIdx = useMemo(
+    () => findNextTrailerForward(currentIndex),
+    [findNextTrailerForward, currentIndex]
+  );
 
   return (
     // Deliberately NO focusable views here: Menu is owned in JS via
@@ -236,28 +328,70 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
           controls={false}
           playInBackground={false}
           playWhenInactive={false}
-          onLoad={({ duration: d }) => { setDuration(d); setCurrentTime(0); setScrubPosition(null); }}
+          onLoadStart={() => setBuffering(true)}
+          onBuffer={({ isBuffering }) => setBuffering(isBuffering)}
+          onReadyForDisplay={() => {
+            setBuffering(false);
+            if (forceFadeTimerRef.current) clearTimeout(forceFadeTimerRef.current);
+            Animated.timing(transitionOpacity, { toValue: 0, duration: 250, useNativeDriver: true }).start();
+          }}
+          onLoad={({ duration: d }) => { setDuration(d); setCurrentTime(0); setScrubPosition(null); setBuffering(false); }}
           onProgress={({ currentTime: t }) => { if (!paused) setCurrentTime(t); }}
           onEnd={handleTrailerEnd}
-          onError={handleClose}
+          onError={handleError}
         />
       )}
 
-      {/* Title overlay */}
-      <View style={styles.titleBar}>
-        <Text style={styles.title} numberOfLines={1}>{currentMovie?.title}</Text>
-        <Text style={styles.counter}>{currentTrailerNumber} / {trailerCount}</Text>
-      </View>
+      {/* Dip-to-black between trailers — above video, below chrome */}
+      <Animated.View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, { backgroundColor: '#000', opacity: transitionOpacity }]}
+      />
 
-      {/* Navigation arrows — only visible when playing */}
-      {!paused && findNextTrailerIndex(currentIndex, -1) >= 0 && (
-        <View style={styles.arrowLeft}>
-          <Animated.Text style={[styles.arrowText, { opacity: leftArrowOpacity }]}>‹</Animated.Text>
+      {/* Buffering spinner */}
+      {buffering && !closing && (
+        <View style={styles.spinnerWrap} pointerEvents="none">
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       )}
-      {!paused && findNextTrailerIndex(currentIndex, 1) >= 0 && (
-        <View style={styles.arrowRight}>
-          <Animated.Text style={[styles.arrowText, { opacity: rightArrowOpacity }]}>›</Animated.Text>
+
+      {/* Chrome — title bar, arrows, playing hint. Auto-hides after 4s of playback. */}
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity: chromeOpacity }]}>
+        <View style={styles.titleBar}>
+          <Text style={styles.title} numberOfLines={1}>{currentMovie?.title}</Text>
+          <Text style={styles.counter}>{currentTrailerNumber} / {trailerCount}</Text>
+        </View>
+
+        {/* Navigation arrows — only visible when playing */}
+        {!paused && findNextTrailerIndex(currentIndex, -1) >= 0 && (
+          <View style={styles.arrowLeft}>
+            <Animated.Text style={[styles.arrowText, { opacity: leftArrowOpacity }]}>‹</Animated.Text>
+          </View>
+        )}
+        {!paused && findNextTrailerIndex(currentIndex, 1) >= 0 && (
+          <View style={styles.arrowRight}>
+            <Animated.Text style={[styles.arrowText, { opacity: rightArrowOpacity }]}>›</Animated.Text>
+          </View>
+        )}
+
+        {/* Control hint while playing (pause has its own hint in the seek overlay) */}
+        {!paused && (
+          <Text style={styles.chromeHint}>‹ › prev / next · select to pause</Text>
+        )}
+      </Animated.View>
+
+      {/* Up next — near the end of a trailer or while paused */}
+      {nextForwardIdx >= 0 && (paused || (duration > 0 && duration - currentTime <= 10)) && (
+        <View style={styles.upNextPill} pointerEvents="none">
+          <Text style={styles.upNextLabel}>Up next:</Text>
+          <Text style={styles.upNextTitle} numberOfLines={1}>{movieList[nextForwardIdx]?.title}</Text>
+        </View>
+      )}
+
+      {/* Toast — brief notices (errors) */}
+      {toastText && (
+        <View style={styles.toastPill} pointerEvents="none">
+          <Text style={styles.toastText}>{toastText}</Text>
         </View>
       )}
 
@@ -277,6 +411,7 @@ const TrailerPlayer = ({ movieList, initialIndex, onClose, onIndexChange }) => {
                 <Text style={styles.seekTime}>{formatTime(displayPos)}</Text>
                 <Text style={styles.seekTime}>{formatTime(duration)}</Text>
               </View>
+              <Text style={styles.seekHint}>‹ › scrub · select to resume · menu to close</Text>
             </View>
           </Animated.View>
         );
@@ -319,6 +454,69 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     fontSize: 24,
     marginLeft: 20,
+  },
+  chromeHint: {
+    position: 'absolute',
+    bottom: 40,
+    alignSelf: 'center',
+    color: Colors.textMuted,
+    fontSize: 20,
+  },
+  spinnerWrap: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  upNextPill: {
+    position: 'absolute',
+    right: 100,
+    bottom: 180,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(10,12,16,0.85)',
+    borderWidth: 1,
+    borderColor: 'rgba(0,212,170,0.4)',
+    borderRadius: 24,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    maxWidth: 560,
+  },
+  upNextLabel: {
+    color: Colors.primary,
+    fontSize: 20,
+    fontWeight: '600',
+    marginRight: 8,
+  },
+  upNextTitle: {
+    color: '#fff',
+    fontSize: 20,
+    flexShrink: 1,
+  },
+  toastPill: {
+    position: 'absolute',
+    bottom: 100,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(20,20,20,0.95)',
+    borderWidth: 1,
+    borderColor: 'rgba(0,212,170,0.5)',
+    borderRadius: 24,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  toastText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  seekHint: {
+    color: Colors.textMuted,
+    fontSize: 20,
+    textAlign: 'center',
+    marginTop: 14,
   },
   arrowLeft: {
     position: 'absolute',
