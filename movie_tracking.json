@@ -6627,11 +6627,16 @@
     "1311031": {
       "title": "Demon Slayer: Kimetsu no Yaiba Infinity Castle",
       "premiere_date": "2025-07-18",
-      "digital_date": null,
+      "digital_date": "2026-07-28",
       "has_providers": false,
       "status": "tracking",
       "added": "2025-09-06T16:48:07.497203",
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-07-05"
     },
     "1282557": {
       "title": "Tanvi the Great",
@@ -19837,12 +19842,12 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 5,
+      "_jw_revert_count": 6,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-04",
+      "_transitioned_at": "2026-07-05",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-04"
+      "_jw_reverted_at": "2026-07-05"
     },
     "1250841": {
       "title": "Hair of the Bear",
@@ -40774,10 +40779,10 @@
       "enriched": false,
       "enrichment_date": null,
       "_is_preorder": true,
-      "_transitioned_at": "2026-07-04",
-      "_jw_revert_count": 17,
+      "_transitioned_at": "2026-07-05",
+      "_jw_revert_count": 18,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-04"
+      "_jw_reverted_at": "2026-07-05"
     },
     "1544405": {
       "title": "Der Rest ist Stille",
@@ -42149,13 +42154,24 @@
     },
     "1426965": {
       "title": "Phantoms of July",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-28",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-05",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "MUBI",
+          "MUBI Amazon Channel"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-05",
+      "_transitioned_at": "2026-07-05"
     },
     "1424569": {
       "title": "Satanic Sow",
@@ -71377,13 +71393,33 @@
     },
     "1421153": {
       "title": "Living the Land",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-26",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-05",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-05",
+      "_transitioned_at": "2026-07-05"
     },
     "1420031": {
       "title": "Patah Hati Yang Kupilih",
@@ -84357,7 +84393,7 @@
       "year": 2024,
       "premiere_date": "2024-09-27",
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-04"
     },
@@ -164483,7 +164519,7 @@
         "streaming": []
       },
       "intake_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-06-27",
@@ -179758,12 +179794,24 @@
     "677558": {
       "title": "The Last Whale Singer",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-12",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-05",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-05",
+      "_transitioned_at": "2026-07-05"
     },
     "1632995": {
       "title": "Il Marciatore - La vera storia di Abdon Pamich",
@@ -180419,8 +180467,9 @@
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "_buyonly_preorder": true,
+      "_type4_pending": true,
       "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-07-03",
+      "_jw_reverted_at": "2026-07-05",
       "_jw_revert_count": 1
     },
     "1316398": {
@@ -182126,10 +182175,13 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "enriched": true,
-      "enrichment_date": "2026-07-04",
-      "_transitioned_at": "2026-07-04",
-      "_buyonly_preorder": true
+      "enriched": false,
+      "enrichment_date": null,
+      "_transitioned_at": "2026-07-05",
+      "_buyonly_preorder": true,
+      "_jw_revert_reason": "justwatch_theatrical_pvod",
+      "_jw_reverted_at": "2026-07-05",
+      "_jw_revert_count": 1
     },
     "1636858": {
       "title": "American SUP",
@@ -211862,7 +211914,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-03"
     },
@@ -218324,19 +218376,25 @@
       "status": "tracking",
       "first_seen": "2026-04-30",
       "providers": {
-        "rent": [],
+        "rent": [
+          "Fandango At Home"
+        ],
         "buy": [
-          "Amazon Video"
+          "Amazon Video",
+          "Fandango At Home"
         ],
         "streaming": []
       },
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": true,
-      "enrichment_date": "2026-06-10",
-      "_transitioned_at": "2026-06-10",
-      "_buyonly_preorder": true
+      "enriched": false,
+      "_transitioned_at": "2026-07-05",
+      "digital_date": "2026-07-05",
+      "is_slop": false,
+      "_jw_revert_reason": "zero_watch_links",
+      "_jw_reverted_at": "2026-07-05",
+      "_jw_revert_count": 1
     },
     "1646633": {
       "title": "De man met de glimlach",
@@ -221613,7 +221671,7 @@
       "providers": {},
       "intake_pass": "B",
       "has_providers": false,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-03"
     },
@@ -221831,7 +221889,7 @@
       ],
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-03"
     },
@@ -228089,10 +228147,24 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-05-22",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-05",
+      "providers": {
+        "rent": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-07-05"
     },
     "1142853": {
       "title": "Nació Simón",
@@ -231538,16 +231610,16 @@
         "streaming": []
       },
       "intake_pass": "A",
-      "_jw_revert_count": 26,
+      "_jw_revert_count": 27,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-04",
+      "_transitioned_at": "2026-07-05",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-04"
+      "_jw_reverted_at": "2026-07-05"
     },
     "1646124": {
       "title": "Tiger's Rampage",
@@ -235181,7 +235253,7 @@
       ],
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-02"
     },
@@ -243835,7 +243907,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-02"
     },
@@ -243979,7 +244051,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-01"
+      "_jw_reverted_at": "2026-07-01",
+      "_skip_provider_discovery": true
     },
     "1537494": {
       "title": "King Hamlet",
@@ -243991,7 +244064,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-01"
+      "_jw_reverted_at": "2026-07-01",
+      "_skip_provider_discovery": true
     },
     "1235969": {
       "title": "Paytime",
@@ -244003,7 +244077,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-01"
+      "_jw_reverted_at": "2026-07-01",
+      "_skip_provider_discovery": true
     },
     "1202033": {
       "title": "Enola Holmes 3",
@@ -244033,7 +244108,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-07-01"
+      "_jw_reverted_at": "2026-07-01",
+      "_skip_provider_discovery": true
     },
     "752880": {
       "title": "Tinsman Road",
@@ -244045,7 +244121,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-07-01"
+      "_jw_reverted_at": "2026-07-01",
+      "_skip_provider_discovery": true
     },
     "1723933": {
       "title": "To Be Remembered Vol 1",
@@ -244057,7 +244134,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-01"
+      "_jw_reverted_at": "2026-07-01",
+      "_skip_provider_discovery": true
     },
     "1647053": {
       "title": "Bitter Revenge",
@@ -244069,7 +244147,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-01"
+      "_jw_reverted_at": "2026-07-01",
+      "_skip_provider_discovery": true
     },
     "1542267": {
       "title": "A Crime Story",
@@ -244212,12 +244291,22 @@
     "1720758": {
       "title": "Disney Celebrates America: The Pursuit of Happiness",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-07-01",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-05",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hulu"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-05",
+      "_transitioned_at": "2026-07-05"
     },
     "1628091": {
       "title": "Beneath the Ashes: The Past Reimagined",
@@ -244340,7 +244429,7 @@
       "digital_date": "2026-07-02",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-02"
     },
@@ -244352,7 +244441,7 @@
       "digital_date": "2026-07-02",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-02"
     },
@@ -244401,7 +244490,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-04"
     },
@@ -245187,16 +245276,22 @@
       ],
       "original_language": "zh",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Rakuten Viki"
+        ]
       },
       "intake_date": "2026-07-03",
       "networks": [
         "Viki",
         "GagaOOLala"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-07-05"
     },
     "tv_327008": {
       "title": "Emma graziano",
@@ -245256,7 +245351,7 @@
       "digital_date": "2026-07-04",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-04"
     },
@@ -245445,10 +245540,23 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-07-04",
-      "digital_date": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null,
+      "_transitioned_at": "2026-07-05",
+      "_buyonly_preorder": true,
+      "_jw_revert_reason": "justwatch_theatrical_pvod",
+      "_jw_reverted_at": "2026-07-05",
+      "_jw_revert_count": 1
     },
     "1155818": {
       "title": "Satluj",
@@ -245507,6 +245615,352 @@
       "networks": [
         "Lifetime",
         "U+ Mobile TV"
+      ],
+      "has_providers": false
+    },
+    "1726088": {
+      "title": "Yaupon Holly: Return to the Florida Fair",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": "2026-07-04",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-05"
+    },
+    "1726083": {
+      "title": "Yaupon Holly: Live at the Florida Fair",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": "2026-07-04",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-05"
+    },
+    "1726026": {
+      "title": "The Guy Who Didn't Like Musicals (2025 Remount)",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": "2026-07-04",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-05"
+    },
+    "1726013": {
+      "title": "The Guy Who Didn't Like Musicals: Reprised!",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": "2026-05-11",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-05"
+    },
+    "1617191": {
+      "title": "Summer's Last Resort",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": "2026-07-03",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-05"
+    },
+    "1722039": {
+      "title": "Marius",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1720237": {
+      "title": "The SU",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1711216": {
+      "title": "Psyche",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1707955": {
+      "title": "Cursed Meme",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1707364": {
+      "title": "The Story of Documentary Film: 1980s",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1706746": {
+      "title": "Robert Richardson: The White Devil",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1706738": {
+      "title": "A Whole Person Almost",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1706074": {
+      "title": "Smile Charles",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1704357": {
+      "title": "HotSpring SharkAttack 2: Great Kyushu Showdown",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1696823": {
+      "title": "Gone and Taken",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1630504": {
+      "title": "The Last Picture Shows",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1615891": {
+      "title": "My Dad is a Zombie",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1551855": {
+      "title": "Last Mankind",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1550555": {
+      "title": "Petty Thieves",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1518062": {
+      "title": "The Grandmaster's Gift",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1454882": {
+      "title": "Karma",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1446390": {
+      "title": "Nyepi",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1442935": {
+      "title": "What Is The Right Way?",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1726065": {
+      "title": "Country-Fried Steak",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1726060": {
+      "title": "Summers With Samuel",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1645603": {
+      "title": "Night of the Living Dead",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-07-05",
+      "digital_date": "2026-07-05",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-05",
+      "_transitioned_at": "2026-07-05"
+    },
+    "1424435": {
+      "title": "Wings of Dread",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-05",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_293421": {
+      "title": "Underage",
+      "content_type": "limited_series",
+      "tmdb_id": 293421,
+      "status": "tracking",
+      "first_air_date": "2026-07-02",
+      "digital_date": "2026-07-02",
+      "episode_count": 12,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/yRXS84CV4CpyoDKeErHz5mBAjkY.jpg",
+      "synopsis": "When a student disappears at a girls' school, secrets begin to leak from the walls. Whispers of obsession, jealousy and betrayal echo through the school's halls and one girl must fight her way through a maze of lies to uncover the truth.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-05",
+      "networks": [
+        "MBC Shahid"
+      ],
+      "has_providers": false
+    },
+    "tv_326475": {
+      "title": "America, who are you?",
+      "content_type": "limited_series",
+      "tmdb_id": 326475,
+      "status": "tracking",
+      "first_air_date": "2026-06-23",
+      "digital_date": "2026-06-23",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": null,
+      "synopsis": "",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "de",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-05",
+      "networks": [
+        "arte.tv"
       ],
       "has_providers": false
     }
