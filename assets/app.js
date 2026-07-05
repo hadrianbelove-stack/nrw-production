@@ -255,7 +255,11 @@ const NRW = {
             };
             window.addEventListener('scroll', () => {
                 const collapsed = hdrEl.classList.contains('nrw-collapsed');
-                if (!collapsed && window.scrollY > 120) {
+                // Collapsing shrinks the header ~107px; on a barely-scrollable
+                // page that can clamp scrollY back under the expand threshold
+                // and bounce. Only collapse when there's real room to scroll.
+                const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+                if (!collapsed && window.scrollY > 120 && scrollable > 300) {
                     hdrEl.classList.add('nrw-collapsed');
                     startHeaderSync();
                 } else if (collapsed && window.scrollY < 30) {
@@ -266,16 +270,17 @@ const NRW = {
         }
 
         // Narrow windows: the lightbox poster becomes a corner thumbnail inside
-        // the info panel (mobile-sheet pattern); restored beside the panel when
-        // wide. CSS for both states lives in the 1100px media block.
+        // the info panel's hero row (mobile-sheet pattern), bottom-aligned with
+        // the scores row; restored beside the panel when wide. CSS for both
+        // states lives in the 1100px media block.
         const posterWrap = document.querySelector('.lightbox-poster-wrap');
-        const lbInfo = document.querySelector('.lightbox-info');
+        const lbHero = document.querySelector('.lightbox-hero');
         const lbContent = document.querySelector('.lightbox-content');
-        if (posterWrap && lbInfo && lbContent) {
+        if (posterWrap && lbHero && lbContent) {
             const narrowLb = window.matchMedia('(max-width: 1100px)');
             const placePoster = () => {
                 if (narrowLb.matches) {
-                    if (posterWrap.parentElement !== lbInfo) lbInfo.insertBefore(posterWrap, lbInfo.firstChild);
+                    if (posterWrap.parentElement !== lbHero) lbHero.insertBefore(posterWrap, lbHero.firstChild);
                 } else if (posterWrap.parentElement !== lbContent) {
                     lbContent.insertBefore(posterWrap, lbContent.firstChild);
                 }
@@ -1046,6 +1051,15 @@ const NRW = {
             // Escape handled by setupLightboxKeyboardHandler (capture phase)
         }
 
+        // Reopened during the closing fade: cancel the pending reset so it
+        // can't hide the trailer we're about to show.
+        if (modal.classList.contains('closing')) {
+            clearTimeout(this._trailerCloseTimer);
+            modal.classList.remove('closing');
+            this.isTrailerReel = false;
+            this.trailerReelMovies = [];
+        }
+
         // Ensure a navigable list exists even when the trailer was opened straight
         // from the grid (not via the lightbox), so auto-advance + arrows work.
         if (!this.isTrailerReel && (!this.lightboxMovies || this.lightboxMovies.length === 0)) {
@@ -1100,7 +1114,7 @@ const NRW = {
         this._trailerLoadedMovieId = null;
 
         modal.classList.add('closing');
-        setTimeout(() => {
+        this._trailerCloseTimer = setTimeout(() => {
             modal.classList.remove('active');
             modal.classList.remove('closing');
 
