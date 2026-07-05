@@ -1606,9 +1606,14 @@ const NRWMobile = {
         if (this._trailerKey) { document.removeEventListener('keydown', this._trailerKey); this._trailerKey = null; }
         if (this._trailerPop) { window.removeEventListener('popstate', this._trailerPop); this._trailerPop = null; }
 
-        // Reel: movies with hosted MP4 trailers (computed early — chrome bar needs it)
+        // Reel: hosted-MP4 movies currently RENDERED on the wall (the same
+        // "displayed" scope as desktop's reel), in wall order — not the whole
+        // filtered list. Computed early: the chrome bar needs the counter.
         const isMp4 = (m) => { const u = m.links?.trailer_hosted; if (!u) return false; try { return new URL(u).pathname.endsWith('.mp4'); } catch { return u.endsWith('.mp4'); } };
-        const reel = this.filteredMovies.filter(isMp4);
+        const reel = this.gridEntries.slice(0, this.displayedCount)
+            .filter(e => e.type === 'movie')
+            .map(e => e.movie)
+            .filter(isMp4);
         const reelIdx = reel.findIndex(m => String(m.id) === String(movie.id));
 
         const overlay = document.createElement('div');

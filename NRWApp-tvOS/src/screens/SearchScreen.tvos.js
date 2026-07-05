@@ -43,16 +43,6 @@ const SearchScreen = ({ route }) => {
     }, 100);
   }, []);
 
-  // Progressive back (standard TV search pattern): Menu with a query showing
-  // clears the search back to its default state; Menu on an empty search exits
-  // to the wall.
-  //
-  // The hardware Menu press pops the native stack BEFORE beforeRemove can veto
-  // it (verified on-sim: preventDefault alone didn't hold), so while a query
-  // exists we own the Menu key in JS — same TVEventControl pattern TrailerPlayer
-  // proved out (its build-28/29 comments). Scoped tightly: enabled only while
-  // this screen has a non-empty query, disabled the moment it clears/unmounts,
-  // so Menu everywhere else keeps its native pop/suspend behavior.
   // Hardware Menu exits this screen via the native-stack pop. That pop fires at
   // the UIKit layer and is NOT interceptible (verified on-sim, three ways:
   // beforeRemove preventDefault, TVEventControl menu ownership, and
