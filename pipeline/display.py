@@ -11,6 +11,8 @@ import os
 import re
 from datetime import datetime, timedelta
 
+from pipeline.provider_names import normalize_watch_links
+
 
 def inject_notability_into(movies_list):
     """Attach a 0-100 Buzz score + notability block to every movie that has
@@ -226,7 +228,9 @@ class DisplayGenerator:
             if not cached_links:
                 continue
 
-            movie['watch_links'] = cached_links
+            # Cache rows hold RAW pre-normalize names (tier variants, channel
+            # suffixes) — normalize like every other data.json writer
+            movie['watch_links'] = normalize_watch_links(cached_links)
             applied += 1
             self.ctx.logger.debug(f"Applied cached watch links for {movie.get('title')}")
 
@@ -486,9 +490,10 @@ class DisplayGenerator:
                     movie['synopsis'] = tracking_movie['synopsis']
                     fields_updated += 1
 
-                # Apply manual watch links
+                # Apply manual watch links (normalized — manual entries may
+                # use raw or tier-variant service names)
                 if tracking_movie.get('manual_watch_links') and tracking_movie.get('watch_links'):
-                    movie['watch_links'] = tracking_movie['watch_links']
+                    movie['watch_links'] = normalize_watch_links(tracking_movie['watch_links'])
                     fields_updated += 1
 
         if fields_updated > 0:

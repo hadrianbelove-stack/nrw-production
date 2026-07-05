@@ -45,6 +45,7 @@ except ImportError:
     GEMINI_RT_AVAILABLE = False
 
 from pipeline.context import PipelineContext
+from pipeline.provider_names import simplify_provider_name
 from pipeline.intake import MovieIntake
 from pipeline.discoverer import ProviderDiscoverer
 from pipeline.enricher import MovieEnricher
@@ -273,59 +274,9 @@ class DataGenerator:
     # ============================================================================
 
     def simplify_provider_name(self, provider_name):
-        """Simplify provider names for display
-        Examples:
-        - 'Amazon Prime Video' → 'Amazon Prime Video' (streaming — different from VOD)
-        - 'Amazon Video' → 'Amazon' (VOD rent/buy)
-        - 'DocuramaFilms Amazon Channel' → 'DocuramaFilms' (NOT 'Amazon')
-        - 'Shudder Amazon Channel' → 'Shudder'
-        - 'AMC Plus Apple TV Channel' → 'AMC+'
-        """
-        if not provider_name:
-            return provider_name
-
-        # Strip platform channel suffixes FIRST — these are third-party channels
-        # hosted on Amazon/Apple, not Amazon/Apple themselves
-        provider_lower = provider_name.lower()
-        channel_suffixes = ['amazon channel', 'apple tv channel']
-        for suffix in channel_suffixes:
-            if suffix in provider_lower:
-                # Extract the actual channel name (everything before the suffix)
-                idx = provider_lower.index(suffix)
-                channel_name = provider_name[:idx].strip()
-                if channel_name:
-                    # Re-run the channel name through simplification (e.g. "AMC Plus" → "AMC+")
-                    return self.simplify_provider_name(channel_name)
-
-        # Most specific patterns first
-        # NOTE: 'amazon prime' MUST come before 'amazon' — Prime Video (streaming)
-        # is a different service from Amazon (VOD rent/buy) with different logos
-        simplifications = [
-            ('amc', 'AMC+'),
-            ('netflix', 'Netflix'),
-            ('disney', 'Disney+'),
-            ('hulu', 'Hulu'),
-            ('hbo max', 'Max'),
-            ('paramount', 'Paramount+'),
-            ('peacock', 'Peacock'),
-            ('amazon prime', 'Amazon Prime Video'),
-            ('prime video', 'Amazon Prime Video'),
-            ('amazon', 'Amazon'),
-            ('apple tv', 'Apple TV'),
-            ('shudder', 'Shudder'),
-            ('mubi', 'MUBI'),
-            ('criterion', 'Criterion'),
-            ('vudu', 'Vudu'),
-            ('youtube', 'YouTube'),
-            ('fandango', 'Fandango'),
-        ]
-
-        provider_lower = provider_name.lower()
-        for pattern, simplified in simplifications:
-            if pattern in provider_lower:
-                return simplified
-
-        return provider_name
+        """Simplify provider names for display — canonical logic lives in
+        pipeline/provider_names.py (shared with the enrichment service)."""
+        return simplify_provider_name(provider_name)
 
 
     def get_movie_details(self, movie_id):

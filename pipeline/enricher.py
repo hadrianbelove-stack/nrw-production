@@ -512,48 +512,10 @@ class MovieEnricher:
                 tmdb_id=str(movie_id).replace('tv_', '')
             )
 
-            # Simplify provider names in watch links (handle both array and dict formats)
-            for category, link_obj in watch_links_raw.items():
-                # Handle array format (new)
-                if isinstance(link_obj, list):
-                    # Dedupe on SIMPLIFIED names: upstream dedup keys on raw
-                    # names, so tier variants ("Netflix" + "Netflix Standard
-                    # with Ads") both survive and collapse to the same name
-                    # here — keep the first (VOD's first carries merged prices)
-                    simplified_array = []
-                    seen_services = set()
-                    for item in link_obj:
-                        if isinstance(item, dict) and 'service' in item:
-                            simplified_name = self.host.simplify_provider_name(item['service'])
-                            svc_key = (simplified_name or '').strip().lower()
-                            if svc_key and svc_key in seen_services:
-                                continue
-                            if svc_key:
-                                seen_services.add(svc_key)
-                            simplified = {
-                                'service': simplified_name,
-                                'link': item.get('link')
-                            }
-                            for price_key in ('rent_price', 'buy_price', 'price'):
-                                if item.get(price_key):
-                                    simplified[price_key] = item[price_key]
-                            simplified_array.append(simplified)
-                        else:
-                            simplified_array.append(item)
-                    result['watch_links'][category] = simplified_array
-                # Handle dict format (legacy backward compatibility)
-                elif isinstance(link_obj, dict) and 'service' in link_obj:
-                    simplified_service = self.host.simplify_provider_name(link_obj['service'])
-                    simplified_dict = {
-                        'service': simplified_service,
-                        'link': link_obj.get('link')
-                    }
-                    for price_key in ('rent_price', 'buy_price', 'price'):
-                        if link_obj.get(price_key):
-                            simplified_dict[price_key] = link_obj[price_key]
-                    result['watch_links'][category] = simplified_dict
-                else:
-                    result['watch_links'][category] = link_obj
+            # get_watch_links returns display-ready links (names simplified,
+            # deduped, list-shaped) — see normalize_watch_links in
+            # pipeline/provider_names.py. Nothing to rename here.
+            result['watch_links'] = watch_links_raw or {}
 
             if result['watch_links']:
                 enrichment_results['watch_links'] = 'success'

@@ -19,6 +19,8 @@ import time
 import requests
 from datetime import datetime, timedelta
 
+from pipeline.provider_names import normalize_watch_links
+
 
 class ProviderDiscoverer:
     """Discovers provider availability for tracking movies."""
@@ -1556,20 +1558,25 @@ class ProviderDiscoverer:
                             if merged:
                                 current_links['vod'] = current_vod
 
-                        # Merge streaming: add if not already present
+                        # Merge streaming: add if not already present.
+                        # JustWatch returns a LIST here; bare dict is legacy.
+                        # (The dict-only check made this a dead path for months
+                        # once JustWatch switched to lists — fixed Jul 2026.)
                         new_streaming = new_links.get('streaming')
-                        if isinstance(new_streaming, dict) and new_streaming.get('link'):
+                        if isinstance(new_streaming, dict):
+                            new_streaming = [new_streaming]
+                        if isinstance(new_streaming, list):
+                            linked = [s for s in new_streaming
+                                      if isinstance(s, dict) and s.get('link')]
                             existing_streaming = current_links.get('streaming')
                             has_existing = (
                                 (isinstance(existing_streaming, dict) and existing_streaming.get('link'))
                                 or (isinstance(existing_streaming, list) and any(
                                     isinstance(s, dict) and s.get('link') for s in existing_streaming))
                             )
-                            if not has_existing:
-                                current_links['streaming'] = {
-                                    'service': self.host.simplify_provider_name(new_streaming['service']),
-                                    'link': new_streaming['link']
-                                }
+                            if linked and not has_existing:
+                                current_links['streaming'] = normalize_watch_links(
+                                    {'streaming': linked})['streaming']
                                 merged = True
 
                         if merged:

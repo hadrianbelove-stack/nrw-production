@@ -24,11 +24,6 @@ import re
 import unicodedata
 from typing import Dict, Optional, List, Any
 
-# Ad-supported tier suffixes ("Netflix Standard with Ads", "Prime Video with
-# Ads") — same service as the base tier, same URL. Anchored to "with ads" so
-# real distinct bundles like "Paramount+ with Showtime" never match.
-_ADS_TIER_RE = re.compile(r'\s+(?:standard\s+|basic\s+|premium\s+)?with\s+ads$', re.IGNORECASE)
-
 
 class JustWatchClient:
     """
@@ -742,24 +737,17 @@ class JustWatchClient:
         if not offers:
             return []
 
-        # Dedupe by service — JustWatch can list the same service twice
-        # (separate HD/SD presentation types, or ad-supported tiers like
-        # "Netflix Standard with Ads" alongside "Netflix" with the same URL).
-        # Key on the tier-collapsed name so ads tiers merge with their base;
-        # an ads-tier-only listing still keeps its link.
+        # Dedupe by raw service name (separate HD/SD listings). Tier variants
+        # with different names ("Netflix" + "Netflix Standard with Ads") pass
+        # through here by design — they collapse at the enrichment exit
+        # boundary (normalize_watch_links in pipeline/provider_names.py).
         seen = {}
         for offer in offers:
             service = offer.get('service')
             link = offer.get('link')
-            if not service or not link:
+            if not service or not link or service in seen:
                 continue
-            key = _ADS_TIER_RE.sub('', service).strip().lower()
-            if key in seen:
-                # Prefer the base-tier name if the ads tier was seen first
-                if _ADS_TIER_RE.search(seen[key]['service']) and not _ADS_TIER_RE.search(service):
-                    seen[key] = {'service': service, 'link': link}
-                continue
-            seen[key] = {'service': service, 'link': link}
+            seen[service] = {'service': service, 'link': link}
 
         # Order by STREAMING_PRIORITY; unknown services keep insertion order at
         # the end (sorted() is stable).

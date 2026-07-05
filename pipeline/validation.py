@@ -14,6 +14,7 @@ import logging
 from urllib.parse import urlparse
 
 from constants import PLACEHOLDER_ASINS
+from pipeline.provider_names import simplify_provider_name
 
 
 class ValidationService:
@@ -172,6 +173,11 @@ class ValidationService:
                 continue
 
             # Handle array format (NEW)
+            # NOTE: no duplicate-service check here — this validator runs
+            # INSIDE the enrichment waterfall, BEFORE normalize_watch_links
+            # collapses tier variants ("Netflix" + "Netflix Standard with
+            # Ads"), so duplicates are normal at this stage. The duplicate
+            # guard lives in validate_data_json_schema (post-write boundary).
             if isinstance(category_data, list):
                 validated_array = []
                 for i, item in enumerate(category_data):
@@ -271,6 +277,14 @@ class ValidationService:
                 if not self._validate_metadata_fields(movie, f"movie[{i}]", file_path):
                     return False
 
+                # Duplicate-service guard (warn-only, never fails the file):
+                # every watch_links writer must pass through normalize_watch_links
+                # (pipeline/provider_names.py), which makes same-service
+                # duplicates impossible. A duplicate HERE means some writer
+                # bypassed the boundary — the gap that shipped two identical
+                # Netflix buttons (Jul 2026). Runs on every pipeline load.
+                self._warn_duplicate_services(movie)
+
             self.logger.info(f"{file_path} schema validation passed: {len(movies)} movies")
             return True
 
@@ -311,6 +325,14 @@ class ValidationService:
             if 'movies' in data and not isinstance(data['movies'], list):
                 self.logger.error(f"Movies field is not a list (type: {type(data['movies']).__name__}) - aborting to preserve data")
                 return False
+
+            # Duplicate-service guard (warn-only): this is the schema check
+            # that actually runs every pipeline pass (validate_data_json_schema
+            # has no live callers), so the bypass alarm lives here too
+            if isinstance(data.get('movies'), list):
+                for movie in data['movies']:
+                    if isinstance(movie, dict):
+                        self._warn_duplicate_services(movie)
 
             # Fix missing required root keys (safe operations only)
             fixed = False
@@ -357,6 +379,31 @@ class ValidationService:
             # Unexpected error - ABORT, do not create fresh file
             self.logger.error(f"Unexpected error reading {file_path}: {e} - aborting to preserve file")
             return False
+
+    def _warn_duplicate_services(self, movie: Dict) -> None:
+        """Warn (never fail) if a movie's watch_links list holds two entries
+        that collapse to the same simplified service name — evidence that a
+        writer bypassed normalize_watch_links. Detection only; the fix is to
+        route that writer through the boundary, not to silently clean here."""
+        watch_links = movie.get('watch_links')
+        if not isinstance(watch_links, dict):
+            return
+        for category, entries in watch_links.items():
+            if not isinstance(entries, list):
+                continue
+            seen = set()
+            for entry in entries:
+                if not isinstance(entry, dict):
+                    continue
+                key = (simplify_provider_name(entry.get('service')) or '').strip().lower()
+                if key and key in seen:
+                    self.logger.warning(
+                        f"DUPLICATE watch-link service '{entry.get('service')}' in '{category}' "
+                        f"for {movie.get('title')} (id {movie.get('id')}) — a watch_links writer "
+                        f"bypassed normalize_watch_links (pipeline/provider_names.py)"
+                    )
+                if key:
+                    seen.add(key)
 
     def get_stats(self) -> Dict[str, int]:
         """

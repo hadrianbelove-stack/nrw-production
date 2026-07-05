@@ -14,6 +14,7 @@ import re
 from urllib.parse import urljoin
 
 from constants import PLACEHOLDER_ASINS
+from pipeline.provider_names import normalize_watch_links
 
 
 class EnrichmentService:
@@ -114,6 +115,25 @@ class EnrichmentService:
     def get_watch_links(self, movie_id, title, year, providers, force_refresh=False,
                         tracking_data=None, original_title=None, alternative_titles=None,
                         director=None, tmdb_id=None):
+        """
+        Get deep links with canonical streaming/vod structure.
+
+        Single exit boundary for ALL waterfall paths (manual/override/cache/
+        JustWatch/scrapers): results are normalized here — service names
+        simplified, legacy dict shape coerced to list, one entry per
+        simplified service. Callers get display-ready links; nothing
+        downstream needs to rename or dedupe.
+        """
+        links = self._get_watch_links_impl(
+            movie_id, title, year, providers, force_refresh=force_refresh,
+            tracking_data=tracking_data, original_title=original_title,
+            alternative_titles=alternative_titles, director=director, tmdb_id=tmdb_id
+        )
+        return normalize_watch_links(links)
+
+    def _get_watch_links_impl(self, movie_id, title, year, providers, force_refresh=False,
+                              tracking_data=None, original_title=None, alternative_titles=None,
+                              director=None, tmdb_id=None):
         """
         Get deep links with canonical streaming/vod structure.
 
@@ -601,21 +621,22 @@ class EnrichmentService:
         # Build watch_links structure
         watch_links = {}
 
-        # Build streaming links
+        # Build streaming links (deduped at the get_watch_links exit boundary
+        # via normalize_watch_links — no per-path dedup needed here)
         if not skip_streaming:
-            streaming = self._dedupe_by_service(self._build_streaming_links(
+            streaming = self._build_streaming_links(
                 movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
                 title_variants=title_variants
-            ))
+            )
             if streaming:
                 watch_links['streaming'] = streaming
 
         # Build VOD links
         if not (skip_rent and skip_buy):
-            watch_links['vod'] = self._dedupe_by_service(self._build_vod_links(
+            watch_links['vod'] = self._build_vod_links(
                 movie_id, title, year, providers, tmdb_rent, tmdb_buy, has_vod_scraper,
                 title_variants=title_variants
-            ))
+            )
 
         # Overlay admin overrides
         for category, override_data in validated_overrides.items():
@@ -630,24 +651,6 @@ class EnrichmentService:
             return True
         except ImportError:
             return False
-
-    @staticmethod
-    def _dedupe_by_service(entries):
-        """One offer per service. Merges from JustWatch + the scraper can list the
-        same service twice (e.g. Netflix x2, Amazon x2); keep the first (VOD's first
-        carries the merged prices)."""
-        if not isinstance(entries, list):
-            return entries
-        seen = set()
-        deduped = []
-        for entry in entries:
-            key = (entry.get('service') or '').strip().lower()
-            if key and key in seen:
-                continue
-            if key:
-                seen.add(key)
-            deduped.append(entry)
-        return deduped
 
     def _build_streaming_links(self, movie_id, title, year, providers, tmdb_streaming, tmdb_rent, tmdb_buy,
                                title_variants=None):

@@ -122,8 +122,16 @@ const FullscreenPosterModal = ({
     const watchLinks = movie.watch_links || {};
     const providers = movie.providers || {};
 
-    if (watchLinks.streaming?.service) {
-      return { service: watchLinks.streaming.service, link: watchLinks.streaming.link };
+    // Canonical list shape — prefer an entry with a real link so the
+    // button is tappable (a dict-only read here left the button disabled
+    // for every list-shaped movie)
+    const streaming = watchLinks.streaming;
+    if (Array.isArray(streaming)) {
+      const entry = streaming.find(s => s?.service && s?.link) || streaming.find(s => s?.service);
+      if (entry) return { service: entry.service, link: entry.link || null };
+    } else if (streaming?.service) {
+      // Legacy single-dict shape
+      return { service: streaming.service, link: streaming.link };
     }
     if (providers.streaming?.length) {
       const service = providers.streaming.find(p => !p.includes('with Ads')) || providers.streaming[0];
