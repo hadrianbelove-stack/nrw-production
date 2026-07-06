@@ -353,14 +353,18 @@ def cmd_batch(args):
 
 
 def cmd_approve(args):
-    """Approve a capsule (original or rewritten) into the training bank."""
+    """Approve a capsule (original or rewritten) into the training bank.
+
+    Exits non-zero on every failure path — headless callers (the admin
+    curation flow) rely on the exit code, not the log output.
+    """
     movies = load_movies()
     if not movies:
-        return
+        sys.exit(1)
 
     movie = find_movie(movies, args.title)
     if not movie:
-        return
+        sys.exit(1)
 
     title = movie['title']
     year = movie.get('year', 0)
@@ -376,24 +380,26 @@ def cmd_approve(args):
                 capsule_text = f.read().strip()
             if not capsule_text:
                 logger.error(f"File {args.file} is empty.")
-                return
+                sys.exit(1)
             logger.info(f"Read rewritten capsule from {args.file}")
         except FileNotFoundError:
             logger.error(f"File not found: {args.file}")
-            return
+            sys.exit(1)
     else:
         # Approve the cached capsule as-is
         cache_key = f"{title}_{year}"
         if cache_key not in writer.cache:
             logger.error(f"No cached capsule for {title} ({year}). Generate one first.")
-            return
+            sys.exit(1)
         cached = writer.cache[cache_key]
         capsule_text = cached.get('capsule', '')
         if not capsule_text:
             logger.error(f"Cached capsule is empty for {title} ({year}).")
-            return
+            sys.exit(1)
 
-    writer.approve_capsule(title, year, capsule_text, director=director)
+    if not writer.approve_capsule(title, year, capsule_text, director=director):
+        logger.error(f"Approve failed for {title} ({year}) — bank or data.json write did not complete.")
+        sys.exit(1)
 
     print(f"\n{'='*60}")
     print(f"APPROVED: {title} ({year})")

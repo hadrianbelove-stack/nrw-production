@@ -22,8 +22,14 @@ import signal
 import sys
 from datetime import date, timedelta
 
-# Don't traceback when piped into head/less (closed pipe).
-signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from pipeline.json_io import json_edit
+
+# Don't traceback when piped into head/less (closed pipe). CLI only — as an
+# import (the admin curation flow), SIG_DFL would let a client disconnect
+# KILL the whole Flask process.
+if __name__ == "__main__":
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 REVIEWED = "admin/curate_reviewed.json"
 CAPSULES = "admin/approved_capsules.json"
@@ -138,13 +144,25 @@ def capsule_queue(window=7):
     return out
 
 
-def build(stage, window):
+def review_rows(stage, window=7):
+    """Stage 1/2/3 candidates: in-window, not old-restoration, not yet
+    watermarked for this stage. Returns movie dicts sorted newest-first.
+    Single source of the review filter — used by build() here AND imported
+    by the admin curation flow (admin/routes/curate_flow.py)."""
     data = json.load(open("data.json"))
     today = str(date.today())
     from_date = str(date.today() - timedelta(days=window))
     cy = date.today().year
     rev = _load(REVIEWED, {})
+    out = [m for m in data["movies"]
+           if _in_window(m, from_date, today)
+           and not _skip_old(m, cy)
+           and stage not in rev.get(str(m.get("id")), {})]
+    out.sort(key=lambda m: m.get("digital_date", "") or "", reverse=True)
+    return out
 
+
+def build(stage, window):
     rows = []
     if stage == "capsule":
         for m, needs in capsule_queue(window):
@@ -153,13 +171,7 @@ def build(stage, window):
                    (m.get("links", {}) or {}).get("wikipedia", "") or "", _trailer(m)]
             rows.append((m.get("digital_date", "") or "", row))
     else:  # selects / sections / slop share one base filter + a watermark key
-        for m in data["movies"]:
-            if not _in_window(m, from_date, today):
-                continue
-            if _skip_old(m, cy):
-                continue
-            if stage in rev.get(str(m.get("id")), {}):
-                continue
+        for m in review_rows(stage, window):
             L = m.get("links", {}) or {}
             wiki = L.get("wikipedia", "") or ""
             if stage == "selects":
@@ -198,10 +210,12 @@ def build(stage, window):
 
 
 def mark(stage, ids):
-    rev = _load(REVIEWED, {})
-    for mid in ids:
-        rev.setdefault(str(mid), {})[stage] = str(date.today())
-    json.dump(rev, open(REVIEWED, "w"), indent=2)
+    # json_edit = flock + atomic replace — this runs concurrently from chat
+    # windows AND inside the multi-threaded admin server; a bare json.dump
+    # here silently lost watermarks (and could commit a torn file).
+    with json_edit(REVIEWED, default={}) as rev:
+        for mid in ids:
+            rev.setdefault(str(mid), {})[stage] = str(date.today())
     print(f"Marked {len(ids)} film(s) {stage}-reviewed")
 
 

@@ -5,6 +5,15 @@ allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 
 # /curate
 
+**Default: the web flow.** The whole homework (Selects · Sections · Slop review page → one page per film for capsule + quotes) lives in the admin panel:
+```bash
+curl -s -o /dev/null http://localhost:5556/flow || ./launch_all.sh   # start servers only if down
+open http://localhost:5556/flow
+```
+The user clicks through it; every save runs the same scripts and commits as the chat flow (blueprint: `admin/routes/curate_flow.py`). Chat's job during a web-flow session: run Stage 0 below first (reissues aren't in the web app), open the page, then stand by for the oddballs — films the page flags (`⚠ no cached variants` → generate live via Step A.1; `⚠ no quotes` → `--custom` or skip), `/correct`-style fixes, and anything the user pastes here instead.
+
+**Chat fallback** (server down, slice runs, or user asks to do it in chat) — the stages below, in order:
+
 **Flow:** Stage 0 Reissues → Stages 1–3 Combined Review (Selects · Sections · Slop — one message, one reply, one commit) → 4 Capsule+Quotes. Run in order.
 
 **Rhythm (user preference):** curate **slop films too** — never skip or batch-drop. Go **straight through from #1** in queue order unless the user redirects. In Stage 4, present each film's **capsule and pull quotes together in one message**, one film at a time — never capsule-first-then-quotes, never as separate passes.

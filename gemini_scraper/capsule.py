@@ -1270,27 +1270,41 @@ FACTOID PRIMER:"""
             logger.warning(f"Capsule for {title} ({year}) has an unmatched '*' "
                            f"(unbalanced italic). Markdown may render wrong. Approving anyway.")
 
-        # 1. Add to approved bank (training data). Load-append-save happens
+        # 1. Add to approved bank (training data). Load-modify-save happens
         # under the shared lock — concurrent windows approve at the same time.
+        # Re-approving the same title+year REPLACES the entry (a revision
+        # supersedes; also makes retried saves idempotent instead of
+        # duplicating bank entries).
         from pipeline.json_io import data_lock, atomic_dump
+        bank_ok = False
         try:
             os.makedirs(os.path.dirname(APPROVED_BANK_PATH) or '.', exist_ok=True)
             with data_lock():
                 bank = self._load_approved_bank()
-                bank.append({
+                entry = {
                     'title': title,
                     'year': year,
                     'director': director or 'Unknown',
                     'capsule': capsule_text,
                     'approved_at': time.strftime('%Y-%m-%dT%H:%M:%S')
-                })
+                }
+                for i, b in enumerate(bank):
+                    if (isinstance(b, dict)
+                            and str(b.get('title', '')).lower() == title.lower()
+                            and str(b.get('year', '')) == str(year)):
+                        bank[i] = entry
+                        break
+                else:
+                    bank.append(entry)
                 atomic_dump(bank, APPROVED_BANK_PATH)
+            bank_ok = True
             logger.info(f"Approved capsule for {title} ({year}) — bank now has {len(bank)} entries")
         except Exception as e:
             logger.error(f"Failed to save approved capsule: {e}")
 
         # 2. Update data.json capsule field (goes live on site; synopsis stays as TMDB fallback)
-        self._publish_to_data_json(title, year, capsule_text)
+        published = self._publish_to_data_json(title, year, capsule_text)
+        return bank_ok and published
 
     def _publish_to_data_json(self, title: str, year: int, capsule_text: str):
         """Write approved capsule into data.json's capsule field (not synopsis — that's the TMDB fallback)."""
@@ -1319,6 +1333,8 @@ FACTOID PRIMER:"""
                 logger.info(f"Published capsule to data.json: {title} ({year})")
             else:
                 logger.warning(f"Could not find {title} ({year}) in data.json to publish capsule")
+            return updated
 
         except Exception as e:
             logger.error(f"Failed to publish capsule to data.json: {e}")
+            return False

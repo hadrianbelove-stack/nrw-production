@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morning Flow — Done</title>
+<style>
+body { font-family: -apple-system, 'Helvetica Neue', sans-serif; margin:0;
+       background:#14181c; color:#e3e6e8; }
+.wrap { max-width:640px; margin:12vh auto 0; padding:0 24px; text-align:center; }
+h1 { font-size:22px; letter-spacing:.04em; }
+a { color:#2ec4b6; text-decoration:none; font-size:15px; }
+.note { color:#9aa4ad; font-size:14.5px; margin:14px 0 26px; }
+</style></head><body><div class="wrap">
+{% if remaining == 0 %}
+<h1>✓ Homework done</h1>
+<div class="note">Nothing left in the 7-day window — every film has its capsule and quotes.
+Everything saved and committed as you went.</div>
+<a href="/flow">Back to the review page</a>
+{% else %}
+<h1>{{ remaining }} film(s) still queued</h1>
+<div class="note">{% if drained %}That film was already finished (or drained by another
+window) — here's the next one.{% else %}Pick up where you left off.{% endif %}</div>
+<a href="/flow/movie/{{ next_id }}">Continue →</a>
+{% endif %}
+</div></body></html>

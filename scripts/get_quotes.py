@@ -40,7 +40,10 @@ import textwrap
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pipeline.json_io import data_lock, atomic_dump
 
-signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+# CLI only — as an import (the admin curation flow), SIG_DFL would let a
+# client disconnect KILL the whole Flask process.
+if __name__ == "__main__":
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 CACHE = "cache/pull_quotes_combined.json"
 DATA = "data.json"

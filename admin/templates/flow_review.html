@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morning Flow — Review</title>
+<style>
+body { font-family: -apple-system, 'Helvetica Neue', sans-serif; margin:0;
+       background:#14181c; color:#e3e6e8; line-height:1.5; }
+.wrap { max-width:1000px; margin:0 auto; padding:28px 24px 90px; }
+h1 { font-size:21px; letter-spacing:.04em; border-bottom:2px solid #2ec4b6; padding-bottom:10px; }
+h2 { font-size:14px; letter-spacing:.12em; color:#9aa4ad; text-transform:uppercase; margin:34px 0 10px; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th { text-align:left; color:#7f8a93; font-weight:600; font-size:12px;
+     text-transform:uppercase; letter-spacing:.06em; padding:6px 8px; }
+td { padding:8px; border-top:1px solid #242b31; vertical-align:top; }
+a { color:#2ec4b6; text-decoration:none; }
+.facts { color:#9aa4ad; font-size:12.5px; font-style:italic; margin-top:3px; }
+.badcell { color:#7f8a93; }
+input[type=checkbox] { width:18px; height:18px; accent-color:#2ec4b6; cursor:pointer; }
+.slopgrp label { margin-right:10px; font-size:13px; cursor:pointer; white-space:nowrap; }
+.slopgrp input { accent-color:#ff9500; }
+.why { color:#7f8a93; font-size:12px; }
+.bar { position:fixed; bottom:0; left:0; right:0; background:#1c2228;
+       border-top:1px solid #2a3138; padding:12px 24px; display:flex;
+       align-items:center; gap:18px; }
+button.primary { background:#2ec4b6; color:#0e1215; border:0; border-radius:8px;
+       padding:11px 26px; font-size:15px; font-weight:700; cursor:pointer; }
+button.primary:disabled { opacity:.5; cursor:wait; }
+.note { color:#7f8a93; font-size:13px; }
+.warn { background:#3a2b12; color:#ffc857; border-radius:8px; padding:8px 14px;
+        margin:10px 0; font-size:13.5px; display:none; }
+.clear { background:#1c2228; border-radius:10px; padding:18px; margin-top:20px; }
+</style></head><body><div class="wrap">
+<h1>MORNING REVIEW <span class="note" style="float:right">{{ queue_len }} film(s) queued for capsules after this</span></h1>
+<div class="warn" id="warnbox"></div>
+
+{% if all_clear %}
+<div class="clear">Review: all caught up — nothing to confirm today.
+  <a href="{{ url_for('curate_flow.flow_done') }}">Start the capsule walk →</a></div>
+{% else %}
+
+{% if selects %}
+<h2>Selects — check the ones you're vouching for</h2>
+<table id="selects">
+<tr><th></th><th>Title</th><th>RT</th><th>MC</th><th>IMDb</th><th>Buzz</th><th>Available on</th><th></th></tr>
+{% for r in selects %}
+<tr data-id="{{ r.id }}">
+  <td><input type="checkbox" class="sel"></td>
+  <td>{% if r.wiki %}<a href="{{ r.wiki }}" target="_blank">{{ r.title }} ({{ r.year }})</a>{% else %}{{ r.title }} ({{ r.year }}){% endif %}
+    {% for f in r.facts %}<div class="facts">★ {{ f }}</div>{% endfor %}</td>
+  <td>{% if r.rt_url and r.rt != '--' %}<a href="{{ r.rt_url }}" target="_blank">{{ r.rt }}</a>{% else %}<span class="badcell">{{ r.rt }}</span>{% endif %}</td>
+  <td>{{ r.mc }}</td><td>{{ r.imdb }}</td><td>{{ r.buzz }}</td>
+  <td>{{ r.services }}</td>
+  <td>{% if r.trailer %}<a href="{{ r.trailer }}" target="_blank">▶</a>{% endif %}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% if sections %}
+<h2>Sections — auto-detected; flip only if wrong</h2>
+<table id="sections">
+<tr><th>Title</th><th>Sections</th><th>Indie</th><th>Restoration</th></tr>
+{% for r in sections %}
+<tr data-id="{{ r.id }}">
+  <td>{% if r.wiki %}<a href="{{ r.wiki }}" target="_blank">{{ r.title }} ({{ r.year }})</a>{% else %}{{ r.title }} ({{ r.year }}){% endif %}</td>
+  <td>{{ r.sections }}</td>
+  <td><input type="checkbox" class="indie" data-orig="{{ 1 if r.is_indie else 0 }}" {% if r.is_indie %}checked{% endif %}></td>
+  <td><input type="checkbox" class="resto" data-orig="{{ 1 if r.is_restoration else 0 }}" {% if r.is_restoration %}checked{% endif %}></td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% if slop %}
+<h2>Slop — confirm or correct the classifier</h2>
+<table id="slop">
+<tr><th>Title</th><th>RT</th><th>IMDb</th><th></th><th>Why</th><th>Verdict</th></tr>
+{% for r in slop %}
+<tr data-id="{{ r.id }}" data-orig="{{ 1 if r.is_slop else 0 }}">
+  <td>{% if r.imdb_url %}<a href="{{ r.imdb_url }}" target="_blank">{{ r.title }} ({{ r.year }})</a>{% else %}{{ r.title }} ({{ r.year }}){% endif %}
+      {% if r.wiki %} <a href="{{ r.wiki }}" target="_blank">[W]</a>{% endif %}</td>
+  <td>{{ r.rt }}</td><td>{{ r.imdb }}</td>
+  <td>{% if r.trailer %}<a href="{{ r.trailer }}" target="_blank">▶</a>{% endif %}</td>
+  <td class="why">{{ r.why }}</td>
+  <td class="slopgrp">
+    <label><input type="radio" name="slop-{{ r.id }}" value="1" {% if r.is_slop %}checked{% endif %}> 🗑 slop</label>
+    <label><input type="radio" name="slop-{{ r.id }}" value="0" {% if not r.is_slop %}checked{% endif %}> ✅ not</label>
+  </td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+<div class="bar">
+  <button class="primary" id="save">Apply & start capsules →</button>
+  <span class="note">One commit for everything above, then the movie pages begin.</span>
+</div>
+
+<script>
+document.getElementById('save').onclick = async () => {
+  const btn = document.getElementById('save');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const ids = t => [...document.querySelectorAll(`#${t} tr[data-id]`)].map(r => r.dataset.id);
+  const payload = {
+    selects: [...document.querySelectorAll('#selects .sel:checked')].map(c => c.closest('tr').dataset.id),
+    slop: {}, indie: {}, restorations: {},
+    shown: { selects: ids('selects'), sections: ids('sections'), slop: ids('slop') }
+  };
+  document.querySelectorAll('#slop tr[data-id]').forEach(r => {
+    const v = r.querySelector('input[type=radio]:checked').value;
+    if (v !== r.dataset.orig) payload.slop[r.dataset.id] = v === '1';
+  });
+  document.querySelectorAll('#sections tr[data-id]').forEach(r => {
+    const i = r.querySelector('.indie'), re = r.querySelector('.resto');
+    if (i && (i.checked ? '1' : '0') !== i.dataset.orig) payload.indie[r.dataset.id] = i.checked;
+    if (re && (re.checked ? '1' : '0') !== re.dataset.orig) payload.restorations[r.dataset.id] = re.checked;
+  });
+  try {
+    const res = await fetch('/flow/review', { method:'POST',
+      headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const j = await res.json();
+    if (!j.success) throw new Error(j.error || 'save failed');
+    if (j.warning && j.warning.includes('NOT committed')) {
+      // git needs a human — show it here and stay.
+      btn.disabled = false; btn.textContent = 'Apply & start capsules →';
+      const w = document.getElementById('warnbox');
+      w.textContent = '⚠ ' + j.warning; w.style.display = 'block';
+      return;
+    }
+    if (j.warning) sessionStorage.setItem('flowWarn', j.warning);
+    location.href = j.next_id ? `/flow/movie/${j.next_id}` : '/flow/done';
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Apply & start capsules →';
+    const w = document.getElementById('warnbox');
+    w.textContent = '⚠ ' + e.message; w.style.display = 'block';
+  }
+};
+</script>
+{% endif %}
+</div></body></html>

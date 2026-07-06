@@ -91,7 +91,7 @@ If nothing: "No concerns."
 
 ## Phase 2 — Curation
 
-After the overnight report, run `/curate` to handle recent arrivals: Confirm Reissues (Stage 0) → the combined review (Selects + Sections + Slop, one message / one reply) → per-film capsule + Wikipedia links + pull quotes (one reply per film). Stage 0 surfaces old films caught getting a new restoration/re-release (intake Pass D) for you to confirm onto the wall. `/curate` is **state-based** — it shows everything from the **last 7 days** still needing work (slop unconfirmed / no capsule / no quotes), newest first. There is no session to resume; skipped days just accumulate in the window until handled.
+After the overnight report, run `/curate`. Its default is the **web flow**: handle Stage 0 (reissues) in chat, then open `http://localhost:5556/flow` — the user does the review page + per-film capsule/quote pages there while chat stands by for flagged films and oddballs. Stage 0 surfaces old films caught getting a new restoration/re-release (intake Pass D) for you to confirm onto the wall. `/curate` is **state-based** — it shows everything from the **last 7 days** still needing work (slop unconfirmed / no capsule / no quotes), newest first. There is no session to resume; skipped days just accumulate in the window until handled.
 
 The curation queue is ready when:
 - Capsule variants can be generated for films without one

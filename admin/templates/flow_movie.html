@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#{{ pos }}/{{ total }} — {{ movie.title }}</title>
+<style>
+body { font-family: -apple-system, 'Helvetica Neue', sans-serif; margin:0;
+       background:#14181c; color:#e3e6e8; line-height:1.55; }
+.wrap { max-width:900px; margin:0 auto; padding:24px 24px 110px; }
+.topbar { display:flex; justify-content:space-between; align-items:center;
+          font-size:13px; color:#7f8a93; margin-bottom:14px; }
+.topbar a { color:#2ec4b6; text-decoration:none; }
+h1 { font-size:20px; margin:0 0 2px; }
+.meta { color:#9aa4ad; font-style:italic; font-size:14px; }
+.kw { color:#7f8a93; font-size:13px; margin:2px 0 6px; }
+.badge { display:inline-block; background:#5a3e00; color:#ffc857; border-radius:4px;
+         padding:0 7px; margin-left:6px; font-size:12px; font-style:normal; }
+.links a { color:#2ec4b6; text-decoration:none; margin-right:14px; font-size:13.5px; }
+.hero { display:flex; gap:18px; }
+.hero img { width:110px; border-radius:8px; align-self:flex-start; }
+h2 { font-size:13px; letter-spacing:.12em; color:#9aa4ad; text-transform:uppercase; margin:26px 0 8px; }
+.variant { background:#1c2228; border-radius:10px; padding:13px 16px; margin:9px 0;
+           font-size:14.5px; }
+.variant .vhead { display:flex; justify-content:space-between; margin-bottom:6px; }
+.variant .vnum { color:#2ec4b6; font-weight:700; }
+.variant .wc { color:#7f8a93; font-size:12px; font-style:italic; }
+.variant button { background:#243038; color:#2ec4b6; border:1px solid #2ec4b6;
+                  border-radius:6px; padding:3px 12px; cursor:pointer; font-size:12.5px; }
+textarea#capsule { width:100%; min-height:150px; background:#10151a; color:#e3e6e8;
+           border:1px solid #2a3138; border-radius:10px; padding:12px; font-size:14.5px;
+           line-height:1.5; box-sizing:border-box; font-family:inherit; }
+details { background:#1c2228; border-radius:10px; padding:10px 16px; margin:10px 0; }
+summary { cursor:pointer; color:#9aa4ad; font-size:13px; letter-spacing:.08em;
+          text-transform:uppercase; }
+details li { margin:7px 0; font-size:14px; }
+.slink { margin:5px 0; font-size:14px; }
+.slink .desc { color:#9aa4ad; font-style:italic; }
+.slink input { accent-color:#2ec4b6; }
+.warn { background:#3a2b12; color:#ffc857; border-radius:8px; padding:8px 14px;
+        margin:10px 0; font-size:13.5px; }
+.quote { border-top:1px solid #242b31; padding:10px 2px; font-size:14.5px; }
+.quote .attr { color:#9aa4ad; font-size:13px; }
+.quote .outlet-h { color:#e3e6e8; font-weight:700; font-size:13.5px; margin:14px 0 2px; }
+.quote input[type=checkbox] { width:18px; height:18px; accent-color:#2ec4b6;
+        margin-right:10px; vertical-align:top; cursor:pointer; }
+.quote textarea { display:none; width:100%; min-height:64px; background:#10151a;
+        color:#e3e6e8; border:1px solid #2ec4b6; border-radius:8px; padding:8px;
+        margin-top:6px; font-size:14px; font-family:inherit; box-sizing:border-box; }
+.quote.on textarea { display:block; }
+.qrow { display:flex; }
+.qbody { flex:1; }
+.bar { position:fixed; bottom:0; left:0; right:0; background:#1c2228;
+       border-top:1px solid #2a3138; padding:12px 24px; display:flex;
+       align-items:center; gap:16px; }
+button.primary { background:#2ec4b6; color:#0e1215; border:0; border-radius:8px;
+       padding:11px 26px; font-size:15px; font-weight:700; cursor:pointer; }
+button.primary:disabled { opacity:.5; cursor:wait; }
+.bar label { font-size:13.5px; color:#9aa4ad; }
+.bar .spacer { flex:1; }
+.bar a { color:#7f8a93; font-size:13.5px; text-decoration:none; }
+#warnbox { display:none; }
+em { color:#cdd3d8; }
+</style></head><body><div class="wrap">
+
+<div class="topbar">
+  <span>#{{ pos }} of {{ total }} · needs {{ needs|join(' + ') }}</span>
+  <span>
+    {% if prev_id %}<a href="/flow/movie/{{ prev_id }}">← prev</a> · {% endif %}
+    <a href="/flow">review page</a>
+    {% if next_id %} · <a href="/flow/movie/{{ next_id }}">next (no save) →</a>{% endif %}
+  </span>
+</div>
+
+<div class="hero">
+  {% if movie.poster %}<img src="{{ movie.poster }}" alt="">{% endif %}
+  <div>
+    <h1>{{ movie.title }} ({{ movie.year }})</h1>
+    <div class="meta">
+      {%- set bits = [] -%}
+      {%- if movie.director %}{% set _ = bits.append('directed by ' + movie.director) %}{% endif -%}
+      {%- if movie.genres %}{% set _ = bits.append(movie.genres) %}{% endif -%}
+      {%- if movie.runtime %}{% set _ = bits.append(movie.runtime|string + ' min') %}{% endif -%}
+      {%- if movie.country %}{% set _ = bits.append(movie.country) %}{% endif -%}
+      {%- if movie.services %}{% set _ = bits.append(movie.services) %}{% endif -%}
+      {{ bits|join(' | ') }}
+      {% if movie.is_slop %}<span class="badge">SLOP</span>{% endif %}
+    </div>
+    {% if movie.keywords %}<div class="kw">{{ movie.keywords }}</div>{% endif %}
+    <div class="links">
+      {% if movie.wiki %}<a href="{{ movie.wiki }}" target="_blank">Wikipedia</a>{% endif %}
+      {% if movie.trailer %}<a href="{{ movie.trailer }}" target="_blank">▶ Trailer</a>{% endif %}
+      {% if movie.rt_url %}<a href="{{ movie.rt_url }}" target="_blank">RT {{ movie.rt }}</a>{% endif %}
+      {% if movie.imdb_url %}<a href="{{ movie.imdb_url }}" target="_blank">IMDb {{ movie.imdb }}</a>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="warn" id="warnbox"></div>
+
+{% if 'capsule' in needs %}
+<h2>Capsule — pick a variant or paste your rewrite</h2>
+{% if variants %}
+  {% for v in variants %}
+  <div class="variant">
+    <div class="vhead"><span class="vnum">{{ v.n }}.</span>
+      <span class="wc">{{ v.words }} words — {{ v.label }}</span>
+      <button type="button" onclick="useVariant({{ loop.index0 }})">Use this</button></div>
+    <div class="vtext" data-raw="{{ v.raw|e }}">{{ v.raw }}</div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="warn" style="display:block">⚠ No cached variants — this film arrived after
+  the nightly run. Paste your own capsule below, or leave empty and handle it in chat.</div>
+{% endif %}
+
+<textarea id="capsule" placeholder="Your capsule — pick a variant above or paste/edit here. Real line breaks are fine."></textarea>
+
+{% if slinks %}
+<h2>Links that ride along (uncheck to drop)</h2>
+{% for l in slinks %}
+<div class="slink"><label><input type="checkbox" class="slcheck" checked data-name="{{ l.name|e }}">
+  <a href="{{ l.url }}" target="_blank">{{ l.name }}</a>
+  {% if l.wiki_description %}— <span class="desc">{{ l.wiki_description }}</span>{% endif %}</label></div>
+{% endfor %}
+{% elif variants and not links_cached %}
+<div class="warn" style="display:block">⚠ Suggested links not cached for this film (pre-upgrade
+entry) — director/cast still link automatically; other entities need chat.</div>
+{% endif %}
+
+{% if primer %}
+<details><summary>Factoid primer ({{ primer|length }} bullets)</summary>
+<ul>{% for b in primer %}<li>{{ b }}</li>{% endfor %}</ul></details>
+{% endif %}
+{% else %}
+<h2>Capsule already approved — quotes only</h2>
+{% endif %}
+
+{% if 'quotes' in needs %}
+<h2>Pull quotes — check to select; edit the box to trim</h2>
+{% if quotes %}
+{% set ns = namespace(grp=None) %}
+{% for q in quotes %}
+  {% if q.group != ns.grp %}<div class="quote outlet-h" style="border:0">{{ q.group }}</div>{% set ns.grp = q.group %}{% endif %}
+  <div class="quote{% if q.spoiler %} spoiler{% endif %}" id="q{{ q.num }}">
+    <div class="qrow">
+      <input type="checkbox" class="qcheck" data-num="{{ q.num }}"
+             data-critic="{{ q.critic|e }}" data-outlet="{{ q.outlet|e }}"
+             {% if q.spoiler %}data-spoiler="1"{% endif %}
+             {% if q.selected %}checked{% endif %}>
+      <div class="qbody">
+        {% if q.spoiler %}
+          <span class="attr">spoiler-protected review — to use it, check + paste the line you want (required)</span>
+          — <a href="{{ q.url }}" target="_blank">read review</a>
+          <div class="attr">— {{ q.critic }}{% if q.group != 'Letterboxd' %}, {{ q.outlet }}{% endif %}</div>
+          <textarea data-orig="" placeholder="Paste the quote line from the review — required for spoiler-protected reviews"></textarea>
+        {% else %}
+          <em>"{{ q.text }}"</em>
+          <div class="attr">— {% if q.group == 'Letterboxd' %}@{{ q.critic }}{% else %}{{ q.critic }}, {{ q.outlet }}{% endif %}
+            {% if q.url %} · <a href="{{ q.url }}" target="_blank">source</a>{% endif %}
+            {% if q.selected %} · ✓ already selected{% endif %}</div>
+          <textarea data-orig="{{ q.text|e }}">{{ q.text }}</textarea>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endfor %}
+{% else %}
+<div class="warn" style="display:block">⚠ No quotes in cache for this film — "skip quotes"
+below marks it reviewed, or add one in chat with --custom.</div>
+{% endif %}
+{% else %}
+<h2>Quotes already handled</h2>
+{% endif %}
+
+<div class="bar">
+  <button class="primary" id="save">Save &amp; Next →</button>
+  {% if 'quotes' in needs %}
+  <label><input type="checkbox" id="skipq" {% if not quotes %}checked{% endif %}> skip quotes</label>
+  {% endif %}
+  <span class="spacer"></span>
+  <a href="/flow/movie/{{ next_id or movie.id }}">skip film →</a>
+</div>
+
+<script>
+const variants = [...document.querySelectorAll('.vtext')].map(d => d.dataset.raw);
+function useVariant(i) {
+  document.getElementById('capsule').value = variants[i];
+  window.scrollTo({ top: document.getElementById('capsule').offsetTop - 80, behavior: 'smooth' });
+}
+document.querySelectorAll('.qcheck').forEach(c => {
+  const sync = () => c.closest('.quote').classList.toggle('on', c.checked);
+  c.addEventListener('change', () => { sync();
+    const skip = document.getElementById('skipq');
+    if (skip && c.checked) skip.checked = false; });
+  sync();
+});
+document.getElementById('save').onclick = async () => {
+  const btn = document.getElementById('save');
+  const capsule = (document.getElementById('capsule')?.value || '').trim();
+  const quotes = [...document.querySelectorAll('.qcheck:checked')].map(c => {
+    const ta = c.closest('.quote').querySelector('textarea');
+    const edited = ta && ta.value.trim() !== ta.dataset.orig.trim();
+    return { num: +c.dataset.num, critic: c.dataset.critic, outlet: c.dataset.outlet,
+             spoiler: !!c.dataset.spoiler, text: edited ? ta.value.trim() : '' };
+  });
+  const emptySpoiler = quotes.find(q => q.spoiler && !q.text);
+  if (emptySpoiler) {
+    showWarn(`Quote #${emptySpoiler.num} is spoiler-protected — paste the line you want into its box (open "read review"), or uncheck it.`);
+    return;
+  }
+  const skipq = document.getElementById('skipq')?.checked && quotes.length === 0;
+  if (!capsule && quotes.length === 0 && !skipq) {
+    showWarn('Nothing to save — pick a variant/paste a capsule, check a quote, or tick "skip quotes". Use "skip film" to move on without saving.');
+    return;
+  }
+  const linksOff = [...document.querySelectorAll('.slcheck')]
+    .filter(c => !c.checked).map(c => c.dataset.name);
+  btn.disabled = true; btn.textContent = 'Saving… (verifying links)';
+  try {
+    const res = await fetch(`/flow/movie/{{ movie.id }}/save`, { method:'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ capsule, quotes, skip_quotes: skipq, links_off: linksOff }) });
+    const j = await res.json();
+    if (!j.success) throw new Error(j.error || 'save failed');
+    const warns = j.warnings || [];
+    if (warns.some(w => w.includes('NOT committed'))) {
+      // git needs a human — stop the flow here instead of burying it.
+      btn.disabled = false; btn.textContent = 'Save & Next →';
+      showWarn(warns.join(' · '));
+      return;
+    }
+    if (warns.length) sessionStorage.setItem('flowWarn', warns.join(' · '));
+    location.href = j.next_id ? `/flow/movie/${j.next_id}` : '/flow/done';
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Save & Next →';
+    showWarn(e.message);
+  }
+};
+function showWarn(msg) {
+  const w = document.getElementById('warnbox');
+  w.textContent = '⚠ ' + msg; w.style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+const carried = sessionStorage.getItem('flowWarn');
+if (carried) { showWarn('previous film: ' + carried); sessionStorage.removeItem('flowWarn'); }
+</script>
+</div></body></html>
