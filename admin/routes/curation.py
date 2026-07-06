@@ -13,6 +13,7 @@ from admin.config import (
     FEATURED_FILE, RESTORATIONS_FILE, CATEGORY_OVERRIDES_FILE,
 )
 from admin.logging_setup import logger
+from pipeline.provider_names import normalize_watch_links
 from pipeline.tracking_db import get_tracking_db
 from admin.utils import (
     load_json, mark_changes_pending, validate_movie_update_request,
@@ -487,7 +488,10 @@ def update_movie_fields() -> dict:
                         else:
                             cat_data['link'] = None
 
-                movie['watch_links'] = watch_links
+                # Route through the canonical boundary like every other
+                # watch_links writer: simplifies the typed service name,
+                # coerces the form's dict shape to the list schema, dedupes
+                movie['watch_links'] = normalize_watch_links(watch_links)
                 movie['manual_watch_links'] = True
                 changes_made.append('Watch Links')
             else:

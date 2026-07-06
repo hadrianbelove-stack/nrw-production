@@ -7,6 +7,11 @@ through normalize_watch_links() at its exit boundary:
 
   - EnrichmentService.get_watch_links (all waterfall paths incl. cache)
   - Discoverer gap-fill merge
+  - Display build: cache-injection + manual tracking overlay (display.py)
+  - Admin panel manual edits (admin/routes/curation.py)
+
+The duplicate guard in ValidationService.fix_data_json_schema warns on
+every pipeline pass if a new writer bypasses this list.
 
 Dedup MUST key on the simplified name: JustWatch lists ad-supported tiers
 as separate offers ("Netflix" + "Netflix Standard with Ads", same URL),
