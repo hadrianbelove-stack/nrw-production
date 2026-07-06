@@ -171,6 +171,15 @@ def print_capsule_result(result, movie, show_sources=False):
         print("FACTOID PRIMER:")
         print(factoid_primer)
 
+    # Suggested Wikipedia links (pre-verified overnight — no live searching)
+    suggested_links = result.get('suggested_links', [])
+    if suggested_links:
+        print(f"{'- '*30}")
+        print("SUGGESTED LINKS:")
+        for i, link in enumerate(suggested_links, 1):
+            desc = f" — {link['wiki_description']}" if link.get('wiki_description') else ""
+            print(f"  {i}. [{link['name']}]({link['url']}){desc}")
+
     # Show verification
     verification = result.get('verification', [])
     if verification:

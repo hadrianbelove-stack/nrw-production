@@ -910,16 +910,19 @@ VERIFICATION:"""
         return capsule
 
     def _generate_factoid_primer(self, sources: Dict, context: str,
-                                title: str, year: int, director: str = None) -> Tuple[str, dict]:
+                                title: str, year: int, director: str = None,
+                                cast: list = None) -> Tuple[str, dict, list]:
         """Generate a rich factoid primer — bullet list of production context,
         interview quotes, and behind-the-scenes details for the capsule editor.
 
         Uses already-fetched sources + Google Search grounding for interviews
         and press coverage not captured by the scraping phase.
 
-        Returns (primer_text, notability) where notability is the parsed
-        {festival, awards, yearend_lists, press_volume} block (reused for the
-        notability Buzz score) — or {} if absent/unparseable.
+        Returns (primer_text, notability, suggested_links) where notability is
+        the parsed {festival, awards, yearend_lists, press_volume} block (reused
+        for the notability Buzz score) — or {} if absent/unparseable — and
+        suggested_links is up to 3 REST-verified non-cast/non-director entities
+        [{name, url, wiki_description}] for the curation link pass.
         """
         if not self._init_gemini():
             return '', {}
@@ -944,6 +947,7 @@ VERIFICATION:"""
 
         source_block = '\n\n'.join(source_lines)
         director_str = f" directed by {director}" if director else ""
+        cast_exclusion = (" (" + ", ".join(cast[:5]) + ")") if cast else ""
 
         prompt = f"""You are a film researcher preparing a detailed factoid primer for an editor who will write a short capsule description of "{title}" ({year}){director_str}.
 
@@ -967,9 +971,11 @@ Using the sources above AND Google Search, dig up everything interesting and use
 
 Output the bullet list using • characters. Write 10–15 bullets. This is a research dump — go long. Each bullet should be as detailed as the material warrants: 2–4 sentences is normal, more if needed. Do NOT truncate interesting information into a terse one-liner. If you have a direct quote, include it verbatim and in full with attribution. Prioritize specific, surprising, or non-obvious details over generic biography. Do not number the bullets. No headers, no sections — just the bullets.
 
-Then, after the bullets, output ONE machine-readable block on its own line and nothing after it, exactly:
+Then, after the bullets, output TWO machine-readable blocks, each on its own line, in this order, and nothing after them:
 <NOTABILITY>{{"festival": "major festivals played + prizes, or 'none found'", "awards": "named awards/nominations, or 'none found'", "yearend_lists": "critic year-end 'best of <year>' inclusions, or 'none found'", "press_volume": "heavy|moderate|light|minimal"}}</NOTABILITY>
 Use "none found" rather than guessing; never invent an award, festival, or list. press_volume = your read of how much trade/news/online coverage this film has.
+<SUGGESTED_LINKS>[{{"name": "Entity Name", "url": "https://en.wikipedia.org/wiki/Entity_Name"}}]</SUGGESTED_LINKS>
+SUGGESTED_LINKS = up to 3 named entities from your bullets that a curious reader would want to look up — people, works, movements, or organizations that have their own English Wikipedia article and appear in your bullets. NEVER include this film itself, its director{cast_exclusion}, or its cast — those are linked separately. Output an empty list [] if nothing qualifies.
 
 FACTOID PRIMER:"""
 
@@ -983,6 +989,7 @@ FACTOID PRIMER:"""
             return response.text.strip() if response.text else None
 
         notability = {}
+        suggested_links = []
         try:
             raw = self._retry_with_backoff(_make_request)
             if raw:
@@ -995,6 +1002,20 @@ FACTOID PRIMER:"""
                     except Exception:
                         notability = {}
                     raw = raw[:m.start()] + raw[m.end():]
+                # Same for suggested links — verify each against Wikipedia
+                # before keeping it (Gemini URLs hallucinate; see pull quotes).
+                m = re.search(r'<SUGGESTED_LINKS>\s*(\[.*?\])\s*</SUGGESTED_LINKS>', raw, re.DOTALL)
+                if m:
+                    try:
+                        candidates = json.loads(m.group(1))
+                    except Exception:
+                        candidates = []
+                    raw = raw[:m.start()] + raw[m.end():]
+                    for c in candidates[:3]:
+                        if isinstance(c, dict) and c.get('name'):
+                            verified = self._verify_wikipedia_entity(c['name'], c.get('url', ''))
+                            if verified:
+                                suggested_links.append(verified)
                 lines = [l.strip() for l in raw.split('\n') if l.strip()]
                 bullets = []
                 for line in lines:
@@ -1005,11 +1026,38 @@ FACTOID PRIMER:"""
                         bullets.append('• ' + line.lstrip('•-* ').strip())
                     elif line and not line.startswith(('#', '<')):
                         bullets.append('• ' + line)
-                return '\n'.join(bullets), notability
+                return '\n'.join(bullets), notability, suggested_links
         except Exception as e:
             logger.warning(f"Factoid primer failed for {title}: {e}")
 
-        return '', notability
+        return '', notability, suggested_links
+
+    def _verify_wikipedia_entity(self, name: str, url: str) -> Optional[Dict]:
+        """One GET to Wikipedia's REST summary endpoint to confirm a suggested
+        entity page exists. Returns {name, url, wiki_description} with the
+        canonical URL and Wikipedia's own one-line description — the curator's
+        guard against right-page/wrong-person links — or None (404, error,
+        disambiguation page).
+        """
+        try:
+            m = re.search(r'en\.wikipedia\.org/wiki/([^#?\s]+)', url or '')
+            title_part = m.group(1) if m else quote((name or '').strip().replace(' ', '_'))
+            if not title_part:
+                return None
+            resp = requests.get(
+                f'https://en.wikipedia.org/api/rest_v1/page/summary/{title_part}',
+                headers={'User-Agent': 'NRW-capsule-links/1.0'}, timeout=8)
+            if resp.status_code != 200:
+                return None
+            data = resp.json()
+            if data.get('type') == 'disambiguation':
+                return None
+            canonical = (data.get('content_urls', {}).get('desktop', {}) or {}).get('page') or url
+            return {'name': name, 'url': canonical,
+                    'wiki_description': data.get('description', '')}
+        except Exception as e:
+            logger.debug(f"Wikipedia entity check failed for {name}: {e}")
+            return None
 
     def write_capsule(
         self,
@@ -1075,6 +1123,7 @@ FACTOID PRIMER:"""
                                 'verification': cached_data.get('verification', []),
                                 'factoid_primer': cached_data.get('factoid_primer', ''),
                                 'notability': cached_data.get('notability', {}),
+                                'suggested_links': cached_data.get('suggested_links', []),
                                 'sources_used': cached_data.get('sources_used', {})
                             }
                     except (ValueError, TypeError):
@@ -1158,8 +1207,8 @@ FACTOID PRIMER:"""
 
         # --- Phase 4: Factoid Primer ---
         logger.info(f"  Generating factoid primer...")
-        factoid_primer, notability = self._generate_factoid_primer(
-            sources, context, title, year, director=director
+        factoid_primer, notability, suggested_links = self._generate_factoid_primer(
+            sources, context, title, year, director=director, cast=cast
         )
 
         # Cache result
@@ -1173,6 +1222,7 @@ FACTOID PRIMER:"""
             'verification': verification,
             'factoid_primer': factoid_primer,
             'notability': notability,
+            'suggested_links': suggested_links,
             'sources_used': {
                 k: (v[:200] if isinstance(v, str) else v) if v else ''
                 for k, v in sources.items()
@@ -1190,6 +1240,7 @@ FACTOID PRIMER:"""
             'verification': verification,
             'factoid_primer': factoid_primer,
             'notability': notability,
+            'suggested_links': suggested_links,
             'sources_used': sources
         }
 

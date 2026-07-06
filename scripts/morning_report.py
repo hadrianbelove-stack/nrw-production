@@ -228,9 +228,15 @@ def quotes():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--section", required=True, choices=["overnight", "backlog", "quotes"])
+    ap.add_argument("--section", required=True,
+                    choices=["overnight", "backlog", "quotes", "all"])
     args = ap.parse_args()
-    {"overnight": overnight, "backlog": backlog, "quotes": quotes}[args.section]()
+    if args.section == "all":
+        for fn in (overnight, backlog, quotes):
+            print(f"\n=== {fn.__name__.upper()} ===")
+            fn()
+    else:
+        {"overnight": overnight, "backlog": backlog, "quotes": quotes}[args.section]()
 
 
 if __name__ == "__main__":

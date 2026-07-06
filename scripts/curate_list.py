@@ -111,6 +111,33 @@ def _slop_status(m):
     return "🗑 SLOP" if m.get("is_slop") else "✅ Not slop"
 
 
+def capsule_queue(window=7):
+    """Stage 4 queue: in-window films missing a capsule (by title, vs the
+    approved bank) or a pull_quotes key. Returns [(movie, needs)] sorted
+    newest-first. Single source of the Stage-4 filter — used by
+    --stage capsule here AND imported by scripts/render_stage4_doc.py."""
+    data = json.load(open("data.json"))
+    today = str(date.today())
+    from_date = str(date.today() - timedelta(days=window))
+    caps = _load(CAPSULES, [])
+    ct = set((c.get("title", "") if isinstance(c, dict) else "").lower() for c in caps)
+    out = []
+    for m in data["movies"]:
+        if not _in_window(m, from_date, today):
+            continue
+        if m.get("filters", {}).get("is_restoration") and not m.get("_reissue"):
+            continue
+        needs = []
+        if m.get("title", "").lower() not in ct:
+            needs.append("capsule")
+        if "pull_quotes" not in m:
+            needs.append("quotes")
+        if needs:
+            out.append((m, needs))
+    out.sort(key=lambda x: x[0].get("digital_date", "") or "", reverse=True)
+    return out
+
+
 def build(stage, window):
     data = json.load(open("data.json"))
     today = str(date.today())
@@ -120,20 +147,7 @@ def build(stage, window):
 
     rows = []
     if stage == "capsule":
-        caps = _load(CAPSULES, [])
-        ct = set((c.get("title", "") if isinstance(c, dict) else "").lower() for c in caps)
-        for m in data["movies"]:
-            if not _in_window(m, from_date, today):
-                continue
-            if m.get("filters", {}).get("is_restoration") and not m.get("_reissue"):
-                continue
-            needs = []
-            if m.get("title", "").lower() not in ct:
-                needs.append("capsule")
-            if "pull_quotes" not in m:
-                needs.append("quotes")
-            if not needs:
-                continue
+        for m, needs in capsule_queue(window):
             row = [str(m.get("id")), m.get("title", ""), str(m.get("year", "?")),
                    str(m.get("rt_score") or "--"), "+".join(needs),
                    (m.get("links", {}) or {}).get("wikipedia", "") or "", _trailer(m)]
