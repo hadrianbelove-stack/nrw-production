@@ -1,60 +1,47 @@
 {
-  "timestamp": "2026-07-05T10:26:26.394750",
-  "movies_requested": 13,
+  "timestamp": "2026-07-06T12:18:34.910670",
+  "movies_requested": 12,
   "movies_enriched": 7,
-  "movies_deferred": 6,
+  "movies_deferred": 5,
   "deferred_details": [
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-05T10:19:13.457016",
+      "discovered_at": "2026-07-06T12:12:39.402145",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
-      "first_reverted_at": "2026-07-05",
+      "revert_count": 7,
+      "first_reverted_at": "2026-07-06",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-05T10:19:13.824090",
+      "discovered_at": "2026-07-06T12:12:39.667063",
       "discovery_source": "tmdb_type4",
-      "revert_count": 27,
-      "first_reverted_at": "2026-07-05",
+      "revert_count": 28,
+      "first_reverted_at": "2026-07-06",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-05T10:19:14.094318",
+      "discovered_at": "2026-07-06T12:12:40.010854",
       "discovery_source": "tmdb_type4",
-      "revert_count": 18,
-      "first_reverted_at": "2026-07-05",
+      "revert_count": 19,
+      "first_reverted_at": "2026-07-06",
       "tmdb_platforms": []
-    },
-    {
-      "title": "The Dangers in My Heart: The Movie",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-07-05T10:19:27.178742",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-05",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Barnes & Noble"
-      ]
     },
     {
       "title": "Blades of the Guardians",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "",
-      "discovered_at": "2026-07-04T10:03:21.837085",
+      "discovered_at": "2026-07-06T12:12:46.497732",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-05",
+      "first_reverted_at": "2026-07-06",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
@@ -63,13 +50,13 @@
       ]
     },
     {
-      "title": "Lockbox",
+      "title": "Mary Oliver: Saved by the Beauty of the World",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "",
-      "discovered_at": "2026-07-05T10:19:32.303434",
+      "discovered_at": "2026-07-06T12:12:46.977432",
       "discovery_source": "provider_availability_check",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-05",
+      "first_reverted_at": "2026-07-06",
       "tmdb_platforms": [
         "Fandango At Home"
       ],
@@ -78,20 +65,19 @@
       ]
     },
     {
-      "title": "The Story of Everything",
+      "title": "The Python Hunt",
       "reason": "zero_watch_links",
       "digital_date": "",
-      "discovered_at": "2026-06-10T13:19:42.396936",
+      "discovered_at": "2026-05-11T12:51:00.017012",
       "discovery_source": "provider_availability_check",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-05",
+      "first_reverted_at": "2026-07-06",
       "tmdb_platforms": [
-        "Fandango At Home",
         "Amazon Video"
       ]
     }
   ],
-  "enrichment_duration_seconds": 407.64,
+  "enrichment_duration_seconds": 340.56,
   "error_details": [],
   "total_errors": 0
 }
