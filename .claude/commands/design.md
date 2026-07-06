@@ -32,7 +32,7 @@ Fill this brief exactly:
 ```
 MODE: <review|options|implement|guide-audit>
 BRIEF: <what to look at / build, restated concretely — which pages, which states (wall top, scrolled, lightbox open, filter active), both surfaces unless the user narrowed it>
-SLUG: <slug>   → screenshots go to screenshots/design/<slug>/
+SLUG: <slug>   → screenshots go to /tmp/design-shots/<slug>/ (disposable — never saved into the repo)
 VIEWPORTS: default per your protocol; <plus any the request implies>
 APPROVED SPEC (implement only): <the exact spec, verbatim>
 CONSTRAINTS: <anything the user said this session — deadlines, "don't touch X", taste remarks>
@@ -43,7 +43,7 @@ One dispatch per mode. Do not dispatch implement and review in the same call.
 ## Step 4 — Present the report (the user is a non-coder — translate)
 
 - Lead with the VERDICT in plain words. No jargon, no hype.
-- `open screenshots/design/<slug>/<key-shot>.png` the 1-3 shots that matter (macOS Preview). For implement, open the AFTER next to the BEFORE.
+- `open /tmp/design-shots/<slug>/<key-shot>.png` the 1-3 shots that matter (macOS Preview). For implement, open the AFTER next to the BEFORE. Screenshots are disposable working artifacts (owner rule, Jul 6 2026): they live in /tmp, get shown once, and evaporate on reboot — never copy them into the repo.
 - Findings as a short list: what's wrong visually → what the fix looks like. Keep file:line available but don't lead with it.
 - **Options mode**: give the local URL per variant (`http://localhost:3000/mockups/<file>.html`) for desktop viewing. For PHONE viewing the user cannot open LAN links — the mockup must be committed to `mockups/` and pushed, then viewed at `https://hadrianbelove-stack.github.io/nrw-production/mockups/<file>.html`. Pages IS production and publish only auto-runs on data.json changes, so a code-only push needs `gh workflow run publish.yml --ref main`. Do this only with the user's OK.
 - **Implement mode**: summarize the diff in plain language, confirm the ?v= bumps and the before/after pair, then remind: changes are UNCOMMITTED. Offer a commit message; commit only if the user says yes (append `APPROVED: DELETE` if any lines were removed — the hook requires it). Deploying to the live site afterwards also needs `gh workflow run publish.yml --ref main`.

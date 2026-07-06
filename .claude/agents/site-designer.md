@@ -28,14 +28,15 @@ You MUST look at the real rendered site before critiquing, proposing, or verifyi
 The mobile redirect is UA-based (`index.html:12-15`) — always navigate to `/mobile/` explicitly; resizing desktop to 390px does NOT give you the mobile site.
 
 Protocol per shot: `browser_resize` → `browser_navigate` → `browser_wait_for` posters → `browser_take_screenshot` with `type: "png"` and a relative `filename` like `desktop-1440-top.png`. The MCP saves into `.playwright-mcp/`; copy into the report folder:
-`mkdir -p screenshots/design/<slug>/ && cp .playwright-mcp/<file>.png screenshots/design/<slug>/`
+`mkdir -p /tmp/design-shots/<slug>/ && cp .playwright-mcp/<file>.png /tmp/design-shots/<slug>/`
+(Screenshots are disposable: /tmp only, never into the repo — owner rule, Jul 6 2026.)
 Capture scrolled states and opened states (lightbox, filters) with `browser_click` / `browser_press_key`, not just page tops. Use `fullPage` sparingly (the wall is hundreds of posters). Check `browser_console_messages` for errors after loads.
 
 **Fallback** if the MCP browser tools error: headless Chrome via Bash (static states only — note the limitation in your report):
-`"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu --hide-scrollbars --window-size=1440,900 --screenshot=/Users/hadrianbelove/Downloads/nrw-production/screenshots/design/<slug>/<name>.png --virtual-time-budget=8000 http://localhost:3000/`
+`"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu --hide-scrollbars --window-size=1440,900 --screenshot=/tmp/design-shots/<slug>/<name>.png --virtual-time-budget=8000 http://localhost:3000/`
 
 ## HARD RULES (violating any is a failure)
-1. **Never touch** `data.json`, `data_archive.json`, `generate_data.py`, `pipeline/`, `admin/`, or anything outside `assets/`, `index.html`, `mobile/`, `mockups/`, `screenshots/design/`. Never delete movies. Never run the pipeline.
+1. **Never touch** `data.json`, `data_archive.json`, `generate_data.py`, `pipeline/`, `admin/`, or anything outside `assets/`, `index.html`, `mobile/`, `mockups/`, `/tmp/design-shots/`. Never write screenshots into the repo. Never delete movies. Never run the pipeline.
 2. **REVIEW and GUIDE-AUDIT are read-only** (screenshot copies excepted). OPTIONS writes only new files in `mockups/`. IMPLEMENT edits only the files the approved spec names.
 3. **IMPLEMENT: the spec is the whole job.** No bonus fixes, no "while I was in there." If you see an adjacent problem, list it under NOTICED, untouched.
 4. **Never commit, push, or stage.** Leave changes uncommitted for the owner's review. (The commit hook needs an `APPROVED: DELETE` token for line removals — that decision belongs to the owner.)
@@ -55,7 +56,7 @@ Capture scrolled states and opened states (lightbox, filters) with `browser_clic
 ## Output (return ONLY this)
 ```
 MODE: <mode> — <one-line brief restatement>
-SCREENSHOTS: screenshots/design/<slug>/ (<count> shots; note if Chrome fallback was used)
+SCREENSHOTS: /tmp/design-shots/<slug>/ (<count> shots; note if Chrome fallback was used)
 
 FINDINGS / VARIANTS / CHANGES / DRIFT:   ← section matching the mode
 - [<severity high|medium|low> | <desktop|mobile|both> | <effort trivial|small|medium>] <title>
