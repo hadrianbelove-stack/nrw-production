@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
   },
   restorationCardBadgeText: {
     color: Colors.restorationText,
-    fontSize: 10,
+    fontSize: 18,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
   },
   screeningRibbonText: {
     color: Colors.screeningGoldText,
-    fontSize: 12,
+    fontSize: 18,
     fontWeight: '700',
     letterSpacing: 0.5,
     textAlign: 'center',
@@ -584,27 +584,29 @@ const styles = StyleSheet.create({
     borderColor: Colors.staffPick,
   },
   streamingFrameHeader: {
-    height: 52,
+    // 10-foot floor (audit F27): band grew 52→72 so the gallery-label type
+    // is legible from a couch; poster below is flex:1 and absorbs the delta
+    height: 72,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 8,
   },
   streamingFrameName: {
-    fontSize: 15,
+    fontSize: 26,
     fontWeight: '800',
-    letterSpacing: 1.4,
-    textTransform: 'uppercase',
-    lineHeight: 17,
-  },
-  streamingFrameSuper: {
-    fontSize: 8,
-    fontWeight: '500',
     letterSpacing: 2,
     textTransform: 'uppercase',
+    lineHeight: 30,
+  },
+  streamingFrameSuper: {
+    fontSize: 18,
+    fontWeight: '500',
+    letterSpacing: 2.5,
+    textTransform: 'uppercase',
     opacity: 0.75,
-    lineHeight: 10,
-    marginTop: 3,
+    lineHeight: 20,
+    marginTop: 2,
   },
   streamingFramePoster: {
     flex: 1,
@@ -615,12 +617,12 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255,215,0,0.25)',
   },
   festFrameName: {
-    fontSize: 13,
+    fontSize: 20,
     fontWeight: '800',
-    letterSpacing: 0.6,
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
     color: '#FFD700',
-    lineHeight: 15,
+    lineHeight: 23,
     textAlign: 'center',
   },
   festDatePill: {
@@ -633,9 +635,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   festDatePillText: {
-    fontSize: 11,
+    fontSize: 18,
     fontWeight: '800',
-    letterSpacing: 0.8,
+    letterSpacing: 1,
     textAlign: 'center',
   },
   festPosterWrap: {
@@ -665,7 +667,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(245,197,24,0.9)',
   },
   cardScoreBadgeText: {
-    fontSize: 14,
+    fontSize: 19,
     fontWeight: '800',
     color: '#fff',
   },
