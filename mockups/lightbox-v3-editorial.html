@@ -53,15 +53,19 @@
 .lightbox-scores .score-badge.mc .score-logo { filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1); }
 .lightbox-scores .score-badge.wiki .score-logo { filter: brightness(0) invert(1); height: 22px; }
 
-/* TRAILER pill anchored to the RIGHT of the score row — identical spec. */
+/* TRAILER pill anchored to the RIGHT of the score row — identical spec.
+   CROWDING RULE (round-2 V3 bug fix): pill pinned top-right, flex:0 0 auto,
+   never shrinks/drops below the chips; chips group wraps rather than clips so
+   every brand mark stays visible. This replaces round-2's flex-wrap:wrap row
+   that let the pill fall UNDER the chips at narrow width. */
 .lb-scorerow {
-    display: flex; align-items: center; flex-wrap: nowrap; gap: 0.5rem;
-    margin: 0.2rem 0 1.1rem;
+    display: flex; align-items: flex-start; flex-wrap: nowrap; gap: 0.5rem;
+    margin: 0.2rem 0 1.1rem; min-height: 40px;
 }
-.lb-scorerow .lightbox-scores { flex: 1 1 auto; min-width: 0; overflow: hidden; }
+.lb-scorerow .lightbox-scores { flex: 1 1 auto; min-width: 0; flex-wrap: wrap; row-gap: 0.4rem; }
 .lb-trailer-pill {
-    flex: 0 0 auto; display: inline-flex; align-items: center; gap: 9px;
-    margin-left: auto; height: 40px; padding: 0 18px;
+    flex: 0 0 auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 9px;
+    height: 40px; padding: 0 18px;
     border: 1.5px solid rgba(255,255,255,0.3); border-radius: 8px;
     background: #E50914; color: #fff;
     font-size: 0.9rem; font-weight: 800; letter-spacing: 0.14em;
@@ -118,15 +122,16 @@
    poster shrinks and hands width to the type. */
 @media (max-width: 1100px) {
     .lightbox-content { flex-direction: row; align-items: center; max-width: calc(100vw - 40px); gap: clamp(0.7rem, 1.8vw, 1.2rem); }
+    /* poster gives up MORE width so the reading column holds 5 logos + pill on one line */
     .lightbox-poster {
-        height: min(86vh, calc(40vw * 1.5));
-        width: calc(min(86vh, calc(40vw * 1.5)) * 0.667);
+        height: min(86vh, calc(32vw * 1.5));
+        width: calc(min(86vh, calc(32vw * 1.5)) * 0.667);
         max-height: 86vh;
     }
     .lightbox-info-wrap {
-        height: min(86vh, calc(40vw * 1.5));
+        height: min(86vh, calc(32vw * 1.5));
         max-height: 86vh;
-        width: clamp(360px, 48vw, 500px);
+        width: clamp(430px, 62vw, 640px);
     }
     .lightbox-info { display: flex; }
     .v3-read .lightbox-synopsis { font-size: 1.04rem; line-height: 1.62; max-width: none; }

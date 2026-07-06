@@ -74,25 +74,33 @@
 .lightbox-scores .score-badge.wiki .score-logo { filter: brightness(0) invert(1); height: 22px; }
 
 /* TRAILER PLACEMENT (decided) — red pill anchored to the RIGHT end of the
-   score row. Identical across variants. */
+   score row. Identical across variants.
+   CROWDING RULE: the pill is pinned top-right and NEVER shrinks or drops below
+   the chips (flex:0 0 auto + align-self:flex-start). The chips group takes the
+   remaining width and is allowed to WRAP to a second line rather than clip — so
+   even the busiest case (5 logos + pill) keeps every brand mark fully visible
+   and the pill still reads first. At the target viewports all 5 fit on one line
+   because the poster gives up width first (see the narrow media query). */
 .lb-scorerow {
     display: flex;
-    align-items: center;
-    flex-wrap: nowrap;              /* pill stays on the row, never wraps below */
+    align-items: flex-start;
+    flex-wrap: nowrap;              /* pill stays beside the chips, never under */
     gap: 0.5rem;
     margin: 0.2rem 0 1rem;
+    min-height: 40px;
 }
 .lb-scorerow .lightbox-scores {
     flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;              /* the CHIPS give up space before the pill does */
+    flex-wrap: wrap;               /* chips wrap cleanly if truly out of room — never clip */
+    row-gap: 0.4rem;
 }
 .lb-trailer-pill {
     flex: 0 0 auto;                /* pill never shrinks or wraps */
+    align-self: flex-start;       /* stays pinned top-right even if chips wrap */
     display: inline-flex;
     align-items: center;
     gap: 9px;
-    margin-left: auto;
     height: 40px;
     padding: 0 18px;
     border: 1.5px solid rgba(255,255,255,0.3);
@@ -174,15 +182,17 @@
         max-width: calc(100vw - 40px);
         gap: clamp(0.7rem, 1.8vw, 1.2rem);
     }
+    /* poster gives up MORE width here so the info column can hold the busiest
+       score row (5 logos + pill) on one line without clipping */
     .lightbox-poster {
-        height: min(88vh, calc(40vw * 1.5));
-        width: calc(min(88vh, calc(40vw * 1.5)) * 0.667);
+        height: min(88vh, calc(32vw * 1.5));
+        width: calc(min(88vh, calc(32vw * 1.5)) * 0.667);
         max-height: 88vh;
     }
     .lightbox-info-wrap {
-        height: min(88vh, calc(40vw * 1.5));
+        height: min(88vh, calc(32vw * 1.5));
         max-height: 88vh;
-        width: clamp(340px, 46vw, 460px);
+        width: clamp(430px, 62vw, 640px);
     }
     /* neutralize production's ≤1100px hero-thumb rules (we don't use the
        .lightbox-hero wrapper, but guard against the poster-in-info overrides) */
