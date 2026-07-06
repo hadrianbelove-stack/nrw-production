@@ -9,6 +9,12 @@ Start the day. Read the overnight report, then curate new arrivals film by film.
 
 ## Phase 1 — Overnight Report
 
+**Step 0 — launch the code catch-up in the background FIRST**, before reading any report files, so it reviews while the report is gathered and the user curates. Use the Agent tool with `run_in_background: true` (subagent type `claude`) and this prompt:
+
+> Execute `.claude/commands/cleanupcatchup.md` in `--report-only` mode for the NRW repo at /Users/hadrianbelove/Downloads/nrw-production. Follow that file exactly: find the marker, pin the range end, filter to code commits, run the behavior pass (bugs / NRW-rule violations) and the dead-code pass over the changed files, append findings to `.claude/catchup_findings.md` under today's date, and advance `.claude/last_reported_commit` to the pinned range end (never a fresh `git rev-parse HEAD` — commits land mid-review). Make NO code edits and never touch `.claude/last_catchup_commit`. Return a compact summary: N commits reviewed, each behavior finding as one line (file:line — plain-English issue), a mechanical-cleanup count, and any still-pending count from earlier ledger entries.
+
+Do not wait for it — go straight to the report reads below.
+
 Read all of the following before presenting anything:
 
 1. `logs/launchagent.log` — last 150 lines. **Use `tail -150` via Bash** (the Read tool reads from the top; log files can be 30k+ lines so offset=0 will return stale entries from months ago)
@@ -67,13 +73,11 @@ Present the output directly. Lead with the backlog count. Any `⚠` flags become
 
 ---
 
-### Code Catch-up (report-only)
+### Code Catch-up (background)
 
-Run `/cleanupcatchup --report-only` — a quality pass over *code* commits **not yet shown in a previous morning report** (review bugs/NRW-rule fails + dead-code candidates). It makes no edits and never advances the real catch-up marker; it advances only its own reported marker, so the same commits aren't re-reviewed every morning. Findings accumulate in `.claude/catchup_findings.md` until a real `/cleanupcatchup` clears them.
+The catch-up agent from Step 0 is still working — the report section is **one line**: *"Code catch-up: reviewing N commits in the background — findings will drop in when ready."* Never block the report or curation on it.
 
-- If it reports "only data/curation commits" or "no new code commits since yesterday's report" → say so and move on (relay any still-pending count it mentions).
-- Otherwise present a 1-line-per-item summary. Any **behavior findings (bugs / rule violations)** become Concerns below. Mechanical cleanup items are listed here but are not Concerns.
-- Do **not** offer to fix anything in `/morning` — point the user to `/cleanupcatchup` for that.
+**When its completion notification arrives** (usually mid-curation): relay the summary between curation beats — behavior findings verbatim, one line each (these are late-arriving **Concerns**); mechanical cleanup as a count. Relay any still-pending count from earlier reports. Do **not** offer to fix anything in `/morning` — point the user to `/cleanupcatchup` for that. If the session ends before it finishes, say so — the findings still land in `.claude/catchup_findings.md` and surface in tomorrow's report.
 
 ---
 
@@ -93,7 +97,7 @@ If nothing: "No concerns."
 
 ## Phase 2 — Curation
 
-After the overnight report, run `/curate` to handle recent arrivals: Confirm Reissues (Stage 0) → Selects → section review → slop review → per-film (capsule + Wikipedia links + pull quotes). Stage 0 surfaces old films caught getting a new restoration/re-release (intake Pass D) for you to confirm onto the wall. `/curate` is **state-based** — it shows everything from the **last 7 days** still needing work (slop unconfirmed / no capsule / no quotes), newest first. There is no session to resume; skipped days just accumulate in the window until handled.
+After the overnight report, run `/curate` to handle recent arrivals: Confirm Reissues (Stage 0) → the combined review (Selects + Sections + Slop, one message / one reply) → per-film capsule + Wikipedia links + pull quotes (one reply per film). Stage 0 surfaces old films caught getting a new restoration/re-release (intake Pass D) for you to confirm onto the wall. `/curate` is **state-based** — it shows everything from the **last 7 days** still needing work (slop unconfirmed / no capsule / no quotes), newest first. There is no session to resume; skipped days just accumulate in the window until handled.
 
 The curation queue is ready when:
 - Capsule variants can be generated for films without one

@@ -29,12 +29,15 @@ A **real run** starts from `last_catchup_commit`. A **`--report-only` run** star
 MARKER=$(cat .claude/last_catchup_commit 2>/dev/null | tr -d '[:space:]')
 # --report-only ONLY: prefer the reported marker (skip this line on a real run)
 REPORTED=$(cat .claude/last_reported_commit 2>/dev/null | tr -d '[:space:]'); [ -n "$REPORTED" ] && git cat-file -e "${REPORTED}^{commit}" 2>/dev/null && MARKER=$REPORTED
+# Pin the range end NOW. Concurrent windows push to main mid-review; a fresh
+# `git rev-parse HEAD` at marker-advance time would silently skip those commits.
+RANGE_END=$(git rev-parse HEAD)
 if [ -n "$MARKER" ] && git cat-file -e "${MARKER}^{commit}" 2>/dev/null; then
-  echo "Starting from marker: $MARKER"
-  echo "--- commits since then ($MARKER..HEAD) ---"
-  git log --oneline "$MARKER..HEAD"
+  echo "Starting from marker: $MARKER (range end pinned: $RANGE_END)"
+  echo "--- commits since then ($MARKER..$RANGE_END) ---"
+  git log --oneline "$MARKER..$RANGE_END"
   echo "--- count ---"
-  git rev-list --count "$MARKER..HEAD"
+  git rev-list --count "$MARKER..$RANGE_END"
 else
   echo "No valid marker yet (first run) — fall back to the last 5 commits."
   git log --oneline -5
@@ -44,28 +47,28 @@ fi
 - Count **0** (nothing since the marker):
   - `--report-only`: say *"No new code commits since yesterday's report."* If `.claude/catchup_findings.md` exists and is non-empty, add one line: *"Earlier findings are still pending — run `/cleanupcatchup` to handle them"* (with a short count from that file). **STOP.**
   - real run: tell the user *"Nothing new since your last catch-up (`<short marker>`)."* and **STOP** — do not advance the marker.
-- **First run** (no marker): use `HEAD~5..HEAD` as the range and say you're starting fresh.
-- Otherwise the range is `<MARKER>..HEAD`.
+- **First run** (no marker): use `HEAD~5..$RANGE_END` as the range and say you're starting fresh.
+- Otherwise the range is `<MARKER>..$RANGE_END`.
 
 ## 2. Filter to code commits
 
 The catch-up reviews **code only** — not data/curation churn. Get the code files changed in the range:
 
 ```bash
-RANGE="<MARKER>..HEAD"   # or HEAD~5..HEAD on first run
+RANGE="<MARKER>..$RANGE_END"   # or HEAD~5..$RANGE_END on first run
 git diff --name-only "$RANGE" \
   | grep -E '\.(py|js|jsx|ts|css|html|brs|kt|swift|sh|ya?ml)$' \
   | grep -v -E '^(data|movie_tracking|data_archive)\.json$'
 ```
 
 - If the list is **empty** → only data/curation commits landed. Report **"No new code since last catch-up."**
-  - `--report-only`: advance only the reported marker (`git rev-parse HEAD > .claude/last_reported_commit`) so tomorrow's morning doesn't re-list the same data-only range, then STOP.
+  - `--report-only`: advance only the reported marker (`echo "$RANGE_END" > .claude/last_reported_commit`) so tomorrow's morning doesn't re-list the same data-only range, then STOP.
   - real run: advance the markers (Step 5) so these data commits aren't re-listed next time, then STOP.
 - Otherwise that file list is the **scope** for both passes below.
 
 ## 3. Behavior pass (bugs / NRW-rule violations)
 
-Run the standard **/review** on the range — invoke the `review` skill with the range string (e.g. `abc123..HEAD`) as its argument and let it do its normal report. It already knows the NRW Tier-1/Tier-2 rules and bug checklist; do **not** duplicate that here.
+Run the standard **/review** on the range — invoke the `review` skill with the pinned range string (e.g. `abc123..def456`, using the resolved `$RANGE_END`, never a bare `HEAD`) as its argument and let it do its normal report. It already knows the NRW Tier-1/Tier-2 rules and bug checklist; do **not** duplicate that here.
 
 - In `--report-only` mode: do **not** let it offer or apply fixes — report only.
 
@@ -93,15 +96,15 @@ Then:
 
 - **`--report-only`** → no edits, and **never** touch `.claude/last_catchup_commit`. Do these two things, then STOP:
   1. **Append** the two sections just presented to `.claude/catchup_findings.md` under a heading `## <today's date> (<range>)` — the pending ledger a real run works from and clears.
-  2. **Advance the reported marker** so tomorrow's `/morning` reviews only new commits: `git rev-parse HEAD > .claude/last_reported_commit`
+  2. **Advance the reported marker** so tomorrow's `/morning` reviews only new commits: `echo "$RANGE_END" > .claude/last_reported_commit` — the pinned end of the range actually reviewed, **never** a fresh `git rev-parse HEAD` (commits landing mid-review would be skipped forever).
   If `.claude/catchup_findings.md` already had findings from earlier reports, add one line to the summary: *"Plus N earlier finding(s) still pending — see a real `/cleanupcatchup`."* (When `/morning` calls this, it just relays the summary and points the user to a real `/cleanupcatchup`.)
 - **Real run** → ask: *"Fix all, pick numbers, or skip?"* Apply only what's approved (NRW Tier-1: never modify code without explicit approval). If `.claude/catchup_findings.md` holds findings from mornings whose commits fall inside this run's range, they'll re-surface in this run's passes — the ledger is a reminder, not a second source. After presenting — whether the user fixes or skips — advance the markers and clear the ledger:
 
 ```bash
-git rev-parse HEAD > .claude/last_catchup_commit
-git rev-parse HEAD > .claude/last_reported_commit
+echo "$RANGE_END" > .claude/last_catchup_commit
+echo "$RANGE_END" > .claude/last_reported_commit
 rm -f .claude/catchup_findings.md
-echo "Catch-up marker advanced to $(git rev-parse --short HEAD)."
+echo "Catch-up marker advanced to $(git rev-parse --short "$RANGE_END")."
 ```
 
 Notes:

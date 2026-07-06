@@ -63,7 +63,7 @@ Show all 3 variants clearly numbered with word counts, then the **FACTOID PRIMER
 
 Each variant takes a different approach: one anchored in premise/genre, one in a concrete detail (production fact, festival moment, quote), one in reception/cultural moment. None should open with a director bio. Label the approach after the word count as shown above.
 
-Then ask: "Pick 1, 2, or 3 — paste a rewrite — or skip."
+Then ask: "Pick 1, 2, or 3 — paste a rewrite — or skip. (The SUGGESTED LINKS above ride along with your pick unless you say otherwise — e.g. 'drop [Name]' or 'no links'.)"
 
 ---
 
@@ -91,11 +91,9 @@ If they ask for more: re-run Step 1 with `--force`.
 **Once they pick a variant or provide a rewrite:**
 
 1. Silently embed director/cast links from data.json (`director_wiki`, `cast_wiki`) wherever their names appear in the text — bold names become `**[Name](url)**`, plain text becomes `[Name](url)`.
-2. Embed any approved SUGGESTED LINKS the same way.
-3. Show the modified capsule with all links visible.
-4. Ask: "Approve with these links — or say 'remove [Name]' to drop any."
-5. If user removes any: strip that link, show updated capsule again.
-6. When user approves: proceed to Step 4.
+2. Embed any SUGGESTED LINKS the reply didn't decline the same way.
+3. **Variant picked as-is (links untouched):** the pick already approved the links that were on screen — proceed straight to Step 4, no re-show, no second wait.
+4. **Rewrite pasted, or the reply removed/changed links:** show the modified capsule once with all links visible and ask "Approve with these links — or say 'remove [Name]' to drop any"; strip that link and re-show on removal; when approved, proceed to Step 4.
 
 ---
 

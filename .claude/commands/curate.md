@@ -5,7 +5,7 @@ allowed-tools: Bash, Read, Grep, Edit, Write, AskUserQuestion, Glob, WebSearch
 
 # /curate
 
-**Flow:** Stage 0 Reissues → 1 Selects → 2 Sections → 3 Slop → 4 Capsule+Quotes. Run in order.
+**Flow:** Stage 0 Reissues → Stages 1–3 Combined Review (Selects · Sections · Slop — one message, one reply, one commit) → 4 Capsule+Quotes. Run in order.
 
 **Rhythm (user preference):** curate **slop films too** — never skip or batch-drop. Go **straight through from #1** in queue order unless the user redirects. In Stage 4, present each film's **capsule and pull quotes together in one message**, one film at a time — never capsule-first-then-quotes, never as separate passes.
 
@@ -93,59 +93,64 @@ A confirmed reissue then behaves like a normal new arrival — it flows through 
 
 ---
 
-## Stage 1 — Selects
+## Stages 1–3 — Combined Review (Selects · Sections · Slop)
+
+**One message, one reply, one commit.** Never present these as three separate waits — the user's replies here are seconds of decisions; the round-trips were the cost.
+
+**Build** all three lists in one parallel batch:
+```bash
+/usr/bin/python3 scripts/curate_list.py --stage selects
+/usr/bin/python3 scripts/curate_list.py --stage sections
+/usr/bin/python3 scripts/curate_list.py --stage slop
+```
+
+**Present every non-empty stage in a SINGLE message**, in this order, each rendered per its Template block:
+1. **Selects** — Templates → Selects table + the ★ Recommended block (see *Selects notes*).
+2. **Sections** — Templates → Sections table.
+3. **Slop** — Templates → Slop table. Below it, **flag contradictions** (any slop-flagged film that is also a Select — vouched-for but hidden by the default slop-free view) and **recommend likely false-positives** (recommend only — never pre-flip; the user decides). Do **not** treat capsules/quotes as slop signals — every film has them.
+
+A stage with 0 rows is one line ("Selects: all caught up") inside the same message. All three empty → skip straight to Stage 4. End with one prompt: *"One reply covers all three — e.g. 'selects: none; sections: looks good; slop: 4 not slop'."*
+
+**On reply, apply each part:**
+- **Selects picks** → read `admin/staff_picks.json`, add the picked IDs (no duplicates), write back.
+- **Section changes** → studio/indie → `admin/category_overrides.json`; restorations → `admin/restorations.json`.
+- **Slop overrides** — for each, write the durable verdict to `admin/overrides.json` (the
+  single override store, applied last in pipeline/display.py so rebuilds never
+  revert it) and to data.json for immediate effect. Key by **ID**:
+  ```bash
+  cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
+  import sys; sys.path.insert(0, '.')
+  from pipeline.json_io import json_edit
+  mid, is_slop_val = sys.argv[1], sys.argv[2] == 'true'
+  with json_edit('admin/overrides.json') as ov:
+      ov.setdefault(mid, {}).setdefault('set', {})['is_slop'] = is_slop_val
+  with json_edit('data.json') as data:
+      for m in data['movies']:
+          if str(m.get('id')) == mid: m['is_slop'] = is_slop_val; break
+  print('done')
+  " "MOVIE_ID" "true_or_false"
+  ```
+  *(`json_edit` locks + writes atomically — never `json.dump` a shared file directly; concurrent windows erase each other's saves.)*
+- **Drain all three** — picks *and* skips, overrides *and* "looks good"; every film shown this run:
+  ```bash
+  /usr/bin/python3 scripts/curate_list.py --mark selects <every shown id>
+  /usr/bin/python3 scripts/curate_list.py --mark sections <every shown id>
+  /usr/bin/python3 scripts/curate_list.py --mark slop <every shown id>
+  ```
+- **One commit for the lot** → COMMIT(every file touched above + `admin/curate_reviewed.json`, `"Curation review: selects/sections/slop"`)
+
+### Selects notes
 *(formerly "Staff Picks" — file is still `admin/staff_picks.json`)*
+- Sort the table **by notability** (Buzz + acclaim, descending). Buzz (0–100) is computed overnight and stored on each record in `data.json` (`buzz_score`). If it shows `--`, the nightly research didn't reach that film — note it and proceed; a pipeline gap to fix later, **not** something to compute by hand during curation.
+- Fill `★ Recommended:` from each shown film's `notability` block in `data.json` (`festival` / `awards` / `yearend_lists`, populated by the nightly research): the genuine finds, **notable facts only** (festivals, named awards, distributor/director), hyperlinking recognizable named entities to Wikipedia — **no plot, no editorializing**. The research already web-searched, so **do not hand-search here**. If nothing stands out, say so.
 
-1. Build the list: `curate_list.py --stage selects` (see *Shared blocks*). 0 rows → "Selects: all caught up", go to Stage 2.
-   - The rows carry a **Buzz** score (0–100), computed overnight as part of enrichment and stored on each record in `data.json` (`buzz_score`). If Buzz shows `--`, the nightly research didn't reach that film — note it and proceed; it's a pipeline gap to fix later, **not** something to compute by hand during curation.
-2. Render as **Templates → Selects table**, **sorted by notability** (Buzz + acclaim, descending). Fill the `★ Recommended:` block from each shown film's `notability` block in `data.json` (`festival` / `awards` / `yearend_lists`, populated by the nightly research): the genuine finds, **notable facts only** (festivals, named awards, distributor/director), hyperlinking recognizable named entities to Wikipedia — **no plot, no editorializing**. The research already web-searched, so **do not hand-search here**. If nothing stands out, say so.
-3. **On reply** (numbers, or "skip"):
-   - Read `admin/staff_picks.json`, add the picked IDs (no duplicates), write back.
-   - **Drain:** `curate_list.py --mark selects <every shown id>` (picks *and* skips).
-   - COMMIT(`admin/staff_picks.json admin/curate_reviewed.json`, `"Staff picks updated"`)
+### Sections notes
+- The `Sections` column is computed by the script from `movie.filters` (Indie/Foreign/Documentary/Virtual Screening/Restoration) and `movie.genres` (Horror/Action/Comedy/Family/Thriller); `(none)` if no filters. Selects is Stage-1 business — not shown here.
+- Filters are auto-detected from TMDB (genres, language, distributor rules). To improve detection logic (e.g. new indie-distributor rules), update the **pipeline code** — not this command.
 
----
-
-## Stage 2 — Sections
-
-1. Build the list: `curate_list.py --stage sections`. 0 rows → "Sections: all caught up", go to Stage 3. The `Sections` column is computed by the script from `movie.filters` (Indie/Foreign/Documentary/Virtual Screening/Restoration) and `movie.genres` (Horror/Action/Comedy/Family/Thriller); `(none)` if no filters. Selects is handled in Stage 1 — not shown here.
-2. Render as **Templates → Sections table**.
-3. **On reply** (changes, or "looks good"):
-   - Studio/indie overrides → read `admin/category_overrides.json`, add entries, write back.
-   - Restoration overrides → read `admin/restorations.json`, add IDs, write back.
-   - **Drain:** `curate_list.py --mark sections <every shown id>`.
-   - COMMIT(the override file(s) changed `+ admin/curate_reviewed.json`, `"Sections updated"`)
-
-**Note:** filters are auto-detected from TMDB (genres, language, distributor rules). To improve detection logic (e.g. new indie-distributor rules), update the **pipeline code** — not this command.
-
----
-
-## Stage 3 — Slop
-
-The false-negative pass, done **once per film**. Shows **all** remaining candidates (not just slop-flagged ones) so the user can catch misclassifications either way. All films stay on the site regardless — the slop toggle is a view mode, never removal.
-
-1. Build the list: `curate_list.py --stage slop`. 0 rows → "Slop: all caught up", go to Stage 4. The script computes the `Slop?` and `Why` columns (`is_slop`/`_is_slop_guess` → `🗑 SLOP (auto)` / `🗑 SLOP (manual)` / `✅ Not slop`; `Why` = `_slop_reason`, or scores, or "no classifier signal").
-2. Render as **Templates → Slop table**. Below it, **flag contradictions:** any slop-flagged film that is also a **Select** (vouched-for but hidden by the default slop-free view). Do **not** flag capsules/quotes — every film has them, so they carry no slop signal.
-3. **On reply** (overrides, or "looks good"):
-   - **For each override** — write the durable verdict to `admin/overrides.json` (the
-     single override store, applied last in pipeline/display.py so rebuilds never
-     revert it) and to data.json for immediate effect. Key by **ID**:
-     ```bash
-     cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 -c "
-     import sys; sys.path.insert(0, '.')
-     from pipeline.json_io import json_edit
-     mid, is_slop_val = sys.argv[1], sys.argv[2] == 'true'
-     with json_edit('admin/overrides.json') as ov:
-         ov.setdefault(mid, {}).setdefault('set', {})['is_slop'] = is_slop_val
-     with json_edit('data.json') as data:
-         for m in data['movies']:
-             if str(m.get('id')) == mid: m['is_slop'] = is_slop_val; break
-     print('done')
-     " "MOVIE_ID" "true_or_false"
-     ```
-     *(`json_edit` locks + writes atomically — never `json.dump` a shared file directly; concurrent windows erase each other's saves.)*
-   - **Drain:** `curate_list.py --mark slop <every shown id>` — even on "looks good" with no changes, so they don't re-show.
-   - COMMIT(`data.json admin/overrides.json admin/curate_reviewed.json`, `"Slop review"`)
+### Slop notes
+- The false-negative pass, done **once per film**. Shows **all** remaining candidates (not just slop-flagged ones) so the user can catch misclassifications either way. All films stay on the site regardless — the slop toggle is a view mode, never removal.
+- The script computes the `Slop?` and `Why` columns (`is_slop`/`_is_slop_guess` → `🗑 SLOP (auto)` / `🗑 SLOP (manual)` / `✅ Not slop`; `Why` = `_slop_reason`, or scores, or "no classifier signal").
 
 ---
 
@@ -164,9 +169,9 @@ For `/curate 1-3`, `4,6`, etc. — Stages 0–3 were skipped. Build the queue ab
 1. `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --variants 3 --skip-verify` — the nightly run pre-generates 3 variants into `cache/capsule_cache.json`, so this returns from cache instantly. Films arriving after the nightly run generate live. No `--force` (a cache hit is what makes it fast) unless deliberately regenerating.
 2. **Read `.claude/commands/capsule.md` Step 2** — that file is the single source of truth for the presentation format (movie header, keyword/badge line, three variants with approach labels, FACTOID PRIMER, SUGGESTED LINKS, pick prompt). Use it exactly.
 3. **Do not wait** — go straight to Step B and append this film's quotes in the *same* message. Wait for the user only after both are shown. **Edited text the user pastes IS the final version.**
-4. **After the user replies** (one reply covers capsule *and* quote), if they picked/rewrote the capsule:
+4. **After the user replies** (ONE reply covers capsule, quote, *and* links — the SUGGESTED LINKS already on screen are approved by that reply unless it says otherwise, e.g. "drop [Name]" / "no links"), if they picked/rewrote the capsule:
    1. Format: **bold** director + cast names; *italicize* other film titles in the text.
-   2. Pre-embed Wikipedia links (Step A-Links), confirm with user.
+   2. Embed Wikipedia links (Step A-Links). **Variant picked as-is → embed silently and continue — no re-show, no second wait.** Rewrite pasted (or links changed in the reply) → one re-show for a final OK.
    3. Write final text to `cache/rewrite.txt`.
    4. `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py approve "TITLE" --file cache/rewrite.txt`
    5. Write cast wiki links to data.json (Step A-Links).
@@ -179,7 +184,7 @@ For `/curate 1-3`, `4,6`, etc. — Stages 0–3 were skipped. Build the queue ab
 **Pre-embedding (after the user picks/rewrites):**
 1. Scan the final text for any `**bold**` names not already listed; WebSearch each, add if found.
 2. Embed all links: `**Name**` → `**[Name](url)**`; plain `Name` → `[Name](url)`; name not in text → skip (still save to cast_wiki for the metadata line).
-3. Show the capsule with links visible. Ask: "Approve with these links — or say 'remove [Name]' to drop any." Strip and re-show on removal. On approval, this is final → write `cache/rewrite.txt`.
+3. **Variant picked as-is, links untouched** → the reply already approved what was on screen: this is final → write `cache/rewrite.txt`, do **not** re-show. **Rewrite pasted, or the reply removed/changed links** → show the capsule once with links visible ("Approve with these links — or say 'remove [Name]' to drop any"); strip and re-show on removal; on approval → write `cache/rewrite.txt`.
 
 **Save cast wiki links (after the approve script runs)** — merge, don't overwrite; cast members only (not director/figures/events — those are text-only links). Encode `(`→`%28`, `)`→`%29` in URLs:
 ```bash
