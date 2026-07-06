@@ -162,6 +162,10 @@ Capsule and quotes done **together, movie by movie** — not separate passes.
 2. Render the full queue as **Templates → Stage 4 queue** (numbered checklist, totals, wiki + trailer links + RT). Numbering is for this run only; if the user redirects ("go to #5", "skip to Kraken"), continue from there.
 3. Work each film in order. **Always lead with its position** — title every presentation `#N of TOTAL — Title (Year)`.
 
+**Pipelining — no dead time between films:**
+- **Prefetch the whole queue up front.** Right after presenting the queue, run every film's `write_capsule.py "TITLE" --variants 3 --skip-verify` (cache hits, ~1s each) and `get_quotes.py "TITLE" YEAR` in ONE parallel batch, and do the Pass 2 WebSearches for suggested links for all films now (the capsule text they depend on is already cached). Present film #1 immediately after; every later film's material is then already in hand — no fetching or searching between films.
+- **Save film N and present film N+1 in the SAME turn.** After each reply, run the full save-chain (`rewrite.txt` → approve → cast-wiki save → quote select → COMMIT) as tightly batched tool calls, then end that same message with film N+1's capsule+quotes presentation. The user should never be looking at a blank screen while saves and pushes run.
+
 ### Parallel-window slice (only when invoked with a number arg)
 For `/curate 1-3`, `4,6`, etc. — Stages 0–3 were skipped. Build the queue above, keep only the requested positions, **pin them to their titles immediately**, and print **Templates → Stage 4 slice header** instead of the full checklist. From then on work by **title, not live position**, so a parallel window draining films can't shift you onto the wrong one. Skip out-of-range positions with a one-line note. Everything else below is unchanged. (Open parallel windows close together so they share one queue snapshot; use the printed titles to confirm no overlap.)
 
