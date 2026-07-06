@@ -14,6 +14,10 @@ th { text-align:left; color:#7f8a93; font-weight:600; font-size:12px;
 td { padding:8px; border-top:1px solid #242b31; vertical-align:top; }
 a { color:#2ec4b6; text-decoration:none; }
 .facts { color:#9aa4ad; font-size:12.5px; font-style:italic; margin-top:3px; }
+.advice { color:#ffc857; font-size:12.5px; margin-top:4px; }
+.advice b { letter-spacing:.02em; }
+.recchip { color:#0e1215; background:#2ec4b6; border-radius:4px; padding:0 6px;
+           font-size:11px; font-weight:700; margin-left:8px; vertical-align:2px; }
 .badcell { color:#7f8a93; }
 input[type=checkbox] { width:18px; height:18px; accent-color:#2ec4b6; cursor:pointer; }
 .slopgrp label { margin-right:10px; font-size:13px; cursor:pointer; white-space:nowrap; }
@@ -45,7 +49,7 @@ button.primary:disabled { opacity:.5; cursor:wait; }
 {% for r in selects %}
 <tr data-id="{{ r.id }}">
   <td><input type="checkbox" class="sel"></td>
-  <td>{% if r.wiki %}<a href="{{ r.wiki }}" target="_blank">{{ r.title }} ({{ r.year }})</a>{% else %}{{ r.title }} ({{ r.year }}){% endif %}
+  <td>{% if r.wiki %}<a href="{{ r.wiki }}" target="_blank">{{ r.title }} ({{ r.year }})</a>{% else %}{{ r.title }} ({{ r.year }}){% endif %}{% if r.recommend %}<span class="recchip">★ WORTH A LOOK</span>{% endif %}
     {% for f in r.facts %}<div class="facts">★ {{ f }}</div>{% endfor %}</td>
   <td>{% if r.rt_url and r.rt != '--' %}<a href="{{ r.rt_url }}" target="_blank">{{ r.rt }}</a>{% else %}<span class="badcell">{{ r.rt }}</span>{% endif %}</td>
   <td>{{ r.mc }}</td><td>{{ r.imdb }}</td><td>{{ r.buzz }}</td>
@@ -78,7 +82,8 @@ button.primary:disabled { opacity:.5; cursor:wait; }
 {% for r in slop %}
 <tr data-id="{{ r.id }}" data-orig="{{ 1 if r.is_slop else 0 }}">
   <td>{% if r.imdb_url %}<a href="{{ r.imdb_url }}" target="_blank">{{ r.title }} ({{ r.year }})</a>{% else %}{{ r.title }} ({{ r.year }}){% endif %}
-      {% if r.wiki %} <a href="{{ r.wiki }}" target="_blank">[W]</a>{% endif %}</td>
+      {% if r.wiki %} <a href="{{ r.wiki }}" target="_blank">[W]</a>{% endif %}
+      {% for tip in r.advice %}<div class="advice">💡 <b>{{ tip[0] }}</b> — {{ tip[1] }}</div>{% endfor %}</td>
   <td>{{ r.rt }}</td><td>{{ r.imdb }}</td>
   <td>{% if r.trailer %}<a href="{{ r.trailer }}" target="_blank">▶</a>{% endif %}</td>
   <td class="why">{{ r.why }}</td>

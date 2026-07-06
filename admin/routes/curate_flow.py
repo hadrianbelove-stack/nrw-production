@@ -34,6 +34,7 @@ from curate_list import (  # noqa: E402
     _services, _trailer, _sections, _buzz,
 )
 from get_quotes import _find_entry, _ordered_quotes, SPOILER_PREFIX  # noqa: E402
+from slop_classifier import classify_slop  # noqa: E402
 
 bp = Blueprint('curate_flow', __name__)
 
@@ -230,6 +231,58 @@ def _notability_facts(m):
     return facts
 
 
+_REASON_WORDS = {
+    'no_wiki': 'no Wikipedia', 'no_rt': 'no RT score', 'no_imdb': 'no IMDb rating',
+    'low_imdb': 'low IMDb', 'mid_imdb': 'middling IMDb', 'good_imdb': 'good IMDb',
+    'no_rt_link': 'no RT page', 'no_lb': 'no Letterboxd',
+}
+
+
+def _human_reason(reason):
+    """Turn classifier reason codes into plain English for the review page."""
+    if not reason:
+        return ''
+    if reason.startswith('indian_cinema_no_crossover'):
+        return ('Indian cinema rule — slop unless a crossover hit '
+                '(needs Wikipedia + Letterboxd + RT≥60 + IMDb≥7)')
+    if reason.startswith('indian_crossover_hit'):
+        return 'Indian cinema crossover hit — clears the RRR bar'
+    if reason.startswith('slop_streaming'):
+        return 'Crunchyroll rule — always slop unless you override'
+    m = re.match(r'score:(-?\d+)\((.*)\)', reason)
+    if m:
+        parts = [(_REASON_WORDS.get(p.split(':')[0], p.replace('_', ' ')) +
+                  (f" ({p.split(':', 1)[1]})" if ':' in p else ''))
+                 for p in m.group(2).split(',') if p]
+        return ' · '.join(parts)
+    return reason.replace('_', ' ').replace(':', ': ')
+
+
+def _slop_advice(m):
+    """The rule-based recommendations chat used to add by hand. Two sources:
+    (1) the LIVE classifier disagrees strongly with the stored verdict (stored
+    verdicts go stale when rules are added later); (2) a slop-flagged film with
+    real pedigree (festival facts / Wikipedia) looks like a false positive.
+    Recommendations only — the user flips the radio, nothing auto-applies."""
+    tips = []
+    stored = bool(m.get('is_slop'))
+    try:
+        fresh, reason, confidence = classify_slop(m)
+        if confidence == 'strong' and fresh != stored:
+            tips.append(('flip to ' + ('SLOP' if fresh else 'NOT slop'),
+                         _human_reason(reason)))
+    except Exception:
+        pass
+    if stored:
+        facts = _notability_facts(m)
+        wiki = bool((m.get('links') or {}).get('wikipedia'))
+        if facts:
+            tips.append(('possible false positive', facts[0]))
+        elif wiki:
+            tips.append(('possible false positive', 'has a Wikipedia page'))
+    return tips
+
+
 @bp.route('/flow')
 def flow_home():
     selects, sections, slop = (review_rows('selects'), review_rows('sections'),
@@ -249,8 +302,13 @@ def flow_home():
             'rt_url': L.get('rt') or '', 'imdb_url': L.get('imdb') or '',
         }
 
+    def _rec(m):
+        rt = str(m.get('rt_score') or '').replace('%', '')
+        return bool(_notability_facts(m)) or (rt.isdigit() and int(rt) >= 90)
+
     selects_rows = sorted(
-        ({**base(m), 'facts': _notability_facts(m)} for m in selects),
+        ({**base(m), 'facts': _notability_facts(m), 'recommend': _rec(m)}
+         for m in selects),
         key=lambda r: int(r['buzz']) if str(r['buzz']).isdigit() else -1,
         reverse=True)
     sections_rows = [{**base(m), 'sections': _sections(m),
@@ -259,10 +317,11 @@ def flow_home():
                       'is_restoration': str(m.get('id')) in [str(x) for x in resto]}
                      for m in sections]
     slop_rows = [{**base(m), 'is_slop': bool(m.get('is_slop')),
-                  'why': m.get('_slop_reason') or
+                  'why': _human_reason(m.get('_slop_reason')) or
                          (f"RT {m.get('rt_score')} / MC {m.get('metacritic_score')}"
                           if (m.get('rt_score') or m.get('metacritic_score'))
-                          else 'no classifier signal')}
+                          else 'no classifier signal'),
+                  'advice': _slop_advice(m)}
                  for m in slop]
 
     return render_template(
