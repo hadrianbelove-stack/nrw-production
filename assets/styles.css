@@ -1616,13 +1616,60 @@ header h1 {
 }
 .lightbox-crew-link:hover { border-bottom-color: #fff; }
 
-/* Scores row below meta */
+/* Scores row below meta — doubles as the editorial "masthead" row: score
+   chips on the left, a compact red TRAILER pill anchored on the right
+   (margin-left:auto). The pill is height-matched to the score chips so the
+   row height is unchanged and the locked hero absorbs it without shifting. */
 .lightbox-scores {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
     margin-bottom: 0.75rem;
 }
 .lightbox-scores:empty { display: none; }
+
+/* Compact TRAILER pill living on the scores row (V3 editorial placement).
+   Keeps the .lb-trailer-btn hook so app.js keyboard-grid + click delegation
+   are unchanged; data-trailer carries the url exactly as the old bar did. */
+.lightbox-scores .lb-trailer-btn {
+    margin-left: auto;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 14px;
+    width: auto;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 7px;
+    background: #E50914;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.lightbox-scores .lb-trailer-btn::before {
+    content: "\25B6";
+    font-size: 0.66rem;
+}
+.lightbox-scores .lb-trailer-btn:hover,
+.lightbox-scores .lb-trailer-btn.lb-focused {
+    background: #ff1a25;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(229,9,20,0.5);
+}
+/* Disabled "NO TRAILER" state keeps its footprint but reads as inert. */
+.lightbox-scores .lb-trailer-btn:disabled {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.18);
+    color: #888;
+    cursor: default;
+}
+.lightbox-scores .lb-trailer-btn:disabled::before { opacity: 0.5; }
 .lightbox-scores .score-badge {
     display: inline-flex;
     align-items: center;
@@ -1655,11 +1702,15 @@ header h1 {
     height: 22px;
 }
 
+/* Editorial reading column (V3): synopsis grows to a magazine measure so a
+   sparse film reads as a deliberately-set page rather than a small block over
+   a void. Corner-sheet (<=1100px) eases this back down in the media query. */
 .lightbox-synopsis {
-    color: #ccc;
-    font-size: 0.98rem;
-    line-height: 1.55;
+    color: #d6d9dd;
+    font-size: 1.12rem;
+    line-height: 1.7;
     margin-bottom: 1rem;
+    max-width: 46ch;
 }
 .lightbox-synopsis a {
     color: inherit;
@@ -1669,9 +1720,14 @@ header h1 {
 }
 .lightbox-synopsis a:hover { text-decoration-color: rgba(255,255,255,0.85); }
 
+/* Year • runtime • distributor — the closing editorial line. margin-top:auto
+   pushes it toward the bottom of the reading area so a sparse film reads as a
+   spacious set page instead of a small block over a void. */
 .lightbox-runtime {
-    color: #ccc;
-    font-size: 1.05rem;
+    color: #888;
+    font-size: 1rem;
+    margin-top: auto;
+    padding-top: 0.6rem;
     margin-bottom: 0.75rem;
 }
 
@@ -1685,9 +1741,11 @@ header h1 {
     border-top: 1px solid rgba(255,255,255,0.08);
 }
 
+/* Boxed editorial pull-quote card (V3): more air inside the card and larger
+   quote/attribution type so the quotes read as set-apart editorial pulls. */
 .pq-card {
     position: relative;
-    padding: 0.45rem 0.6rem;
+    padding: 0.75rem 0.95rem;
     background: rgba(0,212,170,0.07);
     border-radius: 6px;
     border-left: 3px solid #00d4aa;
@@ -1706,17 +1764,17 @@ header h1 {
     display: block;
     font-style: italic;
     color: #00d4aa;
-    font-size: 0.95rem;
-    line-height: 1.45;
+    font-size: 1.06rem;
+    line-height: 1.5;
     quotes: "\201C" "\201D";
 }
 
 .pq-cite {
     display: block;
     font-style: normal;
-    font-size: 0.8rem;
+    font-size: 0.86rem;
     color: rgba(0,212,170,0.55);
-    margin-top: 0.25rem;
+    margin-top: 0.3rem;
 }
 
 /* Lightbox buttons container — always anchored at bottom, outside scroll area */
@@ -2092,6 +2150,13 @@ header h1 {
     }
     /* corner-thumb mode: scores already render inside the info panel */
     .lightbox-info .lightbox-score-overlay { display: none; }
+
+    /* Ease the editorial reading column back down for the narrow sheet: the
+       measure is unconstrained and the runtime auto-push is dropped (block
+       layout), so it reads like the shipped compact sheet, not a wide page. */
+    .lightbox-synopsis { font-size: 1.02rem; line-height: 1.6; max-width: none; }
+    .pq-text { font-size: 1rem; }
+    .lightbox-runtime { margin-top: 0; }
 
     /* Compact action rows */
     .lb-nav-btn {

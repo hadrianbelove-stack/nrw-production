@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lightbox V1 — Vertically Balanced · NRW mockup (round 3)</title>
+<!-- Real production stylesheet: masthead, control bar, wall grid, posters are EXACT -->
+<link rel="stylesheet" href="../assets/styles.css?v=110">
+<style>
+/* =========================================================================
+   VARIANT 1 (ROUND 3) — VERTICALLY BALANCED CONTENT BLOCK
+   Stance on dead space: the panel keeps its full height; content is three
+   vertical zones — HERO (top), BODY (middle, vertically centered), ACTIONS
+   (bottom). The middle void is absorbed by centering the body block.
+
+   ROUND-3 DECISIONS APPLIED (identical shared block across V1/V2/V3):
+   1. TRAILER PLACEMENT DECIDED. The red TRAILER pill now sits ON the score
+      row at the top of the info column (the winning V3 treatment), identical
+      in all three variants. V1's old full-width bar-under-title is removed.
+   2. SCORE LOGOS RESTORED. The round-1 plain-text chips are gone; the score
+      row now mirrors PRODUCTION exactly (styles.css:1620-1656): real logo
+      images (Wikipedia serif mark, RT red, IMDb yellow, Metacritic ring,
+      Letterboxd dots) + colored number, tinted border. Honesty kept:
+      Letterboxd prints the real number (3.9 / 3.1), not rounded stars.
+   3. CROWDING FIX. Score row + pill share one line; the poster gives up size
+      first, so even the busiest case (5 logos + pill, narrow) stays on the
+      row and never wraps the pill below the chips.
+   Everything else stays as round 2: responsive poster-gives-up-size scaling,
+   side-by-side columns at narrow widths, gray .other streamer chrome, bottom
+   cluster transactional only.
+   ========================================================================= */
+
+/* =========================================================================
+   SHARED ROUND-3 BLOCK — IDENTICAL IN V1/V2/V3
+   (score logos restored + trailer pill on the score row + crowding fix)
+   ========================================================================= */
+
+/* Unmapped streamers (OVID/STARZ/FANDANGO AT HOME) get gray chrome, never
+   bare floating text. */
+.lb-stream-row .stream-btn.other {
+    background: #2b2b33;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    color: #fff;
+    letter-spacing: 0.06em;
+    font-size: 0.9rem;
+}
+
+/* SCORE LOGOS RESTORED — mirrors production styles.css:1620-1656 verbatim so
+   the brand marks (Wiki/RT/IMDb/MC/LB) are back. */
+.lightbox-scores { display: flex; gap: 0.5rem; margin: 0; }
+.lightbox-scores:empty { display: none; }
+.lightbox-scores .score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.lightbox-scores .score-badge:hover { filter: brightness(1.15); }
+.lightbox-scores .score-badge.rt   { color: #ff6b6b; border-color: rgba(255,107,107,0.55); background: rgba(255,107,107,0.08); }
+.lightbox-scores .score-badge.mc   { color: #7ddf64; border-color: rgba(125,223,100,0.55); background: rgba(125,223,100,0.08); }
+.lightbox-scores .score-badge.imdb { color: #f5c518; border-color: rgba(245,197,24,0.55);  background: rgba(245,197,24,0.08); }
+.lightbox-scores .score-badge.lb   { color: #00e054; border-color: rgba(0,224,84,0.55);    background: rgba(0,224,84,0.08); }
+.lightbox-scores .score-badge.wiki { color: #bbb;    border-color: rgba(255,255,255,0.3);   background: rgba(255,255,255,0.05); }
+.lightbox-scores .score-badge .score-logo { height: 18px; width: auto; vertical-align: middle; }
+.lightbox-scores .score-badge.mc .score-logo { filter: invert(1) sepia(1) saturate(5) hue-rotate(70deg) brightness(1.1); }
+.lightbox-scores .score-badge.wiki .score-logo { filter: brightness(0) invert(1); height: 22px; }
+
+/* TRAILER PLACEMENT (decided) — red pill anchored to the RIGHT end of the
+   score row. Identical across variants. */
+.lb-scorerow {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;              /* pill stays on the row, never wraps below */
+    gap: 0.5rem;
+    margin: 0.2rem 0 1rem;
+}
+.lb-scorerow .lightbox-scores {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;              /* the CHIPS give up space before the pill does */
+}
+.lb-trailer-pill {
+    flex: 0 0 auto;                /* pill never shrinks or wraps */
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-left: auto;
+    height: 40px;
+    padding: 0 18px;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    background: #E50914;
+    color: #fff;
+    font-size: 0.9rem; font-weight: 800; letter-spacing: 0.14em;
+    text-decoration: none; cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.lb-trailer-pill::before { content: "\25B6"; font-size: 0.72rem; }
+.lb-trailer-pill:hover { background: #ff1a25; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(229,9,20,0.5); }
+
+/* =========================================================================
+   RESPONSIVE POSTER SCALING (the design)
+   The poster height is a clamp keyed to viewport width AND height. Below the
+   wide breakpoint it gives up size first so the info column keeps a usable
+   width. --poster-h drives BOTH the poster and the info-wrap height so the two
+   columns stay the same height.
+   ========================================================================= */
+:root { --poster-h: 92vh; }
+
+.lightbox-content {
+    gap: clamp(0.9rem, 2vw, 1.5rem);
+    align-items: center;
+}
+
+/* Poster is the give: full at wide windows, shrinks toward narrow/vertical.
+   min(92vh, 62vw*1.5) means when the window is wide the poster is height-bound
+   (big); when it's narrow the width term wins and the poster shrinks. */
+.lightbox-poster {
+    height: min(92vh, calc(58vw * 1.5));
+    width: calc(min(92vh, calc(58vw * 1.5)) * 0.667);
+    max-height: 92vh;
+}
+
+/* Info column gets a floor width so it never collapses to a sliver as the
+   poster gives up space. It matches the poster's rendered height. */
+.lightbox-info-wrap {
+    height: min(92vh, calc(58vw * 1.5));
+    max-height: 92vh;
+    width: clamp(400px, 40vw, 560px);
+}
+
+/* --- V1-specific: three vertical zones — hero / centered body / actions --- */
+.lightbox-info {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1.5rem 0.4rem;
+}
+/* HERO zone — title, meta, then the shared score-row+trailer-pill */
+.v1-hero { flex: 0 0 auto; }
+
+/* BODY zone — grows to fill; content vertically centered inside it. */
+.v1-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.9rem;
+    min-height: 0;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ===== narrow / vertical window =====
+   IMPORTANT: production's styles.css stacks the lightbox to a COLUMN below
+   1100px (poster on top of info) — which crushes the info panel to a sliver,
+   the exact failure this round fixes. We OVERRIDE that: keep the two columns
+   side-by-side and let the POSTER give up width first, so the info column
+   keeps a usable floor. The poster shrinks (height keyed to a smaller vw
+   term); the info-wrap holds a floor width. */
+@media (max-width: 1100px) {
+    .lightbox-content {
+        flex-direction: row;          /* override production column-stack */
+        align-items: center;
+        max-width: calc(100vw - 40px);
+        gap: clamp(0.7rem, 1.8vw, 1.2rem);
+    }
+    .lightbox-poster {
+        height: min(88vh, calc(40vw * 1.5));
+        width: calc(min(88vh, calc(40vw * 1.5)) * 0.667);
+        max-height: 88vh;
+    }
+    .lightbox-info-wrap {
+        height: min(88vh, calc(40vw * 1.5));
+        max-height: 88vh;
+        width: clamp(340px, 46vw, 460px);
+    }
+    /* neutralize production's ≤1100px hero-thumb rules (we don't use the
+       .lightbox-hero wrapper, but guard against the poster-in-info overrides) */
+    .lightbox-info { display: flex; }
+    .v1-body { padding: 0.7rem 0; gap: 0.7rem; }
+}
+
+/* ===== page-shell demo scaffolding (mockup only) ===== */
+.mock-tag {
+    position: fixed; top: 8px; left: 8px; z-index: 20000;
+    background: rgba(0,212,170,0.14); border: 1px solid rgba(0,212,170,0.5);
+    color: #00d4aa; font: 700 11px/1.3 -apple-system, sans-serif;
+    padding: 4px 10px; border-radius: 8px; letter-spacing: 0.04em;
+}
+.mock-switch { position: fixed; top: 8px; right: 8px; z-index: 20000; display: flex; gap: 6px; }
+.mock-switch button {
+    background: rgba(20,20,28,0.9); border: 1px solid rgba(255,255,255,0.25);
+    color: #ddd; font: 700 11px/1 -apple-system, sans-serif; letter-spacing: 0.05em;
+    padding: 7px 12px; border-radius: 8px; cursor: pointer;
+}
+.mock-switch button.on { background: #00d4aa; color: #04130f; border-color: #00d4aa; }
+</style>
+</head>
+<body>
+<div class="mock-tag">V1 · VERTICALLY BALANCED (rev)</div>
+<div class="mock-switch">
+    <button id="btn-dense" class="on" onclick="showFilm('dense')">DENSE film</button>
+    <button id="btn-sparse" onclick="showFilm('sparse')">SPARSE film</button>
+</div>
+
+<!-- ===== REAL MASTHEAD (structure mirrors index.html) ===== -->
+<header>
+    <div class="cwide-hdr">
+        <div class="masthead-row">
+            <div class="mh-titles">
+                <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
+                <p class="site-slogan">What came out, every day.</p>
+            </div>
+        </div>
+        <div class="cwide-controls">
+            <div class="slop-toggle-wrap" data-state="all"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">SLOP FILTER</span></div>
+            <div class="cwide-divider"></div>
+            <div class="slop-toggle-wrap"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">SELECTS</span></div>
+            <div class="cwide-divider"></div>
+            <div class="slop-toggle-wrap"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">FESTS</span></div>
+            <div class="cwide-divider"></div>
+            <div class="slop-toggle-wrap"><div class="slop-track"><div class="slop-thumb"></div></div><span class="slop-label">PRE-ORDER</span></div>
+            <div class="cwide-divider"></div>
+            <div class="genre-slot"><button class="genre-control" type="button"><span class="genre-text">GENRE</span><span class="caret">&#9660;</span></button></div>
+            <div class="cwide-divider"></div>
+            <div class="cwide-search"><div class="search-container">
+                <svg class="search-mag" aria-hidden="true" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.8"/><line x1="12.8" y1="12.8" x2="18" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <input type="text" placeholder="Search title, director, genre..." autocomplete="off">
+            </div></div>
+        </div>
+    </div>
+</header>
+
+<main id="wall"></main>
+
+<!-- ===== LIGHTBOX ===== -->
+<div class="poster-lightbox active" id="poster-lightbox">
+    <div class="lightbox-content">
+        <div class="lightbox-poster-wrap">
+            <img class="lightbox-poster" id="lb-poster" alt="">
+        </div>
+        <div class="lightbox-info-wrap">
+            <button class="lightbox-close" aria-label="Close">&times;</button>
+            <div class="lightbox-info" id="lb-info"><!-- built by JS --></div>
+            <div class="lightbox-buttons" id="lb-buttons"><!-- built by JS --></div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ---- real records copied from data.json ---- */
+const IMG = 'https://image.tmdb.org/t/p/';
+const WALL = [
+ {t:"Among Neighbors",p:"w500/bz8toDcg1qrbeoFLwScC7ydR3Ts.jpg",d:"Yoav Potash",g:"Documentary",c:"USA"},
+ {t:"Maintenance Artist",p:"w500/VbYDDEw7RPdATftVrAboA0iuP.jpg",d:"Toby Perl Freilich",g:"Documentary",c:"USA"},
+ {t:"Siksikakowan: The Blackfoot Man",p:"w500/4hvblEkCdXSuToyYRIKSUVHE6nz.jpg",d:"Trevor Solway",g:"Documentary",c:"CAN"},
+ {t:"Primate",p:"w500/z97hrgI5wbGbZvSVkBfAeBnFKAg.jpg",d:"Johannes Roberts",g:"Horror",c:"UK"},
+ {t:"This Ordinary Thing",p:"w500/fx7NrOJJdsFS91uDJqoVc0vccwd.jpg",d:"Nick Davis",g:"Documentary",c:"USA"},
+ {t:"My Sweet Land",p:"w500/wpmPcKbBfSuiUAxzhvMp679JdkW.jpg",d:"Sareen Hairabedian",g:"Documentary",c:"JOR"},
+ {t:"Elie Wiesel: Soul on Fire",p:"w500/kmEWAP6sda66Sm78lGs84PDjXGC.jpg",d:"Oren Rudavsky",g:"Documentary",c:"USA"},
+ {t:"Barrio Triste",p:"w500/dxTcS3Njg0Z2sCZsvGLBsst91Wa.jpg",d:"STILLZ",g:"Crime",c:"COL"},
+ {t:"A Child of My Own",p:"w500/OP9GDVWBKdWW6xsrPw8bq1hEjQ.jpg",d:"Maite Alberdi",g:"Documentary",c:"CHL"},
+ {t:"The Death of Robin Hood",p:"w500/4cD7KeABHyzeJmzdA6QKe36fp2d.jpg",d:"Michael Sarnoski",g:"Adventure",c:"USA"},
+ {t:"23 000 Lives",p:"w500/8ZPoxkREjC92rGIOm2jwWMugl3g.jpg",d:"Markus Goller",g:"Drama",c:"GER"},
+ {t:"The Furious",p:"w500/zP19YO60jwEsfKd5Qf1UvA5uJu8.jpg",d:"Kenji Tanigaki",g:"Action",c:"HKG"},
+ {t:"Backrooms",p:"w500/rhGx6E3qRNMgj3i5su2oukNHwIQ.jpg",d:"Kane Parsons",g:"Horror",c:"USA"},
+ {t:"The Woman with Three Husbands",p:"w500/gn1IWkxdZw2DhYslsvQTgkPQv4c.jpg",d:"Brittany Goodwin",g:"Thriller",c:"USA"},
+ {t:"Man of War",p:"w500/vt0RqHlqfUzeiBEVQvp43yY2076.jpg",d:"William Kaufman",g:"Action",c:"USA"},
+ {t:"Away with Words",p:"w500/giUnHf32Bu961BO2F3ViVnUG2bp.jpg",d:"Samuel Pothier",g:"Comedy",c:"CAN"}
+];
+
+const DENSE = {
+  title:"Under the Flags, the Sun (Bajo las banderas, el sol)",
+  poster:"w500/mDeLGptXyUkKGWNKqPQcIHXoaKo.jpg",
+  meta_country:"Germany", genre:"Documentary", date:"Jun 19",
+  director:"Juanjo Pereira", director_wiki:"#",
+  cast:[["Alfredo Stroessner","#"],["Lyndon B. Johnson","#"]],
+  capsule:'Archival doc on <a href="#" class="lightbox-crew-link">Alfredo Stroessner</a>&rsquo;s 35-year dictatorship in Paraguay, reconstructing the regime&rsquo;s rise and fall through rare, forgotten footage sourced from eleven countries. Premiered at Berlinale.',
+  runtime:"2026 • 90 min • Cine Mio",
+  quotes:[
+    {text:"Like something found deep in the grimy bowels of a prison. A found footage documentary with the visual and aural landscape of some cursed horror film.",cite:"Glenn Dunks, reDocumented"},
+    {text:"Unsettling and informative",cite:"Carlos Aguilar, Variety"}
+  ],
+  scores:[{k:"wiki",lbl:"Wiki",val:""},{k:"imdb",lbl:"IMDb",val:"7.1"},{k:"lb",lbl:"LB",val:"3.9"}],
+  trailer:true,
+  stream:[{name:"OVID",cls:"other"}],
+  vod:[{cls:"amazon",logo:"amazon",label:"AMAZON",price:"Rent $4.99 / Buy $9.99"}]
+};
+
+const SPARSE = {
+  title:"The Death of Robin Hood",
+  poster:"w500/4cD7KeABHyzeJmzdA6QKe36fp2d.jpg",
+  meta_country:"USA", genre:"Adventure", date:"Jul 21",
+  director:"Michael Sarnoski", director_wiki:"#",
+  cast:[["Hugh Jackman","#"],["Jodie Comer","#"]],
+  capsule:'Grappling with his past after a life of crime and murder, Robin Hood finds himself gravely injured after a battle he thought would be his last. In the hands of a mysterious woman, he is offered a chance at salvation.',
+  runtime:"2026 • 123 min • Lyrical Media",
+  quotes:[],
+  scores:[{k:"wiki",lbl:"Wiki",val:""},{k:"rt",lbl:"RT",val:"66"},{k:"imdb",lbl:"IMDb",val:"6.4"},{k:"mc",lbl:"MC",val:"60"},{k:"lb",lbl:"LB",val:"3.1"}],
+  trailer:true,
+  stream:[],
+  vod:[{cls:"amazon",logo:"amazon",label:"AMAZON",price:"Rent Amazon"}],
+  preorder:"Available Jul 21"
+};
+
+const LOGOS = { amazon:"../assets/logos/services/amazon_wide.png", apple:"../assets/logos/services/apple_tv_wide.png", fandango:"../assets/logos/services/fandango_wide.png" };
+
+/* score-logo files — same assets production uses (app.js:1650-1663) */
+const SCORE_LOGO = {
+  wiki:"../assets/logos/wikipedia_PNG40.png",
+  rt:"../assets/logos/rt.png",
+  imdb:"../assets/logos/imdb.png",
+  mc:"../assets/logos/metacritic.png",
+  lb:"../assets/logos/services/letterboxd-dots.svg"
+};
+
+/* ---- render the real wall behind the lightbox ---- */
+function renderWall(){
+  const wall = document.getElementById('wall');
+  wall.innerHTML = WALL.map(m=>`
+    <div class="movie-container">
+      <div class="movie-card"><div class="card-front">
+        <img src="${IMG+m.p}" alt="" loading="lazy">
+      </div></div>
+      <div class="movie-info"><div class="movie-meta">
+        <span class="m-dir">${m.d}</span><span class="m-rest"> · ${m.g} · ${m.c}</span>
+      </div></div>
+    </div>`).join('');
+}
+
+/* ---- score badges: RESTORED PRODUCTION LOGOS + honest LB number ----
+   Mirrors production _updateLightboxScores (app.js:1626-1665): logo image +
+   colored number, Wiki is icon-only, LB shows the real number not stars. */
+function chips(scores){
+  return `<div class="lightbox-scores">${scores.map(s=>{
+    const logo = `<img src="${SCORE_LOGO[s.k]}" class="score-logo" alt="">`;
+    const val = s.val ? ` ${s.val}` : '';
+    return `<a href="#" class="score-badge ${s.k}">${logo}${val}</a>`;
+  }).join('')}</div>`;
+}
+
+/* the shared score-row: chips on the left, red TRAILER pill pinned right */
+function scoreRow(f){
+  const pill = f.trailer ? `<a href="#" class="lb-trailer-pill">TRAILER</a>` : '';
+  return `<div class="lb-scorerow">${chips(f.scores)}${pill}</div>`;
+}
+
+/* ---- watch buttons — BOTTOM CLUSTER IS TRANSACTIONAL ONLY (no trailer) ---- */
+function streamBtns(list){
+  if(!list.length) return '';
+  return `<div class="lb-stream-row">${list.map(s=>
+    `<a href="#" class="stream-btn ${s.cls}">${s.name}</a>`).join('')}</div>`;
+}
+function vodBtns(list){
+  if(!list.length) return '';
+  return `<div class="lb-vod-row">${list.map(v=>`
+    <a href="#" class="vod-btn ${v.cls}">
+      <div class="logo-half"><img src="${LOGOS[v.logo]}" alt="${v.label}"></div>
+      <div class="price-half">${v.price}</div>
+    </a>`).join('')}</div>`;
+}
+
+function buildButtons(f){
+  let h = streamBtns(f.stream);
+  h += vodBtns(f.vod);
+  if(f.preorder) h += `<span class="po-available-date">${f.preorder}</span>`;
+  h += `<div class="lb-share-row"><button class="lb-share-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg><span>SHARE</span></button></div>`;
+  return h;
+}
+
+/* V1: hero (title/meta + shared score-row+trailer-pill) / centered body / actions */
+function buildInfo(f){
+  const castLine = f.cast.map(c=>`<a href="${c[1]}" class="lightbox-crew-link">${c[0]}</a>`).join(', ');
+  const quotesHtml = f.quotes.length ? `<div class="lightbox-pull-quotes">${f.quotes.map(q=>
+    `<div class="pq-card"><q class="pq-text">${q.text}</q><cite class="pq-cite">${q.cite}</cite></div>`).join('')}</div>` : '';
+  return `
+    <div class="v1-hero">
+      <div class="lightbox-title-area">
+        <div class="lightbox-title-row"><h2 class="lightbox-title">${f.title}</h2></div>
+        <div class="lightbox-title-sub">
+          <span class="lightbox-meta"><span class="lightbox-crew-label">${f.meta_country}</span> · ${f.genre} · <span style="color:#00d4aa">${f.date}</span></span>
+        </div>
+      </div>
+      <div class="lightbox-meta"><span class="lightbox-crew-label">Dir:</span> <a href="${f.director_wiki}" class="lightbox-crew-link lightbox-crew-name">${f.director}</a> · <span class="lightbox-crew-label">Cast:</span> ${castLine}</div>
+      ${scoreRow(f)}
+    </div>
+    <div class="v1-body">
+      ${quotesHtml}
+      <div class="lightbox-synopsis">${f.capsule}</div>
+      <div class="lightbox-runtime" style="color:#888;font-size:0.95rem;margin:0;">${f.runtime}</div>
+    </div>`;
+}
+
+function showFilm(which){
+  const f = which==='dense' ? DENSE : SPARSE;
+  document.getElementById('lb-poster').src = IMG + f.poster;
+  document.getElementById('lb-info').innerHTML = buildInfo(f);
+  document.getElementById('lb-buttons').innerHTML = buildButtons(f);
+  document.getElementById('btn-dense').classList.toggle('on', which==='dense');
+  document.getElementById('btn-sparse').classList.toggle('on', which==='sparse');
+}
+
+renderWall();
+showFilm('dense');
+</script>
+</body>
+</html>

@@ -1340,9 +1340,10 @@ const NRW = {
         const scores = document.getElementById('lightbox-scores');
         const scoreBadges = scores ? Array.from(scores.querySelectorAll('.score-badge')) : [];
         if (scoreBadges.length > 0) grid.push(scoreBadges);
-        // Row: TRAILER button (only if present)
+        // Row: TRAILER pill — now lives on the scores row (V3) but stays its own
+        // logical keyboard row so LEFT/RIGHT keep cycling movies on it.
         const btnContainer = document.getElementById('lightbox-buttons');
-        const trailerBtn = btnContainer?.querySelector('.lb-trailer-btn');
+        const trailerBtn = scores?.querySelector('.lb-trailer-btn');
         if (trailerBtn) grid.push([trailerBtn]);
         // Row: streaming buttons
         const streamRow = btnContainer?.querySelector('.lb-stream-row');
@@ -1662,6 +1663,22 @@ const NRW = {
             const lbText = movie.letterboxd_score ? NRW.lbStars(movie.letterboxd_score) : 'LB';
             container.appendChild(makeBadge(movie.links.letterboxd, 'lb', lbText, 'assets/logos/services/letterboxd-dots.svg'));
         }
+
+        // TRAILER pill on the right end of the scores row (V3 editorial
+        // placement). Keeps the .lb-trailer-btn class + data-trailer hook so the
+        // keyboard grid (_getLightboxGrid) and click delegation are unchanged.
+        // margin-left:auto (in CSS) pushes it to the row's far right.
+        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
+        const trailerBtn = document.createElement('button');
+        trailerBtn.className = 'lb-trailer-btn';
+        if (trailerUrl) {
+            trailerBtn.dataset.trailer = trailerUrl;
+            trailerBtn.textContent = 'TRAILER';
+        } else {
+            trailerBtn.textContent = 'NO TRAILER';
+            trailerBtn.disabled = true;
+        }
+        container.appendChild(trailerBtn);
     },
 
     _updateLightboxPullQuotes(movie) {
@@ -1709,10 +1726,9 @@ const NRW = {
         const watchLinks = movie.watch_links || {};
         const providers = movie.providers || {};
 
-        // === ROW 1: TRAILER (the < > cycle arrows are appended to the overlay) ===
-        const navRow = document.createElement('div');
-        navRow.className = 'lb-nav-row';
-
+        // === CYCLE ARROWS (V3: the TRAILER pill now lives on the scores row,
+        // built in _updateLightboxScores; only the < > cycle arrows are set up
+        // here) ===
         // < and > cycle buttons live on the .poster-lightbox OVERLAY, not inside
         // .lightbox-info-wrap \u2014 that panel's backdrop-filter creates a containing
         // block that traps position:fixed and pins the arrows over the capsule.
@@ -1729,29 +1745,12 @@ const NRW = {
         prevBtn.setAttribute('aria-label', 'Previous movie');
         overlay.appendChild(prevBtn);
 
-        // TRAILER button (or disabled placeholder when no trailer)
-        const trailerUrl = movie.links?.trailer_hosted || movie.links?.trailer;
-        const trailerBtn = document.createElement('button');
-        trailerBtn.className = 'lb-trailer-btn';
-        if (trailerUrl) {
-            trailerBtn.dataset.trailer = trailerUrl;
-            trailerBtn.textContent = 'TRAILER';
-        } else {
-            trailerBtn.textContent = 'NO TRAILER';
-            trailerBtn.disabled = true;
-            trailerBtn.style.opacity = '0.35';
-            trailerBtn.style.cursor = 'default';
-        }
-        navRow.appendChild(trailerBtn);
-
         // > button
         const nextBtn = document.createElement('button');
         nextBtn.className = 'lb-nav-btn lb-nav-next';
         nextBtn.textContent = '\u203A';
         nextBtn.setAttribute('aria-label', 'Next movie');
         overlay.appendChild(nextBtn);
-
-        container.appendChild(navRow);
 
         // === STREAM ROW (own row, before VOD) — one button per free stream ===
         // Multiple free streams (e.g. Tubi + Fawesome) split the row into equal
