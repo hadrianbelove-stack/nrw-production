@@ -73,7 +73,7 @@ Then ask: "Pick 1, 2, or 3 — paste a rewrite — or skip. (The SUGGESTED LINKS
 Read `movie.links.director_wiki` and `movie.links.cast_wiki` from data.json. Embed whatever is there wherever their names appear in the capsule text — no user approval needed. If a name has no URL, skip it silently (many actors don't have Wikipedia pages).
 
 **SUGGESTED LINKS — for user approval only:**
-Identify non-cast/non-director named entities that appear in the capsule text: historical figures, referenced filmmakers, organizations, other works. Up to 3. WebSearch each for a Wikipedia page. Present only these to the user (numbered). If none exist, omit the SUGGESTED LINKS block entirely.
+Read `suggested_links` from the capsule result (pre-verified overnight by the nightly generation; each entry carries `name`, `url`, and Wikipedia's one-line `wiki_description` — show the description, it's the guard against right-page/wrong-person links). `write_capsule.py` prints them under SUGGESTED LINKS. **WebSearch only as fallback** when the cache entry lacks the key (pre-upgrade entries): identify non-cast/non-director named entities in the capsule text (historical figures, referenced filmmakers, organizations, other works — up to 3) and search each for a Wikipedia page. If none exist, omit the SUGGESTED LINKS block entirely.
 
 Wikipedia URLs with parentheses (e.g. `_(painter)`, `_(film)`): encode `(` as `%28` and `)` as `%29`.
 

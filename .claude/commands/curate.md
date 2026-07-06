@@ -156,23 +156,24 @@ A stage with 0 rows is one line ("Selects: all caught up") inside the same messa
 
 ## Stage 4 — Capsule + Pull Quotes
 
-Capsule and quotes done **together, movie by movie** — not separate passes.
+Capsule and quotes done **together, movie by movie** — not separate passes. Everything the user reads is **pre-rendered into a doc**; chat carries pointers and decisions only.
 
-1. Build the list: `curate_list.py --stage capsule`. This window includes films **missing a capsule** (not in `approved_capsules.json` by title) **or** missing a `pull_quotes` key. *(Note: `pull_quotes: []` = reviewed-and-skipped, drains; **no key** = never queued. Not the same.)* 0 rows → "nothing needs capsules or quotes in the last 7 days" and finish.
-2. Render the full queue as **Templates → Stage 4 queue** (numbered checklist, totals, wiki + trailer links + RT). Numbering is for this run only; if the user redirects ("go to #5", "skip to Kraken"), continue from there.
-3. Work each film in order. **Always lead with its position** — title every presentation `#N of TOTAL — Title (Year)`.
-
-**Pipelining — no dead time between films:**
-- **Prefetch the whole queue up front.** Right after presenting the queue, run every film's `write_capsule.py "TITLE" --variants 3 --skip-verify` (cache hits, ~1s each) and `get_quotes.py "TITLE" YEAR` in ONE parallel batch, and do the Pass 2 WebSearches for suggested links for all films now (the capsule text they depend on is already cached). Present film #1 immediately after; every later film's material is then already in hand — no fetching or searching between films.
-- **Save film N and present film N+1 in the SAME turn.** After each reply, run the full save-chain (`rewrite.txt` → approve → cast-wiki save → quote select → COMMIT) as tightly batched tool calls, then end that same message with film N+1's capsule+quotes presentation. The user should never be looking at a blank screen while saves and pushes run.
+1. **Render + open the doc:**
+   ```bash
+   cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/render_stage4_doc.py && open cache/stage4_doc.html
+   ```
+   The script assembles every queued film's full presentation (3 variants with approach labels, factoid primer, pre-verified suggested links with Wikipedia's one-line descriptions, numbered pull quotes) from the overnight caches — <1s, no LLM, no network. It prints the queue (`#N Title (Year) — needs`). If it prints "nothing needs capsules or quotes", finish. The queue = films **missing a capsule** (not in `approved_capsules.json` by title) **or** missing a `pull_quotes` key. *(`pull_quotes: []` = reviewed-and-skipped, drains; **no key** = never queued. Not the same.)*
+2. **Relay the printed queue** as the run's checklist and **pin the titles immediately** — from here on work by **title, never live position**, so a parallel window draining films can't shift you onto the wrong one. If the user redirects ("go to #5", "skip to Kraken"), continue from there.
+3. **Walk films one at a time with SHORT pointer turns.** Do **not** re-present doc content in chat (only on request — "show it here"). Each pointer is just: `#N of TOTAL — Title (Year)` + one-line ⚠ reminders carried from the doc (no cached variants / links not cached / no quotes) + the pick prompt: *"capsule 1–3 or paste a rewrite · quote number, trim, or skip · suggested links ride along unless you say otherwise — details in the doc."*
+4. **Save film N and point at film N+1 in the SAME turn.** After each reply, run the save-chain (Steps A/B/C below) as tightly batched tool calls, then end that same message with film N+1's pointer. The user should never wait on saves or pushes.
+5. **Fallbacks, per film (the doc flags each):** `⚠ no cached variants` (arrived after the nightly run) → generate + present live in chat the old way (Step A.1 + capsule.md format). `⚠ links not cached` (pre-upgrade cache entry) → WebSearch entities live for that film only. `⚠ no quotes` → relay it and offer skip or `--custom`.
 
 ### Parallel-window slice (only when invoked with a number arg)
 For `/curate 1-3`, `4,6`, etc. — Stages 0–3 were skipped. Build the queue above, keep only the requested positions, **pin them to their titles immediately**, and print **Templates → Stage 4 slice header** instead of the full checklist. From then on work by **title, not live position**, so a parallel window draining films can't shift you onto the wrong one. Skip out-of-range positions with a one-line note. Everything else below is unchanged. (Open parallel windows close together so they share one queue snapshot; use the printed titles to confirm no overlap.)
 
 ### Step A — Capsule
-1. `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --variants 3 --skip-verify` — the nightly run pre-generates 3 variants into `cache/capsule_cache.json`, so this returns from cache instantly. Films arriving after the nightly run generate live. No `--force` (a cache hit is what makes it fast) unless deliberately regenerating.
-2. **Read `.claude/commands/capsule.md` Step 2** — that file is the single source of truth for the presentation format (movie header, keyword/badge line, three variants with approach labels, FACTOID PRIMER, SUGGESTED LINKS, pick prompt). Use it exactly.
-3. **Do not wait** — go straight to Step B and append this film's quotes in the *same* message. Wait for the user only after both are shown. **Edited text the user pastes IS the final version.**
+1. **Doc flow (default):** the variants, primer, and suggested links are already in the doc — no script run, no re-presentation. **Fallback only** (film flagged `⚠ no cached variants`): `cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/write_capsule.py "TITLE" --variants 3 --skip-verify` generates live (1–3 min), then present in chat per `.claude/commands/capsule.md` Step 2 (the template for standalone/fallback presentations — `scripts/render_stage4_doc.py` owns the doc layout; a format change must touch both). No `--force` unless deliberately regenerating.
+2. **Edited text the user pastes IS the final version.**
 4. **After the user replies** (ONE reply covers capsule, quote, *and* links — the SUGGESTED LINKS already on screen are approved by that reply unless it says otherwise, e.g. "drop [Name]" / "no links"), if they picked/rewrote the capsule:
    1. Format: **bold** director + cast names; *italicize* other film titles in the text.
    2. Embed Wikipedia links (Step A-Links). **Variant picked as-is → embed silently and continue — no re-show, no second wait.** Rewrite pasted (or links changed in the reply) → one re-show for a final OK.
@@ -183,7 +184,7 @@ For `/curate 1-3`, `4,6`, etc. — Stages 0–3 were skipped. Build the queue ab
 ### Step A-Links — Wikipedia links (inside Step A)
 **Pass 1 — Cast + Director (silent, auto-approved, NOT shown in SUGGESTED LINKS):** read `movie.links.cast_wiki` and `movie.links.director_wiki`; embed each wherever the name appears in the capsule. No URL → skip silently (many actors lack pages).
 
-**Pass 2 — Other named entities (user reviews these):** non-cast/non-director people, places, movements, or works named in the capsule text (a manga creator, historical figure, referenced filmmaker — up to 3). WebSearch each for a Wikipedia page. If none exist, omit SUGGESTED LINKS entirely. Present only Pass 2, as **Templates → Suggested links**.
+**Pass 2 — Other named entities (user reviews these):** non-cast/non-director people, places, movements, or works named in the capsule text (a manga creator, historical figure, referenced filmmaker — up to 3). These are **pre-verified overnight** into the capsule cache (`suggested_links`, each with Wikipedia's one-line description as the wrong-person guard) and already shown in the doc — do **not** search live. WebSearch is the fallback only when the cache entry lacks them (`⚠ links not cached` in the doc, or a live fallback generation).
 
 **Pre-embedding (after the user picks/rewrites):**
 1. Scan the final text for any `**bold**` names not already listed; WebSearch each, add if found.
@@ -208,16 +209,16 @@ with json_edit('data.json') as data:
 ```
 *(`json_edit` locks + writes atomically — never `json.dump` data.json directly; concurrent windows erase each other's saves.)*
 
-### Step B — Pull Quotes (SAME message as the capsule)
-Append this film's quotes to the message showing its capsule variants (Step A.3) — do **not** wait for the capsule pick. User reviews both and replies at once (e.g. "capsule 2, quote 4").
+### Step B — Pull Quotes (same doc, same reply)
+The film's quotes are already in the doc, numbered by the exact same ordering `--select --num N` uses (the renderer imports get_quotes' ordering function) — the number the user reads is the number that saves. The user's ONE reply covers capsule + quote + links (e.g. "capsule 2, quote 4").
 
 All quote mechanics live in **`scripts/get_quotes.py`** — never read or edit `cache/pull_quotes_combined.json` directly (it's 3.5MB; the script extracts just this film). The Letterboxd cap (10) is `LB_MAX` in that script.
 
-1. **Print the quotes:**
+1. **Only when needed in chat** (user asks "show it here", or a fallback film):
    ```bash
    cd /Users/hadrianbelove/Downloads/nrw-production && /usr/bin/python3 scripts/get_quotes.py "TITLE" YEAR
    ```
-   Present its output **verbatim** — it already renders **Templates → Quotes block** (all RT/critic quotes grouped by outlet in cache order, then up to 10 Letterboxd, 72-col wrapped, spoiler-protected reviews as `— @username → [read review](url)`). No pre-filtering/ranking. If it prints a `⚠` line (no cache entry / 0 quotes), relay it and skip quotes for this film. Never re-scrape; the morning batch (`scripts/batch_pull_quotes.py`) is canonical.
+   Present its output **verbatim** (it renders **Templates → Quotes block**). No pre-filtering/ranking. If the doc (or script) flags `⚠` (no cache entry / 0 quotes), relay it and offer skip. Never re-scrape; the morning batch (`scripts/batch_pull_quotes.py`) is canonical.
 2. **On reply** (the quote part of the joint reply), one command does the whole save — verifies the `review_url` (bad/unloadable links saved as `review_url: null` with a `⚠` line), sets `selected: true` + final text in the cache, and injects `{text, critic, outlet, review_url}` into the movie's `pull_quotes` in data.json:
    - Number N → `/usr/bin/python3 scripts/get_quotes.py --select "TITLE" YEAR --num N`
    - Pasted trim → **that IS the final version** (never revert to original): write it to `cache/quote_trim.txt`, add `--text-file cache/quote_trim.txt` to the command above.

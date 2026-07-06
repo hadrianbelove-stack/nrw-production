@@ -24,12 +24,12 @@ Read all of the following before presenting anything:
    ```bash
    /usr/bin/python3 -c "import json; print('jw_healthy:', json.load(open('metrics/discovery_run.json')).get('results',{}).get('jw_healthy'))"
    ```
-5. Quote scrape coverage — **never read `cache/pull_quotes_combined.json`** (it's 3.5MB); the script prints cache size, scraped-today count, and any curation candidate with no entry:
+5. The report body — **one call prints all three sections** (overnight: New Releases/Reverted/deferrals · backlog + health scan · quote coverage). **Never read `cache/pull_quotes_combined.json`** (it's 3.5MB):
    ```bash
-   /usr/bin/python3 scripts/morning_report.py --section quotes
+   /usr/bin/python3 scripts/morning_report.py --section all
    ```
 
-Discovery/enrichment detail (New Releases, Reverted, deferrals) comes from `morning_report.py --section overnight` below — do **not** read `discovery_run.json` or `enrichment_run.json` in full; only dig into them when the script or `run_diagnostics.json` flags a failure.
+Run items 1–5 in ONE parallel batch. Discovery/enrichment detail comes from the script's OVERNIGHT section — do **not** read `discovery_run.json` or `enrichment_run.json` in full; only dig into them when the script or `run_diagnostics.json` flags a failure.
 
 Then present this report in order:
 
@@ -39,21 +39,18 @@ Then present this report in order:
 - Did it run last night? (look for most recent date in log)
 - Git pull: was CI data current when it ran?
 - Trailers: how many hosted / failed / skipped — title + reason for each failure
-- Pull quotes: present the `--section quotes` output from above (cache size, scraped-today count, `⚠ No quotes yet:` flags). Its `⚠` lines become Concerns.
+- Pull quotes: present the QUOTES section of the `--section all` output (cache size, scraped-today count, `⚠ No quotes yet:` flags). Its `⚠` lines become Concerns.
 
 ---
 
 ### Overnight Pipeline
 - Overall: success or failure, total duration
 - **Intake**: just the count of new films intaked — this is the "is intake still working?" signal. Flag in Concerns only if it's 0 or abnormally low. (No duplicates/scan-window detail — that's internal noise.)
-- **New Releases & Reverted** — run the script below.
+- **New Releases & Reverted** — from the OVERNIGHT section of the `--section all` output (already run above; do not re-run).
   - **New Releases** = films that newly landed **and stuck** on the wall this run (a full successful transition). List each, shown vs slop.
   - **Reverted** = films that transitioned then got sent back **this run only** (new reversions, with the reason). Chronic/recurring reverters are not listed, just counted — that's noise. Reasons are humanized; **Platforms** prefers `jw_platforms` (what JustWatch actually saw), falling back to `tmdb_platforms`, "—" if neither.
   - Any non-revert deferrals (timeout/error) are pulled out for Concerns.
 
-```bash
-/usr/bin/python3 scripts/morning_report.py --section overnight
-```
 *(Logic lives in the script — reads data.json + metrics/discovery_run.json + metrics/enrichment_run.json. New Releases = films first discovered this run, shown vs slop; Reverted = new jw_revert deferrals this run, humanized + platforms; other deferrals split out for Concerns.)*
 
 - **Any phase failures or warnings** → list in Concerns
@@ -62,11 +59,8 @@ Then present this report in order:
 
 ### Curation Backlog
 
-Two parts: the **backlog** (films still needing work — the number that matters, identical logic to `/curate`) and a **health scan** over all recent arrivals (only the flagged ones are listed). Do **not** present the raw arrivals count as a to-do — most of those are already curated from prior days. Run this script — reads exact field paths, no guessing:
+Two parts: the **backlog** (films still needing work — the number that matters, identical logic to `/curate`) and a **health scan** over all recent arrivals (only the flagged ones are listed). Do **not** present the raw arrivals count as a to-do — most of those are already curated from prior days. Comes from the BACKLOG section of the `--section all` output (already run above; do not re-run).
 
-```bash
-/usr/bin/python3 scripts/morning_report.py --section backlog
-```
 *(Logic lives in the script. Backlog = in-window films still needing `slop?` review / `capsule` / `quotes` — same capsule+quote presence test `/curate` Stage 4 uses, reissues included, auto-restorations skipped. Health scan flags any recent arrival missing a trailer or watch links (`⚠ PLEX ONLY` for Plex-only). Change the window via `WINDOW_DAYS` in the script.)*
 
 Present the output directly. Lead with the backlog count. Any `⚠` flags become Concerns below.
@@ -89,7 +83,7 @@ Bullet list of anything actionable. Stall and JustWatch health live here — the
 - Any `⚠ NO TRAILER` from the Curation Backlog script above
 - Any `⚠ NO LINKS` or `⚠ PLEX ONLY` from the Curation Backlog script above
 - Enrichment errors, plus any "Other enrichment deferrals" (timeout/error) flagged by the New Releases & Reverted script
-- Pull quote gaps — any `⚠ No quotes yet:` line from `morning_report.py --section quotes`
+- Pull quote gaps — any `⚠ No quotes yet:` line from the QUOTES section of the report output
 
 If nothing: "No concerns."
 
