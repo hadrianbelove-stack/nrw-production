@@ -177,3 +177,9 @@ hidden_gems_output/
 # Roku dev creds (local only)
 scripts/.rokurc
 .nrw_data.lock
+
+# Working screenshots (design/QA sessions) — local only, never committed
+/screenshots/
+
+# Admin server runtime flag
+admin/.pending_changes
