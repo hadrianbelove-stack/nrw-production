@@ -1550,9 +1550,11 @@ header h1 {
         padding-bottom: 0;
         margin-bottom: 0;
     }
-    /* Pin the [rule + meta + Dir-Cast + scores] cluster to the hero's bottom. */
+    /* Meta cluster follows the title naturally. (Was margin-top:auto to pin
+       it to the hero's bottom — at tall windows that piled all the free
+       space into a dead zone between genre line and Dir/Cast.) */
     .lightbox-hero-text .lightbox-meta {
-        margin-top: auto;
+        margin-top: 0.6rem;
         padding-top: 0.5rem;
         border-top: 2px solid rgba(0, 212, 170, 0.4);
     }
@@ -1671,6 +1673,9 @@ header h1 {
    row height is unchanged and the locked hero absorbs it without shifting. */
 .lightbox-scores {
     display: flex;
+    /* Must wrap: the hero text column is ~415px and badges + TRAILER pill
+       need ~575px — nowrap clips the pill off the panel's right edge */
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 0.75rem;
