@@ -83,6 +83,32 @@ else
     echo "  No new trailers to stamp" >> "$LOG"
 fi
 
+# Step 3a2: RT-link gap sweep — find Rotten Tomatoes pages CI missed.
+# RT's search page bot-walls datacenter IPs (~half of CI's lookups fail
+# silently; verified Jul 2026), so this runs HERE for the same reason trailer
+# hosting does: the Mac's IP works. Capped (15/run, 3 attempts/film, 2-day
+# cooldown) so most days it's a few seconds. Once a link lands, CI's nightly
+# quote scrape + the merge side-fill pick up the critic quotes automatically.
+echo "RT-link gap sweep..." >> "$LOG"
+/usr/bin/perl -e 'alarm(1200); exec @ARGV' -- \
+    /usr/bin/python3 scripts/rt_gap_sweep.py >> "$LOG" 2>&1 \
+    || echo "  WARNING: RT sweep failed" >> "$LOG"
+
+if ! /usr/bin/git diff --quiet data.json 2>/dev/null; then
+    echo "  Pushing RT stamps to GitHub..." >> "$LOG"
+    if NRW_ALLOW_DATA_COMMIT=1 /usr/bin/git commit data.json -m "Local RT stamp — APPROVED: DELETE" >> "$LOG" 2>&1; then
+        if /usr/bin/git push origin main >> "$LOG" 2>&1; then
+            echo "  Pushed successfully" >> "$LOG"
+        else
+            echo "  WARNING: Push failed — CI will carry it tomorrow" >> "$LOG"
+        fi
+    else
+        echo "  WARNING: Commit failed" >> "$LOG"
+    fi
+else
+    echo "  No RT stamps to push" >> "$LOG"
+fi
+
 # Step 3b: Back up the hand-curated curation banks to B2.
 # admin/approved_capsules.json is git-tracked (CI reads it for house-style
 # generation), but B2 stays as belt-and-suspenders; taste_profile_pullquotes
