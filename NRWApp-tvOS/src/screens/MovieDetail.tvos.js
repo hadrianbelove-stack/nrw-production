@@ -890,7 +890,10 @@ const MovieDetailTvOS = () => {
               return (
                 <View style={styles.vodRow}>
                   {nonVsLinks.map((link, i) => {
+                    // Amazon rent/buy is Amazon-orange; Prime blue (#00A8E1 via
+                    // getServiceColor) is reserved for free-streaming contexts.
                     const buttonColor = movie?._is_preorder ? '#7c3aed'
+                      : normalizeService(link.service) === 'amazon' ? Colors.orange
                       : getServiceColor(link.service);
                     return (
                       <VodButton

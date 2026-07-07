@@ -43,6 +43,9 @@
     --svc-fandango: #FF6600;
     --svc-preorder: #7c3aed;
     --svc-restoration: #C8A951;
+    /* Amazon rent/buy uses the Purchase/Rent orange family; Prime blue
+       (--svc-prime) is reserved for "streams free on Prime" contexts. */
+    --svc-amazon-vod: #ff9500;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -241,8 +244,8 @@ header h1 {
 /* View toggles show their identity color when active (matches banners + date strips) */
 #highlights-toggle.active .slop-track { background: #00d4aa; }
 #highlights-toggle.active .slop-label { color: #00d4aa; }
-#fest-toggle.active .slop-track { background: #f59e0b; }
-#fest-toggle.active .slop-label { color: #f59e0b; }
+#fest-toggle.active .slop-track { background: #FFD700; }
+#fest-toggle.active .slop-label { color: #FFD700; }
 #preorder-toggle.active .slop-track { background: #7c3aed; }
 #preorder-toggle.active .slop-label { color: #7c3aed; }
 
@@ -826,18 +829,32 @@ header h1 {
 
 /* Virtual screening "Buy Ticket" button — styled via .lightbox-buttons rule below */
 
+/* 2-line caption (STYLE_GUIDE "Wall Grid & Poster Captions"):
+   line 1 = white bold title, one line ellipsis; line 2 = teal meta. */
 .movie-info {
     margin-top: 0.4rem;
-    height: 2.5rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     width: 100%;
+    min-width: 0;
     overflow: hidden;
 }
 
+/* Title line: white, bold, one line with ellipsis so a long title
+   can't widen its column (.movie-container is min-width:0). */
 .movie-info .movie-title {
-    display: none;
+    display: block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
 }
 
 /* Meta line: Director · Genre · Nation, all teal, on one line.
@@ -845,10 +862,12 @@ header h1 {
 .movie-info .movie-meta {
     display: flex;
     justify-content: center;
+    max-width: 100%;
     white-space: nowrap;
     color: var(--accent-primary);
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.1rem;
 }
 
 .movie-info .m-dir {
@@ -865,6 +884,16 @@ header h1 {
 
 .movie-info .m-rest {
     flex-shrink: 0;
+}
+
+/* Packed views (genre / pre-order): muted date prefix on the meta line.
+   Pinned (flex-shrink:0) so it's never the part that ellipsizes. */
+.movie-info .m-date,
+.movie-info .m-sep {
+    flex-shrink: 0;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .score-badge {
@@ -1495,17 +1524,19 @@ header h1 {
 .lightbox-hero,
 .lightbox-hero-text { display: contents; }
 
-/* Wide screens (>1100px): hero hugs its content — title, then meta + rule +
-   scores stacked naturally beneath. (An earlier constant-height lock kept
-   content below y-stable while cycling movies, but parked its slack as dead
-   air inside the hero; owner prefers the tighter stack.) */
+/* Wide screens (>1100px): lock the hero to a CONSTANT height so cycling
+   prev/next never shifts the pull-quotes / synopsis / buttons below it.
+   A 1-line vs 2-line title changes only the air inside the hero, never any
+   element's y-position below it. Height = the tallest case (2-line title +
+   meta + scores). The owner requires this lock — do not trade it for
+   density. */
 @media (min-width: 1101px) {
     .lightbox-hero {
         display: flex;
-        /* Hug content — the old constant 204px lock (anti-jitter when cycling
-           movies) parked ~60px of dead air between the scores row and the
-           quotes on 1-line titles. Cycling now shifts content below by at
-           most one title line, which reads better than the void. */
+        height: 204px;
+        /* .lightbox-info is a flex column; without this the hero compresses
+           below 204px on quote-heavy films (flex-shrink) before the scroller
+           kicks in, un-locking the height. Pin it. */
         flex-shrink: 0;
         overflow: hidden;
     }
@@ -1539,6 +1570,15 @@ header h1 {
        scores row land ~10px lower than the 1-line case. Zero it to keep the
        scores row y-identical across 1-line and 2-line titles. */
     .lightbox-hero-text .lightbox-scores { margin-bottom: 0; }
+}
+
+/* 1101-1405px: even with the shaved spacing, the 5-chip score row + TRAILER
+   pill physically cannot fit one line in the narrower panel, so it wraps
+   (flex-wrap net on .lightbox-scores). Step the lock up one row so the
+   wrapped line lives INSIDE the locked hero — still a constant at any given
+   width, so cycling never shifts content below. */
+@media (min-width: 1101px) and (max-width: 1405px) {
+    .lightbox-hero { height: 244px; }
 }
 
 /* Title area wrapper — compact (density redesign): hugs its two rows */
@@ -1648,11 +1688,15 @@ header h1 {
    row height is unchanged and the locked hero absorbs it without shifting. */
 .lightbox-scores {
     display: flex;
-    /* Must wrap: the hero text column is ~415px and badges + TRAILER pill
-       need ~575px — nowrap clips the pill off the panel's right edge */
+    /* Spacing shaved -48px on a 5-chip row (gap 0.5->0.35rem, badge pad
+       9->6px, pill pad 14->11px): 5 chips + the full TRAILER pill fit ONE
+       line wherever the panel is full width — wide mode >=1406px and the
+       <=1100px sheet. flex-wrap stays as the safety net for the 1101-1405px
+       band and short windows, where one line is geometrically impossible;
+       there the pill wraps right-aligned inside the stepped hero lock. */
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.35rem;
     margin-bottom: 0.75rem;
 }
 .lightbox-scores:empty { display: none; }
@@ -1667,7 +1711,7 @@ header h1 {
     align-items: center;
     gap: 8px;
     height: 32px;
-    padding: 0 14px;
+    padding: 0 11px;
     width: auto;
     border: 1.5px solid rgba(255,255,255,0.3);
     border-radius: 7px;
@@ -1703,7 +1747,7 @@ header h1 {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 9px;
+    padding: 4px 6px;
     border-radius: 6px;
     font-size: 0.85rem;
     font-weight: 600;
@@ -2045,7 +2089,7 @@ header h1 {
     text-align: center;
 }
 /* VOD logo-half brand colors */
-.vod-btn.amazon .logo-half { background: var(--svc-prime); }
+.vod-btn.amazon .logo-half { background: var(--svc-amazon-vod); }
 .vod-btn.apple .logo-half { background: #333; }
 .vod-btn.fandango .logo-half { background: var(--svc-fandango); }
 .vod-btn.youtube .logo-half { background: var(--svc-youtube); }

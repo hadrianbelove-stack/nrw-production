@@ -328,7 +328,7 @@ const DateRowStrip = ({ stripKey, stripColor }) => {
   if (stripKey === 'PRE-ORDER') {
     day = 'PRE-ORDER'; rest = 'COMING SOON'; color = '#7c3aed';
   } else if (stripKey === 'SCREENING') {
-    day = 'FEST'; rest = 'NOW SCREENING'; color = '#f59e0b';
+    day = 'FEST'; rest = 'NOW SCREENING'; color = Colors.screeningGold;
   } else if (stripKey === 'HIGHLIGHTS') {
     day = 'SELECTS'; rest = 'OF NOTE'; color = '#00d4aa';
   } else if (stripKey === 'SLOP') {
@@ -821,6 +821,13 @@ const HomeScreenTvOS = () => {
     });
   }, [filteredMovies, activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly]);
 
+  // Genre-filtered views pack into one continuous grid: no per-date strip rows
+  // (a full-width strip over 1-2 filtered cards wastes a row). Each card shows
+  // its own small date in the caption instead (MovieCard showDate). Picking a
+  // genre clears every view toggle (handleFilterChange), so only the regular
+  // bucket can be non-empty while this is true.
+  const genrePacked = activeFilters.size > 0;
+
   // Build flat list data with date markers interspersed
   // Each date marker takes one grid cell (same size as movie card)
   const listData = useMemo(() => {
@@ -924,7 +931,7 @@ const HomeScreenTvOS = () => {
     let trailersPushed = false;
     paginatedRegular.forEach((movie, index) => {
       const movieDate = movie.digital_date || 'Unknown';
-      if (!showHighlightsOnly && movieDate !== currentDate) {
+      if (!showHighlightsOnly && !genrePacked && movieDate !== currentDate) {
         currentDate = movieDate;
         if (!trailersPushed && SHOW_TRAILERS_CARD) {
           items.push({ type: 'trailers', id: 'new-trailers-button', playlistUrl: latestPlaylistUrl });
@@ -932,7 +939,7 @@ const HomeScreenTvOS = () => {
         }
         items.push({ type: 'date', id: `date-${movieDate}-${index}`, date: movieDate, isBootstrap: !!movie.bootstrap_date });
       }
-      items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie, mIdx: mIdx++, stripKey: showHighlightsOnly ? 'HIGHLIGHTS' : movieDate });
+      items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `movie-${index}`, movie, mIdx: mIdx++, stripKey: showHighlightsOnly ? 'HIGHLIGHTS' : movieDate, showDate: genrePacked });
     });
 
     if (hasMore) {
@@ -940,7 +947,7 @@ const HomeScreenTvOS = () => {
     }
 
     return items;
-  }, [displayMovies, latestPlaylistUrl, visibleCount, showHighlightsOnly, slopMode]);
+  }, [displayMovies, latestPlaylistUrl, visibleCount, showHighlightsOnly, slopMode, genrePacked]);
 
   // Group the flat list into rows: strips/trailers/load-more are full-width rows,
   // movies chunk into rows of NUM_COLUMNS. Focus math works on (row, col) of movie rows.
@@ -1097,7 +1104,7 @@ const HomeScreenTvOS = () => {
   const giveInitialFocus = !initialFocusDone.current;
   if (giveInitialFocus) initialFocusDone.current = true;
 
-  // Date strips adopt the active view toggle's color (SELECTS crimson, FESTS amber,
+  // Date strips adopt the active view toggle's color (SELECTS teal, FESTS gold,
   // SLOP ONLY orange); otherwise a single active category filter; otherwise teal
   const singleFilter = activeFilters.size === 1 ? Array.from(activeFilters)[0] : null;
   const dateStripColor = showHighlightsOnly
@@ -1105,7 +1112,7 @@ const HomeScreenTvOS = () => {
     : showPreorders
     ? '#7c3aed'
     : !hideFest
-    ? '#f59e0b'
+    ? Colors.screeningGold
     : slopMode === 'only'
     ? '#ff9500'
     : (singleFilter && STRIP_COLORS[singleFilter]) || Colors.primary;
@@ -1159,7 +1166,7 @@ const HomeScreenTvOS = () => {
       // Row of movie cards — focus neighbors derived from (row, col) in movieGrid
       return (
         <View style={styles.movieRow}>
-          {item.items.map(({ movie, mIdx, id }) => {
+          {item.items.map(({ movie, mIdx, id, showDate }) => {
             const pos = movieGrid.posByIdx.get(mIdx) || { row: 0, col: 0 };
             const { rowsOfIdx } = movieGrid;
             const rowIdx = pos.row;
@@ -1188,9 +1195,11 @@ const HomeScreenTvOS = () => {
             // column-preserving (clamped to the row width). At a day's edge, down
             // lands on the next day's first poster (top-left) and up on the previous
             // day's last poster — a clean hop instead of a column-preserving vault.
+            // Packed genre views have no day blocks (one continuous grid), so
+            // navigation stays column-preserving throughout.
             const thisDay = thisRow.length ? stripKeyByIdx[thisRow[0]] : null;
-            const rowStartsDay = !prevRow || stripKeyByIdx[prevRow[0]] !== thisDay;
-            const rowEndsDay = !nextRow || stripKeyByIdx[nextRow[0]] !== thisDay;
+            const rowStartsDay = !genrePacked && (!prevRow || stripKeyByIdx[prevRow[0]] !== thisDay);
+            const rowEndsDay = !genrePacked && (!nextRow || stripKeyByIdx[nextRow[0]] !== thisDay);
 
             const nextFocusUp = isFirstMovieRow
               ? undefined
@@ -1214,6 +1223,7 @@ const HomeScreenTvOS = () => {
                   onFocus={() => handleMovieFocus(movie, mIdx)}
                   onBlur={() => handleMovieBlur(mIdx)}
                   hasTVPreferredFocus={(giveInitialFocus && isFirstMovie) || pendingFocusMIdx === mIdx}
+                  showDate={showDate}
                   testID={`movie-card-${mIdx}`}
                   nextFocusUp={nextFocusUp}
                   nextFocusDown={nextFocusDown}
@@ -1240,7 +1250,7 @@ const HomeScreenTvOS = () => {
         </View>
       );
     },
-    [movieGrid, stripKeyByIdx, dateStripColor, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, registerItemRef, registerWrapperRef, giveInitialFocus, pendingFocusMIdx]
+    [movieGrid, stripKeyByIdx, dateStripColor, genrePacked, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, registerItemRef, registerWrapperRef, giveInitialFocus, pendingFocusMIdx]
   );
 
   // Key extractor
@@ -1322,7 +1332,7 @@ const HomeScreenTvOS = () => {
             <MetaToggle
               isActive={!hideFest}
               label="FESTS"
-              accentColor="#f59e0b"
+              accentColor={Colors.screeningGold}
               accessibilityLabel={hideFest ? 'Virtual screenings hidden' : 'Showing virtual screenings'}
               onPress={toggleHideFest}
             />

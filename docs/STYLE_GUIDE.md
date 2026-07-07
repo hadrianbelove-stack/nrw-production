@@ -23,12 +23,14 @@ This is the authoritative style guide for all NRW visual design. All UI work (ne
 ### Category Colors
 | Category | Hex | Usage |
 |----------|-----|-------|
-| **Staff Picks** | `#dc143c` | Crimson - badges, borders, accents |
+| **Selects** (was Staff Picks) | `#00d4aa` | Teal - SELECT pills, card glows, badges (crimson era retired Jul 2026) |
+| **Pre-Order** | `#7c3aed` | Purple - toggle, badges, view banner |
 | **Studio** | `#ffffff` | White - default styling |
 | **Indie** | `#00d4aa` | Teal - matches primary accent |
 | **Documentary** | `#4A90D9` | Blue - informational, non-fiction |
-| **Virtual Screenings** | `#FFD700` | Gold - festival/screening accent |
-| **The Slop Pile** | `#888888` | Gray - muted, de-emphasized |
+| **Virtual Screenings / Fests** | `#FFD700` | Gold - the ONLY fest gold: card frames, badges, toggle active state, view banners (the amber #f59e0b era is retired, Jul 2026) |
+| **The Slop Pile** | `#888888` | Gray - muted, de-emphasized (the SLOP-ONLY view accent is `#ff9500` orange) |
+| **TV focus ring** | `#ff9500` | Orange - tvOS/Roku d-pad focus accent |
 | **Restorations** | `#C8A951` | Antique gold - badge pill on poster |
 
 ### Service Colors
@@ -41,6 +43,7 @@ This is the authoritative style guide for all NRW visual design. All UI work (ne
 | Hulu | `#1CE783` |
 | Peacock | `#000000` |
 | Purchase/Rent | `#ff9500` |
+| Amazon rent/buy button | `#ff9500` (`--svc-amazon-vod`) — Prime BLUE `#00A8E1` is reserved for "streams free on Prime" contexts |
 | Plex | `#E5A00D` |
 | Fawesome | `#5B8DEF` |
 | Apple TV | `#aaaaaa` |
@@ -160,8 +163,8 @@ box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 /* Hover glow (accent) */
 box-shadow: 0 5px 20px rgba(0,212,170,0.4);
 
-/* Hover glow (crimson for Staff Picks) */
-box-shadow: 0 0 20px rgba(220,20,60,0.3);
+/* Hover glow (teal for Selects — crimson era retired Jul 2026) */
+box-shadow: 0 0 20px rgba(0,212,170,0.3);
 ```
 
 ### Standard Spacing
@@ -175,6 +178,8 @@ box-shadow: 0 0 20px rgba(220,20,60,0.3);
   1. **Title** — white, bold, **one line** with ellipsis (`white-space: nowrap; text-overflow: ellipsis`).
   2. **Meta** — one teal line: `Director · Genre · Nation` (primary genre only; nation as 3-letter code). The director name ellipsizes if long, but ` · Genre · Nation` is pinned (flexbox, `flex-shrink: 0`) so it's never lost.
 - The grid item (`.movie-container`) sets `min-width: 0` so a long one-line caption can't widen its column.
+- Shipped sizes (Jul 2026 restoration of the title line): title `0.95rem/700` white; meta `0.85rem/600` teal.
+- **Packed filtered views** (Jul 2026): when a genre filter or the PRE-ORDER view is active, the wall renders ONE continuous grid with **no per-date banner rows** — each card instead carries a muted caps date (`.m-date`, #888) prefixed to its meta line. The top section view-banner stays. Default wall, SELECTS, FESTS, slop views, and search keep the date-river banners. Same rule on mobile and tvOS.
 
 ---
 
@@ -292,10 +297,10 @@ Use **light theme** for better email compatibility:
 
 ### Newsletter Section Header
 ```html
-<div style="color: #dc143c; font-weight: 700; letter-spacing: 3px;
-            text-transform: uppercase; border-bottom: 2px solid #dc143c;
+<div style="color: #00d4aa; font-weight: 700; letter-spacing: 3px;
+            text-transform: uppercase; border-bottom: 2px solid #00d4aa;
             padding-bottom: 8px; margin: 40px 0 20px 0;">
-    STAFF PICKS
+    SELECTS
 </div>
 ```
 
@@ -310,6 +315,14 @@ Use **light theme** for better email compatibility:
 ---
 
 ## Changelog
+
+### 2026-07-06 - Owner rulings: category colors + captions + packed filtered views
+- Selects = teal `#00d4aa` (crimson `#dc143c` retired; table, hover glow, and newsletter example updated)
+- ONE fest gold: `#FFD700` everywhere (toggle/banner amber `#f59e0b` retired on all surfaces)
+- Amazon rent/buy = orange `--svc-amazon-vod: #ff9500`; Prime blue reserved for free-streaming contexts
+- Documented Pre-Order purple `#7c3aed`, slop-only orange `#ff9500`, TV focus orange
+- Caption ruling: 2-line caption (white title + teal meta) RESTORED on the desktop wall; shipped sizes noted
+- Packed filtered views: genre/pre-order views drop per-date banners; cards carry a muted date instead
 
 ### 2026-05-25 - 3-Letter Countries + Fluid Poster Grid
 - Country Display Names: switched to **3-letter codes** (UK/USA kept as exceptions); rewrote the section + `countryAbbrev` in `shared-config.js` (covers all data countries + ISO-2 variants)

@@ -98,6 +98,7 @@ const NRWMobile = {
             this.setupPosterGestures();
             this.setupSheetGestures();
             this.setupKeyboard();
+            this.setupHistory();
 
             this.applyFilter();
             this.buildGrid();
@@ -412,6 +413,15 @@ const NRWMobile = {
     },
 
     // ===== GRID (View 0) =====
+    // Packed mode (audit F5/F6): a genre filter or the PRE-ORDER view spread a
+    // handful of films across many days, so per-date banners read as 80–90%
+    // chrome/void. In these views we drop ALL date section headers and pack the
+    // posters into one continuous 3-col grid, each cell carrying a small muted
+    // date instead. Default / SELECTS / FESTS / search are unchanged.
+    isPackedMode() {
+        return (!this.searchQuery && (this.activeFilters.size > 0 || this.showPreorders));
+    },
+
     buildGrid() {
         this.savedScrollTop = 0;
 
@@ -423,16 +433,24 @@ const NRWMobile = {
         let festSoonStarted = false;
         let lastFestStart = '';
         const festToday = new Date().toISOString().slice(0, 10);
+        const packed = this.isPackedMode();
 
-        if (this.showHighlightsOnly && this.filteredMovies.length > 0) {
+        if (!packed && this.showHighlightsOnly && this.filteredMovies.length > 0) {
             this.gridEntries.push({ type: 'date', dateStr: 'highlights' });
             // No description blurb — the "SELECTS · FILMS OF NOTE" banner says enough
         }
-        if (this.slopMode === 'only' && this.filteredMovies.length > 0) {
+        if (!packed && this.slopMode === 'only' && this.filteredMovies.length > 0) {
             this.gridEntries.push({ type: 'date', dateStr: 'slop' });
         }
 
         this.filteredMovies.forEach((movie, i) => {
+            // Packed mode: no headers at all — the per-cell muted date carries the
+            // date info. Just append the movie with its cell date.
+            if (packed) {
+                const cellDate = (movie.digital_date || '').substring(0, 10);
+                this.gridEntries.push({ type: 'movie', movie, index: i, cellDate });
+                return;
+            }
             if (movie.filters?.is_virtual_screening) {
                 // Virtual screenings group into Available Now / Available Soon (not by arrival date)
                 const start = movie.virtual_screening_info?.available_start || '';
@@ -504,7 +522,7 @@ const NRWMobile = {
             if (entry.type === 'date') {
                 grid.appendChild(this.createDateRowHeader(entry.dateStr));
             } else {
-                grid.appendChild(this.createGridItem(entry.movie, entry.index));
+                grid.appendChild(this.createGridItem(entry.movie, entry.index, entry.cellDate));
             }
         }
         this.displayedCount = end;
@@ -554,7 +572,7 @@ const NRWMobile = {
             if (this.showHighlightsOnly) {
                 color = '#00d4aa';
             } else if (!this.hideFest) {
-                color = '#f59e0b';
+                color = '#FFD700';
             } else if (this.slopMode === 'only') {
                 color = '#ff9500';
             } else if (singleFilter && this.STRIP_COLORS[singleFilter]) {
@@ -569,7 +587,7 @@ const NRWMobile = {
         return row;
     },
 
-    createGridItem(movie, index) {
+    createGridItem(movie, index, cellDate) {
         const isStaffPick = NRWConfig.isStaffPick(movie, this.staffPicks);
         const isScreening = movie.filters?.is_virtual_screening;
         const streamingSvc = this.getGridStreamingService(movie);
@@ -644,9 +662,7 @@ const NRWMobile = {
         }
         if (movie.filters?.is_restoration) {
             const badge = document.createElement('span');
-            badge.style.cssText = 'position:absolute;top:4px;right:4px;background:#4a7c3f;color:#fff;' +
-                'font-size:0.32rem;font-weight:700;letter-spacing:0.03em;padding:2px 4px;' +
-                'border-radius:2px;text-transform:uppercase;z-index:3;';
+            badge.className = 'restoration-badge';
             badge.textContent = (movie.reissue_label || 'RESTORATION').toUpperCase();
             badgeTarget.appendChild(badge);
         }
@@ -672,26 +688,46 @@ const NRWMobile = {
 
         item.appendChild(posterWrap);
 
-        // Title + meta info
+        // Caption (STYLE_GUIDE "Wall Grid & Poster Captions"): 2 lines.
+        //  Line 1 = white bold title, ONE line, ellipsis.
+        //  Line 2 = teal Director \u00b7 Genre \u00b7 Nation. Director ellipsizes while the
+        //           pinned " \u00b7 Genre \u00b7 Nation" suffix (flex-shrink:0) is never lost.
+        // Packed mode (genre/pre-order views) prepends a small muted date to line 2.
         const info = document.createElement('div');
         info.className = 'grid-item-info';
 
+        // Line 1: title
+        const titleEl = document.createElement('div');
+        titleEl.className = 'grid-item-title';
+        titleEl.textContent = movie.display_title || movie.title || '';
+        info.appendChild(titleEl);
+
+        // Line 2: teal meta with pinned suffix (+ optional muted packed date)
         const director = movie.crew?.director || movie.director || '';
         const dirWikiUrl = movie.links?.director_wiki;
         const genre = movie.genres?.[0] || '';
         const country = NRWConfig.abbreviateCountry(movie.country) || '';
-        const metaParts = [];
-        if (director) {
-            metaParts.push(dirWikiUrl
-                ? `<a href="${dirWikiUrl}" target="_blank" rel="noopener" class="mobile-dir-link">${this.esc(director)}</a>`
-                : this.esc(director));
-        }
-        if (genre) metaParts.push(this.esc(genre));
-        if (country) metaParts.push(this.esc(country));
-        if (metaParts.length) {
+
+        const dateLabel = cellDate ? this.shortDate(cellDate) : '';
+        const dirHtml = director
+            ? (dirWikiUrl
+                ? `<a href="${dirWikiUrl}" target="_blank" rel="noopener" class="mobile-dir-link grid-meta-dir">${this.esc(director)}</a>`
+                : `<span class="grid-meta-dir">${this.esc(director)}</span>`)
+            : '';
+        const pinnedParts = [];
+        if (genre) pinnedParts.push(this.esc(genre));
+        if (country) pinnedParts.push(this.esc(country));
+        const pinnedHtml = pinnedParts.length
+            ? `<span class="grid-meta-pin">${(dirHtml ? ' \u00b7 ' : '') + pinnedParts.join(' \u00b7 ')}</span>`
+            : '';
+
+        if (dateLabel || dirHtml || pinnedHtml) {
             const meta = document.createElement('div');
             meta.className = 'grid-item-meta';
-            meta.innerHTML = metaParts.join(' \u00b7 ');
+            const dateHtml = dateLabel
+                ? `<span class="grid-meta-date">${this.esc(dateLabel)}${(dirHtml || pinnedHtml) ? ' \u00b7 ' : ''}</span>`
+                : '';
+            meta.innerHTML = dateHtml + dirHtml + pinnedHtml;
             info.appendChild(meta);
         }
 
@@ -728,7 +764,66 @@ const NRWMobile = {
     },
 
     // ===== VIEW TRANSITIONS =====
+    // History model (audit F42/F45): the browser history stack mirrors the view
+    // depth so the iOS swipe-back gesture / Android back button step DOWN through
+    // sheet → poster → grid instead of leaving the site. Depth 0 = grid (base
+    // entry), 1 = poster, 2 = sheet.
+    //
+    // setView() is the smart router:
+    //   • going UP   → do the DOM work + pushState for each new level
+    //   • going DOWN → history.go(delta); popstate is the ONLY path that lowers a
+    //                  view (so a swipe-back and a UI dismiss share one code path)
+    //   • same level → plain DOM (movie navigation)
+    // _applyView() is the raw DOM transition, called by both setView (up) and the
+    // popstate handler (down). _histDepth tracks how many nrwView entries we own.
+    setupHistory() {
+        this._histDepth = 0;
+        // A reload can revive a stale {nrwView} entry while our depth counter
+        // resets — neutralize it so Back doesn't re-open a view for a movie
+        // index that no longer matches.
+        if (history.state && typeof history.state.nrwView === 'number') {
+            history.replaceState(null, '', location.href);
+        }
+        window.addEventListener('popstate', () => {
+            // A trailer overlay owns its own history entry + popstate handler; let
+            // it consume this pop (it's still in the DOM here — removed on a timer).
+            if (document.getElementById('trailer-overlay')) return;
+            const target = (history.state && typeof history.state.nrwView === 'number')
+                ? history.state.nrwView : 0;
+            this._histDepth = target;
+            if (target === 0) this._stripDeepLink();
+            this._applyView(target);
+        });
+    },
+
+    // Drop a stale ?m= deep-link param once the movie is dismissed (audit F45),
+    // without adding a history entry.
+    _stripDeepLink() {
+        const url = new URL(location.href);
+        if (!url.searchParams.has('m')) return;
+        url.searchParams.delete('m');  // only m — other params survive
+        history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+    },
+
     setView(view) {
+        const depth = this._histDepth || 0;
+        if (view > depth) {
+            // Going up: apply DOM, then record one history entry per new level.
+            this._applyView(view);
+            for (let d = depth + 1; d <= view; d++) {
+                history.pushState({ nrwView: d }, '');
+            }
+            this._histDepth = view;
+        } else if (view < depth) {
+            // Going down: let history drive it (popstate does the DOM + strip).
+            history.go(view - depth);
+        } else {
+            // Same level (e.g. reselecting) — plain DOM.
+            this._applyView(view);
+        }
+    },
+
+    _applyView(view) {
         this.currentView = view;
 
         // Update dots
@@ -793,8 +888,10 @@ const NRWMobile = {
             idx = 0;
         }
         if (idx !== -1) {
+            // selectMovie() already enters the poster view (pushes the view-1
+            // history entry on top of the deep-linked base entry); one back()
+            // returns to the grid and strips ?m=.
             this.selectMovie(idx);
-            this.setView(1);
         }
     },
 
@@ -1825,6 +1922,14 @@ const NRWMobile = {
         const h = Math.floor(min / 60);
         const m = min % 60;
         return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+    },
+
+    // Compact "Mon D" date for the packed-view per-cell muted date label.
+    shortDate(iso) {
+        if (!iso) return '';
+        const d = new Date(iso + 'T12:00:00');
+        if (isNaN(d)) return '';
+        return d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
     },
 };
 

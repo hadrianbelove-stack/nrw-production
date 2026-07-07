@@ -106,6 +106,7 @@ const NRW = {
                 this.setupSearchEventListeners();
                 this.setupCardFlipHandler();
                 this.setupLightboxKeyboardHandler();
+                this.setupLightboxHistory();
                 this.setupGridKeyboardHandler();
                 this.setupHeaderKeyboardNav();
                 this.setupDelegatedClickHandlers();
@@ -586,7 +587,7 @@ const NRW = {
                 <div class="movie-card"><div class="card-inner"><div class="card-front">
                     <div class="poster-fallback" aria-hidden="true"></div>
                 </div></div></div>
-                <div class="movie-info"><div class="movie-meta">&nbsp;</div></div>
+                <div class="movie-info"><div class="movie-title">&nbsp;</div><div class="movie-meta">&nbsp;</div></div>
             </div>`;
         }
         wall.innerHTML = html;
@@ -725,11 +726,20 @@ const NRW = {
         let vsLastStart = '';
         const SHOW_TRAILERS_CARD = false; // Trailers card temporarily disabled — set true to restore
 
+        // Packed views (audit #8): a genre filter or the PRE-ORDER view yields
+        // sparse date groups — one card under a full-width banner, banners + voids.
+        // In these two views we drop the per-date strips and render ONE continuous
+        // grid; each card carries its own release date on the meta line instead.
+        // The big section banner at the top still stays. Default wall, SELECTS,
+        // FESTS, SLOP, and search keep the date-river rendering.
+        const activeGenre = this.activeFilters.size ? [...this.activeFilters][0] : null;
+        const packed = !this.searchQuery && !this.showFest && (!!activeGenre || this.showPreorders);
+
         // Date strips: single active filter recolors them; each view has its own color
         const singleFilter = this.activeFilters.size === 1 ? [...this.activeFilters][0] : null;
         const filterColor = singleFilter ? this.STRIP_COLORS[singleFilter] : null;
         const dateStripColor = this.showHighlightsOnly ? '#00d4aa'
-            : this.showFest ? '#f59e0b'
+            : this.showFest ? '#FFD700'
             : this.showPreorders ? '#7c3aed'
             : this.slopMode === 'only' ? '#ff9500'
             : (filterColor || 'var(--accent-primary)');
@@ -785,8 +795,9 @@ const NRW = {
           } else {
             const date = (movie.digital_date || '').substring(0, 10);
 
-            // Date strip whenever the date changes — every view groups by date
-            if (date !== lastDate) {
+            // Packed views (genre / pre-order): no per-date strips — one grid.
+            // Date strip whenever the date changes — every other view groups by date
+            if (!packed && date !== lastDate) {
                 // Add NEW TRAILERS button before the first date marker
                 if (isFirstDate && SHOW_TRAILERS_CARD) {
                     const now = new Date();
@@ -827,7 +838,13 @@ const NRW = {
             // Movie card
             const title = movie.title || 'Untitled';
             const year = movie.year || new Date(movie.digital_date).getFullYear();
-            
+
+            // Packed views drop the date strips, so each card carries its own
+            // release date as a muted caps prefix on the meta line (e.g. "JUL 3").
+            const packedDatePrefix = packed && movie.digital_date
+                ? `<span class="m-date">${NRW.formatShortDate(movie.digital_date).toUpperCase()}</span><span class="m-sep"> · </span>`
+                : '';
+
             const isStaffPick = NRWConfig.isStaffPick(movie, this.staffPicks);
             const staffPickClass = isStaffPick ? ' staff-pick-movie' : '';
 
@@ -944,7 +961,8 @@ const NRW = {
                     </div>
                 </div>
                 <div class="movie-info">
-                    <div class="movie-meta"><span class="m-dir">${NRW._directorLink(movie.crew?.director, movie.links?.director_wiki)}</span><span class="m-rest"> · ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
+                    <div class="movie-title" title="${title.replace(/"/g, '&quot;')}">${title}</div>
+                    <div class="movie-meta">${packedDatePrefix}<span class="m-dir">${NRW._directorLink(movie.crew?.director, movie.links?.director_wiki)}</span><span class="m-rest"> · ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
                 </div>
                 ${badgeBar}
             </div>`;
@@ -1347,6 +1365,71 @@ const NRW = {
     // Fullscreen Poster Lightbox
     // ========================================
 
+    // ---- Browser-history integration (audit #10 / F42) ----
+    // The lightbox is an in-page overlay, so Back should close it, not leave
+    // the site. Opening pushes ONE history entry per session (prev/next arrows
+    // reuse it — see _lbHistoryPushed); closing consumes it via history.back();
+    // popstate does the actual DOM close; a ?m= deep link is stripped on close.
+    _lbHistoryPushed: false,
+
+    setupLightboxHistory() {
+        window.addEventListener('popstate', () => {
+            // A trailer playing over the lightbox is the topmost layer: Back
+            // closes IT and re-arms the lightbox entry, so the lightbox (and
+            // body scroll-lock) isn't yanked out from under the player.
+            const trailer = document.getElementById('trailer-modal');
+            if (trailer && trailer.classList.contains('active')) {
+                this.closeTrailer();
+                history.pushState({ nrwLightbox: true }, '');
+                this._lbHistoryPushed = true;
+                return;
+            }
+            const lightbox = document.getElementById('poster-lightbox');
+            if (lightbox && lightbox.classList.contains('active')) {
+                // Back/forward left the lightbox state → close the overlay, and
+                // clear our ownership so closeLightbox() doesn't pop again.
+                this._lbHistoryPushed = false;
+                this._closeLightboxDOM();
+                this._stripDeepLinkParam();
+            }
+        });
+    },
+
+    // Push a single lightbox history entry (idempotent within a session). For a
+    // ?m= deep-link entry, first replace the current (movie-URL) entry with a
+    // clean wall URL so Back lands on the wall and a refresh there won't reopen.
+    _pushLightboxState(fromDeepLink) {
+        if (this._lbHistoryPushed) return;   // arrows reuse the same entry
+        if (fromDeepLink) {
+            const clean = new URL(location.href);
+            clean.searchParams.delete('m');
+            history.replaceState({ nrwWall: true }, '', clean.href);
+        }
+        history.pushState({ nrwLightbox: true }, '');
+        this._lbHistoryPushed = true;
+    },
+
+    // Drop the ?m= param from the URL so a refresh/re-share of the wall URL
+    // doesn't reopen the just-closed movie.
+    _stripDeepLinkParam() {
+        if (!location.search.includes('m=')) return;
+        const url = new URL(location.href);
+        url.searchParams.delete('m');
+        history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+    },
+
+    // Actually hide the overlay (no history side effects — popstate/close call this).
+    _closeLightboxDOM() {
+        const lightbox = document.getElementById('poster-lightbox');
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+        // Scroll back to grid-selected card
+        if (this.gridSelectedId) {
+            const sel = document.querySelector('#wall .movie-container.grid-selected');
+            if (sel) setTimeout(() => sel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+        }
+    },
+
     // Open lightbox with a specific movie
     openLightbox(movieId) {
         // Build list of currently displayed movies (sorted by date, matching page render order)
@@ -1365,23 +1448,25 @@ const NRW = {
         const lightbox = document.getElementById('poster-lightbox');
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
+        this._pushLightboxState(false);
     },
 
-    // Close lightbox
+    // Close lightbox — consume the pushed history entry so Back stays in sync
+    // (popstate then runs _closeLightboxDOM). If we somehow own no entry, close
+    // directly.
     closeLightbox() {
-        const lightbox = document.getElementById('poster-lightbox');
-        lightbox.classList.remove('active');
-        document.body.style.overflow = '';
-        // Scroll back to grid-selected card
-        if (this.gridSelectedId) {
-            const sel = document.querySelector('#wall .movie-container.grid-selected');
-            if (sel) setTimeout(() => sel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+        if (this._lbHistoryPushed) {
+            this._lbHistoryPushed = false;
+            history.back();   // → popstate → _closeLightboxDOM + strip ?m=
+        } else {
+            this._closeLightboxDOM();
+            this._stripDeepLinkParam();
         }
     },
 
     // Open the lightbox by id even if the movie is filtered out or off-page —
     // a shared link (?m=<id>) must always open, including slop-hidden/older titles.
-    openLightboxById(id) {
+    openLightboxById(id, fromDeepLink) {
         const target = this.allMovies.find(m => String(m.id) === String(id));
         if (!target) return false;
         let list = [...this.filteredMovies]
@@ -1394,13 +1479,16 @@ const NRW = {
         const lightbox = document.getElementById('poster-lightbox');
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
+        this._pushLightboxState(!!fromDeepLink);
         return true;
     },
 
-    // On load, open a movie if the URL carries ?m=<id> (from a shared link)
+    // On load, open a movie if the URL carries ?m=<id> (from a shared link).
+    // Back from a deep-link entry must land on the wall, not exit the site, so
+    // the open replaces the movie URL with a clean wall entry first.
     handleDeepLink() {
         const id = new URLSearchParams(location.search).get('m');
-        if (id) this.openLightboxById(id);
+        if (id) this.openLightboxById(id, true);
     },
 
     // The shareable per-movie URL — the OG stub page that yields a rich link preview.

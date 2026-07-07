@@ -13,6 +13,7 @@ a { color: inherit; text-decoration: none; }
   --border-subtle: rgba(255,255,255,0.2);
   --crimson: #dc143c;
   --screening-gold: #FFD700;
+  --svc-restoration: #C8A951;
   --radius-pill: 25px;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --header-height: 96px;
@@ -226,8 +227,8 @@ body {
 /* View toggles show their identity color when active (matches banners + date strips) */
 #highlights-toggle.active .slop-track { background: #00d4aa; }
 #highlights-toggle.active .slop-label { color: #00d4aa; }
-#fest-toggle.active .slop-track { background: #f59e0b; }
-#fest-toggle.active .slop-label { color: #f59e0b; }
+#fest-toggle.active .slop-track { background: var(--screening-gold); }
+#fest-toggle.active .slop-label { color: var(--screening-gold); }
 #preorder-toggle.active .slop-track { background: #7c3aed; }
 #preorder-toggle.active .slop-label { color: #7c3aed; }
 .search-container {
@@ -328,6 +329,7 @@ body {
 .grid-item {
   cursor: pointer;
   position: relative;
+  min-width: 0; /* long one-line caption can't widen its column */
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.15s ease;
 }
@@ -343,23 +345,50 @@ body {
   object-fit: cover;
   display: block;
 }
+/* Caption: 2 lines (title + teal meta) — STYLE_GUIDE "Wall Grid & Poster Captions" */
 .grid-item-info {
-  height: 2rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   overflow: hidden;
-  padding: 0 2px;
+  padding: 3px 2px 0;
+  min-width: 0;
 }
-.grid-item-meta {
-  font-size: 0.6rem;
+/* Line 1: white bold title, ONE line, ellipsis */
+.grid-item-title {
+  font-size: 0.62rem;
   font-weight: 700;
-  color: var(--accent);
+  color: #fff;
+  line-height: 1.15;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: center;
 }
+/* Line 2: teal Director · Genre · Nation — director ellipsizes, suffix pinned */
+.grid-item-meta {
+  font-size: 0.56rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+  margin-top: 1px;
+  max-width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.grid-item-meta .grid-meta-date { color: var(--text-muted); flex-shrink: 0; }
+.grid-item-meta .grid-meta-dir {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--accent);
+}
+.grid-item-meta .grid-meta-pin { flex-shrink: 0; white-space: nowrap; }
 /* Select: teal border + glow on the poster, matching the screening pattern. */
 .grid-item.staff-pick-movie .grid-item-poster {
   border: 3px solid #00d4aa;
@@ -482,6 +511,22 @@ body {
 }
 .date-row-header.section-banner .drh-day { font-size: 1.7rem; }
 .date-row-header.section-banner .drh-rest { font-size: 1.7rem; font-weight: 400; white-space: normal; }
+
+/* Restoration/reissue badge on poster (top-right, antique gold — matches
+   desktop .restoration-badge; was hardcoded green #4a7c3f — audit F26) */
+.restoration-badge {
+  position: absolute;
+  top: 4px; right: 4px;
+  background: var(--svc-restoration);
+  color: #000;
+  font-size: 0.32rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 2px 4px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  z-index: 3;
+}
 
 /* Pre-order badge */
 .grid-item-poster .preorder-badge {

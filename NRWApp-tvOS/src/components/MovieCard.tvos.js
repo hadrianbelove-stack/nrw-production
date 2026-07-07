@@ -103,6 +103,7 @@ const MovieCard = forwardRef(({
   onBlur,
   isFeatured = false,
   hasTVPreferredFocus = false,
+  showDate = false,
   testID,
   nextFocusUp,
   nextFocusDown,
@@ -259,6 +260,15 @@ const MovieCard = forwardRef(({
   const genre = movie.genres?.[0];
   const metaText = [director, genre, countryText].filter(Boolean).join(' • ');
 
+  // Packed genre views (HomeScreen showDate): no date-strip rows in the grid,
+  // so the card carries its own small muted date, e.g. "JUL 3".
+  const cardDate = (() => {
+    if (!showDate || !movie.digital_date) return null;
+    const d = new Date(movie.digital_date + 'T12:00:00');
+    if (isNaN(d.getTime())) return null;
+    return `${d.toLocaleDateString('en-US', { month: 'short' })} ${d.getDate()}`.toUpperCase();
+  })();
+
   return (
     <TouchableOpacity
       ref={ref}
@@ -411,6 +421,11 @@ const MovieCard = forwardRef(({
           {metaText !== '' && (
             <Text style={styles.infoText} numberOfLines={1}>
               {metaText}
+            </Text>
+          )}
+          {cardDate && (
+            <Text style={styles.infoDate} numberOfLines={1}>
+              {cardDate}
             </Text>
           )}
         </View>
@@ -576,6 +591,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     textAlign: 'center',
+  },
+  // Small per-card date shown in packed (genre-filtered) grids
+  infoDate: {
+    color: '#888888',
+    fontSize: 19,
+    fontWeight: '600',
+    letterSpacing: 1,
+    textAlign: 'center',
+    marginTop: 2,
   },
   staffPickBorder: {
     ...StyleSheet.absoluteFillObject,
