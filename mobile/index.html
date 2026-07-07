@@ -22,6 +22,8 @@
     <meta name="twitter:description" content="What came out, every day.">
     <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
     <link rel="stylesheet" href="mobile.css?v=97">
+    <!-- Start the data download in parallel with CSS/JS instead of after them (audit #5) -->
+    <link rel="preload" href="../data.json" as="fetch" crossorigin="anonymous">
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="../favicon.png">
@@ -136,6 +138,6 @@
     <div class="chevron chevron-right" id="chevron-right">&#8250;</div>
 
     <script src="../assets/shared-config.js?v=4"></script>
-    <script src="mobile.js?v=101"></script>
+    <script src="mobile.js?v=102"></script>
 </body>
 </html>

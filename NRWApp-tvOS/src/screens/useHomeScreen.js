@@ -17,8 +17,6 @@ import {
   getLastFocusedIndex,
   saveUserPreferences,
   getUserPreferences,
-  removeCachedData,
-  CACHE_KEYS,
 } from '../utils/cache';
 
 /**
@@ -61,9 +59,9 @@ export function useHomeScreen() {
     setError(null);
 
     try {
-      // Clear movies cache to ensure fresh data with latest Plex links
-      await removeCachedData(CACHE_KEYS.MOVIES);
-
+      // Do NOT clear the cache before fetching (audit #5): fetchMovies always
+      // fetches fresh first anyway, and keeping the cache means the offline
+      // fallback can actually fire on a flaky network instead of erroring.
       const { movies: moviesArray, featured: featuredIdsList, latestPlaylistUrl: playlistUrl } = await fetchMovies();
       setMovies(moviesArray);
       setFeaturedIds(featuredIdsList);

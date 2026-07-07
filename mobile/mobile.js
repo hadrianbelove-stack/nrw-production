@@ -79,7 +79,8 @@ const NRWMobile = {
         window.addEventListener('resize', () => this.updateHeaderHeight());
 
         try {
-            const response = await fetch('../data.json?t=' + Date.now());
+            // No cache-buster: rely on ETag + max-age=600 (audit #5)
+            const response = await fetch('../data.json');
             const data = await response.json();
 
             this.staffPicks = (data.staff_picks || data.featured || []).map(id => String(id));
@@ -604,7 +605,7 @@ const NRWMobile = {
             imgWrap.style.cssText = 'flex:1;position:relative;overflow:hidden;';
             if (movie.poster) {
                 const img = document.createElement('img');
-                img.src = movie.poster;
+                img.src = this.posterAt(movie.poster, 'w342');
                 img.alt = movie.title || '';
                 img.loading = 'lazy';
                 img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
@@ -615,7 +616,7 @@ const NRWMobile = {
             badgeTarget = imgWrap;
         } else if (movie.poster) {
             const img = document.createElement('img');
-            img.src = movie.poster;
+            img.src = this.posterAt(movie.poster, 'w342');
             img.alt = movie.title || '';
             img.loading = 'lazy';
             img.onerror = function() { this.style.display = 'none'; };
@@ -865,7 +866,8 @@ const NRWMobile = {
             setTimeout(() => container.classList.remove(cls), 250);
         }
 
-        this.dom.posterImg.src = movie.poster || '';
+        // Full-screen close-up gets the sharp w780 rendition (audit #5)
+        this.dom.posterImg.src = this.posterAt(movie.poster, 'w780') || '';
         this.dom.posterImg.alt = this.esc(movie.title || '');
 
         // Counter
@@ -1804,6 +1806,13 @@ const NRWMobile = {
     },
 
     // ===== HELPERS =====
+    // TMDB poster at a different rendition size (audit #5): w342 for the 3-col
+    // grid (46% lighter than w500, still retina-sharp at ~126px cells), w780
+    // for the full-screen close-up. Non-TMDB URLs pass through untouched.
+    posterAt(url, size) {
+        return url && url.includes('/w500/') ? url.replace('/w500/', '/' + size + '/') : url;
+    },
+
     esc(str) {
         if (!str) return '';
         const d = document.createElement('div');

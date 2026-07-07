@@ -79,8 +79,12 @@ const NRW = {
 
     async init() {
         try {
+            // Paint the wall's shape immediately (skeleton) while data downloads
+            this.renderSkeleton();
             // Load movie data
-            const movieResponse = await fetch('data.json?t=' + Date.now());
+            // No cache-buster: GitHub Pages serves ETag + max-age=600, so repeat
+            // visits paint from cache and revalidate for ~1KB (audit #5)
+            const movieResponse = await fetch('data.json');
             const data = await movieResponse.json();
 
             // Load staff picks (supports both new and legacy field names)
@@ -180,9 +184,19 @@ const NRW = {
         if (slopToggle) {
             const SLOP_STATES = ['all', 'free', 'only'];  // SLOP FILTER (rest) → SLOP FREE → SLOP ONLY → back
             this.syncSlopToggle();
-            slopToggle.addEventListener('click', () => {
-                const idx = SLOP_STATES.indexOf(this.slopMode);
-                this.slopMode = SLOP_STATES[(idx + 1) % 3];
+            slopToggle.addEventListener('click', (e) => {
+                // Click a spot ON the track to jump straight to that state
+                // (left/mid/right = all/free/only); clicks elsewhere keep the
+                // familiar cycle. Audit #4: makes the 3 positions discoverable.
+                const track = slopToggle.querySelector('.slop-track');
+                const r = track ? track.getBoundingClientRect() : null;
+                if (r && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top - 6 && e.clientY <= r.bottom + 6) {
+                    const third = (e.clientX - r.left) / r.width;
+                    this.slopMode = third < 1 / 3 ? 'all' : (third < 2 / 3 ? 'free' : 'only');
+                } else {
+                    const idx = SLOP_STATES.indexOf(this.slopMode);
+                    this.slopMode = SLOP_STATES[(idx + 1) % 3];
+                }
                 this.setExclusiveView('slop');  // clear genres + other toggles
                 this.syncSlopToggle();
                 this.gridClearSelection();
@@ -222,6 +236,23 @@ const NRW = {
                 this.renderWallWithMore();
             });
         }
+
+        // Self-teaching filter controls (audit #4): plain-language tooltips +
+        // toggle state for assistive tech. "Slop" is defined here — nowhere
+        // else on the page explains the word.
+        const TOGGLE_HELP = {
+            'slop-free-toggle': 'Slop = mass-produced filler. Click the track to jump: ALL FILMS · SLOP-FREE · SLOP ONLY. Clicking the label cycles through them.',
+            'highlights-toggle': 'NRW Selects — our hand-picked films of note. Click to show only Selects.',
+            'fest-toggle': 'Virtual festival screenings you can watch from home. Click to show only fests.',
+            'preorder-toggle': 'Upcoming releases available to pre-order now. Click to show only pre-orders.',
+        };
+        Object.entries(TOGGLE_HELP).forEach(([id, help]) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.title = help;
+                el.setAttribute('aria-label', help);
+            }
+        });
 
         // Sticky header: expose its height so date strips pin just beneath it
         const updateHeaderOffset = () => {
@@ -483,6 +514,87 @@ const NRW = {
             if (movie.filters?.is_virtual_screening) return false;
             return true;
         });
+
+        this._updateFilterChip();
+        this._syncToggleAria();
+    },
+
+    // Filter status chip (audit #4): when a genre or slop-free narrows the wall,
+    // show the count and a one-click exit ("HORROR — 12 films · Clear ✕").
+    // The four view toggles already announce themselves with banners; this
+    // covers the two narrowing filters that changed the wall silently.
+    _updateFilterChip() {
+        let chip = document.getElementById('filter-chip');
+        if (!chip) {
+            const wall = document.getElementById('wall');
+            if (!wall) return;
+            chip = document.createElement('div');
+            chip.id = 'filter-chip';
+            wall.before(chip);
+            chip.addEventListener('click', (e) => {
+                if (e.target.closest('.chip-clear')) this._clearNarrowFilter();
+            });
+        }
+        const activeGenre = this.activeFilters.size ? [...this.activeFilters][0] : null;
+        const slopFree = this.slopMode === 'free';
+        if ((activeGenre || slopFree) && !this.searchQuery) {
+            const genreBtn = activeGenre ? document.querySelector(`.filter-btn[data-filter="${activeGenre}"]`) : null;
+            const label = activeGenre ? (genreBtn ? genreBtn.textContent : activeGenre).toUpperCase() : 'SLOP-FREE';
+            const n = this.filteredMovies.length;
+            chip.innerHTML = `<span class="chip-label">${label}</span><span class="chip-count">${n} film${n === 1 ? '' : 's'}</span><button class="chip-clear" type="button">Clear ✕</button>`;
+            chip.classList.add('visible');
+        } else {
+            chip.classList.remove('visible');
+        }
+    },
+
+    _clearNarrowFilter() {
+        this.activeFilters.clear();
+        document.querySelectorAll('.filter-btn.active').forEach(b => b.classList.remove('active'));
+        this.syncGenreControl();  // GENRE control drops its has-active label too
+        if (this.slopMode === 'free') {
+            this.slopMode = 'all';
+            this.syncSlopToggle();
+        }
+        this.gridClearSelection();
+        this.displayedCount = this.loadIncrement;
+        this.applyFilter();
+        this.updateFilterDescription();
+        this.renderWallWithMore();
+    },
+
+    // Reflect toggle state to assistive tech (audit #4 / F32-lite)
+    _syncToggleAria() {
+        const set = (id, on) => document.getElementById(id)?.setAttribute('aria-pressed', String(!!on));
+        set('highlights-toggle', this.showHighlightsOnly);
+        set('fest-toggle', this.showFest);
+        set('preorder-toggle', this.showPreorders);
+        set('slop-free-toggle', this.slopMode !== 'all');
+    },
+
+    // Skeleton wall (audit #5): 10 empty 2:3 cards + a date strip painted
+    // before the data fetch resolves, so first load shows the wall's shape
+    // instead of a blank page. Replaced wholesale by the first real render.
+    renderSkeleton() {
+        const wall = document.getElementById('wall');
+        if (!wall || wall.children.length) return;
+        let html = '<div class="date-row-header"><span class="drh-day">&nbsp;</span><span class="drh-rest">&nbsp;</span></div>';
+        for (let i = 0; i < 10; i++) {
+            html += `
+            <div class="movie-container">
+                <div class="movie-card"><div class="card-inner"><div class="card-front">
+                    <div class="poster-fallback" aria-hidden="true"></div>
+                </div></div></div>
+                <div class="movie-info"><div class="movie-meta">&nbsp;</div></div>
+            </div>`;
+        }
+        wall.innerHTML = html;
+    },
+
+    // TMDB poster at a different rendition size (w342/w500/w780). Only TMDB
+    // URLs carry the /w500/ segment; anything else passes through untouched.
+    posterAt(url, size) {
+        return url && url.includes('/w500/') ? url.replace('/w500/', `/${size}/`) : url;
     },
 
     renderWallWithMore() {
@@ -1450,7 +1562,9 @@ const NRW = {
     // --- Lightbox sub-renderers (extracted from updateLightbox) ---
 
     _updateLightboxPoster(movie) {
-        document.getElementById('lightbox-poster').src = movie.poster || '';
+        // Hero rendition (audit #5): the lightbox poster renders ~2.3x larger
+        // than the w500 wall file — fetch w780 so the hero is sharp
+        document.getElementById('lightbox-poster').src = this.posterAt(movie.poster, 'w780') || '';
         document.getElementById('lightbox-poster').style.display = movie.poster ? '' : 'none';
         document.getElementById('lightbox-poster-fallback').style.display = movie.poster ? 'none' : 'flex';
         document.getElementById('lightbox-poster-fallback-title').textContent = movie.display_title || movie.title;
@@ -1660,7 +1774,16 @@ const NRW = {
             container.appendChild(makeBadge(movie.links.metacritic, 'mc', movie.metacritic_score, 'assets/logos/metacritic.png'));
         }
         if (movie.links?.letterboxd) {
-            const lbText = movie.letterboxd_score ? NRW.lbStars(movie.letterboxd_score) : 'LB';
+            // Numeric Letterboxd score (honest half-values, one decimal) instead
+            // of the rounded ★★★☆☆ string. The star glyphs made this chip ~143px
+            // wide, overflowing the scores row and clipping the TRAILER pill on
+            // 5-chip films. Lightbox only — the wall card (renderMovie, ~line 919)
+            // still uses stars. NaN-guarded so a malformed score falls back to LB.
+            let lbText = 'LB';
+            if (movie.letterboxd_score) {
+                const lbNum = parseFloat(movie.letterboxd_score);
+                lbText = Number.isNaN(lbNum) ? 'LB' : lbNum.toFixed(1);
+            }
             container.appendChild(makeBadge(movie.links.letterboxd, 'lb', lbText, 'assets/logos/services/letterboxd-dots.svg'));
         }
 

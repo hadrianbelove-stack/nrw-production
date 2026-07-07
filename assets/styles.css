@@ -225,6 +225,19 @@ header h1 {
     background: #ffffff;
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
+/* 3-state track shows its three stops at rest (audit #4) — the thumb covers
+   the current stop; the other two ticks reveal there's somewhere to go.
+   [data-state] selector ties the state rules' specificity; declared after
+   them so the ticks survive their background shorthand. Tick centers match
+   the thumb-center stops: 16px / 50% / width-16px. */
+#slop-free-toggle[data-state] .slop-track {
+    background-image: radial-gradient(circle, rgba(255,255,255,0.38) 0 2px, transparent 2.6px),
+                      radial-gradient(circle, rgba(255,255,255,0.38) 0 2px, transparent 2.6px),
+                      radial-gradient(circle, rgba(255,255,255,0.38) 0 2px, transparent 2.6px);
+    background-size: 6px 6px;
+    background-repeat: no-repeat;
+    background-position: 13px center, center center, calc(100% - 13px) center;
+}
 /* View toggles show their identity color when active (matches banners + date strips) */
 #highlights-toggle.active .slop-track { background: #00d4aa; }
 #highlights-toggle.active .slop-label { color: #00d4aa; }
@@ -279,6 +292,42 @@ header h1 {
 .search-clear:hover {
     color: #fff;
 }
+
+/* Filter status chip (audit #4): count + one-click exit when a genre or
+   slop-free filter narrows the wall (those two changed the wall silently) */
+#filter-chip { display: none; }
+#filter-chip.visible {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    margin: 8px auto 0;
+    padding: 5px 16px;
+    border: 1px solid rgba(0, 212, 170, 0.4);
+    border-radius: 25px;
+    background: rgba(0, 212, 170, 0.06);
+}
+#filter-chip .chip-label {
+    color: var(--accent-primary);
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+}
+#filter-chip .chip-count {
+    color: #bbb;
+    font-size: 0.8rem;
+}
+#filter-chip .chip-clear {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    font-family: inherit;
+}
+#filter-chip .chip-clear:hover { color: #fff; }
 
 #wall {
     padding: 0 2rem 1.5rem;
