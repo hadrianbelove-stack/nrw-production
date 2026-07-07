@@ -896,6 +896,14 @@ VERIFICATION:"""
         capsule = re.sub(r'^CAPSULE:\s*', '', capsule, flags=re.IGNORECASE).strip()
         capsule = capsule.strip('"').strip()
 
+        # Reasoning-leak guard: reject or salvage before caching (a 600-word
+        # brainstorm shipped as a "variant" in Jul 2026 — warning-only checks
+        # let it through).
+        capsule = self._strip_reasoning_leak(capsule, title, year)
+        if not capsule:
+            self.stats['gemini_failures'] += 1
+            return None
+
         # Validate length
         word_count = len(capsule.split())
         if word_count < 20:
@@ -908,6 +916,37 @@ VERIFICATION:"""
         self.stats['gemini_successes'] += 1
         self.stats['capsules_written'] += 1
         return capsule
+
+    # Meta phrases that only appear when Gemini "thinks out loud" in the
+    # visible output instead of its thought channel.
+    _LEAK_MARKERS = ('Brainstorming', 'Style Guide', 'I will write the final capsule',
+                     'Review against', "Okay, let's draft", '**Angle:**',
+                     '**Structure:**', 'This looks solid')
+
+    def _strip_reasoning_leak(self, text: str, title: str, year: int) -> Optional[str]:
+        """Detect a leaked reasoning preamble and salvage the real capsule —
+        the model drafts, self-reviews, then writes the final text, so the
+        capsule is the trailing run of clean prose paragraphs. Returns the
+        text unchanged when clean, the salvaged capsule when recoverable,
+        or None (drop the variant) when not."""
+        leaked = any(m in text for m in self._LEAK_MARKERS)
+        if not leaked and len(text.split()) <= 300:
+            return text
+        paras = [p.strip() for p in re.split(r'\n\s*\n', text) if p.strip()]
+        tail = []
+        for p in reversed(paras):
+            if any(m in p for m in self._LEAK_MARKERS) or p.lstrip().startswith(('*', '-', '#')):
+                break
+            tail.insert(0, p)
+        salvaged = '\n\n'.join(tail).strip().strip('"').strip()
+        wc = len(salvaged.split())
+        if 20 <= wc <= 250:
+            logger.warning(f"Reasoning leak in capsule for {title} ({year}) — "
+                           f"salvaged the final {wc} words")
+            return salvaged
+        logger.error(f"Reasoning leak in capsule for {title} ({year}) — "
+                     "unsalvageable, variant dropped")
+        return None
 
     def _generate_factoid_primer(self, sources: Dict, context: str,
                                 title: str, year: int, director: str = None,
