@@ -781,8 +781,8 @@ const NRW = {
             const _section = (_s && _s > today) ? 'soon' : 'now';
             if (_section !== vsLastSection) {
                 html += _section === 'now'
-                    ? stripHtml('AVAILABLE', 'NOW', '#FFD700', ' section-banner')
-                    : stripHtml('AVAILABLE', 'SOON', '#b9952e', ' section-banner');
+                    ? stripHtml('FESTS', 'AVAILABLE NOW', '#FFD700', ' section-banner')
+                    : stripHtml('FESTS', 'COMING SOON', '#b9952e', ' section-banner');
                 vsLastSection = _section;
                 vsLastStart = '';
             }

@@ -193,7 +193,7 @@ body {
 }
 .slop-toggle-wrap.active .slop-thumb {
   transform: translateX(12px);
-  background: #ffffff;
+  background: #0a0a0a;  /* dark dot passes 3:1 on every filled track */
 }
 /* 3-state slop toggle — resting "all" (SLOP) sits left; thumb moves
    left→middle→right as SLOP → SLOP-FREE → SLOP ONLY. */
@@ -212,7 +212,7 @@ body {
 }
 #slop-free-toggle[data-state="free"] .slop-thumb {
   transform: translateX(6px);
-  background: #ffffff;
+  background: #0a0a0a;  /* dark dot passes 3:1 on every filled track */
 }
 #slop-free-toggle[data-state="free"] #slop-state-label { color: #00d4aa; }
 #slop-free-toggle[data-state="only"] .slop-track {
@@ -221,7 +221,7 @@ body {
 }
 #slop-free-toggle[data-state="only"] .slop-thumb {
   transform: translateX(12px);
-  background: #ffffff;
+  background: #0a0a0a;  /* dark dot passes 3:1 on every filled track */
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
 /* View toggles show their identity color when active (matches banners + date strips) */
@@ -230,7 +230,7 @@ body {
 #fest-toggle.active .slop-track { background: var(--screening-gold); }
 #fest-toggle.active .slop-label { color: var(--screening-gold); }
 #preorder-toggle.active .slop-track { background: #7c3aed; }
-#preorder-toggle.active .slop-label { color: #7c3aed; }
+#preorder-toggle.active .slop-label { color: #a78bfa; }  /* readable tint; track fill stays #7c3aed */
 .search-container {
   flex: 1;
   position: relative;

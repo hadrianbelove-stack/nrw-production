@@ -63,7 +63,9 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    padding: 1.5rem 1.5rem 0;
+    /* side padding lives on .cwide-hdr (2rem) so the wordmark shares the
+       wall's exact left rail — doubling it here pushed the masthead 24px in */
+    padding: 1.5rem 0 0;
     transition: padding 0.28s ease;
     text-align: left;
     /* no border-bottom — the first date strip's neon top edge is the header's
@@ -75,7 +77,8 @@ header {
 header h1 {
     font-weight: 100;
     letter-spacing: 0.24em;
-    font-size: 3.3rem;
+    /* fluid so the wordmark never clips off-screen at 769-900px windows */
+    font-size: clamp(2rem, 5.2vw, 3.3rem);
     line-height: 1.0;
     white-space: nowrap;
     flex-shrink: 0;
@@ -197,7 +200,7 @@ header h1 {
        (matches the legacy 108px/72px design; the slop toggle's ONLY stop
        uses the symmetric −32px) */
     transform: translateX(calc(var(--trk, 84px) - 36px));
-    background: #ffffff;
+    background: #0a0a0a;  /* dark dot passes 3:1 on every filled track */
 }
 /* 3-state slop toggle — resting "all" (SLOP FILTER) sits left; cycle moves the
    thumb left→middle→right as SLOP FILTER → SLOP FREE → SLOP ONLY. */
@@ -216,7 +219,7 @@ header h1 {
 }
 #slop-free-toggle[data-state="free"] .slop-thumb {
     transform: translateX(calc((var(--trk, 84px) - 32px) / 2));
-    background: #ffffff;
+    background: #0a0a0a;  /* dark dot passes 3:1 on every filled track */
 }
 #slop-free-toggle[data-state="free"] #slop-state-label { color: #00d4aa; }
 #slop-free-toggle[data-state="only"] .slop-track {
@@ -225,7 +228,7 @@ header h1 {
 }
 #slop-free-toggle[data-state="only"] .slop-thumb {
     transform: translateX(calc(var(--trk, 84px) - 32px));
-    background: #ffffff;
+    background: #0a0a0a;  /* dark dot passes 3:1 on every filled track */
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
 /* 3-state track shows its three stops at rest (audit #4) — the thumb covers
@@ -247,7 +250,7 @@ header h1 {
 #fest-toggle.active .slop-track { background: #FFD700; }
 #fest-toggle.active .slop-label { color: #FFD700; }
 #preorder-toggle.active .slop-track { background: #7c3aed; }
-#preorder-toggle.active .slop-label { color: #7c3aed; }
+#preorder-toggle.active .slop-label { color: #a78bfa; }  /* readable tint; track fill stays #7c3aed */
 
 /* Search input */
 .search-container {
@@ -2243,7 +2246,9 @@ header h1 {
 
 /* === Desktop header — masthead is just the wordmark; one filled control bar
    holds SLOP · SELECTS · FESTS · PRE-ORDER · GENRE · Search (far right) === */
-.cwide-hdr { padding: 14px 26px 0; max-width: 1500px; margin: 0 auto; }
+/* No max-width cap: masthead + control bar share the wall's 2rem left rail
+   at every width (the 1500px cap left them floating ~210px inboard at 1920) */
+.cwide-hdr { padding: 14px 2rem 0; }
 
 /* Masthead row: wordmark + slogan only (search lives in the control bar).
    Collapsible — recedes on scroll so only the control row stays pinned

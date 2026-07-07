@@ -1657,7 +1657,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     letterSpacing: 1.4,
-    color: 'rgba(0,212,170,0.45)',
+    color: 'rgba(0,212,170,0.75)',  // 0.45 was 2.8:1 — below the 3:1 large-text floor at 10ft
   },
   metaToggleLabelActive: {
     color: '#00d4aa',

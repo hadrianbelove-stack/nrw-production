@@ -552,9 +552,9 @@ const NRWMobile = {
         if (dateStr === 'pre-order') {
             day = 'PRE-ORDER'; rest = 'COMING SOON'; color = '#7c3aed';
         } else if (dateStr === 'fest' || dateStr === 'fest-now') {
-            day = 'AVAILABLE'; rest = 'NOW'; color = '#FFD700';
+            day = 'FESTS'; rest = 'AVAILABLE NOW'; color = '#FFD700';
         } else if (dateStr === 'fest-soon') {
-            day = 'AVAILABLE'; rest = 'SOON'; color = '#b9952e';
+            day = 'FESTS'; rest = 'COMING SOON'; color = '#b9952e';
         } else if (dateStr.startsWith('fest-open:')) {
             const fd = new Date(dateStr.slice(10) + 'T12:00:00');
             day = fd.toLocaleDateString('en', { weekday: 'short' });
