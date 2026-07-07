@@ -1,8 +1,15 @@
 # Plan: Distributor Release-Calendar Tracking for NRW
 
-> Status: **proposed subproject** (multi-session). Not yet started.
-> Owner: TBD (hand off to a dedicated agent window + branch).
-> Last updated: 2026-06-30.
+> Status: **Phase 1 BUILT** (2026-07-06) — Pass E is wired into pipeline/intake.py behind
+> `intake.enable_pass_e` (default OFF). physicalmedia.news rows intake as PARKED
+> deferred-reissue entries (change-detection baseline captured at intake, so the 44%
+> stale-old-transfer cohort can never false-transition); LOW matches merge into
+> admin/distributor_unmatched.json; labels + never-slop overrides written at intake;
+> CI stages the Pass E admin files. Wake path fixed: a provider-signal wake now refuses
+> the stale Type-4 date (would have dated the film years back, off the 90-day wall) and
+> stamps today instead. E2E-verified on 118 live rows + a full park→wake→transition run.
+> Remaining phases below; flag flip in CI = phase 5.
+> Last updated: 2026-07-06.
 
 ## Goal
 Proactively surface new releases from a curated set of arthouse / restoration
@@ -385,7 +392,9 @@ named destination, "surface for human review" has nowhere to surface to.
 1. **Prototype the aggregator first (cheapest, no 403).** Parse one month of
    `physicalmedia.news/upcoming` → normalize → TMDB-match → intake with expectation
    fields → confirm normal discovery picks it up. Proves the whole pipeline end-to-end
-   without touching bot protection.
+   without touching bot protection. — **DONE 2026-07-06** (Pass E in pipeline/intake.py;
+   note: rows intake as *parked deferred* entries per the signal model — a lone disc
+   lead never surfaces directly; discovery wakes it on a NEW digital signal only).
 2. **Add the Google News RSS feed** (`"4K restoration"`) for label-agnostic coverage; route
    its noisier rows through the taste/match gate (see Quality gate above).
 3. **Verification alert.** Wire the expected-date check into the morning report.

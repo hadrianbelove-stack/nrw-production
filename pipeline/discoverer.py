@@ -471,6 +471,14 @@ class ProviderDiscoverer:
                 # provider discovery below (which handles past/future/pre-order/JW correctly).
                 if movie.get('_reissue_deferred') and movie['status'] == 'tracking':
                     if self._deferred_reissue_signal_changed(movie_id, movie):
+                        # Keep the baseline Type-4 as a permanent stale-date floor: when the
+                        # wake came from a NEW-provider signal, the Type-4 path below would
+                        # re-read the same years-old digital date the baseline existed to
+                        # ignore and stamp it as digital_date — dating the film outside the
+                        # 90-day wall window (invisible, then auto-archived). Any Type-4 at
+                        # or below the floor predates the restoration and must not date it.
+                        if movie.get('_reissue_baseline_type4'):
+                            movie['_reissue_woken_from_t4'] = movie['_reissue_baseline_type4']
                         for k in ('_reissue_deferred', '_reissue_baseline_type4',
                                   '_reissue_baseline_providers', '_skip_provider_discovery'):
                             movie.pop(k, None)
@@ -529,6 +537,14 @@ class ProviderDiscoverer:
                             type4_date = _pf['type4_date']
                         else:
                             type4_date = self.host.fetch_tmdb_type4_date(movie_id)
+                        # Woken reissue: a Type-4 at or below the wake-time floor is the old
+                        # transfer's record, not the restoration's — fall through to the
+                        # provider check, which stamps digital_date = today.
+                        stale_floor = movie.get('_reissue_woken_from_t4')
+                        if type4_date and stale_floor and type4_date <= stale_floor:
+                            self.logger.info(f"Woken reissue {movie.get('title', movie_id)}: ignoring "
+                                             f"stale Type-4 {type4_date} (floor {stale_floor})")
+                            type4_date = None
                         if type4_date:
                             try:
                                 type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')

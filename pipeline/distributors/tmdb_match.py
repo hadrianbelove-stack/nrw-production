@@ -1,20 +1,20 @@
-"""Match normalized distributor-calendar rows to TMDB ids — DRY RUN, no writes to
-tracking or data.json.
+"""Match normalized distributor-calendar rows to TMDB ids.
 
 Confidence:
   HIGH   normalized title matches AND year within +/-1  -> auto-matchable
-  LOW    no result, year mismatch, or ambiguous         -> admin/distributor_unmatched.json
+  LOW    no result, year mismatch, or ambiguous         -> human-review sink
+  ERROR  TMDB unreachable for the row                   -> retry next run, never sink
 
-Bias toward HIGH-only auto-match; everything else goes to the human-review sink
-(per docs/DISTRIBUTOR_TRACKING_PLAN.md). Clean matches are written to a preview
-file for eyeballing; NOTHING is intaked here.
+Bias toward HIGH-only auto-match (per docs/DISTRIBUTOR_TRACKING_PLAN.md).
+Intake Pass E consumes match_rows() and owns the real accumulated sink
+(admin/distributor_unmatched.json). Running this module directly is a DRY RUN:
+it writes previews under cache/ and intakes nothing.
 
 Run: python3 -m pipeline.distributors.tmdb_match
 """
 
 import os
 import re
-import sys
 import json
 import time
 import unicodedata
@@ -25,7 +25,10 @@ import requests
 from pipeline.distributors import physicalmedia
 
 ROOT = Path(__file__).resolve().parents[2]
-UNMATCHED_FILE = ROOT / "admin" / "distributor_unmatched.json"
+# Dry-run outputs are previews under cache/ — the REAL accumulated review sink is
+# admin/distributor_unmatched.json, owned by intake Pass E (merge-only; a bare
+# overwrite here would destroy rows that already slid off the calendar page).
+UNMATCHED_PREVIEW_FILE = ROOT / "cache" / "distributor_unmatched_preview.json"
 PREVIEW_FILE = ROOT / "cache" / "distributor_match_preview.json"
 
 _ARTICLES = ("the ", "a ", "an ")
@@ -58,6 +61,9 @@ def _norm(title):
 
 
 def _search(key, query, year=None):
+    """Search results list, or None on a transport/API failure — a failed fetch
+    must never read as 'no results' (it would flood the review sink with junk
+    rows during a TMDB outage)."""
     params = {"api_key": key, "query": query, "language": "en-US", "page": 1}
     if year:
         params["primary_release_year"] = year
@@ -67,15 +73,18 @@ def _search(key, query, year=None):
         r.raise_for_status()
         return r.json().get("results", [])
     except Exception:
-        return []
+        return None
 
 
 def match_row(key, row):
-    """Return (status, payload). status in {'high','low'}."""
+    """Return (status, payload). status in {'high','low','error'} — 'error' means
+    TMDB was unreachable for this row (retry next run, do NOT sink it)."""
     want_t, want_y = _norm(row["title"]), row["year"]
     results = _search(key, row["title"], want_y)
-    if not results:                       # one fallback without the year
+    if not results:                       # [] or None — one fallback without the year
         results = _search(key, row["title"])
+        if results is None:
+            return "error", dict(row)
 
     def cand(m):
         ry = (m.get("release_date") or "")[:4]
@@ -95,34 +104,46 @@ def match_row(key, row):
                    "candidates": [cand(m) for m in results[:5]], "reason": reason}
 
 
+def match_rows(key, rows, sleep=0.05):
+    """Programmatic entry for intake Pass E: returns (high, low, errors) with no
+    printing and no file writes — the caller owns the unmatched sink. 'errors'
+    are transport failures to retry next run; they must never enter the sink."""
+    high, low, errors = [], [], []
+    buckets = {"high": high, "low": low, "error": errors}
+    for row in rows:
+        status, payload = match_row(key, row)
+        buckets[status].append(payload)
+        time.sleep(sleep)
+    return high, low, errors
+
+
 def run():
     key = _tmdb_key()
     if not key:
         print("No TMDB key found.")
         return
     rows = physicalmedia.fetch()
-    high, low = [], []
-    for i, row in enumerate(rows, 1):
-        status, payload = match_row(key, row)
-        (high if status == "high" else low).append(payload)
-        time.sleep(0.05)
-        if i % 25 == 0:
-            print(f"  ...{i}/{len(rows)}", file=sys.stderr)
+    high, low, errors = match_rows(key, rows)
 
     PREVIEW_FILE.write_text(json.dumps(high, indent=2))
-    UNMATCHED_FILE.write_text(json.dumps(low, indent=2))
+    UNMATCHED_PREVIEW_FILE.write_text(json.dumps(low, indent=2))
 
-    print(f"\n{len(rows)} restoration rows  ->  {len(high)} HIGH-confidence, {len(low)} to review\n")
+    print(f"\n{len(rows)} restoration rows  ->  {len(high)} HIGH-confidence, "
+          f"{len(low)} to review, {len(errors)} lookup errors\n")
     print(f"=== HIGH-confidence matches (wrote {PREVIEW_FILE.relative_to(ROOT)}) ===")
     for r in sorted(high, key=lambda x: (x["release_date"], x["title"])):
         flag = "" if _norm(r["title"]) == _norm(r["tmdb_title"]) else "  (~title)"
         print(f"  {r['release_date']}  {r['title']} ({r['year']}) -> "
               f"tmdb:{r['tmdb_id']} {r['tmdb_title']} ({r['tmdb_year']}){flag}  [{r['distributor']}]")
 
-    print(f"\n=== TO REVIEW (wrote {UNMATCHED_FILE.relative_to(ROOT)}) ===")
+    print(f"\n=== TO REVIEW (wrote {UNMATCHED_PREVIEW_FILE.relative_to(ROOT)}) ===")
     for r in sorted(low, key=lambda x: x["title"]):
         cands = ", ".join(f"{c['title']} ({c['year']})" for c in r["candidates"][:3]) or "—"
         print(f"  {r['title']} ({r['year']}) [{r['distributor']}] — {r['reason']}: {cands}")
+    if errors:
+        print(f"\n=== LOOKUP ERRORS (TMDB unreachable — retry later) ===")
+        for r in errors:
+            print(f"  {r['title']} ({r['year']}) [{r['distributor']}]")
 
 
 if __name__ == "__main__":

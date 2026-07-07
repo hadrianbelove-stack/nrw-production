@@ -1,10 +1,12 @@
 """
 Movie Intake — discovers new movies from TMDB and adds them to tracking.
 
-Handles three intake passes:
+Handles five intake passes:
   A) Direct-to-digital releases (release_date + type=4)
   B) Theatrical releases (primary_release_date)
   C) Festival premieres (with_release_type=1 in festival regions)
+  D) Reissue/restoration candidates (held in a queue for human confirm)
+  E) Distributor release calendars (intaked as parked deferred-reissue entries)
 
 Plus miniseries intake (TMDB /discover/tv with type=Miniseries).
 """
@@ -228,6 +230,21 @@ class MovieIntake:
                     self.logger.info(f"Pass D completed: {pass_d_count} new reissue candidate(s) queued")
             except Exception as e:
                 self.logger.error(f"Pass D (reissue candidates) failed: {e}")
+
+        # Pass E: Distributor release calendars — restorations intaked as PARKED
+        # deferred-reissue entries; discovery wakes them only on a NEW digital signal.
+        enable_pass_e = intake_config.get('enable_pass_e', False)
+        if enable_pass_e:
+            if debug:
+                self.logger.info("Starting Pass E: Distributor calendars")
+            try:
+                pass_e_count = self._run_distributor_calendar_pass(
+                    all_intaked_movies, existing_ids, debug
+                )
+                if debug:
+                    self.logger.info(f"Pass E completed: {pass_e_count} calendar entries parked")
+            except Exception as e:
+                self.logger.error(f"Pass E (distributor calendars) failed: {e}")
 
         # Merge all intaked movies into database
         for movie_id, movie_data in all_intaked_movies.items():
@@ -1229,3 +1246,202 @@ class MovieIntake:
         # Prefer US entries with a note, then any with a note, then most recent
         in_window.sort(key=lambda r: (r['country'] != 'US', not r['note'], r['date']), reverse=False)
         return in_window[0]
+
+    # ------------------------------------------------------------------
+    # Pass E: distributor release calendars (restoration lane)
+    # ------------------------------------------------------------------
+
+    DISTRIBUTOR_UNMATCHED_FILE = 'admin/distributor_unmatched.json'
+
+    def _run_distributor_calendar_pass(self, intaked_movies, existing_ids, debug=False):
+        """Scrape curated-distributor release calendars and park restorations in tracking.
+
+        Source: physicalmedia.news (curated labels + year-gap threshold from
+        admin/restoration_config.json). HIGH-confidence TMDB matches intake as
+        deferred-reissue entries carrying the same change-detection baseline that
+        scripts/confirm_reissue.py --defer captures — current Type-4 date + current
+        US providers. The baseline is the safety: a restoration's title usually
+        already has a stale old transfer on VOD (measured 44%), and without it
+        discovery would false-transition the film on the very next run. Discovery
+        un-defers only on a NEW signal (_deferred_reissue_signal_changed).
+        LOW-confidence rows merge into admin/distributor_unmatched.json for review.
+        """
+        from pipeline.distributors import physicalmedia, tmdb_match
+
+        rows = physicalmedia.fetch()
+        if debug:
+            self.logger.info(f"Pass E: {len(rows)} restoration-lane calendar rows")
+        if not rows:
+            return 0
+
+        # Dedupe against the Pass D reissue queue too — any status: a rejected or
+        # deferred line blocks re-intake until the user deletes it, same as Pass D.
+        queue_ids = set()
+        if os.path.exists(self.REISSUE_CANDIDATES_FILE):
+            try:
+                with open(self.REISSUE_CANDIDATES_FILE, 'r') as f:
+                    data = json.load(f)
+                if isinstance(data, dict):
+                    queue_ids = set(data.get('candidates', {}).keys())
+            except Exception as e:
+                self.logger.warning(f"Pass E: could not load reissue candidate queue: {e}")
+
+        if not self.tmdb_key:
+            raise RuntimeError("Pass E: no TMDB API key — refusing to run "
+                               "(every row would misread as unmatched)")
+
+        rate = self.config.get('api', {}).get('tmdb_rate_limit', 0.1)
+        high, low, errors = tmdb_match.match_rows(self.tmdb_key, rows, sleep=rate)
+        if errors:
+            self.logger.warning(f"Pass E: {len(errors)} TMDB lookups failed (transport) — "
+                                f"those rows retry on tomorrow's scrape, never sent to review")
+
+        today = get_today()
+        parked = {}
+        labels_added = {}
+        for payload in high:
+            mid = str(payload['tmdb_id'])
+            if mid in existing_ids or mid in intaked_movies or mid in parked or mid in queue_ids:
+                self.intake_stats['duplicates_skipped'] += 1
+                continue
+
+            # Change-detection baseline, captured NOW — atomically with the entry.
+            # A failed snapshot means no safe baseline: skip the row this run (the
+            # calendar page re-lists it tomorrow) rather than intake unprotected.
+            try:
+                baseline_t4 = self._fetch_us_type4_date(mid)     # None = no digital release
+                rent_p, buy_p, stream_p = self._fetch_us_providers(mid)
+            except Exception as e:
+                self.logger.warning(f"Pass E: baseline snapshot failed for "
+                                    f"{payload['tmdb_title']} ({mid}) — skipped this run: {e}")
+                continue
+
+            label = '4K Restoration' if '4K' in payload.get('formats', []) else 'Restoration'
+            parked[mid] = {
+                'title': payload['tmdb_title'],
+                'year': payload['tmdb_year'],
+                'status': 'tracking',
+                'intake_date': today,
+                'digital_date': None,
+                'providers': {'rent': rent_p, 'buy': buy_p, 'streaming': stream_p},
+                'has_providers': bool(rent_p or buy_p or stream_p),
+                'intake_pass': 'E',
+                '_discovery_source': 'distributor_calendar',
+                '_expected_distributor': payload['distributor'],
+                '_expected_source_url': payload['source_url'],
+                '_expected_digital_date': payload['release_date'],  # disc street date
+                '_reissue': True,
+                'reissue_label': label,
+                '_reissue_deferred': True,
+                '_reissue_deferred_at': today,
+                '_reissue_baseline_type4': baseline_t4,
+                '_reissue_baseline_providers': rent_p + buy_p + stream_p,
+            }
+            labels_added[mid] = label
+            if debug:
+                self.logger.info(f"  parked: {payload['tmdb_title']} ({payload['tmdb_year']}) "
+                                 f"[{payload['distributor']}] disc {payload['release_date']}")
+            time.sleep(rate)
+
+        # Durables FIRST, entries after: if either json_edit raises, the pass aborts
+        # with NOTHING committed to tracking (rows simply return on tomorrow's scrape),
+        # so a film can never park without its never-slop override. The reverse order
+        # would leave parked-but-unprotected films that no later run repairs (the
+        # dedupe skips them as existing). Idempotent, so a durables-written/park-failed
+        # split just rewrites harmlessly next run.
+        if parked:
+            self._write_reissue_durables(labels_added)
+            intaked_movies.update(parked)
+
+        # The review sink is independent and self-healing (the scrape window slides
+        # daily) — never let it abort the pass after entries are committed.
+        unmatched_added = 0
+        if low:
+            try:
+                unmatched_added = self._merge_unmatched_rows(low, today)
+            except Exception as e:
+                self.logger.warning(f"Pass E: unmatched-sink merge failed (non-fatal): {e}")
+
+        self.logger.info(f"Pass E: {len(parked)} parked, {unmatched_added} new to review, "
+                         f"{len(errors)} lookup errors, {len(high) - len(parked)} duplicate/skipped")
+        return len(parked)
+
+    def _fetch_us_type4_date(self, tmdb_id):
+        """First US Type-4 (digital) release date as YYYY-MM-DD, or None when the film
+        has no digital release. Mirrors generator.fetch_tmdb_type4_date so the deferred
+        baseline and discovery's live read agree. Raises on fetch failure — a
+        false-None baseline would un-defer the film on its own stale Type-4 date."""
+        resp = requests.get(
+            f"https://api.themoviedb.org/3/movie/{tmdb_id}/release_dates",
+            params={'api_key': self.tmdb_key}, timeout=15)
+        resp.raise_for_status()
+        for entry in resp.json().get('results', []):
+            if entry.get('iso_3166_1') == 'US':
+                for release in entry.get('release_dates', []):
+                    if release.get('type') == 4 and release.get('release_date'):
+                        return release['release_date'][:10]
+        return None
+
+    def _fetch_us_providers(self, tmdb_id):
+        """Current US (rent, buy, streaming) provider-name lists. Raises on fetch
+        failure — an empty-by-error baseline would read every stale provider as a
+        NEW signal on the first discovery run and un-defer the film."""
+        resp = requests.get(
+            f"https://api.themoviedb.org/3/movie/{tmdb_id}/watch/providers",
+            params={'api_key': self.tmdb_key}, timeout=15)
+        resp.raise_for_status()
+        us = resp.json().get('results', {}).get('US', {})
+        return ([p['provider_name'] for p in us.get('rent', [])],
+                [p['provider_name'] for p in us.get('buy', [])],
+                [p['provider_name'] for p in us.get('flatrate', [])])
+
+    def _write_reissue_durables(self, labels_added):
+        """Durable badge + not-slop layers, mirroring confirm_reissue --defer:
+        admin/reissue_labels.json wins over the tracking entry's label at display
+        time, and overrides.json is_slop=False applies the moment the film
+        transitions — a reissue is never slop."""
+        from pipeline.json_io import json_edit
+        # Overrides first: is_slop=False is the load-bearing layer (nothing else
+        # exempts a woken reissue from the slop classifier); the label has a display
+        # fallback via the tracking entry's reissue_label. If the second write fails
+        # the caller aborts the pass and next run rewrites both idempotently.
+        with json_edit('admin/overrides.json', default={}) as overrides:
+            for mid in labels_added:
+                ov = overrides.get(mid, {})
+                ov.setdefault('set', {})['is_slop'] = False
+                overrides[mid] = ov
+        with json_edit('admin/reissue_labels.json', default={}) as labels:
+            labels.update(labels_added)
+
+    def _merge_unmatched_rows(self, low_rows, today):
+        """Merge LOW-confidence calendar rows into the human-review sink without
+        clobbering rows still awaiting review (the scrape window slides daily)."""
+        existing = []
+        if os.path.exists(self.DISTRIBUTOR_UNMATCHED_FILE):
+            try:
+                with open(self.DISTRIBUTOR_UNMATCHED_FILE, 'r') as f:
+                    data = json.load(f)
+                if isinstance(data, dict):
+                    existing = data.get('rows', [])
+                elif isinstance(data, list):
+                    existing = data
+            except Exception as e:
+                self.logger.warning(f"Pass E: could not load unmatched sink: {e}")
+
+        def _key(r):
+            return (r.get('title', '').lower(), r.get('year'), r.get('distributor'))
+
+        seen = {_key(r) for r in existing}
+        added = 0
+        for r in low_rows:
+            if _key(r) in seen:
+                continue
+            existing.append(dict(r, first_seen=today))
+            seen.add(_key(r))
+            added += 1
+
+        if added:
+            out = {'last_updated': datetime.now().isoformat(), 'rows': existing}
+            if not self.storage.atomic_write_json(out, self.DISTRIBUTOR_UNMATCHED_FILE, backup=False):
+                self.logger.error("Pass E: failed to save distributor unmatched sink")
+        return added

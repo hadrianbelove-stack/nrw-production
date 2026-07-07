@@ -123,6 +123,16 @@ intake:
     - director's cut
     - film festival
 
+  # Pass E: Distributor release calendars (restoration lane). Scrapes physicalmedia.news
+  # for upcoming discs from curated restoration labels (label list + year-gap threshold:
+  # admin/restoration_config.json), TMDB-matches each row, and intakes HIGH-confidence
+  # matches as PARKED deferred-reissue tracking entries — the same change-detection
+  # baseline as confirm_reissue --defer, so a stale old transfer already streaming can
+  # never false-transition them. Discovery wakes an entry only on a NEW digital signal.
+  # Unmatched rows accumulate in admin/distributor_unmatched.json for human review.
+  # Default OFF (unlike passes A-D) until the CI rollout is approved.
+  enable_pass_e: false
+
 # Film Festival Configuration
 # Used by intake Pass C to discover films premiering at major festivals
 # festival_templates: defines each festival once with typical timing — code auto-generates

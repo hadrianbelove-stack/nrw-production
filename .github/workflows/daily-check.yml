@@ -280,7 +280,8 @@ jobs:
         run: |
           # Check for changes in data.json, movie_tracking.json, and all metrics files
           # Note: metrics/run_diagnostics.json tracks orchestrator health over time
-          if ! git diff --quiet --exit-code -- data.json movie_tracking.json metrics/; then
+          # admin/ files cover intake writes (Pass D queue; Pass E labels/overrides/unmatched sink)
+          if ! git diff --quiet --exit-code -- data.json movie_tracking.json metrics/ admin/reissue_candidates.json admin/reissue_labels.json admin/overrides.json admin/distributor_unmatched.json; then
             echo "changes=true" >> $GITHUB_OUTPUT
             echo "Changes detected in repository"
           else
@@ -344,9 +345,13 @@ jobs:
 
           # Stage generated files (data.json, archive, movie_tracking.json, metrics, wikipedia cache,
           # and the reissue candidate queue written by intake Pass D — otherwise daily-collected
-          # reissues are discarded when the CI job ends and never reach the next /curate)
-          echo "📦 Staging data.json, data_archive.json, movie_tracking.json, metrics, wikipedia cache, reissue queue"
-          git add data.json data_archive.json movie_tracking.json metrics/ cache/wikipedia_cache.json admin/reissue_candidates.json
+          # reissues are discarded when the CI job ends and never reach the next /curate).
+          # Pass E (distributor calendars) additionally writes reissue_labels.json +
+          # overrides.json (never-slop protection) + distributor_unmatched.json (review
+          # sink) — same failure class: unstaged = silently lost when the runner dies,
+          # and a dirty worktree breaks the pull --rebase in the push step.
+          echo "📦 Staging data.json, data_archive.json, movie_tracking.json, metrics, wikipedia cache, reissue queue, Pass E files"
+          git add data.json data_archive.json movie_tracking.json metrics/ cache/wikipedia_cache.json admin/reissue_candidates.json admin/reissue_labels.json admin/overrides.json admin/distributor_unmatched.json
 
           # Only commit if there are staged changes and set flag accordingly
           if git diff --cached --quiet; then
