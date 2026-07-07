@@ -148,27 +148,17 @@ def main():
         cache_key = f"{title}_{year}"
 
         # Skip if already in combined cache (unless --force).
-        # Two retry classes — a "complete" entry is otherwise never re-scraped:
-        # - _no_quotes_tried (zero quotes at all): retried after 14 days
-        # - _lb_empty_tried (RT succeeded, Letterboxd empty that night — common
-        #   in a film's first days out): LB-only retry after 7 days. Without
-        #   this, an early scrape froze lb_quotes=[] forever (Jul 2026).
+        # Negative-cache entries (_no_quotes_tried, empty quotes) are retried
+        # after 14 days — reviews often appear weeks after release.
         if not args.force and cache_key in combined:
             entry = combined[cache_key]
             tried = entry.get('_no_quotes_tried', '') if isinstance(entry, dict) else ''
-            lb_tried = entry.get('_lb_empty_tried', '') if isinstance(entry, dict) else ''
-
-            def _days(stamp):
-                try:
-                    return (_date.today() - _date.fromisoformat(stamp)).days
-                except ValueError:
-                    return 0
-
             if tried:
-                if _days(tried) < 14:
-                    continue
-            elif lb_tried and not entry.get('lb_quotes'):
-                if _days(lb_tried) < 7:
+                try:
+                    days_ago = (_date.today() - _date.fromisoformat(tried)).days
+                except ValueError:
+                    days_ago = 0
+                if days_ago < 14:
                     continue
             else:
                 continue
@@ -216,22 +206,7 @@ def main():
 
             if quotes:
                 # Write to combined cache in admin-compatible format
-                new_entry = convert_to_combined_format(title, year, quotes)
-                old = combined.get(cache_key)
-                if not args.force and isinstance(old, dict) and old.get('rt_quotes'):
-                    # LB-empty retry on an RT-complete entry: curation state
-                    # (selected flags, trims) lives in the existing rt_quotes —
-                    # keep them, take only the fresh Letterboxd side.
-                    old['lb_quotes'] = new_entry.get('lb_quotes', [])
-                    old.pop('_lb_empty_tried', None)
-                    old['scraped_at'] = new_entry.get('scraped_at') or old.get('scraped_at')
-                    combined[cache_key] = old
-                else:
-                    if not new_entry.get('lb_quotes'):
-                        # RT came through but LB was empty tonight — mark for
-                        # the 7-day LB-only retry instead of freezing forever.
-                        new_entry['_lb_empty_tried'] = str(_date.today())
-                    combined[cache_key] = new_entry
+                combined[cache_key] = convert_to_combined_format(title, year, quotes)
                 stats['with_quotes'] += 1
                 rt_count = sum(1 for q in quotes if q.get('source') != 'letterboxd')
                 lb_count = sum(1 for q in quotes if q.get('source') == 'letterboxd')
