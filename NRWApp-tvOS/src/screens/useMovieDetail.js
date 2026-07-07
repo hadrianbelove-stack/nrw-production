@@ -142,14 +142,13 @@ export function useMovieDetail(movie) {
     return { value: rating, label: rating.toFixed(1) };
   }, [movie]);
 
-  // Get Letterboxd score display (stars)
+  // Get Letterboxd score display \u2014 the honest number ("3.4"), never rounded
+  // stars (whole-star rounding inflated 3.5 to \u2605\u2605\u2605\u2605; audit #7, owner call)
   const lbScore = useMemo(() => {
     if (!movie?.letterboxd_score) return null;
     const score = parseFloat(movie.letterboxd_score);
     if (isNaN(score)) return null;
-    const n = Math.round(score);
-    const label = '\u2605'.repeat(n) + '\u2606'.repeat(5 - n);
-    return { value: score, label };
+    return { value: score, label: score.toFixed(1) };
   }, [movie]);
 
   // Get formatted countries — abbreviated per style guide (USA/UK exceptions, 3-letter for rest)

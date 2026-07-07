@@ -63,10 +63,11 @@ const NRW = {
     _trailerResume: new Map(), // movieId -> last currentTime this session (resume on reopen)
     _trailerLoadedMovieId: null, // movie whose video is currently loaded in the trailer player
 
-    // Convert Letterboxd score (0-5) to star glyphs: "3.8" → "★★★★☆"
     lbStars(score) {
-        const n = Math.round(parseFloat(score));
-        return '\u2605'.repeat(n) + '\u2606'.repeat(5 - n);
+        // Honest number ("3.4"), never rounded stars — whole-star rounding
+        // inflated 3.5 to four stars (audit #7, owner call)
+        const n = parseFloat(score);
+        return isNaN(n) ? '' : n.toFixed(1);
     },
 
     // Format screening end date: "2026-03-30" → "Mar 30"

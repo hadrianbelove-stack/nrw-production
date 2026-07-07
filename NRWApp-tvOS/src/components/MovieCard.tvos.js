@@ -357,8 +357,8 @@ const MovieCard = forwardRef(({
               {/* Score badges overlay */}
               {(movie.rt_score || movie.imdb_rating) && (
                 <View style={styles.cardScoreOverlay}>
-                  {movie.rt_score && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeRt]}><Text style={styles.cardScoreBadgeText}>{movie.rt_score}</Text></View>}
-                  {movie.imdb_rating && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeImdb]}><Text style={[styles.cardScoreBadgeText, { color: '#000' }]}>{parseFloat(movie.imdb_rating).toFixed(1)}</Text></View>}
+                  {movie.rt_score && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeRt]}><Text style={styles.cardScoreBadgeText}>{`RT ${movie.rt_score}`}</Text></View>}
+                  {movie.imdb_rating && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeImdb]}><Text style={[styles.cardScoreBadgeText, { color: '#000' }]}>{`IMDb ${parseFloat(movie.imdb_rating).toFixed(1)}`}</Text></View>}
                 </View>
               )}
             </View>
@@ -392,8 +392,8 @@ const MovieCard = forwardRef(({
               {/* Score badges overlay — bottom-left, matches desktop card */}
               {(movie.rt_score || movie.imdb_rating) && (
                 <View style={styles.cardScoreOverlay}>
-                  {movie.rt_score && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeRt]}><Text style={styles.cardScoreBadgeText}>{movie.rt_score}</Text></View>}
-                  {movie.imdb_rating && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeImdb]}><Text style={[styles.cardScoreBadgeText, { color: '#000' }]}>{parseFloat(movie.imdb_rating).toFixed(1)}</Text></View>}
+                  {movie.rt_score && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeRt]}><Text style={styles.cardScoreBadgeText}>{`RT ${movie.rt_score}`}</Text></View>}
+                  {movie.imdb_rating && <View style={[styles.cardScoreBadge, styles.cardScoreBadgeImdb]}><Text style={[styles.cardScoreBadgeText, { color: '#000' }]}>{`IMDb ${parseFloat(movie.imdb_rating).toFixed(1)}`}</Text></View>}
                 </View>
               )}
             </View>
