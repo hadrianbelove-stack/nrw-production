@@ -31,6 +31,25 @@ import load_env  # noqa: F401
 from pipeline.json_io import json_edit
 
 
+def _slug_sane(url, title, year):
+    """Cheap wrong-film guard on the returned URL (the finder's own page
+    verification has holes — it accepted a Fred Oldfield doc for 'Painting
+    With Fire' and a 2015 page for a 2026 film, Jul 2026):
+    - every significant title word must appear in the slug
+    - a year suffix in the slug must be within 1 of the film's year
+    Rejected films just count as a miss (retry cap applies)."""
+    import re
+    slug = url.rstrip('/').rsplit('/', 1)[-1].lower()
+    words = [w for w in re.sub(r'[^a-z0-9 ]', ' ', (title or '').lower()).split()
+             if w not in ('the', 'a', 'an', 'of', 'and', 'in', 'on', 'to') and len(w) > 1]
+    if any(w not in slug for w in words):
+        return False
+    m = re.search(r'(19|20)(\d{2})$', slug)
+    if m and abs(int(m.group(0)) - int(year)) > 1:
+        return False
+    return True
+
+
 def eligible(m, window_start, today, max_attempts, cooldown_cutoff):
     dd = m.get('digital_date') or ''
     if not (window_start <= dd <= today):
@@ -89,9 +108,11 @@ def main():
         except Exception as e:
             print(f"  ✗ {title} — finder error: {type(e).__name__}: {str(e)[:150]}")
             continue
-        if isinstance(r, dict) and r.get('url'):
+        if isinstance(r, dict) and r.get('url') and _slug_sane(r['url'], title, year):
             found[mid] = {'url': r['url'], 'score': r.get('score')}
             print(f"  ✓ {title} → {r['url']} (score: {r.get('score') or '—'})")
+        elif isinstance(r, dict) and r.get('url'):
+            print(f"  ✗ {title} — rejected implausible match {r['url']}")
         else:
             print(f"  ○ {title} — no RT page found")
 
