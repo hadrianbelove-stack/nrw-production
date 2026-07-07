@@ -868,9 +868,11 @@ header h1 {
 }
 
 .score-badge {
-    flex: 1;
+    /* Hug content — flex:1 stretched each badge to fill the row equally,
+       which reads as big empty boxes when a film has only 1-2 scores */
+    flex: 0 1 auto;
     display: block;
-    padding: 0.4rem 0.5rem;
+    padding: 0.4rem 0.9rem;
     border-radius: 5px;
     text-align: center;
     font-size: 0.75rem;
@@ -1493,19 +1495,17 @@ header h1 {
 .lightbox-hero,
 .lightbox-hero-text { display: contents; }
 
-/* Wide screens (>1100px): lock the hero to a CONSTANT height so cycling
-   prev/next never shifts the pull-quotes / synopsis / buttons below it.
-   The title is top-anchored (2-line clamp); the meta + rule + scores cluster
-   is pinned to the bottom via margin-top:auto — so a 1-line vs 2-line title
-   changes only the empty air in the middle, never any element's y-position
-   below the hero. Height = the tallest case (2-line title + meta + scores). */
+/* Wide screens (>1100px): hero hugs its content — title, then meta + rule +
+   scores stacked naturally beneath. (An earlier constant-height lock kept
+   content below y-stable while cycling movies, but parked its slack as dead
+   air inside the hero; owner prefers the tighter stack.) */
 @media (min-width: 1101px) {
     .lightbox-hero {
         display: flex;
-        height: 204px;
-        /* .lightbox-info is a flex column; without this the hero compresses
-           below 204px on quote-heavy films (flex-shrink) before the scroller
-           kicks in, un-locking the height. Pin it. */
+        /* Hug content — the old constant 204px lock (anti-jitter when cycling
+           movies) parked ~60px of dead air between the scores row and the
+           quotes on 1-line titles. Cycling now shifts content below by at
+           most one title line, which reads better than the void. */
         flex-shrink: 0;
         overflow: hidden;
     }
