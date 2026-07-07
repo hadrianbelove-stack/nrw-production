@@ -31,6 +31,9 @@ Strength levels: **[hard]** never violate · **[strong]** violate only with expl
   editorial voice, not decoration. *(2026-06, link-row feedback)*
 - **[strong] Plain tone, no hype.** In reports, on the site, in microcopy. No
   exclamation-point energy, no marketing adjectives. *(standing preference)*
+- **[strong] Logos over text where possible.** When a brand mark exists (score sources,
+  streaming services), use it rather than a plain-text label. *(2026-07-06, lightbox
+  score-row feedback)*
 
 ## Mockup process rules
 
