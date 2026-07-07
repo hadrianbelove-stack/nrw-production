@@ -272,26 +272,31 @@ body {
 }
 .search-clear.visible { display: block; }
 
-/* View dots */
-.view-dots {
+/* View switch — three glyph buttons (grid / poster / details) */
+.view-switch {
   display: flex;
-  gap: 6px;
+  gap: 2px;
   align-items: center;
+  flex: 0 0 auto;
 }
-.view-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  opacity: 0.4;
-  transition: all 0.3s ease;
-  cursor: pointer;
+.view-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;      /* hit area >= 40px; icon drawn compact inside */
+  padding: 0;
   border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(0,212,170,0.6);
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.view-dot.active {
-  opacity: 1;
+.view-btn svg { width: 23px; height: 23px; display: block; }
+.view-btn.active {
   background: var(--accent);
-  transform: scale(1.3);
+  color: #000;
 }
 
 /* ===== FILTER DESCRIPTION ===== */
@@ -601,6 +606,31 @@ body {
   font-size: 0.75rem;
   opacity: 0.75;
 }
+/* "⌃ DETAILS" lip — slim tab peeking from the bottom edge of the poster view,
+   teal-outline convention (mirrors .sheet-more-pill); tap = open the sheet.
+   Anchored to the view-container bottom so it never crowds the poster-meta. */
+.poster-details-lip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 4;
+  background: rgba(0,212,170,0.16);
+  border: 1px solid rgba(0,212,170,0.5);
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 13px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.poster-details-lip:active { background: rgba(0,212,170,0.28); }
+/* Only shown in poster view (view 1); hidden once the sheet is up (view 2). */
+#poster-view.sheet-open .poster-details-lip { display: none; }
 .poster-full img {
   width: 100%; height: 100%;
   object-fit: cover;

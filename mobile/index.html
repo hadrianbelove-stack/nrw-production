@@ -21,7 +21,7 @@
     <meta name="twitter:title" content="The New Release Wall">
     <meta name="twitter:description" content="What came out, every day.">
     <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="mobile.css?v=102">
+    <link rel="stylesheet" href="mobile.css?v=103">
     <!-- Start the data download in parallel with CSS/JS instead of after them (audit #5) -->
     <link rel="preload" href="../data.json" as="fetch" crossorigin="anonymous">
     <link rel="icon" type="image/png" href="../favicon.png">
@@ -72,10 +72,16 @@
                     <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
                     <button id="search-clear" class="search-clear" aria-label="Clear">&times;</button>
                 </div>
-                <div class="view-dots" id="view-dots">
-                    <button class="view-dot active" data-view="0"></button>
-                    <button class="view-dot" data-view="1"></button>
-                    <button class="view-dot" data-view="2"></button>
+                <div class="view-switch" id="view-dots">
+                    <button class="view-btn active" data-view="0" aria-label="Grid view">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </button>
+                    <button class="view-btn" data-view="1" aria-label="Poster view">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6.5" y="3" width="11" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/></svg>
+                    </button>
+                    <button class="view-btn" data-view="2" aria-label="Details view">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="7" y="2.5" width="10" height="11" rx="1.6" stroke="currentColor" stroke-width="1.8"/><line x1="5.5" y1="17" x2="18.5" y2="17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="5.5" y1="21" x2="14.5" y2="21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -122,6 +128,7 @@
             </button>
         </div>
         <div id="poster-meta" class="poster-meta"></div>
+        <button class="poster-details-lip" id="poster-details-lip" type="button" aria-label="Show details">&#8963;&nbsp;DETAILS</button>
     </div>
 
     <!-- View 3: Bottom sheet -->
@@ -138,6 +145,6 @@
     <div class="chevron chevron-right" id="chevron-right">&#8250;</div>
 
     <script src="../assets/shared-config.js?v=4"></script>
-    <script src="mobile.js?v=106"></script>
+    <script src="mobile.js?v=107"></script>
 </body>
 </html>

@@ -70,7 +70,8 @@ const NRWMobile = {
             sheetBtnbar: document.getElementById('sheet-btnbar'),
             chevronLeft: document.getElementById('chevron-left'),
             chevronRight: document.getElementById('chevron-right'),
-            viewDots: document.querySelectorAll('.view-dot'),
+            viewDots: document.querySelectorAll('.view-btn'),
+            posterDetailsLip: document.getElementById('poster-details-lip'),
             siteHeader: document.getElementById('site-header'),
             filterDesc: document.getElementById('filter-desc'),
         };
@@ -594,6 +595,7 @@ const NRWMobile = {
 
         const item = document.createElement('div');
         item.className = 'grid-item' + (isScreening ? ' screening-movie' : '') + (isStaffPick ? ' staff-pick-movie' : '');
+        item.dataset.index = index;   // filteredMovies index — used to open the first on-screen movie
 
         // VS: festival name band above the poster (dark, gold text — matches desktop)
         if (isScreening && movie.virtual_screening_info?.screening_name) {
@@ -834,6 +836,8 @@ const NRWMobile = {
 
         // Poster view (visible in view 1 and view 2)
         this.dom.posterView.classList.toggle('hidden', view !== 1 && view !== 2);
+        // Hide the "⌃ DETAILS" lip once the sheet is up (view 2)
+        this.dom.posterView.classList.toggle('sheet-open', view === 2);
 
         // Bottom sheet
         const sheet = this.dom.bottomSheet;
@@ -859,6 +863,22 @@ const NRWMobile = {
                 this.dom.gridView.scrollTop = this.savedScrollTop;
             });
         }
+    },
+
+    // The filteredMovies index of the first grid card currently in the viewport
+    // (below the fixed header). Falls back to 0 if none is found (e.g. empty grid).
+    firstVisibleGridIndex() {
+        const headerH = this.dom.siteHeader ? this.dom.siteHeader.getBoundingClientRect().bottom : 0;
+        const items = this.dom.gridView.querySelectorAll('.grid-item');
+        for (const el of items) {
+            const r = el.getBoundingClientRect();
+            // First card whose bottom edge clears the header — i.e. it's on screen.
+            if (r.bottom > headerH && r.top < window.innerHeight) {
+                const idx = parseInt(el.dataset.index, 10);
+                if (!isNaN(idx)) return idx;
+            }
+        }
+        return 0;
     },
 
     selectMovie(index) {
@@ -1489,18 +1509,28 @@ const NRWMobile = {
                     this.setView(0);
                 } else if (v === 1) {
                     if (this.currentView === 0 && this.filteredMovies.length > 0) {
-                        this.selectMovie(0);
+                        // From the grid, open the first movie currently on screen
+                        // (selectMovie routes through setView(1) so history stays consistent).
+                        this.selectMovie(this.firstVisibleGridIndex());
                     } else {
                         this.setView(1);
                     }
                 } else if (v === 2) {
                     if (this.currentView === 0 && this.filteredMovies.length > 0) {
-                        this.selectMovie(0);
+                        this.selectMovie(this.firstVisibleGridIndex());
                     }
                     this.setView(2);
                 }
             });
         });
+
+        // "⌃ DETAILS" lip on the poster view → open the sheet (same path as swipe-up).
+        if (this.dom.posterDetailsLip) {
+            this.dom.posterDetailsLip.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.setView(2);
+            });
+        }
     },
 
     setupPosterGestures() {
@@ -1596,8 +1626,8 @@ const NRWMobile = {
             sheet.style.transition = '';
             sheet.style.transform = '';
             if (Math.abs(dy) < 10) {
-                // Tap on handle → back to grid
-                this.setView(0);
+                // Tap on handle → step down one level to the poster (matches drag).
+                this.setView(1);
             } else if (dy > 100) {
                 // Drag dismiss → back to poster
                 this.setView(1);
