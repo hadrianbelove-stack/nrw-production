@@ -575,7 +575,11 @@ class MovieEnricher:
                 },
                 'genres': genres,
                 'studio': studio,
-                'country': country
+                'country': country,
+                # The slop classifier's Indian-cinema tier keys on this field;
+                # without it here (it used to arrive only via the generator's
+                # final assembly) that tier could never fire at pipeline time.
+                'original_language': movie_details.get('original_language')
             })
         except Exception as e:
             self.ctx.logger.warning(f"TMDB Metadata: Error extracting for {title} ({year}): {type(e).__name__}: {str(e)[:500]}")
@@ -584,7 +588,8 @@ class MovieEnricher:
                 'crew': {'director': 'Unknown', 'cast': []},
                 'genres': [],
                 'studio': None,
-                'country': None
+                'country': None,
+                'original_language': None
             })
 
         # Digital date correction from TMDB Type 4 (isolated failure handling)
