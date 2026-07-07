@@ -1043,6 +1043,13 @@ const styles = StyleSheet.create({
   detailsScrollContent: {
     padding: Spacing.tvos.md,
     paddingBottom: Spacing.tvos.sm,
+    // Audit F9: quote-less films left ~40% of the panel empty below a short
+    // synopsis. flexGrow makes short content fill the scroll viewport, and
+    // space-between spreads the blocks (title / meta / quotes / synopsis)
+    // toward the pinned footer instead of pooling at the top. When content
+    // overflows, flexGrow is a no-op and scrolling behaves exactly as before.
+    flexGrow: 1,
+    justifyContent: 'space-between',
   },
   titleRow: {
     flexDirection: 'column',
@@ -1151,11 +1158,17 @@ const styles = StyleSheet.create({
   },
   synopsisContainer: {
     marginTop: Spacing.tvos.sm,
+    // Audit F9: cap the reading measure — the full panel (~1008px inner) is far
+    // too long a line at 10 feet. ~850px keeps the synopsis a comfortable
+    // measure without shrinking the panel itself.
+    maxWidth: 850,
   },
   synopsis: {
     color: Colors.textPrimary,
-    fontSize: Typography.tvos.body,
-    lineHeight: Typography.tvos.body * 1.5,
+    // Audit F9: raised from Typography.tvos.body (24) — body copy read too
+    // small over the long measure at couch distance.
+    fontSize: 27,
+    lineHeight: 27 * 1.5,
   },
   synopsisFooterMeta: {
     color: Colors.textMuted,

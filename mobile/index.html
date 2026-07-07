@@ -21,7 +21,7 @@
     <meta name="twitter:title" content="The New Release Wall">
     <meta name="twitter:description" content="What came out, every day.">
     <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="mobile.css?v=103">
+    <link rel="stylesheet" href="mobile.css?v=104">
     <!-- Start the data download in parallel with CSS/JS instead of after them (audit #5) -->
     <link rel="preload" href="../data.json" as="fetch" crossorigin="anonymous">
     <link rel="icon" type="image/png" href="../favicon.png">
@@ -69,7 +69,7 @@
                 <button class="genre-control" id="genre-control" type="button"><span class="genre-text">GENRE</span><span class="caret">▼</span></button>
                 <div class="search-container">
                     <svg class="search-mag" aria-hidden="true" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.8"/><line x1="12.8" y1="12.8" x2="18" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                    <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
+                    <input type="text" id="search-input" placeholder="Search&hellip;" autocomplete="off">
                     <button id="search-clear" class="search-clear" aria-label="Clear">&times;</button>
                 </div>
                 <div class="view-switch" id="view-dots">
@@ -83,9 +83,19 @@
                         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="7" y="2.5" width="10" height="11" rx="1.6" stroke="currentColor" stroke-width="1.8"/><line x1="5.5" y1="17" x2="18.5" y2="17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="5.5" y1="21" x2="14.5" y2="21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
                     </button>
                 </div>
+                <button class="about-control" id="about-control" type="button" aria-label="What is this?">&#9432;</button>
             </div>
         </div>
     </header>
+
+    <!-- ABOUT bottom sheet (audit F22) -->
+    <div class="genre-backdrop" id="about-backdrop">
+        <div class="genre-sheet about-sheet" id="about-sheet">
+            <div class="genre-sheet-handle"></div>
+            <div class="genre-sheet-head"><span>What is this?</span><button class="genre-sheet-clear" id="about-sheet-close" type="button">Close</button></div>
+            <p class="about-sheet-body">The New Release Wall is a hand-curated video store of all the new arrivals. What came out, every day, every platform. With the <strong>SLOP</strong>-filter, you can narrow the feed to films with wider releases. <strong>SELECTS</strong> &#9733; are our picks of note. <strong>FESTS</strong> are &ldquo;virtual screenings&rdquo; from festivals, that you can watch from home for a limited time. <strong>PRE-ORDER</strong> is what&rsquo;s coming. No algorithm, no feed. Bringing back browsing.</p>
+        </div>
+    </div>
 
     <!-- GENRE bottom sheet -->
     <div class="genre-backdrop" id="genre-backdrop">
@@ -145,6 +155,6 @@
     <div class="chevron chevron-right" id="chevron-right">&#8250;</div>
 
     <script src="../assets/shared-config.js?v=4"></script>
-    <script src="mobile.js?v=107"></script>
+    <script src="mobile.js?v=108"></script>
 </body>
 </html>

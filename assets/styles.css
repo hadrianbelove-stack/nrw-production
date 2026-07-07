@@ -16,9 +16,9 @@
     /* Sticky-header height — JS (updateHeaderOffset) overwrites with the exact
        measured value; this default just prevents banner overlap before JS runs. */
     --header-height: 160px;
-    /* Toggle-track width — fluid: 84px at full width, squeezing to 64px in
-       narrow windows. Thumb travel derives from this (see .slop-thumb rules). */
-    --trk: clamp(64px, calc(28px + 4vw), 84px);
+    /* One shared control-bar height — slop slider, binary switches, GENRE,
+       and the search field all stand on this baseline (control-bar V3). */
+    --ctl-h: 36px;
 
     /* Service colors — single source of truth for badges + buttons */
     --svc-netflix: #E50914;
@@ -139,118 +139,152 @@ header h1 {
     box-shadow: 0 5px 15px var(--accent-glow);
 }
 
-/* Slop toggle — lives in the title row */
-.slop-toggle-wrap {
+/* ==========================================================================
+   CONTROL-BAR V3 — "labeled slider" (shipped Jul 2026)
+   SLOP is a single knob on a labeled 3-stop track (SLOP FILTER · SLOP FREE ·
+   SLOP ONLY) — a mode selector, not an on/off switch. The binary views keep
+   the flip-switch look but sit in fixed-width cells so the thumbs land on an
+   even grid. One shared control height (--ctl-h) across slider, switches,
+   GENRE, and search.
+   ========================================================================== */
+
+/* --- SLOP: labeled 3-stop slider. Neutral = knob parked at SLOP FILTER,
+   quiet soft-white, NO teal glow at rest. Fills teal at FREE, orange at ONLY. */
+.slop-slider {
+    position: relative;
+    height: var(--ctl-h, 36px);
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
-    gap: 10px;
+    border-radius: calc(var(--ctl-h, 36px) / 2);
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.05);
+    padding: 3px;
     cursor: pointer;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    flex-shrink: 0;
+    transition: border-color 0.2s, background 0.2s;
 }
-/* Keyboard focus ring when arrow-navigated (matches the filter buttons) */
-.slop-toggle-wrap:focus-visible {
+.slop-slider:hover {  /* subtle hover feedback */
+    border-color: rgba(255,255,255,0.34);
+    background: rgba(255,255,255,0.08);
+}
+.slop-slider:focus-visible {
     outline: 2px solid var(--accent-primary);
-    outline-offset: 6px;
+    outline-offset: 4px;
+}
+.slop-slider .stop {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(var(--ctl-h, 36px) - 6px);
+    padding: 0 14px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    white-space: nowrap;
+    transition: color 0.2s;
+}
+/* the moving knob — an absolutely-positioned filled lozenge under the active label */
+.slop-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    bottom: 3px;
+    z-index: 1;
+    border-radius: calc(var(--ctl-h, 36px) / 2);
+    transition: transform 0.28s cubic-bezier(.4,0,.2,1),
+                width 0.28s cubic-bezier(.4,0,.2,1),
+                background 0.2s, box-shadow 0.2s;
+}
+/* neutral: knob is a QUIET soft-white lozenge under SLOP FILTER — no color glow */
+.slop-slider[data-state="all"] .slop-knob { background: rgba(255,255,255,0.12); box-shadow: none; }
+.slop-slider[data-state="all"] .stop[data-i="0"] { color: rgba(255,255,255,0.92); }
+/* free: teal knob under SLOP FREE */
+.slop-slider[data-state="free"] .slop-knob { background: var(--accent-primary); box-shadow: 0 0 14px var(--accent-glow); }
+.slop-slider[data-state="free"] .stop[data-i="1"] { color: #031a15; }
+/* only: orange knob under SLOP ONLY */
+.slop-slider[data-state="only"] .slop-knob { background: var(--svc-amazon-vod); box-shadow: 0 0 14px rgba(255,149,0,0.4); }
+.slop-slider[data-state="only"] .stop[data-i="2"] { color: #1a0e00; }
+/* #slop-state-label is kept for the app.js/aria contract but not shown — the
+   three .stop labels are the visible copy. */
+.slop-state-label-hidden {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* --- BINARY SWITCH GROUP ---
+   At full width the group is transparent to layout (display:contents) so its 3
+   cells become direct children of .cwide-controls and join the single space-between
+   row — every control (slider · 3 switches · genre · search) gets one even gap.
+   The compression band (≤1120px) re-establishes .switch-group as a real flex item
+   so the cells wrap together as a unit — that behavior is unchanged. */
+.switch-group {
+    display: contents;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+}
+.switch-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: var(--ctl-h, 36px);
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    flex: 0 0 auto;             /* hug content; the row's space-between spreads the gaps */
+    justify-content: flex-start;
+}
+.switch-cell:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 4px;
     border-radius: 10px;
 }
-.slop-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(0,212,170,0.75);
-    transition: color 0.25s;
-    white-space: nowrap;
-}
-.slop-toggle-wrap.active .slop-label {
-    color: #00d4aa;
-}
-#slop-state-label {
-    width: 92px;
-    display: inline-block;
-}
-.slop-track {
-    width: var(--trk, 84px);
-    height: 32px;
-    border-radius: 16px;
+.sw-track {
+    width: 52px;
+    height: 26px;
+    border-radius: 13px;
     background: #1a1a1a;
-    border: 1px solid rgba(0,212,170,0.45);
+    border: 1px solid rgba(255,255,255,0.22);
     position: relative;
     flex-shrink: 0;
     transition: background 0.25s, border-color 0.25s;
 }
-.slop-toggle-wrap.active .slop-track {
-    background: #00d4aa;
-    border-color: rgba(0,0,0,0.35);
-}
-.slop-thumb {
+.sw-thumb {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 24px;
-    height: 24px;
-    background: rgba(0,212,170,0.55);
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
+    background: rgba(255,255,255,0.55);
     transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
 }
-.slop-toggle-wrap.active .slop-thumb {
-    /* travel = track − 24px thumb − 4px left inset − 8px right gap
-       (matches the legacy 108px/72px design; the slop toggle's ONLY stop
-       uses the symmetric −32px) */
-    transform: translateX(calc(var(--trk, 84px) - 36px));
-    background: #0a0a0a;  /* dark dot passes 3:1 on every filled track */
+.sw-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    white-space: nowrap;
+    transition: color 0.25s;
 }
-/* 3-state slop toggle — resting "all" (SLOP FILTER) sits left; cycle moves the
-   thumb left→middle→right as SLOP FILTER → SLOP FREE → SLOP ONLY. */
-#slop-free-toggle[data-state="all"] .slop-track {
-    background: rgba(0,212,170,0.1);
-    border-color: #00d4aa;
-}
-#slop-free-toggle[data-state="all"] .slop-thumb {
-    transform: translateX(0);
-    background: #00d4aa;
-}
-#slop-free-toggle[data-state="all"] #slop-state-label { color: #00d4aa; }
-#slop-free-toggle[data-state="free"] .slop-track {
-    background: #00d4aa;
-    border-color: rgba(0,0,0,0.35);
-}
-#slop-free-toggle[data-state="free"] .slop-thumb {
-    transform: translateX(calc((var(--trk, 84px) - 32px) / 2));
-    background: #0a0a0a;  /* dark dot passes 3:1 on every filled track */
-}
-#slop-free-toggle[data-state="free"] #slop-state-label { color: #00d4aa; }
-#slop-free-toggle[data-state="only"] .slop-track {
-    background: #ff9500;
-    border-color: rgba(0,0,0,0.35);
-}
-#slop-free-toggle[data-state="only"] .slop-thumb {
-    transform: translateX(calc(var(--trk, 84px) - 32px));
-    background: #0a0a0a;  /* dark dot passes 3:1 on every filled track */
-}
-#slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
-/* 3-state track shows its three stops at rest (audit #4) — the thumb covers
-   the current stop; the other two ticks reveal there's somewhere to go.
-   [data-state] selector ties the state rules' specificity; declared after
-   them so the ticks survive their background shorthand. Tick centers match
-   the thumb-center stops: 16px / 50% / width-16px. */
-#slop-free-toggle[data-state] .slop-track {
-    background-image: radial-gradient(circle, rgba(255,255,255,0.38) 0 2px, transparent 2.6px),
-                      radial-gradient(circle, rgba(255,255,255,0.38) 0 2px, transparent 2.6px),
-                      radial-gradient(circle, rgba(255,255,255,0.38) 0 2px, transparent 2.6px);
-    background-size: 6px 6px;
-    background-repeat: no-repeat;
-    background-position: 13px center, center center, calc(100% - 13px) center;
-}
-/* View toggles show their identity color when active (matches banners + date strips) */
-#highlights-toggle.active .slop-track { background: #00d4aa; }
-#highlights-toggle.active .slop-label { color: #00d4aa; }
-#fest-toggle.active .slop-track { background: #FFD700; }
-#fest-toggle.active .slop-label { color: #FFD700; }
-#preorder-toggle.active .slop-track { background: #7c3aed; }
-#preorder-toggle.active .slop-label { color: #a78bfa; }  /* readable tint; track fill stays #7c3aed */
+.switch-cell:hover .sw-track { background: #222; border-color: rgba(255,255,255,0.4); }  /* hover feedback */
+.switch-cell:hover .sw-label { color: rgba(255,255,255,0.85); }
+/* ON — .active is the single on-class app.js toggles; identity color keys off the ID */
+.switch-cell.active .sw-thumb { transform: translateX(26px); background: #0a0a0a; }
+.switch-cell.active .sw-track { border-color: rgba(0,0,0,0.35); }
+#highlights-toggle.active .sw-track { background: var(--accent-primary); }
+#highlights-toggle.active .sw-label { color: var(--accent-primary); }
+#fest-toggle.active .sw-track { background: var(--screening-gold); }
+#fest-toggle.active .sw-label { color: var(--screening-gold); }
+#preorder-toggle.active .sw-track { background: var(--svc-preorder); }
+#preorder-toggle.active .sw-label { color: #a78bfa; }  /* readable tint; track fill stays #7c3aed */
 
 /* Search input */
 .search-container {
@@ -2267,31 +2301,40 @@ header.nrw-collapsed { padding-top: 0.6rem; }
 .mh-titles h1 { margin: 0; }
 .mh-titles .site-slogan { margin: 10px 0 0; }
 
-/* Search — far right of the control bar; real SVG magnifying glass */
-.cwide-controls .cwide-search { flex: 0 1 320px; min-width: 140px; }
+/* Search — far right of the control bar; real SVG magnifying glass. Capped so
+   the right end doesn't pool; shares --ctl-h with the rest of the bar. */
+/* Fixed-width anchor at the right edge: space-between spreads the row, so search
+   must NOT grow (a growing search would swallow the surplus and reopen the gap). */
+.cwide-controls .cwide-search { flex: 0 0 280px; min-width: 150px; }
 .cwide-controls .cwide-search .search-container { position: relative; display: flex; align-items: center; margin: 0; width: 100%; }
 .cwide-controls .cwide-search .search-mag { position: absolute; left: 14px; width: 15px; height: 15px; pointer-events: none; color: var(--accent-primary); }
 .cwide-controls .cwide-search #search-input,
-.cwide-controls .cwide-search #search-input:focus { width: 100%; padding: 0.52rem 2rem 0.52rem 2.3rem; }
+.cwide-controls .cwide-search #search-input:focus {
+  width: 100%; height: var(--ctl-h, 36px); padding: 0 1rem 0 2.3rem;
+  border-radius: calc(var(--ctl-h, 36px) / 2); font-size: 0.85rem;
+}
 
 /* Open control row (fused-strip design): no box — the row sits directly on
-   the first date strip, whose neon top border is the row's bottom line */
-.cwide-controls { display: flex; align-items: center; justify-content: space-between;
-  background: transparent; border: none;
-  border-radius: 0; padding: 4px 2px 10px; gap: 14px; }
-.cwide-controls .slop-toggle-wrap { margin: 0; flex: 0 0 auto; }
+   the first date strip, whose neon top border is the row's bottom line.
+   space-between spreads the six controls edge-to-edge as one even row (the
+   switch-group is display:contents, so all six are siblings here); the 18px
+   gap is only the MINIMUM — it's what you get once the row stops having surplus,
+   i.e. in the compression band. */
+.cwide-controls { display: flex; align-items: center;
+  background: transparent; border: none; justify-content: space-between;
+  border-radius: 0; padding: 4px 2px 12px; gap: 18px; }
 .cwide-divider { display: none; }
 
-/* GENRE — de-emphasized: a quiet peer of the toggle labels, not a loud pill */
+/* GENRE — raised to the shared height with real presence (control-bar V3) */
 .genre-slot { position: relative; display: flex; align-items: center; flex: 0 0 auto; }
-.genre-control { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-  color: rgba(0,212,170,0.75); background: transparent; border: 1px solid rgba(0,212,170,0.35);
-  border-radius: 25px; padding: 0.34rem 0.85rem; display: inline-flex; align-items: center; gap: 6px;
+.genre-control { height: var(--ctl-h, 36px); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(0,212,170,0.85); background: rgba(0,212,170,0.06); border: 1px solid rgba(0,212,170,0.4);
+  border-radius: calc(var(--ctl-h, 36px) / 2); padding: 0 16px; display: inline-flex; align-items: center; gap: 8px;
   cursor: pointer; white-space: nowrap; transition: color .25s, border-color .25s, background .25s; }
-.genre-control .caret { font-size: 0.6rem; opacity: 0.7; transition: transform .2s; }
+.genre-control .caret { font-size: 0.6rem; opacity: 0.8; transition: transform .2s; }
 .genre-control.open .caret { transform: rotate(180deg); }
-.genre-control:hover, .genre-control.open { color: var(--accent-primary); border-color: rgba(0,212,170,0.7); background: rgba(0,212,170,0.08); }
-.genre-control.has-active { color: var(--accent-primary); border-color: rgba(0,212,170,0.55); }
+.genre-control:hover, .genre-control.open { color: var(--accent-primary); border-color: rgba(0,212,170,0.75); background: rgba(0,212,170,0.12); }
+.genre-control.has-active { color: var(--accent-primary); border-color: var(--accent-primary); }
 .genre-pop { position: absolute; z-index: 60; top: 100%; right: 0; margin-top: 10px; min-width: 360px;
   background: #14141f; border: 1px solid rgba(255,255,255,0.16); border-radius: 14px; padding: 14px;
   box-shadow: 0 16px 48px rgba(0,0,0,0.55); display: none; }
@@ -2302,15 +2345,66 @@ header.nrw-collapsed { padding-top: 0.6rem; }
 .genre-chips { display: flex; flex-wrap: wrap; gap: 9px; }
 .genre-chips .filter-btn { flex: 0 0 auto; font-size: 0.95rem; padding: 0.45rem 0.9rem; }
 
+/* Search honesty (audit F17): while a query is active, search bypasses every
+   view toggle + GENRE, so dim them to ~0.35 to show they're not in play.
+   Pointer-events stay live — clicking one clears the search and applies the
+   view (wired in app.js). */
+.cwide-controls.search-active .slop-slider,
+.cwide-controls.search-active .switch-group,
+.cwide-controls.search-active .genre-slot { opacity: 0.35; transition: opacity .2s; }
+/* "searching all films" microcopy under the search field */
+.cwide-controls .search-scope-note {
+  display: none; position: absolute; top: 100%; right: 0; margin-top: 4px;
+  font-size: 0.62rem; letter-spacing: 0.05em; color: #888; white-space: nowrap; pointer-events: none;
+}
+.cwide-controls.search-active .search-scope-note { display: block; }
+.cwide-controls .cwide-search { position: relative; }
+
+/* ABOUT affordance (audit F22): a quiet ⓘ at the far right edge, beyond search.
+   Small, rgba-teal like the GENRE control; opens a "What is this?" popover that
+   doubles as the badge/filter legend. Sits outside the canonical SLOP·SELECTS·
+   FESTS·PRE-ORDER·GENRE·SEARCH sequence. */
+.about-slot { position: relative; display: flex; align-items: center; flex: 0 0 auto; }
+.about-control {
+  width: var(--ctl-h, 36px); height: var(--ctl-h, 36px); padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.05rem; line-height: 1; cursor: pointer;
+  color: rgba(0,212,170,0.7); background: rgba(0,212,170,0.06);
+  border: 1px solid rgba(0,212,170,0.4); border-radius: 50%;
+  transition: color .25s, border-color .25s, background .25s;
+}
+.about-control:hover, .about-control.open { color: var(--accent-primary); border-color: rgba(0,212,170,0.75); background: rgba(0,212,170,0.12); }
+.about-pop {
+  position: absolute; z-index: 60; top: 100%; right: 0; margin-top: 10px; width: 340px;
+  background: #14141f; border: 1px solid rgba(255,255,255,0.16); border-radius: 14px; padding: 14px 16px 16px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.55); display: none;
+}
+.about-pop.open { display: block; }
+.about-pop-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.about-pop-head span { color: #888; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.about-close { color: #888; font-size: 1.2rem; line-height: 1; cursor: pointer; background: none; border: none; padding: 0; }
+.about-close:hover { color: #fff; }
+.about-pop-body { color: var(--text-secondary, #bbb); font-size: 0.82rem; line-height: 1.55; margin: 0; }
+.about-pop-body strong { color: var(--accent-primary); font-weight: 700; }
+
 @media (max-width: 1280px) {
   .cwide-hdr { padding-left: 18px; padding-right: 18px; }
 }
+/* Compression band — re-establish the switch-group as a real flex item (undo the
+   full-width display:contents flatten), pack left, shrink the shared height,
+   tighten gaps + cells, cap search narrower. Labels never overlap (each switch
+   cell stays fixed-width). Behavior here is unchanged from before the fill fix. */
 @media (max-width: 1120px) {
-  .slop-toggle-wrap { gap: 7px; }
-  .slop-label { letter-spacing: 0.08em; }
+  :root { --ctl-h: 34px; }
+  .cwide-controls { gap: 12px; justify-content: flex-start; }
+  .switch-group { display: flex; gap: 12px; flex: 1 1 auto; justify-content: center; }
+  .switch-cell { width: 128px; flex: 0 0 auto; }
+  .slop-slider .stop { padding: 0 10px; }
+  .cwide-controls .cwide-search { flex: 0 1 220px; }
 }
 @media (max-width: 980px) {
   .masthead-row { flex-wrap: wrap; }
   .cwide-controls { flex-wrap: wrap; gap: 14px; justify-content: flex-start; }
+  .switch-group { display: flex; flex: 1 1 100%; justify-content: flex-start; }
   .cwide-controls .cwide-search { flex: 1 1 100%; min-width: 0; }
 }

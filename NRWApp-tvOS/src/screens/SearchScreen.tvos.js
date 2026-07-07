@@ -142,6 +142,15 @@ const SearchScreen = ({ route }) => {
             autoCorrect={false}
             returnKeyType="search"
           />
+          {/* Audit F36: live match count INSIDE the keyboard band — the results
+              grid below sits behind the system keyboard's blur until the query
+              is committed, so this is the only per-keystroke feedback the user
+              can actually see. Don't fight the blur itself. */}
+          {searchQuery.length > 0 && (
+            <Text style={styles.liveCount}>
+              {results.length} {results.length === 1 ? 'match' : 'matches'}
+            </Text>
+          )}
           {searchQuery.length > 0 && (
             <TouchableOpacity
               style={[styles.clearButton, clearFocused && styles.clearButtonFocused]}
@@ -187,7 +196,7 @@ const SearchScreen = ({ route }) => {
         <View style={styles.emptyContainer}>
           <SearchIcon size={72} color="rgba(0,212,170,0.35)" strokeWidth={1.4} />
           <Text style={styles.emptyText}>Search the wall</Text>
-          <Text style={styles.emptyHint}>Results appear as you type — title, director, or country</Text>
+          <Text style={styles.emptyHint}>Press Search to see results — the match count updates as you type</Text>
         </View>
       )}
     </View>
@@ -269,6 +278,13 @@ const styles = StyleSheet.create({
   },
   clearIconFocused: {
     color: Colors.primary,
+  },
+  // Live match count in the keyboard band (Audit F36)
+  liveCount: {
+    color: Colors.primary,
+    fontSize: 24,
+    fontWeight: '700',
+    marginLeft: 18,
   },
   resultsInfo: {
     paddingHorizontal: 68,

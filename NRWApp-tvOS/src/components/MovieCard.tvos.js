@@ -214,7 +214,14 @@ const MovieCard = forwardRef(({
     if (s.includes('criterion')) return frame('CRITERION', '#000000');
     if (s.includes('paramount')) return frame('PARAMOUNT+', '#0064FF');
     if (s.includes('apple')) return frame('APPLE TV+', '#000000');
-    return frame(service.toUpperCase().slice(0, 8), '#666666');
+    // Unresolved service (Audit F21): no more hard slice to 8 chars ("PBS DOCU").
+    // Recurring long channels get a curated short name; everything else passes
+    // through in full and the band Text shrinks-to-fit (numberOfLines +
+    // adjustsFontSizeToFit) instead of character surgery.
+    const shortNames = {
+      'pbs documentaries': 'PBS DOCS',
+    };
+    return frame(shortNames[s] || service.toUpperCase(), '#666666');
   };
 
   const isFest = !!movie.filters?.is_virtual_screening;
@@ -342,7 +349,12 @@ const MovieCard = forwardRef(({
             <View style={[styles.posterContainer, { width: cardWidth, height: cardHeight, backgroundColor: streamingBadge.color, justifyContent: 'flex-start' }]}>
               {/* 52px header strip: SERVICE NAME + NOW STREAMING */}
               <View style={styles.streamingFrameHeader}>
-                <Text style={[styles.streamingFrameName, { color: frameTextColor }]}>{streamingBadge.name}</Text>
+                <Text
+                  style={[styles.streamingFrameName, { color: frameTextColor }]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.7}
+                >{streamingBadge.name}</Text>
                 <Text style={[styles.streamingFrameSuper, { color: frameTextColor }]}>NOW STREAMING</Text>
               </View>
               {/* Poster fills remaining space */}

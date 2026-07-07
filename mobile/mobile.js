@@ -184,6 +184,7 @@ const NRWMobile = {
             if (!pill) return;
 
             const filter = pill.dataset.filter;
+            this._clearSearchForView();  // search bypasses views — tapping one exits search
 
             // One exclusive group: picking a genre clears the toggles + other
             // genres (single-select). Re-tapping the active genre clears it.
@@ -217,6 +218,7 @@ const NRWMobile = {
             };
             updateSlopToggle();
             slopToggle.addEventListener('click', () => {
+                this._clearSearchForView();  // search bypasses views — tapping one exits search
                 const idx = SLOP_STATES.indexOf(this.slopMode);
                 this.slopMode = SLOP_STATES[(idx + 1) % 3];
                 this.setExclusiveView('slop'); // clear genres + other toggles
@@ -233,6 +235,7 @@ const NRWMobile = {
         if (highlightsToggle) {
             highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
             highlightsToggle.addEventListener('click', () => {
+                this._clearSearchForView();  // search bypasses views — tapping one exits search
                 this.showHighlightsOnly = !this.showHighlightsOnly;
                 highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
                 if (this.showHighlightsOnly) this.setExclusiveView('selects');
@@ -249,6 +252,7 @@ const NRWMobile = {
         if (festToggle) {
             festToggle.classList.toggle('active', !this.hideFest);
             festToggle.addEventListener('click', () => {
+                this._clearSearchForView();  // search bypasses views — tapping one exits search
                 this.hideFest = !this.hideFest;
                 festToggle.classList.toggle('active', !this.hideFest);
                 if (!this.hideFest) this.setExclusiveView('fests');
@@ -265,6 +269,7 @@ const NRWMobile = {
         if (preorderToggle) {
             preorderToggle.classList.toggle('active', this.showPreorders);
             preorderToggle.addEventListener('click', () => {
+                this._clearSearchForView();  // search bypasses views — tapping one exits search
                 this.showPreorders = !this.showPreorders;
                 preorderToggle.classList.toggle('active', this.showPreorders);
                 if (this.showPreorders) this.setExclusiveView('preorders');
@@ -275,6 +280,14 @@ const NRWMobile = {
                 this.dom.gridView.scrollTop = 0;
             });
         }
+
+        // ABOUT affordance (audit F22): ⓘ opens a "What is this?" bottom sheet.
+        const aboutControl = document.getElementById('about-control');
+        const aboutBackdrop = document.getElementById('about-backdrop');
+        const closeAbout = () => aboutBackdrop?.classList.remove('open');
+        aboutControl?.addEventListener('click', () => aboutBackdrop?.classList.add('open'));
+        aboutBackdrop?.addEventListener('click', (e) => { if (e.target === aboutBackdrop) closeAbout(); });
+        document.getElementById('about-sheet-close')?.addEventListener('click', closeAbout);
     },
 
     // Reflect the active genre (if any) on the quiet GENRE control: highlight it
@@ -411,6 +424,26 @@ const NRWMobile = {
 
             return true;
         });
+
+        this._syncSearchActiveState();
+    },
+
+    // Search honesty (audit F17, mobile mirror): reflect an active query on the
+    // header — dim the bypassed toggle row + GENRE.
+    _syncSearchActiveState() {
+        const header = document.getElementById('site-header');
+        if (header) header.classList.toggle('search-active', !!this.searchQuery);
+    },
+
+    // A toggle / genre was tapped while a search was active. Search bypasses
+    // views, so clear the query first, then let the caller apply the view.
+    _clearSearchForView() {
+        if (!this.searchQuery) return;
+        const input = document.getElementById('search-input');
+        const clearBtn = document.getElementById('search-clear');
+        if (input) input.value = '';
+        if (clearBtn) clearBtn.style.display = 'none';
+        this.searchQuery = '';
     },
 
     // ===== GRID (View 0) =====
@@ -493,8 +526,9 @@ const NRWMobile = {
         this.dom.gridView.innerHTML = '';
 
         if (this.gridEntries.length === 0) {
-            this.dom.gridView.innerHTML =
-                '<div class="loading"><p>No movies found</p></div>';
+            this.dom.gridView.innerHTML = this.searchQuery
+                ? '<div class="loading"><p>No results for &ldquo;' + this.esc(this.searchQuery) + '&rdquo;</p><p class="empty-hint">Try a different title, director, or cast</p></div>'
+                : '<div class="loading"><p>No movies found</p><p class="empty-hint">Try a different filter</p></div>';
             return;
         }
 
@@ -1006,7 +1040,7 @@ const NRWMobile = {
         const metaEl = document.getElementById('poster-meta');
         if (metaEl) {
             const line1 = dirName
-                ? '<div class="poster-meta-line poster-meta-dir"><span class="poster-meta-label">D:</span> ' + this.esc(dirName) + '</div>'
+                ? '<div class="poster-meta-line poster-meta-dir"><span class="poster-meta-label">Dir:</span> ' + this.esc(dirName) + '</div>'
                 : '';
             const line2Parts = [genre, country].filter(Boolean);
             const line2 = line2Parts.length

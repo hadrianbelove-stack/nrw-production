@@ -78,6 +78,14 @@ const NRW = {
         return `${months[parseInt(m, 10) - 1]} ${parseInt(d, 10)}`;
     },
 
+    // Runtime "1h 24m" (canonical spec; mirrors mobile's formatRuntime)
+    _formatRuntime(min) {
+        if (!min) return '';
+        const h = Math.floor(min / 60);
+        const m = min % 60;
+        return h > 0 ? `${h}h ${m}m` : `${m}m`;
+    },
+
     async init() {
         try {
             // Paint the wall's shape immediately (skeleton) while data downloads
@@ -103,6 +111,7 @@ const NRW = {
 
                 this.setupFilterEventListeners();
                 this.setupGenreDropdown();
+                this.setupAboutPopover();
                 this.setupSearchEventListeners();
                 this.setupCardFlipHandler();
                 this.setupLightboxKeyboardHandler();
@@ -160,6 +169,7 @@ const NRW = {
             btn.addEventListener('click', () => {
                 const filter = btn.dataset.filter;
                 if (!filter) return;
+                this._clearSearchForView();  // search bypasses views — clicking one exits search
 
                 // One exclusive group: picking a genre clears every other view
                 // (other genres + the toggles + slop). Re-clicking the active
@@ -181,32 +191,41 @@ const NRW = {
             });
         });
 
-        // Slop toggle (3-state: free / all / only) — part of the exclusive view group
+        // Slop control (3-state: all / free / only) — a labeled 3-stop slider
+        // (control-bar V3). One knob slides across SLOP FILTER · SLOP FREE ·
+        // SLOP ONLY. Part of the exclusive view group.
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
-            const SLOP_STATES = ['all', 'free', 'only'];  // SLOP FILTER (rest) → SLOP FREE → SLOP ONLY → back
-            this.syncSlopToggle();
-            slopToggle.addEventListener('click', (e) => {
-                // Click a spot ON the track to jump straight to that state
-                // (left/mid/right = all/free/only); clicks elsewhere keep the
-                // familiar cycle. Audit #4: makes the 3 positions discoverable.
-                const track = slopToggle.querySelector('.slop-track');
-                const r = track ? track.getBoundingClientRect() : null;
-                if (r && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top - 6 && e.clientY <= r.bottom + 6) {
-                    const third = (e.clientX - r.left) / r.width;
-                    this.slopMode = third < 1 / 3 ? 'all' : (third < 2 / 3 ? 'free' : 'only');
-                } else {
-                    const idx = SLOP_STATES.indexOf(this.slopMode);
-                    this.slopMode = SLOP_STATES[(idx + 1) % 3];
-                }
+            const SLOP_STATES = ['all', 'free', 'only'];  // stop 0 / 1 / 2
+            // Apply a slop state: clear other views, re-sync + re-place the knob,
+            // and re-filter the wall. Shared by stop-clicks, the cycle click,
+            // and keyboard activation.
+            const applySlop = (state) => {
+                this._clearSearchForView();  // search bypasses views — clicking one exits search
+                this.slopMode = state;
                 this.setExclusiveView('slop');  // clear genres + other toggles
-                this.syncSlopToggle();
+                this.syncSlopToggle();          // sets data-state, label, and places the knob
                 this.gridClearSelection();
                 this.displayedCount = this.loadIncrement;
                 this.updateFilterDescription();
                 this.applyFilter();
                 this.renderWallWithMore();
+            };
+            this._applySlop = applySlop;
+
+            // Click a specific stop → jump straight to that state (discoverable
+            // mode selection). Clicking elsewhere on the slider cycles forward.
+            slopToggle.querySelectorAll('.stop').forEach((s, i) => {
+                s.addEventListener('click', (e) => { e.stopPropagation(); applySlop(SLOP_STATES[i]); });
             });
+            slopToggle.addEventListener('click', () => {
+                const idx = SLOP_STATES.indexOf(this.slopMode);
+                applySlop(SLOP_STATES[(idx + 1) % 3]);
+            });
+
+            // Place the knob on load and whenever the row reflows.
+            this.syncSlopToggle();
+            window.addEventListener('resize', () => this.placeSlopKnob());
         }
 
         // Highlights toggle — show only staff picks
@@ -214,6 +233,7 @@ const NRW = {
         if (highlightsToggle) {
             highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
             highlightsToggle.addEventListener('click', () => {
+                this._clearSearchForView();  // search bypasses views — clicking one exits search
                 this.showHighlightsOnly = !this.showHighlightsOnly;
                 highlightsToggle.classList.toggle('active', this.showHighlightsOnly);
                 if (this.showHighlightsOnly) this.setExclusiveView('selects');
@@ -229,6 +249,7 @@ const NRW = {
         if (festToggle) {
             festToggle.classList.toggle('active', this.showFest);
             festToggle.addEventListener('click', () => {
+                this._clearSearchForView();  // search bypasses views — clicking one exits search
                 this.showFest = !this.showFest;
                 festToggle.classList.toggle('active', this.showFest);
                 if (this.showFest) this.setExclusiveView('fests');
@@ -268,8 +289,11 @@ const NRW = {
         // Re-measure once web fonts finish loading — they can change the header's
         // height a beat after first paint, leaving the date strips docked a few px off.
         if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(updateHeaderOffset);
+            document.fonts.ready.then(() => { updateHeaderOffset(); this.placeSlopKnob(); });
         }
+        // Re-place the slop knob after first paint (labels are measured, so the
+        // knob can't be sized until layout settles).
+        requestAnimationFrame(() => this.placeSlopKnob());
 
         // Masthead recedes on scroll: collapse the wordmark row past 120px,
         // restore near the top (hysteresis so it never flutters at a threshold).
@@ -327,6 +351,7 @@ const NRW = {
         if (preorderToggle) {
             preorderToggle.classList.toggle('active', this.showPreorders);
             preorderToggle.addEventListener('click', () => {
+                this._clearSearchForView();  // search bypasses views — clicking one exits search
                 this.showPreorders = !this.showPreorders;
                 preorderToggle.classList.toggle('active', this.showPreorders);
                 if (this.showPreorders) this.setExclusiveView('preorders');
@@ -367,7 +392,8 @@ const NRW = {
         if (text) text.textContent = active ? active.textContent.toUpperCase() : 'GENRE';
     },
 
-    // Sync the 3-state slop toggle's data-state + label to this.slopMode.
+    // Sync the 3-state slop slider's data-state + (hidden) label to this.slopMode,
+    // then slide the knob under the active stop.
     syncSlopToggle() {
         const toggle = document.getElementById('slop-free-toggle');
         if (!toggle) return;
@@ -375,6 +401,26 @@ const NRW = {
         const label = document.getElementById('slop-state-label');
         const SLOP_LABELS = { free: 'SLOP FREE', all: 'SLOP FILTER', only: 'SLOP ONLY' };
         if (label) label.textContent = SLOP_LABELS[this.slopMode];
+        this.placeSlopKnob();
+    },
+
+    // Size + slide the slop knob to sit under whichever stop is active. Measured
+    // from the DOM (labels vary in width), so it must re-run on state change and
+    // on resize. Mirrors the V3 mockup's placeKnob.
+    placeSlopKnob() {
+        const slider = document.getElementById('slop-free-toggle');
+        if (!slider) return;
+        const knob = slider.querySelector('.slop-knob');
+        const stops = slider.querySelectorAll('.stop');
+        const idx = { all: 0, free: 1, only: 2 }[this.slopMode] ?? 0;
+        const target = stops[idx];
+        if (!knob || !target) return;
+        const sliderBox = slider.getBoundingClientRect();
+        const box = target.getBoundingClientRect();
+        if (!box.width) return;  // not laid out yet (e.g. hidden) — skip
+        const left = box.left - sliderBox.left;  // includes the 3px pad via offset
+        knob.style.width = box.width + 'px';
+        knob.style.transform = 'translateX(' + (left - 3) + 'px)';
     },
 
     // Show/hide filter description based on active filters
@@ -418,6 +464,24 @@ const NRW = {
             reflect(); close();
         });
         document.addEventListener('click', close);
+    },
+
+    // ABOUT affordance (audit F22): the quiet ⓘ opens a "What is this?" popover
+    // (genre-pop styling family) that doubles as the badge/filter legend.
+    setupAboutPopover() {
+        const toggle = document.getElementById('about-toggle');
+        const pop = document.getElementById('about-pop');
+        const closeBtn = document.getElementById('about-close');
+        if (!toggle || !pop) return;
+
+        const open = () => { pop.classList.add('open'); toggle.classList.add('open'); toggle.setAttribute('aria-expanded', 'true'); };
+        const close = () => { pop.classList.remove('open'); toggle.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); };
+
+        toggle.addEventListener('click', (e) => { e.stopPropagation(); pop.classList.contains('open') ? close() : open(); });
+        pop.addEventListener('click', (e) => e.stopPropagation());
+        if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); close(); });
+        document.addEventListener('click', close);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
     },
 
     setupSearchEventListeners() {
@@ -519,6 +583,26 @@ const NRW = {
 
         this._updateFilterChip();
         this._syncToggleAria();
+        this._syncSearchActiveState();
+    },
+
+    // Search honesty (audit F17): reflect an active query on the control bar —
+    // dim the bypassed toggles/GENRE and show the "searching all films" note.
+    _syncSearchActiveState() {
+        const controls = document.querySelector('.cwide-controls');
+        if (controls) controls.classList.toggle('search-active', !!this.searchQuery);
+    },
+
+    // A view toggle / genre / slop stop was clicked while a search was active.
+    // Search bypasses views, so clear the query first, then let the caller apply
+    // the chosen view. Returns nothing; safe to call unconditionally.
+    _clearSearchForView() {
+        if (!this.searchQuery) return;
+        const input = document.getElementById('search-input');
+        const clearBtn = document.getElementById('search-clear');
+        if (input) input.value = '';
+        if (clearBtn) clearBtn.style.display = 'none';
+        this.searchQuery = '';
     },
 
     // Filter status chip (audit #4): when a genre or slop-free narrows the wall,
@@ -654,7 +738,7 @@ const NRW = {
         if (!movies || movies.length === 0) {
             const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
             wall.innerHTML = this.searchQuery
-                ? `<div class="wall-empty">No results for &ldquo;${esc(this.searchQuery)}&rdquo;<span class="wall-empty-hint">Try a different title, director, or country</span></div>`
+                ? `<div class="wall-empty">No results for &ldquo;${esc(this.searchQuery)}&rdquo;<span class="wall-empty-hint">Try a different title, director, or cast</span></div>`
                 : `<div class="wall-empty">No movies found<span class="wall-empty-hint">Try a different filter</span></div>`;
             return;
         }
@@ -1815,7 +1899,7 @@ const NRW = {
         if (runtimeEl) {
             const runtimeParts = [];
             if (movie.year) runtimeParts.push(movie.year);
-            if (movie.runtime) runtimeParts.push(`${movie.runtime} min`);
+            if (movie.runtime) runtimeParts.push(NRW._formatRuntime(movie.runtime));
             if (movie.distributor || movie.studio) runtimeParts.push(movie.distributor || movie.studio);
             if (runtimeParts.length) {
                 runtimeEl.textContent = runtimeParts.join(' \u2022 ');
@@ -2417,10 +2501,11 @@ const NRW = {
             const lightbox = document.getElementById('poster-lightbox');
             if (lightbox && lightbox.classList.contains('active')) return;
 
-            const isToggle = e.target.classList.contains('slop-toggle-wrap');
+            const isToggle = e.target.classList.contains('slop-slider') || e.target.classList.contains('switch-cell');
             const onSearch = e.target.id === 'search-input';
 
             // Enter/Space activates a focused toggle (filters are <button>, native handles those).
+            // On the slop slider this cycles the state (all→free→only); on a switch it flips it.
             if (isToggle && (e.key === 'Enter' || e.key === ' ')) {
                 e.preventDefault();
                 e.target.click();

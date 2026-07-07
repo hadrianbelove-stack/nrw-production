@@ -34,7 +34,7 @@
     <meta name="twitter:title" content="The New Release Wall">
     <meta name="twitter:description" content="What came out, every day.">
     <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="assets/styles.css?v=118">
+    <link rel="stylesheet" href="assets/styles.css?v=120">
     <!-- Start the data download in parallel with CSS/JS instead of after them (audit #5) -->
     <link rel="preload" href="data.json" as="fetch" crossorigin="anonymous">
 </head>
@@ -48,26 +48,30 @@
                 </div>
             </div>
             <div class="cwide-controls">
-                <div class="slop-toggle-wrap" id="slop-free-toggle" data-state="all">
-                    <div class="slop-track"><div class="slop-thumb"></div></div>
-                    <span class="slop-label" id="slop-state-label">SLOP FILTER</span>
+                <!-- SLOP: a labeled 3-stop slider — one knob slides across SLOP FILTER · SLOP FREE · SLOP ONLY.
+                     data-state (all/free/only) drives the fill/knob; app.js sets #slop-state-label for the
+                     functional/aria contract (kept visually hidden — the three .stop labels are the visible copy). -->
+                <div class="slop-slider" id="slop-free-toggle" data-state="all">
+                    <div class="slop-knob"></div>
+                    <span class="stop" data-i="0">SLOP FILTER</span>
+                    <span class="stop" data-i="1">SLOP FREE</span>
+                    <span class="stop" data-i="2">SLOP ONLY</span>
+                    <span class="slop-state-label-hidden" id="slop-state-label">SLOP FILTER</span>
                 </div>
-                <div class="cwide-divider"></div>
-                <div class="slop-toggle-wrap" id="highlights-toggle">
-                    <div class="slop-track"><div class="slop-thumb"></div></div>
-                    <span class="slop-label">SELECTS</span>
+                <div class="switch-group">
+                    <div class="switch-cell" id="highlights-toggle">
+                        <div class="sw-track"><div class="sw-thumb"></div></div>
+                        <span class="sw-label">SELECTS</span>
+                    </div>
+                    <div class="switch-cell" id="fest-toggle">
+                        <div class="sw-track"><div class="sw-thumb"></div></div>
+                        <span class="sw-label">FESTS</span>
+                    </div>
+                    <div class="switch-cell" id="preorder-toggle">
+                        <div class="sw-track"><div class="sw-thumb"></div></div>
+                        <span class="sw-label">PRE-ORDER</span>
+                    </div>
                 </div>
-                <div class="cwide-divider"></div>
-                <div class="slop-toggle-wrap" id="fest-toggle">
-                    <div class="slop-track"><div class="slop-thumb"></div></div>
-                    <span class="slop-label">FESTS</span>
-                </div>
-                <div class="cwide-divider"></div>
-                <div class="slop-toggle-wrap" id="preorder-toggle">
-                    <div class="slop-track"><div class="slop-thumb"></div></div>
-                    <span class="slop-label">PRE-ORDER</span>
-                </div>
-                <div class="cwide-divider"></div>
                 <div class="genre-slot">
                     <button class="genre-control" id="genre-toggle" type="button" aria-expanded="false"><span class="genre-text">GENRE</span><span class="caret">▼</span></button>
                     <div class="genre-pop" id="genre-pop">
@@ -85,12 +89,19 @@
                         </div>
                     </div>
                 </div>
-                <div class="cwide-divider"></div>
                 <div class="cwide-search">
                     <div class="search-container">
                         <svg class="search-mag" aria-hidden="true" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.8"/><line x1="12.8" y1="12.8" x2="18" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                        <input type="text" id="search-input" placeholder="Search title, director, genre..." autocomplete="off">
+                        <input type="text" id="search-input" placeholder="Search title, director, cast&hellip;" autocomplete="off">
                         <button id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
+                    </div>
+                    <span class="search-scope-note" id="search-scope-note" aria-hidden="true">Searching all films</span>
+                </div>
+                <div class="about-slot">
+                    <button class="about-control" id="about-toggle" type="button" aria-expanded="false" aria-label="What is this?" title="What is this?">&#9432;</button>
+                    <div class="about-pop" id="about-pop" role="dialog" aria-label="What is this?">
+                        <div class="about-pop-head"><span>What is this?</span><button class="about-close" id="about-close" type="button" aria-label="Close">&times;</button></div>
+                        <p class="about-pop-body">The New Release Wall is a hand-curated video store of all the new arrivals. What came out, every day, every platform. With the <strong>SLOP</strong>-filter, you can narrow the feed to films with wider releases. <strong>SELECTS</strong> &#9733; are our picks of note. <strong>FESTS</strong> are &ldquo;virtual screenings&rdquo; from festivals, that you can watch from home for a limited time. <strong>PRE-ORDER</strong> is what&rsquo;s coming. No algorithm, no feed. Bringing back browsing.</p>
                     </div>
                 </div>
             </div>
@@ -145,6 +156,6 @@
     </div>
 
     <script src="assets/shared-config.js?v=4"></script>
-    <script src="assets/app.js?v=96"></script>
+    <script src="assets/app.js?v=98"></script>
 </body>
 </html>

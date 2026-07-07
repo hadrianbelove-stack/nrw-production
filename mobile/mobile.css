@@ -109,6 +109,27 @@ body {
 .genre-control .caret { font-size: 0.45rem; opacity: 0.7; }
 .genre-control.has-active { color: var(--accent); border-color: rgba(0,212,170,0.55); }
 
+/* Search honesty (audit F17, mobile mirror): while a query is active, search
+   bypasses the toggle row + GENRE, so dim them to ~0.35. Taps stay live —
+   tapping one clears the search and applies the view (wired in mobile.js). */
+.site-header.search-active .toggle-row,
+.site-header.search-active .genre-control { opacity: 0.35; transition: opacity .2s; }
+/* Empty-state hint under "No results" / "No movies found" */
+.empty-hint { color: var(--text-muted); font-size: 0.72rem; margin-top: 6px; }
+
+/* ABOUT affordance (audit F22): quiet ⓘ at the right end of the filter row;
+   opens a "What is this?" bottom sheet (genre-sheet family). */
+.about-control {
+  flex: 0 0 auto; width: 26px; height: 26px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.95rem; line-height: 1; cursor: pointer;
+  color: rgba(0,212,170,0.75); background: transparent;
+  border: 1px solid rgba(0,212,170,0.35); border-radius: 50%;
+  font-family: var(--font); -webkit-tap-highlight-color: transparent;
+}
+.about-sheet-body { color: var(--text-secondary, #bbb); font-size: 0.85rem; line-height: 1.55; margin: 0; }
+.about-sheet-body strong { color: var(--accent); font-weight: 700; }
+
 /* GENRE bottom sheet */
 .genre-backdrop {
   position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.6);

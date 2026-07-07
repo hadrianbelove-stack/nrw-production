@@ -1802,7 +1802,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginTop: 10,
-    marginBottom: 6,
+    // Audit F35: a focused first-row card scales 1.12 (516px card → ~31px bloom
+    // above its top edge) and was clipping the strip's text at the old 6px gap.
+    // 30px clears the bloom. Packed genre mode renders no strips at all
+    // (listData pushes 'date' items only when !genrePacked), so this can't
+    // double-space that view.
+    marginBottom: 30,
     shadowOpacity: 0.55,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 0 },
