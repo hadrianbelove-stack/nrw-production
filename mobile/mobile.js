@@ -206,8 +206,8 @@ const NRWMobile = {
         // Slop toggle (3-state: free / all / only)
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
-            const SLOP_STATES = ['all', 'free', 'only'];  // SLOP FILTER (rest) → SLOP FREE → SLOP ONLY → back
-            const SLOP_LABELS = { free: 'SLOP FREE', all: 'SLOP FILTER', only: 'SLOP ONLY' };
+            const SLOP_STATES = ['all', 'free', 'only'];  // SLOP FILTER (rest) → SLOP-FREE → SLOP ONLY → back
+            const SLOP_LABELS = { free: 'SLOP-FREE', all: 'SLOP FILTER', only: 'SLOP ONLY' };
             const updateSlopToggle = () => {
                 slopToggle.dataset.state = this.slopMode;
                 const label = document.getElementById('slop-state-label');

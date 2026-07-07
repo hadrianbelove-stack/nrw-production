@@ -405,20 +405,6 @@ header h1 {
     box-shadow: 0 0 20px var(--screening-glow);
 }
 
-/* Badge bar below title/director (Design K) — used for both Staff Pick and Virtual Screening */
-.badge-bar {
-    width: calc(100% + 16px);
-    margin: 6px -8px -8px -8px;
-    text-align: center;
-    padding: 5px 4px;
-    font-size: 0.65rem;
-    font-weight: 900;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    border-radius: 0 0 12px 12px;
-}
-.badge-bar.red { background: var(--staff-pick); color: #fff; }
-
 /* Virtual screening: festival name band ABOVE the poster (dark, gold text).
    Sits as a sibling above .movie-card so the 2:3 poster is never cropped. */
 .movie-container.screening-movie .fest-above {
@@ -667,7 +653,7 @@ header h1 {
     display: none;
     align-items: center;
     justify-content: center;
-    height: 96vh;
+    height: var(--lbh, 96vh);
     aspect-ratio: 2 / 3;
     padding: 2rem;
     text-align: center;
@@ -763,28 +749,9 @@ header h1 {
     top: 60px;
 }
 
-/* Service badge colors — uses :root service color variables */
-.badge-netflix { background: var(--svc-netflix); color: white; }
-.badge-disney { background: var(--svc-disney); color: white; }
-.badge-max { background: var(--svc-max); color: white; }
-.badge-prime { background: var(--svc-prime); color: white; }
-.badge-hulu { background: var(--svc-hulu); color: black; }
-.badge-peacock { background: var(--svc-peacock); color: white; border: 1px solid #fff; }
-.badge-mubi { background: var(--svc-mubi); color: white; }
-.badge-shudder { background: var(--svc-shudder); color: white; }
-.badge-criterion { background: var(--svc-criterion); color: white; border: 1px solid #444; }
-.badge-tubi { background: var(--svc-tubi); color: white; }
-.badge-youtube { background: var(--svc-youtube); color: white; }
-.badge-paramount { background: var(--svc-paramount); color: white; }
-.badge-kanopy { background: var(--svc-kanopy); color: white; }
-.badge-hoopla { background: var(--svc-hoopla); color: white; }
-.badge-roku { background: var(--svc-roku); color: white; }
-.badge-pluto { background: var(--svc-pluto); color: white; }
-.badge-crackle { background: var(--svc-crackle); color: white; }
-.badge-amc { background: var(--svc-amc); color: white; }
-.badge-fawesome { background: var(--svc-fawesome); color: white; }
-.badge-fandango { background: var(--svc-fandango); color: white; }
-.badge-other { background: #444; color: white; }
+/* Pre-order badge — the one .badge-* class still rendered (app.js builds
+   "streaming-badge badge-preorder"); the per-service .badge-* family was
+   dead code from the pre-streaming-frame era, deleted Jul 2026 */
 .badge-preorder {
     background: var(--svc-preorder);
     color: white;
@@ -1437,11 +1404,19 @@ header h1 {
     position: relative;
 }
 
+/* Shared lightbox column height: keyed to window height on normal landscape
+   windows, but ALSO capped by available width so tall/portrait-ish windows
+   don't let the poster balloon and crush the info panel into a sliver.
+   (poster 0.667×h + panel 0.67×h + gap must fit inside 100vw - 240px arrows) */
+.poster-lightbox {
+    --lbh: min(96vh, calc((100vw - 264px) / 1.34));
+}
+
 /* Large poster — locked to a 2:3 box so off-ratio posters keep a constant
    width and never shift the info panel beside them (object-fit crops the rest) */
 .lightbox-poster {
-    height: 96vh;
-    width: calc(96vh * 0.667);
+    height: var(--lbh, 96vh);
+    width: calc(var(--lbh, 96vh) * 0.667);
     border-radius: 12px;
     object-fit: cover;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -1451,8 +1426,8 @@ header h1 {
 /* Info panel wrapper — holds close button + scrollable content + sticky buttons */
 .lightbox-info-wrap {
     position: relative;
-    width: calc(96vh * 0.67);
-    height: 96vh;
+    width: calc(var(--lbh, 96vh) * 0.67);
+    height: var(--lbh, 96vh);
     background: rgba(12, 12, 24, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -1838,13 +1813,6 @@ header h1 {
     background: rgba(12, 12, 24, 0.6);
 }
 
-/* ROW 1: < TRAILER > navigation row */
-.lb-nav-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
 .lb-nav-btn {
     width: 56px;
     height: 56px;

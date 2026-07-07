@@ -136,12 +136,12 @@ body {
   margin: 2px 2px;
   flex-shrink: 0;
 }
-.toggle-row { justify-content: space-between; gap: 6px; }
+.toggle-row { justify-content: space-between; gap: 2px; }
 .toggle-row .filter-pill-divider { display: none; }
 .slop-toggle-wrap {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 3px;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -149,9 +149,11 @@ body {
   padding: 2px 0;
 }
 .slop-label {
-  font-size: 0.52rem;
+  /* 0.64rem = 10.24px — owner-approved "cheat to 10.2" so the full
+     "SLOP FILTER" label fits the 390px row at a readable size */
+  font-size: 0.64rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgba(0,212,170,0.75);
   transition: color 0.25s;
@@ -161,11 +163,11 @@ body {
   color: #00d4aa;
 }
 #slop-state-label {
-  width: 64px;
+  width: 75px;
   display: inline-block;
 }
 .slop-track {
-  width: 34px;
+  width: 30px;
   height: 20px;
   border-radius: 10px;
   background: #1a1a1a;
@@ -189,11 +191,11 @@ body {
   transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
 }
 .slop-toggle-wrap.active .slop-thumb {
-  transform: translateX(16px);
+  transform: translateX(12px);
   background: #ffffff;
 }
-/* 3-state slop toggle — resting "all" (SLOP FILTER) sits left; thumb moves
-   left→middle→right as SLOP FILTER → SLOP FREE → SLOP ONLY. */
+/* 3-state slop toggle — resting "all" (SLOP) sits left; thumb moves
+   left→middle→right as SLOP → SLOP-FREE → SLOP ONLY. */
 #slop-free-toggle[data-state="all"] .slop-track {
   background: rgba(0,212,170,0.1);
   border-color: #00d4aa;
@@ -208,7 +210,7 @@ body {
   border-color: rgba(0,0,0,0.35);
 }
 #slop-free-toggle[data-state="free"] .slop-thumb {
-  transform: translateX(8px);
+  transform: translateX(6px);
   background: #ffffff;
 }
 #slop-free-toggle[data-state="free"] #slop-state-label { color: #00d4aa; }
@@ -217,7 +219,7 @@ body {
   border-color: rgba(0,0,0,0.35);
 }
 #slop-free-toggle[data-state="only"] .slop-thumb {
-  transform: translateX(16px);
+  transform: translateX(12px);
   background: #ffffff;
 }
 #slop-free-toggle[data-state="only"] #slop-state-label { color: #ff9500; }
@@ -372,10 +374,10 @@ body {
   background: #081412;
   color: #00ffbb;
   border: 1px solid #00d4aa;
-  font-size: 0.4rem;
+  font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: 12px;
   text-transform: uppercase;
   white-space: nowrap;
@@ -386,19 +388,6 @@ body {
   border: 2px solid var(--screening-gold);
   border-radius: 5px;
 }
-.grid-item-poster .screening-banner {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  background: rgba(255, 215, 0, 0.92);
-  color: #000;
-  font-size: 0.3rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: center;
-  padding: 2px 4px;
-  z-index: 2;
-}
 
 /* VS: festival name band above the poster (dark, gold text — matches desktop) */
 .grid-item.screening-movie .screening-fest-band {
@@ -407,7 +396,7 @@ body {
   border: 2px solid var(--screening-gold);
   border-bottom: none;
   border-radius: 5px 5px 0 0;
-  font-size: 0.42rem;
+  font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.03em;
   line-height: 1.25;
@@ -500,9 +489,9 @@ body {
   bottom: 3px; left: 3px;
   background: #7c3aed;
   color: white;
-  font-size: 0.3rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  padding: 1px 4px;
+  padding: 2px 5px;
   border-radius: 3px;
   text-transform: uppercase;
   z-index: 2;
@@ -855,14 +844,6 @@ body {
   color: var(--text-muted);
   margin-top: 3px;
 }
-.hero-meta {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  margin-top: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 .crew-label {
   color: var(--accent);
 }
@@ -1143,7 +1124,7 @@ body {
   text-decoration: none;
   color: inherit;
   font-weight: 700;
-  font-size: 0.55rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   padding: 5px 3px;
@@ -1295,7 +1276,7 @@ body {
 .vmini-price {
   flex: 1;
   text-align: center;
-  font-size: 0.54rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
