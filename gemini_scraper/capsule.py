@@ -944,6 +944,13 @@ VERIFICATION:"""
             logger.warning(f"Reasoning leak in capsule for {title} ({year}) — "
                            f"salvaged the final {wc} words")
             return salvaged
+        if not leaked:
+            # No leak markers — just a long clean capsule. Keep it (warned);
+            # only marker-confirmed leaks are worth dropping output over.
+            logger.warning(f"Capsule for {title} ({year}) runs "
+                           f"{len(text.split())} words (>300, no leak markers) "
+                           "— kept unchanged")
+            return text
         logger.error(f"Reasoning leak in capsule for {title} ({year}) — "
                      "unsalvageable, variant dropped")
         return None

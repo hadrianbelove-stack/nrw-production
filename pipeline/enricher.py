@@ -367,7 +367,12 @@ class MovieEnricher:
             rt_director = movie_details.get('crew', {}).get('director') if movie_details else None
             rt_lang = movie_details.get('original_language') if movie_details else None
             rt_orig_title = movie_details.get('original_name' if is_tv else 'original_title') if movie_details else None
-            rt_data = self.host.find_rt_url(title, year, imdb_id, director=rt_director, original_language=rt_lang, original_title=rt_orig_title)
+            # _lock_rt = curator says deliberately no RT; never re-search or
+            # re-stamp. Lives on the data.json record (existing_movie) —
+            # rt_gap_sweep honors the same flag.
+            _rt_locked = (existing_movie or {}).get('_lock_rt') or movie_data.get('_lock_rt')
+            rt_data = None if _rt_locked else \
+                self.host.find_rt_url(title, year, imdb_id, director=rt_director, original_language=rt_lang, original_title=rt_orig_title)
             if rt_data:
                 if isinstance(rt_data, dict):
                     if rt_data.get('url'):

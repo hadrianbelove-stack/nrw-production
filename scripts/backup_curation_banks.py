@@ -2,14 +2,16 @@
 """
 Back up the hand-curated curation banks to Backblaze B2.
 
-cache/approved_capsules.json (capsule house-style few-shot bank) and
-cache/taste_profile_pullquotes.json (pull-quote taste profile) are
-deliberately gitignored — this Mac holds the ONLY copies. A disk failure
-would permanently destroy months of hand curation, so local_daily.sh
-uploads a dated copy to B2 whenever the content changes.
+Two banks (see BANK_FILES):
+- admin/approved_capsules.json (capsule house-style few-shot bank) — git-tracked
+  since Jul 2026; the B2 copy is belt-and-braces.
+- cache/taste_profile_pullquotes.json (pull-quote taste profile) — gitignored;
+  this Mac holds the ONLY copy, so the B2 backup is the sole safety net.
+
+local_daily.sh uploads a dated copy of each whenever the content changes.
 
 Restore: download the newest backups/curation/<name>.<date>.json from the
-B2 bucket back to cache/<name>.json.
+B2 bucket back to the path listed in BANK_FILES for that name.
 
 Usage:
     python3.11 scripts/backup_curation_banks.py            # backup if changed

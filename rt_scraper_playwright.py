@@ -552,6 +552,12 @@ class RTScraperPlaywright(PlaywrightScraperBase):
                     self._log(f"Director mismatch: page has {page_directors}, expected '{director}' — rejecting {rt_link}", level='warning')
                     rt_link = None
                     rt_score = None
+                elif not page_directors and rt_score is None:
+                    # Scoreless page with no director to verify = zero positive
+                    # identity signals; the ±1-year same-title trap (Magic
+                    # Hour, Jul 2026) lives here. Reject rather than guess.
+                    self._log(f"No score and no page director to verify '{title}' — rejecting {rt_link}", level='warning')
+                    rt_link = None
 
             if not rt_link:
                 self._log(f"No RT link found for {title} ({year})", level='warning')
@@ -623,15 +629,19 @@ class RTScraperPlaywright(PlaywrightScraperBase):
 
     @staticmethod
     def _director_matches(expected, page_directors):
-        """Compare expected director against page directors by last name."""
+        """Compare expected director against page directors. Token-based: RT
+        sometimes lists East-Asian names surname-first ("Tanigaki Kenji" for
+        Kenji Tanigaki, Jul 2026), so any shared name token ≥3 chars counts."""
         if not expected or not page_directors:
             return True  # Can't verify — assume OK
-        expected_last = re.sub(r'[^a-z]', '', expected.strip().split()[-1].lower())
+        exp_tokens = {re.sub(r'[^a-z]', '', t.lower())
+                      for t in expected.strip().split()}
+        exp_tokens = {t for t in exp_tokens if len(t) >= 3}
         for pd in page_directors:
             if not pd:
                 continue
-            pd_last = re.sub(r'[^a-z]', '', pd.strip().split()[-1].lower())
-            if expected_last and pd_last and expected_last == pd_last:
+            pd_tokens = {re.sub(r'[^a-z]', '', t.lower()) for t in pd.strip().split()}
+            if exp_tokens & {t for t in pd_tokens if len(t) >= 3}:
                 return True
         return False
 

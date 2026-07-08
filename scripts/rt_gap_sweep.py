@@ -122,7 +122,9 @@ def main():
             mid = str(m.get('id'))
             if mid in found:
                 m.setdefault('links', {})['rt'] = found[mid]['url']
-                if found[mid]['score']:
+                # Fill only — an existing score (OMDb is authoritative) wins
+                # over whatever the scraper read off the page.
+                if found[mid]['score'] and not m.get('rt_score'):
                     m['rt_score'] = found[mid]['score']
                 m.pop('_rt_retry_count', None)
                 m.pop('_rt_last_retry', None)

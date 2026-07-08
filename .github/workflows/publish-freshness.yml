@@ -74,7 +74,7 @@ jobs:
 
             // Stale — alert loudly, but don't stack duplicate issues
             const body = [
-              '## 🚨 The live site has not been published in over 24 hours',
+              '## 🚨 The live site has not been published in over 26 hours',
               '',
               `**Last successful publish:** ${ageLabel}`,
               `**Checked at:** ${new Date().toISOString()}`,

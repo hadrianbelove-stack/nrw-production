@@ -56,7 +56,7 @@ class GeminiRestorationVODFinder(GeminiFinderBase):
           'is_restoration_version': 'yes'|'no'|'unclear',
           'on_vod': bool,          # the catch decision: available=yes AND version=yes
           'platforms': [str, ...],
-          'since_date': 'YYYY-MM' or '',
+          'since_date': 'YYYY-MM' or 'YYYY-MM-DD' or '',
           'confidence': 'high'|'medium'|'low',
           'basis': str,
           'sources': [str, ...],
@@ -200,10 +200,15 @@ If you cannot confirm, use unclear / NONE and low confidence rather than guessin
 
     def _field(self, text: str, label: str, allowed: set, default: str) -> str:
         raw = self._raw_field(text, label).lower()
+        tokens = [t for t in re.split(r'[^a-z_]+', raw) if t]
         # take the first allowed token that appears (model sometimes adds a gloss)
-        for token in re.split(r'[^a-z_]+', raw):
+        for token in tokens:
             if token in allowed:
                 return token
+        # natural-language forms: "theatrical only" / "disc-only" → underscore token
+        for a, b in zip(tokens, tokens[1:]):
+            if f'{a}_{b}' in allowed:
+                return f'{a}_{b}'
         return default
 
     def _list_field(self, text: str, label: str) -> List[str]:

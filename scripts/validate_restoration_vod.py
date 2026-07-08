@@ -33,16 +33,14 @@ GOLDEN = [
 
 def main() -> int:
     finder = GeminiRestorationVODFinder()
-    rows, passed = [], 0
+    passed = 0
     for title, year, note, expected, why in GOLDEN:
         v = finder.find_restoration_vod_status(title, year, restoration_note=note)
         if v is None:
             print(f"!! API failed for {title} ({year}) — cannot validate")
-            rows.append((title, "API-FAIL", expected, False))
             continue
         ok = (v["on_vod"] == expected)
         passed += ok
-        rows.append((title, v, expected, ok))
         mark = "PASS" if ok else "FAIL"
         print(f"\n=== {title} ({year})  [{mark}] ===")
         print(f"  expected on_vod={expected}  ({why})")

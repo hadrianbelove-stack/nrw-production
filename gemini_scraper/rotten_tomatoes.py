@@ -566,8 +566,13 @@ class HybridRTFinder:
                 self.stats['playwright_resolved'] += 1
                 return {'url': cached['url'], 'score': cached['score']}
             if cached.get('url') is None and cached.get('score') is None:
-                # Previously confirmed: no RT page exists
-                return None
+                # Previously confirmed: no RT page exists. Honor only while
+                # fresh — an eternal miss answers the gap sweep's retries with
+                # instant Nones until the film caps out without ever
+                # re-searching, and new films grow RT pages days after release.
+                from utils.datetime_utils import is_cache_fresh
+                if is_cache_fresh(cached.get('scraped_at', ''), 1):
+                    return None
 
         # --- PRIMARY: Playwright searches RT directly ---
         playwright = self._get_playwright_scraper()
