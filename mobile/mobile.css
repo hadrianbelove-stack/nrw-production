@@ -48,7 +48,12 @@ body {
   font-weight: 100;
   letter-spacing: 0.32em;
   font-size: clamp(0.72rem, 3.6vw, 1.1rem);
-  color: var(--accent);
+  /* White→teal 45° gradient wordmark — matches the desktop lockup (styles.css
+     header h1) as the canonical brand mark (F26 / brand-lockup unification). */
+  background: linear-gradient(45deg, #fff, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 6px;
 }
 .site-header .site-slogan {
@@ -147,6 +152,8 @@ body {
 .genre-sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .genre-sheet-head span { color: var(--text-muted); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; }
 .genre-sheet-clear { color: var(--accent); font-size: 0.74rem; background: none; border: none; cursor: pointer; }
+/* Nothing to clear when no genre is active — visibly inert (minor audit finding). */
+.genre-sheet-clear:disabled { opacity: 0.4; cursor: default; }
 .genre-sheet-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .genre-sheet-chips .filter-pill { font-size: 0.8rem; padding: 7px 13px; color: #fff; }
 .genre-sheet-chips .filter-pill.active { color: #000; }
@@ -520,6 +527,24 @@ body {
   letter-spacing: 0.28em;
   text-transform: uppercase;
   white-space: nowrap;
+}
+/* TODAY marker on today's date strip — accent chip before the weekday,
+   with a "·" separator so it reads "TODAY · MON JUL 7". */
+.drh-today {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 0 8px var(--accent),
+               0 0 18px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.drh-today::after {
+  content: '·';
+  margin-left: 0.6rem;
+  color: var(--strip-c, var(--accent));
+  text-shadow: none;
 }
 
 /* Section banner (SLOP / SELECTS / FESTS / PRE-ORDER) — ~2x the date dividers */
@@ -1419,7 +1444,8 @@ body {
   display: block;
   font-style: normal;
   font-size: 0.72rem;
-  color: rgba(0,212,170,0.6);
+  /* Raised from 0.6 → 0.75 alpha to clear WCAG 4.5:1 (was ~3.7:1). */
+  color: rgba(0,212,170,0.75);
   margin-top: 4px;
 }
 .sheet-pq-link {

@@ -179,6 +179,7 @@ const NRWMobile = {
             const active = genreSheet?.querySelector('.filter-pill.active');
             if (active) active.click();   // clears via the same handler below
         });
+        this.syncGenreControl();  // set the Clear button's initial disabled state
         genreSheet?.addEventListener('click', (e) => {
             const pill = e.target.closest('.filter-pill');
             if (!pill) return;
@@ -299,6 +300,9 @@ const NRWMobile = {
         control.classList.toggle('has-active', !!active);
         const text = control.querySelector('.genre-text');
         if (text) text.textContent = active ? active.textContent.toUpperCase() : 'GENRE';
+        // Clear is inert when no genre is active (minor audit finding).
+        const clearBtn = document.getElementById('genre-sheet-clear');
+        if (clearBtn) clearBtn.disabled = !active;
     },
 
     // View toggles (Selects / Fests / Pre-Orders) are mutually exclusive.
@@ -583,7 +587,7 @@ const NRWMobile = {
         row.className = 'date-row-header' + (SECTION_TYPES.includes(dateStr) ? ' section-banner' : '');
 
         // Neon sticky banner: colored day + white rest; color follows section / active filter
-        let day, rest = '', color = '';
+        let day, rest = '', color = '', lead = '';
         if (dateStr === 'pre-order') {
             day = 'PRE-ORDER'; rest = 'COMING SOON'; color = '#7c3aed';
         } else if (dateStr === 'fest' || dateStr === 'fest-now') {
@@ -603,6 +607,13 @@ const NRWMobile = {
             const d = new Date(dateStr + 'T12:00:00');
             day = d.toLocaleDateString('en', { weekday: 'short' });
             rest = d.toLocaleDateString('en', { month: 'short' }) + ' ' + d.getDate();
+            // TODAY marker: only when this group's date is the local calendar today.
+            const lt = new Date();
+            const localToday = `${lt.getFullYear()}-${String(lt.getMonth() + 1).padStart(2, '0')}-${String(lt.getDate()).padStart(2, '0')}`;
+            if (dateStr === localToday) {
+                lead = '<span class="drh-today">TODAY</span>';
+                row.classList.add('is-today');
+            }
             const singleFilter = this.activeFilters.size === 1 ? [...this.activeFilters][0] : null;
             if (this.showHighlightsOnly) {
                 color = '#00d4aa';
@@ -617,6 +628,7 @@ const NRWMobile = {
 
         if (color) row.style.setProperty('--strip-c', color);
         row.innerHTML =
+            lead +
             '<span class="drh-day">' + day + '</span>' +
             (rest ? '<span class="drh-rest">' + rest + '</span>' : '');
         return row;

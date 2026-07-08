@@ -211,7 +211,6 @@ const NRW = {
                 this.applyFilter();
                 this.renderWallWithMore();
             };
-            this._applySlop = applySlop;
 
             // Click a specific stop → jump straight to that state (discoverable
             // mode selection). Clicking elsewhere on the slider cycles forward.
@@ -264,7 +263,7 @@ const NRW = {
         // toggle state for assistive tech. "Slop" is defined here — nowhere
         // else on the page explains the word.
         const TOGGLE_HELP = {
-            'slop-free-toggle': 'Slop = mass-produced filler. Click the track to jump: ALL FILMS · SLOP-FREE · SLOP ONLY. Clicking the label cycles through them.',
+            'slop-free-toggle': 'Slop = mass-produced filler. Click a label to jump straight to it: SLOP FILTER · SLOP FREE · SLOP ONLY. Clicking the slider anywhere else cycles through them.',
             'highlights-toggle': 'NRW Selects — our hand-picked films of note. Click to show only Selects.',
             'fest-toggle': 'Virtual festival screenings you can watch from home. Click to show only fests.',
             'preorder-toggle': 'Upcoming releases available to pre-order now. Click to show only pre-orders.',
@@ -448,7 +447,10 @@ const NRW = {
             const active = pop.querySelector('.filter-btn.active');
             toggle.classList.toggle('has-active', !!active);
             if (text) text.textContent = active ? active.textContent.toUpperCase() : 'GENRE';
+            // Clear is inert when no genre is active (minor audit finding).
+            if (clearBtn) clearBtn.disabled = !active;
         };
+        reflect();  // set the Clear button's initial disabled state
 
         toggle.addEventListener('click', (e) => { e.stopPropagation(); pop.classList.contains('open') ? close() : open(); });
         pop.addEventListener('click', (e) => {
@@ -768,6 +770,10 @@ const NRW = {
 
         // Sort fest: active (NOW) first by soonest expiry, then upcoming (FUTURE) ascending, then expired
         const today = new Date().toISOString().slice(0, 10);
+        // Local calendar today (not UTC) — the wall's group dates are local
+        // calendar dates, so the TODAY strip marker must compare against local.
+        const _lt = new Date();
+        const localToday = `${_lt.getFullYear()}-${String(_lt.getMonth() + 1).padStart(2, '0')}-${String(_lt.getDate()).padStart(2, '0')}`;
         const festTier = m => {
             if (m.virtual_screening_info?.status === 'active') return 0;
             if ((m.digital_date || '') > today) return 1;
@@ -827,8 +833,8 @@ const NRW = {
             : this.showPreorders ? '#7c3aed'
             : this.slopMode === 'only' ? '#ff9500'
             : (filterColor || 'var(--accent-primary)');
-        const stripHtml = (day, rest, color, extraClass = '', titleAttr = '') =>
-            `<div class="date-row-header${extraClass}" style="--strip-c:${color}"${titleAttr}><span class="drh-day">${day}</span>${rest ? `<span class="drh-rest">${rest}</span>` : ''}</div>`;
+        const stripHtml = (day, rest, color, extraClass = '', titleAttr = '', lead = '') =>
+            `<div class="date-row-header${extraClass}" style="--strip-c:${color}"${titleAttr}>${lead}<span class="drh-day">${day}</span>${rest ? `<span class="drh-rest">${rest}</span>` : ''}</div>`;
 
         // Virtual-screening days-left bottom bar: red when ≤3 days left, gold "Until …" when calm,
         // muted "Opens …" for upcoming screenings.
@@ -909,8 +915,14 @@ const NRW = {
                     const dateTitle = isBootstrapDate ? ' title="Approximate date - may have been available earlier"' : '';
                     const dayLabel = d.toLocaleDateString('en', {weekday: 'short'});
                     const restLabel = `${datePrefix}${d.toLocaleDateString('en', {month: 'short'})} ${d.getDate()}`;
+                    // TODAY marker: only when this group's date is the local calendar
+                    // today. Rendered as an accent chip (its own flex sibling, so the
+                    // strip's gap gives "TODAY · MON JUL 7") before the weekday.
+                    const isToday = date === localToday;
+                    const todayChip = isToday ? `<span class="drh-today">TODAY</span>` : '';
                     html += stripHtml(dayLabel, restLabel, dateStripColor,
-                        isBootstrapDate ? ' date-approximate' : '', dateTitle);
+                        (isBootstrapDate ? ' date-approximate' : '') + (isToday ? ' is-today' : ''),
+                        dateTitle, todayChip);
                 } else {
                     html += stripHtml('DATE TBD', '', dateStripColor);
                 }
@@ -1046,7 +1058,7 @@ const NRW = {
                 </div>
                 <div class="movie-info">
                     <div class="movie-title" title="${title.replace(/"/g, '&quot;')}">${title}</div>
-                    <div class="movie-meta">${packedDatePrefix}<span class="m-dir">${NRW._directorLink(movie.crew?.director, movie.links?.director_wiki)}</span><span class="m-rest"> · ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
+                    <div class="movie-meta">${packedDatePrefix}<span class="m-dir">${NRW._directorLink(movie.crew?.director, movie.links?.director_wiki)}</span><span class="m-rest">&nbsp;· ${movie.genres?.[0] ? movie.genres[0] + ' · ' : ''}${NRW.abbreviateCountry(movie.country) || 'Unknown Country'}</span></div>
                 </div>
                 ${badgeBar}
             </div>`;
@@ -1479,16 +1491,21 @@ const NRW = {
         });
     },
 
-    // Push a single lightbox history entry (idempotent within a session). For a
-    // ?m= deep-link entry, first replace the current (movie-URL) entry with a
-    // clean wall URL so Back lands on the wall and a refresh there won't reopen.
+    // Push a single lightbox history entry (idempotent within a session). Two paths:
+    //
+    //  · Normal open (fromDeepLink=false): the current entry is already a clean wall
+    //    URL, so just push the lightbox entry on top.
+    //
+    //  · Deep-link open (fromDeepLink=true): the loaded URL carries ?m=<id>. We KEEP
+    //    it while the lightbox is open so the address bar stays shareable — the push
+    //    inherits the same ?m= URL. Back (or X → history.back()) lands on that same
+    //    ?m= entry, where popstate runs _stripDeepLinkParam() to leave a clean wall
+    //    URL (so a refresh-after-close doesn't reopen). One shared strip point, two
+    //    dismissal paths, both ending clean.
     _pushLightboxState(fromDeepLink) {
         if (this._lbHistoryPushed) return;   // arrows reuse the same entry
-        if (fromDeepLink) {
-            const clean = new URL(location.href);
-            clean.searchParams.delete('m');
-            history.replaceState({ nrwWall: true }, '', clean.href);
-        }
+        // Passing undefined as the URL to pushState keeps the current URL (the ?m=
+        // URL on a deep link, the clean wall URL otherwise) — exactly what we want.
         history.pushState({ nrwLightbox: true }, '');
         this._lbHistoryPushed = true;
     },
@@ -1532,6 +1549,9 @@ const NRW = {
         const lightbox = document.getElementById('poster-lightbox');
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
+        // Drop focus off the wall's expand button before the modal takes over,
+        // so assistive tech isn't left focused on a control behind the lightbox (F32).
+        if (document.activeElement?.classList.contains('expand-btn')) document.activeElement.blur();
         this._pushLightboxState(false);
     },
 
@@ -1563,6 +1583,7 @@ const NRW = {
         const lightbox = document.getElementById('poster-lightbox');
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
+        if (document.activeElement?.classList.contains('expand-btn')) document.activeElement.blur();
         this._pushLightboxState(!!fromDeepLink);
         return true;
     },
@@ -1672,9 +1693,10 @@ const NRW = {
                 } else if (this.lbCol > 0) {
                     this.lbCol--;
                     this._updateLightboxGridFocus(grid);
-                } else {
-                    this.lightboxNav(-1);  // past first button → prev movie
                 }
+                // F44: past the first button on a non-trailer row is a NO-OP.
+                // Movie cycling stays on the trailer row + the on-screen chevrons,
+                // so one over-press can't silently switch films.
                 break;
             case 'right':
                 if (isTrailerRow) {
@@ -1682,9 +1704,8 @@ const NRW = {
                 } else if (this.lbCol < grid[this.lbRow].length - 1) {
                     this.lbCol++;
                     this._updateLightboxGridFocus(grid);
-                } else {
-                    this.lightboxNav(1);  // past last button → next movie
                 }
+                // F44: past the last button on a non-trailer row is a NO-OP (see above).
                 break;
             case 'up':
                 if (this.lbRow > 0) {
@@ -1900,7 +1921,11 @@ const NRW = {
             const runtimeParts = [];
             if (movie.year) runtimeParts.push(movie.year);
             if (movie.runtime) runtimeParts.push(NRW._formatRuntime(movie.runtime));
-            if (movie.distributor || movie.studio) runtimeParts.push(movie.distributor || movie.studio);
+            // Distributor (or studio fallback), but never the placeholder strings
+            // "Unknown"/"None" the data carries when neither is known — printing
+            // them literally read as a bug (minor audit finding).
+            const _dist = (movie.distributor || movie.studio || '').trim();
+            if (_dist && !/^(unknown|none)$/i.test(_dist)) runtimeParts.push(_dist);
             if (runtimeParts.length) {
                 runtimeEl.textContent = runtimeParts.join(' \u2022 ');
                 runtimeEl.style.display = '';
@@ -2105,7 +2130,7 @@ const NRW = {
 
             if (vodType.key === 'screening') {
                 btn.className = 'vod-btn screening';
-                btn.innerHTML = '<div class="price-half screening-full">Buy Ticket</div>';
+                btn.innerHTML = '<div class="price-half screening-full">Buy Tickets</div>';
             } else {
                 const logoHalf = document.createElement('div');
                 logoHalf.className = 'logo-half';
@@ -2463,6 +2488,12 @@ const NRW = {
             containerEl.classList.add('grid-selected');
             const expandBtn = containerEl.querySelector('.expand-btn[data-movie-id]');
             this.gridSelectedId = expandBtn ? expandBtn.dataset.movieId : null;
+            // Move REAL DOM focus to the card's expand button (F32): it carries an
+            // aria-label, so a screen reader announces the selection. The visual
+            // outline still keys off .grid-selected (see styles.css); the button's
+            // own focus ring is suppressed there. preventScroll — scrollIntoView
+            // below owns positioning so focus() can't yank the card under the strip.
+            if (expandBtn) expandBtn.focus({ preventScroll: true });
             // 'nearest' (with .movie-container scroll-margin-top) keeps the card clear
             // of the sticky header + date strip. 'center' parked rows under the strip.
             containerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
@@ -2473,7 +2504,13 @@ const NRW = {
 
     gridClearSelection() {
         const prev = document.querySelector('#wall .movie-container.grid-selected');
-        if (prev) prev.classList.remove('grid-selected');
+        if (prev) {
+            // Drop real focus off the just-selected card so assistive tech and the
+            // browser focus ring don't linger on an invisible/deselected button.
+            const btn = prev.querySelector('.expand-btn[data-movie-id]');
+            if (btn && document.activeElement === btn) btn.blur();
+            prev.classList.remove('grid-selected');
+        }
         this.gridSelectedId = null;
         this.gridNavActive = false;
         this.gridAnchorX = null;

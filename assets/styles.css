@@ -518,6 +518,25 @@ header h1 {
     color: #fff;
 }
 
+/* TODAY marker on today's date strip — accent chip before the weekday,
+   with a "·" separator so it reads "TODAY · MON JUL 7". */
+.drh-today {
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px var(--accent-primary),
+                 0 0 22px color-mix(in srgb, var(--accent-primary) 60%, transparent);
+}
+.drh-today::after {
+    content: '·';
+    margin-left: 0.8rem;
+    color: var(--strip-c, var(--accent-primary));
+    text-shadow: none;
+}
+
 /* Section banner (SLOP / SELECTS / FESTS / PRE-ORDER) — ~2× the date dividers
    so the "which view am I in" header reads as a major heading, not a date row. */
 .date-row-header.section-banner {
@@ -1394,6 +1413,12 @@ header h1 {
     background: var(--accent-primary);
 }
 
+/* Grid keyboard nav (F32) moves real focus here for assistive tech; the visible
+   selection ring is the .grid-selected outline on .movie-card, so suppress the
+   button's own focus ring to avoid a doubled/offset outline. */
+.expand-btn:focus { outline: none; }
+.expand-btn:focus-visible { outline: none; }
+
 /* Lightbox container */
 .poster-lightbox {
     display: none;
@@ -1883,7 +1908,8 @@ header h1 {
     display: block;
     font-style: normal;
     font-size: 0.86rem;
-    color: rgba(0,212,170,0.55);
+    /* Raised from 0.55 → 0.75 alpha to clear WCAG 4.5:1 (was ~3.7:1). */
+    color: rgba(0,212,170,0.75);
     margin-top: 0.3rem;
 }
 
@@ -2342,6 +2368,8 @@ header.nrw-collapsed { padding-top: 0.6rem; }
 .genre-pop-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .genre-pop-head span { color: #888; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; }
 .genre-clear { color: var(--accent-primary); font-size: 0.78rem; cursor: pointer; background: none; border: none; }
+/* Nothing to clear when no genre is active — visibly inert (minor audit finding). */
+.genre-clear:disabled { opacity: 0.4; cursor: default; }
 .genre-chips { display: flex; flex-wrap: wrap; gap: 9px; }
 .genre-chips .filter-btn { flex: 0 0 auto; font-size: 0.95rem; padding: 0.45rem 0.9rem; }
 

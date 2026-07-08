@@ -37,7 +37,7 @@ const NRWConfig = {
         apple:     { key: 'apple',     matches: ['apple', 'itunes'], label: 'APPLE TV',  btnLabel: 'Rent Apple TV', logo: 'apple%20logo.png', wideLogo: 'services/apple_tv_wide.png' },
         fandango:  { key: 'fandango',  matches: ['fandango'],        label: 'FANDANGO',  btnLabel: 'Rent Fandango', logo: 'fandangoathome.png', wideLogo: 'services/fandango_wide.png' },
         youtube:   { key: 'youtube',   matches: ['youtube'],         label: 'YOUTUBE',   btnLabel: 'Rent YouTube',  logo: null },
-        screening: { key: 'screening', matches: ['eventive'],        label: 'BUY TICKET', btnLabel: 'Buy Ticket',  logo: null,
+        screening: { key: 'screening', matches: ['eventive'],        label: 'BUY TICKETS', btnLabel: 'Buy Tickets',  logo: null,
                      linkMatches: ['eventive.org', 'festivalplayer', 'shift72.com'] },
         plex:      { key: 'plex',      matches: ['plex'],            label: 'PLEX',       btnLabel: 'Watch on Plex', logo: null, wideLogo: 'services/plex_wide.png', fallback: true },
     },
