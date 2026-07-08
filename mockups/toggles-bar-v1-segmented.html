@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW · Toggles Bar V1 — Segmented Slop</title>
+<style>
+/* ============================================================
+   NRW control-bar mockup V1 — "Segmented slop, switches for binaries"
+   Production CSS mirrored from assets/styles.css. Colors from :root tokens.
+   System fonts only. Whole page: real masthead + real wall below.
+   ============================================================ */
+:root{
+  --accent-primary:#00d4aa;
+  --accent-glow:rgba(0,212,170,0.3);
+  --bg-dark:#1a1a2e; --bg-darker:#0a0a0a;
+  --screening-gold:#FFD700; --screening-glow:rgba(255,215,0,0.3); --screening-subtle:rgba(255,215,0,0.05);
+  --staff-pick:#00d4aa; --staff-pick-glow:rgba(0,212,170,0.3); --staff-pick-subtle:rgba(0,212,170,0.05);
+  --svc-preorder:#7c3aed;
+  --slop-orange:#ff9500;
+  --header-height:160px;
+  /* ONE shared control height for the whole row (brief #2) */
+  --ctl-h:35px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 100%);
+  background-attachment:fixed; color:#fff;
+  font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif; line-height:1.6; min-height:100vh;
+}
+
+/* ---------- Masthead (mirrors production) ---------- */
+header{position:sticky;top:0;z-index:100;padding:1.5rem 0 0;text-align:left;
+  background:rgba(8,8,12,0.88);backdrop-filter:blur(12px);}
+.cwide-hdr{padding:14px 2rem 0;}
+.masthead-row{display:flex;align-items:center;gap:24px;margin-bottom:10px;}
+.mh-titles{flex:0 0 auto;min-width:0;}
+header h1{font-weight:100;letter-spacing:0.24em;font-size:clamp(2rem,5.2vw,3.3rem);line-height:1.0;
+  white-space:nowrap;flex-shrink:0;background:linear-gradient(45deg,#fff,var(--accent-primary));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin:0;}
+.site-slogan{font-weight:500;font-size:0.78rem;letter-spacing:0.3em;text-transform:uppercase;
+  margin:10px 0 0;color:rgba(0,212,170,0.8);width:fit-content;}
+
+/* ======================================================================
+   CONTROL BAR V1
+   - Row: 6 slots, one shared height (--ctl-h), one baseline.
+   - Even rhythm: the three binary switches sit in equal-width cells so the
+     round thumbs land at regular intervals regardless of label length.
+   - Slop = a SEGMENTED 3-label control (a visibly different KIND of object
+     from the on/off switches). Its neutral "SLOP FILTER" state is QUIET
+     (no fill, no glow); the lit look belongs to SLOP FREE / SLOP ONLY.
+   - GENRE raised to shared height with real presence; search capped so the
+     right end no longer pools. Row distributes across the full width.
+   ====================================================================== */
+.cwide-controls{display:flex;align-items:center;gap:16px;
+  background:transparent;border:none;border-radius:0;padding:4px 2px 12px;}
+
+/* --- SLOP: segmented 3-label pill (its own grammar) --- */
+.slop-seg{display:inline-flex;height:var(--ctl-h);align-items:stretch;flex:0 0 auto;
+  border:1px solid rgba(255,255,255,0.16);border-radius:calc(var(--ctl-h)/2);
+  background:rgba(255,255,255,0.04);overflow:hidden;position:relative;}
+.slop-seg .seg{display:inline-flex;align-items:center;justify-content:center;
+  padding:0 15px;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  color:rgba(255,255,255,0.5);cursor:pointer;user-select:none;white-space:nowrap;
+  border-right:1px solid rgba(255,255,255,0.1);transition:color .2s,background .2s;}
+.slop-seg .seg:last-child{border-right:none;}
+.slop-seg .seg:hover{color:#fff;background:rgba(255,255,255,0.06);} /* hover feedback (brief #5) */
+/* neutral resting state — QUIET: only a faint underline of "you are here", no color glow */
+.slop-seg .seg.on-neutral{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.07);}
+/* lit states carry the teal / orange identities */
+.slop-seg .seg.on-free{color:#031a15;background:var(--accent-primary);
+  box-shadow:inset 0 0 0 100px var(--accent-primary);}
+.slop-seg .seg.on-only{color:#1a0e00;background:var(--slop-orange);}
+
+/* --- BINARY SWITCHES: equal-width cells → even thumb rhythm --- */
+.switch-cell{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:10px;height:var(--ctl-h);
+  cursor:pointer;user-select:none;justify-content:flex-start;}
+.sw-track{width:52px;height:26px;border-radius:13px;background:#1a1a1a;
+  border:1px solid rgba(255,255,255,0.22);position:relative;flex-shrink:0;
+  transition:background .25s,border-color .25s;}
+.sw-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+  background:rgba(255,255,255,0.55);transition:transform .25s cubic-bezier(.4,0,.2,1),background .25s;}
+.sw-label{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  color:rgba(255,255,255,0.55);white-space:nowrap;transition:color .25s;}
+/* hover feedback on the toggles (brief #5): brighten track + border */
+.switch-cell:hover .sw-track{background:#222;border-color:rgba(255,255,255,0.4);}
+.switch-cell:hover .sw-label{color:rgba(255,255,255,0.85);}
+/* ON identity colors kept: SELECTS teal, FESTS gold, PRE-ORDER purple */
+.switch-cell.on .sw-track{background:var(--accent-primary);border-color:rgba(0,0,0,0.35);}
+.switch-cell.on .sw-thumb{transform:translateX(26px);background:#0a0a0a;}
+.switch-cell.on .sw-label{color:var(--accent-primary);}
+.switch-cell.on-fest .sw-track{background:var(--screening-gold);border-color:rgba(0,0,0,0.35);}
+.switch-cell.on-fest .sw-label{color:var(--screening-gold);}
+.switch-cell.on-pre .sw-track{background:var(--svc-preorder);border-color:rgba(0,0,0,0.35);}
+.switch-cell.on-pre .sw-label{color:#a78bfa;}
+
+/* --- GENRE: raised to shared height, real presence --- */
+.genre-slot{position:relative;display:flex;align-items:center;flex:0 0 auto;}
+.genre-control{height:var(--ctl-h);font-size:0.72rem;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;color:rgba(0,212,170,0.85);background:rgba(0,212,170,0.06);
+  border:1px solid rgba(0,212,170,0.4);border-radius:calc(var(--ctl-h)/2);padding:0 16px;
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap;
+  transition:color .25s,border-color .25s,background .25s;}
+.genre-control .caret{font-size:0.6rem;opacity:0.8;transition:transform .2s;}
+.genre-control.open .caret{transform:rotate(180deg);}
+.genre-control:hover,.genre-control.open{color:var(--accent-primary);border-color:rgba(0,212,170,0.75);
+  background:rgba(0,212,170,0.12);}
+.genre-control.has-active{color:var(--accent-primary);border-color:var(--accent-primary);}
+.genre-pop{position:absolute;z-index:60;top:100%;right:0;margin-top:10px;min-width:360px;
+  background:#14141f;border:1px solid rgba(255,255,255,0.16);border-radius:14px;padding:14px;
+  box-shadow:0 16px 48px rgba(0,0,0,0.55);display:none;}
+.genre-pop.open{display:block;}
+.genre-pop-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.genre-pop-head span{color:#888;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;}
+.genre-clear{color:var(--accent-primary);font-size:0.78rem;cursor:pointer;background:none;border:none;}
+.genre-chips{display:flex;flex-wrap:wrap;gap:9px;}
+.gchip{font-size:0.9rem;padding:0.42rem 0.85rem;border-radius:25px;background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);color:#fff;cursor:pointer;}
+.gchip.active{background:var(--accent-primary);border-color:var(--accent-primary);color:#000;}
+
+/* --- SEARCH: capped, sits at far right --- */
+.cwide-search{flex:0 1 300px;min-width:160px;}
+.search-container{position:relative;display:flex;align-items:center;width:100%;}
+.search-mag{position:absolute;left:14px;width:15px;height:15px;pointer-events:none;color:var(--accent-primary);}
+#search-input{width:100%;height:var(--ctl-h);padding:0 1rem 0 2.3rem;background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:calc(var(--ctl-h)/2);font-size:0.85rem;
+  transition:border-color .25s,background .25s;}
+#search-input::placeholder{color:rgba(255,255,255,0.5);}
+#search-input:focus{outline:none;background:rgba(255,255,255,0.15);border-color:var(--accent-primary);
+  box-shadow:0 0 10px var(--accent-glow);}
+
+/* thin vertical divider between the slop object and the switch group */
+.ctl-div{width:1px;height:22px;background:rgba(255,255,255,0.12);flex:0 0 auto;}
+
+/* label above each demo bar (mockup only, not production) */
+.demo-note{font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:#666;
+  padding:18px 2rem 4px;font-weight:700;}
+.demo-note b{color:var(--accent-primary);}
+
+/* ---------- Wall (mirrors production) ---------- */
+#wall{padding:0 2rem 1.5rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:1.25rem 1rem;}
+.date-row-header{grid-column:1/-1;display:flex;justify-content:center;align-items:baseline;gap:0.8rem;
+  background:rgba(8,8,12,0.94);border-top:2px solid var(--accent-primary);border-bottom:2px solid var(--accent-primary);
+  border-radius:4px;padding:6px 12px;margin:0.6rem 0 0.2rem;
+  box-shadow:0 0 28px rgba(0,212,170,0.35),inset 0 0 18px rgba(0,212,170,0.14);}
+.drh-day{font-size:1.15rem;font-weight:900;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent-primary);
+  text-shadow:0 0 10px var(--accent-primary),0 0 22px rgba(0,212,170,0.6);}
+.drh-rest{font-size:1.15rem;font-weight:500;letter-spacing:0.3em;text-transform:uppercase;color:#fff;}
+.movie-container{display:flex;flex-direction:column;align-items:center;position:relative;min-width:0;}
+.movie-card{width:100%;aspect-ratio:2/3;cursor:pointer;transition:transform .3s ease;border-radius:12px;overflow:hidden;
+  background:linear-gradient(180deg,#0a0a0a,#1a1a2e);}
+.movie-card:hover{transform:scale(1.05);}
+.movie-card img{width:100%;height:100%;object-fit:cover;display:block;}
+.movie-info{margin-top:0.4rem;display:flex;flex-direction:column;align-items:center;width:100%;min-width:0;overflow:hidden;}
+.movie-title{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:#fff;font-size:0.95rem;font-weight:700;line-height:1.25;text-align:center;}
+.movie-meta{display:flex;justify-content:center;max-width:100%;white-space:nowrap;color:var(--accent-primary);
+  font-size:0.85rem;font-weight:600;margin-top:0.1rem;overflow:hidden;text-overflow:ellipsis;}
+.staff-pick-movie{border:5px solid var(--staff-pick);border-radius:15px;padding:8px;background:var(--staff-pick-subtle);box-shadow:0 0 28px var(--staff-pick-glow);}
+.screening-movie{border:3px solid var(--screening-gold);border-radius:15px;padding:8px;background:var(--screening-subtle);box-shadow:0 0 20px var(--screening-glow);}
+
+@media (max-width:1120px){ :root{--ctl-h:34px;} .cwide-controls{gap:12px;} .sw-label{letter-spacing:0.06em;} .cwide-search{flex:0 1 240px;} }
+@media (max-width:980px){ .cwide-controls{flex-wrap:wrap;} .cwide-search{flex:1 1 100%;} #wall{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));} }
+</style>
+</head>
+<body>
+<header>
+  <div class="cwide-hdr">
+    <div class="masthead-row">
+      <div class="mh-titles">
+        <h1>THE NEW RELEASE WALL</h1>
+        <div class="site-slogan">Bringing back browsing. What came out, every day.</div>
+      </div>
+    </div>
+
+    <!-- STATE A — default: everything neutral -->
+    <div class="demo-note">State A — <b>default</b> (all neutral)</div>
+    <div class="cwide-controls">
+      <div class="slop-seg" title="Show everything, hide the slop pile, or show only the slop pile">
+        <span class="seg on-neutral">Slop Filter</span>
+        <span class="seg">Slop Free</span>
+        <span class="seg">Slop Only</span>
+      </div>
+      <div class="ctl-div"></div>
+      <div class="switch-cell"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Selects</span></div>
+      <div class="switch-cell"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Fests</span></div>
+      <div class="switch-cell"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Pre-Order</span></div>
+      <div class="genre-slot"><div class="genre-control">Genre <span class="caret">▾</span></div></div>
+      <div class="cwide-search"><div class="search-container">
+        <svg class="search-mag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        <input id="search-input" placeholder="Search title, director, genre…">
+      </div></div>
+    </div>
+
+    <!-- STATE B — SLOP FREE active -->
+    <div class="demo-note">State B — <b>slop free</b> active</div>
+    <div class="cwide-controls">
+      <div class="slop-seg">
+        <span class="seg">Slop Filter</span>
+        <span class="seg on-free">Slop Free</span>
+        <span class="seg">Slop Only</span>
+      </div>
+      <div class="ctl-div"></div>
+      <div class="switch-cell"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Selects</span></div>
+      <div class="switch-cell"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Fests</span></div>
+      <div class="switch-cell"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Pre-Order</span></div>
+      <div class="genre-slot"><div class="genre-control">Genre <span class="caret">▾</span></div></div>
+      <div class="cwide-search"><div class="search-container">
+        <svg class="search-mag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        <input id="search-input" placeholder="Search title, director, genre…">
+      </div></div>
+    </div>
+
+    <!-- STATE C — SELECTS on (a binary), and SLOP ONLY active -->
+    <div class="demo-note">State C — <b>Selects ON</b> (binary) + <b>slop only</b> active</div>
+    <div class="cwide-controls">
+      <div class="slop-seg">
+        <span class="seg">Slop Filter</span>
+        <span class="seg">Slop Free</span>
+        <span class="seg on-only">Slop Only</span>
+      </div>
+      <div class="ctl-div"></div>
+      <div class="switch-cell on"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Selects</span></div>
+      <div class="switch-cell"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Fests</span></div>
+      <div class="switch-cell"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Pre-Order</span></div>
+      <div class="genre-slot"><div class="genre-control">Genre <span class="caret">▾</span></div></div>
+      <div class="cwide-search"><div class="search-container">
+        <svg class="search-mag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        <input id="search-input" placeholder="Search title, director, genre…">
+      </div></div>
+    </div>
+
+    <!-- STATE D — GENRE popover open, HORROR active -->
+    <div class="demo-note">State D — <b>Genre popover open</b> (Horror active) + <b>Fests ON</b></div>
+    <div class="cwide-controls">
+      <div class="slop-seg">
+        <span class="seg on-neutral">Slop Filter</span>
+        <span class="seg">Slop Free</span>
+        <span class="seg">Slop Only</span>
+      </div>
+      <div class="ctl-div"></div>
+      <div class="switch-cell"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Selects</span></div>
+      <div class="switch-cell on-fest"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Fests</span></div>
+      <div class="switch-cell"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">Pre-Order</span></div>
+      <div class="genre-slot">
+        <div class="genre-control open has-active">Genre: Horror <span class="caret">▾</span></div>
+        <div class="genre-pop open">
+          <div class="genre-pop-head"><span>Filter by genre</span><button class="genre-clear">Clear</button></div>
+          <div class="genre-chips">
+            <span class="gchip">Action</span><span class="gchip">Comedy</span><span class="gchip">Drama</span>
+            <span class="gchip">Documentary</span><span class="gchip active">Horror</span><span class="gchip">Thriller</span>
+            <span class="gchip">Animation</span><span class="gchip">Sci-Fi</span><span class="gchip">Romance</span>
+          </div>
+        </div>
+      </div>
+      <div class="cwide-search"><div class="search-container">
+        <svg class="search-mag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        <input id="search-input" placeholder="Search title, director, genre…">
+      </div></div>
+    </div>
+  </div>
+</header>
+
+<div id="wall">
+  <div class="date-row-header"><span class="drh-day">MON</span><span class="drh-rest">JUL 6</span></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/c9SSH3ZhyvKYrO0W6jY3dfHCXQy.jpg" alt=""></div><div class="movie-info"><span class="movie-title">American Youngboy</span><span class="movie-meta">Nico Ballesteros · Documentary · USA</span></div></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/vajGff87GT6JfCi45K4bPquLbom.jpg" alt=""></div><div class="movie-info"><span class="movie-title">The Story of Everything</span><span class="movie-meta">Eric Esau · Documentary · USA</span></div></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/5l0klDtj2v4FMFOGGCEH23AQb30.jpg" alt=""></div><div class="movie-info"><span class="movie-title">Night of the Living Dead</span><span class="movie-meta">Christopher Ray · Horror · USA</span></div></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/yIDPrKCgiG49cULhITKxeZywISe.jpg" alt=""></div><div class="movie-info"><span class="movie-title">The Last Whale Singer</span><span class="movie-meta">Reza Memari · Adventure · CAN</span></div></div>
+
+  <div class="date-row-header"><span class="drh-day">SUN</span><span class="drh-rest">JUL 5</span></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/u2U7fOk4886MVx1CYh8VHN3xOxC.jpg" alt=""></div><div class="movie-info"><span class="movie-title">Living the Land</span><span class="movie-meta">Huo Meng · Drama · CHN</span></div></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/4HqQg0WxnTNxkil7Pg21HPknwtj.jpg" alt=""></div><div class="movie-info"><span class="movie-title">Phantoms of July</span><span class="movie-meta">Julian Radlmaier · Drama · GER</span></div></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/nFzaWTQUuTk9KFTmSAEJFijHCNr.jpg" alt=""></div><div class="movie-info"><span class="movie-title">Disney Celebrates America</span><span class="movie-meta">David Hoffman · Documentary · USA</span></div></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/hKbQjE5ZcZUpuzApEjyoVCUWwdx.jpg" alt=""></div><div class="movie-info"><span class="movie-title">Daadi Ki Shaadi</span><span class="movie-meta">Ashish R. Mohan · Comedy · IND</span></div></div>
+
+  <div class="date-row-header"><span class="drh-day">FRI</span><span class="drh-rest">JUL 3</span></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/vt0RqHlqfUzeiBEVQvp43yY2076.jpg" alt=""></div><div class="movie-info"><span class="movie-title">Man of War</span><span class="movie-meta">William Kaufman · Action · USA</span></div></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/giUnHf32Bu961BO2F3ViVnUG2bp.jpg" alt=""></div><div class="movie-info"><span class="movie-title">Away with Words</span><span class="movie-meta">Samuel Pothier · Comedy · CAN</span></div></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/pXS4A7VmWT3p1Bc4KyTapOviUmw.jpg" alt=""></div><div class="movie-info"><span class="movie-title">Corina</span><span class="movie-meta">Urzula Barba Hopfner · Drama · MEX</span></div></div>
+  <div class="movie-container"><div class="movie-card"><img src="https://image.tmdb.org/t/p/w500/9yTWVCapYo63Mc93CHxEyIdSEqo.jpg" alt=""></div><div class="movie-info"><span class="movie-title">Escape</span><span class="movie-meta">Rodrigo Cortés · Drama · ESP</span></div></div>
+</div>
+
+<script>
+/* Interactive: segments and switches toggle live so the owner can click through states.
+   No production logic — mockup only. */
+document.querySelectorAll('.slop-seg').forEach(seg=>{
+  seg.querySelectorAll('.seg').forEach((s,i)=>{
+    s.addEventListener('click',()=>{
+      seg.querySelectorAll('.seg').forEach(x=>x.className='seg');
+      s.className='seg '+['on-neutral','on-free','on-only'][i];
+    });
+  });
+});
+document.querySelectorAll('.switch-cell').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const fest=c.querySelector('.sw-label').textContent.trim()==='Fests';
+    const pre=c.querySelector('.sw-label').textContent.trim()==='Pre-Order';
+    const cls=fest?'on-fest':pre?'on-pre':'on';
+    c.classList.toggle(cls);
+  });
+});
+document.querySelectorAll('.genre-control').forEach(g=>{
+  g.addEventListener('click',()=>{const p=g.parentElement.querySelector('.genre-pop');if(p){g.classList.toggle('open');p.classList.toggle('open');}});
+});
+</script>
+</body>
+</html>
