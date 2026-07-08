@@ -1,12 +1,13 @@
 """
 Movie Intake — discovers new movies from TMDB and adds them to tracking.
 
-Handles five intake passes:
+Handles six intake passes:
   A) Direct-to-digital releases (release_date + type=4)
   B) Theatrical releases (primary_release_date)
   C) Festival premieres (with_release_type=1 in festival regions)
   D) Reissue/restoration candidates (held in a queue for human confirm)
-  E) Distributor release calendars (intaked as parked deferred-reissue entries)
+  E) Distributor release calendars (parked deferred-reissue entries — lead pool)
+  F) Google News restoration announcements (parked like E — the signal side)
 
 Plus miniseries intake (TMDB /discover/tv with type=Miniseries).
 """
@@ -245,6 +246,21 @@ class MovieIntake:
                     self.logger.info(f"Pass E completed: {pass_e_count} calendar entries parked")
             except Exception as e:
                 self.logger.error(f"Pass E (distributor calendars) failed: {e}")
+
+        # Pass F: Google News restoration announcements — the signal side; parked
+        # exactly like Pass E, woken only by a NEW digital signal.
+        enable_pass_f = intake_config.get('enable_pass_f', False)
+        if enable_pass_f:
+            if debug:
+                self.logger.info("Starting Pass F: News restoration announcements")
+            try:
+                pass_f_count = self._run_news_announcement_pass(
+                    all_intaked_movies, existing_ids, debug
+                )
+                if debug:
+                    self.logger.info(f"Pass F completed: {pass_f_count} announcements parked")
+            except Exception as e:
+                self.logger.error(f"Pass F (news announcements) failed: {e}")
 
         # Merge all intaked movies into database
         for movie_id, movie_data in all_intaked_movies.items():
@@ -1274,17 +1290,7 @@ class MovieIntake:
         if not rows:
             return 0
 
-        # Dedupe against the Pass D reissue queue too — any status: a rejected or
-        # deferred line blocks re-intake until the user deletes it, same as Pass D.
-        queue_ids = set()
-        if os.path.exists(self.REISSUE_CANDIDATES_FILE):
-            try:
-                with open(self.REISSUE_CANDIDATES_FILE, 'r') as f:
-                    data = json.load(f)
-                if isinstance(data, dict):
-                    queue_ids = set(data.get('candidates', {}).keys())
-            except Exception as e:
-                self.logger.warning(f"Pass E: could not load reissue candidate queue: {e}")
+        queue_ids = self._load_reissue_queue_ids()
 
         if not self.tmdb_key:
             raise RuntimeError("Pass E: no TMDB API key — refusing to run "
@@ -1305,38 +1311,19 @@ class MovieIntake:
                 self.intake_stats['duplicates_skipped'] += 1
                 continue
 
-            # Change-detection baseline, captured NOW — atomically with the entry.
-            # A failed snapshot means no safe baseline: skip the row this run (the
-            # calendar page re-lists it tomorrow) rather than intake unprotected.
-            try:
-                baseline_t4 = self._fetch_us_type4_date(mid)     # None = no digital release
-                rent_p, buy_p, stream_p = self._fetch_us_providers(mid)
-            except Exception as e:
-                self.logger.warning(f"Pass E: baseline snapshot failed for "
-                                    f"{payload['tmdb_title']} ({mid}) — skipped this run: {e}")
-                continue
-
             label = '4K Restoration' if '4K' in payload.get('formats', []) else 'Restoration'
-            parked[mid] = {
-                'title': payload['tmdb_title'],
-                'year': payload['tmdb_year'],
-                'status': 'tracking',
-                'intake_date': today,
-                'digital_date': None,
-                'providers': {'rent': rent_p, 'buy': buy_p, 'streaming': stream_p},
-                'has_providers': bool(rent_p or buy_p or stream_p),
-                'intake_pass': 'E',
-                '_discovery_source': 'distributor_calendar',
-                '_expected_distributor': payload['distributor'],
-                '_expected_source_url': payload['source_url'],
-                '_expected_digital_date': payload['release_date'],  # disc street date
-                '_reissue': True,
-                'reissue_label': label,
-                '_reissue_deferred': True,
-                '_reissue_deferred_at': today,
-                '_reissue_baseline_type4': baseline_t4,
-                '_reissue_baseline_providers': rent_p + buy_p + stream_p,
-            }
+            entry = self._build_parked_reissue_entry(
+                'Pass E', mid, payload['tmdb_title'], payload['tmdb_year'], label,
+                extra_fields={
+                    'intake_pass': 'E',
+                    '_discovery_source': 'distributor_calendar',
+                    '_expected_distributor': payload['distributor'],
+                    '_expected_source_url': payload['source_url'],
+                    '_expected_digital_date': payload['release_date'],  # disc street date
+                })
+            if entry is None:
+                continue
+            parked[mid] = entry
             labels_added[mid] = label
             if debug:
                 self.logger.info(f"  parked: {payload['tmdb_title']} ({payload['tmdb_year']}) "
@@ -1445,3 +1432,185 @@ class MovieIntake:
             if not self.storage.atomic_write_json(out, self.DISTRIBUTOR_UNMATCHED_FILE, backup=False):
                 self.logger.error("Pass E: failed to save distributor unmatched sink")
         return added
+
+    # ------------------------------------------------------------------
+    # Shared parked-reissue machinery (Pass E + Pass F)
+    # ------------------------------------------------------------------
+
+    def _load_reissue_queue_ids(self):
+        """Ids in the Pass D reissue queue, any status — a rejected or deferred line
+        blocks re-intake until the user deletes it, same rule as Pass D itself."""
+        if not os.path.exists(self.REISSUE_CANDIDATES_FILE):
+            return set()
+        try:
+            with open(self.REISSUE_CANDIDATES_FILE, 'r') as f:
+                data = json.load(f)
+            return set(data.get('candidates', {}).keys()) if isinstance(data, dict) else set()
+        except Exception as e:
+            self.logger.warning(f"Could not load reissue candidate queue: {e}")
+            return set()
+
+    def _build_parked_reissue_entry(self, pass_name, mid, title, year, label,
+                                    extra_fields=None):
+        """Parked deferred-reissue tracking entry (Stage 1: announced) with the
+        change-detection baseline captured NOW, atomically with the entry. Returns
+        None when the baseline snapshot fails — no safe baseline means the film
+        must NOT intake this run (a false-empty baseline would false-wake it on
+        its own stale availability); the source re-lists it next run.
+        """
+        try:
+            baseline_t4 = self._fetch_us_type4_date(mid)     # None = no digital release
+            rent_p, buy_p, stream_p = self._fetch_us_providers(mid)
+        except Exception as e:
+            self.logger.warning(f"{pass_name}: baseline snapshot failed for "
+                                f"{title} ({mid}) — skipped this run: {e}")
+            return None
+        today = get_today()
+        entry = {
+            'title': title,
+            'year': year,
+            'status': 'tracking',
+            'intake_date': today,
+            'digital_date': None,
+            'providers': {'rent': rent_p, 'buy': buy_p, 'streaming': stream_p},
+            'has_providers': bool(rent_p or buy_p or stream_p),
+            '_reissue': True,
+            'reissue_label': label,
+            '_reissue_deferred': True,
+            '_reissue_deferred_at': today,
+            '_reissue_baseline_type4': baseline_t4,
+            '_reissue_baseline_providers': rent_p + buy_p + stream_p,
+            '_restoration_stage': 'announced',
+        }
+        entry.update(extra_fields or {})
+        return entry
+
+    # ------------------------------------------------------------------
+    # Pass F: Google News restoration announcements (Stage 1 of the lifecycle)
+    # ------------------------------------------------------------------
+
+    GOOGLENEWS_SEEN_FILE = 'cache/googlenews_seen.json'
+
+    def _run_news_announcement_pass(self, intaked_movies, existing_ids, debug=False):
+        """Park restorations announced in the news — the SIGNAL side of the lane.
+
+        Headlines are the triage cue (clean restoration keywords only). Each new
+        item resolves title -> TMDB via the quoted-title heuristic plus a
+        conservative no-year matcher; resolved films park exactly like Pass E
+        (deferred + baseline). Unresolved/ambiguous headlines merge into the
+        review sink — Phase 3 adds the read-the-article Gemini fallback in
+        between. A seen-ledger stops re-listed feed items from re-processing
+        daily; transport failures are NOT marked seen (they retry).
+        """
+        from pipeline.distributors import googlenews, tmdb_match
+        from pipeline.json_io import json_edit, load_json
+
+        if not self.tmdb_key:
+            raise RuntimeError("Pass F: no TMDB API key — refusing to run")
+
+        by_title, per_kw = googlenews.collect(googlenews.CLEAN_KEYWORDS)
+        if debug:
+            self.logger.info(f"Pass F: {sum(per_kw.values())} news items -> "
+                             f"{len(by_title)} unique guessed titles")
+        if not by_title:
+            return 0
+
+        seen = load_json(self.GOOGLENEWS_SEEN_FILE, default={}) or {}
+        new_items = {k: it for k, it in by_title.items() if k not in seen}
+        if not new_items:
+            if debug:
+                self.logger.info("Pass F: nothing new (all headlines already processed)")
+            return 0
+
+        queue_ids = self._load_reissue_queue_ids()
+        rate = self.config.get('api', {}).get('tmdb_rate_limit', 0.1)
+        today = get_today()
+
+        parked, labels_added, low_rows, processed = {}, {}, [], []
+        for key, it in new_items.items():
+            # Try EVERY quoted phrase; park only an unambiguous single resolution —
+            # a headline quoting two films (subculture + title) must sink, not park
+            # whichever phrase happened to come first.
+            highs, low_payload, transport_error = {}, None, False
+            for g in it.get('guesses', [it['guess']]):
+                status, payload = tmdb_match.match_title_no_year(self.tmdb_key, g)
+                time.sleep(rate)
+                if status == 'error':
+                    transport_error = True
+                    break
+                if status == 'high':
+                    highs[str(payload['tmdb_id'])] = payload
+                elif low_payload is None:
+                    low_payload = payload
+            if transport_error:
+                continue    # TMDB unreachable — retry next run, stay unseen
+            processed.append(key)
+            if len(highs) != 1:
+                reason = ('ambiguous_quotes' if len(highs) > 1
+                          else (low_payload or {}).get('reason', 'no_confident_match'))
+                low_rows.append({
+                    'source_title': it.get('headline', ''),
+                    'title': it['guess'],
+                    'year': None,
+                    'distributor': it.get('source', ''),        # publisher, for context
+                    'release_date': it.get('date', ''),
+                    'source_url': it.get('link', ''),
+                    'candidates': ([{'tmdb_id': p['tmdb_id'], 'title': p['tmdb_title'],
+                                     'year': p['tmdb_year']} for p in highs.values()]
+                                   or (low_payload or {}).get('candidates', [])),
+                    'reason': reason,
+                    'source': 'googlenews',
+                })
+                continue
+            payload = next(iter(highs.values()))
+            mid = str(payload['tmdb_id'])
+            if mid in existing_ids or mid in intaked_movies or mid in parked or mid in queue_ids:
+                self.intake_stats['duplicates_skipped'] += 1
+                continue
+            label = '4K Restoration' if '4k' in it.get('keyword', '').lower() else 'Restoration'
+            entry = self._build_parked_reissue_entry(
+                'Pass F', mid, payload['tmdb_title'], payload['tmdb_year'], label,
+                extra_fields={
+                    'intake_pass': 'F',
+                    '_discovery_source': 'google_news',
+                    '_announcement_url': it.get('link', ''),
+                    '_announcement_date': it.get('date', ''),
+                    '_announcement_headline': it.get('headline', ''),
+                    '_announcement_keyword': it.get('keyword', ''),
+                })
+            if entry is None:
+                processed.pop()     # snapshot failed — retry this headline next run
+                continue
+            parked[mid] = entry
+            labels_added[mid] = label
+            if debug:
+                self.logger.info(f"  parked: {payload['tmdb_title']} ({payload['tmdb_year']}) "
+                                 f"— {it.get('headline', '')[:80]}")
+
+        # Same abort-safe ordering as Pass E: durables first, entries after.
+        if parked:
+            self._write_reissue_durables(labels_added)
+            intaked_movies.update(parked)
+
+        unmatched_added = 0
+        if low_rows:
+            try:
+                unmatched_added = self._merge_unmatched_rows(low_rows, today)
+            except Exception as e:
+                self.logger.warning(f"Pass F: unmatched-sink merge failed (non-fatal): {e}")
+
+        # Mark handled headlines + prune the ledger (only after entries committed,
+        # so an aborted pass re-processes everything next run).
+        try:
+            with json_edit(self.GOOGLENEWS_SEEN_FILE, default={}) as ledger:
+                for k in processed:
+                    ledger[k] = today
+                cutoff = (datetime.now() - timedelta(days=90)).strftime('%Y-%m-%d')
+                for k in [k for k, v in ledger.items() if (v or '') < cutoff]:
+                    del ledger[k]
+        except Exception as e:
+            self.logger.warning(f"Pass F: seen-ledger update failed (headlines re-process): {e}")
+
+        self.logger.info(f"Pass F: {len(parked)} parked, {unmatched_added} new to review, "
+                         f"{len(new_items) - len(processed)} lookup errors")
+        return len(parked)

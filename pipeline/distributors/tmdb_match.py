@@ -104,6 +104,48 @@ def match_row(key, row):
                    "candidates": [cand(m) for m in results[:5]], "reason": reason}
 
 
+def match_title_no_year(key, title, min_age_years=10):
+    """News-headline matcher — no release year available. Returns (status, payload).
+
+    HIGH only when EXACTLY ONE exact-normalized-title result exists AND that film
+    is at least min_age_years old. Any ambiguity is LOW — multi-version classics
+    (Nosferatu, Metropolis, Suspiria) must go to the human sink; a wrong id
+    pollutes tracking. 'error' = TMDB unreachable (retry next run, never sink).
+    """
+    import datetime as _dt
+
+    results = _search(key, title)
+    if results is None:
+        return "error", {"title": title}
+
+    want_t = _norm(title)
+
+    def cand(m):
+        ry = (m.get("release_date") or "")[:4]
+        return {"tmdb_id": m.get("id"), "title": m.get("title"),
+                "year": int(ry) if ry.isdigit() else None}
+
+    exact = [cand(m) for m in results[:8]
+             if _norm(m.get("title", "")) == want_t and (m.get("release_date") or "")[:4].isdigit()]
+
+    cutoff = _dt.date.today().year - min_age_years
+    if len(exact) == 1 and exact[0]["year"] <= cutoff:
+        c = exact[0]
+        return "high", {"title": title, "tmdb_id": c["tmdb_id"],
+                        "tmdb_title": c["title"], "tmdb_year": c["year"]}
+
+    if not results:
+        reason = "no_results"
+    elif len(exact) > 1:
+        reason = "ambiguous_title"
+    elif exact:
+        reason = "not_old_enough"
+    else:
+        reason = "no_confident_match"
+    return "low", {"title": title, "year": None,
+                   "candidates": [cand(m) for m in results[:5]], "reason": reason}
+
+
 def match_rows(key, rows, sleep=0.05):
     """Programmatic entry for intake Pass E: returns (high, low, errors) with no
     printing and no file writes — the caller owns the unmatched sink. 'errors'

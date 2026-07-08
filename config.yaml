@@ -133,6 +133,14 @@ intake:
   # Default OFF (unlike passes A-D) until the CI rollout is approved.
   enable_pass_e: false
 
+  # Pass F: Google News restoration announcements (the SIGNAL side; Pass E's disc
+  # calendar is the lead pool). Clean keywords only ("4K restoration" etc.); each
+  # headline resolves via quoted-title heuristic + conservative no-year TMDB match;
+  # resolved films park exactly like Pass E. Unresolved headlines go to the same
+  # admin/distributor_unmatched.json review sink. Seen-ledger:
+  # cache/googlenews_seen.json. Default OFF until the CI rollout is approved.
+  enable_pass_f: false
+
 # Restoration version gate (Stage 4 of the restoration lifecycle). When enabled, a
 # reissue (_reissue) film that discovery would transition to the wall is HELD in
 # tracking instead — TMDB/JustWatch confirm the TITLE has offers, not that the offer
