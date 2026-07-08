@@ -362,7 +362,14 @@ def cmd_approve(args):
     if not movies:
         sys.exit(1)
 
-    movie = find_movie(movies, args.title)
+    if getattr(args, 'id', None):
+        # ID beats title — same-title wall films otherwise get the wrong capsule.
+        movie = next((m for m in movies if str(m.get('id')) == str(args.id)), None)
+        if not movie:
+            logger.error(f"No movie with id {args.id} in data.json.")
+            sys.exit(1)
+    else:
+        movie = find_movie(movies, args.title)
     if not movie:
         sys.exit(1)
 
@@ -456,9 +463,10 @@ def main():
         return
 
     if argv[0] == 'approve':
-        # approve "Title" [--file rewrite.txt]
+        # approve "Title" [--id MID] [--file rewrite.txt]
         parser = argparse.ArgumentParser(description='Approve a capsule')
         parser.add_argument('title', help='Movie title')
+        parser.add_argument('--id', help='Movie ID — disambiguates same-title films')
         parser.add_argument('--file', help='Path to file with rewritten capsule text')
         args = parser.parse_args(argv[1:])
         cmd_approve(args)

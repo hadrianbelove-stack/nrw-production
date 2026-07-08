@@ -358,11 +358,15 @@ def capsule_approve():
     try:
         from gemini_scraper import GeminiCapsuleWriter
         writer = GeminiCapsuleWriter()
-        writer.approve_capsule(movie.get('title', ''), movie.get('year', 0), text,
-                               director=director)
+        ok = writer.approve_capsule(movie.get('title', ''), movie.get('year', 0),
+                                    text, director=director)
     except Exception as e:
         logger.error(f"Capsule approve failed for {movie_id}: {e}")
         return jsonify({'success': False, 'error': str(e)})
+    if not ok:
+        logger.error(f"Capsule approve reported failure for {movie_id}")
+        return jsonify({'success': False,
+                        'error': 'approve_capsule reported failure — not saved'})
 
     mark_changes_pending()
     logger.info(f"Capsule approved for movie {movie_id}")

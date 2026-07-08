@@ -11,14 +11,13 @@ URL verification, bank appends, and cache behavior are identical to /curate.
 Slop verdicts + data.json edits go through pipeline.json_io.json_edit (flock +
 atomic replace) — never bare json.dump on shared files.
 """
-import json
 import os
 import re
 import subprocess
 import sys
 import tempfile
 
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, current_app, jsonify, render_template, request
 
 from admin.config import (
     SITE_ROOT, DATA_FILE, STAFF_PICKS_FILE, RESTORATIONS_FILE,
@@ -193,6 +192,14 @@ def _git_commit_push(files, message):
         return None
     rc, rebase_out = _git(['pull', '--rebase', 'origin', 'main'], timeout=90)
     if rc != 0:
+        low = rebase_out.lower()
+        if ('unstaged changes' in low or 'uncommitted changes' in low
+                or 'cannot pull with rebase' in low):
+            # Routinely-dirty shared tree: the rebase never started, so this
+            # is a stand-down, not a conflict — don't scare the user.
+            return ('push raced another window and the tree has uncommitted '
+                    'work, so auto-rebase stood down. Your save is committed '
+                    'on local main and will push with the next clean save.')
         _git(['rebase', '--abort'])
         return ('push rejected and the auto-rebase hit a conflict (aborted '
                 'cleanly — your commit is safe on local main). Resolve in a '
@@ -271,8 +278,9 @@ def _slop_advice(m):
         if confidence == 'strong' and fresh != stored:
             tips.append(('flip to ' + ('SLOP' if fresh else 'NOT slop'),
                          _human_reason(reason)))
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(
+            'slop advice: classify_slop failed for %s: %s', m.get('title'), e)
     if stored:
         facts = _notability_facts(m)
         wiki = bool((m.get('links') or {}).get('wikipedia'))
@@ -340,13 +348,18 @@ def flow_review_save():
     resto_flips = {str(k): bool(v) for k, v in (payload.get('restorations') or {}).items()}
     shown = payload.get('shown') or {}
 
-    changed_files = ['admin/curate_reviewed.json']
+    # movie_tracking.json rides along like flow_movie_save's commit: the
+    # pre-commit hook stages its export, and a pathspec commit that omits it
+    # leaves that staged copy for the next unrelated commit to sweep up.
+    changed_files = ['admin/curate_reviewed.json', 'movie_tracking.json']
 
     if picks:
         with json_edit(STAFF_PICKS_FILE) as sp:
+            have = {str(x) for x in sp}
             for mid in picks:
-                if mid not in sp:
+                if mid not in have:
                     sp.append(mid)
+                    have.add(mid)
         changed_files.append(STAFF_PICKS_FILE)
 
     if indie_flips:
@@ -357,11 +370,14 @@ def flow_review_save():
 
     if resto_flips:
         with json_edit(RESTORATIONS_FILE) as ro:
+            have = {str(x) for x in ro}
             for mid, on in resto_flips.items():
-                if on and mid not in ro:
+                if on and mid not in have:
                     ro.append(mid)
-                elif not on and mid in ro:
-                    ro.remove(mid)
+                    have.add(mid)
+                elif not on and mid in have:
+                    ro[:] = [x for x in ro if str(x) != mid]
+                    have.discard(mid)
         changed_files.append(RESTORATIONS_FILE)
 
     if slop_flips:
@@ -399,16 +415,23 @@ def flow_movie(mid):
     queue = capsule_queue()
     ids = [str(qm.get('id')) for qm, _n in queue]
     needs_map = {str(qm.get('id')): nd for qm, nd in queue}
-    if str(mid) not in ids:
-        return render_template('flow_done.html', remaining=len(ids),
-                               next_id=ids[0] if ids else None, drained=True)
     m = _movie_by_id(mid)
     if m is None:
         return render_template('flow_done.html', remaining=len(ids),
                                next_id=ids[0] if ids else None, drained=True)
 
-    needs = needs_map.get(str(mid), [])
-    pos = ids.index(str(mid)) + 1
+    # Already-curated wall film (e.g. "← back" after a save): render it in
+    # revisit mode so a typo'd capsule or wrong quote can be fixed in place.
+    revisit = str(mid) not in ids
+    if revisit:
+        needs = ['capsule', 'quotes']
+        pos, prev_id = None, None
+        next_id = ids[0] if ids else None
+    else:
+        needs = needs_map.get(str(mid), [])
+        pos = ids.index(str(mid)) + 1
+        prev_id = ids[pos - 2] if pos > 1 else None
+        next_id = ids[pos % len(ids)] if len(ids) > 1 else None
     entry = _capsule_entry(m.get('title'), m.get('year'))
     L = m.get('links') or {}
     crew = m.get('crew') or {}
@@ -419,6 +442,10 @@ def flow_movie(mid):
             variants.append({'n': i, 'raw': cap,
                              'label': VARIANT_LABELS[(i - 1) % 3],
                              'words': len((cap or '').split())})
+    if revisit and (m.get('capsule') or '').strip():
+        variants.insert(0, {'n': '★', 'raw': m['capsule'],
+                            'label': 'current live capsule (links embedded)',
+                            'words': len(m['capsule'].split())})
 
     primer = [l.lstrip('• ').strip()
               for l in ((entry or {}).get('factoid_primer') or '').split('\n')
@@ -428,8 +455,8 @@ def flow_movie(mid):
 
     return render_template(
         'flow_movie.html',
-        pos=pos, total=len(ids), prev_id=ids[pos - 2] if pos > 1 else None,
-        next_id=ids[pos % len(ids)] if len(ids) > 1 else None,
+        pos=pos, total=len(ids), prev_id=prev_id, next_id=next_id,
+        revisit=revisit,
         movie={
             'id': str(m.get('id')), 'title': m.get('title'), 'year': m.get('year'),
             'director': crew.get('director') if isinstance(crew, dict) else None,
@@ -484,7 +511,7 @@ def flow_movie_save(mid):
             tmp = f.name
         try:
             ok, out = _run([PY, 'scripts/write_capsule.py', 'approve', title,
-                            '--file', tmp])
+                            '--id', str(mid), '--file', tmp])
             if not ok:
                 return jsonify({'success': False,
                                 'error': f'capsule approve failed: {out[-400:]}'})
@@ -553,6 +580,18 @@ def flow_movie_save(mid):
             if tmp:
                 os.unlink(tmp)
 
+    # Unselects: quotes the page loaded as selected and the user unchecked.
+    unselects = payload.get('unselect') or []
+    for q in unselects:
+        critic = (q.get('critic') or '').strip()
+        outlet = (q.get('outlet') or '').strip()
+        if not critic or not outlet:
+            continue
+        ok, out = _run([PY, 'scripts/get_quotes.py', '--unselect', title,
+                        str(year), '--critic', critic, '--outlet', outlet])
+        if not ok:
+            warnings.append(f'unselect ({critic}, {outlet}) failed: {out[-200:]}')
+
     if skip_quotes and not quotes:
         ok, out = _run([PY, 'scripts/get_quotes.py', '--skip', title, str(year)])
         if not ok:
@@ -562,7 +601,8 @@ def flow_movie_save(mid):
     files = ['data.json', 'movie_tracking.json']
     if committed_capsule:
         files.append('admin/approved_capsules.json')
-    label = ('Capsule + pull quotes' if committed_capsule and (quotes or skip_quotes)
+    label = ('Capsule + pull quotes'
+             if committed_capsule and (quotes or skip_quotes or unselects)
              else 'Capsule' if committed_capsule else 'Pull quotes')
     warn = _git_commit_push(files, f'{label}: {title} (flow)')
     if warn:

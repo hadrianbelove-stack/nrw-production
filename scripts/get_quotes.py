@@ -27,6 +27,11 @@ Usage:
       Write pull_quotes: [] to data.json (reviewed-and-skipped). Refuses if
       the movie already has quotes unless --force is passed.
 
+  get_quotes.py --unselect "TITLE" YEAR --critic C --outlet O
+      Undo a selection: selected=false in the cache and the quote removed
+      from the movie's pull_quotes in data.json (identity = critic+outlet,
+      same as --select's replace logic).
+
 Numbering is deterministic: display and --select build the same ordered list,
 so the number shown is the number saved.
 """
@@ -240,6 +245,50 @@ def select(title, year, args):
         sys.exit(1)
 
 
+def unselect(title, year, args):
+    """Undo a selection by critic+outlet: cache selected=false, quote removed
+    from the movie's pull_quotes. An empty resulting list stays [] (reviewed)."""
+    if not (args.critic and args.outlet):
+        print("--unselect needs --critic and --outlet")
+        sys.exit(1)
+    hit = False
+    with data_lock():
+        cache = json.load(open(CACHE))
+        key = _find_entry(cache, title, year)
+        if key is None:
+            print(f"⚠ No cache entry for {title!r} ({year}).")
+            sys.exit(1)
+        for bucket in ("rt_quotes", "lb_quotes"):
+            for q in cache[key].get(bucket, []):
+                if (q.get("critic") == args.critic
+                        and q.get("outlet") == args.outlet and q.get("selected")):
+                    q["selected"] = False
+                    hit = True
+        if hit:
+            _atomic_write(CACHE, cache)
+
+        real_title = cache[key].get("title", title)
+        real_year = cache[key].get("year", year)
+        data = json.load(open(DATA))
+        movies = data if isinstance(data, list) else data.get("movies", [])
+        tl = str(real_title).lower()
+        for m in movies:
+            if m.get("title", "").lower() == tl and str(m.get("year", "")) == str(real_year):
+                quotes = m.get("pull_quotes") or []
+                kept = [q for q in quotes
+                        if not (q.get("critic") == args.critic
+                                and q.get("outlet") == args.outlet)]
+                if len(kept) != len(quotes):
+                    m["pull_quotes"] = kept
+                    _atomic_write(DATA, data)
+                    hit = True
+                break
+    if hit:
+        print(f"Unselected: {args.critic}, {args.outlet} — removed from pull_quotes.")
+    else:
+        print(f"⚠ No selected quote by {args.critic}, {args.outlet} — nothing changed.")
+
+
 def skip(title, year, force):
     with data_lock():
         data = json.load(open(DATA))
@@ -264,6 +313,7 @@ def main():
     ap.add_argument("title")
     ap.add_argument("year")
     ap.add_argument("--select", action="store_true")
+    ap.add_argument("--unselect", action="store_true", dest="unselect_mode")
     ap.add_argument("--skip", action="store_true", dest="skip_mode")
     ap.add_argument("--num", type=int)
     ap.add_argument("--text-file")
@@ -278,6 +328,8 @@ def main():
 
     if args.select:
         select(args.title, args.year, args)
+    elif args.unselect_mode:
+        unselect(args.title, args.year, args)
     elif args.skip_mode:
         skip(args.title, args.year, args.force)
     else:

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>#{{ pos }}/{{ total }} — {{ movie.title }}</title>
+<title>{% if revisit %}revisit{% else %}#{{ pos }}/{{ total }}{% endif %} — {{ movie.title }}</title>
 <style>
 body { font-family: -apple-system, 'Helvetica Neue', sans-serif; margin:0;
        background:#14181c; color:#e3e6e8; line-height:1.55; }
@@ -62,9 +62,9 @@ em { color:#cdd3d8; }
 </style></head><body><div class="wrap">
 
 <div class="topbar">
-  <span>#{{ pos }} of {{ total }} · needs {{ needs|join(' + ') }}</span>
+  <span>{% if revisit %}revisiting — already curated{% else %}#{{ pos }} of {{ total }} · needs {{ needs|join(' + ') }}{% endif %}</span>
   <span>
-    {% if prev_id %}<a href="/flow/movie/{{ prev_id }}">← prev</a> · {% endif %}
+    <a href="#" id="backlink" style="display:none" data-prev="{{ prev_id or '' }}">← back</a><span id="backsep" style="display:none"> · </span>
     <a href="/flow">review page</a>
     {% if next_id %} · <a href="/flow/movie/{{ next_id }}">next (no save) →</a>{% endif %}
   </span>
@@ -95,6 +95,11 @@ em { color:#cdd3d8; }
 </div>
 
 <div class="warn" id="warnbox"></div>
+{% if revisit %}
+<div class="warn" style="display:block">Revisiting an already-curated film — anything you
+save here overwrites what's on the site. Leave the capsule box empty to keep the current
+capsule; check/uncheck quotes to change the selection.</div>
+{% endif %}
 
 {% if 'capsule' in needs %}
 <h2>Capsule — pick a variant or paste your rewrite</h2>
@@ -140,12 +145,12 @@ entry) — director/cast still link automatically; other entities need chat.</di
 {% set ns = namespace(grp=None) %}
 {% for q in quotes %}
   {% if q.group != ns.grp %}<div class="quote outlet-h" style="border:0">{{ q.group }}</div>{% set ns.grp = q.group %}{% endif %}
-  <div class="quote{% if q.spoiler %} spoiler{% endif %}" id="q{{ q.num }}">
+  <div class="quote" id="q{{ q.num }}">
     <div class="qrow">
       <input type="checkbox" class="qcheck" data-num="{{ q.num }}"
              data-critic="{{ q.critic|e }}" data-outlet="{{ q.outlet|e }}"
              {% if q.spoiler %}data-spoiler="1"{% endif %}
-             {% if q.selected %}checked{% endif %}>
+             {% if q.selected %}checked data-initsel="1"{% endif %}>
       <div class="qbody">
         {% if q.spoiler %}
           <span class="attr">spoiler-protected review — to use it, check + paste the line you want (required)</span>
@@ -207,8 +212,12 @@ document.getElementById('save').onclick = async () => {
     showWarn(`Quote #${emptySpoiler.num} is spoiler-protected — paste the line you want into its box (open "read review"), or uncheck it.`);
     return;
   }
+  // Quotes that loaded selected and were unchecked → explicit unselects.
+  const unselect = [...document.querySelectorAll('.qcheck[data-initsel]')]
+    .filter(c => !c.checked)
+    .map(c => ({ num: +c.dataset.num, critic: c.dataset.critic, outlet: c.dataset.outlet }));
   const skipq = document.getElementById('skipq')?.checked && quotes.length === 0;
-  if (!capsule && quotes.length === 0 && !skipq) {
+  if (!capsule && quotes.length === 0 && unselect.length === 0 && !skipq) {
     showWarn('Nothing to save — pick a variant/paste a capsule, check a quote, or tick "skip quotes". Use "skip film" to move on without saving.');
     return;
   }
@@ -218,7 +227,7 @@ document.getElementById('save').onclick = async () => {
   try {
     const res = await fetch(`/flow/movie/{{ movie.id }}/save`, { method:'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ capsule, quotes, skip_quotes: skipq, links_off: linksOff }) });
+      body: JSON.stringify({ capsule, quotes, unselect, skip_quotes: skipq, links_off: linksOff }) });
     const j = await res.json();
     if (!j.success) throw new Error(j.error || 'save failed');
     const warns = j.warnings || [];
@@ -242,5 +251,24 @@ function showWarn(msg) {
 }
 const carried = sessionStorage.getItem('flowWarn');
 if (carried) { showWarn('previous film: ' + carried); sessionStorage.removeItem('flowWarn'); }
+// "← back" walks the films you actually visited (incl. just-saved ones, which
+// drain out of the queue and are re-opened in revisit mode). Falls back to the
+// queue's previous film when there's no visit history (fresh tab).
+(function () {
+  const mid = '{{ movie.id }}';
+  let hist = [];
+  try { hist = JSON.parse(sessionStorage.getItem('flowHist') || '[]'); } catch (e) {}
+  if (hist[hist.length - 1] !== mid) {
+    const seen = hist.indexOf(mid);
+    hist = seen !== -1 ? hist.slice(0, seen + 1) : hist.concat(mid);
+    sessionStorage.setItem('flowHist', JSON.stringify(hist));
+  }
+  const back = document.getElementById('backlink');
+  const target = hist.length > 1 ? hist[hist.length - 2] : back.dataset.prev;
+  if (target) {
+    back.style.display = ''; document.getElementById('backsep').style.display = '';
+    back.onclick = (e) => { e.preventDefault(); location.href = '/flow/movie/' + target; };
+  }
+})();
 </script>
 </div></body></html>

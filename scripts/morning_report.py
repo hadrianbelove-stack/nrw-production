@@ -210,18 +210,28 @@ def quotes():
              and any(n in ("capsule", "quotes") for n in _needs_work(m, ct, rev, cy))]
 
     # Entry lookup mirrors get_quotes.py: exact "{title}_{year}" key, then
-    # case-insensitive title+year.
-    loose = {f'{str(e.get("title", "")).lower()}_{e.get("year", "")}' for e in pq.values()}
-    missing = [m for m in cands
-               if f'{m.get("title")}_{m.get("year")}' not in pq
-               and f'{str(m.get("title", "")).lower()}_{m.get("year")}' not in loose]
+    # case-insensitive title+year. An entry whose quote lists are all empty
+    # counts as missing too — the scraper ran but found nothing, and
+    # get_quotes.py treats that the same as no entry.
+    def _has_quotes(e):
+        return any((q.get("text") or "").strip()
+                   for q in (e.get("rt_quotes") or []) + (e.get("lb_quotes") or []))
+
+    loose = {f'{str(e.get("title", "")).lower()}_{e.get("year", "")}': e
+             for e in pq.values()}
+    missing = []
+    for m in cands:
+        e = pq.get(f'{m.get("title")}_{m.get("year")}') or \
+            loose.get(f'{str(m.get("title", "")).lower()}_{m.get("year")}')
+        if e is None or not _has_quotes(e):
+            missing.append(m)
 
     if not cands:
         print("No curation candidates in the window need quotes/capsules.")
     elif not missing:
-        print(f"All {len(cands)} curation candidate(s) have a quote entry.")
+        print(f"All {len(cands)} curation candidate(s) have quotes.")
     else:
-        print(f"{len(missing)} of {len(cands)} candidate(s) have NO quote entry (→ Concerns):")
+        print(f"{len(missing)} of {len(cands)} candidate(s) have NO quotes (→ Concerns):")
         for m in missing:
             print(f'  ⚠ No quotes yet: {m.get("title")} ({m.get("year")})')
 
