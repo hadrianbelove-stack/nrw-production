@@ -1,15 +1,23 @@
 # Plan: Distributor Release-Calendar Tracking for NRW
 
-> Status: **Phase 1 BUILT** (2026-07-06) — Pass E is wired into pipeline/intake.py behind
-> `intake.enable_pass_e` (default OFF). physicalmedia.news rows intake as PARKED
-> deferred-reissue entries (change-detection baseline captured at intake, so the 44%
-> stale-old-transfer cohort can never false-transition); LOW matches merge into
-> admin/distributor_unmatched.json; labels + never-slop overrides written at intake;
-> CI stages the Pass E admin files. Wake path fixed: a provider-signal wake now refuses
-> the stale Type-4 date (would have dated the film years back, off the 90-day wall) and
-> stamps today instead. E2E-verified on 118 live rows + a full park→wake→transition run.
-> Remaining phases below; flag flip in CI = phase 5.
-> Last updated: 2026-07-06.
+> Status: **STAGED LIFECYCLE BUILT** (2026-07-07) — the owner's 4-stage model is
+> implemented end-to-end on branch `distributor-tracking`, all flags default OFF:
+> 1. *Announced* — **Pass E** (physicalmedia.news disc calendar, `enable_pass_e`,
+>    d35caf7c) and **Pass F** (Google News clean keywords + quoted-title heuristics +
+>    read-the-article Gemini fallback + shorts guard, `enable_pass_f`, 45a8489a +
+>    a287e7a5) park films as deferred-reissue entries with change-detection baselines.
+> 2. *VOD announced* — **news-gap recheck** (pipeline/news_recheck.py, 31d12d1f):
+>    monthly per-title second-cluster scan; informational only.
+> 3. *Available* — the existing TMDB wake gate + JustWatch link verification
+>    (unchanged, sole operative trigger); stale-Type-4 floor fixed on wake.
+> 4. *Version verified* — **version gate** (`restoration_gate.enabled`, 849c73b8):
+>    a woken reissue is HELD, grounded-verified (pipeline/version_check.py), and only
+>    a human ruling (scripts/release_restoration.py --release/--repark) walls it.
+>    Nothing on the wall without verification.
+> Rollout = flip flags in config.yaml (suggested order: restoration_gate first, then
+> enable_pass_e/f). Still open: the expected-date verification alert (below), Playwright
+> listing-reader (Stage-4 V2), newsletters/per-label scrapers, park-clock downgrade.
+> Last updated: 2026-07-07.
 
 ## Goal
 Proactively surface new releases from a curated set of arthouse / restoration
@@ -396,7 +404,11 @@ named destination, "surface for human review" has nowhere to surface to.
    note: rows intake as *parked deferred* entries per the signal model — a lone disc
    lead never surfaces directly; discovery wakes it on a NEW digital signal only).
 2. **Add the Google News RSS feed** (`"4K restoration"`) for label-agnostic coverage; route
-   its noisier rows through the taste/match gate (see Quality gate above).
+   its noisier rows through the taste/match gate (see Quality gate above). — **DONE
+   2026-07-07** (Pass F: clean keywords, all-quoted-phrases disambiguation, no-year
+   matcher, read-the-article Gemini fallback with is-restoration-news + shorts guards;
+   plus the Stage-4 version gate so nothing reaches the wall unverified, and the
+   news-gap second-cluster recheck as the Stage-2 signal).
 3. **Verification alert.** Wire the expected-date check into the morning report.
 4. **Fill gaps per label** — newsletters first, then headless per-label calendar/press
    pages only for labels the lighter sources miss. *This is where the 403 work lives, if
