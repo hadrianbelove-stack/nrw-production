@@ -15,8 +15,9 @@ const DATA_URL = 'https://raw.githubusercontent.com/hadrianbelove-stack/nrw-prod
  */
 export async function fetchMovies() {
   try {
-    // No cache-buster / no-cache header: GitHub Pages serves ETag + max-age=600,
-    // so unchanged data costs a ~1KB revalidation instead of a full re-download
+    // No cache-buster / no-cache header: GitHub Pages sends max-age=600, so
+    // repeat fetches inside 10 min are served from cache; after that an ETag
+    // revalidation (304, ~1KB) replaces the full re-download when unchanged.
     console.log('[API] Fetching movie data from GitHub');
 
     // Add timeout to prevent indefinite hang on slow networks

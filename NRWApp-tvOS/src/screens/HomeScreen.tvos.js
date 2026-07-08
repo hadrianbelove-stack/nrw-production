@@ -517,7 +517,6 @@ const HomeScreenTvOS = () => {
   const [headerNodeHandle, setHeaderNodeHandle] = useState(null);
   const headerRefObject = useRef(null);
   const [lastFilterNodeHandle, setLastFilterNodeHandle] = useState(null);
-  const [lastToggleNodeHandle, setLastToggleNodeHandle] = useState(null);
   // GENRE pulldown overlay (collapses the genre chips behind one control)
   const [genreOverlay, setGenreOverlay] = useState(false);
   // Ref to first rendered movie card — used by the boundary TVFocusGuideView for DOWN from filters
@@ -525,7 +524,6 @@ const HomeScreenTvOS = () => {
 
   // First filter button — no longer the wall's UP target (the toggle module is, now
   // that toggles sit in the lower-left directly above the wall).
-  const setFirstFilterRef = useCallback((ref) => {}, []);
 
   // Callback ref for the last control in the bar (SEARCH) — LEFT from the first
   // row's leftmost poster wraps up to it.
@@ -545,14 +543,6 @@ const HomeScreenTvOS = () => {
     }
   }, []);
 
-  // Callback ref for last toggle (pre-order) — leftmost first-row poster LEFT target
-  const setLastToggleRef = useCallback((ref) => {
-    if (ref) {
-      const handle = findNodeHandle(ref);
-      if (handle) setLastToggleNodeHandle(handle);
-    }
-  }, []);
-
   // Get shared state and actions
   const {
     movies,
@@ -567,7 +557,10 @@ const HomeScreenTvOS = () => {
   // (search covers everything, bypassing wall view filters — matches desktop).
   const handleOpenSearch = useCallback(() => {
     returningFromSearchRef.current = true;
-    setSearchMovieList(movies);
+    // Full list minus hidden/reverted films — the other devices' search
+    // excludes them too (api.filterMovies applies the same two exclusions).
+    setSearchMovieList(movies.filter(
+      m => m._enrichment_status !== 'reverted' && !m.hidden));
     navigation.navigate('Search');
   }, [navigation, movies]);
 
@@ -1317,7 +1310,6 @@ const HomeScreenTvOS = () => {
           <View style={styles.barCell}>
             <SlopToggle ref={setFirstToggleRef} slopMode={slopMode} onPress={cycleSlopMode} />
           </View>
-          <View style={styles.barDivider} />
           <View style={styles.barCell}>
             <MetaToggle
               isActive={showHighlightsOnly}
@@ -1327,7 +1319,6 @@ const HomeScreenTvOS = () => {
               onPress={toggleShowHighlights}
             />
           </View>
-          <View style={styles.barDivider} />
           <View style={styles.barCell}>
             <MetaToggle
               isActive={!hideFest}
@@ -1337,10 +1328,8 @@ const HomeScreenTvOS = () => {
               onPress={toggleHideFest}
             />
           </View>
-          <View style={styles.barDivider} />
           <View style={styles.barCell}>
             <MetaToggle
-              ref={setLastToggleRef}
               isActive={showPreorders}
               label="PRE-ORDER"
               accentColor="#7c3aed"
@@ -1348,7 +1337,6 @@ const HomeScreenTvOS = () => {
               onPress={toggleShowPreorders}
             />
           </View>
-          <View style={styles.barDivider} />
           <View style={styles.barCell}>
             <GenreControl
               label={genreControlLabel}
@@ -1356,7 +1344,6 @@ const HomeScreenTvOS = () => {
               onPress={() => setGenreOverlay(true)}
             />
           </View>
-          <View style={styles.barDivider} />
           <View style={styles.barCell}>
             <SearchButton ref={setLastFilterRef} onPress={handleOpenSearch} hasTVPreferredFocus={searchBtnPreferredFocus} />
           </View>
@@ -1591,11 +1578,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 4,
     marginTop: 2,
-  },
-  barDivider: {
-    width: 0,
-    height: 36,
-    backgroundColor: 'transparent',
   },
   // Each toggle/genre occupies an equal cell so they fill the bar evenly
   // (no clumped negative space between pills).

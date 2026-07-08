@@ -735,7 +735,13 @@ const MovieDetailTvOS = () => {
             ref={scrollViewRef}
             style={styles.detailsScroll}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.detailsScrollContent}
+            contentContainerStyle={[
+              styles.detailsScrollContent,
+              // No capsule/synopsis (and no quotes): space-between would
+              // render the title→footer gap as a full-panel void.
+              !(movie.capsule || movie.synopsis || movie.pull_quotes?.length) &&
+                styles.detailsScrollContentBare,
+            ]}
           >
             {/* 1. Title row with date */}
             <View style={styles.titleRow}>
@@ -1051,6 +1057,9 @@ const styles = StyleSheet.create({
     // overflows, flexGrow is a no-op and scrolling behaves exactly as before.
     flexGrow: 1,
     justifyContent: 'space-between',
+  },
+  detailsScrollContentBare: {
+    justifyContent: 'flex-start',
   },
   titleRow: {
     flexDirection: 'column',
