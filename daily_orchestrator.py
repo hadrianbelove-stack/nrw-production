@@ -1205,6 +1205,14 @@ class NRWOrchestrator:
                 # while restoration_gate.enabled is false / nothing is held.
                 ("python3 pipeline/version_check.py --limit 15",
                  "Version-check held restorations", False, False, 600),
+
+                # Phase 2.3: News-gap recheck — scan parked restorations' news
+                # timelines (monthly per title) for the home-release "second
+                # cluster". Informational only: stamps _news_dig_hit + stage for
+                # the morning report; the TMDB wake gate stays the sole operative
+                # trigger. Non-critical; no-op while nothing is parked/due.
+                ("python3 pipeline/news_recheck.py --limit 15",
+                 "News-gap recheck parked restorations", False, False, 600),
             ]
 
             # Execute discovery and monitoring pipeline
