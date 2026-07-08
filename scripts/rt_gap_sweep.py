@@ -37,11 +37,17 @@ def _slug_sane(url, title, year):
     With Fire' and a 2015 page for a 2026 film, Jul 2026):
     - every significant title word must appear in the slug
     - a year suffix in the slug must be within 1 of the film's year
+    Parenthetical qualifiers are stripped first: RT lists 'Black Box
+    (Flight 298)' at /m/black_box_2026, so requiring 'flight'/'298' in the
+    slug false-rejected a page the scraper had already director-verified
+    (Jul 2026). Core-title + year checks (and the upstream director/OMDb
+    verification) still gate wrong films.
     Rejected films just count as a miss (retry cap applies)."""
     import re
-    slug = url.rstrip('/').rsplit('/', 1)[-1].lower()
-    words = [w for w in re.sub(r'[^a-z0-9 ]', ' ', (title or '').lower()).split()
+    core = re.sub(r'\([^)]*\)', ' ', title or '')  # drop "(qualifiers)"
+    words = [w for w in re.sub(r'[^a-z0-9 ]', ' ', core.lower()).split()
              if w not in ('the', 'a', 'an', 'of', 'and', 'in', 'on', 'to') and len(w) > 1]
+    slug = url.rstrip('/').rsplit('/', 1)[-1].lower()
     if any(w not in slug for w in words):
         return False
     m = re.search(r'(19|20)(\d{2})$', slug)
