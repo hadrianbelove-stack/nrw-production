@@ -351,7 +351,7 @@ jobs:
           # sink) — same failure class: unstaged = silently lost when the runner dies,
           # and a dirty worktree breaks the pull --rebase in the push step.
           echo "📦 Staging data.json, data_archive.json, movie_tracking.json, metrics, wikipedia cache, reissue queue, Pass E/F files, restoration caches"
-          git add data.json data_archive.json movie_tracking.json metrics/ cache/wikipedia_cache.json admin/reissue_candidates.json admin/reissue_labels.json admin/overrides.json admin/distributor_unmatched.json cache/restoration_vod_cache.json cache/googlenews_seen.json
+          git add data.json data_archive.json movie_tracking.json metrics/ cache/wikipedia_cache.json admin/reissue_candidates.json admin/reissue_labels.json admin/overrides.json admin/distributor_unmatched.json cache/restoration_vod_cache.json cache/googlenews_seen.json cache/news_title_cache.json
 
           # Only commit if there are staged changes and set flag accordingly
           if git diff --cached --quiet; then

@@ -68,6 +68,9 @@ cache/*.json
 # Pass F seen-ledger: which news headlines were already processed. Uncommitted,
 # every stateless CI run would re-process the whole feed window.
 !cache/googlenews_seen.json
+# Pass F headline resolutions (static — never expire); stateless CI would
+# re-buy the same Gemini reads daily.
+!cache/news_title_cache.json
 # Curation caches (pull_quotes_combined.json, capsule_cache.json) stay IGNORED:
 # CI generates them and ships them via the "curation-caches" artifact, which
 # local_daily.sh merges in. They are deliberately NOT tracked.

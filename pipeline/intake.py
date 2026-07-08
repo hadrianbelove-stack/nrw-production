@@ -1312,7 +1312,7 @@ class MovieIntake:
                 continue
 
             label = '4K Restoration' if '4K' in payload.get('formats', []) else 'Restoration'
-            entry = self._build_parked_reissue_entry(
+            entry, skip = self._build_parked_reissue_entry(
                 'Pass E', mid, payload['tmdb_title'], payload['tmdb_year'], label,
                 extra_fields={
                     'intake_pass': 'E',
@@ -1322,7 +1322,7 @@ class MovieIntake:
                     '_expected_digital_date': payload['release_date'],  # disc street date
                 })
             if entry is None:
-                continue
+                continue    # snapshot_failed retries via tomorrow's re-list; shorts re-skip cheaply
             parked[mid] = entry
             labels_added[mid] = label
             if debug:
@@ -1453,18 +1453,33 @@ class MovieIntake:
     def _build_parked_reissue_entry(self, pass_name, mid, title, year, label,
                                     extra_fields=None):
         """Parked deferred-reissue tracking entry (Stage 1: announced) with the
-        change-detection baseline captured NOW, atomically with the entry. Returns
-        None when the baseline snapshot fails — no safe baseline means the film
-        must NOT intake this run (a false-empty baseline would false-wake it on
-        its own stale availability); the source re-lists it next run.
+        change-detection baseline captured NOW, atomically with the entry.
+
+        Returns (entry, None) on success, or (None, reason) with reason:
+          'snapshot_failed' — no safe baseline this run (a false-empty baseline
+              would false-wake the film on its own stale availability); RETRY
+              next run.
+          'short' — a CONFIRMED short (1-59 min) never parks: features only,
+              same rule as the intake runtime filter; PERMANENT drop. Runtime
+              0/unknown is admitted deliberately — thin-metadata restorations
+              (the ENO class) are exactly what this lane exists to catch.
         """
         try:
             baseline_t4 = self._fetch_us_type4_date(mid)     # None = no digital release
             rent_p, buy_p, stream_p = self._fetch_us_providers(mid)
+            det = requests.get(f"https://api.themoviedb.org/3/movie/{mid}",
+                               params={'api_key': self.tmdb_key}, timeout=15)
+            det.raise_for_status()
+            runtime = det.json().get('runtime') or 0
         except Exception as e:
             self.logger.warning(f"{pass_name}: baseline snapshot failed for "
                                 f"{title} ({mid}) — skipped this run: {e}")
-            return None
+            return None, 'snapshot_failed'
+        min_runtime = self.config.get('intake', {}).get('min_runtime', 60)
+        if 0 < runtime < min_runtime:
+            self.logger.info(f"{pass_name}: {title} ({mid}) is a short "
+                             f"({runtime}m) — not parked (features only)")
+            return None, 'short'
         today = get_today()
         entry = {
             'title': title,
@@ -1483,7 +1498,7 @@ class MovieIntake:
             '_restoration_stage': 'announced',
         }
         entry.update(extra_fields or {})
-        return entry
+        return entry, None
 
     # ------------------------------------------------------------------
     # Pass F: Google News restoration announcements (Stage 1 of the lifecycle)
@@ -1525,6 +1540,7 @@ class MovieIntake:
         queue_ids = self._load_reissue_queue_ids()
         rate = self.config.get('api', {}).get('tmdb_rate_limit', 0.1)
         today = get_today()
+        gemini_budget = self.config.get('intake', {}).get('news_gemini_limit', 10)
 
         parked, labels_added, low_rows, processed = {}, {}, [], []
         for key, it in new_items.items():
@@ -1545,41 +1561,65 @@ class MovieIntake:
             if transport_error:
                 continue    # TMDB unreachable — retry next run, stay unseen
             processed.append(key)
-            if len(highs) != 1:
-                reason = ('ambiguous_quotes' if len(highs) > 1
-                          else (low_payload or {}).get('reason', 'no_confident_match'))
-                low_rows.append({
-                    'source_title': it.get('headline', ''),
-                    'title': it['guess'],
-                    'year': None,
-                    'distributor': it.get('source', ''),        # publisher, for context
-                    'release_date': it.get('date', ''),
-                    'source_url': it.get('link', ''),
-                    'candidates': ([{'tmdb_id': p['tmdb_id'], 'title': p['tmdb_title'],
-                                     'year': p['tmdb_year']} for p in highs.values()]
-                                   or (low_payload or {}).get('candidates', [])),
-                    'reason': reason,
-                    'source': 'googlenews',
-                })
-                continue
-            payload = next(iter(highs.values()))
+            if len(highs) == 1:
+                payload = next(iter(highs.values()))
+            else:
+                # Heuristics failed (no match, or several films quoted) — READ THE
+                # ARTICLE (owner's rule) via the grounded Gemini fallback, budget-capped;
+                # beyond-budget headlines stay unseen and retry tomorrow.
+                if gemini_budget <= 0:
+                    processed.pop()
+                    continue
+                gemini_budget -= 1
+                gstatus, gpayload = self._resolve_headline_with_gemini(it, tmdb_match, rate)
+                if gstatus == 'error':
+                    processed.pop()     # API failure — retry next run, stay unseen
+                    continue
+                if gstatus == 'not_restoration':
+                    continue            # keyword noise — drop silently, marked seen
+                if gstatus != 'high':
+                    reason = ('ambiguous_quotes' if len(highs) > 1
+                              else (gpayload or low_payload or {}).get('reason', 'gemini_unresolved'))
+                    low_rows.append({
+                        'source_title': it.get('headline', ''),
+                        'title': it['guess'],
+                        'year': None,
+                        'distributor': it.get('source', ''),    # publisher, for context
+                        'release_date': it.get('date', ''),
+                        'source_url': it.get('link', ''),
+                        'candidates': ([{'tmdb_id': p['tmdb_id'], 'title': p['tmdb_title'],
+                                         'year': p['tmdb_year']} for p in highs.values()]
+                                       or (gpayload or low_payload or {}).get('candidates', [])),
+                        'reason': reason,
+                        'source': 'googlenews',
+                    })
+                    continue
+                payload = gpayload
             mid = str(payload['tmdb_id'])
             if mid in existing_ids or mid in intaked_movies or mid in parked or mid in queue_ids:
                 self.intake_stats['duplicates_skipped'] += 1
                 continue
             label = '4K Restoration' if '4k' in it.get('keyword', '').lower() else 'Restoration'
-            entry = self._build_parked_reissue_entry(
+            extra = {
+                'intake_pass': 'F',
+                '_discovery_source': 'google_news',
+                '_announcement_url': it.get('link', ''),
+                '_announcement_date': it.get('date', ''),
+                '_announcement_headline': it.get('headline', ''),
+                '_announcement_keyword': it.get('keyword', ''),
+            }
+            if payload.get('gemini_distributor'):
+                extra['_announcement_distributor'] = payload['gemini_distributor']
+            if payload.get('gemini_vod_mention') == 'yes':
+                # The article itself talks digital availability — Stage 2 evidence.
+                extra['_restoration_stage'] = 'vod_announced'
+            entry, skip = self._build_parked_reissue_entry(
                 'Pass F', mid, payload['tmdb_title'], payload['tmdb_year'], label,
-                extra_fields={
-                    'intake_pass': 'F',
-                    '_discovery_source': 'google_news',
-                    '_announcement_url': it.get('link', ''),
-                    '_announcement_date': it.get('date', ''),
-                    '_announcement_headline': it.get('headline', ''),
-                    '_announcement_keyword': it.get('keyword', ''),
-                })
+                extra_fields=extra)
             if entry is None:
-                processed.pop()     # snapshot failed — retry this headline next run
+                if skip == 'snapshot_failed':
+                    processed.pop()     # retry this headline next run
+                # 'short' stays marked seen — permanent drop
                 continue
             parked[mid] = entry
             labels_added[mid] = label
@@ -1612,5 +1652,52 @@ class MovieIntake:
             self.logger.warning(f"Pass F: seen-ledger update failed (headlines re-process): {e}")
 
         self.logger.info(f"Pass F: {len(parked)} parked, {unmatched_added} new to review, "
-                         f"{len(new_items) - len(processed)} lookup errors")
+                         f"{len(new_items) - len(processed)} deferred (errors/budget)")
         return len(parked)
+
+    def _resolve_headline_with_gemini(self, it, tmdb_match, rate):
+        """Read-the-article fallback for headlines the heuristics couldn't resolve
+        (owner's rule: flagged articles get read). V1 reads via grounded search —
+        Google News links are JS-redirects a plain fetch can't follow.
+
+        Returns (status, payload):
+          ('high', payload)          Gemini named the film and TMDB confirmed it
+          ('not_restoration', None)  keyword noise or a too-recent film — drop silently
+          ('low', payload_or_None)   couldn't resolve — sink for human review
+          ('error', None)            API failure — retry next run, never sink
+        """
+        try:
+            from gemini_scraper.news_title import GeminiNewsTitleFinder
+            if getattr(self, '_news_title_finder', None) is None:
+                self._news_title_finder = GeminiNewsTitleFinder()
+            res = self._news_title_finder.resolve_headline(
+                it.get('headline', ''), it.get('source', ''), it.get('date', ''))
+        except Exception as e:
+            self.logger.warning(f"Pass F: news-title finder error: {e}")
+            return 'error', None
+        if res is None:
+            return 'error', None
+        if res['is_restoration_news'] == 'no':
+            return 'not_restoration', None
+        if not res['film_title'] or not res['film_year'] or res['is_restoration_news'] != 'yes':
+            return 'low', {'reason': f"gemini_unresolved "
+                                     f"({res['is_restoration_news']}/{res['confidence']})"}
+        min_age = self.config.get('intake', {}).get('reissue_min_age_years', 10)
+        if res['film_year'] > datetime.now().year - min_age:
+            # Restoration news about a recent film is outside the reissue lane.
+            return 'not_restoration', None
+        status, payload = tmdb_match.match_row(self.tmdb_key, {
+            'title': res['film_title'], 'year': res['film_year'],
+            'source_title': it.get('headline', ''),
+            'distributor': res.get('distributor', ''),
+            'release_date': it.get('date', ''), 'source_url': it.get('link', '')})
+        time.sleep(rate)
+        if status == 'error':
+            return 'error', None
+        if status != 'high':
+            payload['reason'] = (f"gemini_title_no_tmdb "
+                                 f"({res['film_title']} {res['film_year']})")
+            return 'low', payload
+        payload['gemini_distributor'] = res.get('distributor', '')
+        payload['gemini_vod_mention'] = res.get('vod_mention', '')
+        return 'high', payload
