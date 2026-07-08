@@ -1,60 +1,60 @@
 {
-  "timestamp": "2026-07-07T11:16:24.657718",
-  "movies_requested": 21,
-  "movies_enriched": 15,
+  "timestamp": "2026-07-08T10:26:35.739192",
+  "movies_requested": 10,
+  "movies_enriched": 4,
   "movies_deferred": 6,
   "deferred_details": [
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-07T11:02:49.956005",
+      "discovered_at": "2026-07-08T10:19:38.451530",
       "discovery_source": "tmdb_type4",
-      "revert_count": 8,
-      "first_reverted_at": "2026-07-07",
+      "revert_count": 9,
+      "first_reverted_at": "2026-07-08",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-07T11:02:50.228177",
+      "discovered_at": "2026-07-08T10:19:38.749191",
       "discovery_source": "tmdb_type4",
-      "revert_count": 29,
-      "first_reverted_at": "2026-07-07",
+      "revert_count": 30,
+      "first_reverted_at": "2026-07-08",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-07T11:02:50.547853",
+      "discovered_at": "2026-07-08T10:19:38.984610",
       "discovery_source": "tmdb_type4",
-      "revert_count": 20,
-      "first_reverted_at": "2026-07-07",
+      "revert_count": 21,
+      "first_reverted_at": "2026-07-08",
       "tmdb_platforms": []
     },
     {
-      "title": "The Dangers in My Heart: The Movie",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-07-07T11:02:56.333038",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-07",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Barnes & Noble"
+      "title": "Bricks on Track: Building the LEGO F1 Drivers' Parade",
+      "reason": "under_60min",
+      "digital_date": "2026-07-08",
+      "discovered_at": "2026-07-08T10:19:40.918569",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Peacock Premium",
+        "Peacock Premium Plus"
       ]
     },
     {
       "title": "Blades of the Guardians",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "",
-      "discovered_at": "2026-07-07T11:02:56.598486",
+      "discovered_at": "2026-07-08T10:19:46.636320",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-07",
+      "first_reverted_at": "2026-07-08",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
@@ -63,17 +63,21 @@
       ]
     },
     {
-      "title": "5002 Space Aliens",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-08-10",
-      "discovered_at": "2026-07-07T11:02:59.118026",
+      "title": "Girls Like Girls",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-07",
+      "discovered_at": "2026-07-08T10:19:47.454792",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-07",
-      "tmdb_platforms": []
+      "first_reverted_at": "2026-07-08",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Amazon Video",
+        "Apple TV Store"
+      ]
     }
   ],
-  "enrichment_duration_seconds": 801.17,
+  "enrichment_duration_seconds": 405.91,
   "error_details": [],
   "total_errors": 0
 }

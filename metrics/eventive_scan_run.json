@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-07T10:45:29.908284",
+  "timestamp": "2026-07-08T10:03:08.183999",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 117,
@@ -9,8 +9,8 @@
     "expired_filtered": 0,
     "unique_active": 1680,
     "tracking_matches": 66,
-    "wall_matches": 14,
-    "new_cached": 42,
+    "wall_matches": 22,
+    "new_cached": 50,
     "skipped_undated": 38
   },
   "tracking_matches": [
@@ -99,6 +99,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1195113",
+      "nrw_title": "Carissa",
+      "eventive_title": "Carissa",
+      "festival": "South African Film Festival 2026",
+      "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
+      "start": "2026-06-25T14:15:00.000Z",
+      "end": "2026-07-26T13:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1012180",
       "nrw_title": "Identity",
       "eventive_title": "Identity",
@@ -111,13 +123,25 @@
       "nrw_status": "removed"
     },
     {
-      "movie_id": "1195113",
-      "nrw_title": "Carissa",
-      "eventive_title": "Carissa",
-      "festival": "South African Film Festival 2026",
-      "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
-      "start": "2026-06-25T14:15:00.000Z",
-      "end": "2026-07-26T13:45:00.000Z",
+      "movie_id": "1226046",
+      "nrw_title": "Inheritance",
+      "eventive_title": "Inheritance",
+      "festival": "Film of the Month",
+      "link": "https://watch.eventive.org/rmwf/play/6a429bb535d588831018b90f",
+      "start": "2026-07-01T06:00:00.000Z",
+      "end": "2026-08-01T05:59:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1677549",
+      "nrw_title": "Inheritance",
+      "eventive_title": "Inheritance",
+      "festival": "Film of the Month",
+      "link": "https://watch.eventive.org/rmwf/play/6a429bb535d588831018b90f",
+      "start": "2026-07-01T06:00:00.000Z",
+      "end": "2026-08-01T05:59:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
@@ -195,54 +219,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1585144",
-      "nrw_title": "Connection",
-      "eventive_title": "The Connection",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1049439",
-      "nrw_title": "The Golden Age",
-      "eventive_title": "The Golden Age",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1226046",
-      "nrw_title": "Inheritance",
-      "eventive_title": "Inheritance",
-      "festival": "Film of the Month",
-      "link": "https://watch.eventive.org/rmwf/play/6a429bb535d588831018b90f",
-      "start": "2026-07-01T06:00:00.000Z",
-      "end": "2026-08-01T05:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1677549",
-      "nrw_title": "Inheritance",
-      "eventive_title": "Inheritance",
-      "festival": "Film of the Month",
-      "link": "https://watch.eventive.org/rmwf/play/6a429bb535d588831018b90f",
-      "start": "2026-07-01T06:00:00.000Z",
-      "end": "2026-08-01T05:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1604573",
       "nrw_title": "Isolation",
       "eventive_title": "Isolation",
@@ -260,6 +236,30 @@
       "eventive_title": "Isolation",
       "festival": "Fun Film Fest - Hybrid 2030",
       "link": "https://watch.eventive.org/funvirtual/play/5f29de2dc7183a007837116f",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1585144",
+      "nrw_title": "Connection",
+      "eventive_title": "The Connection",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1049439",
+      "nrw_title": "The Golden Age",
+      "eventive_title": "The Golden Age",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
       "start": "",
       "end": "",
       "status": "active",
@@ -672,7 +672,7 @@
       "end": "2026-08-07T19:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1557013",
@@ -696,7 +696,7 @@
       "end": "2026-08-08T13:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1480425",
@@ -708,7 +708,7 @@
       "end": "2026-08-08T16:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1510537",
@@ -720,7 +720,7 @@
       "end": "2026-08-09T16:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1539301",
@@ -732,7 +732,7 @@
       "end": "2026-08-09T17:30:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1629054",
@@ -756,7 +756,7 @@
       "end": "2026-08-09T20:30:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1567560",
@@ -768,7 +768,7 @@
       "end": "2026-08-10T15:30:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1526217",
@@ -780,7 +780,7 @@
       "end": "2026-08-10T20:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1249271",
@@ -804,7 +804,7 @@
       "end": "2026-08-11T00:30:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     }
   ],
   "wall_matches": [
@@ -840,6 +840,30 @@
       "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
       "start": "2026-06-25T14:15:00.000Z",
       "end": "2026-07-26T13:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1677549",
+      "nrw_title": "Inheritance",
+      "eventive_title": "Inheritance",
+      "festival": "Film of the Month",
+      "link": "https://watch.eventive.org/rmwf/play/6a429bb535d588831018b90f",
+      "start": "2026-07-01T06:00:00.000Z",
+      "end": "2026-08-01T05:59:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1226046",
+      "nrw_title": "Inheritance",
+      "eventive_title": "Inheritance",
+      "festival": "Film of the Month",
+      "link": "https://watch.eventive.org/rmwf/play/6a429bb535d588831018b90f",
+      "start": "2026-07-01T06:00:00.000Z",
+      "end": "2026-08-01T05:59:00.000Z",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
@@ -905,30 +929,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1677549",
-      "nrw_title": "Inheritance",
-      "eventive_title": "Inheritance",
-      "festival": "Film of the Month",
-      "link": "https://watch.eventive.org/rmwf/play/6a429bb535d588831018b90f",
-      "start": "2026-07-01T06:00:00.000Z",
-      "end": "2026-08-01T05:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1226046",
-      "nrw_title": "Inheritance",
-      "eventive_title": "Inheritance",
-      "festival": "Film of the Month",
-      "link": "https://watch.eventive.org/rmwf/play/6a429bb535d588831018b90f",
-      "start": "2026-07-01T06:00:00.000Z",
-      "end": "2026-08-01T05:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1583348",
       "nrw_title": "The Finale",
       "eventive_title": "The Finale",
@@ -965,6 +965,90 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1568068",
+      "nrw_title": "Let Them Be Seen",
+      "eventive_title": "Let Them Be Seen",
+      "festival": "",
+      "link": "https://watch.eventive.org/bsff26/play/6a46bd6d2e4b14fd514eb5c4",
+      "start": "2026-08-06T19:00:00.000Z",
+      "end": "2026-08-07T19:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1676460",
+      "nrw_title": "The Tropic Sun and His Eyes",
+      "eventive_title": "The Tropic Sun and His Eyes",
+      "festival": "",
+      "link": "https://watch.eventive.org/bsff26/play/6a46bd6d2e4b14fd514eb5e2",
+      "start": "2026-08-07T13:00:00.000Z",
+      "end": "2026-08-08T13:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1480425",
+      "nrw_title": "And She Didn't Die",
+      "eventive_title": "And She Didn't Die",
+      "festival": "",
+      "link": "https://watch.eventive.org/bsff26/play/6a46bd6d2e4b14fd514eb5ec",
+      "start": "2026-08-07T16:00:00.000Z",
+      "end": "2026-08-08T16:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1510537",
+      "nrw_title": "Becoming Human",
+      "eventive_title": "Becoming Human",
+      "festival": "",
+      "link": "https://watch.eventive.org/bsff26/play/6a46bd6d2e4b14fd514eb61e",
+      "start": "2026-08-08T16:00:00.000Z",
+      "end": "2026-08-09T16:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1539301",
+      "nrw_title": "No Sunshine in Here",
+      "eventive_title": "No Sunshine in Here",
+      "festival": "",
+      "link": "https://watch.eventive.org/bsff26/play/6a46bd6d2e4b14fd514eb623",
+      "start": "2026-08-08T17:30:00.000Z",
+      "end": "2026-08-09T17:30:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "684086",
+      "nrw_title": "Mickey",
+      "eventive_title": "Mickey",
+      "festival": "",
+      "link": "https://watch.eventive.org/bsff26/play/6a46bd6d2e4b14fd514eb62d",
+      "start": "2026-08-08T20:30:00.000Z",
+      "end": "2026-08-09T20:30:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1567560",
+      "nrw_title": "Wood Street",
+      "eventive_title": "Wood Street",
+      "festival": "",
+      "link": "https://watch.eventive.org/bsff26/play/6a46bd6d2e4b14fd514eb646",
+      "start": "2026-08-09T15:30:00.000Z",
+      "end": "2026-08-10T15:30:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1249271",
       "nrw_title": "Powwow People",
       "eventive_title": "Powwow People",
@@ -972,6 +1056,18 @@
       "link": "https://watch.eventive.org/bsff26/play/6a46bd6d2e4b14fd514eb65f",
       "start": "2026-08-09T23:00:00.000Z",
       "end": "2026-08-10T23:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1599249",
+      "nrw_title": "Variations on a Theme",
+      "eventive_title": "Variations on a Theme",
+      "festival": "",
+      "link": "https://watch.eventive.org/bsff26/play/6a46bd6d2e4b14fd514eb664",
+      "start": "2026-08-10T00:30:00.000Z",
+      "end": "2026-08-11T00:30:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
