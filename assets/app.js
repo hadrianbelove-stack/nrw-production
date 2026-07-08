@@ -325,6 +325,14 @@ const NRW = {
             }, { passive: true });
         }
 
+        // Infinite scroll: a sentinel ~800px above the MORE button auto-loads the
+        // next page as it nears the viewport, so the wall grows without a click.
+        // The MORE button stays in the DOM as a no-JS / observer-failure fallback
+        // but is hidden (.observed) while the observer is live. inFlight guards
+        // against a burst of intersection callbacks stacking loadMore() calls; it
+        // clears after the render + a rAF so scroll-driven reflow can settle.
+        this.setupInfiniteScroll();
+
         // Narrow windows: the lightbox poster becomes a corner thumbnail inside
         // the info panel's hero row (mobile-sheet pattern), bottom-aligned with
         // the scores row; restored beside the panel when wide. CSS for both
@@ -709,6 +717,10 @@ const NRW = {
         const container = document.getElementById('load-more-container');
         if (!container) return;
 
+        // When the IntersectionObserver is running, the wall auto-grows, so the
+        // button is only a fallback — hide it via .observed but leave it in the DOM.
+        container.classList.toggle('observed', this._loadMoreObserverActive === true);
+
         if (hasMore) {
             const remaining = totalCount - this.displayedCount;
             container.innerHTML = `
@@ -719,6 +731,29 @@ const NRW = {
         } else {
             container.innerHTML = '';
         }
+    },
+
+    // Auto-load the next page as the sentinel (~800px above the MORE button)
+    // nears the viewport. Set up once; the observer + sentinel persist across
+    // re-renders (renderWall rebuilds #wall, not the sentinel/container siblings).
+    setupInfiniteScroll() {
+        const sentinel = document.getElementById('load-more-sentinel');
+        if (!sentinel || !('IntersectionObserver' in window)) return; // fallback: MORE button stays visible
+
+        this._loadMoreInFlight = false;
+        this._loadMoreObserver = new IntersectionObserver((entries) => {
+            if (!entries[0].isIntersecting) return;
+            if (this._loadMoreInFlight) return;
+            // Only load when there's actually more and we're not mid-search-empty.
+            if (this.displayedCount >= this.filteredMovies.length) return;
+            this._loadMoreInFlight = true;
+            this.loadMore();
+            // Release after the render settles so a single scroll can't stack loads,
+            // but the next page can still fire on continued scrolling.
+            requestAnimationFrame(() => requestAnimationFrame(() => { this._loadMoreInFlight = false; }));
+        }, { rootMargin: '800px 0px', threshold: 0 });
+        this._loadMoreObserver.observe(sentinel);
+        this._loadMoreObserverActive = true;
     },
 
     loadMore() {
@@ -1030,10 +1065,8 @@ const NRW = {
                     cardScoreBadges += `<span class="card-score-badge imdb"><img src="assets/logos/imdb.png" class="score-logo" alt="IMDb"> ${movie.imdb_rating}</span>`;
                 }
             }
-            if (movie.links?.letterboxd) {
-                const lbText = movie.letterboxd_score ? NRW.lbStars(movie.letterboxd_score) : '';
-                cardScoreBadges += `<a href="${movie.links.letterboxd}" target="_blank" rel="noopener noreferrer" class="card-score-badge lb"><img src="assets/logos/services/letterboxd-dots.svg" class="score-logo" alt="LB">${lbText ? ' ' + lbText : ''}</a>`;
-            }
+            // Card scores are RT + IMDb only (RT + IMDb on every surface, 2026-07-07).
+            // Letterboxd stays in the lightbox, not on the wall cards.
             const cardScoreHtml = cardScoreBadges ? `<div class="card-score-overlay">${cardScoreBadges}</div>` : '';
 
             html += `

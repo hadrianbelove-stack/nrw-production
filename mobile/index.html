@@ -21,7 +21,7 @@
     <meta name="twitter:title" content="The New Release Wall">
     <meta name="twitter:description" content="What came out, every day.">
     <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="mobile.css?v=105">
+    <link rel="stylesheet" href="mobile.css?v=106">
     <!-- Start the data download in parallel with CSS/JS instead of after them (audit #5) -->
     <link rel="preload" href="../data.json" as="fetch" crossorigin="anonymous">
     <link rel="icon" type="image/png" href="../favicon.png">
@@ -36,33 +36,34 @@
         </div>
         <p class="site-slogan">What came out, every day.</p>
         <div class="header-controls">
-            <div class="toggle-row">
-                <div class="slop-toggle-wrap" id="slop-free-toggle" data-state="all">
-                    <div class="slop-track">
-                        <div class="slop-thumb"></div>
-                    </div>
-                    <span class="slop-label" id="slop-state-label">SLOP FILTER</span>
+            <!-- SLOP: labeled 3-stop slider — one knob slides across SLOP FILTER ·
+                 SLOP FREE · SLOP ONLY (ports the desktop control-bar V3). Full-width
+                 on its own row so the three named stops have room to read. Quiet at
+                 rest, teal at FREE, orange at ONLY. #slop-state-label stays for the
+                 mobile.js/aria contract; the three .stop labels are the visible copy. -->
+            <div class="slop-row">
+                <div class="slop-slider" id="slop-free-toggle" data-state="all">
+                    <div class="slop-knob"></div>
+                    <span class="stop" data-i="0">SLOP FILTER</span>
+                    <span class="stop" data-i="1">SLOP FREE</span>
+                    <span class="stop" data-i="2">SLOP ONLY</span>
+                    <span class="slop-state-label-hidden" id="slop-state-label">SLOP FILTER</span>
                 </div>
-                <div class="filter-pill-divider"></div>
-                <div class="slop-toggle-wrap" id="highlights-toggle">
-                    <div class="slop-track">
-                        <div class="slop-thumb"></div>
-                    </div>
-                    <span class="slop-label">SELECTS</span>
+            </div>
+            <!-- BINARY VIEWS: flip switches with ON identity colors (teal / gold / purple),
+                 distributed across the width on a second row (canonical order preserved). -->
+            <div class="toggle-row switch-group">
+                <div class="switch-cell" id="highlights-toggle">
+                    <div class="sw-track"><div class="sw-thumb"></div></div>
+                    <span class="sw-label">SELECTS</span>
                 </div>
-                <div class="filter-pill-divider"></div>
-                <div class="slop-toggle-wrap" id="fest-toggle">
-                    <div class="slop-track">
-                        <div class="slop-thumb"></div>
-                    </div>
-                    <span class="slop-label">FESTS</span>
+                <div class="switch-cell" id="fest-toggle">
+                    <div class="sw-track"><div class="sw-thumb"></div></div>
+                    <span class="sw-label">FESTS</span>
                 </div>
-                <div class="filter-pill-divider"></div>
-                <div class="slop-toggle-wrap" id="preorder-toggle">
-                    <div class="slop-track">
-                        <div class="slop-thumb"></div>
-                    </div>
-                    <span class="slop-label">PRE-ORDER</span>
+                <div class="switch-cell" id="preorder-toggle">
+                    <div class="sw-track"><div class="sw-thumb"></div></div>
+                    <span class="sw-label">PRE-ORDER</span>
                 </div>
             </div>
             <div class="filter-row" id="filters">
@@ -154,7 +155,7 @@
     <div class="chevron chevron-left" id="chevron-left">&#8249;</div>
     <div class="chevron chevron-right" id="chevron-right">&#8250;</div>
 
-    <script src="../assets/shared-config.js?v=6"></script>
-    <script src="mobile.js?v=109"></script>
+    <script src="../assets/shared-config.js?v=7"></script>
+    <script src="mobile.js?v=110"></script>
 </body>
 </html>

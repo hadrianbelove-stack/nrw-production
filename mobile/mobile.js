@@ -207,27 +207,39 @@ const NRWMobile = {
             closeSheet();
         });
 
-        // Slop toggle (3-state: free / all / only)
+        // Slop control — a labeled 3-stop slider (control-bar V3, mobile port).
+        // One knob slides across SLOP FILTER · SLOP FREE · SLOP ONLY. Tapping a
+        // stop jumps straight to that mode; tapping the slider elsewhere cycles.
+        // Part of the exclusive view group. Labels match desktop exactly.
         const slopToggle = document.getElementById('slop-free-toggle');
         if (slopToggle) {
-            const SLOP_STATES = ['all', 'free', 'only'];  // SLOP FILTER (rest) → SLOP-FREE → SLOP ONLY → back
-            const SLOP_LABELS = { free: 'SLOP-FREE', all: 'SLOP FILTER', only: 'SLOP ONLY' };
+            const SLOP_STATES = ['all', 'free', 'only'];  // stop 0 / 1 / 2
+            const SLOP_LABELS = { all: 'SLOP FILTER', free: 'SLOP FREE', only: 'SLOP ONLY' };
             const updateSlopToggle = () => {
                 slopToggle.dataset.state = this.slopMode;
                 const label = document.getElementById('slop-state-label');
-                if (label) label.textContent = SLOP_LABELS[this.slopMode];
+                if (label) label.textContent = SLOP_LABELS[this.slopMode];  // hidden aria copy
             };
-            updateSlopToggle();
-            slopToggle.addEventListener('click', () => {
+            // Apply a slop state: clear search + other views, re-sync knob, re-filter.
+            const applySlop = (state) => {
                 this._clearSearchForView();  // search bypasses views — tapping one exits search
-                const idx = SLOP_STATES.indexOf(this.slopMode);
-                this.slopMode = SLOP_STATES[(idx + 1) % 3];
+                this.slopMode = state;
                 this.setExclusiveView('slop'); // clear genres + other toggles
                 updateSlopToggle();
                 this.applyFilter();
                 this.buildGrid();
                 this.setView(0);
                 this.dom.gridView.scrollTop = 0;
+            };
+            updateSlopToggle();
+            // Tap a specific stop → jump straight to that state (discoverable).
+            slopToggle.querySelectorAll('.stop').forEach((s, i) => {
+                s.addEventListener('click', (e) => { e.stopPropagation(); applySlop(SLOP_STATES[i]); });
+            });
+            // Tap elsewhere on the slider → cycle forward.
+            slopToggle.addEventListener('click', () => {
+                const idx = SLOP_STATES.indexOf(this.slopMode);
+                applySlop(SLOP_STATES[(idx + 1) % 3]);
             });
         }
 
