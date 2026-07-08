@@ -1,204 +1,240 @@
 /**
  * New Release Wall - tvOS Search Screen
- * Full-screen search destination (Apple TV / Netflix pattern): big query field
- * up top, live-filtered results grid below, native tvOS keyboard.
- * Searches movies by title, original title, director, or country.
+ * Full-screen search destination with a custom two-mode on-screen keyboard,
+ * porting the Roku app's pattern (NRWApp-Roku/components/screens/SearchScreen.brs):
+ *
+ *   KEYBOARD mode — d-pad key grid on the left; live match count (header) and
+ *                   live results grid (right pane) visible AT ALL TIMES while
+ *                   typing. The system tvOS keyboard blurred the results grid
+ *                   until the query was committed — that's why it was replaced.
+ *   BROWSE mode   — focus is inside the results grid (arrow RIGHT off the key
+ *                   grid, or DOWN off its bottom row via the boundary focus
+ *                   guide). Menu returns focus to the keyboard; LEFT off the
+ *                   grid's first column also lands back on the keys.
+ *
+ * Mode is derived from where tvOS focus actually is (key onFocus vs result
+ * card onFocus), so it can never desync from the focus engine.
+ *
+ * Menu-key contract (tvos-menu-pop landmine — do not "improve" this):
+ * The hardware Menu pop of this route fires at the UIKit layer and, on screens
+ * with focusable views, is NOT reliably interceptible (verified on-sim, three
+ * ways: beforeRemove preventDefault, TVEventControl menu ownership, and
+ * gestureEnabled:false all lost to it). Worse, a beforeRemove preventDefault
+ * against the native pop DESYNCS react-navigation's JS state from the native
+ * stack, and navigate('Search') becomes a no-op afterward — the original
+ * "can't reselect search" bug. So this screen NEVER blocks or preventDefaults
+ * the native pop. Instead:
+ *   - KEYBOARD mode: Menu is left to the system → native pop → exit search.
+ *     The exit-fresh contract holds: the route unmounts (search always reopens
+ *     fresh) and HomeScreen re-seeds focus onto the SEARCH button on return.
+ *   - BROWSE mode (and only while this route is focused): TVEventControl
+ *     .enableTVMenuKey() is scoped on, per the TrailerPlayer pattern, and the
+ *     JS 'menu' handler ONLY flips mode + re-seeds focus onto the key grid —
+ *     it never calls navigation methods. If the native pop still wins on real
+ *     hardware (sim can't prove Menu — TestFlight does), the worst case is
+ *     search exits a mode early; the stack can never desync or double-pop.
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   StyleSheet,
-  TouchableOpacity,
+  TVFocusGuideView,
+  TVEventControl,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { Colors } from '../constants/colors';
 import MovieCard from '../components/MovieCard.tvos';
 import SearchIcon from '../components/SearchIcon.tvos';
+import SearchKeyboard from '../components/SearchKeyboard.tvos';
+import { useTVEventHandler, TV_EVENTS } from '../utils/focusManager.tvos';
 import { getSearchMovieList, setSharedMovieList } from './sharedMovieList';
 
-const CARD_GAP = 16;
-const NUM_COLUMNS = 5;
+const CARD_GAP = 24;
+const NUM_COLUMNS = 3;
+
+// Ported VERBATIM from assets/shared-config.js NRWConfig.matchesSearch — the
+// shared 8-field matcher with accent folding. Keep in sync with the web sites.
+// (The character class below is the combining-diacritics range U+0300–U+036F
+// written as literal characters, exactly as the web source writes it.)
+const matchesSearch = (movie, query) => {
+  const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const nq = norm(query);
+  return norm(movie.title || '').includes(nq) ||
+         norm(movie.original_title || '').includes(nq) ||
+         norm(movie.crew?.director || movie.director || '').includes(nq) ||
+         norm((movie.crew?.cast || []).join(' ')).includes(nq) ||
+         norm(movie.capsule || movie.synopsis || '').includes(nq) ||
+         norm((movie.genres || []).join(' ')).includes(nq) ||
+         norm(movie.country || '').includes(nq) ||
+         String(movie.year || '').includes(query);
+};
 
 const SearchScreen = ({ route }) => {
   const navigation = useNavigation();
+  const isScreenFocused = useIsFocused();
   // Full movie list seeded by HomeScreen via the shared store (route params can't
   // carry the ~1.6MB list). route.params kept as a fallback for older callers.
   const movies = getSearchMovieList().length
     ? getSearchMovieList()
     : (route.params?.movies || []);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [results, setResults] = useState([]);
-  const [inputFocused, setInputFocused] = useState(false);
-  const [clearFocused, setClearFocused] = useState(false);
-  const inputRef = useRef(null);
 
-  // Focus input on mount
+  const [query, setQuery] = useState('');
+  // 'keyboard' | 'browse' — derived from focus (key onFocus vs card onFocus)
+  const [mode, setMode] = useState('keyboard');
+  // One-shot focus seed onto the 'A' key: true at mount (search opens typing)
+  // and re-armed by Menu in browse mode. Same pattern as HomeScreen's
+  // searchBtnPreferredFocus re-seed.
+  const [kbdPreferredFocus, setKbdPreferredFocus] = useState(true);
+  const [firstResultRef, setFirstResultRef] = useState(null);
+
   useEffect(() => {
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
-  }, []);
+    if (!kbdPreferredFocus) return;
+    const t = setTimeout(() => setKbdPreferredFocus(false), 400);
+    return () => clearTimeout(t);
+  }, [kbdPreferredFocus]);
 
-  // Hardware Menu exits this screen via the native-stack pop. That pop fires at
-  // the UIKit layer and is NOT interceptible (verified on-sim, three ways:
-  // beforeRemove preventDefault, TVEventControl menu ownership, and
-  // gestureEnabled:false all lost to it — TrailerPlayer's JS-menu trick only
-  // works because that screen has no focusable views). Worse, a beforeRemove
-  // preventDefault against the native pop DESYNCS react-navigation's JS state
-  // from the native stack, and navigate('Search') becomes a no-op afterward —
-  // the original "can't reselect search" bug. So: NO back-press interception of
-  // any kind on this screen. The UX contract instead: exiting unmounts the
-  // route (search always reopens fresh), HomeScreen re-seeds focus onto the
-  // SEARCH button on return, and the ✕ button clears in place.
+  // Live results — recomputed every keystroke; the grid never hides.
+  const trimmedQuery = query.trim();
+  const results = useMemo(
+    () => (trimmedQuery ? movies.filter((movie) => matchesSearch(movie, trimmedQuery)) : []),
+    [movies, trimmedQuery]
+  );
 
-  // Search function
-  const performSearch = useCallback((query) => {
-    if (!query.trim()) {
-      setResults([]);
-      return;
-    }
+  // Drop the boundary guide's target when there's nothing to land on.
+  useEffect(() => {
+    if (results.length === 0) setFirstResultRef(null);
+  }, [results.length]);
 
-    const lowerQuery = query.toLowerCase();
-    const filtered = movies.filter((movie) => {
-      const title = (movie.title || '').toLowerCase();
-      const origTitle = (movie.original_title || '').toLowerCase();
-      const director = (movie.crew?.director || movie.director || '').toLowerCase();
-      const country = (movie.country || '').toLowerCase();
+  // Keyboard events
+  const handleChar = useCallback((ch) => setQuery((q) => q + ch), []);
+  const handleDelete = useCallback(() => setQuery((q) => q.slice(0, -1)), []);
+  const handleClear = useCallback(() => setQuery(''), []);
+  const handleKeyFocus = useCallback(() => setMode('keyboard'), []);
+  const handleResultFocus = useCallback(() => setMode('browse'), []);
 
-      return (
-        title.includes(lowerQuery) ||
-        origTitle.includes(lowerQuery) ||
-        director.includes(lowerQuery) ||
-        country.includes(lowerQuery)
-      );
-    });
+  // BROWSE-mode Menu ownership — scoped exactly like TrailerPlayer's effect,
+  // and additionally gated on this route being the focused one so a pushed
+  // MovieDetail (Search stays mounted beneath it) never has its Menu swallowed.
+  useEffect(() => {
+    if (mode !== 'browse' || !isScreenFocused) return undefined;
+    TVEventControl.enableTVMenuKey();
+    return () => TVEventControl.disableTVMenuKey();
+  }, [mode, isScreenFocused]);
 
-    setResults(filtered);
-  }, [movies]);
+  useTVEventHandler({
+    [TV_EVENTS.MENU]: () => {
+      if (mode !== 'browse' || !isScreenFocused) return;
+      // Flip mode FIRST (turns Menu ownership off even if the focus re-seed
+      // fails, so the next Menu press can always exit natively — no trap),
+      // then re-seed focus onto the key grid. Never touch navigation here.
+      setMode('keyboard');
+      setKbdPreferredFocus(true);
+    },
+  });
 
-  // Handle search input change
-  const handleSearchChange = useCallback((text) => {
-    setSearchQuery(text);
-    performSearch(text);
-  }, [performSearch]);
-
-  // Handle movie selection — seed the shared list with the current results so
+  // Movie selection — seed the shared list with the current results so
   // MovieDetail's left/right arrows browse within the search results.
   const handleMovieSelect = useCallback((movie, index) => {
     setSharedMovieList(results);
     navigation.navigate('MovieDetail', { movie, movieIndex: index });
   }, [navigation, results]);
 
-  // Handle back button
-  const handleBack = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
-
-  // Render movie item
   const renderItem = useCallback(({ item, index }) => (
     <View style={styles.cardWrapper}>
       <MovieCard
+        ref={index === 0 ? ((r) => { if (r) setFirstResultRef(r); }) : undefined}
         movie={item}
         onSelect={() => handleMovieSelect(item, index)}
+        onFocus={handleResultFocus}
         testID={`search-result-${index}`}
       />
     </View>
-  ), [handleMovieSelect]);
+  ), [handleMovieSelect, handleResultFocus]);
 
   const keyExtractor = useCallback((item, index) => String(item.id || item.tmdb_id || index), []);
 
   return (
     <View style={styles.container}>
-      {/* Header with back button and the big query field */}
+      {/* Header: glass icon + query readout (not a TextInput — focusing one
+          summons the system keyboard) + live match count, visible every keystroke */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleBack}
-          accessible={true}
-          accessibilityLabel="Go back"
-          accessibilityRole="button"
-        >
-          <Text style={styles.backIcon}>‹</Text>
-        </TouchableOpacity>
-
-        <View style={[styles.searchContainer, inputFocused && styles.searchContainerFocused]}>
-          <View style={styles.searchIconWrap}>
-            <SearchIcon size={34} color={inputFocused ? '#00d4aa' : 'rgba(255,255,255,0.55)'} strokeWidth={1.8} />
-          </View>
-          <TextInput
-            ref={inputRef}
-            style={styles.searchInput}
-            placeholder="Search movies, directors, countries…"
-            placeholderTextColor="rgba(255,255,255,0.35)"
-            value={searchQuery}
-            onChangeText={handleSearchChange}
-            onFocus={() => setInputFocused(true)}
-            onBlur={() => setInputFocused(false)}
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="search"
-          />
-          {/* Audit F36: live match count INSIDE the keyboard band — the results
-              grid below sits behind the system keyboard's blur until the query
-              is committed, so this is the only per-keystroke feedback the user
-              can actually see. Don't fight the blur itself. */}
-          {searchQuery.length > 0 && (
-            <Text style={styles.liveCount}>
-              {results.length} {results.length === 1 ? 'match' : 'matches'}
+        <View style={styles.searchIconWrap}>
+          <SearchIcon size={34} color={Colors.primary} strokeWidth={1.8} />
+        </View>
+        <View style={styles.queryBox}>
+          {query.length > 0 ? (
+            <Text style={styles.queryText} numberOfLines={1}>
+              {query}
+              <Text style={styles.queryCursor}>▎</Text>
+            </Text>
+          ) : (
+            <Text style={styles.queryPlaceholder} numberOfLines={1}>
+              Search movies, directors, countries…
             </Text>
           )}
-          {searchQuery.length > 0 && (
-            <TouchableOpacity
-              style={[styles.clearButton, clearFocused && styles.clearButtonFocused]}
-              onPress={() => handleSearchChange('')}
-              onFocus={() => setClearFocused(true)}
-              onBlur={() => setClearFocused(false)}
-              accessible={true}
-              accessibilityLabel="Clear search"
-            >
-              <Text style={[styles.clearIcon, clearFocused && styles.clearIconFocused]}>✕</Text>
-            </TouchableOpacity>
+        </View>
+        {trimmedQuery.length > 0 && (
+          <Text style={styles.liveCount}>
+            {results.length} {results.length === 1 ? 'match' : 'matches'}
+          </Text>
+        )}
+      </View>
+
+      <View style={styles.body}>
+        {/* Left pane: the key grid (KEYBOARD mode home) */}
+        <View style={styles.keyboardPane}>
+          <SearchKeyboard
+            onChar={handleChar}
+            onDelete={handleDelete}
+            onClear={handleClear}
+            onKeyFocus={handleKeyFocus}
+            preferredFocus={kbdPreferredFocus}
+          />
+          {/* DOWN boundary: focus falling off the keyboard's bottom row lands
+              here and is redirected to the first result card. Sits under the
+              keyboard only (NOT between the panes — a between-pane guide would
+              also catch LEFT moves from the grid and trap focus in results). */}
+          <TVFocusGuideView
+            destinations={firstResultRef && results.length > 0 ? [firstResultRef] : []}
+            style={styles.downBoundaryGuide}
+          />
+          <Text style={styles.hint}>
+            {mode === 'browse'
+              ? 'MENU back to keyboard  ·  press a poster to open'
+              : 'RIGHT or DOWN to browse results  ·  MENU to exit'}
+          </Text>
+        </View>
+
+        {/* Right pane: live results — visible at all times (the whole point) */}
+        <View style={styles.resultsPane}>
+          {results.length > 0 ? (
+            <FlatList
+              data={results}
+              renderItem={renderItem}
+              keyExtractor={keyExtractor}
+              numColumns={NUM_COLUMNS}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.listContent}
+              columnWrapperStyle={styles.row}
+            />
+          ) : trimmedQuery.length > 0 ? (
+            <View style={styles.emptyContainer}>
+              <SearchIcon size={72} color="rgba(255,255,255,0.18)" strokeWidth={1.4} />
+              <Text style={styles.emptyText}>No movies found</Text>
+              <Text style={styles.emptyHint}>Try a different title, director, or country</Text>
+            </View>
+          ) : (
+            <View style={styles.emptyContainer}>
+              <SearchIcon size={72} color="rgba(0,212,170,0.35)" strokeWidth={1.4} />
+              <Text style={styles.emptyText}>Search the wall</Text>
+              <Text style={styles.emptyHint}>Results appear here as you type</Text>
+            </View>
           )}
         </View>
       </View>
-
-      {/* Results count */}
-      {searchQuery.length > 0 && (
-        <View style={styles.resultsInfo}>
-          <Text style={styles.resultsText}>
-            {results.length} {results.length === 1 ? 'result' : 'results'} for "{searchQuery}"
-          </Text>
-        </View>
-      )}
-
-      {/* Results grid */}
-      {results.length > 0 ? (
-        <FlatList
-          data={results}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          numColumns={NUM_COLUMNS}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          columnWrapperStyle={styles.row}
-        />
-      ) : searchQuery.length > 0 ? (
-        <View style={styles.emptyContainer}>
-          <SearchIcon size={72} color="rgba(255,255,255,0.18)" strokeWidth={1.4} />
-          <Text style={styles.emptyText}>No movies found</Text>
-          <Text style={styles.emptyHint}>Try a different title, director, or country</Text>
-        </View>
-      ) : (
-        <View style={styles.emptyContainer}>
-          <SearchIcon size={72} color="rgba(0,212,170,0.35)" strokeWidth={1.4} />
-          <Text style={styles.emptyText}>Search the wall</Text>
-          <Text style={styles.emptyHint}>Press Search to see results — the match count updates as you type</Text>
-        </View>
-      )}
     </View>
   );
 };
@@ -213,91 +249,65 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 68,
     paddingTop: 40,
-    paddingBottom: 18,
-    gap: 24,
-  },
-  backButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backIcon: {
-    color: Colors.textPrimary,
-    fontSize: 38,
-    lineHeight: 44,
-  },
-  // Big query field — 10-foot sizing, teal focus treatment matching the app
-  searchContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 18,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.16)',
-    paddingHorizontal: 26,
-    height: 88,
-  },
-  searchContainerFocused: {
-    borderColor: Colors.primary,
-    backgroundColor: 'rgba(0,212,170,0.06)',
-    shadowColor: Colors.primary,
-    shadowOpacity: 0.45,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 0 },
+    paddingBottom: 24,
+    gap: 20,
   },
   searchIconWrap: {
-    marginRight: 18,
+    width: 44,
+    alignItems: 'center',
   },
-  searchInput: {
+  // Query readout — 10-foot sizing, teal-adjacent chrome matching the app
+  queryBox: {
     flex: 1,
+    height: 84,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.16)',
+    paddingHorizontal: 24,
+  },
+  queryText: {
     color: Colors.textPrimary,
     fontSize: 30,
-    height: '100%',
   },
-  clearButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  clearButtonFocused: {
-    backgroundColor: 'rgba(0,212,170,0.15)',
-    borderColor: Colors.primary,
-  },
-  clearIcon: {
-    color: 'rgba(255,255,255,0.55)',
+  queryCursor: {
+    color: Colors.primary,
     fontSize: 30,
   },
-  clearIconFocused: {
-    color: Colors.primary,
+  queryPlaceholder: {
+    color: 'rgba(255,255,255,0.35)',
+    fontSize: 30,
   },
-  // Live match count in the keyboard band (Audit F36)
+  // Live match count — per-keystroke feedback, never hidden (10-foot: >= 22pt)
   liveCount: {
     color: Colors.primary,
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700',
-    marginLeft: 18,
   },
-  resultsInfo: {
+  body: {
+    flex: 1,
+    flexDirection: 'row',
     paddingHorizontal: 68,
-    paddingBottom: 10,
+    gap: 48,
   },
-  resultsText: {
+  keyboardPane: {
+    width: 506,
+  },
+  downBoundaryGuide: {
+    width: '100%',
+    height: 2,
+  },
+  hint: {
+    marginTop: 16,
     color: Colors.textSecondary,
-    fontSize: 20,
+    fontSize: 22,
+    lineHeight: 28,
+  },
+  resultsPane: {
+    flex: 1,
   },
   listContent: {
-    // Center the 5-column grid: (1920 - 5*344 - 4*16) / 2 = 68px
-    paddingHorizontal: 68,
-    paddingTop: 10,
     paddingBottom: 40,
   },
   row: {
@@ -320,7 +330,7 @@ const styles = StyleSheet.create({
   },
   emptyHint: {
     color: Colors.textMuted,
-    fontSize: 20,
+    fontSize: 22,
   },
 });
 

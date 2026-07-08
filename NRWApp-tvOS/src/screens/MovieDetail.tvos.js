@@ -751,7 +751,9 @@ const MovieDetailTvOS = () => {
                 </Text>
               </View>
               {(() => {
+                // Meta grammar (audit F12): Country \u00b7 Genre \u00b7 Date
                 const hp = [];
+                if (formattedCountries) hp.push(formattedCountries);
                 if (movie.genres?.[0]) hp.push(movie.genres[0]);
                 if (movie.digital_date) {
                   let d = formatShortDate(movie.digital_date);
@@ -759,7 +761,6 @@ const MovieDetailTvOS = () => {
                     d += '\u2013' + formatShortDate(movie.virtual_screening_info.available_end);
                   hp.push(d);
                 }
-                if (formattedCountries) hp.push(formattedCountries);
                 return hp.length > 0 ? <Text style={styles.titleDate}>{hp.join(' \u00b7 ')}</Text> : null;
               })()}
             </View>
@@ -769,7 +770,7 @@ const MovieDetailTvOS = () => {
               {/* Left: Director, Cast, year/runtime, language */}
               <View style={styles.metaLeft}>
                 {(movie.crew?.director || movie.director) && (
-                  <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Director: </Text><Text style={styles.metadataCrewName}>{movie.crew?.director || movie.director}</Text></Text>
+                  <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Dir: </Text><Text style={styles.metadataCrewName}>{movie.crew?.director || movie.director}</Text></Text>
                 )}
                 {movie.crew?.cast?.length > 0 && (
                   <Text style={styles.metadataCrewLine}><Text style={styles.metadataCrewLabel}>Cast: </Text><Text style={styles.metadataCrewName}>{movie.crew.cast.slice(0, 3).join(', ')}</Text></Text>

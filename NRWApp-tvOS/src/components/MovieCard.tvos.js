@@ -265,7 +265,9 @@ const MovieCard = forwardRef(({
 
   const countryText = getCountryText();
   const genre = movie.genres?.[0];
-  const metaText = [director, genre, countryText].filter(Boolean).join(' • ');
+  // Caption contract (audit F28, ports desktop .movie-meta): the director may
+  // shrink/ellipsize, but ' · Genre · Nation' is pinned and never lost.
+  const metaSuffix = [genre, countryText].filter(Boolean).join(' · ');
 
   // Packed genre views (HomeScreen showDate): no date-strip rows in the grid,
   // so the card carries its own small muted date, e.g. "JUL 3".
@@ -428,12 +430,24 @@ const MovieCard = forwardRef(({
           {isFocused && <View style={styles.focusBorder} />}
         </Animated.View>
 
-        {/* Info below poster - always visible */}
+        {/* Info below poster - always visible.
+            Row of nested Texts (desktop .movie-meta contract): director Text
+            flexShrink 1 + numberOfLines 1 so IT ellipsizes; the ' · Genre ·
+            Nation' suffix Text is flexShrink 0 so it is never pushed off. */}
         <View style={styles.infoContainer}>
-          {metaText !== '' && (
-            <Text style={styles.infoText} numberOfLines={1}>
-              {metaText}
-            </Text>
+          {(director || metaSuffix !== '') && (
+            <View style={styles.infoRow}>
+              {director ? (
+                <Text style={[styles.infoText, styles.infoDirector]} numberOfLines={1}>
+                  {director}
+                </Text>
+              ) : null}
+              {metaSuffix !== '' ? (
+                <Text style={[styles.infoText, styles.infoSuffix]} numberOfLines={1}>
+                  {director ? ` · ${metaSuffix}` : metaSuffix}
+                </Text>
+              ) : null}
+            </View>
           )}
           {cardDate && (
             <Text style={styles.infoDate} numberOfLines={1}>
@@ -598,11 +612,23 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     paddingHorizontal: 2,
   },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    maxWidth: '100%',
+  },
   infoText: {
     color: Colors.primary,
-    fontSize: 20,
+    fontSize: 23,
     fontWeight: '700',
     textAlign: 'center',
+  },
+  // Director shrinks/ellipsizes; suffix (' · Genre · Nation') is pinned
+  infoDirector: {
+    flexShrink: 1,
+  },
+  infoSuffix: {
+    flexShrink: 0,
   },
   // Small per-card date shown in packed (genre-filtered) grids
   infoDate: {
