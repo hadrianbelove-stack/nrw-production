@@ -1136,6 +1136,12 @@ header h1 {
     box-shadow: 0 5px 20px rgba(0, 212, 170, 0.4);
 }
 
+/* Infinite scroll: the sentinel is a zero-height trigger above the button; the
+   MORE button is kept as a no-JS / observer-failure fallback but hidden once
+   the observer is live (container gets .observed from renderMoreButton). */
+#load-more-sentinel { height: 1px; width: 100%; }
+#load-more-container.observed { display: none; }
+
 /* Trailer Modal */
 .trailer-modal {
     display: none;

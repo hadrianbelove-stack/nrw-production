@@ -219,6 +219,7 @@ border-color: #00d4aa;
 - Subtle border `rgba(255,255,255,0.2)`
 - Shadow on hover
 - Scale up slightly on hover (`transform: scale(1.05)`)
+- **Card scores: RT + IMDb on every surface** (translucent logo'd badges — tomato logo + salmon `#ff6b6b` for RT, IMDb yellow `#f5c518`). Letterboxd lives in the lightbox/detail view only, not on wall cards.
 
 ### Navigation Arrows (Movie Detail)
 For navigating between movies on detail screens across all devices:
@@ -315,6 +316,11 @@ Use **light theme** for better email compatibility:
 ---
 
 ## Changelog
+
+### 2026-07-07 - Owner rulings: card scores + action color + infinite scroll
+- Card scores unified to **RT + IMDb on every surface** (desktop wall cards dropped Letterboxd — it stays in the lightbox/detail; mobile + TVs were already RT+IMDb)
+- Action genre color moved off `#ff9500` to `#ff5a36` in `shared-config.js` `STRIP_COLORS` (resolves the F24 collision where action = Purchase/rent = slop-only = TV-focus orange)
+- Desktop wall gains infinite scroll (IntersectionObserver sentinel); the MORE button stays as a no-JS/failure fallback, hidden while the observer runs. Mobile already had infinite scroll.
 
 ### 2026-07-06 - Owner rulings: category colors + captions + packed filtered views
 - Selects = teal `#00d4aa` (crimson `#dc143c` retired; table, hover glow, and newsletter example updated)

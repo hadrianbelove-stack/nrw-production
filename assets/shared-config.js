@@ -46,7 +46,7 @@ const NRWConfig = {
     STRIP_COLORS: {
         'indie': '#00d4aa',
         'horror': '#ff5e57',
-        'action': '#ff9500',
+        'action': '#ff5a36',
         'comedy': '#ffd32a',
         'family': '#2ed573',
         'thriller': '#d63031',
