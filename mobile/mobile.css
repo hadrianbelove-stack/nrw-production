@@ -859,7 +859,9 @@ body {
   border-radius: 18px 18px 0 0;
   z-index: 940;
   transform: translateY(100%);
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  /* z-index drop waits for the slide-down to finish, so the closing sheet
+     doesn't pop behind the header mid-animation */
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), z-index 0s 0.3s;
   display: flex;
   flex-direction: column;
   box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
@@ -867,8 +869,10 @@ body {
 .bottom-sheet.visible {
   transform: translateY(0);
   /* Above the fixed header (950): the risen sheet covers the control rows;
-     the wordmark + slogan stay visible above the sheet's top edge. */
+     the wordmark + slogan stay visible above the sheet's top edge.
+     z-index raises instantly on open (no delay in this state's transition). */
   z-index: 955;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .sheet-handle {
   display: flex;
@@ -1016,7 +1020,9 @@ body {
 .sheet-scores {
   display: flex;
   gap: 5px;
-  flex-wrap: nowrap;
+  /* wrap: a fully-scored film has 5 badges in a ~233px column — nowrap
+     clipped the last one (usually Letterboxd) untappable on narrow phones */
+  flex-wrap: wrap;
   margin-top: auto;
   min-width: 0;
 }
@@ -1115,17 +1121,6 @@ body {
 .btn-share svg { width: 18px; height: 18px; fill: currentColor; }
 .btn-share:active { background: rgba(0,212,170,0.12); transform: scale(0.98); }
 
-/* Make reused watch buttons full-width inside the bar */
-.sheet-btnbar .vcard-m {
-  width: 100%;
-  max-width: none;
-  min-height: 50px;
-  border-radius: 10px;
-}
-.sheet-btnbar .vcard-logo-m { width: 42%; }
-.sheet-btnbar .vcard-prices-m { width: 58%; }
-.sheet-btnbar .vcard-logo-m .vcard-logo-text { font-size: 0.72rem; }
-.sheet-btnbar .vcard-price-m { font-size: 0.72rem; }
 /* Brand-colored streaming button (matches mockup .btn-stream) */
 .btn-stream {
   display: flex;
@@ -1222,83 +1217,6 @@ body {
   font-weight: 600;
   white-space: nowrap;
 }
-
-/* V2 VOD price cards (mobile): logo left, prices right */
-.vcard-m {
-  display: flex;
-  flex-direction: row;
-  border-radius: 6px;
-  overflow: hidden;
-  min-width: 130px;
-  max-width: 180px;
-}
-.vcard-logo-m {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50%;
-  padding: 8px 6px;
-  text-decoration: none;
-}
-.vcard-logo-m .vcard-logo-img {
-  height: 14px;
-  width: auto;
-  max-width: 60px;
-  object-fit: contain;
-}
-.vcard-logo-m .vcard-logo-img.invert { filter: invert(1); }
-.vcard-logo-m .vcard-logo-text {
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.6rem;
-  text-transform: uppercase;
-}
-.vcard-prices-m {
-  display: flex;
-  flex-direction: column;
-  width: 50%;
-}
-.vcard-price-m {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  color: inherit;
-  font-weight: 700;
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  padding: 5px 3px;
-  white-space: nowrap;
-}
-.vcard-price-m.rent:not(:only-child) { border-bottom: 1px solid rgba(0,0,0,0.15); }
-/* Logo backgrounds */
-.vcard-m.amazon .vcard-logo-m { background: #ff9900; }
-.vcard-m.apple .vcard-logo-m { background: #000; }
-.vcard-m.apple { border: 1px solid #444; }
-.vcard-m.fandango .vcard-logo-m { background: #FF6600; }
-.vcard-m.youtube .vcard-logo-m { background: #cc0000; }
-.vcard-m.plex .vcard-logo-m { background: #1a1a1a; }
-.vcard-m.plex { border: 1px solid #444; }
-/* Logo images white */
-.vcard-m.amazon .vcard-logo-img { filter: brightness(0) invert(1); }
-.vcard-m.apple .vcard-logo-img { filter: invert(1); }
-.vcard-m.fandango .vcard-logo-img { filter: brightness(0) invert(1); }
-.vcard-m.youtube .vcard-logo-img { filter: brightness(0) invert(1); }
-.vcard-m.plex .vcard-logo-img { filter: brightness(0) invert(1); }
-/* Price colors */
-.vcard-m.amazon .vcard-price-m.rent { background: #ffad33; color: #000; }
-.vcard-m.amazon .vcard-price-m.buy { background: #e68a00; color: #000; }
-.vcard-m.apple .vcard-price-m.rent { background: #2a2a2a; color: #fff; }
-.vcard-m.apple .vcard-price-m.buy { background: #1a1a1a; color: #ddd; }
-.vcard-m.fandango .vcard-price-m.rent { background: #e55a00; color: #fff; }
-.vcard-m.fandango .vcard-price-m.buy { background: #cc5200; color: #fff; }
-.vcard-m.youtube .vcard-price-m.rent { background: #cc0000; color: #fff; }
-.vcard-m.youtube .vcard-price-m.buy { background: #990000; color: #fff; }
-.vcard-m.plex .vcard-price-m.rent { background: #c8900b; color: #fff; }
-.vcard-m.plex .vcard-price-m.buy { background: #a07508; color: #fff; }
-.vcard-m.apple .vcard-price-m.rent:not(:only-child) { border-bottom: 1px solid #444; }
 
 /* Virtual screening — quiet gold-italic note at the end of the capsule */
 .sheet-vs-note {

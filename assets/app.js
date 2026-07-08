@@ -135,7 +135,6 @@ const NRW = {
         // Click anywhere on a movie card to open lightbox
         document.getElementById('wall').addEventListener('click', (e) => {
             if (e.target.tagName === 'A') return;
-            if (e.target.closest('.movie-info')) return;
             if (e.target.closest('[data-trailer-reel]')) return;
 
             // Find the movie card — try multiple selectors for robustness
@@ -500,11 +499,12 @@ const NRW = {
 
         if (!searchInput) return;
 
-        // Debounce search for performance
-        let debounceTimer;
+        // Debounce search for performance. Timer lives on `this` so
+        // _clearSearchForView can cancel a pending fire when a view toggle
+        // interrupts mid-debounce.
         searchInput.addEventListener('input', (e) => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
+            clearTimeout(this._searchDebounce);
+            this._searchDebounce = setTimeout(() => {
                 this.gridClearSelection();
                 this.searchQuery = e.target.value.trim().toLowerCase();
                 this.displayedCount = this.loadIncrement; // Reset pagination
@@ -607,8 +607,12 @@ const NRW = {
     // Search bypasses views, so clear the query first, then let the caller apply
     // the chosen view. Returns nothing; safe to call unconditionally.
     _clearSearchForView() {
-        if (!this.searchQuery) return;
+        // Cancel a mid-debounce search too — text typed <200ms before the
+        // toggle click isn't in searchQuery yet, but its pending timer would
+        // flip the wall back into search mode with the toggle still lit.
+        clearTimeout(this._searchDebounce);
         const input = document.getElementById('search-input');
+        if (!this.searchQuery && !(input && input.value)) return;
         const clearBtn = document.getElementById('search-clear');
         if (input) input.value = '';
         if (clearBtn) clearBtn.style.display = 'none';
@@ -1220,7 +1224,7 @@ const NRW = {
             }
             container.innerHTML = `
                 <iframe id="trailer-iframe"
-                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&enablejsapi=1"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowfullscreen>
@@ -1228,7 +1232,20 @@ const NRW = {
             `;
             this._trailerLoadedMovieId = null;
             this._setTrailerYouTubeMode(videoId);
+            this._ytPaused = false; // autoplay=1 — starts playing
         }
+    },
+
+    // YouTube embed play/pause via the iframe API (enablejsapi=1 on the src).
+    // State is tracked optimistically — a player-side pause can desync one
+    // keypress, after which the toggle re-syncs.
+    _ytTogglePlay() {
+        const frame = document.getElementById('trailer-iframe');
+        if (!frame || !frame.contentWindow) return;
+        const func = this._ytPaused ? 'playVideo' : 'pauseVideo';
+        frame.contentWindow.postMessage(
+            JSON.stringify({ event: 'command', func, args: [] }), '*');
+        this._ytPaused = !this._ytPaused;
     },
 
     // Navigate to next/prev trailer within the lightbox movie list
@@ -2008,8 +2025,7 @@ const NRW = {
             // Numeric Letterboxd score (honest half-values, one decimal) instead
             // of the rounded ★★★☆☆ string. The star glyphs made this chip ~143px
             // wide, overflowing the scores row and clipping the TRAILER pill on
-            // 5-chip films. Lightbox only — the wall card (renderMovie, ~line 919)
-            // still uses stars. NaN-guarded so a malformed score falls back to LB.
+            // 5-chip films. NaN-guarded so a malformed score falls back to LB.
             let lbText = 'LB';
             if (movie.letterboxd_score) {
                 const lbNum = parseFloat(movie.letterboxd_score);
@@ -2328,6 +2344,7 @@ const NRW = {
                     e.preventDefault();
                     const vid = document.getElementById('trailer-video');
                     if (vid) vid.paused ? vid.play() : vid.pause();
+                    else this._ytTogglePlay(); // YouTube embed mode
                 } else if (e.key === 'j' || e.key === 'J') {
                     e.preventDefault();
                     const vid = document.getElementById('trailer-video');

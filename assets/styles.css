@@ -2355,7 +2355,6 @@ header.nrw-collapsed { padding-top: 0.6rem; }
 .cwide-controls { display: flex; align-items: center;
   background: transparent; border: none; justify-content: space-between;
   border-radius: 0; padding: 4px 2px 12px; gap: 18px; }
-.cwide-divider { display: none; }
 
 /* GENRE — raised to the shared height with real presence (control-bar V3) */
 .genre-slot { position: relative; display: flex; align-items: center; flex: 0 0 auto; }
@@ -2383,8 +2382,9 @@ header.nrw-collapsed { padding-top: 0.6rem; }
    view toggle + GENRE, so dim them to ~0.35 to show they're not in play.
    Pointer-events stay live — clicking one clears the search and applies the
    view (wired in app.js). */
+/* .switch-group is display:contents (can't carry opacity) — dim its children */
 .cwide-controls.search-active .slop-slider,
-.cwide-controls.search-active .switch-group,
+.cwide-controls.search-active .switch-group > *,
 .cwide-controls.search-active .genre-slot { opacity: 0.35; transition: opacity .2s; }
 /* "searching all films" microcopy under the search field */
 .cwide-controls .search-scope-note {

@@ -366,10 +366,11 @@ const NRWMobile = {
         const clearBtn = document.getElementById('search-clear');
         if (!searchInput) return;
 
-        let debounceTimer;
+        // Timer lives on `this` so _clearSearchForView can cancel a pending
+        // fire when a view toggle interrupts mid-debounce.
         searchInput.addEventListener('input', (e) => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
+            clearTimeout(this._searchDebounce);
+            this._searchDebounce = setTimeout(() => {
                 this.searchQuery = e.target.value.trim().toLowerCase();
                 this.applyFilter();
                 this.buildGrid();
@@ -454,8 +455,12 @@ const NRWMobile = {
     // A toggle / genre was tapped while a search was active. Search bypasses
     // views, so clear the query first, then let the caller apply the view.
     _clearSearchForView() {
-        if (!this.searchQuery) return;
+        // Cancel a mid-debounce search too — text typed <200ms before the
+        // toggle tap isn't in searchQuery yet, but its pending timer would
+        // flip the wall back into search mode with the toggle still lit.
+        clearTimeout(this._searchDebounce);
         const input = document.getElementById('search-input');
+        if (!this.searchQuery && !(input && input.value)) return;
         const clearBtn = document.getElementById('search-clear');
         if (input) input.value = '';
         if (clearBtn) clearBtn.style.display = 'none';
@@ -850,6 +855,15 @@ const NRWMobile = {
             if (document.getElementById('trailer-overlay')) return;
             const target = (history.state && typeof history.state.nrwView === 'number')
                 ? history.state.nrwView : 0;
+            // Entries deeper in the stack survive the reload-neutralizer above;
+            // after a reload they name a view for a movie that isn't loaded —
+            // fall back to the wall instead of a blank sheet/poster (the
+            // desktop popstate handler guards the same way).
+            if (target > 0 && !(this.filteredMovies && this.filteredMovies.length)) {
+                this._histDepth = 0;
+                this._applyView(0);
+                return;
+            }
             this._histDepth = target;
             if (target === 0) this._stripDeepLink();
             this._applyView(target);
@@ -1498,34 +1512,6 @@ const NRWMobile = {
             ? '<a class="btn-stream" style="' + style + '" href="' + provider.link +
                 '" target="_blank" rel="noopener">' + label + '</a>'
             : '<div class="btn-stream" style="' + style + '">' + label + '</div>';
-    },
-
-    renderVODPriceCard(provider) {
-        if (!provider.rentPrice && !provider.buyPrice) return this.renderProviderBadge(provider);
-        // V2: logo left, prices stacked right
-        const svcKey = provider.serviceKey || '';
-        const invertClass = this.INVERT_KEYS.has(svcKey) ? ' invert' : '';
-        let logoHtml;
-        if (provider.wideLogo) {
-            const src = '../assets/logos/' + provider.wideLogo;
-            logoHtml = '<img class="vcard-logo-img' + invertClass + '" src="' + src +
-                '" alt="' + this.esc(provider.name) + '">';
-        } else {
-            logoHtml = '<span class="vcard-logo-text">' + this.esc(provider.name) + '</span>';
-        }
-        let pricesHtml = '';
-        if (provider.rentPrice) {
-            pricesHtml += '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
-                'class="vcard-price-m rent">Rent ' + this.esc(provider.rentPrice) + '</a>';
-        }
-        if (provider.buyPrice) {
-            pricesHtml += '<a href="' + provider.link + '" target="_blank" rel="noopener" ' +
-                'class="vcard-price-m buy">Buy ' + this.esc(provider.buyPrice) + '</a>';
-        }
-        return '<div class="vcard-m ' + this.esc(svcKey) + '">' +
-            '<a href="' + provider.link + '" target="_blank" rel="noopener" class="vcard-logo-m">' + logoHtml + '</a>' +
-            '<div class="vcard-prices-m">' + pricesHtml + '</div>' +
-            '</div>';
     },
 
     // Compact VOD card for the one-row bottom bar (density redesign):
