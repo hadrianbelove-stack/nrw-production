@@ -113,6 +113,55 @@ class ProviderDiscoverer:
                                 f"{movie.get('title', movie_id)}: {e}")
         return False
 
+    # ------------------------------------------------------------------
+    # Stage-4 version gate (restorations)
+    # ------------------------------------------------------------------
+
+    def _reissue_gate_active(self, movie):
+        """True when the restoration version gate applies: gate enabled, the film is
+        a reissue, and no human has verified the available offer IS the restoration."""
+        return bool(self.config.get('restoration_gate', {}).get('enabled', False)
+                    and movie.get('_reissue')
+                    and not movie.get('_version_verified'))
+
+    def _hold_reissue_for_version_check(self, movie_id, movie, source,
+                                        orig_digital_date='__unset__'):
+        """Stage-4 gate: a reissue that reached a JW-verified transition is HELD in
+        tracking instead of walled — TMDB/JW confirm the TITLE has offers, not that
+        the offer is the RESTORATION (44% of parked restorations have an old transfer
+        already streaming). pipeline/version_check.py researches held films;
+        scripts/release_restoration.py --release sets _version_verified and the next
+        discovery run transitions the film on these same rails.
+
+        Returns True when held (caller must skip the transition).
+        """
+        if not self._reissue_gate_active(movie):
+            return False
+        first_hold = not movie.get('_version_check_pending')
+        movie['_version_check_pending'] = True
+        movie.setdefault('_version_check_since', datetime.now().strftime('%Y-%m-%d'))
+        movie['_restoration_stage'] = 'pending_version_check'
+        movie['_pending_transition_source'] = source
+        provs = movie.get('providers') or {}
+        movie['_pending_platforms'] = sorted({p for kind in ('streaming', 'rent', 'buy')
+                                              for p in (provs.get(kind) or [])})
+        # The provider path stamps a speculative digital_date=today before this gate;
+        # restore the pre-check value so the film dates from its real release day when
+        # it finally walls (same pattern as the rent pre-order hold).
+        if orig_digital_date != '__unset__':
+            if orig_digital_date is None:
+                movie.pop('digital_date', None)
+            else:
+                movie['digital_date'] = orig_digital_date
+        if first_hold:
+            self.logger.info(f"Version gate: {movie.get('title', movie_id)} held for "
+                             f"restoration-version check (source={source})")
+            print(f"  🔎 {movie.get('title', movie_id)} — offers found, HELD for version check "
+                  f"(restoration or old transfer?)")
+        else:
+            self.logger.debug(f"Version gate: {movie.get('title', movie_id)} still held")
+        return True
+
     def _verify_before_wall(self, movie_id, movie):
         """JustWatch pre-check before adding a movie to the wall.
 
@@ -505,6 +554,9 @@ class ProviderDiscoverer:
                                     if jw_result is None:
                                         type4_found = True  # Don't fall through to provider check
                                         continue
+                                    if self._hold_reissue_for_version_check(movie_id, movie, 'tmdb_type4'):
+                                        type4_found = True
+                                        continue
                                     self.host._transition_movie_to_available(
                                         movie_id, movie, 'tmdb_type4', newly_available_ids)
                                     newly_digital += 1
@@ -515,10 +567,17 @@ class ProviderDiscoverer:
                                     days_until = (pending_dt - today_dt).days
                                     # Ensure pending movie is on wall as pre-order (migrates existing pending movies)
                                     if not movie.get('_is_preorder'):
-                                        movie['_is_preorder'] = True
-                                        self.host.add_movie_to_site_immediately(movie_id, movie)
-                                        newly_available_ids.append(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
-                                        print(f"  🏷️ {movie['title']} — added to wall as pre-order ({pending_date})")
+                                        if self._reissue_gate_active(movie):
+                                            # Gated reissue: never on the wall unverified — the future
+                                            # date is a VOD announcement, not a pre-order card.
+                                            movie['_restoration_stage'] = 'vod_announced'
+                                            self.logger.info(f"Version gate: {movie['title']} pre-order "
+                                                             f"suppressed (digital {pending_date})")
+                                        else:
+                                            movie['_is_preorder'] = True
+                                            self.host.add_movie_to_site_immediately(movie_id, movie)
+                                            newly_available_ids.append(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
+                                            print(f"  🏷️ {movie['title']} — added to wall as pre-order ({pending_date})")
                                     self.logger.debug(f"Type 4 still pending: {movie['title']} — {days_until}d until {pending_date}")
                             except ValueError:
                                 pass
@@ -555,6 +614,9 @@ class ProviderDiscoverer:
                                     if jw_result is None:
                                         type4_found = True  # Don't fall through to provider check
                                         continue
+                                    if self._hold_reissue_for_version_check(movie_id, movie, 'tmdb_type4'):
+                                        type4_found = True
+                                        continue
                                     self.host._transition_movie_to_available(
                                         movie_id, movie, 'tmdb_type4', newly_available_ids)
                                     newly_digital += 1
@@ -568,12 +630,22 @@ class ProviderDiscoverer:
                                     movie['digital_date'] = type4_date
                                     movie['_discovery_source'] = 'tmdb_type4'
                                     movie['_type4_pending'] = True
-                                    movie['_is_preorder'] = True
                                     type4_found = True  # Skip provider check
-                                    self.host.add_movie_to_site_immediately(movie_id, movie)
-                                    newly_available_ids.append(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
-                                    self.logger.info(f"Type 4 future: {movie['title']} — {days_until}d until {type4_date} [pre-order on wall]")
-                                    print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date}) [pre-order on wall]")
+                                    if self._reissue_gate_active(movie):
+                                        # Gated reissue: never on the wall unverified — record the
+                                        # future date as a VOD announcement; the pending branch
+                                        # re-evaluates daily and the gate holds it at arrival too.
+                                        movie['_restoration_stage'] = 'vod_announced'
+                                        self.logger.info(f"Version gate: {movie['title']} future digital "
+                                                         f"{type4_date} — pre-order suppressed")
+                                        print(f"  🔎 {movie['title']} — digital in {days_until}d ({type4_date}) "
+                                              f"[held: version gate]")
+                                    else:
+                                        movie['_is_preorder'] = True
+                                        self.host.add_movie_to_site_immediately(movie_id, movie)
+                                        newly_available_ids.append(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
+                                        self.logger.info(f"Type 4 future: {movie['title']} — {days_until}d until {type4_date} [pre-order on wall]")
+                                        print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date}) [pre-order on wall]")
                             except ValueError:
                                 pass
 
@@ -758,6 +830,10 @@ class ProviderDiscoverer:
 
                             # Genuine release — clear any stale hold flag and transition
                             movie.pop('_rent_preorder_held', None)
+                            if self._hold_reissue_for_version_check(
+                                    movie_id, movie, 'provider_availability_check',
+                                    orig_digital_date=_orig_digital_date):
+                                continue
                             self.host._transition_movie_to_available(
                                 movie_id, movie, 'provider_availability_check', newly_available_ids)
                             newly_digital += 1

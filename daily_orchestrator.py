@@ -1197,6 +1197,14 @@ class NRWOrchestrator:
                 # Routinely takes 40-80 min (polls 13,000+ movies). 2hr safety net.
                 ("python3 generate_data.py --discover",
                  "Discover provider availability for tracking movies", True, False, 7200),
+
+                # Phase 2.2: Version-check restorations HELD by the discovery version
+                # gate (offers found — restoration or old transfer?). Grounded Gemini
+                # verdicts land on the tracking entries for the owner's ruling
+                # (release_restoration.py, surfaced in /morning). Non-critical; no-op
+                # while restoration_gate.enabled is false / nothing is held.
+                ("python3 pipeline/version_check.py --limit 15",
+                 "Version-check held restorations", False, False, 600),
             ]
 
             # Execute discovery and monitoring pipeline

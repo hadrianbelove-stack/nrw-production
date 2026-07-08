@@ -226,17 +226,60 @@ def quotes():
             print(f'  ⚠ No quotes yet: {m.get("title")} ({m.get("year")})')
 
 
+def restorations():
+    """Version-gate holds + parked-restoration counts (Stage 4 ruling queue).
+
+    A held film means discovery found real digital offers for a parked reissue
+    but can't tell whether they're the RESTORATION or an old transfer — the
+    ruling is the owner's, via scripts/release_restoration.py."""
+    try:
+        mt = json.load(open("movie_tracking.json"))["movies"]
+    except Exception as e:
+        print(f"  ⚠ Could not read movie_tracking.json: {e}")
+        return
+    held = {mid: m for mid, m in mt.items() if m.get("_version_check_pending")}
+    parked = [m for m in mt.values() if m.get("_reissue_deferred")]
+    dig_hits = [m for m in mt.values()
+                if m.get("_news_dig_hit") and m.get("_reissue_deferred")]
+
+    if not held and not dig_hits:
+        if parked:
+            print(f"  {len(parked)} restoration(s) parked, none woken — nothing to rule on.")
+        return
+    if held:
+        print(f"  🔎 {len(held)} restoration(s) HELD at the version gate "
+              f"(real offers found — restoration or old transfer?):")
+        for mid, m in sorted(held.items(), key=lambda im: im[1].get("title", "")):
+            res = m.get("_version_check_result") or {}
+            if res.get("on_vod"):
+                verdict = f"verdict: RESTORATION ON VOD [{res.get('confidence')}]"
+            elif res:
+                verdict = (f"verdict: {res.get('available')}/"
+                           f"version={res.get('is_restoration_version')} "
+                           f"[{res.get('confidence')}]")
+            else:
+                verdict = "no verdict yet (version_check pending)"
+            print(f"    ⚠ {m.get('title')} ({m.get('year')}) — held since "
+                  f"{m.get('_version_check_since', '?')} — {verdict}")
+        print(f"    → rule: python3 scripts/release_restoration.py --list")
+    for m in dig_hits:
+        hit = m["_news_dig_hit"]
+        print(f"  📰 {m.get('title')} — news says digital "
+              f"({hit.get('date', '?')}: {hit.get('headline', '')[:80]})")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--section", required=True,
-                    choices=["overnight", "backlog", "quotes", "all"])
+                    choices=["overnight", "backlog", "quotes", "restorations", "all"])
     args = ap.parse_args()
     if args.section == "all":
-        for fn in (overnight, backlog, quotes):
+        for fn in (overnight, backlog, quotes, restorations):
             print(f"\n=== {fn.__name__.upper()} ===")
             fn()
     else:
-        {"overnight": overnight, "backlog": backlog, "quotes": quotes}[args.section]()
+        {"overnight": overnight, "backlog": backlog, "quotes": quotes,
+         "restorations": restorations}[args.section]()
 
 
 if __name__ == "__main__":

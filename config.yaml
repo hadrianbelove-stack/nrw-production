@@ -133,6 +133,17 @@ intake:
   # Default OFF (unlike passes A-D) until the CI rollout is approved.
   enable_pass_e: false
 
+# Restoration version gate (Stage 4 of the restoration lifecycle). When enabled, a
+# reissue (_reissue) film that discovery would transition to the wall is HELD in
+# tracking instead — TMDB/JustWatch confirm the TITLE has offers, not that the offer
+# is the RESTORATION (44% of parked restorations have an old transfer streaming).
+# pipeline/version_check.py researches held films (grounded Gemini);
+# scripts/release_restoration.py --release / --repark is the human ruling.
+# Nothing on the wall without verification.
+restoration_gate:
+  enabled: false
+  research_limit: 15   # grounded Gemini calls per version_check run
+
 # Film Festival Configuration
 # Used by intake Pass C to discover films premiering at major festivals
 # festival_templates: defines each festival once with typical timing — code auto-generates

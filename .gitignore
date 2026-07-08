@@ -62,6 +62,9 @@ output/
 *_cache.json
 cache/*.json
 !cache/wikipedia_cache.json
+# Restoration version-gate verdicts: CI runners are stateless — an uncommitted
+# cache would re-buy the same grounded Gemini verdicts every day.
+!cache/restoration_vod_cache.json
 # Curation caches (pull_quotes_combined.json, capsule_cache.json) stay IGNORED:
 # CI generates them and ships them via the "curation-caches" artifact, which
 # local_daily.sh merges in. They are deliberately NOT tracked.
