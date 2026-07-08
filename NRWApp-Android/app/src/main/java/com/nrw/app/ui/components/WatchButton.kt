@@ -265,7 +265,8 @@ private fun getSimplifiedLabel(service: String): String {
  */
 internal fun getServiceColor(service: String): Color {
     return when (service.lowercase()) {
-        "amazon", "amazon_video", "prime_video" -> AmazonOrange
+        "amazon", "amazon_video" -> AmazonOrange
+        "prime_video" -> Color(0xFF00A8E1)  // Prime Video blue (streaming brand, distinct from Amazon storefront orange)
         "apple_tv" -> Color(0xFF000000)
         "netflix" -> NetflixRed
         "hulu" -> HuluGreen

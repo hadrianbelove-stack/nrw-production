@@ -42,7 +42,7 @@ Sub Init()
     m.fonts = Fonts()
 
     m.switchAccent = {
-        hide_fest: "0xF59E0BFF"
+        hide_fest: "0xFFD700FF"
         show_preorders: "0x7C3AEDFF"
         slop_free: "0x00D4AAFF"
         show_highlights: "0x00D4AAFF"

@@ -104,7 +104,7 @@ fun FilterChips(
                 activeLabel = "FESTS",
                 inactiveLabel = "NO FEST",
                 onClick = onHideFestToggle,
-                accentColor = if (!hideFest) Color(0xFFF59E0B) else SlopTeal
+                accentColor = if (!hideFest) Color(0xFFFFD700) else SlopTeal
             )
         }
 
@@ -192,7 +192,7 @@ private fun MetaTogglePill(
         Text(
             text = if (isActive) activeLabel else inactiveLabel,
             color = textColor,
-            fontSize = 10.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
         )
@@ -266,7 +266,7 @@ private fun FilterPill(
         Text(
             text = text,
             color = textColor,
-            fontSize = 10.sp,
+            fontSize = 18.sp,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
         )
@@ -317,7 +317,7 @@ private fun GenreControl(
         Text(
             text = "$label  ▾",
             color = textColor,
-            fontSize = 10.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
         )
@@ -360,12 +360,12 @@ private fun SearchControl(onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
         ) {
-            SearchGlassIcon(size = 11.dp, color = textColor)
+            SearchGlassIcon(size = 18.dp, color = textColor)
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = "SEARCH",
                 color = textColor,
-                fontSize = 10.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold
             )
         }

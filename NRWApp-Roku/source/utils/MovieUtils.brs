@@ -581,9 +581,15 @@ Function NormalizeServiceName(service as String) as String
     normalized = normalized.Replace(" ", "_")
     normalized = normalized.Replace("+", "_plus")
 
-    ' Map variations
-    if normalized = "amazon_video" OR normalized = "prime_video"
+    ' Map variations.
+    ' Amazon (VOD rent/buy, orange) and Prime Video (streaming, blue) are
+    ' DIFFERENT services — never collapse prime into amazon. data.json uses
+    ' "Amazon Prime Video" for the streaming service and "Amazon"/"Amazon Video"
+    ' for the VOD store (see pipeline/provider_names.py).
+    if normalized = "amazon_video"
         return "amazon"
+    else if normalized = "prime_video" OR normalized = "amazon_prime_video"
+        return "prime"
     else if normalized = "hbo_max"
         return "max"
     else if normalized = "itunes" OR normalized = "apple"

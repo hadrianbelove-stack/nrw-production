@@ -120,7 +120,10 @@ export default function HomeScreen({navigation}) {
       if (movie._is_preorder || (!movie.filters?.is_virtual_screening && date > today)) {
         stripKey = 'pre-order';
       } else if (movie.filters?.is_virtual_screening) {
-        stripKey = 'fest';
+        // Split fest banners like web (assets/app.js): screenings whose window has
+        // opened get "FESTS · AVAILABLE NOW", future-dated ones "FESTS · COMING SOON".
+        const vsStart = movie.virtual_screening_info?.available_start || '';
+        stripKey = !vsStart || vsStart <= today ? 'fest-active' : 'fest-upcoming';
       } else if (showHighlightsOnly) {
         stripKey = 'highlights';
       } else {
@@ -139,13 +142,13 @@ export default function HomeScreen({navigation}) {
     return rows;
   }, [displayedMovies, searchQuery, showHighlightsOnly, slopMode]);
 
-  // Strip color: active view toggle recolors date strips (SELECTS teal, FESTS amber,
+  // Strip color: active view toggle recolors date strips (SELECTS teal, FESTS gold,
   // SLOP ONLY orange); otherwise a single active category filter; otherwise teal
   const singleFilter = activeFilters.size === 1 ? Array.from(activeFilters)[0] : null;
   const dateStripColor = showHighlightsOnly
     ? '#00d4aa'
     : !hideFest
-    ? '#f59e0b'
+    ? '#FFD700'
     : slopMode === 'only'
     ? '#ff9500'
     : (singleFilter && STRIP_COLORS[singleFilter]) || Colors.primary;
@@ -370,10 +373,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   slogan: {
-    color: '#cfcfcf',
-    fontSize: 12,
-    fontWeight: '300',
-    letterSpacing: 0.3,
+    // Tracked caps echoing the wordmark's rhythm (matches tvOS headerSlogan, scaled for phone)
+    color: Colors.primary,
+    fontSize: 10,
+    fontWeight: '500',
+    letterSpacing: 3,
+    textTransform: 'uppercase',
     marginTop: 5,
     textAlign: 'center',
   },

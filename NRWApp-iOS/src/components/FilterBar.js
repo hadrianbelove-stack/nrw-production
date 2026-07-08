@@ -23,7 +23,7 @@ const FILTERS = [
 const SLOP_STATES = ['all', 'free', 'only'];
 const SLOP_LABELS = {all: 'SLOP FILTER', free: 'SLOP FREE', only: 'SLOP ONLY'};
 
-const AMBER = '#f59e0b';
+const GOLD = '#FFD700';
 const PURPLE = '#7c3aed';
 const TEAL = '#00d4aa';
 const ORANGE = '#ff9500';
@@ -74,7 +74,7 @@ export default function FilterBar({
       <View style={styles.toggleRow}>
         <SlopToggle mode={slopMode} onPress={() => onSlopModeChange(SLOP_STATES[(SLOP_STATES.indexOf(slopMode) + 1) % 3])} />
         <Toggle label="SELECTS" active={showHighlightsOnly} color={TEAL} onPress={() => onShowHighlightsChange(!showHighlightsOnly)} />
-        <Toggle label="FESTS" active={!hideFest} color={AMBER} onPress={() => onHideFestChange(!hideFest)} />
+        <Toggle label="FESTS" active={!hideFest} color={GOLD} onPress={() => onHideFestChange(!hideFest)} />
         <Toggle label="PRE-ORDER" active={showPreorders} color={PURPLE} onPress={() => onShowPreordersChange(!showPreorders)} />
       </View>
 

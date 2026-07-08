@@ -78,7 +78,8 @@ Sub onMovieChanged()
         return
     end if
 
-    ' Movie card (date markers are now grid section dividers, not card items)
+    ' Movie card (dates are grid section dividers on the wall; in packed genre
+    ' views the card caption carries the date instead — see cardDate below)
     m.cardContainer.visible = true
     m.directorLabel.visible = true
 
@@ -99,15 +100,35 @@ Sub onMovieChanged()
     if movie.country <> invalid AND movie.country <> ""
         countryText = FormatCountry(movie.country)
     end if
+
+    ' Packed genre views: the grid suppresses per-date SECTION strips, so the
+    ' card carries its own date ("JUL 3 · ...") in the caption, rendered muted.
+    ' dateStr is set by HomeScreen BuildNextPage ("" outside genre views).
+    cardDate = ""
+    if m.top.itemContent <> invalid AND m.top.itemContent.dateStr <> invalid
+        cardDate = m.top.itemContent.dateStr
+    end if
+
     parts = []
     if director <> "" then parts.Push(director)
     if genre <> "" then parts.Push(genre)
     if countryText <> "" then parts.Push(countryText)
-    if parts.Count() > 0
-        meta = parts[0]
-        for i = 1 to parts.Count() - 1
-            meta = meta + " · " + parts[i]
+    if parts.Count() > 0 OR cardDate <> ""
+        meta = ""
+        for i = 0 to parts.Count() - 1
+            if meta <> "" then meta = meta + " · "
+            meta = meta + parts[i]
         end for
+        if cardDate <> ""
+            if meta <> ""
+                meta = cardDate + " · " + meta
+            else
+                meta = cardDate
+            end if
+            m.directorLabel.color = "0x888888FF"   ' muted date-carrying caption
+        else
+            m.directorLabel.color = "0xBBBBBBFF"   ' reset (cards are recycled)
+        end if
         m.directorLabel.text = meta
         m.directorLabel.visible = true
     else
@@ -239,7 +260,9 @@ End Sub
 ' filled chips (matches tvOS).
 ' ============================================================================
 Sub PositionScoreBadges(baseY as Integer)
-    chipW = 48
+    ' 92px fits the widest labeled score ("IMDb 7.2" in 14px Lato Black);
+    ' 3 chips: 12 + 92 + 6 + 92 + 6 + 92 = 300 ≤ 320 poster width.
+    chipW = 92
     gap = 6
     x = 12
 
@@ -349,8 +372,8 @@ Sub SetupRtBadge(score as Dynamic)
         return
     end if
 
-    ' Filled chip, score-only (matches tvOS)
-    m.rtBadge.text = scoreInt.ToStr()
+    ' Filled chip, labeled score (matches web/tvOS "RT 85")
+    m.rtBadge.text = "RT " + scoreInt.ToStr()
     m.rtBadgeBg.color = "0xFA3232D9"
     m.rtBadge.color = "0xFFFFFFFF"
     m.rtBadge.visible = true
@@ -379,7 +402,7 @@ Sub SetupMcBadge(score as Dynamic)
         return
     end if
 
-    m.mcBadge.text = scoreInt.ToStr()
+    m.mcBadge.text = "MC " + scoreInt.ToStr()
     m.mcBadgeBg.color = "0x7DDF64E6"
     m.mcBadge.color = "0x06270AFF"
     m.mcBadge.visible = true
@@ -410,7 +433,7 @@ Sub SetupImdbBadge(rating as Dynamic)
         return
     end if
 
-    m.imdbBadge.text = ratingStr
+    m.imdbBadge.text = "IMDb " + ratingStr
     m.imdbBadgeBg.color = "0xF5C518E6"
     m.imdbBadge.color = "0x000000FF"
     m.imdbBadge.visible = true

@@ -172,7 +172,7 @@ Sub LoadMovie(index as Integer)
 
     ' Build metadata line
     ' Meta block — 3 lines
-    ' Line 1: Director: Director
+    ' Line 1: Dir: Director
     director = GetDirector(movie)
     ' Line 2: Cast
     castArray = GetCast(movie)
@@ -185,10 +185,13 @@ Sub LoadMovie(index as Integer)
         end for
     end if
 
-    ' Line 3: Country • Year • Runtime • Studio
+    ' Line 3: Country • Genre • Year • Runtime • Studio
     metaParts = []
     if movie.country <> invalid AND movie.country <> ""
         metaParts.Push(FormatCountry(movie.country))
+    end if
+    if movie.genres <> invalid AND movie.genres.Count() > 0
+        metaParts.Push(movie.genres[0])
     end if
     if movie.year <> invalid
         metaParts.Push(Str(movie.year).Trim())
@@ -201,7 +204,7 @@ Sub LoadMovie(index as Integer)
     end if
 
     if director <> ""
-        m.directorLabel.text = "Director: "
+        m.directorLabel.text = "Dir: "
         m.directorName.text = director
         m.directorRow.visible = true
     else
@@ -387,21 +390,12 @@ Sub LoadMovie(index as Integer)
         m.imdbGroup.visible = false
     end if
 
-    ' Letterboxd score (star glyphs)
+    ' Letterboxd score (numeric, e.g. "3.8" — matches web/tvOS)
     if movie.letterboxd_score <> invalid
         lbStr = movie.letterboxd_score.ToStr()
         lbNum = Val(lbStr)
         if lbNum > 0
-            lbRounded = Int(lbNum + 0.5)
-            if lbRounded > 5 then lbRounded = 5
-            stars = ""
-            for i = 1 to lbRounded
-                stars = stars + chr(9733)
-            end for
-            for i = 1 to (5 - lbRounded)
-                stars = stars + chr(9734)
-            end for
-            m.lbScoreLabel.text = stars
+            m.lbScoreLabel.text = lbStr
             m.lbGroup.visible = true
             hasInfo = true
         else

@@ -82,9 +82,13 @@ Function GetServiceColor(service as String) as String
     normalized = normalized.Replace(" ", "_")
     normalized = normalized.Replace("+", "_plus")
 
-    ' Map variations to standard names
-    if normalized = "amazon_video" OR normalized = "prime_video"
+    ' Map variations to standard names.
+    ' Amazon (VOD rent/buy, orange) and Prime Video (streaming, blue) are
+    ' DIFFERENT services — never collapse prime into amazon.
+    if normalized = "amazon_video"
         normalized = "amazon"
+    else if normalized = "prime_video" OR normalized = "amazon_prime_video"
+        normalized = "prime"
     else if normalized = "hbo_max"
         normalized = "max"
     else if normalized = "itunes" OR normalized = "apple"

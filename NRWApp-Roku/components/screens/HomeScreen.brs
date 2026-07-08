@@ -288,7 +288,7 @@ Sub UpdateSectionDividerColor()
     if m.showHighlightsOnly
         color = "0x00D4AAFF"  ' crimson
     else if m.hideFest = false
-        color = "0xF59E0BFF"  ' fest amber
+        color = "0xFFD700FF"  ' fest gold (matches screeningGold)
     else if m.slopMode = "only"
         color = "0xFF9500FF"  ' slop orange
     else if m.activeFilters.Count() = 1 AND stripColors.DoesExist(m.activeFilters[0])
@@ -316,9 +316,9 @@ Sub UpdateDateHud(index as Integer)
     rest = ""
     color = m.dateStripColor
     if key = "FEST"
-        day = "FEST"
-        rest = "NOW SCREENING"
-        color = "0xF59E0BFF"
+        day = "FESTS"
+        rest = "AVAILABLE NOW"
+        color = "0xFFD700FF"
     else if key = "PRE-ORDER"
         day = "PRE-ORDER"
         rest = "COMING SOON"
@@ -379,22 +379,41 @@ Sub BuildNextPage()
     dates = m.grouped.dates
     addedThisPage = 0
 
+    ' Genre views pack tight: no per-date SECTION divider strips. Each card
+    ' instead carries its date, which MovieCard renders in the caption line.
+    ' (activeFilters only ever holds genres, so this flag = genre filter active.)
+    genreMode = (m.activeFilters <> invalid AND m.activeFilters.Count() > 0)
+
     while m.renderedSectionCount < dates.Count() AND addedThisPage < m.PAGE_SIZE
         dateStr = dates[m.renderedSectionCount]
-        section = m.gridContent.CreateChild("ContentNode")
-        section.contentType = "SECTION"
-        section.title = FormatSectionTitle(dateStr)
+
+        if genreMode
+            ' Flat mode: items append directly to the grid content (append-only,
+            ' so grid focus stays stable exactly like appending sections does).
+            parent = m.gridContent
+        else
+            parent = m.gridContent.CreateChild("ContentNode")
+            parent.contentType = "SECTION"
+            parent.title = FormatSectionTitle(dateStr)
+        end if
+
+        ' Per-card date caption (genre mode only; real dates only)
+        itemDate = ""
+        if genreMode AND dateStr <> "FEST" AND dateStr <> "PRE-ORDER" AND dateStr <> "HIGHLIGHTS" AND dateStr <> "Unknown"
+            itemDate = UCase(FormatShortDate(dateStr))
+        end if
 
         for each movie in m.grouped.groups[dateStr]
             cardTitle = movie.title
             if movie.display_title <> invalid AND movie.display_title <> ""
                 cardTitle = movie.display_title
             end if
-            item = section.CreateChild("ContentNode")
+            item = parent.CreateChild("ContentNode")
             item.AddFields({
                 movie: movie
                 title: cardTitle
                 posterUrl: movie.poster
+                dateStr: itemDate
             })
             addedThisPage = addedThisPage + 1
             m.renderedCount = m.renderedCount + 1
@@ -405,13 +424,13 @@ Sub BuildNextPage()
 End Sub
 
 ' ============================================================================
-' Section Title (strip label): "WED · JUN 10", "FEST · NOW SCREENING", etc.
+' Section Title (strip label): "WED · JUN 10", "FESTS · AVAILABLE NOW", etc.
 ' ============================================================================
 Function FormatSectionTitle(dateStr as String) as String
     if dateStr = "PRE-ORDER"
         return "PRE-ORDER"
     else if dateStr = "FEST"
-        return "FEST · NOW SCREENING"
+        return "FESTS · AVAILABLE NOW"
     else if dateStr = "HIGHLIGHTS"
         return "SELECTS  ·  OF NOTE"
     else if dateStr = "Unknown"

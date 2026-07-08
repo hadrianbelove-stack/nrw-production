@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   featuredText: {
     color: '#00ffbb',
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.4,
   },
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   },
   restorationText: {
     color: Colors.restorationText,
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
@@ -348,13 +348,13 @@ const styles = StyleSheet.create({
   },
   streamingFrameText: {
     color: '#fff',
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.8,
   },
   streamingFrameSubtext: {
     color: '#fff',
-    fontSize: 7,
+    fontSize: 10,
     fontWeight: '500',
     letterSpacing: 1,
     opacity: 0.75,
@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
   },
   preOrderBadgeText: {
     color: '#fff',
-    fontSize: 8,
+    fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
   },
   screeningTopBannerText: {
     color: '#000',
-    fontSize: 8,
+    fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.8,
     textTransform: 'uppercase',

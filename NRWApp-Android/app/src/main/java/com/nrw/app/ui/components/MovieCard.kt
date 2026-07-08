@@ -377,10 +377,10 @@ fun MovieCard(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(
-                                end = 4.dp,
+                                end = 2.dp,
                                 bottom = if (isStaffPick || isScreening) 22.dp else 4.dp
                             ),
-                        horizontalArrangement = Arrangement.spacedBy(3.dp)
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
                         if (rtScore != null) {
                             RtBadge(score = rtScore)
@@ -530,7 +530,7 @@ private fun RtBadge(
             .clip(RoundedCornerShape(3.dp))
             .background(brandColor.copy(alpha = 0.08f))
             .border(1.dp, brandColor.copy(alpha = 0.55f), RoundedCornerShape(3.dp))
-            .padding(horizontal = 4.dp, vertical = 2.dp)
+            .padding(horizontal = 3.dp, vertical = 2.dp)
     ) {
         Text(text = "RT $score%", color = brandColor, fontSize = 7.sp, fontWeight = FontWeight.Bold)
     }
@@ -547,7 +547,7 @@ private fun McBadge(
             .clip(RoundedCornerShape(3.dp))
             .background(brandColor.copy(alpha = 0.08f))
             .border(1.dp, brandColor.copy(alpha = 0.55f), RoundedCornerShape(3.dp))
-            .padding(horizontal = 4.dp, vertical = 2.dp)
+            .padding(horizontal = 3.dp, vertical = 2.dp)
     ) {
         Text(text = "MC $score", color = brandColor, fontSize = 7.sp, fontWeight = FontWeight.Bold)
     }
@@ -564,9 +564,9 @@ private fun ImdbBadge(
             .clip(RoundedCornerShape(3.dp))
             .background(brandColor.copy(alpha = 0.08f))
             .border(1.dp, brandColor.copy(alpha = 0.55f), RoundedCornerShape(3.dp))
-            .padding(horizontal = 4.dp, vertical = 2.dp)
+            .padding(horizontal = 3.dp, vertical = 2.dp)
     ) {
-        Text(text = rating, color = brandColor, fontSize = 7.sp, fontWeight = FontWeight.Bold)
+        Text(text = "IMDb $rating", color = brandColor, fontSize = 7.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -586,7 +586,7 @@ fun DateRowHeader(
     val color: Color
     when (dateString) {
         "PRE-ORDER" -> { day = "PRE-ORDER"; rest = "COMING SOON"; color = Color(0xFF7C3AED) }
-        "FEST" -> { day = "FEST"; rest = "NOW SCREENING"; color = Color(0xFFF59E0B) }
+        "FEST" -> { day = "FESTS"; rest = "AVAILABLE NOW"; color = Color(0xFFFFD700) }
         "HIGHLIGHTS" -> { day = "SELECTS"; rest = "OF NOTE"; color = Color(0xFF00D4AA) }
         "SLOP" -> { day = "SLOP"; rest = "THE CONTENT RIVER"; color = Color(0xFFFF9500) }
         else -> {

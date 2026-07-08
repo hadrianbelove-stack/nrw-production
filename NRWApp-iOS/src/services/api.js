@@ -308,6 +308,7 @@ export function searchMovies(movies, query) {
 export function sortByDate(movies) {
   if (!movies || !Array.isArray(movies)) return [];
 
+  const today = new Date().toISOString().slice(0, 10);
   return [...movies].sort((a, b) => {
     // Pre-orders sort to the end
     if (a._is_preorder && !b._is_preorder) return 1;
@@ -321,11 +322,15 @@ export function sortByDate(movies) {
     if (aFest && !bFest) return -1;
     if (!aFest && bFest) return 1;
 
-    // Virtual screenings: sort by tier (active → upcoming → expired)
+    // Virtual screenings: sort by tier (active → upcoming → expired).
+    // Active = screening window has opened (start missing or <= today) — the same
+    // predicate HomeScreen uses to split the FESTS AVAILABLE NOW / COMING SOON
+    // banners (mirrors web assets/app.js), so the groups stay contiguous.
     const screeningTier = m => {
       if (!m.filters?.is_virtual_screening) return -1;
-      const s = m.virtual_screening_info?.status;
-      return s === 'active' ? 0 : s === 'expired' ? 2 : 1;
+      if (m.virtual_screening_info?.status === 'expired') return 2;
+      const s = m.virtual_screening_info?.available_start || '';
+      return !s || s <= today ? 0 : 1;
     };
     const ta = screeningTier(a), tb = screeningTier(b);
     if (ta >= 0 && tb >= 0 && ta !== tb) return ta - tb;

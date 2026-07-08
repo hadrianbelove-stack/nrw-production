@@ -105,12 +105,12 @@ fun HomeScreen(
         createGridItems(uiState.filteredMovies, uiState.playlistUrl, uiState.showHighlightsOnly, uiState.slopMode)
     }
 
-    // Date strips adopt the active view toggle's color (SELECTS crimson, FESTS amber,
+    // Date strips adopt the active view toggle's color (SELECTS crimson, FESTS gold,
     // SLOP ONLY orange); otherwise a single active category filter; otherwise teal
     val singleFilterId = if (uiState.activeFilters.size == 1) uiState.activeFilters.first().id else null
     val dateStripColor = when {
         uiState.showHighlightsOnly -> HighlightCrimson
-        !uiState.hideFest -> Color(0xFFF59E0B)
+        !uiState.hideFest -> Color(0xFFFFD700)
         uiState.slopMode == "only" -> Color(0xFFFF9500)
         singleFilterId != null -> STRIP_COLORS[singleFilterId] ?: Primary
         else -> Primary
@@ -284,12 +284,13 @@ private fun Header() {
             fontWeight = FontWeight.SemiBold,
             letterSpacing = 3.sp
         )
+        // Tracked caps echoing the wordmark's rhythm (matches tvOS headerSlogan: 22px/500/tracked, scaled)
         Text(
-            text = "What came out, every day.",
-            color = TextSecondary,
+            text = "WHAT CAME OUT, EVERY DAY.",
+            color = Primary.copy(alpha = 0.8f),
             fontSize = 12.sp,
-            fontWeight = FontWeight.Light,
-            letterSpacing = 0.3.sp
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 3.sp
         )
     }
 }

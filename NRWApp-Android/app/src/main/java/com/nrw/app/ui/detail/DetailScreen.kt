@@ -64,6 +64,7 @@ import com.nrw.app.R
 import com.nrw.app.data.Movie
 import com.nrw.app.data.WatchType
 import com.nrw.app.data.getBackdropUrl
+import com.nrw.app.data.getDisplayDate
 import com.nrw.app.data.getFormattedCountries
 import com.nrw.app.data.getFormattedRuntime
 import com.nrw.app.data.getPosterUrl
@@ -80,12 +81,6 @@ import com.nrw.app.ui.theme.TextPrimary
 import com.nrw.app.ui.theme.TextSecondary
 import com.nrw.app.util.DeepLinkHelper
 import com.nrw.app.util.formatShortDate
-
-/** Convert Letterboxd 0-5 score to star glyphs (★★★★☆) */
-private fun lbStars(score: Float): String {
-    val n = Math.round(score).coerceIn(0, 5)
-    return "\u2605".repeat(n) + "\u2606".repeat(5 - n)
-}
 
 /** ISO language code -> readable name (e.g. "es" -> "Spanish"); falls back to the upper code. */
 private val LANGUAGE_NAMES = mapOf(
@@ -438,13 +433,13 @@ private fun MovieDetail(
                     Text(
                         text = buildAnnotatedString {
                             withStyle(SpanStyle(color = Primary, fontWeight = FontWeight.Bold)) {
-                                append("Director: ")
+                                append("Dir: ")
                             }
                             withStyle(SpanStyle(color = TextPrimary, fontWeight = FontWeight.Bold)) {
                                 append(director)
                             }
                         },
-                        fontSize = 12.sp,
+                        fontSize = 18.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -460,30 +455,35 @@ private fun MovieDetail(
                                 append(cast.take(3).joinToString(", "))
                             }
                         },
-                        fontSize = 12.sp,
+                        fontSize = 18.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
+                // Meta row: Country · Genre · digital date (Mon D) · runtime · studio
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     movie.getFormattedCountries()?.let { country ->
-                        Text(text = country, color = TextSecondary, fontSize = 12.sp)
-                        Text(text = "•", color = TextMuted, fontSize = 12.sp)
+                        Text(text = country, color = TextSecondary, fontSize = 18.sp)
+                        Text(text = "•", color = TextMuted, fontSize = 18.sp)
                     }
-                    movie.year?.let { year ->
-                        Text(text = year.toString(), color = TextSecondary, fontSize = 12.sp)
-                        Text(text = "•", color = TextMuted, fontSize = 12.sp)
+                    movie.genres?.firstOrNull()?.let { genre ->
+                        Text(text = genre, color = TextSecondary, fontSize = 18.sp)
+                        Text(text = "•", color = TextMuted, fontSize = 18.sp)
+                    }
+                    movie.getDisplayDate()?.let { date ->
+                        Text(text = formatShortDate(date), color = TextSecondary, fontSize = 18.sp)
+                        Text(text = "•", color = TextMuted, fontSize = 18.sp)
                     }
                     movie.getFormattedRuntime()?.let { runtime ->
-                        Text(text = runtime, color = TextSecondary, fontSize = 12.sp)
+                        Text(text = runtime, color = TextSecondary, fontSize = 18.sp)
                     }
                     movie.studio?.let { studio ->
-                        Text(text = "•", color = TextMuted, fontSize = 12.sp)
-                        Text(text = studio, color = TextSecondary, fontSize = 12.sp)
+                        Text(text = "•", color = TextMuted, fontSize = 18.sp)
+                        Text(text = studio, color = TextSecondary, fontSize = 18.sp)
                     }
                 }
 
@@ -762,7 +762,7 @@ private fun MovieDetail(
                                 )
                             }
                         }
-                        // Letterboxd: logo + star glyphs (display-only)
+                        // Letterboxd: logo + numeric score (display-only, matches IMDb pattern)
                         lbRating?.let { score ->
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Image(
@@ -773,7 +773,7 @@ private fun MovieDetail(
                                     colorFilter = ColorFilter.tint(Color(0xFF00E054))
                                 )
                                 Text(
-                                    text = lbStars(score),
+                                    text = "%.1f".format(score),
                                     color = Color(0xFF00E054),
                                     fontWeight = FontWeight.ExtraBold,
                                     fontSize = 18.sp

@@ -346,6 +346,7 @@ End Function
 Function GetVodDisplayName(service as String) as String
     names = {
         amazon: "AMAZON"
+        prime: "PRIME"
         apple_tv: "APPLE TV"
         fandango: "FANDANGO"
         vudu: "FANDANGO"
