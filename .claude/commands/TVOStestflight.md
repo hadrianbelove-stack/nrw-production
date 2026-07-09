@@ -41,9 +41,13 @@ the build is bad and must NOT be uploaded.
 ```bash
 cd NRWApp-tvOS
 mkdir -p build
-# Build + install + launch in the Release simulator (JS is bundled; the Metro
-# "Cannot start server" line is expected in Release and is harmless).
-npx react-native run-ios --mode Release --scheme NRWAppTemp-tvOS --simulator 'Apple TV' > build/sim-release.log 2>&1
+# Build + install + launch in the Release simulator. --no-packager is REQUIRED:
+# Release bundles the JS at build time (Metro not needed), and without the flag
+# `run-ios` tries to open Metro in a new terminal window and aborts headless with
+# "error Cannot start server in new window because no terminal app was specified"
+# — building nothing (log has only that line). With --no-packager it compiles,
+# installs, and launches normally.
+npx react-native run-ios --mode Release --scheme NRWAppTemp-tvOS --simulator 'Apple TV' --no-packager > build/sim-release.log 2>&1
 xcrun simctl launch booted org.reactjs.native.example.NRWApp-tvOS
 # give it a few seconds to render, then capture:
 xcrun simctl io booted screenshot build/sim-release-shot.png
