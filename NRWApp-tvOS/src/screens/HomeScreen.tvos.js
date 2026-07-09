@@ -191,7 +191,6 @@ const SearchButton = forwardRef(({ onPress, hasTVPreferredFocus }, ref) => {
         style={[
           styles.searchControl,
           isFocused && styles.searchControlFocused,
-          { transform: [{ scale: scaleAnim }] },
         ]}
       >
         <SearchIcon size={24} color={isFocused ? '#00d4aa' : 'rgba(0,212,170,0.75)'} strokeWidth={2} />
@@ -1381,7 +1380,7 @@ const HomeScreenTvOS = () => {
               onPress={() => setGenreOverlay(true)}
             />
           </View>
-          <View style={styles.barCell}>
+          <View style={styles.barCellGrow}>
             <SearchButton ref={setLastFilterRef} onPress={handleOpenSearch} hasTVPreferredFocus={searchBtnPreferredFocus} />
           </View>
           <View style={styles.barCell}>
@@ -1589,9 +1588,12 @@ const styles = StyleSheet.create({
   // SEARCH button (far right of the control row) — glass icon + label, quiet teal
   // pill matching the GENRE control. Select opens the full-screen Search route.
   searchControl: {
+    // Wide search bar: fills its growing cell and left-aligns the icon+label
+    // like a real search field, so it reads as the width-filler (FILL-1).
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
     gap: 10,
     paddingVertical: 12,
     paddingHorizontal: 26,
@@ -1613,17 +1615,26 @@ const styles = StyleSheet.create({
     // strip below acts as the row's bottom line
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    gap: 14,
     backgroundColor: 'transparent',
     paddingVertical: 6,
     paddingHorizontal: 4,
     marginTop: 2,
   },
-  // Each toggle/genre occupies an equal cell so they fill the bar evenly
-  // (no clumped negative space between pills).
+  // Content-sized cell — the left controls (SLOP·SELECTS·FESTS·PRE-ORDER·GENRE)
+  // form a tight cluster instead of each taking an equal 1/N slice, which
+  // floated the small pills in dead space (matches the web FILL-1 layout).
   barCell: {
-    flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // SEARCH grows into a wide bar that eats the surplus width, so there is no
+  // dead void between the toggle cluster and the row end — the TV port of web
+  // FILL-1's flex:1 search field (select still opens the full-screen search).
+  barCellGrow: {
+    flex: 1,
+    alignItems: 'stretch',
     justifyContent: 'center',
   },
   // GENRE overlay — dropdown panel anchored under the GENRE control (top-right),
