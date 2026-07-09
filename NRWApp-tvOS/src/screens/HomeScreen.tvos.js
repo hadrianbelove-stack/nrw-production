@@ -201,6 +201,43 @@ const SearchButton = forwardRef(({ onPress, hasTVPreferredFocus }, ref) => {
   );
 });
 
+// Settings / unlock entry — opens the personal-Plex unlock screen (owner-only).
+// Harmless for anyone without a token; kept small and at the row end.
+const SettingsButton = forwardRef(({ onPress }, ref) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.timing(scaleAnim, { toValue: 1.08, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+  return (
+    <TouchableOpacity
+      ref={ref}
+      onPress={onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      activeOpacity={1}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel="Personal library settings"
+    >
+      <Animated.View
+        style={[
+          styles.searchControl,
+          isFocused && styles.searchControlFocused,
+          { transform: [{ scale: scaleAnim }] },
+        ]}
+      >
+        <Text style={[styles.searchControlText, isFocused && styles.searchControlTextFocused]}>⚙</Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+});
+
 // Slop Toggle Button - TV remote focusable
 // iOS-style track+thumb toggle — matches the website design
 const MetaToggle = forwardRef(({ isActive, label, accessibilityLabel, onPress, nextFocusUp, nextFocusDown, accentColor }, ref) => {
@@ -1346,6 +1383,9 @@ const HomeScreenTvOS = () => {
           </View>
           <View style={styles.barCell}>
             <SearchButton ref={setLastFilterRef} onPress={handleOpenSearch} hasTVPreferredFocus={searchBtnPreferredFocus} />
+          </View>
+          <View style={styles.barCell}>
+            <SettingsButton onPress={() => navigation.navigate('Unlock')} />
           </View>
         </View>
       </View>

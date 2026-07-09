@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>NRW · Screening Room</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<style>
+  :root{
+    --accent:#00d4aa;
+    --accent-dim:rgba(0,212,170,0.8);
+    --bg:#0a0a0a;
+    --panel:#141420;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg);
+    color:#eee;
+    font-family:-apple-system,system-ui,sans-serif;
+    display:flex;flex-direction:column;min-height:100vh;
+  }
+  header{padding:22px 26px 14px;border-bottom:1px solid rgba(255,255,255,0.06)}
+  h1{
+    font-weight:100;letter-spacing:0.24em;line-height:1;
+    font-size:clamp(1.5rem,4vw,2.4rem);white-space:nowrap;margin:0;
+    background:linear-gradient(45deg,#fff,var(--accent));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .slogan{
+    font-weight:500;font-size:0.7rem;letter-spacing:0.3em;text-transform:uppercase;
+    color:var(--accent-dim);margin:6px 0 0;
+  }
+  main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+  .stage{width:100%;max-width:1100px}
+  .filmtitle{font-size:1.1rem;letter-spacing:0.02em;margin:0 0 12px;color:#fff}
+  .filmtitle .yr{color:#888;font-weight:400}
+  video{width:100%;max-height:78vh;background:#000;border-radius:10px;
+        box-shadow:0 0 0 1px rgba(255,255,255,0.06),0 20px 60px rgba(0,0,0,0.6)}
+  .card{
+    background:var(--panel);border:1px solid rgba(255,255,255,0.08);
+    border-radius:12px;padding:30px 28px;max-width:520px;margin:0 auto;text-align:center;
+  }
+  .card h2{margin:0 0 8px;font-weight:600;font-size:1.15rem;color:#fff}
+  .card p{color:#aaa;line-height:1.5;font-size:0.92rem;margin:8px 0}
+  .poster{width:150px;border-radius:8px;margin:0 auto 18px;display:block}
+  input[type=text],input[type=password]{
+    width:100%;padding:11px 13px;margin:10px 0;border-radius:8px;
+    border:1px solid rgba(255,255,255,0.15);background:#0d0d16;color:#fff;font-size:0.95rem;
+  }
+  button.act{
+    background:var(--accent);color:#000;font-weight:800;letter-spacing:0.04em;
+    border:none;border-radius:8px;padding:12px 22px;font-size:0.95rem;cursor:pointer;
+    text-transform:uppercase;
+  }
+  button.act:hover{filter:brightness(1.08)}
+  a.plexfall{
+    display:inline-block;margin-top:14px;color:var(--accent);text-decoration:none;
+    border:1px solid var(--accent);border-radius:8px;padding:10px 18px;font-size:0.9rem;
+  }
+  .tap-overlay{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,0.45);cursor:pointer;border-radius:10px;
+  }
+  .tap-overlay .play{
+    width:78px;height:78px;border-radius:50%;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .tap-overlay .play::after{content:"";border-style:solid;border-width:16px 0 16px 26px;
+    border-color:transparent transparent transparent #000;margin-left:6px}
+  .videowrap{position:relative}
+  .muted-note{color:#888;font-size:0.8rem;margin-top:10px;text-align:center}
+  footer{padding:14px;text-align:center;color:#555;font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase}
+</style>
+</head>
+<body>
+<header>
+  <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
+  <p class="slogan">Screening Room</p>
+</header>
+<main><div class="stage" id="stage"></div></main>
+<footer>NRW · Private screening — your library, your server</footer>
+
+<script src="assets/hls.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var TOKEN_KEY = "nrw_plex_token";
+  var SERVER_KEY = "nrw_plex_server";
+  var stage = document.getElementById("stage");
+
+  // ---- helpers ----
+  function qs(name){ return new URLSearchParams(location.search).get(name); }
+  function hashParams(){
+    var h = (location.hash||"").replace(/^#/,"");
+    return new URLSearchParams(h);
+  }
+  function esc(s){ return (s==null?"":String(s)).replace(/[&<>"]/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+  // Capture unlock material from the URL fragment (never sent to any server),
+  // persist it, then strip the fragment from the address bar + history entry.
+  function absorbHash(){
+    var hp = hashParams();
+    var t = hp.get("token"), sv = hp.get("server");
+    var changed = false;
+    if (t){ localStorage.setItem(TOKEN_KEY, t); changed = true; }
+    if (sv){ localStorage.setItem(SERVER_KEY, sv); changed = true; }
+    if (changed){
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  }
+  function getToken(){ return localStorage.getItem(TOKEN_KEY) || ""; }
+  function getServer(movie){
+    // Precedence: explicit debug ?server= → per-device unlocked server → data.json plex.server
+    return qs("server")
+        || localStorage.getItem(SERVER_KEY)
+        || (movie && movie.plex && movie.plex.server)
+        || "";
+  }
+
+  function render(html){ stage.innerHTML = html; }
+
+  function lockedScreen(movie){
+    var poster = movie && movie.poster_url ? '<img class="poster" src="'+esc(movie.poster_url)+'" alt="">' : '';
+    render(
+      '<div class="card">'+poster+
+      '<h2>Unlock this device</h2>'+
+      '<p>This screening room streams from your personal server. Paste your access key once — it stays on this device only.</p>'+
+      '<input type="password" id="tokin" placeholder="Plex access token" autocomplete="off">'+
+      '<div><button class="act" id="unlockbtn">Unlock</button></div>'+
+      '</div>'
+    );
+    document.getElementById("unlockbtn").onclick = function(){
+      var v = document.getElementById("tokin").value.trim();
+      if(v){ localStorage.setItem(TOKEN_KEY, v); location.reload(); }
+    };
+  }
+
+  function messageScreen(title, body, plexUrl){
+    render(
+      '<div class="card">'+
+      '<h2>'+esc(title)+'</h2>'+
+      '<p>'+esc(body)+'</p>'+
+      (plexUrl ? '<a class="plexfall" href="'+esc(plexUrl)+'">Open in Plex instead</a>' : '')+
+      '</div>'
+    );
+  }
+
+  // Build the Plex HLS transcode playlist URL. Transcoding lets ANY container/codec
+  // (mkv, hevc, eac3, DTS…) play in the browser — verified: Plex returns permissive
+  // CORS for this origin.
+  function transcodeUrl(server, ratingKey, token){
+    var session = "nrw-" + ratingKey + "-" + Math.floor(Date.now()/1000);
+    var p = new URLSearchParams({
+      path: "/library/metadata/" + ratingKey,
+      mediaIndex: "0", partIndex: "0",
+      protocol: "hls", fastSeek: "1",
+      directPlay: "0", directStream: "1",
+      subtitleSize: "100", audioBoost: "100",
+      "X-Plex-Token": token,
+      "X-Plex-Client-Identifier": "nrw-web-player",
+      "X-Plex-Product": "NRW", "X-Plex-Platform": "Web",
+      session: session,
+      videoResolution: "1920x1080", maxVideoBitrate: "12000"
+    });
+    return server.replace(/\/$/,"") + "/video/:/transcode/universal/start.m3u8?" + p.toString();
+  }
+
+  function deepLinkUrl(movie){
+    return (movie && movie.plex && movie.plex.deep_link) || "";
+  }
+
+  function playScreen(movie, server, ratingKey, token){
+    var title = movie ? movie.title : "Now playing";
+    var yr = movie && movie.year ? ' <span class="yr">'+esc(movie.year)+'</span>' : '';
+    render(
+      '<div class="filmtitle">'+esc(title)+yr+'</div>'+
+      '<div class="videowrap" id="vwrap">'+
+      '<video id="vid" playsinline controls poster="'+esc(movie&&movie.poster_url||"")+'"></video>'+
+      '</div>'+
+      '<div class="muted-note" id="note"></div>'
+    );
+    var video = document.getElementById("vid");
+    var url = transcodeUrl(server, ratingKey, token);
+    var note = document.getElementById("note");
+
+    function showTapOverlay(){
+      var wrap = document.getElementById("vwrap");
+      if(document.getElementById("tapov")) return;
+      var ov = document.createElement("div");
+      ov.className = "tap-overlay"; ov.id = "tapov";
+      ov.innerHTML = '<div class="play"></div>';
+      ov.onclick = function(){ video.play(); ov.remove(); };
+      wrap.appendChild(ov);
+    }
+    function tryAutoplay(){
+      var pr = video.play();
+      if(pr && pr.catch){ pr.catch(function(){ showTapOverlay(); }); }
+    }
+    function hardFail(){
+      messageScreen(
+        "Can't reach the server",
+        "The film couldn't start. Your server may be offline, or your access key may have expired.",
+        deepLinkUrl(movie)
+      );
+    }
+
+    // Safari plays HLS natively; everyone else uses hls.js (MSE).
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = url;
+      video.addEventListener("loadedmetadata", tryAutoplay);
+      video.addEventListener("error", hardFail);
+    } else if (window.Hls && window.Hls.isSupported()) {
+      var hls = new Hls({ maxBufferLength: 30 });
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, tryAutoplay);
+      hls.on(Hls.Events.ERROR, function(evt, data){
+        if(data && data.fatal){ hls.destroy(); hardFail(); }
+      });
+    } else {
+      messageScreen("Unsupported browser",
+        "This browser can't play streaming video. Try Safari or Chrome.",
+        deepLinkUrl(movie));
+    }
+  }
+
+  // ---- main flow ----
+  absorbHash();
+
+  var token = getToken();
+  var debugRk = qs("rk");          // debug: play a ratingKey directly, no data.json
+  var mId = qs("m");
+
+  // Debug path: ?rk=<ratingKey>&server=<url>#token=<t>  (lets us verify the player
+  // against the live server before the pipeline injects plex data)
+  if (debugRk){
+    var dServer = getServer(null);
+    if(!token){ lockedScreen(null); return; }
+    if(!dServer){ messageScreen("No server","Add &server=<url> or unlock with #server=."); return; }
+    playScreen({title:"Debug playback ("+debugRk+")"}, dServer, debugRk, token);
+    return;
+  }
+
+  if(!mId){
+    messageScreen("No film selected","Open a film from The New Release Wall to screen it here.");
+    return;
+  }
+
+  fetch("data.json").then(function(r){ return r.json(); }).then(function(data){
+    var movies = (data && data.movies) || [];
+    var movie = null;
+    for(var i=0;i<movies.length;i++){
+      if(String(movies[i].id) === String(mId)){ movie = movies[i]; break; }
+    }
+    if(!movie){ messageScreen("Film not found","That film isn't on the wall right now."); return; }
+    if(!movie.plex || !movie.plex.ratingKey){
+      messageScreen("Not in your library","This film isn't in your personal library.", deepLinkUrl(movie));
+      return;
+    }
+    if(!token){ lockedScreen(movie); return; }
+    var server = getServer(movie);
+    if(!server){ messageScreen("No server","This device doesn't know your server address yet. Re-unlock with a #server= link."); return; }
+    playScreen(movie, server, movie.plex.ratingKey, token);
+  }).catch(function(){
+    messageScreen("Couldn't load","The wall data failed to load. Try again in a moment.");
+  });
+})();
+</script>
+</body>
+</html>

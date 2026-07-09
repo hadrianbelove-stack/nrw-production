@@ -14,6 +14,12 @@ import HomeScreen from './src/screens/HomeScreen.tvos';
 import MovieDetail from './src/screens/MovieDetail.tvos';
 import SearchScreen from './src/screens/SearchScreen.tvos';
 import TrailerScreen from './src/screens/TrailerScreen.tvos';
+import UnlockScreen from './src/screens/UnlockScreen.tvos';
+import PlexPlayerScreen from './src/screens/PlexPlayerScreen.tvos';
+
+// Personal Plex (owner-only): load the owned-films map at startup if this
+// device was previously unlocked. No-op (and silent) on un-unlocked installs.
+import { refreshLibraryMap } from './src/services/plexClient.tvos';
 
 // Import constants
 import { Colors } from './src/constants/colors';
@@ -36,6 +42,7 @@ const linking = {
       Home: '',
       MovieDetail: 'movie/:id',
       Search: 'search',
+      Unlock: 'unlock',
     },
   },
 };
@@ -149,6 +156,20 @@ const App = () => {
                 title: 'Trailer',
               }}
             />
+            <Stack.Screen
+              name="Unlock"
+              component={UnlockScreen}
+              options={{
+                title: 'Unlock',
+              }}
+            />
+            <Stack.Screen
+              name="PlexPlayer"
+              component={PlexPlayerScreen}
+              options={{
+                title: 'Screening Room',
+              }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
@@ -166,6 +187,9 @@ async function initializeServices() {
     // Initialize crash reporting
     await initializeSentry();
     console.log('[App] Sentry initialized');
+
+    // Personal Plex: refresh the owned-films map (silent no-op if not unlocked)
+    refreshLibraryMap().catch(() => {});
   } catch (error) {
     console.error('[App] Error initializing services:', error);
   }

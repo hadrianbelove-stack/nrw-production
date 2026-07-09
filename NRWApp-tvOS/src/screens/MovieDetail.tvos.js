@@ -38,6 +38,7 @@ import {
 import { fetchMovies } from '../services/api';
 import { trackWatchButtonTap } from '../services/analytics.tvos';
 import { getSharedMovieList, takePendingTrailerIndex } from './sharedMovieList';
+import { getRatingKey } from '../services/plexClient.tvos';
 import { renderMarkdownSpans } from '../utils/markdown';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -131,6 +132,58 @@ const streamBtnStyles = StyleSheet.create({
   },
   darkServiceBorder: {
     borderColor: 'rgba(255,255,255,0.2)',
+  },
+});
+
+// NRW button — solid teal, black wordmark. Personal-library playback (owner-only).
+// Appears only when the current film is in the unlocked Plex library.
+const NrwButton = forwardRef(({ onPress, nextFocusUp, hasTVPreferredFocus = false }, ref) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const onFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.spring(scaleAnim, { toValue: 1.05, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+  const onBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+  return (
+    <TouchableOpacity
+      ref={ref}
+      onPress={onPress}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      nextFocusUp={nextFocusUp}
+      hasTVPreferredFocus={hasTVPreferredFocus}
+      activeOpacity={0.9}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel="Watch on NRW, your personal library"
+      testID="action-btn-nrw"
+      style={{ flex: 1 }}
+    >
+      <Animated.View style={[
+        nrwBtnStyles.button,
+        isFocused && nrwBtnStyles.focused,
+        { transform: [{ scale: scaleAnim }] },
+      ]}>
+        <Text style={nrwBtnStyles.text}>NRW</Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+});
+
+const nrwBtnStyles = StyleSheet.create({
+  button: {
+    height: 70, borderRadius: 8, backgroundColor: '#00d4aa',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  focused: {
+    borderWidth: 3, borderColor: '#fff',
+  },
+  text: {
+    color: '#000', fontSize: 26, fontWeight: '800', letterSpacing: 3,
   },
 });
 
@@ -560,6 +613,16 @@ const MovieDetailTvOS = () => {
   } = useMovieDetail(movie);
 
 
+  // Personal Plex (owner-only): does THIS film exist in the unlocked library?
+  // getRatingKey resolves from the in-memory map loaded at app start; null on
+  // un-unlocked devices, so the NRW button never appears for testers.
+  const [nrwRatingKey, setNrwRatingKey] = useState(null);
+  useEffect(() => {
+    let active = true;
+    getRatingKey(movie?.id).then((rk) => { if (active) setNrwRatingKey(rk); });
+    return () => { active = false; };
+  }, [movie]);
+
   // Trailer button ref → node handle for nextFocusUp on watch buttons
   // trailerButtonRef also used to restore focus after trailer closes (setNativeProps)
   const [trailerHandle, setTrailerHandle] = useState(null);
@@ -933,6 +996,21 @@ const MovieDetailTvOS = () => {
                 </View>
               );
             })()}
+
+            {/* 10b. NRW personal-library button (owner-only, client-side match).
+                 Its own row so it shows even for films with no other watch options. */}
+            {nrwRatingKey && (
+              <View style={styles.vodRow}>
+                <NrwButton
+                  nextFocusUp={trailerHandle}
+                  onPress={() => navigation.navigate('PlexPlayer', {
+                    ratingKey: nrwRatingKey,
+                    title: movie?.title,
+                    year: movie?.year,
+                  })}
+                />
+              </View>
+            )}
 
             {/* 11. Virtual screening QR code */}
             {purchaseLinks.some(link => isVirtualScreeningPlatform(link.service, link.url)) && (() => {
