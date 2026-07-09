@@ -109,6 +109,10 @@ const NRW = {
                     return !!m.digital_date;
                 });
 
+                // Personal Plex (owner-only): warm the owned-films set if this
+                // browser is unlocked. Silent no-op otherwise. Enables NRW buttons.
+                if (window.NRWPlex) NRWPlex.loadOwned().catch(() => {});
+
                 this.setupFilterEventListeners();
                 this.setupGenreDropdown();
                 this.setupAboutPopover();
@@ -2150,6 +2154,26 @@ const NRW = {
                 streamRowEl.appendChild(btn);
             });
             if (streamRowEl.children.length) container.appendChild(streamRowEl);
+        }
+
+        // === NRW personal-library button (owner-only, client-side) ===
+        // Appears only on an unlocked browser for films in the owner's Plex
+        // library. Opens the reskinned watch.html player. Nothing here is in
+        // data.json — membership is computed live by NRWPlex.
+        if (window.NRWPlex && NRWPlex.owns(movie.id)) {
+            let nrwRow = container.querySelector('.lb-stream-row');
+            if (!nrwRow) {
+                nrwRow = document.createElement('div');
+                nrwRow.className = 'lb-stream-row';
+                container.appendChild(nrwRow);
+            }
+            const nrwBtn = document.createElement('a');
+            nrwBtn.className = 'stream-btn nrw';
+            nrwBtn.setAttribute('href', NRWPlex.watchUrl(movie.id));
+            nrwBtn.setAttribute('target', '_blank');
+            nrwBtn.setAttribute('rel', 'noopener noreferrer');
+            nrwBtn.textContent = 'NRW';
+            nrwRow.appendChild(nrwBtn);
         }
 
         // === VOD ROW (own row, after streaming) ===

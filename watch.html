@@ -125,17 +125,24 @@
 
   function lockedScreen(movie){
     var poster = movie && movie.poster_url ? '<img class="poster" src="'+esc(movie.poster_url)+'" alt="">' : '';
+    var curServer = localStorage.getItem(SERVER_KEY) || 'https://';
     render(
       '<div class="card">'+poster+
       '<h2>Unlock this device</h2>'+
-      '<p>This screening room streams from your personal server. Paste your access key once — it stays on this device only.</p>'+
+      '<p>Connect your personal server once. Your key stays on this device only, and also unlocks the NRW buttons on the wall.</p>'+
       '<input type="password" id="tokin" placeholder="Plex access token" autocomplete="off">'+
+      '<input type="text" id="srvin" placeholder="https://…plex.direct:PORT" autocomplete="off" value="'+esc(curServer)+'">'+
       '<div><button class="act" id="unlockbtn">Unlock</button></div>'+
       '</div>'
     );
     document.getElementById("unlockbtn").onclick = function(){
-      var v = document.getElementById("tokin").value.trim();
-      if(v){ localStorage.setItem(TOKEN_KEY, v); location.reload(); }
+      var t = document.getElementById("tokin").value.trim();
+      var s = document.getElementById("srvin").value.trim().replace(/\/+$/,'');
+      if(t && s && s !== 'https:'){
+        localStorage.setItem(TOKEN_KEY, t);
+        localStorage.setItem(SERVER_KEY, s);
+        location.reload();
+      }
     };
   }
 
@@ -246,7 +253,9 @@
   }
 
   if(!mId){
-    messageScreen("No film selected","Open a film from The New Release Wall to screen it here.");
+    // No film + no token → this is the "unlock this device" entry point.
+    if(!token){ lockedScreen(null); return; }
+    messageScreen("Screening Room","This device is unlocked. Open a film from The New Release Wall to screen it here.");
     return;
   }
 

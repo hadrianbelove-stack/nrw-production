@@ -92,6 +92,9 @@ const NRWMobile = {
                 return !!m.digital_date;
             });
 
+            // Personal Plex (owner-only): warm the owned-films set if unlocked.
+            if (window.NRWPlex) NRWPlex.loadOwned().catch(() => {});
+
             this.sortMovies();
             this.setupFilters();
             this.setupSearch();
@@ -1264,6 +1267,14 @@ const NRWMobile = {
                 '</div>';
         }
         streamingList.forEach(s => { bar += this.renderStreamButton(s); });
+
+        // NRW personal-library button (owner-only, client-side). Shows only on an
+        // unlocked phone for films in the owner's Plex library; opens the reskinned
+        // watch.html player. Nothing in data.json — membership computed live.
+        if (window.NRWPlex && NRWPlex.owns(movie.id)) {
+            bar += '<a class="btn-stream" style="background:#00d4aa;color:#000;font-weight:800;letter-spacing:0.06em" href="../'
+                + NRWPlex.watchUrl(movie.id) + '" target="_blank" rel="noopener">NRW</a>';
+        }
 
         // Pre-order fallback (no other watch links)
         if (!rentVod.length && !streamingList.length && !isScreening) {
