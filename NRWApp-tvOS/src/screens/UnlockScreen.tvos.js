@@ -7,46 +7,61 @@
  * A tester who opens this screen but has no token simply can't proceed.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Colors } from '../constants/colors';
-import { setPlexConfig, clearPlexConfig, refreshLibraryMap } from '../services/plexClient.tvos';
+import { setPlexConfig, clearPlexConfig, refreshLibraryMap, getLastDiag } from '../services/plexClient.tvos';
 
 const TEAL = '#00d4aa';
 
 const UnlockScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   const [token, setToken] = useState('');
   const [server, setServer] = useState('https://');
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
 
-  const onSave = useCallback(async () => {
-    if (!token.trim() || !server.trim() || server.trim() === 'https://') {
+  const doUnlock = useCallback(async (tk, sv) => {
+    if (!tk || !tk.trim() || !sv || !sv.trim() || sv.trim() === 'https://') {
       setStatus('Enter both your access token and server address.');
       return;
     }
     setBusy(true);
     setStatus('Connecting to your server…');
     try {
-      await setPlexConfig(token, server);
+      await setPlexConfig(tk, sv);
       const map = await refreshLibraryMap();
       const n = map ? Object.keys(map).length : 0;
       if (n > 0) {
         setStatus('Unlocked — ' + n + ' films in your library.');
-        setTimeout(() => { if (navigation.canGoBack()) navigation.goBack(); }, 1200);
+        setTimeout(() => { if (navigation.canGoBack()) navigation.goBack(); }, 1400);
       } else {
-        setStatus('Connected, but no films matched. Check the token/server and try again.');
+        // getLastDiag() carries the real reason (HTTP 401, non-JSON, network error…)
+        setStatus('No films matched — ' + (getLastDiag() || 'unknown reason') + '. Check the token/server.');
       }
     } catch (e) {
-      setStatus('Could not connect. Check the server address and token.');
+      setStatus('Could not connect: ' + (e && e.message ? e.message : e));
     } finally {
       setBusy(false);
     }
-  }, [token, server, navigation]);
+  }, [navigation]);
+
+  const onSave = useCallback(() => doUnlock(token, server), [doUnlock, token, server]);
+
+  // No-type unlock path: nrw://unlock?token=…&server=… fills + unlocks on open.
+  // Lets us test on the simulator and lets the owner unlock without the remote.
+  useEffect(() => {
+    const p = route.params || {};
+    if (p.token && p.server) {
+      setToken(p.token);
+      setServer(p.server);
+      doUnlock(p.token, p.server);
+    }
+  }, [route.params, doUnlock]);
 
   const onForget = useCallback(async () => {
     await clearPlexConfig();

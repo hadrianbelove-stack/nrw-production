@@ -19,6 +19,9 @@ const LIBMAP_KEY = 'nrw_plex_libmap';
 const SECTION = '4'; // movie library section key on the owner's server
 
 let _memMap = null; // { [tmdbId]: ratingKey }
+let _lastDiag = '';  // human-readable result of the last library fetch
+
+export function getLastDiag() { return _lastDiag; }
 
 function encodeQuery(obj) {
   return Object.keys(obj)
@@ -79,10 +82,17 @@ export async function refreshLibraryMap() {
       headers: { Accept: 'application/json', 'X-Plex-Token': token },
     });
     if (!res.ok) {
-      console.log('[Plex] library fetch HTTP', res.status, '- using cached map');
+      _lastDiag = 'HTTP ' + res.status + (res.status === 401 ? ' — token rejected' : '');
+      console.log('[Plex] library fetch', _lastDiag);
       return await loadCachedMap();
     }
-    const data = await res.json();
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); }
+    catch (pe) {
+      _lastDiag = 'server returned non-JSON (' + text.slice(0, 40).replace(/\s+/g, ' ') + '…)';
+      return await loadCachedMap();
+    }
     const items = (data.MediaContainer && data.MediaContainer.Metadata) || [];
     const map = {};
     for (let i = 0; i < items.length; i++) {
@@ -97,10 +107,12 @@ export async function refreshLibraryMap() {
     }
     _memMap = map;
     await AsyncStorage.setItem(LIBMAP_KEY, JSON.stringify(map));
-    console.log('[Plex] library map: ' + Object.keys(map).length + ' owned films');
+    _lastDiag = items.length + ' items, ' + Object.keys(map).length + ' with tmdb ids';
+    console.log('[Plex] library map: ' + _lastDiag);
     return map;
   } catch (e) {
-    console.log('[Plex] library fetch failed:', e && e.message, '- using cached map');
+    _lastDiag = 'network error: ' + (e && e.message ? e.message : e);
+    console.log('[Plex] library fetch failed:', _lastDiag);
     return await loadCachedMap();
   }
 }
