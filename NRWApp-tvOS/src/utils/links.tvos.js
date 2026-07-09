@@ -18,6 +18,7 @@ const SERVICE_SCHEMES = {
   peacock: 'peacock://',
   paramount_plus: 'paramountplus://',
   mubi: 'mubi://',
+  tubi: 'tubitv://',
   criterion: 'criterionchannel://',
   youtube: 'youtube://',
   vix: 'vix://',
@@ -25,6 +26,18 @@ const SERVICE_SCHEMES = {
   shudder: 'shudder://',
   fandango: 'fandangoathome://',
   plex: 'plex://',
+  // Additional services with real tvOS apps. Best-effort schemes — like the
+  // ones above, these need confirmation on an actual Apple TV. A wrong scheme
+  // fails harmlessly (openURL throws, cascade falls through to the error alert).
+  hoopla: 'hoopla://',
+  kanopy: 'kanopy://',
+  crunchyroll: 'crunchyroll://',
+  fawesome: 'fawesome://',
+  pbs: 'pbs://',
+  starz: 'starz://',
+  britbox: 'britbox://',
+  amc_plus: 'amcplus://',
+  discovery_plus: 'discoveryplus://',
 };
 
 // Web fallback URLs
@@ -38,6 +51,7 @@ const SERVICE_WEB_URLS = {
   peacock: 'https://www.peacocktv.com',
   paramount_plus: 'https://www.paramountplus.com',
   mubi: 'https://mubi.com',
+  tubi: 'https://tubitv.com',
   criterion: 'https://www.criterionchannel.com',
   youtube: 'https://www.youtube.com',
   vix: 'https://www.vix.com',
@@ -45,6 +59,15 @@ const SERVICE_WEB_URLS = {
   shudder: 'https://www.shudder.com',
   fandango: 'https://www.fandangoathome.com',
   plex: 'https://app.plex.tv',
+  hoopla: 'https://www.hoopladigital.com',
+  kanopy: 'https://www.kanopy.com',
+  crunchyroll: 'https://www.crunchyroll.com',
+  fawesome: 'https://fawesome.tv',
+  pbs: 'https://www.pbs.org',
+  starz: 'https://www.starz.com',
+  britbox: 'https://www.britbox.com',
+  amc_plus: 'https://www.amcplus.com',
+  discovery_plus: 'https://www.discoveryplus.com',
 };
 
 /**
@@ -69,13 +92,18 @@ export async function openURL(url, service = null) {
       }
     }
 
-    // Try to open the provided content URL directly
-    // This preserves content-specific deep links (e.g., YouTube video URLs)
+    // Try to open the provided content URL directly. On tvOS this is the only
+    // path that can reach the specific title via Universal Links (mubi.com,
+    // tubitv.com, etc. are associated domains for their apps). We do NOT gate on
+    // canOpenURL here: for https it always returns false on tvOS (no browser),
+    // which would skip this branch entirely. Try openURL directly and fall
+    // through on failure — same try/catch pattern as the deep link above.
     if (url) {
-      const canOpenUrl = await Linking.canOpenURL(url);
-      if (canOpenUrl) {
+      try {
         await Linking.openURL(url);
         return { success: true };
+      } catch (e) {
+        // Not a resolvable Universal Link / app not installed — fall through.
       }
     }
 
