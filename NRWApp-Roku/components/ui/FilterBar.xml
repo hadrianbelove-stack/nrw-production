@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
   NRW Filter Bar
-  One clean row (matches web/tvOS): SLOP FILTER · PRE-ORDER · FESTS · SELECTS
-  · GENRE. The 9 genre chips are collapsed behind the GENRE control, which
+  One clean row (matches web/tvOS): SLOP · SELECTS · FESTS · PRE-ORDER · GENRE
+  · SEARCH. The 9 genre chips are collapsed behind the GENRE control, which
   opens a horizontal overlay strip below the bar (OK on a chip applies + closes,
-  Back closes). Search sits to the right. All geometry is computed in
-  FilterBar.brs after the bundled font loads (LayoutChips).
+  Back closes). Search grows to fill the rest of the bar to the title-safe right
+  edge (FILL-1). All geometry is computed in FilterBar.brs after the bundled
+  font loads (LayoutChips).
 -->
 <component name="FilterBar" extends="Group">
   <interface>

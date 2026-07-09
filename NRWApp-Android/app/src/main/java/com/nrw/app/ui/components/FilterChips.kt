@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -68,81 +69,72 @@ fun FilterChips(
     onSearchClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    TvLazyRow(
-        modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 32.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    // FILL-1 layout (matches web/tvOS): a fixed Row, not a TvLazyRow — the bar has
+    // only 6 controls and never overflows a 10-foot display. The left controls
+    // (SLOP·SELECTS·FESTS·PRE-ORDER·GENRE) are content-sized in a tight cluster;
+    // SEARCH gets weight(1f) so it grows into a wide bar filling the rest, so there
+    // is no equal-slice dead space or center void.
+    Row(
+        modifier = modifier.fillMaxWidth().padding(horizontal = 32.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // One clean row (matches web): SLOP FILTER · SELECTS · FESTS · PRE-ORDER · GENRE · SEARCH.
-        item {
-            // SLOP is first among the toggles (matches canonical web order).
-            val slopLabel = when (slopMode) { "only" -> "SLOP ONLY"; "free" -> "SLOP FREE"; else -> "SLOP FILTER" }
-            val slopAccent = if (slopMode == "only") Color(0xFFFF9500) else SlopTeal
-            MetaTogglePill(
-                isActive = slopMode != "all",
-                activeLabel = slopLabel,
-                inactiveLabel = slopLabel,
-                onClick = onSlopModeToggle,
-                accentColor = slopAccent
-            )
-        }
+        // SLOP is first among the toggles (matches canonical web order).
+        val slopLabel = when (slopMode) { "only" -> "SLOP ONLY"; "free" -> "SLOP FREE"; else -> "SLOP FILTER" }
+        val slopAccent = if (slopMode == "only") Color(0xFFFF9500) else SlopTeal
+        MetaTogglePill(
+            isActive = slopMode != "all",
+            activeLabel = slopLabel,
+            inactiveLabel = slopLabel,
+            onClick = onSlopModeToggle,
+            accentColor = slopAccent
+        )
 
-        item {
-            // Identity color when active (matches banners + date strips)
-            MetaTogglePill(
-                isActive = showHighlightsOnly,
-                activeLabel = "SELECTS",
-                inactiveLabel = "SELECTS",
-                onClick = onShowHighlightsToggle,
-                accentColor = if (showHighlightsOnly) Color(0xFF00D4AA) else SlopTeal
-            )
-        }
+        // Identity color when active (matches banners + date strips)
+        MetaTogglePill(
+            isActive = showHighlightsOnly,
+            activeLabel = "SELECTS",
+            inactiveLabel = "SELECTS",
+            onClick = onShowHighlightsToggle,
+            accentColor = if (showHighlightsOnly) Color(0xFF00D4AA) else SlopTeal
+        )
 
-        item {
-            MetaTogglePill(
-                isActive = !hideFest,
-                activeLabel = "FESTS",
-                inactiveLabel = "NO FEST",
-                onClick = onHideFestToggle,
-                accentColor = if (!hideFest) Color(0xFFFFD700) else SlopTeal
-            )
-        }
+        MetaTogglePill(
+            isActive = !hideFest,
+            activeLabel = "FESTS",
+            inactiveLabel = "NO FEST",
+            onClick = onHideFestToggle,
+            accentColor = if (!hideFest) Color(0xFFFFD700) else SlopTeal
+        )
 
-        item {
-            MetaTogglePill(
-                isActive = showPreorders,
-                activeLabel = "PRE-ORDERS",
-                inactiveLabel = "NO PRE-ORDERS",
-                onClick = onShowPreordersToggle,
-                accentColor = if (showPreorders) Color(0xFF7C3AED) else SlopTeal
-            )
-        }
+        MetaTogglePill(
+            isActive = showPreorders,
+            activeLabel = "PRE-ORDERS",
+            inactiveLabel = "NO PRE-ORDERS",
+            onClick = onShowPreordersToggle,
+            accentColor = if (showPreorders) Color(0xFF7C3AED) else SlopTeal
+        )
 
-        item {
-            // Divider
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .background(Color.White.copy(alpha = 0.2f))
-                    .width(1.dp)
-                    .padding(vertical = 4.dp),
-                contentAlignment = Alignment.Center
-            ) {}
-        }
+        // Divider
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .background(Color.White.copy(alpha = 0.2f))
+                .width(1.dp)
+                .padding(vertical = 4.dp),
+            contentAlignment = Alignment.Center
+        ) {}
 
-        item {
-            // GENRE pulldown control (replaces the genre chips; opens the genre overlay)
-            GenreControl(
-                label = genreLabel,
-                hasActive = hasActiveGenre,
-                onClick = onGenreClick
-            )
-        }
+        // GENRE pulldown control (replaces the genre chips; opens the genre overlay)
+        GenreControl(
+            label = genreLabel,
+            hasActive = hasActiveGenre,
+            onClick = onGenreClick
+        )
 
-        item {
-            // SEARCH — far right; opens the full-screen search overlay (matches tvOS/Roku)
-            SearchControl(onClick = onSearchClick)
-        }
+        // SEARCH — grows (weight 1f) into a wide bar filling the rest of the row;
+        // opens the full-screen search overlay (matches tvOS/Roku).
+        SearchControl(onClick = onSearchClick)
     }
 }
 
@@ -330,14 +322,17 @@ private fun GenreControl(
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun SearchControl(onClick: () -> Unit) {
+private fun RowScope.SearchControl(onClick: () -> Unit) {
     var isFocused by remember { mutableStateOf(false) }
     val accent = SlopTeal
     val textColor = if (isFocused) accent else accent.copy(alpha = 0.75f)
 
     Surface(
         onClick = onClick,
-        modifier = Modifier.onFocusChanged { isFocused = it.isFocused },
+        // weight(1f): grow to fill the rest of the bar (FILL-1 wide search bar).
+        modifier = Modifier
+            .weight(1f)
+            .onFocusChanged { isFocused = it.isFocused },
         shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(14.dp)),
         colors = ClickableSurfaceDefaults.colors(
             containerColor = Color.Transparent,
@@ -354,11 +349,14 @@ private fun SearchControl(onClick: () -> Unit) {
                 shape = RoundedCornerShape(14.dp)
             )
         ),
-        scale = ClickableSurfaceDefaults.scale(focusedScale = 1.1f, pressedScale = 0.95f)
+        // No focus-zoom: a full-width bar scaling up would overflow; the border/
+        // background focus state carries the feedback (matches the tvOS port).
+        scale = ClickableSurfaceDefaults.scale(focusedScale = 1.0f, pressedScale = 0.98f)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 3.dp)
         ) {
             SearchGlassIcon(size = 18.dp, color = textColor)
             Spacer(modifier = Modifier.width(6.dp))

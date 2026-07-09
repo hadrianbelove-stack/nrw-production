@@ -134,9 +134,11 @@ Sub LayoutChips()
     m.toggleBoxBorder.width = boxW : m.toggleBoxBorder.height = boxH
     m.toggleBoxBg.width = boxW - 2 : m.toggleBoxBg.height = boxH - 2 : m.toggleBoxBg.translation = [1, 1]
 
-    ' --- Search box: right of the bar ---
-    searchX = boxW + 44
-    searchW = 1600 - searchX
+    ' --- Search box: grows to fill the rest of the bar to the title-safe right
+    ' edge (FILL-1: tight gap after the cluster, no dead void). filterRow sits at
+    ' screen x=100, so the title-safe right (screen 1820) is x=1720 here. ---
+    searchX = boxW + swGap
+    searchW = 1720 - searchX
     if searchW < 260 then searchW = 260
     m.searchBar.translation = [searchX, 0]
     m.searchBarBg.width = searchW : m.searchBarBg.height = boxH

@@ -20,6 +20,12 @@ Strength levels: **[hard]** never violate · **[strong]** violate only with expl
 - **[strong] Fill the space.** Designs must use the full area available — no cramped
   corners, no undersized elements floating in voids. If an element looks small in
   context, it is wrong. *(2026-06, mockup feedback)*
+- **[strong] Fill wide layouts by growing a real control, not by spreading gaps.**
+  On a wide bar, don't relocate surplus space into gaps between small controls
+  (`space-between` / equal slices) OR into a tight cluster-in-a-corner that leaves a
+  center void — both just move the emptiness. Grow a real control (the search field
+  into a wide bar, or a distributed track) to consume the surplus so the bar reads
+  full edge-to-edge. *(2026-07-09, control-bar FILL-1 iteration)*
 - **[strong] No wasted chrome or redundant labels.** Example: the desktop header toggle
   box has NO "VIEW" label header — the toggles speak for themselves. Don't reintroduce
   labels that only name a control group. *(2026-06, header iteration)*
@@ -69,3 +75,8 @@ proposed twice. Format: date — what was proposed — why rejected.)*
 Seeded from standing feedback: whole-page exact mockups, fill-the-space, no "VIEW"
 label, Wikipedia-first links, Pages URLs for phone viewing, plain tone, system fonts,
 token colors, screenshot-first debugging.
+
+### 2026-07-09 — Fill-by-growing-a-control corollary
+Added the "fill wide layouts by growing a real control, not by spreading gaps" rule,
+from the control-bar FILL-1 iteration (search field grown into a wide bar to eat the
+surplus instead of `space-between` gaps or a corner cluster + void).
