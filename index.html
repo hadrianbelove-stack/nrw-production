@@ -34,7 +34,7 @@
     <meta name="twitter:title" content="The New Release Wall">
     <meta name="twitter:description" content="What came out, every day.">
     <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="assets/styles.css?v=123">
+    <link rel="stylesheet" href="assets/styles.css?v=124">
     <!-- Start the data download in parallel with CSS/JS instead of after them (audit #5) -->
     <link rel="preload" href="data.json" as="fetch" crossorigin="anonymous">
 </head>
@@ -48,15 +48,25 @@
                 </div>
             </div>
             <div class="cwide-controls">
-                <!-- SLOP: a labeled 3-stop slider — one knob slides across SLOP FILTER · SLOP FREE · SLOP ONLY.
-                     data-state (all/free/only) drives the fill/knob; app.js sets #slop-state-label for the
-                     functional/aria contract (kept visually hidden — the three .stop labels are the visible copy). -->
-                <div class="slop-slider" id="slop-free-toggle" data-state="all">
-                    <div class="slop-knob"></div>
-                    <span class="stop" data-i="0">SLOP FILTER</span>
-                    <span class="stop" data-i="1">SLOP FREE</span>
-                    <span class="stop" data-i="2">SLOP ONLY</span>
-                    <span class="slop-state-label-hidden" id="slop-state-label">SLOP FILTER</span>
+                <!-- Left cluster: SLOP selector pill joined to the binary switch track.
+                     Single left-to-right flex row (no space-between); SEARCH grows to fill
+                     the right edge (FILL-1 / A2 layout). -->
+                <div class="view-cluster">
+                <!-- SLOP: its OWN teal-outlined pill — a "SLOP" group tag + a 3-segment
+                     selector (FILTER / FREE / ONLY). One knob slides across the three
+                     segments. data-state (all/free/only) drives the fill/knob; app.js sets
+                     #slop-state-label for the functional/aria contract (kept visually
+                     hidden — the three .stop labels are the visible copy). The word "SLOP"
+                     lives once in the tag, not repeated per segment. -->
+                <div class="slop-pill">
+                    <span class="grp-tag">SLOP</span>
+                    <div class="slop-slider" id="slop-free-toggle" data-state="all">
+                        <div class="slop-knob"></div>
+                        <span class="stop" data-i="0">FILTER</span>
+                        <span class="stop" data-i="1">FREE</span>
+                        <span class="stop" data-i="2">ONLY</span>
+                        <span class="slop-state-label-hidden" id="slop-state-label">SLOP FILTER</span>
+                    </div>
                 </div>
                 <div class="switch-group">
                     <div class="switch-cell" id="highlights-toggle">
@@ -71,6 +81,7 @@
                         <div class="sw-track"><div class="sw-thumb"></div></div>
                         <span class="sw-label">PRE-ORDER</span>
                     </div>
+                </div>
                 </div>
                 <div class="genre-slot">
                     <button class="genre-control" id="genre-toggle" type="button" aria-expanded="false"><span class="genre-text">GENRE</span><span class="caret">▼</span></button>

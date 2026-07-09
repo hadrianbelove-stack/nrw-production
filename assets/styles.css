@@ -148,26 +148,44 @@ header h1 {
    GENRE, and search.
    ========================================================================== */
 
-/* --- SLOP: labeled 3-stop slider. Neutral = knob parked at SLOP FILTER,
-   quiet soft-white, NO teal glow at rest. Fills teal at FREE, orange at ONLY. */
-.slop-slider {
-    position: relative;
-    height: var(--ctl-h, 36px);
-    flex: 0 0 auto;
+/* --- SLOP: its OWN teal-outlined pill (A2). A "SLOP" group tag sits beside a
+   3-segment selector track (FILTER / FREE / ONLY). Reads as a distinct three-way
+   selector, not a fourth on/off switch. The word "SLOP" appears once, in the tag. */
+.slop-pill {
     display: flex;
     align-items: center;
+    gap: 9px;
+    height: var(--ctl-h, 36px);
+    padding: 0 12px 0 13px;
     border-radius: calc(var(--ctl-h, 36px) / 2);
-    border: 1px solid rgba(255,255,255,0.18);
-    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(0,212,170,0.30);
+    background: rgba(0,212,170,0.05);
+    user-select: none;
+    flex: 0 0 auto;
+}
+.slop-pill .grp-tag {
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: rgba(0,212,170,0.75);
+    white-space: nowrap;
+}
+/* Inner 3-segment track: darker inset, knob slides teal/orange under the active
+   segment. JS (placeSlopKnob) sizes + positions .slop-knob from the .stop rects,
+   so the fill hugs each label's real width. */
+.slop-slider {
+    position: relative;
+    height: calc(var(--ctl-h, 36px) - 12px);
+    flex: 0 0 auto;
+    display: flex;
+    align-items: stretch;
+    border-radius: calc((var(--ctl-h, 36px) - 12px) / 2);
+    background: rgba(0,0,0,0.34);
     padding: 3px;
     cursor: pointer;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: border-color 0.2s, background 0.2s;
-}
-.slop-slider:hover {  /* subtle hover feedback */
-    border-color: rgba(255,255,255,0.34);
-    background: rgba(255,255,255,0.08);
 }
 .slop-slider:focus-visible {
     outline: 2px solid var(--accent-primary);
@@ -179,37 +197,39 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: calc(var(--ctl-h, 36px) - 6px);
-    padding: 0 14px;
+    height: 100%;
+    padding: 0 12px;
     font-size: 0.66rem;
     font-weight: 700;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: rgba(255,255,255,0.5);
     white-space: nowrap;
     transition: color 0.2s;
 }
-/* the moving knob — an absolutely-positioned filled lozenge under the active label */
+/* the moving knob — an absolutely-positioned filled lozenge under the active
+   label. left/top/bottom = 3px matches the 3px track padding so app.js's
+   placeSlopKnob (which subtracts a 3px pad offset) lands it exactly. */
 .slop-knob {
     position: absolute;
     top: 3px;
     left: 3px;
     bottom: 3px;
     z-index: 1;
-    border-radius: calc(var(--ctl-h, 36px) / 2);
+    border-radius: calc((var(--ctl-h, 36px) - 18px) / 2);
     transition: transform 0.28s cubic-bezier(.4,0,.2,1),
                 width 0.28s cubic-bezier(.4,0,.2,1),
                 background 0.2s, box-shadow 0.2s;
 }
-/* neutral: knob is a QUIET soft-white lozenge under SLOP FILTER — no color glow */
-.slop-slider[data-state="all"] .slop-knob { background: rgba(255,255,255,0.12); box-shadow: none; }
-.slop-slider[data-state="all"] .stop[data-i="0"] { color: rgba(255,255,255,0.92); }
-/* free: teal knob under SLOP FREE */
-.slop-slider[data-state="free"] .slop-knob { background: var(--accent-primary); box-shadow: 0 0 14px var(--accent-glow); }
-.slop-slider[data-state="free"] .stop[data-i="1"] { color: #031a15; }
-/* only: orange knob under SLOP ONLY */
-.slop-slider[data-state="only"] .slop-knob { background: var(--svc-amazon-vod); box-shadow: 0 0 14px rgba(255,149,0,0.4); }
-.slop-slider[data-state="only"] .stop[data-i="2"] { color: #1a0e00; }
+/* neutral (FILTER, resting): quiet soft-white lozenge — no color glow */
+.slop-slider[data-state="all"] .slop-knob { background: rgba(255,255,255,0.14); box-shadow: none; }
+.slop-slider[data-state="all"] .stop[data-i="0"] { color: rgba(255,255,255,0.95); font-weight: 800; }
+/* free: teal knob under FREE */
+.slop-slider[data-state="free"] .slop-knob { background: var(--accent-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 0 10px var(--accent-glow); }
+.slop-slider[data-state="free"] .stop[data-i="1"] { color: #04120f; font-weight: 800; }
+/* only: orange knob under ONLY */
+.slop-slider[data-state="only"] .slop-knob { background: var(--svc-amazon-vod); box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 0 10px rgba(255,149,0,0.4); }
+.slop-slider[data-state="only"] .stop[data-i="2"] { color: #1a0e00; font-weight: 800; }
 /* #slop-state-label is kept for the app.js/aria contract but not shown — the
    three .stop labels are the visible copy. */
 .slop-state-label-hidden {
@@ -217,27 +237,38 @@ header h1 {
     overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-/* --- BINARY SWITCH GROUP ---
-   At full width the group is transparent to layout (display:contents) so its 3
-   cells become direct children of .cwide-controls and join the single space-between
-   row — every control (slider · 3 switches · genre · search) gets one even gap.
-   The compression band (≤1120px) re-establishes .switch-group as a real flex item
-   so the cells wrap together as a unit — that behavior is unchanged. */
+/* --- BINARY SWITCH GROUP (FILL-1 switch track) ---
+   The three binary switches (SELECTS · FESTS · PRE-ORDER) sit in one outlined
+   track, joined to the SLOP pill inside .view-cluster. The left cluster hugs its
+   content (flex:0 0 auto) and SEARCH grows to fill the row — no space-between,
+   so the cells stay a tight unit at every wide width. */
 .switch-group {
-    display: contents;
+    display: flex;
     align-items: center;
-    gap: 20px;
-    justify-content: center;
+    gap: 0;
+    height: var(--ctl-h, 36px);
+    padding: 3px;
+    border-radius: calc(var(--ctl-h, 36px) / 2);
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.05);
+    flex: 0 0 auto;
+}
+/* hairline dividers between the three switch cells */
+.switch-group .switch-cell + .switch-cell {
+    border-left: 1px solid rgba(255,255,255,0.12);
+    margin-left: 6px;
+    padding-left: 12px;
 }
 .switch-cell {
     display: flex;
     align-items: center;
-    gap: 10px;
-    height: var(--ctl-h, 36px);
+    gap: 9px;
+    height: calc(var(--ctl-h, 36px) - 6px);
+    padding: 0 12px;
     cursor: pointer;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
-    flex: 0 0 auto;             /* hug content; the row's space-between spreads the gaps */
+    flex: 0 0 auto;
     justify-content: flex-start;
 }
 .switch-cell:focus-visible {
@@ -246,9 +277,9 @@ header h1 {
     border-radius: 10px;
 }
 .sw-track {
-    width: 52px;
-    height: 26px;
-    border-radius: 13px;
+    width: 44px;
+    height: 22px;
+    border-radius: 11px;
     background: #1a1a1a;
     border: 1px solid rgba(255,255,255,0.22);
     position: relative;
@@ -259,8 +290,8 @@ header h1 {
     position: absolute;
     top: 3px;
     left: 3px;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: rgba(255,255,255,0.55);
     transition: transform 0.25s cubic-bezier(.4,0,.2,1), background 0.25s;
@@ -277,7 +308,7 @@ header h1 {
 .switch-cell:hover .sw-track { background: #222; border-color: rgba(255,255,255,0.4); }  /* hover feedback */
 .switch-cell:hover .sw-label { color: rgba(255,255,255,0.85); }
 /* ON — .active is the single on-class app.js toggles; identity color keys off the ID */
-.switch-cell.active .sw-thumb { transform: translateX(26px); background: #0a0a0a; }
+.switch-cell.active .sw-thumb { transform: translateX(22px); background: #0a0a0a; }
 .switch-cell.active .sw-track { border-color: rgba(0,0,0,0.35); }
 #highlights-toggle.active .sw-track { background: var(--accent-primary); }
 #highlights-toggle.active .sw-label { color: var(--accent-primary); }
@@ -2333,11 +2364,12 @@ header.nrw-collapsed { padding-top: 0.6rem; }
 .mh-titles h1 { margin: 0; }
 .mh-titles .site-slogan { margin: 10px 0 0; }
 
-/* Search — far right of the control bar; real SVG magnifying glass. Capped so
-   the right end doesn't pool; shares --ctl-h with the rest of the bar. */
-/* Fixed-width anchor at the right edge: space-between spreads the row, so search
-   must NOT grow (a growing search would swallow the surplus and reopen the gap). */
-.cwide-controls .cwide-search { flex: 0 0 280px; min-width: 150px; }
+/* Search — far right of the control bar; real SVG magnifying glass.
+   Shares --ctl-h with the rest of the bar. */
+/* THE FILL LEVER (FILL-1): search grows to consume every remaining pixel out to
+   the right edge, so the row reads as [tight left cluster][wide search] with no
+   dead middle void — instead of the old space-between spray. */
+.cwide-controls .cwide-search { flex: 1 1 auto; min-width: 200px; }
 .cwide-controls .cwide-search .search-container { position: relative; display: flex; align-items: center; margin: 0; width: 100%; }
 .cwide-controls .cwide-search .search-mag { position: absolute; left: 14px; width: 15px; height: 15px; pointer-events: none; color: var(--accent-primary); }
 .cwide-controls .cwide-search #search-input,
@@ -2348,13 +2380,15 @@ header.nrw-collapsed { padding-top: 0.6rem; }
 
 /* Open control row (fused-strip design): no box — the row sits directly on
    the first date strip, whose neon top border is the row's bottom line.
-   space-between spreads the six controls edge-to-edge as one even row (the
-   switch-group is display:contents, so all six are siblings here); the 18px
-   gap is only the MINIMUM — it's what you get once the row stops having surplus,
-   i.e. in the compression band. */
+   FILL-1: a single left-to-right flex row with small fixed 16px gaps (NOT
+   space-between, which sprayed a ~760px void across the six gaps at 1920).
+   The left cluster hugs its content; SEARCH (flex:1 1 auto) eats the surplus. */
 .cwide-controls { display: flex; align-items: center;
-  background: transparent; border: none; justify-content: space-between;
-  border-radius: 0; padding: 4px 2px 12px; gap: 18px; }
+  background: transparent; border: none; justify-content: flex-start;
+  border-radius: 0; padding: 4px 2px 12px; gap: 16px; }
+
+/* Left cluster: SLOP pill joined to the binary switch track as one tight unit. */
+.view-cluster { display: flex; align-items: center; flex: 0 0 auto; gap: 8px; }
 
 /* GENRE — raised to the shared height with real presence (control-bar V3) */
 .genre-slot { position: relative; display: flex; align-items: center; flex: 0 0 auto; }
@@ -2381,10 +2415,9 @@ header.nrw-collapsed { padding-top: 0.6rem; }
 /* Search honesty (audit F17): while a query is active, search bypasses every
    view toggle + GENRE, so dim them to ~0.35 to show they're not in play.
    Pointer-events stay live — clicking one clears the search and applies the
-   view (wired in app.js). */
-/* .switch-group is display:contents (can't carry opacity) — dim its children */
-.cwide-controls.search-active .slop-slider,
-.cwide-controls.search-active .switch-group > *,
+   view (wired in app.js). The left cluster (SLOP pill + switch track) is one
+   element now, so dim it as a unit alongside GENRE. */
+.cwide-controls.search-active .view-cluster,
 .cwide-controls.search-active .genre-slot { opacity: 0.35; transition: opacity .2s; }
 /* "searching all films" microcopy under the search field */
 .cwide-controls .search-scope-note {
@@ -2424,21 +2457,23 @@ header.nrw-collapsed { padding-top: 0.6rem; }
 @media (max-width: 1280px) {
   .cwide-hdr { padding-left: 18px; padding-right: 18px; }
 }
-/* Compression band — re-establish the switch-group as a real flex item (undo the
-   full-width display:contents flatten), pack left, shrink the shared height,
-   tighten gaps + cells, cap search narrower. Labels never overlap (each switch
-   cell stays fixed-width). Behavior here is unchanged from before the fill fix. */
+/* Compression band — shrink the shared height + tighten the segment/cell padding
+   so the left cluster stays a tight unit; SEARCH keeps growing to fill the row.
+   (The FILL-1 row is always a single left-to-right flex row now — no display:
+   contents to undo.) */
 @media (max-width: 1120px) {
   :root { --ctl-h: 34px; }
-  .cwide-controls { gap: 12px; justify-content: flex-start; }
-  .switch-group { display: flex; gap: 12px; flex: 1 1 auto; justify-content: center; }
-  .switch-cell { width: 128px; flex: 0 0 auto; }
+  .cwide-controls { gap: 12px; }
+  .view-cluster { gap: 6px; }
+  .switch-cell { padding: 0 10px; }
+  .switch-group .switch-cell + .switch-cell { margin-left: 4px; padding-left: 10px; }
   .slop-slider .stop { padding: 0 10px; }
-  .cwide-controls .cwide-search { flex: 0 1 220px; }
+  .cwide-controls .cwide-search { min-width: 160px; }
 }
+/* Narrow band (still desktop; phones redirect ≤768px): let the row wrap, the
+   cluster stays intact and search takes the full next line. */
 @media (max-width: 980px) {
   .masthead-row { flex-wrap: wrap; }
   .cwide-controls { flex-wrap: wrap; gap: 14px; justify-content: flex-start; }
-  .switch-group { display: flex; flex: 1 1 100%; justify-content: flex-start; }
   .cwide-controls .cwide-search { flex: 1 1 100%; min-width: 0; }
 }
