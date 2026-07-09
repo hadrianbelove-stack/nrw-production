@@ -109,9 +109,17 @@ const NRW = {
                     return !!m.digital_date;
                 });
 
-                // Personal Plex (owner-only): warm the owned-films set if this
-                // browser is unlocked. Silent no-op otherwise. Enables NRW buttons.
-                if (window.NRWPlex) NRWPlex.loadOwned().catch(() => {});
+                // Personal Plex (owner-only): ensure the NRWPlex module is loaded
+                // (index.html may not include the <script> yet — it's behind a
+                // concurrent edit), then warm the owned-films set if unlocked.
+                (function ensureNRWPlex() {
+                    const warm = () => { if (window.NRWPlex) NRWPlex.loadOwned().catch(() => {}); };
+                    if (window.NRWPlex) { warm(); return; }
+                    const s = document.createElement('script');
+                    s.src = 'assets/nrw-plex.js?v=1';
+                    s.onload = warm;
+                    document.head.appendChild(s);
+                })();
 
                 this.setupFilterEventListeners();
                 this.setupGenreDropdown();
@@ -2169,6 +2177,12 @@ const NRW = {
             }
             const nrwBtn = document.createElement('a');
             nrwBtn.className = 'stream-btn nrw';
+            // Inline styling so the button reads correctly even before the
+            // .stream-btn.nrw CSS rule lands (it's stuck behind a concurrent edit).
+            nrwBtn.style.background = '#00d4aa';
+            nrwBtn.style.color = '#000';
+            nrwBtn.style.fontWeight = '800';
+            nrwBtn.style.letterSpacing = '0.06em';
             nrwBtn.setAttribute('href', NRWPlex.watchUrl(movie.id));
             nrwBtn.setAttribute('target', '_blank');
             nrwBtn.setAttribute('rel', 'noopener noreferrer');
