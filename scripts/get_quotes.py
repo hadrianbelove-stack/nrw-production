@@ -56,6 +56,26 @@ LB_MAX = 10  # Letterboxd quotes to show (all if fewer)
 WRAP = 72
 SPOILER_PREFIX = "This review may contain spoilers"
 
+# Reputable outlets whose review pages routinely 403/paywall-block the
+# Playwright verifier — verify_quote_url() returns "error" (couldn't load)
+# and the link gets stripped even though it's correct. For these domains the
+# domain itself is strong provenance and the verifier can't read them anyway,
+# so we skip verification and keep the URL (same effect as --keep-url).
+# Extend this list as new blocking outlets turn up.
+TRUSTED_REVIEW_DOMAINS = {
+    "nytimes.com", "wsj.com", "washingtonpost.com", "newyorker.com",
+    "theatlantic.com", "ft.com", "economist.com", "latimes.com",
+    "bloomberg.com", "vulture.com", "nymag.com", "newyork.com",
+}
+
+
+def _is_trusted_domain(url):
+    """True if url's host is (or is a subdomain of) a TRUSTED_REVIEW_DOMAINS
+    entry — e.g. www.nytimes.com matches nytimes.com."""
+    from urllib.parse import urlparse
+    host = (urlparse(url).hostname or "").lower()
+    return any(host == d or host.endswith("." + d) for d in TRUSTED_REVIEW_DOMAINS)
+
 
 def _atomic_write(path, obj):
     """Torn-write guard; see pipeline/json_io.py. Callers that read-modify-write
@@ -221,7 +241,10 @@ def select(title, year, args):
 
     real_title = cache[key].get("title", title)
     url = None if args.no_url else q.get("review_url")
-    if url and not args.keep_url and not args.custom:
+    if url and not args.keep_url and not args.custom and _is_trusted_domain(url):
+        print(f"✓ Trusted outlet ({url}) — kept without loading "
+              "(these paywall/block the verifier).")
+    elif url and not args.keep_url and not args.custom:
         status = _verify_url(url, real_title, q.get("critic"))
         if status == "bad_link":
             print(f"⚠ Review link doesn't appear to be this movie/critic ({url}) "

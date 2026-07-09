@@ -135,5 +135,13 @@
     "verdict_type": "evident",
     "hypothesis_count": 1,
     "tool_calls_used": 5
+  },
+  {
+    "date": "2026-07-08",
+    "question": "Black Box links.rt=None / no RT quotes \u2014 regression vs staleness",
+    "scope": "pipeline failure + specific movie",
+    "verdict_type": "confirmed",
+    "hypothesis_count": 3,
+    "tool_calls_used": "workflow: 6 agents / 198 tool_uses"
   }
 ]

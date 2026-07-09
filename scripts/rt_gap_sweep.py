@@ -15,8 +15,12 @@ result like a trailer stamp). Also runnable by hand.
 Rules:
   - wall films with digital_date in the last --days (default 30), no links.rt
   - _lock_rt respected (curator says: deliberately no RT — never re-search)
-  - attempt cap (--max-attempts, default 3) + cooldown (--cooldown-days,
-    default 2) via _rt_retry_count / _rt_last_retry on the record
+  - attempt cap (--max-attempts, default 3) + cooldown (--cooldown-hours,
+    default 2) via _rt_retry_count / _rt_last_retry on the record. RT
+    bot-walls are transient (the page usually exists — verified Jul 2026),
+    so a miss is retried in hours, not days. Each attempt clears the film's
+    cached RT miss first (the finder short-circuits a cached miss for ~a day),
+    so the retry actually re-queries RT instead of echoing the old miss.
   - batch cap per run (--batch, default 15)
   - writes via pipeline.json_io.json_edit (flock + atomic) — safe alongside
     open /flow curation windows and concurrent /curate sessions
@@ -75,13 +79,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--days', type=int, default=30)
     ap.add_argument('--max-attempts', type=int, default=3)
-    ap.add_argument('--cooldown-days', type=int, default=2)
+    ap.add_argument('--cooldown-hours', type=float, default=2,
+                    help='hours to wait before re-attempting a missed film '
+                         '(RT bot-walls are transient — retry soon, not in days)')
     ap.add_argument('--batch', type=int, default=15)
     args = ap.parse_args()
 
     today = str(date.today())
     window_start = str(date.today() - timedelta(days=args.days))
-    cooldown_cutoff = (datetime.now() - timedelta(days=args.cooldown_days)).isoformat()
+    cooldown_cutoff = (datetime.now() - timedelta(hours=args.cooldown_hours)).isoformat()
 
     import json
     data = json.load(open('data.json'))
@@ -104,6 +110,22 @@ def main():
         title, year = m.get('title'), m.get('year')
         mid = str(m.get('id'))
         tried.append(mid)
+        # Force a real re-query. The finder short-circuits a cached miss for
+        # ~a day (verified Jul 2026: a second lookup returns the stored miss
+        # without touching RT), so a spaced retry would echo the old miss and
+        # burn the attempt cap without ever re-searching. The miss can live in
+        # EITHER cache layer — the Gemini finder's dict (outer short-circuit)
+        # and the Playwright scraper's dict (inner short-circuit) are loaded
+        # separately — so drop it from both. Drop only a MISS (url falsy);
+        # never clobber a real hit.
+        _key = f"{title}_{int(year)}"
+        _pw = finder._get_playwright_scraper()
+        for _c in (finder.gemini_finder.cache, getattr(_pw, 'cache', None)):
+            if _c is None:
+                continue
+            _e = _c.get(_key)
+            if isinstance(_e, dict) and not _e.get('url'):
+                _c.pop(_key, None)
         try:
             r = finder.find_rt_score(
                 title, int(year),
