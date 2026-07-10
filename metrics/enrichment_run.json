@@ -1,17 +1,47 @@
 {
-  "timestamp": "2026-07-09T11:16:04.039319",
-  "movies_requested": 22,
-  "movies_enriched": 14,
+  "timestamp": "2026-07-10T11:09:27.602387",
+  "movies_requested": 18,
+  "movies_enriched": 10,
   "movies_deferred": 8,
   "deferred_details": [
+    {
+      "title": "CAMP",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-07-10",
+      "discovered_at": "2026-07-10T10:59:29.960516",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "first_reverted_at": "2026-07-10",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Passenger",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-09",
+      "discovered_at": "2026-07-10T10:59:35.650654",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-10",
+      "tmdb_platforms": [
+        "Amazon Video",
+        "Apple TV Store",
+        "Google Play Movies",
+        "Fandango At Home"
+      ],
+      "jw_platforms": [
+        "Amazon Video",
+        "Apple TV Store",
+        "Fandango At Home"
+      ]
+    },
     {
       "title": "Girls Like Girls",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-07-07",
-      "discovered_at": "2026-07-09T11:02:25.689389",
+      "discovered_at": "2026-07-10T10:59:37.079111",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-09",
+      "first_reverted_at": "2026-07-10",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
@@ -23,113 +53,59 @@
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-09T11:02:27.051342",
+      "discovered_at": "2026-07-10T10:59:38.527418",
       "discovery_source": "tmdb_type4",
-      "revert_count": 10,
-      "first_reverted_at": "2026-07-09",
+      "revert_count": 11,
+      "first_reverted_at": "2026-07-10",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Nicol\u00e1s de Jes\u00fas' Now You See Me...",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-10-26",
+      "discovered_at": "2026-07-10T10:59:38.754591",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 5,
+      "first_reverted_at": "2026-06-26",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-09T11:02:27.274189",
+      "discovered_at": "2026-07-10T10:59:38.974538",
       "discovery_source": "tmdb_type4",
-      "revert_count": 31,
-      "first_reverted_at": "2026-07-09",
+      "revert_count": 32,
+      "first_reverted_at": "2026-07-10",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-09T11:02:27.487644",
+      "discovered_at": "2026-07-10T10:59:39.238543",
       "discovery_source": "tmdb_type4",
-      "revert_count": 22,
-      "first_reverted_at": "2026-07-09",
+      "revert_count": 23,
+      "first_reverted_at": "2026-07-10",
       "tmdb_platforms": []
-    },
-    {
-      "title": "CAMP",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-10",
-      "discovered_at": "2026-07-09T11:02:46.125950",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-09",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "The Dangers in My Heart: The Movie",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-07-09T11:02:46.457854",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-09",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Barnes & Noble"
-      ]
     },
     {
       "title": "Blades of the Guardians",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "",
-      "discovered_at": "2026-07-09T11:02:46.688883",
+      "discovered_at": "2026-07-10T10:59:42.343057",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-09",
+      "first_reverted_at": "2026-07-10",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
         "Apple TV Store",
         "Fandango At Home"
       ]
-    },
-    {
-      "title": "Passenger",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-09",
-      "discovered_at": "2026-07-09T11:02:55.665193",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-09",
-      "tmdb_platforms": [
-        "Amazon Video",
-        "Apple TV Store"
-      ],
-      "jw_platforms": [
-        "Amazon Video",
-        "Apple TV Store",
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "Reeling",
-      "reason": "zero_watch_links",
-      "digital_date": "",
-      "discovered_at": "2026-06-13T12:00:39.786393",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-09",
-      "tmdb_platforms": [
-        "Amazon Video",
-        "Apple TV Store"
-      ]
-    },
-    {
-      "title": "Demon Hunter: Time 2 Kill",
-      "reason": "zero_watch_links",
-      "digital_date": "2026-07-07",
-      "discovered_at": "2026-07-07T11:03:01.831672",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-09",
-      "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 785.63,
+  "enrichment_duration_seconds": 580.84,
   "error_details": [],
   "total_errors": 0
 }
