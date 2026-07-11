@@ -1,27 +1,27 @@
 {
-  "timestamp": "2026-07-10T11:09:27.602387",
-  "movies_requested": 18,
-  "movies_enriched": 10,
-  "movies_deferred": 8,
+  "timestamp": "2026-07-11T09:41:48.954796",
+  "movies_requested": 17,
+  "movies_enriched": 8,
+  "movies_deferred": 9,
   "deferred_details": [
     {
       "title": "CAMP",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-10",
-      "discovered_at": "2026-07-10T10:59:29.960516",
+      "discovered_at": "2026-07-11T09:33:22.735762",
       "discovery_source": "tmdb_type4",
-      "revert_count": 2,
-      "first_reverted_at": "2026-07-10",
+      "revert_count": 3,
+      "first_reverted_at": "2026-07-11",
       "tmdb_platforms": []
     },
     {
       "title": "Passenger",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-07-09",
-      "discovered_at": "2026-07-10T10:59:35.650654",
+      "discovered_at": "2026-07-11T09:33:28.266643",
       "discovery_source": "provider_availability_check",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-10",
+      "first_reverted_at": "2026-07-11",
       "tmdb_platforms": [
         "Amazon Video",
         "Apple TV Store",
@@ -38,10 +38,10 @@
       "title": "Girls Like Girls",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-07-07",
-      "discovered_at": "2026-07-10T10:59:37.079111",
+      "discovered_at": "2026-07-11T09:33:29.088426",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-10",
+      "first_reverted_at": "2026-07-11",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
@@ -53,50 +53,65 @@
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-10T10:59:38.527418",
+      "discovered_at": "2026-07-11T09:33:29.821899",
       "discovery_source": "tmdb_type4",
-      "revert_count": 11,
-      "first_reverted_at": "2026-07-10",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Nicol\u00e1s de Jes\u00fas' Now You See Me...",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-10-26",
-      "discovered_at": "2026-07-10T10:59:38.754591",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 5,
-      "first_reverted_at": "2026-06-26",
+      "revert_count": 12,
+      "first_reverted_at": "2026-07-11",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-10T10:59:38.974538",
+      "discovered_at": "2026-07-11T09:33:30.101866",
       "discovery_source": "tmdb_type4",
-      "revert_count": 32,
-      "first_reverted_at": "2026-07-10",
+      "revert_count": 33,
+      "first_reverted_at": "2026-07-11",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-10T10:59:39.238543",
+      "discovered_at": "2026-07-11T09:33:30.373527",
       "discovery_source": "tmdb_type4",
-      "revert_count": 23,
-      "first_reverted_at": "2026-07-10",
+      "revert_count": 24,
+      "first_reverted_at": "2026-07-11",
       "tmdb_platforms": []
+    },
+    {
+      "title": "Dear England",
+      "reason": "under_60min",
+      "digital_date": "",
+      "discovered_at": "2026-07-11T09:33:30.863775",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
+    },
+    {
+      "title": "The Dangers in My Heart: The Movie",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-14",
+      "discovered_at": "2026-07-11T09:33:34.234174",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-11",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Barnes & Noble"
+      ]
     },
     {
       "title": "Blades of the Guardians",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "",
-      "discovered_at": "2026-07-10T10:59:42.343057",
+      "discovered_at": "2026-07-11T09:33:34.558636",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-10",
+      "first_reverted_at": "2026-07-11",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
@@ -105,7 +120,7 @@
       ]
     }
   ],
-  "enrichment_duration_seconds": 580.84,
+  "enrichment_duration_seconds": 489.96,
   "error_details": [],
   "total_errors": 0
 }
