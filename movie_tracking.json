@@ -19739,7 +19739,7 @@
       "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-10"
     },
@@ -19868,12 +19868,12 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 13,
+      "_jw_revert_count": 14,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-12",
+      "_transitioned_at": "2026-07-13",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-12"
+      "_jw_reverted_at": "2026-07-13"
     },
     "1250841": {
       "title": "Hair of the Bear",
@@ -40805,10 +40805,10 @@
       "enriched": false,
       "enrichment_date": null,
       "_is_preorder": true,
-      "_transitioned_at": "2026-07-12",
-      "_jw_revert_count": 25,
+      "_transitioned_at": "2026-07-13",
+      "_jw_revert_count": 26,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-12"
+      "_jw_reverted_at": "2026-07-13"
     },
     "1544405": {
       "title": "Der Rest ist Stille",
@@ -54213,9 +54213,9 @@
     },
     "1482791": {
       "title": "Son of the Soil",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-06",
-      "digital_date": "2026-07-14",
+      "digital_date": "2026-07-13",
       "providers": {},
       "discovery_pass": "B",
       "has_providers": false,
@@ -109868,7 +109868,8 @@
       "premiere_date": "2025-08-01",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-09"
+      "_jw_reverted_at": "2026-07-09",
+      "_skip_provider_discovery": true
     },
     "1580883": {
       "title": "平塚奈菜　30-31",
@@ -118183,13 +118184,25 @@
     "1228335": {
       "title": "The Mountain",
       "year": 2024,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-13",
+      "providers": {
+        "rent": [
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Toronto/TIFF",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-13",
+      "_transitioned_at": "2026-07-13"
     },
     "1225624": {
       "title": "On Falling",
@@ -135659,7 +135672,8 @@
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-07-09"
+      "_jw_reverted_at": "2026-07-09",
+      "_skip_provider_discovery": true
     },
     "1385773": {
       "title": "Among Neighbors",
@@ -139424,12 +139438,12 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-12",
+      "_transitioned_at": "2026-07-13",
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-07-12"
+      "_jw_reverted_at": "2026-07-13"
     },
     "1309083": {
       "title": "Dolly",
@@ -164734,28 +164748,30 @@
     "1315259": {
       "title": "Influenced",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-18",
       "providers": {
         "rent": [
           "Amazon Video",
+          "Apple TV Store",
+          "Fandango At Home",
           "Plex"
         ],
         "buy": [
-          "Amazon Video"
+          "Amazon Video",
+          "Apple TV Store",
+          "Fandango At Home"
         ],
         "streaming": []
       },
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
-      "_transitioned_at": "2026-07-12",
+      "enriched": true,
+      "_transitioned_at": "2026-07-13",
       "digital_date": "2026-07-12",
       "is_slop": true,
-      "_jw_revert_reason": "zero_watch_links",
-      "_jw_reverted_at": "2026-07-12",
-      "_jw_revert_count": 1
+      "enrichment_date": "2026-07-13"
     },
     "1137627": {
       "title": "We Are Perfect",
@@ -165887,11 +165903,21 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-01-20",
-      "digital_date": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-13",
+      "_transitioned_at": "2026-07-13",
+      "_buyonly_preorder": true
     },
     "1596318": {
       "title": "Cookie Queens",
@@ -180723,9 +180749,9 @@
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "_buyonly_preorder": true,
-      "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-07-11",
-      "_jw_revert_count": 1
+      "_type4_pending": true,
+      "enriched": true,
+      "enrichment_date": "2026-07-13"
     },
     "1316398": {
       "title": "Our Erika",
@@ -182431,9 +182457,10 @@
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-07-12",
-      "_transitioned_at": "2026-07-12",
-      "_buyonly_preorder": true
+      "enrichment_date": "2026-07-13",
+      "_transitioned_at": "2026-07-13",
+      "_buyonly_preorder": true,
+      "is_slop": true
     },
     "1636858": {
       "title": "American SUP",
@@ -193629,13 +193656,27 @@
     "1640579": {
       "title": "Jenny – A Story on Lydmor",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-03-09",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-13",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "CPH:DOX",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-13",
+      "_transitioned_at": "2026-07-13"
     },
     "1640576": {
       "title": "Jason's Box",
@@ -228459,12 +228500,24 @@
     "1516529": {
       "title": "Dose",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-05-22",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-13",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-13",
+      "_transitioned_at": "2026-07-13"
     },
     "1452757": {
       "title": "Missoula",
@@ -232019,16 +232072,16 @@
         "streaming": []
       },
       "intake_pass": "A",
-      "_jw_revert_count": 34,
+      "_jw_revert_count": 35,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-12",
+      "_transitioned_at": "2026-07-13",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-12"
+      "_jw_reverted_at": "2026-07-13"
     },
     "1646124": {
       "title": "Tiger's Rampage",
@@ -236750,12 +236803,23 @@
     "1626170": {
       "title": "Sing Geetham",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-06-10",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-13",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-13",
+      "_transitioned_at": "2026-07-13"
     },
     "1528885": {
       "title": "Kichka: Telling Myself",
@@ -240350,10 +240414,20 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-06-19",
-      "digital_date": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-13",
+      "_transitioned_at": "2026-07-13",
+      "_buyonly_preorder": true
     },
     "1461751": {
       "title": "Black Men in Uniform",
@@ -247376,12 +247450,24 @@
     "1703154": {
       "title": "Fire Tornado",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-07-08",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-13",
+      "providers": {
+        "rent": [
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-13",
+      "_transitioned_at": "2026-07-13"
     },
     "tv_324113": {
       "title": "Sin And Love",
@@ -247524,7 +247610,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-09"
+      "_jw_reverted_at": "2026-07-09",
+      "_skip_provider_discovery": true
     },
     "1728566": {
       "title": "致命潮汐",
@@ -247964,7 +248051,7 @@
       "digital_date": "2026-07-10",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-10"
     },
@@ -247976,7 +248063,7 @@
       "digital_date": "2026-07-10",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-10"
     },
@@ -248060,7 +248147,7 @@
       "digital_date": "2026-07-09",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-10"
     },
@@ -248077,12 +248164,24 @@
     "1729010": {
       "title": "The Night Everything Changed",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-07-10",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-13",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-13",
+      "_transitioned_at": "2026-07-13"
     },
     "1728582": {
       "title": "Léon : Au-delà de l’Or",
@@ -248299,10 +248398,20 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-07-10",
-      "digital_date": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-13",
+      "_transitioned_at": "2026-07-13",
+      "_buyonly_preorder": true
     },
     "1361852": {
       "title": "The convent",
@@ -248489,7 +248598,7 @@
       "digital_date": "2026-07-10",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-11"
     },
@@ -248501,7 +248610,7 @@
       "digital_date": "2026-07-10",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-11"
     },
@@ -249026,6 +249135,121 @@
       },
       "intake_date": "2026-07-12",
       "networks": [],
+      "has_providers": false
+    },
+    "1726658": {
+      "title": "Le Concert de Paris 2026",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1724285": {
+      "title": "Die Abräumer",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1730805": {
+      "title": "「信号Signal」洛天依十四周年·共鸣之夜生日会",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1730751": {
+      "title": "Battle For the Bid",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1730875": {
+      "title": "Night Shift",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1730872": {
+      "title": "The Content Trilogy",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-13",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1730028": {
+      "title": "Chunks",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-13",
+      "digital_date": "2026-07-17",
+      "providers": {},
+      "intake_pass": "B",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-07-13"
+    },
+    "1616674": {
+      "title": "Me Before Me",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-13",
+      "digital_date": "2026-07-16",
+      "providers": {},
+      "intake_pass": "B",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-07-13"
+    },
+    "tv_328183": {
+      "title": "Sheep",
+      "content_type": "limited_series",
+      "tmdb_id": 328183,
+      "status": "tracking",
+      "first_air_date": "2026-07-13",
+      "digital_date": "2026-07-13",
+      "episode_count": 5,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/deEoqa7gUh1MTFpLyjNZYe3it3h.jpg",
+      "synopsis": "",
+      "genres": [
+        "Comedy",
+        "Drama"
+      ],
+      "original_language": "de",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-13",
+      "networks": [
+        "ZDF"
+      ],
       "has_providers": false
     }
   }

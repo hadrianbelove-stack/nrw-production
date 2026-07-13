@@ -1,74 +1,51 @@
 {
-  "timestamp": "2026-07-12T10:00:45.938721",
-  "movies_requested": 12,
-  "movies_enriched": 7,
-  "movies_deferred": 5,
+  "timestamp": "2026-07-13T11:25:50.871252",
+  "movies_requested": 18,
+  "movies_enriched": 14,
+  "movies_deferred": 4,
   "deferred_details": [
     {
       "title": "CAMP",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-10",
-      "discovered_at": "2026-07-12T09:52:42.265777",
+      "discovered_at": "2026-07-13T11:04:30.854521",
       "discovery_source": "tmdb_type4",
-      "revert_count": 4,
-      "first_reverted_at": "2026-07-12",
+      "revert_count": 5,
+      "first_reverted_at": "2026-07-13",
       "tmdb_platforms": []
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-12T09:52:51.006385",
+      "discovered_at": "2026-07-13T11:04:32.426669",
       "discovery_source": "tmdb_type4",
-      "revert_count": 13,
-      "first_reverted_at": "2026-07-12",
+      "revert_count": 14,
+      "first_reverted_at": "2026-07-13",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-12T09:52:51.272745",
+      "discovered_at": "2026-07-13T11:04:32.709638",
       "discovery_source": "tmdb_type4",
-      "revert_count": 34,
-      "first_reverted_at": "2026-07-12",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Hypomania",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-17",
-      "discovered_at": "2026-07-12T09:52:51.543248",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 5,
-      "first_reverted_at": "2026-06-21",
+      "revert_count": 35,
+      "first_reverted_at": "2026-07-13",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-12T09:52:51.885785",
+      "discovered_at": "2026-07-13T11:04:33.078507",
       "discovery_source": "tmdb_type4",
-      "revert_count": 25,
-      "first_reverted_at": "2026-07-12",
+      "revert_count": 26,
+      "first_reverted_at": "2026-07-13",
       "tmdb_platforms": []
-    },
-    {
-      "title": "Influenced",
-      "reason": "zero_watch_links",
-      "digital_date": "",
-      "discovered_at": "2026-06-27T10:01:13.918656",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-12",
-      "tmdb_platforms": [
-        "Amazon Video",
-        "Plex"
-      ]
     }
   ],
-  "enrichment_duration_seconds": 464.94,
+  "enrichment_duration_seconds": 1249.71,
   "error_details": [],
   "total_errors": 0
 }
