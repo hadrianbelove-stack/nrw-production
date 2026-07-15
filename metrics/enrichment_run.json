@@ -1,32 +1,17 @@
 {
-  "timestamp": "2026-07-14T09:59:17.600229",
-  "movies_requested": 11,
-  "movies_enriched": 4,
-  "movies_deferred": 7,
+  "timestamp": "2026-07-15T10:08:42.955366",
+  "movies_requested": 20,
+  "movies_enriched": 14,
+  "movies_deferred": 6,
   "deferred_details": [
     {
       "title": "Backrooms",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-07-14",
-      "discovered_at": "2026-06-21T11:51:02.814918",
+      "discovered_at": "2026-07-15T09:53:26.979008",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-14",
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ],
-      "jw_platforms": [
-        "Amazon Video"
-      ]
-    },
-    {
-      "title": "The Breadwinner",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-07-11T09:33:35.260568",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-14",
+      "first_reverted_at": "2026-07-15",
       "tmdb_platforms": [
         "Fandango At Home"
       ],
@@ -36,67 +21,73 @@
       ]
     },
     {
-      "title": "Sunset Strip Killers",
-      "reason": "jw_revert:justwatch_no_valid_offers",
+      "title": "The Breadwinner",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-07-14",
-      "discovered_at": "2026-07-11T09:33:37.698621",
+      "discovered_at": "2026-07-15T09:53:27.213647",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-14",
-      "tmdb_platforms": []
+      "first_reverted_at": "2026-07-15",
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ],
+      "jw_platforms": [
+        "Amazon Video",
+        "Apple TV Store"
+      ]
     },
     {
       "title": "CAMP",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-10",
-      "discovered_at": "2026-07-14T09:50:01.471061",
+      "discovered_at": "2026-07-15T09:53:28.110066",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
-      "first_reverted_at": "2026-07-14",
+      "revert_count": 7,
+      "first_reverted_at": "2026-07-15",
       "tmdb_platforms": []
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-14T09:50:02.160770",
+      "discovered_at": "2026-07-15T09:53:28.308636",
       "discovery_source": "tmdb_type4",
-      "revert_count": 15,
-      "first_reverted_at": "2026-07-14",
+      "revert_count": 16,
+      "first_reverted_at": "2026-07-15",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-14T09:50:02.384667",
+      "discovered_at": "2026-07-15T09:53:28.749421",
       "discovery_source": "tmdb_type4",
-      "revert_count": 36,
-      "first_reverted_at": "2026-07-14",
+      "revert_count": 37,
+      "first_reverted_at": "2026-07-15",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-14T09:50:02.580472",
+      "discovered_at": "2026-07-15T09:53:28.939714",
       "discovery_source": "tmdb_type4",
-      "revert_count": 27,
-      "first_reverted_at": "2026-07-14",
+      "revert_count": 28,
+      "first_reverted_at": "2026-07-15",
       "tmdb_platforms": []
     },
     {
-      "title": "Blades of the Guardians",
+      "title": "The Dangers in My Heart: The Movie",
       "reason": "zero_watch_links",
-      "digital_date": "2026-06-30",
-      "discovered_at": "2026-07-12T09:52:58.420693",
+      "digital_date": "2026-07-14",
+      "discovered_at": "2026-07-13T11:04:40.464053",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-14",
+      "first_reverted_at": "2026-07-15",
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 549.59,
+  "enrichment_duration_seconds": 885.55,
   "error_details": [],
   "total_errors": 0
 }
