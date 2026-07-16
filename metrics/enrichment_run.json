@@ -1,93 +1,63 @@
 {
-  "timestamp": "2026-07-15T10:08:42.955366",
-  "movies_requested": 20,
-  "movies_enriched": 14,
-  "movies_deferred": 6,
+  "timestamp": "2026-07-16T11:31:56.776762",
+  "movies_requested": 18,
+  "movies_enriched": 13,
+  "movies_deferred": 5,
   "deferred_details": [
-    {
-      "title": "Backrooms",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-07-15T09:53:26.979008",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-15",
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ],
-      "jw_platforms": [
-        "Amazon Video",
-        "Apple TV Store"
-      ]
-    },
-    {
-      "title": "The Breadwinner",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-07-15T09:53:27.213647",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-15",
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ],
-      "jw_platforms": [
-        "Amazon Video",
-        "Apple TV Store"
-      ]
-    },
     {
       "title": "CAMP",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-10",
-      "discovered_at": "2026-07-15T09:53:28.110066",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 7,
-      "first_reverted_at": "2026-07-15",
-      "tmdb_platforms": []
+      "discovered_at": "2026-07-16T11:15:27.572023",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 8,
+      "first_reverted_at": "2026-07-16",
+      "tmdb_platforms": [
+        "YouTube"
+      ]
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-15T09:53:28.308636",
+      "discovered_at": "2026-07-16T11:15:27.884665",
       "discovery_source": "tmdb_type4",
-      "revert_count": 16,
-      "first_reverted_at": "2026-07-15",
+      "revert_count": 17,
+      "first_reverted_at": "2026-07-16",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-15T09:53:28.749421",
+      "discovered_at": "2026-07-16T11:15:28.352762",
       "discovery_source": "tmdb_type4",
-      "revert_count": 37,
-      "first_reverted_at": "2026-07-15",
+      "revert_count": 38,
+      "first_reverted_at": "2026-07-16",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-15T09:53:28.939714",
+      "discovered_at": "2026-07-16T11:15:28.592713",
       "discovery_source": "tmdb_type4",
-      "revert_count": 28,
-      "first_reverted_at": "2026-07-15",
+      "revert_count": 29,
+      "first_reverted_at": "2026-07-16",
       "tmdb_platforms": []
     },
     {
-      "title": "The Dangers in My Heart: The Movie",
-      "reason": "zero_watch_links",
-      "digital_date": "2026-07-14",
-      "discovered_at": "2026-07-13T11:04:40.464053",
+      "title": "Rumours Of Madam Roach",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-07-26",
+      "discovered_at": "2026-07-16T11:15:42.324446",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-15",
+      "first_reverted_at": "2026-07-16",
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 885.55,
+  "enrichment_duration_seconds": 972.48,
   "error_details": [],
   "total_errors": 0
 }
