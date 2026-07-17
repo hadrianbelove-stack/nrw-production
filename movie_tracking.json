@@ -19869,12 +19869,12 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 17,
+      "_jw_revert_count": 18,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-16",
+      "_transitioned_at": "2026-07-17",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-16"
+      "_jw_reverted_at": "2026-07-17"
     },
     "1250841": {
       "title": "Hair of the Bear",
@@ -20841,13 +20841,25 @@
     },
     "1514051": {
       "title": "Gentle Barbarians",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-10-26",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-17",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-17",
+      "_transitioned_at": "2026-07-17"
     },
     "1507686": {
       "title": "O porco",
@@ -40822,10 +40834,10 @@
       "enriched": false,
       "enrichment_date": null,
       "_is_preorder": true,
-      "_transitioned_at": "2026-07-16",
-      "_jw_revert_count": 29,
+      "_transitioned_at": "2026-07-17",
+      "_jw_revert_count": 30,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-16"
+      "_jw_reverted_at": "2026-07-17"
     },
     "1544405": {
       "title": "Der Rest ist Stille",
@@ -76861,12 +76873,24 @@
     "1507724": {
       "title": "Labyrinth",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-01",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-17",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-17",
+      "_transitioned_at": "2026-07-17"
     },
     "1506560": {
       "title": "Clash of the Thundermans",
@@ -113599,21 +113623,30 @@
       "status": "tracking",
       "first_seen": "2026-01-04",
       "providers": {
-        "rent": [],
-        "buy": [
+        "rent": [
+          "Amazon Video",
           "Fandango At Home"
         ],
-        "streaming": []
+        "buy": [
+          "Amazon Video",
+          "Fandango At Home"
+        ],
+        "streaming": [
+          "Kino Film Collection"
+        ]
       },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
       "premiere_date": "2025-08-30",
       "_discovery_source": "provider_availability_check",
-      "enriched": true,
-      "enrichment_date": "2026-06-19",
-      "_transitioned_at": "2026-06-19",
-      "_buyonly_preorder": true
+      "enriched": false,
+      "_transitioned_at": "2026-07-17",
+      "digital_date": "2026-07-17",
+      "is_slop": false,
+      "_jw_revert_reason": "zero_watch_links",
+      "_jw_reverted_at": "2026-07-17",
+      "_jw_revert_count": 1
     },
     "1394398": {
       "title": "Short Summer",
@@ -121270,11 +121303,24 @@
       "year": 2025,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "SXSW",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": false,
+      "enrichment_date": null,
+      "_transitioned_at": "2026-07-17",
+      "_buyonly_preorder": true,
+      "_jw_revert_reason": "justwatch_theatrical_pvod",
+      "_jw_reverted_at": "2026-07-17",
+      "_jw_revert_count": 1
     },
     "1280684": {
       "title": "Corina",
@@ -139529,14 +139575,14 @@
       "intake_pass": "C",
       "festival": "Fantastic Fest",
       "has_providers": true,
-      "_discovery_source": "provider_availability_check",
+      "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 8,
+      "_jw_revert_count": 9,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-16",
+      "_transitioned_at": "2026-07-17",
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-07-16"
+      "_jw_reverted_at": "2026-07-17"
     },
     "1309083": {
       "title": "Dolly",
@@ -166481,11 +166527,16 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-01-20",
-      "digital_date": null,
+      "digital_date": "2026-08-01",
       "providers": {},
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-07-17"
     },
     "1596270": {
       "title": "When a Witness Recants",
@@ -213615,18 +213666,21 @@
     "1668364": {
       "title": "Desire",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-19",
       "digital_date": "2026-07-17",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
       "_is_preorder": true,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-19",
-      "_jw_revert_count": 1
+      "enriched": true,
+      "enrichment_date": "2026-07-17",
+      "_transitioned_at": "2026-07-17"
     },
     "1667371": {
       "title": "Becoming",
@@ -216224,9 +216278,10 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-07-16",
-      "_transitioned_at": "2026-07-16",
-      "_buyonly_preorder": true
+      "enrichment_date": "2026-07-17",
+      "_transitioned_at": "2026-07-17",
+      "_buyonly_preorder": true,
+      "is_slop": true
     },
     "1621855": {
       "title": "L'aventurine",
@@ -228730,7 +228785,7 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-05-22",
-      "digital_date": "2026-05-22",
+      "digital_date": "2026-07-16",
       "providers": {
         "rent": [
           "Google Play Movies",
@@ -232221,16 +232276,16 @@
         "streaming": []
       },
       "intake_pass": "A",
-      "_jw_revert_count": 38,
+      "_jw_revert_count": 39,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-16",
+      "_transitioned_at": "2026-07-17",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-16"
+      "_jw_reverted_at": "2026-07-17"
     },
     "1646124": {
       "title": "Tiger's Rampage",
@@ -235437,10 +235492,20 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-06-06",
-      "digital_date": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-17",
+      "_transitioned_at": "2026-07-17",
+      "_buyonly_preorder": true
     },
     "1629929": {
       "title": "The Quiet Kind of Drowning",
@@ -241845,15 +241910,22 @@
       "status": "tracking",
       "intake_date": "2026-06-21",
       "digital_date": "2026-07-17",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "_jw_revert_count": 5,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-06-21",
+      "_jw_revert_count": 6,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
-      "_is_preorder": true
+      "_is_preorder": true,
+      "has_providers": true,
+      "enriched": false,
+      "enrichment_date": null,
+      "_transitioned_at": "2026-07-17",
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-17"
     },
     "1718210": {
       "title": "A House Most Haunted",
@@ -245306,16 +245378,22 @@
     "1656220": {
       "title": "23 000 Lives",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-07-02",
       "digital_date": "2026-07-17",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-07-02"
+      "enrichment_date": "2026-07-17",
+      "has_providers": true,
+      "_transitioned_at": "2026-07-17",
+      "is_slop": true
     },
     "1649187": {
       "title": "Para los jóvenes: a 20 años del 2006",
@@ -247314,7 +247392,7 @@
         ]
       },
       "intake_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
@@ -248990,7 +249068,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-14"
     },
@@ -249110,7 +249188,7 @@
       ],
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-16"
     },
@@ -249406,13 +249484,21 @@
       "status": "tracking",
       "intake_date": "2026-07-13",
       "digital_date": "2026-07-17",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
       "_is_preorder": true,
-      "enriched": true,
-      "enrichment_date": "2026-07-13"
+      "enriched": false,
+      "enrichment_date": null,
+      "has_providers": true,
+      "_transitioned_at": "2026-07-17",
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-07-17",
+      "_jw_revert_count": 1
     },
     "1616674": {
       "title": "Me Before Me",
@@ -249469,7 +249555,7 @@
       "digital_date": "2026-07-14",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-14",
       "has_providers": false
@@ -249892,7 +249978,7 @@
       "title": "Lucky",
       "content_type": "limited_series",
       "tmdb_id": 278624,
-      "status": "tracking",
+      "status": "available",
       "first_air_date": "2026-07-14",
       "digital_date": "2026-07-14",
       "episode_count": 7,
@@ -249905,15 +249991,22 @@
       ],
       "original_language": "en",
       "providers": {
-        "streaming": [],
         "rent": [],
-        "buy": []
+        "buy": [],
+        "streaming": [
+          "Apple TV",
+          "Apple TV Amazon Channel"
+        ]
       },
       "intake_date": "2026-07-14",
       "networks": [
         "Apple TV"
       ],
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-17",
+      "_transitioned_at": "2026-07-17"
     },
     "1463042": {
       "title": "Rise of the Super Tromettes",
@@ -249928,9 +250021,9 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": true,
-      "enrichment_date": "2026-07-16",
+      "enrichment_date": "2026-07-17",
       "_discovery_source": "tmdb_type4",
-      "_transitioned_at": "2026-07-16",
+      "_transitioned_at": "2026-07-17",
       "_buyonly_preorder": true,
       "is_slop": true
     },
@@ -250257,16 +250350,22 @@
     "1318621": {
       "title": "Descendants: Wicked Wonderland",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-07-16",
       "digital_date": "2026-07-17",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-07-16"
+      "enrichment_date": "2026-07-17",
+      "has_providers": true,
+      "_transitioned_at": "2026-07-17",
+      "is_slop": true
     },
     "1732321": {
       "title": "Breaths Of Rhymes : The Suspended Odes",
@@ -250281,16 +250380,22 @@
     "1468683": {
       "title": "Heartstopper Forever",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-07-16",
       "digital_date": "2026-07-17",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-07-16"
+      "enrichment_date": "2026-07-17",
+      "has_providers": true,
+      "_transitioned_at": "2026-07-17",
+      "is_slop": true
     },
     "1717213": {
       "title": "Parallel Gazes",
@@ -250378,6 +250483,457 @@
       "intake_date": "2026-07-16",
       "networks": [
         "WeTV"
+      ],
+      "has_providers": false
+    },
+    "1727780": {
+      "title": "Borderline",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": "2026-07-17",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-17"
+    },
+    "1587964": {
+      "title": "They Fight",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-07-17",
+      "digital_date": "2026-07-17",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-07-17",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-07-17"
+    },
+    "1394926": {
+      "title": "Watchful Eyes",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": "2026-07-17",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-07-17"
+    },
+    "1732324": {
+      "title": "Mister Middle Class",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1731462": {
+      "title": "Ante Neh",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1727409": {
+      "title": "Jodi",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1724375": {
+      "title": "The Wind Recoils",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1724355": {
+      "title": "AI Means Love",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1724088": {
+      "title": "Drop Your Cat",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1720636": {
+      "title": "Dead Parents Club",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1719557": {
+      "title": "The Living Dragon",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1713529": {
+      "title": "A Part of Me",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1709896": {
+      "title": "Diamond Made Man Part 2",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1699463": {
+      "title": "The Girl We Let In",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-07-17",
+      "digital_date": "2026-07-12",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-07-17",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-07-17"
+    },
+    "1667772": {
+      "title": "The Dendrill",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1650856": {
+      "title": "Dastaar",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1634018": {
+      "title": "La vida és Verdi",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1616237": {
+      "title": "Arulvaan",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1592679": {
+      "title": "Oh..! Sukumari",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1458250": {
+      "title": "Beyond The Mast",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1732391": {
+      "title": "Devrimciler Ölür Devrimler Yaşar",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1708241": {
+      "title": "Corpus",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-17",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Fantasia",
+      "has_providers": false
+    },
+    "tv_328040": {
+      "title": "Backrooms: INCEPTION",
+      "content_type": "limited_series",
+      "tmdb_id": 328040,
+      "status": "tracking",
+      "first_air_date": "2026-07-17",
+      "digital_date": "2026-07-17",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/grnfaT3LuO6sbDC9aVz7p16ANuV.jpg",
+      "synopsis": "It’s 1997, A mute guy by the name of Colton Bond, a 32 year old man who works at HOH (Helpers of Humanity), decides to explore “The Backrooms” by himself since he became obsessed with it and wants to dig deeper into its origin and exploratory limits.\n\nWhat he doesn’t realize is, the backrooms were waiting for him.",
+      "genres": [
+        "Mystery",
+        "Drama"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-17",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_327403": {
+      "title": "Make It Right 2026",
+      "content_type": "limited_series",
+      "tmdb_id": 327403,
+      "status": "tracking",
+      "first_air_date": "2026-07-17",
+      "digital_date": "2026-07-17",
+      "episode_count": 12,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/issNnAwqNq9lftRAFY3bDr5EHKV.jpg",
+      "synopsis": "After his first love falls apart, a student grows closer to a quiet classmate as he and his friends face the highs and lows of young love.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "th",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-17",
+      "networks": [
+        "Viu"
+      ],
+      "has_providers": false
+    },
+    "tv_322401": {
+      "title": "Until Death Do Us Part",
+      "content_type": "limited_series",
+      "tmdb_id": 322401,
+      "status": "tracking",
+      "first_air_date": "2026-07-17",
+      "digital_date": "2026-07-17",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/zDhUzGioYvixzMmxEGdaKpx1Xg4.jpg",
+      "synopsis": "When family lawyer Malin and her husband Tobias have the neighbours over for a drink, the police come knocking. The babysitter supposed to be looking after Malin and Tobias's children has been murdered, and Tobias is the primary suspect.",
+      "genres": [
+        "Mystery",
+        "Drama"
+      ],
+      "original_language": "sv",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-17",
+      "networks": [
+        "TV4"
+      ],
+      "has_providers": false
+    },
+    "tv_288671": {
+      "title": "The Map of Longing",
+      "content_type": "limited_series",
+      "tmdb_id": 288671,
+      "status": "tracking",
+      "first_air_date": "2026-07-17",
+      "digital_date": "2026-07-17",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/wcgjZ7koqOYDcKUn6DmnNolqmUS.jpg",
+      "synopsis": "Before her death, Lucy creates a game for her sister, Greta, pushing her into a journey of self-discovery — and toward the charming Will Tucker.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "es",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-17",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": false
+    },
+    "tv_279323": {
+      "title": "The East Palace",
+      "content_type": "limited_series",
+      "tmdb_id": 279323,
+      "status": "tracking",
+      "first_air_date": "2026-07-17",
+      "digital_date": "2026-07-17",
+      "episode_count": 8,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/yfYohBszGqoAW8oM0qydOtJ4kPh.jpg",
+      "synopsis": "A man who walks the spirit world and a court lady who hears the dead enter the East Palace by the king's orders — can they unravel its dark secrets?",
+      "genres": [
+        "Mystery",
+        "Action & Adventure",
+        "Sci-Fi & Fantasy"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-17",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": false
+    },
+    "tv_328346": {
+      "title": "Fill the Beat",
+      "content_type": "limited_series",
+      "tmdb_id": 328346,
+      "status": "tracking",
+      "first_air_date": "2026-07-12",
+      "digital_date": "2026-07-12",
+      "episode_count": 10,
+      "runtime": 25,
+      "poster": "https://image.tmdb.org/t/p/w500/xTP1kO6SKcDiqCAyXcACZaJO4Y.jpg",
+      "synopsis": "In a riverside town, a Gen Z grandson and his Boomer grandfather bridge their generational gap through timeless, classic Suntaraporn music.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "th",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-17",
+      "networks": [
+        "Workpoint TV"
+      ],
+      "has_providers": false
+    },
+    "tv_328663": {
+      "title": "Mystery Club Adventures",
+      "content_type": "limited_series",
+      "tmdb_id": 328663,
+      "status": "tracking",
+      "first_air_date": "2026-07-05",
+      "digital_date": "2026-07-05",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/kWxuJ9WsIfPgIXkSsdowMYXdlpX.jpg",
+      "synopsis": "In an effort to make a famous horror movie, a group of kids from the Mystery Club set out to uncover the mysteries around them, but their greatest challenge turns out to be the conflict among themselves. Petualangan Klub Misteri (Mystery Club Adventures) is a live-action children's adventure miniseries. It airs every Sunday at 10:00 WIB. Season 1, Part I, Episode 1 premieres on July 5, 2026.",
+      "genres": [
+        "Kids"
+      ],
+      "original_language": "id",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-17",
+      "networks": [
+        "YouTube"
+      ],
+      "has_providers": false
+    },
+    "tv_265176": {
+      "title": "She, Damned Soul",
+      "content_type": "limited_series",
+      "tmdb_id": 265176,
+      "status": "tracking",
+      "first_air_date": "2026-06-18",
+      "digital_date": "2026-06-18",
+      "episode_count": 9,
+      "runtime": 87,
+      "poster": "https://image.tmdb.org/t/p/w500/oiqLMUe5N89PzWYC3Z0KmY7WFZq.jpg",
+      "synopsis": "A triangle loe story between a local priest, his cousin and his wife",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "es",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-17",
+      "networks": [
+        "Telecinco"
       ],
       "has_providers": false
     }
