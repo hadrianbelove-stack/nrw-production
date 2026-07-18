@@ -1,102 +1,71 @@
 {
-  "timestamp": "2026-07-17T10:06:26.906748",
-  "movies_requested": 21,
-  "movies_enriched": 14,
-  "movies_deferred": 7,
+  "timestamp": "2026-07-18T09:42:15.388699",
+  "movies_requested": 14,
+  "movies_enriched": 8,
+  "movies_deferred": 6,
   "deferred_details": [
+    {
+      "title": "Last Chance To Save",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-07-18",
+      "discovered_at": "2026-07-18T09:33:20.878268",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "first_reverted_at": "2026-07-18",
+      "tmdb_platforms": []
+    },
     {
       "title": "Hypomania",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-07-17T09:53:00.030071",
+      "discovered_at": "2026-07-18T09:33:21.765453",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
-      "first_reverted_at": "2026-07-17",
+      "revert_count": 7,
+      "first_reverted_at": "2026-07-18",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-07-13T11:04:59.486475",
+      "discovered_at": "2026-07-18T09:33:22.026213",
       "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-17",
+      "revert_count": 2,
+      "first_reverted_at": "2026-07-18",
       "tmdb_platforms": []
-    },
-    {
-      "title": "CAMP",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-07-10",
-      "discovered_at": "2026-07-17T09:53:01.946455",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 9,
-      "first_reverted_at": "2026-07-17",
-      "tmdb_platforms": [
-        "YouTube"
-      ]
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-17T09:53:02.281555",
+      "discovered_at": "2026-07-18T09:33:23.586506",
       "discovery_source": "tmdb_type4",
-      "revert_count": 18,
-      "first_reverted_at": "2026-07-17",
+      "revert_count": 19,
+      "first_reverted_at": "2026-07-18",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-17T09:53:02.578422",
+      "discovered_at": "2026-07-18T09:33:23.868318",
       "discovery_source": "tmdb_type4",
-      "revert_count": 39,
-      "first_reverted_at": "2026-07-17",
+      "revert_count": 40,
+      "first_reverted_at": "2026-07-18",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-17T09:53:02.846914",
+      "discovered_at": "2026-07-18T09:33:24.180301",
       "discovery_source": "tmdb_type4",
-      "revert_count": 30,
-      "first_reverted_at": "2026-07-17",
+      "revert_count": 31,
+      "first_reverted_at": "2026-07-18",
       "tmdb_platforms": []
-    },
-    {
-      "title": "LifeHack",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-07-17T09:53:09.326327",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-17",
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ],
-      "jw_platforms": [
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "The Souffleur",
-      "reason": "zero_watch_links",
-      "digital_date": "",
-      "discovered_at": "2026-06-19T12:56:45.412183",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-17",
-      "tmdb_platforms": [
-        "Kino Film Collection",
-        "Amazon Video",
-        "Fandango At Home"
-      ]
     }
   ],
-  "enrichment_duration_seconds": 792.28,
+  "enrichment_duration_seconds": 524.02,
   "error_details": [],
   "total_errors": 0
 }
