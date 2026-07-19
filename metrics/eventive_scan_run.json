@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-07-18T09:16:13.158455",
+  "timestamp": "2026-07-19T09:36:57.973367",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 117,
     "festivals_with_films": 112,
     "festivals_failed": 48,
-    "total_films_indexed": 2272,
+    "total_films_indexed": 2254,
     "expired_filtered": 0,
-    "unique_active": 1633,
+    "unique_active": 1622,
     "tracking_matches": 63,
     "wall_matches": 21,
     "new_cached": 46,
@@ -75,6 +75,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1195113",
+      "nrw_title": "Carissa",
+      "eventive_title": "Carissa",
+      "festival": "South African Film Festival 2026",
+      "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
+      "start": "2026-06-25T14:15:00.000Z",
+      "end": "2026-07-26T13:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1012180",
       "nrw_title": "Identity",
       "eventive_title": "Identity",
@@ -87,16 +99,28 @@
       "nrw_status": "removed"
     },
     {
-      "movie_id": "1195113",
-      "nrw_title": "Carissa",
-      "eventive_title": "Carissa",
-      "festival": "South African Film Festival 2026",
-      "link": "https://watch.eventive.org/southafricanfilmfestival/play/6a104056ca2f9fe6ca60b9b2",
-      "start": "2026-06-25T14:15:00.000Z",
-      "end": "2026-07-26T13:45:00.000Z",
+      "movie_id": "1585144",
+      "nrw_title": "Connection",
+      "eventive_title": "The Connection",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
+      "start": "",
+      "end": "",
       "status": "active",
       "match_tier": 1,
-      "nrw_status": "available"
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1049439",
+      "nrw_title": "The Golden Age",
+      "eventive_title": "The Golden Age",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
     },
     {
       "movie_id": "1568068",
@@ -241,30 +265,6 @@
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
-    },
-    {
-      "movie_id": "1585144",
-      "nrw_title": "Connection",
-      "eventive_title": "The Connection",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1049439",
-      "nrw_title": "The Golden Age",
-      "eventive_title": "The Golden Age",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
     },
     {
       "movie_id": "1561978",
