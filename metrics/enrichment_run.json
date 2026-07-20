@@ -1,71 +1,93 @@
 {
-  "timestamp": "2026-07-19T10:09:03.922760",
-  "movies_requested": 22,
-  "movies_enriched": 16,
-  "movies_deferred": 6,
+  "timestamp": "2026-07-20T10:58:31.381747",
+  "movies_requested": 11,
+  "movies_enriched": 4,
+  "movies_deferred": 7,
   "deferred_details": [
-    {
-      "title": "Last Chance To Save",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-18",
-      "discovered_at": "2026-07-19T09:53:16.003040",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 3,
-      "first_reverted_at": "2026-07-19",
-      "tmdb_platforms": []
-    },
     {
       "title": "Hypomania",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-19",
-      "discovered_at": "2026-07-19T09:53:16.288283",
+      "discovered_at": "2026-07-20T10:50:49.996849",
       "discovery_source": "tmdb_type4",
-      "revert_count": 8,
-      "first_reverted_at": "2026-07-19",
+      "revert_count": 9,
+      "first_reverted_at": "2026-07-20",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Last Chance To Save",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-07-18",
+      "discovered_at": "2026-07-20T10:50:50.314465",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "first_reverted_at": "2026-07-20",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-07-19T09:53:16.503073",
+      "discovered_at": "2026-07-20T10:50:51.135837",
       "discovery_source": "tmdb_type4",
-      "revert_count": 3,
-      "first_reverted_at": "2026-07-19",
+      "revert_count": 4,
+      "first_reverted_at": "2026-07-20",
       "tmdb_platforms": []
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-19T09:53:18.857344",
+      "discovered_at": "2026-07-20T10:50:51.588400",
       "discovery_source": "tmdb_type4",
-      "revert_count": 20,
-      "first_reverted_at": "2026-07-19",
+      "revert_count": 21,
+      "first_reverted_at": "2026-07-20",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-19T09:53:19.127652",
+      "discovered_at": "2026-07-20T10:50:51.910228",
       "discovery_source": "tmdb_type4",
-      "revert_count": 41,
-      "first_reverted_at": "2026-07-19",
+      "revert_count": 42,
+      "first_reverted_at": "2026-07-20",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-19T09:53:19.337663",
+      "discovered_at": "2026-07-20T10:50:52.186287",
       "discovery_source": "tmdb_type4",
-      "revert_count": 32,
-      "first_reverted_at": "2026-07-19",
+      "revert_count": 33,
+      "first_reverted_at": "2026-07-20",
       "tmdb_platforms": []
+    },
+    {
+      "title": "Here the Whole Time",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-08-19",
+      "discovered_at": "2026-07-20T10:51:01.187643",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-20",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Renoir",
+      "reason": "zero_watch_links",
+      "digital_date": "",
+      "discovered_at": "2026-05-31T11:29:25.911372",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-20",
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
     }
   ],
-  "enrichment_duration_seconds": 923.49,
+  "enrichment_duration_seconds": 447.79,
   "error_details": [],
   "total_errors": 0
 }
