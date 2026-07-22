@@ -9683,11 +9683,17 @@
     "1428766": {
       "title": "Penny Lane Is Dead",
       "premiere_date": "2025-10-18",
-      "digital_date": null,
+      "digital_date": "2026-08-28",
       "has_providers": false,
       "status": "tracking",
       "added": "2025-10-20T23:50:20.397249",
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-22",
+      "_jw_revert_count": 1
     },
     "1428278": {
       "title": "K-Ramp",
@@ -19869,7 +19875,7 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 22,
+      "_jw_revert_count": 23,
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-07-22",
@@ -40835,7 +40841,7 @@
       "enrichment_date": null,
       "_is_preorder": true,
       "_transitioned_at": "2026-07-22",
-      "_jw_revert_count": 34,
+      "_jw_revert_count": 35,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-22"
     },
@@ -66792,7 +66798,8 @@
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-06-29"
+      "_jw_reverted_at": "2026-06-29",
+      "_skip_provider_discovery": true
     },
     "1516391": {
       "title": "Cover-Up",
@@ -100388,7 +100395,7 @@
       "has_providers": false,
       "year": 2025,
       "premiere_date": "2025-05-05",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-19"
     },
@@ -116320,7 +116327,7 @@
       "festival": "Cannes",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-19"
     },
@@ -125136,7 +125143,7 @@
     "1184941": {
       "title": "Blue Heron",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
       "providers": {
         "rent": [
@@ -125153,14 +125160,12 @@
       "festival": "Toronto/TIFF",
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "enriched": false,
+      "enriched": true,
       "_transitioned_at": "2026-07-22",
       "is_slop": false,
       "_buyonly_preorder": true,
       "digital_date": "2026-07-21",
-      "_jw_revert_reason": "zero_watch_links",
-      "_jw_reverted_at": "2026-07-22",
-      "_jw_revert_count": 1
+      "enrichment_date": "2026-07-22"
     },
     "1157322": {
       "title": "Franz",
@@ -127617,11 +127622,14 @@
       "year": 2024,
       "status": "tracking",
       "first_seen": "2026-01-06",
-      "digital_date": null,
+      "digital_date": "2026-02-10",
       "providers": {},
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false
+      "has_providers": false,
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-22"
     },
     "1006024": {
       "title": "Who'll Stop the Rain",
@@ -176045,7 +176053,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-22"
     },
@@ -199820,7 +199828,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 5,
+      "_jw_revert_count": 6,
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-07-22",
@@ -232370,7 +232378,7 @@
         "streaming": []
       },
       "intake_pass": "A",
-      "_jw_revert_count": 43,
+      "_jw_revert_count": 44,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
@@ -233761,10 +233769,16 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-06-02",
-      "digital_date": null,
+      "digital_date": "2026-08-14",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-22",
+      "_jw_revert_count": 1
     },
     "1706766": {
       "title": "Góðufellarnir",
@@ -234005,9 +234019,9 @@
     "454639": {
       "title": "Masters of the Universe",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-06-03",
-      "digital_date": "2026-07-21",
+      "digital_date": "2026-07-22",
       "providers": {
         "rent": [],
         "buy": [],
@@ -234017,12 +234031,9 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 2,
-      "enriched": false,
-      "enrichment_date": null,
-      "_transitioned_at": "2026-07-22",
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-07-22"
+      "enriched": true,
+      "enrichment_date": "2026-07-22",
+      "_transitioned_at": "2026-07-22"
     },
     "1707019": {
       "title": "Roba Estesa: \"L'última estesa\"",
@@ -236775,7 +236786,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-20"
     },
@@ -238215,15 +238226,13 @@
       "festival": "Tribeca",
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "enriched": false,
-      "enrichment_date": null,
+      "enriched": true,
+      "enrichment_date": "2026-07-22",
       "_transitioned_at": "2026-07-22",
       "_buyonly_preorder": true,
-      "digital_date": "2026-07-21",
+      "digital_date": "2026-08-04",
       "_is_preorder": true,
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-07-22",
-      "_jw_revert_count": 1
+      "_type4_pending": true
     },
     "tv_324744": {
       "title": "Ina",
@@ -241519,7 +241528,7 @@
       "intake_pass": "C",
       "festival": "Tribeca",
       "has_providers": false,
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-22"
     },
@@ -249649,7 +249658,7 @@
       "enrichment_date": null,
       "has_providers": true,
       "_transitioned_at": "2026-07-22",
-      "_jw_revert_count": 5,
+      "_jw_revert_count": 6,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-22"
     },
@@ -251175,7 +251184,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-18"
+      "_jw_reverted_at": "2026-07-18",
+      "_skip_provider_discovery": true
     },
     "1731875": {
       "title": "Duplicate",
@@ -251477,7 +251487,7 @@
       "digital_date": "2026-07-18",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-19"
     },
@@ -251598,7 +251608,7 @@
       "providers": {},
       "intake_pass": "A",
       "has_providers": false,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-20"
     },
@@ -251887,7 +251897,7 @@
       "digital_date": "2026-07-18",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-20"
     },
@@ -252366,6 +252376,190 @@
       "networks": [
         "Stan"
       ],
+      "has_providers": false
+    },
+    "1728954": {
+      "title": "My Grandfather Charles Manson",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": "2026-07-22",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-07-22"
+    },
+    "1723460": {
+      "title": "A Toxic Love Story",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": "2026-07-22",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-07-22"
+    },
+    "772557": {
+      "title": "Ensurance Trap",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": "2026-07-22",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-22"
+    },
+    "1365863": {
+      "title": "The Rebrand",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-07-22",
+      "digital_date": "2026-07-21",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-07-22",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-07-22"
+    },
+    "1735788": {
+      "title": "Gamer Warz",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1735490": {
+      "title": "Spejdercraft",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1731430": {
+      "title": "Le meilleur des Francofolies",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1680635": {
+      "title": "Les Vacances de Golo & Ritchie",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1654781": {
+      "title": "Everything I Own",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1582058": {
+      "title": "Take Care of Yourself",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1496491": {
+      "title": "Comédie-Française",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1422088": {
+      "title": "Child No. 82",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1369033": {
+      "title": "Les Madeleines",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1127861": {
+      "title": "I, Object",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1708236": {
+      "title": "Los Vampires",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1735891": {
+      "title": "No Man's City",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1670061": {
+      "title": "Beasts Clawing at Straws",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
       "has_providers": false
     }
   }
