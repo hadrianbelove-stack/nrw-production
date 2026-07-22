@@ -1,16 +1,69 @@
 {
-  "timestamp": "2026-07-20T10:58:31.381747",
-  "movies_requested": 11,
-  "movies_enriched": 4,
-  "movies_deferred": 7,
+  "timestamp": "2026-07-22T00:29:37.982007",
+  "movies_requested": 23,
+  "movies_enriched": 11,
+  "movies_deferred": 12,
   "deferred_details": [
+    {
+      "title": "The Mandalorian and Grogu",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-21",
+      "discovered_at": "2026-07-15T09:53:52.056622",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-22",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Amazon Video",
+        "Apple TV Store",
+        "Fandango At Home"
+      ]
+    },
+    {
+      "title": "Scary Movie",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-07-21",
+      "discovered_at": "2026-07-22T00:16:19.774332",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-22",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "JustWatch TV",
+        "Amazon Video",
+        "Apple TV Store",
+        "Fandango At Home"
+      ]
+    },
+    {
+      "title": "Masters of the Universe",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-07-21",
+      "discovered_at": "2026-07-22T00:16:20.026469",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "first_reverted_at": "2026-07-22",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Death of Robin Hood",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-07-21",
+      "discovered_at": "2026-06-29T12:39:21.331706",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-22",
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ]
+    },
     {
       "title": "Hypomania",
       "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-19",
-      "discovered_at": "2026-07-20T10:50:49.996849",
+      "digital_date": "2026-07-24",
+      "discovered_at": "2026-07-22T00:16:24.779932",
       "discovery_source": "tmdb_type4",
-      "revert_count": 9,
+      "revert_count": 10,
       "first_reverted_at": "2026-07-20",
       "tmdb_platforms": []
     },
@@ -18,76 +71,88 @@
       "title": "Last Chance To Save",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-18",
-      "discovered_at": "2026-07-20T10:50:50.314465",
+      "discovered_at": "2026-07-22T00:16:25.103525",
       "discovery_source": "tmdb_type4",
-      "revert_count": 4,
-      "first_reverted_at": "2026-07-20",
+      "revert_count": 5,
+      "first_reverted_at": "2026-07-22",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-07-20T10:50:51.135837",
+      "discovered_at": "2026-07-22T00:16:26.402223",
       "discovery_source": "tmdb_type4",
-      "revert_count": 4,
-      "first_reverted_at": "2026-07-20",
+      "revert_count": 5,
+      "first_reverted_at": "2026-07-22",
       "tmdb_platforms": []
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-20T10:50:51.588400",
+      "discovered_at": "2026-07-22T00:16:27.810108",
       "discovery_source": "tmdb_type4",
-      "revert_count": 21,
-      "first_reverted_at": "2026-07-20",
+      "revert_count": 22,
+      "first_reverted_at": "2026-07-22",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-20T10:50:51.910228",
+      "discovered_at": "2026-07-22T00:16:28.232445",
       "discovery_source": "tmdb_type4",
-      "revert_count": 42,
-      "first_reverted_at": "2026-07-20",
+      "revert_count": 43,
+      "first_reverted_at": "2026-07-22",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-20T10:50:52.186287",
+      "discovered_at": "2026-07-22T00:16:28.563203",
       "discovery_source": "tmdb_type4",
-      "revert_count": 33,
-      "first_reverted_at": "2026-07-20",
+      "revert_count": 34,
+      "first_reverted_at": "2026-07-22",
       "tmdb_platforms": []
     },
     {
-      "title": "Here the Whole Time",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-08-19",
-      "discovered_at": "2026-07-20T10:51:01.187643",
+      "title": "The Deb",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-08-25",
+      "discovered_at": "2026-07-22T00:16:30.703759",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-20",
+      "first_reverted_at": "2026-07-22",
       "tmdb_platforms": []
     },
     {
-      "title": "Renoir",
+      "title": "Batman: Knightfall Part 1: Knightfall",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-08-25",
+      "discovered_at": "2026-07-22T00:16:32.551454",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-22",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Blue Heron",
       "reason": "zero_watch_links",
-      "digital_date": "",
-      "discovered_at": "2026-05-31T11:29:25.911372",
+      "digital_date": "2026-07-21",
+      "discovered_at": "2026-06-27T10:01:07.633435",
       "discovery_source": "provider_availability_check",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-20",
+      "first_reverted_at": "2026-07-22",
       "tmdb_platforms": [
-        "Amazon Video"
+        "Fandango At Home",
+        "Amazon Video",
+        "Apple TV Store"
       ]
     }
   ],
-  "enrichment_duration_seconds": 447.79,
+  "enrichment_duration_seconds": 782.67,
   "error_details": [],
   "total_errors": 0
 }
