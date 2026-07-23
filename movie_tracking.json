@@ -19875,12 +19875,12 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 23,
+      "_jw_revert_count": 24,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-22",
+      "_transitioned_at": "2026-07-23",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-22"
+      "_jw_reverted_at": "2026-07-23"
     },
     "1250841": {
       "title": "Hair of the Bear",
@@ -30744,13 +30744,27 @@
     },
     "1322787": {
       "title": "We Will Find Happiness",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-07",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-23",
+      "providers": {
+        "rent": [
+          "Apple TV Store",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Apple TV Store",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-23",
+      "_transitioned_at": "2026-07-23"
     },
     "1320917": {
       "title": "Subsuelo",
@@ -40840,10 +40854,10 @@
       "enriched": false,
       "enrichment_date": null,
       "_is_preorder": true,
-      "_transitioned_at": "2026-07-22",
-      "_jw_revert_count": 35,
+      "_transitioned_at": "2026-07-23",
+      "_jw_revert_count": 36,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-22"
+      "_jw_reverted_at": "2026-07-23"
     },
     "1544405": {
       "title": "Der Rest ist Stille",
@@ -76915,10 +76929,16 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-01-01",
-      "digital_date": null,
+      "digital_date": "2026-09-03",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": false,
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-07-23",
+      "_jw_revert_count": 1
     },
     "1498047": {
       "title": "Abuela tremenda",
@@ -100397,7 +100417,8 @@
       "premiere_date": "2025-05-05",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-19"
+      "_jw_reverted_at": "2026-07-19",
+      "_skip_provider_discovery": true
     },
     "1465937": {
       "title": "Plat en blanc",
@@ -107850,14 +107871,30 @@
     },
     "1553244": {
       "title": "Meandering Scars",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-23",
+      "providers": {
+        "rent": [
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-06-28"
+      "premiere_date": "2025-06-28",
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-23",
+      "_transitioned_at": "2026-07-23"
     },
     "1517821": {
       "title": "Asura / Esperanto!",
@@ -111520,14 +111557,28 @@
     },
     "1337438": {
       "title": "Unidentified",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-23",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-09-05"
+      "premiere_date": "2025-09-05",
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-23",
+      "_transitioned_at": "2026-07-23"
     },
     "1329471": {
       "title": "Carolina Caroline",
@@ -116329,7 +116380,8 @@
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-07-19"
+      "_jw_reverted_at": "2026-07-19",
+      "_skip_provider_discovery": true
     },
     "1012241": {
       "title": "The Village Next to Paradise",
@@ -127627,7 +127679,7 @@
       "intake_pass": "C",
       "festival": "NYFF",
       "has_providers": false,
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-22"
     },
@@ -137586,13 +137638,27 @@
     "1212952": {
       "title": "Heavyweight",
       "year": 2025,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-23",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sheffield DocFest",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-23",
+      "_transitioned_at": "2026-07-23"
     },
     "1486383": {
       "title": "Regina",
@@ -165823,23 +165889,23 @@
       "status": "tracking",
       "first_seen": "2026-01-20",
       "providers": {
-        "rent": [],
-        "buy": [
-          "Fandango At Home"
+        "rent": [
+          "Plex"
         ],
+        "buy": [],
         "streaming": []
       },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-06-20",
-      "_buyonly_preorder": true,
-      "_jw_revert_reason": "justwatch_theatrical_pvod",
+      "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-06-20",
-      "_jw_revert_count": 1
+      "_jw_revert_count": 2,
+      "digital_date": "2026-07-23"
     },
     "1528830": {
       "title": "Extra Geography",
@@ -175950,12 +176016,22 @@
     "1621842": {
       "title": "Bebe Main Badmash Banuga",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-02-06",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-23",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "KableOne"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-23",
+      "_transitioned_at": "2026-07-23"
     },
     "1621015": {
       "title": "A Kingdom in Chaos",
@@ -176053,7 +176129,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-22"
     },
@@ -199828,12 +199904,12 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 6,
+      "_jw_revert_count": 7,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-22",
+      "_transitioned_at": "2026-07-23",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-22"
+      "_jw_reverted_at": "2026-07-23"
     },
     "1407885": {
       "title": "Pelangi di Mars",
@@ -201021,10 +201097,13 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-03-20",
-      "digital_date": null,
+      "digital_date": "2026-07-23",
       "providers": {},
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": false,
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-23"
     },
     "1539421": {
       "title": "A Metamorfose",
@@ -216367,8 +216446,8 @@
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-07-22",
-      "_transitioned_at": "2026-07-22",
+      "enrichment_date": "2026-07-23",
+      "_transitioned_at": "2026-07-23",
       "is_slop": true,
       "_buyonly_preorder": true
     },
@@ -221482,7 +221561,7 @@
     "1228710": {
       "title": "Star Wars: The Mandalorian and Grogu",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-05-06",
       "digital_date": "2026-07-21",
       "providers": {
@@ -221494,12 +221573,9 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "enriched": false,
-      "enrichment_date": null,
-      "_transitioned_at": "2026-07-22",
-      "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-07-22",
-      "_jw_revert_count": 1
+      "enriched": true,
+      "enrichment_date": "2026-07-23",
+      "_transitioned_at": "2026-07-23"
     },
     "1689361": {
       "title": "Todos los caminos llevan a la Esperanza",
@@ -232378,16 +232454,16 @@
         "streaming": []
       },
       "intake_pass": "A",
-      "_jw_revert_count": 44,
+      "_jw_revert_count": 45,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-07-22",
+      "_transitioned_at": "2026-07-23",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-22"
+      "_jw_reverted_at": "2026-07-23"
     },
     "1646124": {
       "title": "Tiger's Rampage",
@@ -232561,12 +232637,26 @@
     "1484708": {
       "title": "Sugar Beach",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-06-01",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-07-23",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-23",
+      "_transitioned_at": "2026-07-23"
     },
     "1195309": {
       "title": "Feast or Famine",
@@ -233969,7 +234059,7 @@
     "1273221": {
       "title": "Scary Movie",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-06-03",
       "digital_date": "2026-07-21",
       "providers": {
@@ -233981,12 +234071,9 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "enriched": false,
-      "enrichment_date": null,
-      "_transitioned_at": "2026-07-22",
-      "_jw_revert_reason": "justwatch_theatrical_pvod",
-      "_jw_reverted_at": "2026-07-22",
-      "_jw_revert_count": 1
+      "enriched": true,
+      "enrichment_date": "2026-07-23",
+      "_transitioned_at": "2026-07-23"
     },
     "1207878": {
       "title": "Taming The Beast",
@@ -235617,7 +235704,7 @@
         "streaming": []
       },
       "intake_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-07-17",
@@ -236786,7 +236873,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-20"
     },
@@ -241528,7 +241615,7 @@
       "intake_pass": "C",
       "festival": "Tribeca",
       "has_providers": false,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-22"
     },
@@ -249657,10 +249744,10 @@
       "enriched": false,
       "enrichment_date": null,
       "has_providers": true,
-      "_transitioned_at": "2026-07-22",
-      "_jw_revert_count": 6,
+      "_transitioned_at": "2026-07-23",
+      "_jw_revert_count": 7,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-07-22"
+      "_jw_reverted_at": "2026-07-23"
     },
     "1616674": {
       "title": "Me Before Me",
@@ -250184,9 +250271,9 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": true,
-      "enrichment_date": "2026-07-22",
+      "enrichment_date": "2026-07-23",
       "_discovery_source": "tmdb_type4",
-      "_transitioned_at": "2026-07-22",
+      "_transitioned_at": "2026-07-23",
       "_buyonly_preorder": true,
       "is_slop": true
     },
@@ -251489,7 +251576,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-07-19"
+      "_jw_reverted_at": "2026-07-19",
+      "_skip_provider_discovery": true
     },
     "695721": {
       "title": "The Hunger Games: The Ballad of Songbirds & Snakes",
@@ -251608,7 +251696,7 @@
       "providers": {},
       "intake_pass": "A",
       "has_providers": false,
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-20"
     },
@@ -251897,7 +251985,7 @@
       "digital_date": "2026-07-18",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-20"
     },
@@ -251962,16 +252050,22 @@
     "1630409": {
       "title": "The Debt Collector",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-07-20",
       "digital_date": "2026-07-23",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-07-20"
+      "enrichment_date": "2026-07-23",
+      "has_providers": true,
+      "_transitioned_at": "2026-07-23",
+      "is_slop": true
     },
     "1248230": {
       "title": "Splash City",
@@ -252386,7 +252480,7 @@
       "digital_date": "2026-07-22",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-22"
     },
@@ -252398,7 +252492,7 @@
       "digital_date": "2026-07-22",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-07-22"
     },
@@ -252410,7 +252504,7 @@
       "digital_date": "2026-07-22",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-07-22"
     },
@@ -252560,6 +252654,364 @@
       "digital_date": null,
       "providers": {},
       "intake_pass": "B",
+      "has_providers": false
+    },
+    "1724845": {
+      "title": "Mystery Inc. II: Curse of the 13th Spirit",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": "2026-07-23",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-07-23"
+    },
+    "1361774": {
+      "title": "The Dink",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": "2026-07-23",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-07-23"
+    },
+    "1487861": {
+      "title": "Elize: Shadows of a Woman",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-07-23",
+      "digital_date": "2026-07-22",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-07-23",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-07-23"
+    },
+    "1736195": {
+      "title": "La casa",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1735976": {
+      "title": "That We May See",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1732977": {
+      "title": "Pillars of Power: The Hidden Secret Behind Achieving Greatness",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1726561": {
+      "title": "What Was She Thinking",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1726106": {
+      "title": "Blue Marks",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1724692": {
+      "title": "Polis",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1723532": {
+      "title": "Kavej 2",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1712586": {
+      "title": "Sia: Nostalgic for the Present",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1712439": {
+      "title": "Behind the Screens",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1706011": {
+      "title": "Anak-Anak Bambu",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1706004": {
+      "title": "Sihir Tanah Kubur",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1703118": {
+      "title": "A Malevolent World",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1679585": {
+      "title": "To my Sisters",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1671183": {
+      "title": "Butterfly Effect: Azzam",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1590177": {
+      "title": "My Wild Friend: Returning Home",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1569872": {
+      "title": "Dream High",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1533282": {
+      "title": "Mil Luas",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1514111": {
+      "title": "Bardotky",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1425085": {
+      "title": "Finding Mojo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1307903": {
+      "title": "Little Creatures",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1244139": {
+      "title": "Demons at Dawn",
+      "year": 2024,
+      "status": "available",
+      "intake_date": "2026-07-23",
+      "digital_date": "2026-07-23",
+      "providers": {
+        "rent": [
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube",
+          "Fandango At Home"
+        ],
+        "streaming": [
+          "YouTube TV",
+          "Here TV",
+          "Here TV  Amazon Channel"
+        ]
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-07-23",
+      "_transitioned_at": "2026-07-23"
+    },
+    "1736437": {
+      "title": "KIRILA KIRILA 1 - 21 Mayıs 2026 - Bova Sahne",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1736245": {
+      "title": "Quebonafide: Ostatni Koncert",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1736200": {
+      "title": "EVANGELION: DEATH (TRUE)² & REBIRTH",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-07-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_326192": {
+      "title": "The Idaho Murders: A College Town Nightmare",
+      "content_type": "limited_series",
+      "tmdb_id": 326192,
+      "status": "tracking",
+      "first_air_date": "2026-07-23",
+      "digital_date": "2026-07-23",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": null,
+      "synopsis": "In the fall of 2022, four University of Idaho students were found murdered in an off-campus house in the quiet college town of Moscow. As fear spread through the community, investigators faced intense pressure to solve a case marked by few immediate answers. This new documentary unpacks the chilling crime, the investigation that followed, and the lasting impact on a town forever changed.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-23",
+      "networks": [
+        "Sundance Now",
+        "AMC+"
+      ],
+      "has_providers": false
+    },
+    "tv_277640": {
+      "title": "Pompeii: Out of Time with Tom Hiddleston",
+      "content_type": "limited_series",
+      "tmdb_id": 277640,
+      "status": "tracking",
+      "first_air_date": "2026-07-23",
+      "digital_date": "2026-07-23",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/qnOYQ6uqxj5HEuXtVf1vSZicok.jpg",
+      "synopsis": "A historical exploration about the eruption of Vesuvius in 79 A.D. and the preserved Roman city it left behind.",
+      "genres": [
+        "Documentary",
+        "Drama"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-07-23",
+      "networks": [
+        "National Geographic"
+      ],
       "has_providers": false
     }
   }

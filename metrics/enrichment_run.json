@@ -1,112 +1,71 @@
 {
-  "timestamp": "2026-07-22T10:32:36.917002",
-  "movies_requested": 15,
-  "movies_enriched": 6,
-  "movies_deferred": 9,
+  "timestamp": "2026-07-23T10:41:09.166200",
+  "movies_requested": 19,
+  "movies_enriched": 13,
+  "movies_deferred": 6,
   "deferred_details": [
-    {
-      "title": "The Mandalorian and Grogu",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-21",
-      "discovered_at": "2026-07-22T10:25:09.398099",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-22",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Amazon Video",
-        "Apple TV Store",
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "Scary Movie",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-07-21",
-      "discovered_at": "2026-07-22T10:25:09.595521",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-22",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "JustWatch TV",
-        "Amazon Video",
-        "Apple TV Store",
-        "Fandango At Home"
-      ]
-    },
     {
       "title": "Last Chance To Save",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-18",
-      "discovered_at": "2026-07-22T10:25:10.518515",
+      "discovered_at": "2026-07-23T10:24:22.777317",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
-      "first_reverted_at": "2026-07-22",
+      "revert_count": 7,
+      "first_reverted_at": "2026-07-23",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-07-22T10:25:11.212714",
+      "discovered_at": "2026-07-23T10:24:23.375014",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
-      "first_reverted_at": "2026-07-22",
+      "revert_count": 7,
+      "first_reverted_at": "2026-07-23",
       "tmdb_platforms": []
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-22T10:25:11.514220",
+      "discovered_at": "2026-07-23T10:24:23.687224",
       "discovery_source": "tmdb_type4",
-      "revert_count": 23,
-      "first_reverted_at": "2026-07-22",
+      "revert_count": 24,
+      "first_reverted_at": "2026-07-23",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-22T10:25:11.800288",
+      "discovered_at": "2026-07-23T10:24:23.892777",
       "discovery_source": "tmdb_type4",
-      "revert_count": 44,
-      "first_reverted_at": "2026-07-22",
+      "revert_count": 45,
+      "first_reverted_at": "2026-07-23",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-22T10:25:12.000893",
+      "discovered_at": "2026-07-23T10:24:24.097932",
       "discovery_source": "tmdb_type4",
-      "revert_count": 35,
-      "first_reverted_at": "2026-07-22",
+      "revert_count": 36,
+      "first_reverted_at": "2026-07-23",
       "tmdb_platforms": []
     },
     {
-      "title": "Penny Lane Is Dead",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-08-28",
-      "discovered_at": "2026-07-22T10:25:12.331827",
+      "title": "Clash of the Thundermans",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-09-03",
+      "discovered_at": "2026-07-23T10:24:32.735509",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-22",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "All Night Wrong",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-08-14",
-      "discovered_at": "2026-07-22T10:25:15.606897",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-22",
+      "first_reverted_at": "2026-07-23",
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 438.91,
+  "enrichment_duration_seconds": 988.52,
   "error_details": [],
   "total_errors": 0
 }
