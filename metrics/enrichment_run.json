@@ -1,71 +1,71 @@
 {
-  "timestamp": "2026-07-23T10:41:09.166200",
-  "movies_requested": 19,
-  "movies_enriched": 13,
+  "timestamp": "2026-07-24T10:38:47.779808",
+  "movies_requested": 22,
+  "movies_enriched": 16,
   "movies_deferred": 6,
   "deferred_details": [
+    {
+      "title": "Hypomania",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-07-24",
+      "discovered_at": "2026-07-24T10:19:59.624544",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 11,
+      "first_reverted_at": "2026-07-24",
+      "tmdb_platforms": []
+    },
     {
       "title": "Last Chance To Save",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-18",
-      "discovered_at": "2026-07-23T10:24:22.777317",
+      "discovered_at": "2026-07-24T10:20:01.998661",
       "discovery_source": "tmdb_type4",
-      "revert_count": 7,
-      "first_reverted_at": "2026-07-23",
+      "revert_count": 8,
+      "first_reverted_at": "2026-07-24",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-07-23T10:24:23.375014",
+      "discovered_at": "2026-07-24T10:20:02.212263",
       "discovery_source": "tmdb_type4",
-      "revert_count": 7,
-      "first_reverted_at": "2026-07-23",
+      "revert_count": 8,
+      "first_reverted_at": "2026-07-24",
       "tmdb_platforms": []
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-23T10:24:23.687224",
+      "discovered_at": "2026-07-24T10:20:02.508917",
       "discovery_source": "tmdb_type4",
-      "revert_count": 24,
-      "first_reverted_at": "2026-07-23",
+      "revert_count": 25,
+      "first_reverted_at": "2026-07-24",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-23T10:24:23.892777",
+      "discovered_at": "2026-07-24T10:20:02.720006",
       "discovery_source": "tmdb_type4",
-      "revert_count": 45,
-      "first_reverted_at": "2026-07-23",
+      "revert_count": 46,
+      "first_reverted_at": "2026-07-24",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-23T10:24:24.097932",
+      "discovered_at": "2026-07-24T10:20:02.924130",
       "discovery_source": "tmdb_type4",
-      "revert_count": 36,
-      "first_reverted_at": "2026-07-23",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Clash of the Thundermans",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-09-03",
-      "discovered_at": "2026-07-23T10:24:32.735509",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-07-23",
+      "revert_count": 37,
+      "first_reverted_at": "2026-07-24",
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 988.52,
+  "enrichment_duration_seconds": 1114.57,
   "error_details": [],
   "total_errors": 0
 }
