@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-07-25T09:25:26.816685",
+  "timestamp": "2026-07-26T09:41:40.069109",
   "operation": "eventive_scan_pipeline",
   "stats": {
-    "festivals_scanned": 115,
-    "festivals_with_films": 110,
+    "festivals_scanned": 116,
+    "festivals_with_films": 111,
     "festivals_failed": 47,
-    "total_films_indexed": 2214,
+    "total_films_indexed": 2288,
     "expired_filtered": 0,
-    "unique_active": 1602,
-    "tracking_matches": 63,
+    "unique_active": 1641,
+    "tracking_matches": 65,
     "wall_matches": 21,
-    "new_cached": 46,
+    "new_cached": 48,
     "skipped_undated": 38
   },
   "tracking_matches": [
@@ -315,30 +315,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1585144",
-      "nrw_title": "Connection",
-      "eventive_title": "The Connection",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1049439",
-      "nrw_title": "The Golden Age",
-      "eventive_title": "The Golden Age",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
       "movie_id": "1591027",
       "nrw_title": "Tadaima",
       "eventive_title": "Tadaima",
@@ -392,6 +368,30 @@
       "eventive_title": "Isolation",
       "festival": "Fun Film Fest - Hybrid 2030",
       "link": "https://watch.eventive.org/funvirtual/play/5f29de2dc7183a007837116f",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1585144",
+      "nrw_title": "Connection",
+      "eventive_title": "The Connection",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1049439",
+      "nrw_title": "The Golden Age",
+      "eventive_title": "The Golden Age",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
       "start": "",
       "end": "",
       "status": "active",
@@ -769,6 +769,30 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
+    },
+    {
+      "movie_id": "1553362",
+      "nrw_title": "This is Pike County",
+      "eventive_title": "This is Pike County",
+      "festival": "2026 Richmond International Film Festival",
+      "link": "https://watch.eventive.org/riff/play/6a4e7a2a24702927bcb1766b",
+      "start": "2026-09-22T16:00:00.000Z",
+      "end": "2026-09-23T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1454103",
+      "nrw_title": "Widow Champion",
+      "eventive_title": "Widow Champion",
+      "festival": "2026 Richmond International Film Festival",
+      "link": "https://watch.eventive.org/riff/play/6a646c4302dd449afd68be30",
+      "start": "2026-09-22T16:00:00.000Z",
+      "end": "2026-09-28T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
     }
   ],
   "wall_matches": [

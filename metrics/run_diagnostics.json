@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-07-25T09:57:10.531150",
-  "duration_seconds": 2267.897023,
+  "timestamp": "2026-07-26T10:19:34.604040",
+  "duration_seconds": 2654.05923,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,72 +8,72 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 9.601197,
+      "duration_seconds": 9.567855,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-07-23 to 2026-07-25 (incremental mode, 18 intaked)\n\u2705 Movie intake complete: 18 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-06-25 to 2026-07-25\n   \ud83d\udccb Murder 101 (3 eps) on Amazon Prime Vide"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-07-24 to 2026-07-26 (incremental mode, 15 intaked)\n\u2705 Movie intake complete: 15 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-06-26 to 2026-07-26\n   \ud83d\udccb Force of Nature (6 eps)\n   \ud83d\udccb Match Poin"
     },
     {
       "name": "Research reissue candidates (Pass D)",
       "success": true,
-      "duration_seconds": 0.107337,
+      "duration_seconds": 0.108399,
       "error": null,
       "output_preview": "Reissue research: nothing to do (all pending candidates already researched).\n"
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 354.466358,
+      "duration_seconds": 369.840651,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 162 festival slugs\nScanning 162 festivals for catalogs...\n  Progress: 75/162 slugs | 28 scanned | 933 films indexed\n  Progress: 100/162 slugs | 53 scanned | 1381 films indexed\n  Progress: 125/162 slugs | 78 scanned | 1633 films indexed\n  Progress: 150/162 slugs | 103 scanned | 2112 films indexed\n  Done: 115 festivals, 110 with films, 47 failed, 2214 total films\n  Active: 2214 | Expired: 0 | Unique: 160"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 163 festival slugs\nScanning 163 festivals for catalogs...\n  Progress: 75/163 slugs | 28 scanned | 1013 films indexed\n  Progress: 100/163 slugs | 53 scanned | 1390 films indexed\n  Progress: 125/163 slugs | 78 scanned | 1733 films indexed\n  Progress: 150/163 slugs | 103 scanned | 2107 films indexed\n  Done: 116 festivals, 111 with films, 47 failed, 2288 total films\n  Active: 2288 | Expired: 0 | Unique: 16"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 1061.074613,
+      "duration_seconds": 1079.011164,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 19033 total movies\n\ud83d\udd0d Raw tracking filter: 14876 movies\n\ud83d\udd0d Assigned tracking_movies list: 14876\n\ud83d\udd0d Found 14876 movies in tracking status\n  Priority queue (last 180 days): 773 movies\n  Older movies: 14103 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 14876 movies for digital availability...\n\n  \u26a1 Prefetching discovery data for 14876 movies (8 workers)...\n  \u26a1 Prefetch: 1000/14876 movies"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 19051 total movies\n\ud83d\udd0d Raw tracking filter: 14888 movies\n\ud83d\udd0d Assigned tracking_movies list: 14888\n\ud83d\udd0d Found 14888 movies in tracking status\n  Priority queue (last 180 days): 776 movies\n  Older movies: 14112 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 14888 movies for digital availability...\n\n  \u26a1 Prefetching discovery data for 14888 movies (8 workers)...\n  \u26a1 Prefetch: 1000/14888 movies"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 635.828874,
+      "duration_seconds": 890.952397,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 20 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Beast Race: Amazon not found\n      \u00b7 Beast Race: Fandango not found\n      \u2713 De"
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 18 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Love & Other Crimes: Amazon not found\n      \u00b7 Love & Other Crimes: Fandango no"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.15896,
+      "duration_seconds": 1.43799,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 1192 trailers and 135 subtitle files in B2 bucket\nSaved data.json: 0 stamped, 0 stale cleaned, 2 subs stamped\n\nStamp results:\n  Stamped:          0\n  Already had URL:  660\n  Stale cleaned:    0\n  Not in B2:        81\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 1197 trailers and 136 subtitle files in B2 bucket\nSaved data.json: 0 stamped, 0 stale cleaned, 2 subs stamped\n\nStamp results:\n  Stamped:          0\n  Already had URL:  661\n  Stale cleaned:    0\n  Not in B2:        86\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 189.430311,
+      "duration_seconds": 202.656955,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 228 of 741 wall movies (last 30 days)\n  \ud83c\udfac He'll Never Find Me \u2014 Director Wikipedia added (Dave Thomas)\n  \ud83c\udfac Beast Race \u2014 Director Wikipedia added (Fernando Meirelles)\n  + The Hunger Games: Mockingjay - Part 1 \u2014 new services added\n  + Borderline \u2014 new services added\n  + Rise of the Super Tromettes \u2014 new services added\n  \ud83c\udf93 True North: Canadian Myths and Black Power \u2014 pre-order graduated (available 2026-07-07)\n      JW_DIAG empty-result"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 234 of 747 wall movies (last 30 days)\n  \ud83c\udfac Euphoria: A Look Back \u2014 Director Wikipedia added (Sam Levinson)\n  \ud83c\udfac Newborn \u2014 Director Wikipedia added (Nate Parker)\n  \ud83c\udfac Our Land \u2014 Director Wikipedia added (Lucrecia Martel)\n  \ud83c\udfac The Last Twins \u2014 Director Wikipedia added (Perri Peltz)\n  + Piggy Duster \u2014 new services added\n  + Cruel Hands \u2014 new services added\n  + Saccharine \u2014 new services added\n  + Unidentified \u2014 new services added\n  + Blue H"
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 10.460662,
+      "duration_seconds": 92.324111,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 2 movies missing trailers:\n  \u2022 Beast Race\n  \u2022 1-800-On-Her-Own\n  \u2713 Cache hit: Beast Race (2026)\n  \u25cb Beast Race \u2014 no trailer found (attempt 1/5)\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 5 movies missing trailers:\n  \u2022 Deadly Sign-In\n  \u2022 Mohammed & Paul \u2013 Once Upon a Time in Tangier\n  \u2022 Borderline\n  \u2022 The Woman with Three Husbands\n  \u2022 Why We Dream\n  \u2713 Cache hit: Deadly Sign-In (2026)\n  \u25cb Deadly Sign-In \u2014 no trailer found (attempt 2/5)\n  \u2713 Mohammed & Paul \u2013 Once Upon a Time in Tangier \u2014 trailer found (tier=gemini_playwright)\n[YouTubeTrailerScraper] Initializing browser via shared manager...\n[PlaywrightManager] Initializing sh"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 5.007662,
+      "duration_seconds": 7.422409,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 77 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 17 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 79 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 19 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.546567,
+      "duration_seconds": 0.526911,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 4 movies (>90 days old) \u2192 data_archive.json\n   data.json: 737 movies | archive: 1098 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 8 movies (>90 days old) \u2192 data_archive.json\n   data.json: 739 movies | archive: 1107 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -84,93 +84,103 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 19033,
-    "tracking": 14870,
-    "available": 3771,
-    "data_movies": 737,
-    "movies_with_links": 715,
-    "movies_with_rt": 512,
+    "total": 19051,
+    "tracking": 14879,
+    "available": 3780,
+    "data_movies": 739,
+    "movies_with_links": 717,
+    "movies_with_rt": 515,
     "movies_with_wikipedia": 359,
-    "movies_with_trailers": 689
+    "movies_with_trailers": 693
   },
   "enrichment_metrics": {
-    "timestamp": "2026-07-25T09:53:43.187113",
-    "movies_requested": 16,
-    "movies_enriched": 9,
-    "movies_deferred": 7,
+    "timestamp": "2026-07-26T10:14:29.455529",
+    "movies_requested": 20,
+    "movies_enriched": 12,
+    "movies_deferred": 8,
     "deferred_details": [
+      {
+        "title": "Rumours Of Madam Roach",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-07-26",
+        "discovered_at": "2026-07-26T09:59:20.597605",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 2,
+        "first_reverted_at": "2026-07-26",
+        "tmdb_platforms": []
+      },
       {
         "title": "Hypomania",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-07-24",
-        "discovered_at": "2026-07-25T09:42:47.545598",
+        "discovered_at": "2026-07-26T09:59:22.100976",
         "discovery_source": "tmdb_type4",
-        "revert_count": 12,
-        "first_reverted_at": "2026-07-25",
+        "revert_count": 13,
+        "first_reverted_at": "2026-07-26",
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Ensurance Trap",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2027-07-22",
+        "discovered_at": "2026-07-26T09:59:24.436173",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 5,
+        "first_reverted_at": "2026-07-22",
         "tmdb_platforms": []
       },
       {
         "title": "Last Chance To Save",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-07-18",
-        "discovered_at": "2026-07-25T09:42:49.743971",
+        "discovered_at": "2026-07-26T09:59:24.718028",
         "discovery_source": "tmdb_type4",
-        "revert_count": 9,
-        "first_reverted_at": "2026-07-25",
+        "revert_count": 10,
+        "first_reverted_at": "2026-07-26",
         "tmdb_platforms": []
       },
       {
         "title": "Chunks",
         "reason": "jw_revert:justwatch_no_valid_offers",
         "digital_date": "2026-07-17",
-        "discovered_at": "2026-07-25T09:42:50.059899",
+        "discovered_at": "2026-07-26T09:59:25.001329",
         "discovery_source": "tmdb_type4",
-        "revert_count": 9,
-        "first_reverted_at": "2026-07-25",
+        "revert_count": 10,
+        "first_reverted_at": "2026-07-26",
         "tmdb_platforms": []
       },
       {
         "title": "Forelock",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-07-01",
-        "discovered_at": "2026-07-25T09:42:50.954389",
+        "discovered_at": "2026-07-26T09:59:25.588556",
         "discovery_source": "tmdb_type4",
-        "revert_count": 26,
-        "first_reverted_at": "2026-07-25",
+        "revert_count": 27,
+        "first_reverted_at": "2026-07-26",
         "tmdb_platforms": []
       },
       {
         "title": "The Last Light",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-21",
-        "discovered_at": "2026-07-25T09:42:51.267355",
+        "discovered_at": "2026-07-26T09:59:25.881356",
         "discovery_source": "tmdb_type4",
-        "revert_count": 47,
-        "first_reverted_at": "2026-07-25",
+        "revert_count": 48,
+        "first_reverted_at": "2026-07-26",
         "tmdb_platforms": []
       },
       {
         "title": "Love & Other Crimes",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-19",
-        "discovered_at": "2026-07-25T09:42:51.521071",
+        "discovered_at": "2026-07-26T09:59:26.152954",
         "discovery_source": "tmdb_type4",
-        "revert_count": 38,
-        "first_reverted_at": "2026-07-25",
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Demon Hunters",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-08-07",
-        "discovered_at": "2026-07-25T09:42:53.895770",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 1,
-        "first_reverted_at": "2026-07-25",
+        "revert_count": 39,
+        "first_reverted_at": "2026-07-26",
         "tmdb_platforms": []
       }
     ],
-    "enrichment_duration_seconds": 634.64,
+    "enrichment_duration_seconds": 889.72,
     "error_details": [],
     "total_errors": 0
   }

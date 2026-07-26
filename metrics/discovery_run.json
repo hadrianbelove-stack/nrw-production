@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-25T09:43:07.771737",
+  "timestamp": "2026-07-26T09:59:38.959811",
   "operation": "discover_availability",
   "scan_context": {
     "poll_all_tracking": true,
@@ -8,8 +8,8 @@
     "full_scan": true
   },
   "results": {
-    "polled": 14876,
-    "transitions": 14,
+    "polled": 14888,
+    "transitions": 19,
     "failed": 0,
     "rent_preorders_held": 0,
     "jw_healthy": true,
@@ -17,91 +17,121 @@
   },
   "transition_details": [
     {
-      "movie_id": "980431",
-      "title": "Avatar Aang: The Last Airbender",
+      "movie_id": "1729149",
+      "title": "Rumours Of Madam Roach",
       "source": "tmdb_type4",
-      "timestamp": "2026-07-25T09:42:47.381830"
+      "timestamp": "2026-07-26T09:59:20.687034"
+    },
+    {
+      "movie_id": "1353760",
+      "title": "Piggy Duster",
+      "source": "tmdb_type4",
+      "timestamp": "2026-07-26T09:59:21.925191"
     },
     {
       "movie_id": "1685867",
       "title": "Hypomania",
       "source": "tmdb_type4",
-      "timestamp": "2026-07-25T09:42:47.632109"
+      "timestamp": "2026-07-26T09:59:22.189021"
     },
     {
-      "movie_id": "1728954",
-      "title": "My Grandfather Charles Manson",
-      "source": "tmdb_type4",
-      "timestamp": "2026-07-25T09:42:49.333393"
+      "movie_id": "tv_326192",
+      "title": "The Idaho Murders: A College Town Nightmare",
+      "source": "provider_availability_check",
+      "timestamp": "2026-07-26T09:59:23.718257"
+    },
+    {
+      "movie_id": "tv_277640",
+      "title": "Pompeii: Out of Time with Tom Hiddleston",
+      "source": "provider_availability_check",
+      "timestamp": "2026-07-26T09:59:24.255483"
     },
     {
       "movie_id": "1414010",
       "title": "Senin Harga Naik",
       "source": "tmdb_type4",
-      "timestamp": "2026-07-25T09:42:49.832556"
+      "timestamp": "2026-07-26T09:59:24.806751"
     },
     {
       "movie_id": "1730028",
       "title": "Chunks",
       "source": "tmdb_type4",
-      "timestamp": "2026-07-25T09:42:50.148657"
-    },
-    {
-      "movie_id": "tv_325622",
-      "title": "Murder 101",
-      "source": "provider_availability_check",
-      "timestamp": "2026-07-25T09:42:50.583359"
+      "timestamp": "2026-07-26T09:59:25.091597"
     },
     {
       "movie_id": "1255832",
       "title": "Forelock",
       "source": "tmdb_type4",
-      "timestamp": "2026-07-25T09:42:51.044603"
+      "timestamp": "2026-07-26T09:59:25.679606"
     },
     {
       "movie_id": "1684243",
       "title": "The Last Light",
       "source": "tmdb_type4",
-      "timestamp": "2026-07-25T09:42:51.356546"
+      "timestamp": "2026-07-26T09:59:25.970463"
     },
     {
       "movie_id": "1544556",
       "title": "Love & Other Crimes",
       "source": "tmdb_type4",
-      "timestamp": "2026-07-25T09:42:51.610812"
+      "timestamp": "2026-07-26T09:59:26.243994"
     },
     {
-      "movie_id": "1288220",
-      "title": "A Mosquito in the Ear",
+      "movie_id": "tv_284828",
+      "title": "Duang With You",
       "source": "provider_availability_check",
-      "timestamp": "2026-07-25T09:43:00.504096"
+      "timestamp": "2026-07-26T09:59:26.766978"
     },
     {
-      "movie_id": "1489931",
-      "title": "Suzzanna: Witchcraft",
+      "movie_id": "1483986",
+      "title": "The Last Twins",
       "source": "provider_availability_check",
-      "timestamp": "2026-07-25T09:43:01.201119"
+      "timestamp": "2026-07-26T09:59:27.703387"
+    },
+    {
+      "movie_id": "661603",
+      "title": "Landmarks",
+      "source": "provider_availability_check",
+      "timestamp": "2026-07-26T09:59:34.346268"
+    },
+    {
+      "movie_id": "1553362",
+      "title": "This is Pike County",
+      "source": "provider_availability_check",
+      "timestamp": "2026-07-26T09:59:35.082433"
+    },
+    {
+      "movie_id": "1454103",
+      "title": "Widow Champion",
+      "source": "provider_availability_check",
+      "timestamp": "2026-07-26T09:59:35.701958"
+    },
+    {
+      "movie_id": "787844",
+      "title": "Newborn",
+      "source": "tmdb_type4",
+      "timestamp": "2026-07-26T09:59:37.032451"
     },
     {
       "movie_id": "1628071",
       "title": "Ip Man: Kung Fu Legend",
       "source": "provider_availability_check",
-      "timestamp": "2026-07-25T09:43:01.929969"
+      "timestamp": "2026-07-26T09:59:37.402288"
     },
     {
       "movie_id": "1463042",
       "title": "Rise of the Super Tromettes",
       "source": "tmdb_type4",
-      "timestamp": "2026-07-25T09:43:02.712485"
+      "timestamp": "2026-07-26T09:59:37.897904"
     },
     {
-      "movie_id": "1735229",
-      "title": "He'll Never Find Me",
-      "source": "provider_availability_check",
-      "timestamp": "2026-07-25T09:43:06.901716"
+      "movie_id": "1732097",
+      "title": "Euphoria: A Look Back",
+      "source": "tmdb_type4",
+      "timestamp": "2026-07-26T09:59:38.534286"
     }
   ],
-  "total_transitions": 14,
+  "total_transitions": 19,
   "held_preorder_details": [],
   "captcha_block_titles": [],
   "api_errors": [
@@ -110,701 +140,701 @@
       "title": "Fractured 3",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:30.223089"
+      "timestamp": "2026-07-26T09:41:43.025520"
     },
     {
       "movie_id": "1726026",
       "title": "The Guy Who Didn't Like Musicals (2025 Remount)",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:32.116225"
+      "timestamp": "2026-07-26T09:41:46.435458"
     },
     {
       "movie_id": "1707796",
       "title": "XBOX Games Showcase 2026",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:39.817773"
+      "timestamp": "2026-07-26T09:41:53.256032"
     },
     {
       "movie_id": "1702271",
       "title": "Rogue One: The Andor Cut",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:42.377592"
+      "timestamp": "2026-07-26T09:41:57.696060"
     },
     {
       "movie_id": "1695088",
       "title": "Good Omens: The Finale",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:45.221082"
+      "timestamp": "2026-07-26T09:41:59.074144"
     },
     {
       "movie_id": "1726013",
       "title": "The Guy Who Didn't Like Musicals: Reprised!",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:45.374696"
+      "timestamp": "2026-07-26T09:41:59.355329"
     },
     {
       "movie_id": "1690338",
       "title": "Mixtape",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:46.641966"
+      "timestamp": "2026-07-26T09:42:00.815095"
     },
     {
       "movie_id": "1688925",
       "title": "Gary",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:47.588043"
+      "timestamp": "2026-07-26T09:42:01.671005"
     },
     {
       "movie_id": "1687037",
       "title": "Star Wars: Maul - Shadow Lord",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:47.676775"
+      "timestamp": "2026-07-26T09:42:03.058910"
     },
     {
       "movie_id": "tv_319986",
       "title": "The Flesh Yoke",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:51.723691"
+      "timestamp": "2026-07-26T09:42:06.174468"
     },
     {
       "movie_id": "tv_317511",
       "title": "Chernobyl \u2013 The Untold Story",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:52.658298"
+      "timestamp": "2026-07-26T09:42:07.694989"
     },
     {
       "movie_id": "tv_320008",
       "title": "Icons Unearthed: Transformers",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:53.687688"
+      "timestamp": "2026-07-26T09:42:09.049927"
     },
     {
       "movie_id": "tv_315717",
       "title": "\uc0ac\ub0e5\uac1c\ub4e4 2",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:53.721938"
+      "timestamp": "2026-07-26T09:42:08.331927"
     },
     {
       "movie_id": "tv_318868",
       "title": "Your Loser Husband Is a Big Shot",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:55.400112"
+      "timestamp": "2026-07-26T09:42:10.057045"
     },
     {
       "movie_id": "tv_318002",
       "title": "Tip 2 Tip",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:55.542402"
+      "timestamp": "2026-07-26T09:42:09.627760"
     },
     {
       "movie_id": "tv_317013",
       "title": "\u90a3\u5e74\u51ac\u81f3",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:56.696257"
+      "timestamp": "2026-07-26T09:42:10.542953"
     },
     {
       "movie_id": "tv_318589",
       "title": "\ub9c8\uce68\ub0b4, \ubd04",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:25:58.433154"
+      "timestamp": "2026-07-26T09:42:12.873203"
     },
     {
       "movie_id": "tv_315626",
       "title": "\u70ba\u4f60\u9418\u60c5",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:03.281679"
+      "timestamp": "2026-07-26T09:42:17.558173"
     },
     {
       "movie_id": "tv_52543",
       "title": "Once Upon a Time",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:06.382320"
+      "timestamp": "2026-07-26T09:42:20.602381"
     },
     {
       "movie_id": "tv_314853",
       "title": "Australia v India Women's Multi Format-Trophy 2026 Series (T20's, ODI's & Test)",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:08.914482"
+      "timestamp": "2026-07-26T09:42:22.016948"
     },
     {
       "movie_id": "tv_310602",
       "title": "MuTeluv: Love Me if You Swear",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:10.574801"
+      "timestamp": "2026-07-26T09:42:25.319993"
     },
     {
       "movie_id": "tv_313378",
       "title": "K\u00dcR\u0130L\u0130",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:12.628449"
+      "timestamp": "2026-07-26T09:42:26.736395"
     },
     {
       "movie_id": "tv_311462",
       "title": "A Road Map to Happiness",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:16.050484"
+      "timestamp": "2026-07-26T09:42:30.646910"
     },
     {
       "movie_id": "manual_the_man_with_the_hat",
       "title": "The Man With the Hat",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:17.436628"
+      "timestamp": "2026-07-26T09:42:31.646520"
     },
     {
       "movie_id": "tv_310597",
       "title": "MuTeluv: Love Lock",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:19.166493"
+      "timestamp": "2026-07-26T09:42:33.380474"
     },
     {
       "movie_id": "tv_310278",
       "title": "O Auto da Compadecida 2",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:20.548045"
+      "timestamp": "2026-07-26T09:42:34.664844"
     },
     {
       "movie_id": "1574158",
       "title": "The Drawer",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:21.767650"
+      "timestamp": "2026-07-26T09:42:35.746510"
     },
     {
       "movie_id": "1574671",
       "title": "To The Finish Line",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.355225"
+      "timestamp": "2026-07-26T09:42:36.783814"
     },
     {
       "movie_id": "1571160",
       "title": "Big Leather: Lemon Lanes",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:21.916938"
+      "timestamp": "2026-07-26T09:42:37.275906"
     },
     {
       "movie_id": "1564431",
       "title": "Burton's Dream",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:21.918882"
+      "timestamp": "2026-07-26T09:42:36.233326"
     },
     {
       "movie_id": "1564102",
       "title": "ColorBlind",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.784977"
+      "timestamp": "2026-07-26T09:42:35.983202"
     },
     {
       "movie_id": "1573072",
       "title": "The Best of BandLab",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.174660"
+      "timestamp": "2026-07-26T09:42:37.440902"
     },
     {
       "movie_id": "1574417",
       "title": "FREAKBOB",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.641451"
+      "timestamp": "2026-07-26T09:42:37.183898"
     },
     {
       "movie_id": "1574043",
       "title": "Where The Fog Breathes",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.163655"
+      "timestamp": "2026-07-26T09:42:36.230462"
     },
     {
       "movie_id": "1573506",
       "title": "Harmony Can Happen",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.168413"
+      "timestamp": "2026-07-26T09:42:36.257970"
     },
     {
       "movie_id": "1572586",
       "title": "A Serpent's Tale",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.219630"
+      "timestamp": "2026-07-26T09:42:36.509737"
     },
     {
       "movie_id": "1571600",
       "title": "Skull Forever",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.377904"
+      "timestamp": "2026-07-26T09:42:36.499060"
     },
     {
       "movie_id": "1570556",
       "title": "Soaked In Tears",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.383427"
+      "timestamp": "2026-07-26T09:42:36.525738"
     },
     {
       "movie_id": "1570256",
       "title": "Ghoulish",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.423142"
+      "timestamp": "2026-07-26T09:42:36.655686"
     },
     {
       "movie_id": "1564470",
       "title": "The Girl of Dull Entrapment",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.592858"
+      "timestamp": "2026-07-26T09:42:37.614343"
     },
     {
       "movie_id": "1554012",
       "title": "Street Beast",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.596974"
+      "timestamp": "2026-07-26T09:42:37.919693"
     },
     {
       "movie_id": "1544586",
       "title": "The Mysterious Disappearance Of A Duck",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:22.633961"
+      "timestamp": "2026-07-26T09:42:37.200355"
     },
     {
       "movie_id": "1478589",
       "title": "Step 10",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.204577"
+      "timestamp": "2026-07-26T09:42:37.044566"
     },
     {
       "movie_id": "1573175",
       "title": "Hocus Pocus: Witches on a Rampage",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.627241"
+      "timestamp": "2026-07-26T09:42:37.667122"
     },
     {
       "movie_id": "1570127",
       "title": "All the Time in the World",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.200264"
+      "timestamp": "2026-07-26T09:42:37.286279"
     },
     {
       "movie_id": "1575228",
       "title": "Apple Music Live: Gracie Abrams",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.778259"
+      "timestamp": "2026-07-26T09:42:37.438279"
     },
     {
       "movie_id": "1571534",
       "title": "Exhale",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.505996"
+      "timestamp": "2026-07-26T09:42:37.445656"
     },
     {
       "movie_id": "1570542",
       "title": "Ch\u00e8re Fin,",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.545221"
+      "timestamp": "2026-07-26T09:42:37.517018"
     },
     {
       "movie_id": "1569919",
       "title": "The Masked Threat",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:24.138715"
+      "timestamp": "2026-07-26T09:42:37.536002"
     },
     {
       "movie_id": "1555250",
       "title": "Nightfall - A Pine Ridge Anthology",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.395707"
+      "timestamp": "2026-07-26T09:42:38.398689"
     },
     {
       "movie_id": "1570846",
       "title": "MOUSE: P.I. For Hire - A Deep Dive Documentary",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.419512"
+      "timestamp": "2026-07-26T09:42:38.238693"
     },
     {
       "movie_id": "1573503",
       "title": "April 12th 1912",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.533913"
+      "timestamp": "2026-07-26T09:42:37.764811"
     },
     {
       "movie_id": "1569847",
       "title": "Commodore Barry",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.615084"
+      "timestamp": "2026-07-26T09:42:38.232079"
     },
     {
       "movie_id": "1569650",
       "title": "Adult Animation",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.657725"
+      "timestamp": "2026-07-26T09:42:37.842210"
     },
     {
       "movie_id": "1569870",
       "title": "Smiling Ball Z",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.745132"
+      "timestamp": "2026-07-26T09:42:37.865256"
     },
     {
       "movie_id": "1568813",
       "title": "MEATCANYON",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:23.783774"
+      "timestamp": "2026-07-26T09:42:38.849201"
     },
     {
       "movie_id": "1568796",
       "title": "Lifewasters",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:24.221291"
+      "timestamp": "2026-07-26T09:42:38.538038"
     },
     {
       "movie_id": "1568757",
       "title": "MEATCANYON",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:24.660233"
+      "timestamp": "2026-07-26T09:42:38.824815"
     },
     {
       "movie_id": "1508880",
       "title": "VR: A Digital Frontier",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:24.650591"
+      "timestamp": "2026-07-26T09:42:39.275599"
     },
     {
       "movie_id": "1567138",
       "title": "8pm to 8am",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:25.424241"
+      "timestamp": "2026-07-26T09:42:39.113257"
     },
     {
       "movie_id": "1520194",
       "title": "Tiny Mite",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:24.381953"
+      "timestamp": "2026-07-26T09:42:38.504377"
     },
     {
       "movie_id": "1573497",
       "title": "A Hypnotized Place",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:25.090836"
+      "timestamp": "2026-07-26T09:42:38.476262"
     },
     {
       "movie_id": "1571547",
       "title": "Writers Room",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:24.295037"
+      "timestamp": "2026-07-26T09:42:38.635590"
     },
     {
       "movie_id": "1565019",
       "title": "Dead Race",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:26.120211"
+      "timestamp": "2026-07-26T09:42:40.464265"
     },
     {
       "movie_id": "1559054",
       "title": "Short Sharp Scares: Welcome",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:28.638440"
+      "timestamp": "2026-07-26T09:42:42.818543"
     },
     {
       "movie_id": "1552293",
       "title": "Like Me",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:30.414778"
+      "timestamp": "2026-07-26T09:42:44.542317"
     },
     {
       "movie_id": "1326204",
       "title": "Lilith: The Nightmare Doll",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:32.917313"
+      "timestamp": "2026-07-26T09:42:46.601429"
     },
     {
       "movie_id": "1559424",
       "title": "Pumpkin Guts",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:32.718159"
+      "timestamp": "2026-07-26T09:42:47.290934"
     },
     {
       "movie_id": "1568479",
       "title": "\ud83d\ude8cdeadhead",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:33.802624"
+      "timestamp": "2026-07-26T09:42:47.344635"
     },
     {
       "movie_id": "1566699",
       "title": "Ever Onward: Making The Long Walk",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:34.342031"
+      "timestamp": "2026-07-26T09:42:47.485560"
     },
     {
       "movie_id": "1565889",
       "title": "Heidis Arm\u00e9 \u2013 The Movie",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:34.509200"
+      "timestamp": "2026-07-26T09:42:48.613827"
     },
     {
       "movie_id": "1507901",
       "title": "Bloodsuckers and the Grimoire",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:35.385152"
+      "timestamp": "2026-07-26T09:42:49.344055"
     },
     {
       "movie_id": "1565812",
       "title": "O SUPER GUIA DEFINITIVAMENTE \u00c9PICO CHEIROSO E BUNITO DE RPG",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:35.542621"
+      "timestamp": "2026-07-26T09:42:49.367905"
     },
     {
       "movie_id": "1565846",
       "title": "HALLOWEEN HANGOVER - A Star Wars Story",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:35.632411"
+      "timestamp": "2026-07-26T09:42:50.392635"
     },
     {
       "movie_id": "1564997",
       "title": "The Kill Count (2017) KILL COUNT",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:35.781794"
+      "timestamp": "2026-07-26T09:42:49.650669"
     },
     {
       "movie_id": "1564673",
       "title": "Did Daddy Fool You?",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:35.875752"
+      "timestamp": "2026-07-26T09:42:50.183594"
     },
     {
       "movie_id": "1360520",
       "title": "Halloween Aftermath",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:36.699454"
+      "timestamp": "2026-07-26T09:42:50.761319"
     },
     {
       "movie_id": "1566514",
       "title": "Roadkill",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:37.462968"
+      "timestamp": "2026-07-26T09:42:51.440175"
     },
     {
       "movie_id": "1464547",
       "title": "The Worst Summer Ever",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:37.627783"
+      "timestamp": "2026-07-26T09:42:51.716520"
     },
     {
       "movie_id": "1560692",
       "title": "Victoria's Secret Fashion Show 2025",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:37.397925"
+      "timestamp": "2026-07-26T09:42:51.284790"
     },
     {
       "movie_id": "1564270",
       "title": "THE WINNER TAKES IT ALL",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:37.493275"
+      "timestamp": "2026-07-26T09:42:52.231828"
     },
     {
       "movie_id": "1557566",
       "title": "BFDI:TPOT 20: Alone",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:38.273560"
+      "timestamp": "2026-07-26T09:42:51.720394"
     },
     {
       "movie_id": "1563879",
       "title": "A New Fusion",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:38.797954"
+      "timestamp": "2026-07-26T09:42:52.408062"
     },
     {
       "movie_id": "1559286",
       "title": "LIO",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:39.439036"
+      "timestamp": "2026-07-26T09:42:52.097685"
     },
     {
       "movie_id": "1564891",
       "title": "Shit Happens",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:38.836526"
+      "timestamp": "2026-07-26T09:42:52.647721"
     },
     {
       "movie_id": "1560503",
       "title": "Tears of the Mountain",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:39.383344"
+      "timestamp": "2026-07-26T09:42:52.704226"
     },
     {
       "movie_id": "1557414",
       "title": "Rendez-vous avec le crime : Tel \u00e9pris (ira se faire pendre)",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:39.930122"
+      "timestamp": "2026-07-26T09:42:53.374071"
     },
     {
       "movie_id": "1562482",
       "title": "Look At Me",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:41.247895"
+      "timestamp": "2026-07-26T09:42:53.641335"
     },
     {
       "movie_id": "1561628",
       "title": "Cocky v Wimpy: The Fight of The Century",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:40.192330"
+      "timestamp": "2026-07-26T09:42:54.438685"
     },
     {
       "movie_id": "1562045",
       "title": "Melancholy Objects",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:40.399330"
+      "timestamp": "2026-07-26T09:42:53.877362"
     },
     {
       "movie_id": "1561549",
       "title": "Fractured Helix",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:40.450837"
+      "timestamp": "2026-07-26T09:42:54.687914"
     },
     {
       "movie_id": "1461960",
       "title": "Don't Shoot Me: The Snake Mirror Weekend Tour",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:40.782916"
+      "timestamp": "2026-07-26T09:42:54.433518"
     },
     {
       "movie_id": "1564520",
       "title": "Claimed by My Ex's Alpha Brother",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:41.547149"
+      "timestamp": "2026-07-26T09:42:55.820037"
     },
     {
       "movie_id": "1560614",
       "title": "Habitual",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:41.637692"
+      "timestamp": "2026-07-26T09:42:56.048159"
     },
     {
       "movie_id": "1560624",
       "title": "How Much Longer?",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:42.343838"
+      "timestamp": "2026-07-26T09:42:56.103613"
     },
     {
       "movie_id": "1555836",
       "title": "Ma\u00eetre Conti : Le fils perdu",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:42.572258"
+      "timestamp": "2026-07-26T09:42:56.144138"
     },
     {
       "movie_id": "1556383",
       "title": "Short Sharp Scares: Snare",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:43.595051"
+      "timestamp": "2026-07-26T09:42:57.248006"
     },
     {
       "movie_id": "1553939",
       "title": "Niccol\u00f2",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:43.763633"
+      "timestamp": "2026-07-26T09:42:58.808343"
     },
     {
       "movie_id": "1558718",
       "title": "Close to You",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:44.872071"
+      "timestamp": "2026-07-26T09:42:57.307418"
     },
     {
       "movie_id": "1557417",
       "title": "Rendez-vous avec le crime : L'h\u00e9ritage fant\u00f4me",
       "error_type": "http_error",
       "status_code": 404,
-      "timestamp": "2026-07-25T09:26:44.042220"
+      "timestamp": "2026-07-26T09:42:57.487024"
     }
   ],
-  "total_api_errors": 691
+  "total_api_errors": 693
 }
