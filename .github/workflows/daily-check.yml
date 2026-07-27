@@ -95,14 +95,19 @@ jobs:
       # never block the data.json publish, so both use continue-on-error.
       # Results are handed back to the Mac via the "curation-caches" artifact
       # (see the upload step below) — they are NOT committed to git.
+      #
+      # COST GATE (Jul 2026): both steps are gated behind the repo variable
+      # ENABLE_GEMINI_CURATION. Unset/false -> they SKIP (zero Gemini spend) while
+      # we measure + tune model and thinking-budget costs. Re-enable with:
+      #   gh variable set ENABLE_GEMINI_CURATION --body true
       - name: Pre-scrape pull quotes for new arrivals
-        if: always()
+        if: always() && vars.ENABLE_GEMINI_CURATION == 'true'
         continue-on-error: true
         run: |
           python3 scripts/batch_pull_quotes.py || echo "Pull-quote pre-scrape failed, continuing..."
 
       - name: Pre-generate capsules for new arrivals
-        if: always()
+        if: always() && vars.ENABLE_GEMINI_CURATION == 'true'
         continue-on-error: true
         run: |
           python3 scripts/write_capsule.py --batch --days 7 --variants 3 --skip-verify \
