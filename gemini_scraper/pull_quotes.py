@@ -17,6 +17,7 @@ Gemini — RT and MC are pure Playwright scraping.
 """
 
 import html as html_module
+import os
 import re
 import time
 import logging
@@ -347,8 +348,14 @@ class PullQuoteFinder(GeminiFinderBase):
             logger.info(f"No MC URL for {title} ({year}), skipping MC")
 
         # --- Step 3: Letterboxd quotes ---
-        from gemini_scraper.letterboxd_quotes import LetterboxdQuoteScraper
-        lb_quotes = LetterboxdQuoteScraper().scrape_quotes(title, year, lb_url=lb_url)
+        # NRW_QUOTES_BACKEND=claude routes the Gemini parts (quote extraction +
+        # the rare LB-URL discovery) to a local `claude -p` on the Max plan (~$0);
+        # the Playwright review scrape is unchanged either way. Default = Gemini.
+        if os.environ.get('NRW_QUOTES_BACKEND') == 'claude':
+            from gemini_scraper.claude_quotes import ClaudeLetterboxdQuoteScraper as _LBScraper
+        else:
+            from gemini_scraper.letterboxd_quotes import LetterboxdQuoteScraper as _LBScraper
+        lb_quotes = _LBScraper().scrape_quotes(title, year, lb_url=lb_url)
         if lb_quotes:
             all_quotes.extend(lb_quotes)
             logger.info(f"Found {len(lb_quotes)} Letterboxd quotes for {title} ({year})")

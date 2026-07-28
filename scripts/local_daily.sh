@@ -155,8 +155,8 @@ if [ "$CI_DATE" = "$TODAY" ]; then
         # Fallback: CI artifact unavailable — generate the whole curate window
         # locally (the old path). alarm(3600) hard-kills a hung run.
         echo "  Artifact unavailable — falling back to local generation" >> "$LOG"
-        echo "Scraping pull quotes for new arrivals..." >> "$LOG"
-        /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
+        echo "Scraping pull quotes for new arrivals (Claude/Max)..." >> "$LOG"
+        NRW_QUOTES_BACKEND=claude /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
             /usr/bin/python3 scripts/batch_pull_quotes.py >> "$LOG" 2>&1 \
             || echo "  WARNING: pull quotes exited non-zero (timeout or error)" >> "$LOG"
         echo "Pre-generating capsules for new arrivals (Claude/Max)..." >> "$LOG"
@@ -170,12 +170,13 @@ if [ "$CI_DATE" = "$TODAY" ]; then
         # instead — DETACHED (nohup) so the ~4-min-per-film run can't trip
         # launchd's 30-min ExitTimeOut. Fills cache/capsule_cache.json for the
         # morning /curate flow, then recomputes Buzz once notability exists.
-        if pgrep -f "write_capsule.py --batch" >/dev/null 2>&1; then
-            echo "  Local Claude capsule pre-gen already running; skipping" >> "$LOG"
+        if pgrep -f "write_capsule.py --batch" >/dev/null 2>&1 \
+                || pgrep -f "batch_pull_quotes.py" >/dev/null 2>&1; then
+            echo "  Local Claude curation pre-gen already running; skipping" >> "$LOG"
         else
-            echo "  Starting local Claude capsule pre-gen (detached, Claude/Max)..." >> "$LOG"
-            NRW_CAPSULE_BACKEND=claude nohup /bin/bash -c \
-                '/usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 2 && /usr/bin/python3 scripts/inject_notability.py' \
+            echo "  Starting local Claude curation pre-gen (quotes+capsules, detached, Claude/Max)..." >> "$LOG"
+            NRW_QUOTES_BACKEND=claude NRW_CAPSULE_BACKEND=claude nohup /bin/bash -c \
+                '/usr/bin/python3 scripts/batch_pull_quotes.py --days 7 && /usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 2 && /usr/bin/python3 scripts/inject_notability.py' \
                 >> "$CAPSULE_LOG" 2>&1 &
             disown
         fi

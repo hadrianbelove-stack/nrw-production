@@ -93,7 +93,15 @@ def main():
     parser.add_argument('--all', action='store_true',
                         help='Ignore the date window — process every uncached wall movie')
     parser.add_argument('--force', action='store_true', help='Re-scrape even if cached')
+    parser.add_argument('--backend', choices=['gemini', 'claude'], default=None,
+                        help="Extraction backend: 'gemini' (paid API) or 'claude' "
+                             "(local `claude -p` on the Max plan, ~$0). Playwright "
+                             "scraping is unchanged. Default: $NRW_QUOTES_BACKEND or 'gemini'.")
     args = parser.parse_args()
+
+    # PullQuoteFinder reads NRW_QUOTES_BACKEND at scrape time; --backend sets it.
+    if args.backend:
+        os.environ['NRW_QUOTES_BACKEND'] = args.backend
 
     # Load movies from data.json
     data = load_json('data.json', {})
