@@ -31,6 +31,17 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import load_env
 from gemini_scraper import GeminiCapsuleWriter
 
+
+def make_writer(args):
+    """Pick the capsule backend. Default 'gemini' (paid API); 'claude' runs a
+    local headless `claude -p` on the Max plan (~$0). Env NRW_CAPSULE_BACKEND
+    sets the default so the launchagent can flip it globally."""
+    backend = getattr(args, 'backend', None) or os.environ.get('NRW_CAPSULE_BACKEND', 'gemini')
+    if backend == 'claude':
+        from gemini_scraper.claude_capsule import ClaudeCapsuleWriter
+        return ClaudeCapsuleWriter()
+    return GeminiCapsuleWriter()
+
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
@@ -208,7 +219,7 @@ def cmd_generate(args):
     if not movie:
         return
 
-    writer = GeminiCapsuleWriter()
+    writer = make_writer(args)
     kwargs = extract_capsule_args(movie)
     kwargs['force'] = args.force
     kwargs['skip_verify'] = args.skip_verify
@@ -244,7 +255,7 @@ def cmd_batch(args):
         from_date = str(date.today() - timedelta(days=args.days))
         today = str(date.today())
 
-    writer = GeminiCapsuleWriter()
+    writer = make_writer(args)
 
     to_process = []
     for m in movies:
@@ -378,7 +389,7 @@ def cmd_approve(args):
     crew = movie.get('crew', {}) or {}
     director = crew.get('director', 'Unknown') if isinstance(crew, dict) else 'Unknown'
 
-    writer = GeminiCapsuleWriter()
+    writer = make_writer(args)
 
     if args.file:
         # Read rewritten capsule from file
@@ -488,6 +499,10 @@ def main():
     parser.add_argument('--skip-verify', action='store_true', help='Skip fact verification pass')
     parser.add_argument('--show-sources', action='store_true', help='Print source material alongside capsule')
     parser.add_argument('--variants', type=int, default=3, help='Number of capsule variants to generate (default 3)')
+    parser.add_argument('--backend', choices=['gemini', 'claude'], default=None,
+                        help="Generation backend: 'gemini' (paid API) or 'claude' "
+                             "(local `claude -p` on the Max plan, ~$0). Default: "
+                             "$NRW_CAPSULE_BACKEND or 'gemini'.")
     args = parser.parse_args(argv)
 
     if args.batch:

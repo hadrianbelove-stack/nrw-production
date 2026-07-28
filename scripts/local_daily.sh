@@ -9,6 +9,7 @@
 export PATH="/opt/homebrew/bin:$PATH"
 PROJECT_DIR="/Users/hadrianbelove/Downloads/nrw-production"
 LOG="$PROJECT_DIR/logs/launchagent.log"
+CAPSULE_LOG="$PROJECT_DIR/logs/claude_capsules.log"
 
 # Already pulled today's CI data? Done.
 SENTINEL="/var/tmp/nrw_daily_$(date +%Y%m%d)"
@@ -158,17 +159,26 @@ if [ "$CI_DATE" = "$TODAY" ]; then
         /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
             /usr/bin/python3 scripts/batch_pull_quotes.py >> "$LOG" 2>&1 \
             || echo "  WARNING: pull quotes exited non-zero (timeout or error)" >> "$LOG"
-        echo "Pre-generating capsules for new arrivals..." >> "$LOG"
-        /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
-            /usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 3 --skip-verify >> "$LOG" 2>&1 \
+        echo "Pre-generating capsules for new arrivals (Claude/Max)..." >> "$LOG"
+        NRW_CAPSULE_BACKEND=claude /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
+            /usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 2 >> "$LOG" 2>&1 \
             || echo "  WARNING: capsule batch exited non-zero (timeout or error)" >> "$LOG"
     else
-        # Artifact OK: CI's capsules are bank-aware now that the approved bank
-        # is git-tracked (admin/approved_capsules.json), so no local patch-up
-        # regen is needed. Entries stamp bank_size for provenance — a 0 there
-        # means a bank-less draft (shouldn't happen anymore; the workflow's
-        # "capsule bank present" check fails loudly if the bank goes missing).
-        echo "  CI capsules are bank-aware — no local regen needed" >> "$LOG"
+        # CI's Gemini capsule pre-gen is gated OFF (ENABLE_GEMINI_CURATION) to
+        # stop Gemini spend, so the merged artifact no longer carries fresh
+        # capsules. Generate them locally with Claude on the Max plan (~$0)
+        # instead — DETACHED (nohup) so the ~4-min-per-film run can't trip
+        # launchd's 30-min ExitTimeOut. Fills cache/capsule_cache.json for the
+        # morning /curate flow, then recomputes Buzz once notability exists.
+        if pgrep -f "write_capsule.py --batch" >/dev/null 2>&1; then
+            echo "  Local Claude capsule pre-gen already running; skipping" >> "$LOG"
+        else
+            echo "  Starting local Claude capsule pre-gen (detached, Claude/Max)..." >> "$LOG"
+            NRW_CAPSULE_BACKEND=claude nohup /bin/bash -c \
+                '/usr/bin/python3 scripts/write_capsule.py --batch --days 7 --variants 2 && /usr/bin/python3 scripts/inject_notability.py' \
+                >> "$CAPSULE_LOG" 2>&1 &
+            disown
+        fi
     fi
     # Buzz (Selects guesser) — recompute into data.json now that the capsule
     # research has produced notability facts.
