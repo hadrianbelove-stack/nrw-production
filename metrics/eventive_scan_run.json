@@ -1,79 +1,19 @@
 {
-  "timestamp": "2026-07-27T11:01:49.644362",
+  "timestamp": "2026-07-28T10:17:01.629910",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 116,
     "festivals_with_films": 111,
     "festivals_failed": 47,
-    "total_films_indexed": 2414,
+    "total_films_indexed": 2421,
     "expired_filtered": 0,
-    "unique_active": 1627,
+    "unique_active": 1630,
     "tracking_matches": 72,
-    "wall_matches": 23,
-    "new_cached": 57,
+    "wall_matches": 27,
+    "new_cached": 61,
     "skipped_undated": 38
   },
   "tracking_matches": [
-    {
-      "movie_id": "1546068",
-      "nrw_title": "3000 Lesbians Go To York",
-      "eventive_title": "3000 Lesbians Go To York (2025)",
-      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
-      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a6ffb9cec8430a9307fe3",
-      "start": "2026-06-13T11:00:00.000Z",
-      "end": "2026-09-17T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1480593",
-      "nrw_title": "Bombacha",
-      "eventive_title": "Bombacha (2025)",
-      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
-      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a8cc7b413a91640095e22",
-      "start": "2026-06-13T11:07:00.000Z",
-      "end": "2026-09-24T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1514721",
-      "nrw_title": "Duplicity",
-      "eventive_title": "Duplicity (2026)",
-      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
-      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a7e4f3091294a896864a1",
-      "start": "2026-06-26T23:00:00.000Z",
-      "end": "2026-09-24T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1258157",
-      "nrw_title": "Lakeview",
-      "eventive_title": "Lakeview (2024)",
-      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
-      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a945b1cfaef70f304e86d",
-      "start": "2026-06-19T23:00:00.000Z",
-      "end": "2026-09-24T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1000092",
-      "nrw_title": "Nowhere",
-      "eventive_title": "Nowhere (2021)",
-      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
-      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a962917178824a3beb905",
-      "start": "2026-06-19T23:00:00.000Z",
-      "end": "2026-09-24T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
     {
       "movie_id": "1568068",
       "nrw_title": "Let Them Be Seen",
@@ -219,6 +159,66 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1546068",
+      "nrw_title": "3000 Lesbians Go To York",
+      "eventive_title": "3000 Lesbians Go To York (2025)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a6ffb9cec8430a9307fe3",
+      "start": "2026-06-13T11:00:00.000Z",
+      "end": "2026-09-17T03:59:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1480593",
+      "nrw_title": "Bombacha",
+      "eventive_title": "Bombacha (2025)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a8cc7b413a91640095e22",
+      "start": "2026-06-13T11:07:00.000Z",
+      "end": "2026-09-24T03:59:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1514721",
+      "nrw_title": "Duplicity",
+      "eventive_title": "Duplicity (2026)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a7e4f3091294a896864a1",
+      "start": "2026-06-26T23:00:00.000Z",
+      "end": "2026-09-24T03:59:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1258157",
+      "nrw_title": "Lakeview",
+      "eventive_title": "Lakeview (2024)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a945b1cfaef70f304e86d",
+      "start": "2026-06-19T23:00:00.000Z",
+      "end": "2026-09-24T03:59:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1000092",
+      "nrw_title": "Nowhere",
+      "eventive_title": "Nowhere (2021)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a962917178824a3beb905",
+      "start": "2026-06-19T23:00:00.000Z",
+      "end": "2026-09-24T03:59:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1561978",
       "nrw_title": "The Ark",
       "eventive_title": "The Ark",
@@ -291,18 +291,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1162053",
-      "nrw_title": "Out of Order",
-      "eventive_title": "Out of Order",
-      "festival": "CinemaDanube",
-      "link": "https://watch.eventive.org/cinemadanube/play/68cc2cb0fbf0fc260b1fef0c",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
       "movie_id": "1226046",
       "nrw_title": "Inheritance",
       "eventive_title": "Inheritance",
@@ -325,6 +313,18 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
+    },
+    {
+      "movie_id": "1162053",
+      "nrw_title": "Out of Order",
+      "eventive_title": "Out of Order",
+      "festival": "CinemaDanube",
+      "link": "https://watch.eventive.org/cinemadanube/play/68cc2cb0fbf0fc260b1fef0c",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
     },
     {
       "movie_id": "1604573",
@@ -672,7 +672,7 @@
       "end": "2026-09-14T03:45:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1654805",
@@ -684,7 +684,7 @@
       "end": "2026-09-14T03:45:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1593761",
@@ -708,7 +708,7 @@
       "end": "2026-09-14T03:45:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1589370",
@@ -720,7 +720,7 @@
       "end": "2026-09-14T03:45:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1307748",
@@ -881,30 +881,6 @@
   ],
   "wall_matches": [
     {
-      "movie_id": "1258157",
-      "nrw_title": "Lakeview",
-      "eventive_title": "Lakeview (2024)",
-      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
-      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a945b1cfaef70f304e86d",
-      "start": "2026-06-19T23:00:00.000Z",
-      "end": "2026-09-24T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1000092",
-      "nrw_title": "Nowhere",
-      "eventive_title": "Nowhere (2021)",
-      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
-      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a962917178824a3beb905",
-      "start": "2026-06-19T23:00:00.000Z",
-      "end": "2026-09-24T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1568068",
       "nrw_title": "Let Them Be Seen",
       "eventive_title": "Let Them Be Seen",
@@ -1013,6 +989,30 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1258157",
+      "nrw_title": "Lakeview",
+      "eventive_title": "Lakeview (2024)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a945b1cfaef70f304e86d",
+      "start": "2026-06-19T23:00:00.000Z",
+      "end": "2026-09-24T03:59:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1000092",
+      "nrw_title": "Nowhere",
+      "eventive_title": "Nowhere (2021)",
+      "festival": "Gilbert Baker Film Festival-GBFF2026 \nStreaming Worldwide on Eventive\n\n\nCelebrating PRIDE Worldwide \nJune 12, 2026  thru September 23, 2026",
+      "link": "https://watch.eventive.org/gilbertbakerfilmfestivalgbff2026/play/6a1a962917178824a3beb905",
+      "start": "2026-06-19T23:00:00.000Z",
+      "end": "2026-09-24T03:59:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1561978",
       "nrw_title": "The Ark",
       "eventive_title": "The Ark",
@@ -1105,6 +1105,54 @@
       "start": "",
       "end": "",
       "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1654805",
+      "nrw_title": "The Call",
+      "eventive_title": "The Call",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653de7b82f405642f260c6",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1556927",
+      "nrw_title": "The Call",
+      "eventive_title": "The Call",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653de7b82f405642f260c6",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1428960",
+      "nrw_title": "Masterpiece",
+      "eventive_title": "Masterpiece",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a668d3da80b0b402f79e241",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1589370",
+      "nrw_title": "The Ride",
+      "eventive_title": "The Ride",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653f29627037773e708a75",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
     },
