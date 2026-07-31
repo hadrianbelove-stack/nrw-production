@@ -1,57 +1,82 @@
 {
-  "timestamp": "2026-07-30T10:39:39.747979",
-  "movies_requested": 21,
-  "movies_enriched": 12,
-  "movies_deferred": 9,
+  "timestamp": "2026-07-31T10:50:59.136126",
+  "movies_requested": 22,
+  "movies_enriched": 11,
+  "movies_deferred": 11,
   "deferred_details": [
+    {
+      "title": "Maddie's Secret",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "",
+      "discovered_at": "2026-07-07T11:02:51.023737",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-07-31",
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ],
+      "jw_platforms": [
+        "Barnes & Noble"
+      ]
+    },
+    {
+      "title": "Nightborn",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-07-31",
+      "discovered_at": "2026-07-31T10:32:38.829551",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "first_reverted_at": "2026-07-31",
+      "tmdb_platforms": []
+    },
     {
       "title": "Rumours Of Madam Roach",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-26",
-      "discovered_at": "2026-07-30T10:23:20.686573",
+      "discovered_at": "2026-07-31T10:32:41.177034",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
-      "first_reverted_at": "2026-07-30",
+      "revert_count": 7,
+      "first_reverted_at": "2026-07-31",
       "tmdb_platforms": []
     },
     {
       "title": "Hypomania",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-24",
-      "discovered_at": "2026-07-30T10:23:21.327544",
+      "discovered_at": "2026-07-31T10:32:41.461623",
       "discovery_source": "tmdb_type4",
-      "revert_count": 17,
-      "first_reverted_at": "2026-07-30",
+      "revert_count": 18,
+      "first_reverted_at": "2026-07-31",
       "tmdb_platforms": []
     },
     {
       "title": "Last Chance To Save",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-18",
-      "discovered_at": "2026-07-30T10:23:21.528284",
+      "discovered_at": "2026-07-31T10:32:41.740388",
       "discovery_source": "tmdb_type4",
-      "revert_count": 14,
-      "first_reverted_at": "2026-07-30",
+      "revert_count": 15,
+      "first_reverted_at": "2026-07-31",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-07-30T10:23:21.722395",
+      "discovered_at": "2026-07-31T10:32:42.089219",
       "discovery_source": "tmdb_type4",
-      "revert_count": 14,
-      "first_reverted_at": "2026-07-30",
+      "revert_count": 15,
+      "first_reverted_at": "2026-07-31",
       "tmdb_platforms": []
     },
     {
       "title": "Lockbox",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-03",
-      "discovered_at": "2026-07-30T10:23:21.911106",
+      "discovered_at": "2026-07-31T10:32:42.367602",
       "discovery_source": "tmdb_type4",
-      "revert_count": 3,
-      "first_reverted_at": "2026-07-30",
+      "revert_count": 4,
+      "first_reverted_at": "2026-07-31",
       "tmdb_platforms": [
         "Fandango At Home"
       ]
@@ -60,44 +85,44 @@
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-07-30T10:23:22.163544",
+      "discovered_at": "2026-07-31T10:32:42.643715",
       "discovery_source": "tmdb_type4",
-      "revert_count": 31,
-      "first_reverted_at": "2026-07-30",
+      "revert_count": 32,
+      "first_reverted_at": "2026-07-31",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-07-30T10:23:22.364167",
+      "discovered_at": "2026-07-31T10:32:42.927504",
       "discovery_source": "tmdb_type4",
-      "revert_count": 52,
-      "first_reverted_at": "2026-07-30",
+      "revert_count": 53,
+      "first_reverted_at": "2026-07-31",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-07-30T10:23:22.553537",
+      "discovered_at": "2026-07-31T10:32:43.264634",
       "discovery_source": "tmdb_type4",
-      "revert_count": 43,
-      "first_reverted_at": "2026-07-30",
+      "revert_count": 44,
+      "first_reverted_at": "2026-07-31",
       "tmdb_platforms": []
     },
     {
-      "title": "Rainbow on Mars",
+      "title": "Gentle Monster",
       "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-08-14",
-      "discovered_at": "2026-07-30T10:23:32.641125",
+      "digital_date": "2026-11-18",
+      "discovered_at": "2026-07-31T10:32:52.778257",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-07-30",
+      "first_reverted_at": "2026-07-31",
       "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 958.17,
+  "enrichment_duration_seconds": 1082.95,
   "error_details": [],
   "total_errors": 0
 }
