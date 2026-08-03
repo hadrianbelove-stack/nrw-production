@@ -1,57 +1,57 @@
 {
-  "timestamp": "2026-08-02T10:12:30.222998",
-  "movies_requested": 18,
-  "movies_enriched": 10,
-  "movies_deferred": 8,
+  "timestamp": "2026-08-03T11:40:48.158175",
+  "movies_requested": 23,
+  "movies_enriched": 14,
+  "movies_deferred": 9,
   "deferred_details": [
     {
       "title": "Rumours Of Madam Roach",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-26",
-      "discovered_at": "2026-08-02T09:58:45.161140",
+      "discovered_at": "2026-08-03T11:20:57.698259",
       "discovery_source": "tmdb_type4",
-      "revert_count": 9,
-      "first_reverted_at": "2026-08-02",
+      "revert_count": 10,
+      "first_reverted_at": "2026-08-03",
       "tmdb_platforms": []
     },
     {
       "title": "Hypomania",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-24",
-      "discovered_at": "2026-08-02T09:58:45.412396",
+      "discovered_at": "2026-08-03T11:20:57.984260",
       "discovery_source": "tmdb_type4",
-      "revert_count": 20,
-      "first_reverted_at": "2026-08-02",
+      "revert_count": 21,
+      "first_reverted_at": "2026-08-03",
       "tmdb_platforms": []
     },
     {
       "title": "Last Chance To Save",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-18",
-      "discovered_at": "2026-08-02T09:58:45.740546",
+      "discovered_at": "2026-08-03T11:20:58.330722",
       "discovery_source": "tmdb_type4",
-      "revert_count": 17,
-      "first_reverted_at": "2026-08-02",
+      "revert_count": 18,
+      "first_reverted_at": "2026-08-03",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-08-02T09:58:46.005449",
+      "discovered_at": "2026-08-03T11:20:58.717066",
       "discovery_source": "tmdb_type4",
-      "revert_count": 17,
-      "first_reverted_at": "2026-08-02",
+      "revert_count": 18,
+      "first_reverted_at": "2026-08-03",
       "tmdb_platforms": []
     },
     {
       "title": "Lockbox",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-03",
-      "discovered_at": "2026-08-02T09:58:46.259644",
+      "discovered_at": "2026-08-03T11:20:59.077467",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
-      "first_reverted_at": "2026-08-02",
+      "revert_count": 7,
+      "first_reverted_at": "2026-08-03",
       "tmdb_platforms": [
         "Fandango At Home"
       ]
@@ -60,34 +60,47 @@
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-08-02T09:58:46.588941",
+      "discovered_at": "2026-08-03T11:20:59.340067",
       "discovery_source": "tmdb_type4",
-      "revert_count": 34,
-      "first_reverted_at": "2026-08-02",
+      "revert_count": 35,
+      "first_reverted_at": "2026-08-03",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-08-02T09:58:46.864199",
+      "discovered_at": "2026-08-03T11:20:59.682218",
       "discovery_source": "tmdb_type4",
-      "revert_count": 55,
-      "first_reverted_at": "2026-08-02",
+      "revert_count": 56,
+      "first_reverted_at": "2026-08-03",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-08-02T09:58:47.124976",
+      "discovered_at": "2026-08-03T11:21:00.000654",
       "discovery_source": "tmdb_type4",
-      "revert_count": 46,
-      "first_reverted_at": "2026-08-02",
+      "revert_count": 47,
+      "first_reverted_at": "2026-08-03",
       "tmdb_platforms": []
+    },
+    {
+      "title": "Our Hero, Balthazar",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-08-11",
+      "discovered_at": "2026-07-30T10:23:28.804688",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-08-03",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Fandango At Home"
+      ]
     }
   ],
-  "enrichment_duration_seconds": 807.78,
+  "enrichment_duration_seconds": 1171.14,
   "error_details": [],
   "total_errors": 0
 }
