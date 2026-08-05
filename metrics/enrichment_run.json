@@ -1,103 +1,122 @@
 {
-  "timestamp": "2026-08-04T10:56:39.403199",
-  "movies_requested": 17,
-  "movies_enriched": 8,
-  "movies_deferred": 9,
+  "timestamp": "2026-08-05T11:11:49.017575",
+  "movies_requested": 24,
+  "movies_enriched": 14,
+  "movies_deferred": 10,
   "deferred_details": [
     {
       "title": "Evil Dead Burn",
-      "reason": "jw_revert:justwatch_no_valid_offers",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-08-04",
-      "discovered_at": "2026-07-29T10:36:18.444034",
+      "discovered_at": "2026-08-05T10:35:14.582744",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-08-04",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "A Very Straight Neck",
-      "reason": "under_60min",
-      "digital_date": "2026-08-03",
-      "discovered_at": "2026-08-04T10:37:22.673378",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 0,
-      "first_reverted_at": "",
-      "tmdb_platforms": [
-        "Criterion Channel"
+      "first_reverted_at": "2026-08-05",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Amazon Video"
       ]
     },
     {
       "title": "Rumours Of Madam Roach",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-26",
-      "discovered_at": "2026-08-04T10:37:25.601897",
+      "discovered_at": "2026-08-05T10:35:20.869616",
       "discovery_source": "tmdb_type4",
-      "revert_count": 11,
-      "first_reverted_at": "2026-08-04",
+      "revert_count": 12,
+      "first_reverted_at": "2026-08-05",
       "tmdb_platforms": []
     },
     {
       "title": "Hypomania",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-24",
-      "discovered_at": "2026-08-04T10:37:25.930414",
+      "discovered_at": "2026-08-05T10:35:21.233852",
       "discovery_source": "tmdb_type4",
-      "revert_count": 22,
-      "first_reverted_at": "2026-08-04",
+      "revert_count": 23,
+      "first_reverted_at": "2026-08-05",
       "tmdb_platforms": []
     },
     {
       "title": "Last Chance To Save",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-18",
-      "discovered_at": "2026-08-04T10:37:26.185944",
+      "discovered_at": "2026-08-05T10:35:21.507057",
       "discovery_source": "tmdb_type4",
-      "revert_count": 19,
-      "first_reverted_at": "2026-08-04",
+      "revert_count": 20,
+      "first_reverted_at": "2026-08-05",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-08-04T10:37:26.457272",
+      "discovered_at": "2026-08-05T10:35:21.775300",
       "discovery_source": "tmdb_type4",
-      "revert_count": 19,
-      "first_reverted_at": "2026-08-04",
+      "revert_count": 20,
+      "first_reverted_at": "2026-08-05",
       "tmdb_platforms": []
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-08-04T10:37:27.073757",
+      "discovered_at": "2026-08-05T10:35:22.125701",
       "discovery_source": "tmdb_type4",
-      "revert_count": 36,
-      "first_reverted_at": "2026-08-04",
+      "revert_count": 37,
+      "first_reverted_at": "2026-08-05",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-08-04T10:37:27.333014",
+      "discovered_at": "2026-08-05T10:35:22.398961",
       "discovery_source": "tmdb_type4",
-      "revert_count": 57,
-      "first_reverted_at": "2026-08-04",
+      "revert_count": 58,
+      "first_reverted_at": "2026-08-05",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-08-04T10:37:27.592913",
+      "discovered_at": "2026-08-05T10:35:22.668018",
       "discovery_source": "tmdb_type4",
-      "revert_count": 48,
-      "first_reverted_at": "2026-08-04",
+      "revert_count": 49,
+      "first_reverted_at": "2026-08-05",
       "tmdb_platforms": []
+    },
+    {
+      "title": "Our Hero, Balthazar",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-08-11",
+      "discovered_at": "2026-08-05T10:35:29.240847",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-08-05",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Fandango At Home"
+      ]
+    },
+    {
+      "title": "Spider-Man: Brand New Day",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "",
+      "discovered_at": "2026-08-05T10:35:39.553266",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 1,
+      "first_reverted_at": "2026-08-05",
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ],
+      "jw_platforms": [
+        "Fandango At Home"
+      ]
     }
   ],
-  "enrichment_duration_seconds": 1145.31,
+  "enrichment_duration_seconds": 2165.87,
   "error_details": [],
   "total_errors": 0
 }
