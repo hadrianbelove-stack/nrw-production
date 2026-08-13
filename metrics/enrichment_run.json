@@ -1,191 +1,124 @@
 {
-  "timestamp": "2026-08-12T09:24:09.192510",
-  "movies_requested": 25,
-  "movies_enriched": 10,
-  "movies_deferred": 15,
+  "timestamp": "2026-08-13T09:35:27.999076",
+  "movies_requested": 28,
+  "movies_enriched": 18,
+  "movies_deferred": 10,
   "deferred_details": [
+    {
+      "title": "A Child of My Own",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-08-13",
+      "discovered_at": "2026-05-02T16:53:47.447617",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-08-13",
+      "tmdb_platforms": []
+    },
     {
       "title": "Horsegirls",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-08-12",
-      "discovered_at": "2026-08-10T09:22:29.169377",
+      "discovered_at": "2026-08-13T09:15:13.350812",
       "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-12",
+      "revert_count": 2,
+      "first_reverted_at": "2026-08-13",
       "tmdb_platforms": []
-    },
-    {
-      "title": "The Invite",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-08-11",
-      "discovered_at": "2026-08-12T09:12:27.925666",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-12",
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ],
-      "jw_platforms": [
-        "Amazon Video",
-        "Apple TV Store",
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "Jackass: Best and Last",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-08-11",
-      "discovered_at": "2026-08-12T09:12:28.400006",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-12",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "JustWatch TV",
-        "Amazon Video",
-        "Apple TV Store"
-      ]
-    },
-    {
-      "title": "Minions & Monsters",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-08-11",
-      "discovered_at": "2026-08-12T09:12:28.714826",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-12",
-      "tmdb_platforms": [],
-      "jw_platforms": [
-        "Amazon Video",
-        "Apple TV Store"
-      ]
     },
     {
       "title": "Side Effects May Include...",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-08-09",
-      "discovered_at": "2026-08-12T09:12:30.310119",
+      "discovered_at": "2026-08-13T09:15:16.058629",
       "discovery_source": "tmdb_type4",
-      "revert_count": 5,
-      "first_reverted_at": "2026-08-12",
+      "revert_count": 6,
+      "first_reverted_at": "2026-08-13",
       "tmdb_platforms": []
     },
     {
       "title": "Awake",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-08-08",
-      "discovered_at": "2026-08-12T09:12:30.636988",
+      "discovered_at": "2026-08-13T09:15:16.391363",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
-      "first_reverted_at": "2026-08-12",
+      "revert_count": 7,
+      "first_reverted_at": "2026-08-13",
       "tmdb_platforms": []
     },
     {
       "title": "Rumours Of Madam Roach",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-26",
-      "discovered_at": "2026-08-12T09:12:31.372832",
+      "discovered_at": "2026-08-13T09:15:16.986453",
       "discovery_source": "tmdb_type4",
-      "revert_count": 19,
-      "first_reverted_at": "2026-08-12",
+      "revert_count": 20,
+      "first_reverted_at": "2026-08-13",
       "tmdb_platforms": []
     },
     {
       "title": "Last Chance To Save",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-18",
-      "discovered_at": "2026-08-12T09:12:31.632978",
+      "discovered_at": "2026-08-13T09:15:17.187881",
       "discovery_source": "tmdb_type4",
-      "revert_count": 27,
-      "first_reverted_at": "2026-08-12",
+      "revert_count": 28,
+      "first_reverted_at": "2026-08-13",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-08-12T09:12:31.857806",
+      "discovered_at": "2026-08-13T09:15:17.401220",
       "discovery_source": "tmdb_type4",
-      "revert_count": 27,
-      "first_reverted_at": "2026-08-12",
+      "revert_count": 28,
+      "first_reverted_at": "2026-08-13",
       "tmdb_platforms": []
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-08-12T09:12:32.316229",
+      "discovered_at": "2026-08-13T09:15:17.819644",
       "discovery_source": "tmdb_type4",
-      "revert_count": 44,
-      "first_reverted_at": "2026-08-12",
+      "revert_count": 45,
+      "first_reverted_at": "2026-08-13",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-08-12T09:12:32.762023",
+      "discovered_at": "2026-08-13T09:15:18.042851",
       "discovery_source": "tmdb_type4",
-      "revert_count": 65,
-      "first_reverted_at": "2026-08-12",
+      "revert_count": 66,
+      "first_reverted_at": "2026-08-13",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-08-12T09:12:33.029734",
+      "discovered_at": "2026-08-13T09:15:18.260148",
       "discovery_source": "tmdb_type4",
-      "revert_count": 56,
-      "first_reverted_at": "2026-08-12",
+      "revert_count": 57,
+      "first_reverted_at": "2026-08-13",
       "tmdb_platforms": []
     },
     {
-      "title": "Remake",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "title": "Ip Man: Kung Fu Legend",
+      "reason": "zero_watch_links",
       "digital_date": "",
-      "discovered_at": "2026-08-12T09:12:33.688289",
+      "discovered_at": "2026-07-16T11:15:38.226852",
       "discovery_source": "provider_availability_check",
       "revert_count": 1,
-      "first_reverted_at": "2026-08-12",
+      "first_reverted_at": "2026-08-13",
       "tmdb_platforms": [
-        "Fandango At Home"
-      ],
-      "jw_platforms": [
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "Union County",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "",
-      "discovered_at": "2026-08-12T09:12:36.280899",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-12",
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ],
-      "jw_platforms": [
-        "Fandango At Home"
-      ]
-    },
-    {
-      "title": "Gail Daughtry and the Celebrity Sex Pass",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-08-11",
-      "discovered_at": "2026-08-12T09:12:36.742484",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-12",
-      "tmdb_platforms": [],
-      "jw_platforms": [
         "Amazon Video",
-        "Apple TV Store"
+        "Plex"
       ]
     }
   ],
-  "enrichment_duration_seconds": 684.36,
+  "enrichment_duration_seconds": 1195.06,
   "error_details": [],
   "total_errors": 0
 }
