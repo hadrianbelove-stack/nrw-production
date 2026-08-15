@@ -1,9 +1,119 @@
 {
-  "timestamp": "2026-08-14T09:42:34.342324",
-  "movies_requested": 36,
-  "movies_enriched": 25,
-  "movies_deferred": 11,
+  "timestamp": "2026-08-15T08:34:19.495418",
+  "movies_requested": 28,
+  "movies_enriched": 16,
+  "movies_deferred": 12,
   "deferred_details": [
+    {
+      "title": "Rainbow on Mars",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-08-14",
+      "discovered_at": "2026-08-15T08:17:27.076492",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 3,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Horsegirls",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-08-12",
+      "discovered_at": "2026-08-15T08:17:34.324981",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 4,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Side Effects May Include...",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-08-09",
+      "discovered_at": "2026-08-15T08:17:34.699969",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 8,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Awake",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-08-08",
+      "discovered_at": "2026-08-15T08:17:34.902667",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 9,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Rumours Of Madam Roach",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-07-26",
+      "discovered_at": "2026-08-15T08:17:35.102502",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 22,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Last Chance To Save",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-07-18",
+      "discovered_at": "2026-08-15T08:17:35.391438",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 30,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Chunks",
+      "reason": "jw_revert:justwatch_no_valid_offers",
+      "digital_date": "2026-07-17",
+      "discovered_at": "2026-08-15T08:17:35.601693",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 30,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Forelock",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-07-01",
+      "discovered_at": "2026-08-15T08:17:35.805883",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 47,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Last Light",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-21",
+      "discovered_at": "2026-08-15T08:17:36.010401",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 68,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Love & Other Crimes",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-06-19",
+      "discovered_at": "2026-08-15T08:17:36.300595",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 59,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Beyond the Clouds",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-10-25",
+      "discovered_at": "2026-08-15T08:17:38.089075",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-08-15",
+      "tmdb_platforms": []
+    },
     {
       "title": "Them Bones",
       "reason": "tmdb_fetch_failed",
@@ -13,109 +123,9 @@
       "revert_count": 0,
       "first_reverted_at": "",
       "tmdb_platforms": []
-    },
-    {
-      "title": "Rainbow on Mars",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-08-14",
-      "discovered_at": "2026-08-14T09:12:53.079026",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 2,
-      "first_reverted_at": "2026-08-14",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Horsegirls",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-08-12",
-      "discovered_at": "2026-08-14T09:12:58.841229",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 3,
-      "first_reverted_at": "2026-08-14",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Side Effects May Include...",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-08-09",
-      "discovered_at": "2026-08-14T09:12:59.893847",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 7,
-      "first_reverted_at": "2026-08-14",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Awake",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-08-08",
-      "discovered_at": "2026-08-14T09:13:00.205937",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 8,
-      "first_reverted_at": "2026-08-14",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Rumours Of Madam Roach",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-26",
-      "discovered_at": "2026-08-14T09:13:01.250864",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 21,
-      "first_reverted_at": "2026-08-14",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Last Chance To Save",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-18",
-      "discovered_at": "2026-08-14T09:13:01.597565",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 29,
-      "first_reverted_at": "2026-08-14",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Chunks",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-07-17",
-      "discovered_at": "2026-08-14T09:13:02.032961",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 29,
-      "first_reverted_at": "2026-08-14",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Forelock",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-07-01",
-      "discovered_at": "2026-08-14T09:13:02.370030",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 46,
-      "first_reverted_at": "2026-08-14",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "The Last Light",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-21",
-      "discovered_at": "2026-08-14T09:13:02.659001",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 67,
-      "first_reverted_at": "2026-08-14",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Love & Other Crimes",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-06-19",
-      "discovered_at": "2026-08-14T09:13:03.008511",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 58,
-      "first_reverted_at": "2026-08-14",
-      "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 1743.67,
+  "enrichment_duration_seconds": 989.69,
   "error_details": [],
   "total_errors": 0
 }
