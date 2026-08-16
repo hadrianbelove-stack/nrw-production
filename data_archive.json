@@ -1,6 +1,6 @@
 {
-  "archived_at": "2026-08-15T08:37:29.710934",
-  "count": 1292,
+  "archived_at": "2026-08-16T08:41:56.060389",
+  "count": 1295,
   "movies": [
     {
       "id": "896096",
@@ -113671,6 +113671,258 @@
         "is_virtual_screening": false,
         "is_series": false,
         "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "keywords": [],
+      "_reissue": false
+    },
+    {
+      "id": "1481699",
+      "title": "Guerrilla Filmmaker",
+      "digital_date": "2026-08-29",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A documentary about ultra-low budget guerrilla filmmaking, deep in the heart of Texas.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 117,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {},
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": null
+      },
+      "watch_links": {},
+      "pre_order_links": [],
+      "_enrichment_status": "reverted",
+      "_discovered_at": "2026-08-16T08:20:46.365297",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/zBnFPc4DsS4nnAla95H9MudulPF.jpg",
+      "studio": "Unknown",
+      "budget": 20000,
+      "country": "US",
+      "original_language": "en",
+      "original_title": "Guerrilla Filmmaker",
+      "display_title": "Guerrilla Filmmaker",
+      "crew": {
+        "director": "Les Branson",
+        "cast": [
+          "Dan Burkarth",
+          "Chris Adeler",
+          "Les Branson",
+          "Samuel H. Roden",
+          "Mary McGrew Ponto"
+        ]
+      },
+      "_discovery_source": "tmdb_type4",
+      "_is_preorder": true,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-08-16",
+      "_jw_reverted": true,
+      "_jw_revert_reason": "justwatch_no_match",
+      "status": "tracking",
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1218412",
+      "title": "Promised Sky",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Marie, Naney, and Jolie live together in Tunis, sheltering Kenza, a shipwreck survivor. As this unorthodox family forms, crises make each woman reconsider her place.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 92,
+      "year": 2026,
+      "rt_score": "83%",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Promised_Sky",
+        "trailer": "https://www.youtube.com/watch?v=2ZPSs1D6nHA",
+        "rt": "https://www.rottentomatoes.com/m/promised_sky",
+        "justwatch": "https://www.justwatch.com/us/movie/promised-sky",
+        "cast_wiki": {
+          "Aïssa Maïga": "https://en.wikipedia.org/wiki/A%C3%AFssa_Ma%C3%AFga"
+        },
+        "metacritic": "https://www.metacritic.com/movie/promised-sky/",
+        "imdb": "https://www.imdb.com/title/tt33311007/",
+        "letterboxd": "https://letterboxd.com/film/promised-sky"
+      },
+      "watch_links": {},
+      "pre_order_links": [
+        {
+          "service": "Fandango At Home",
+          "link": "https://athome.fandango.com/content/browse/details/Promised-Sky/4968067",
+          "buy_price": "$12.99",
+          "price": "$12.99"
+        }
+      ],
+      "_enrichment_status": "reverted",
+      "_discovered_at": "2026-06-19T12:49:36.764500",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/gJCOjtz4rCxhrPfHH26lOb89reX.jpg",
+      "studio": "Maneki Films",
+      "budget": 6800000,
+      "country": "QA",
+      "original_language": "fr",
+      "original_title": "Promis le ciel",
+      "display_title": "Promised Sky (Promis le ciel)",
+      "crew": {
+        "director": "Erige Sehiri",
+        "cast": [
+          "Aïssa Maïga",
+          "Laëtitia Ky",
+          "Déborah Naney",
+          "Mohamed Grayaâ",
+          "Foued Zaazaa"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 2,
+      "_last_enrichment_attempt": "2026-08-16",
+      "_buyonly_preorder": true,
+      "imdb_rating": "6.3",
+      "letterboxd_score": "3.5",
+      "keywords": [],
+      "_trailer_source": "gemini_playwright",
+      "metacritic_score": "0",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_slop_reason": "score:1(mid_imdb)",
+      "status": "tracking",
+      "reissue_label": null,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "is_slop": false,
+      "_slop_confidence": "weak",
+      "_reissue": false,
+      "_wiki_language_count": 5,
+      "_imdb_votes": 203,
+      "_jw_revert_reason": "zero_watch_links"
+    },
+    {
+      "id": "1585266",
+      "title": "Clairtone",
+      "digital_date": "2026-05-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Canadian electronics company Clairtone finds a successful niche producing high-end modernist stereo systems before succumbing to hard economic realities.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 73,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=vPv3WScOavM",
+        "rt": "https://www.rottentomatoes.com/m/clairtone",
+        "imdb": "https://www.imdb.com/title/tt36589991/",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1585266.mp4",
+        "letterboxd": "https://letterboxd.com/film/clairtone",
+        "director_wiki": "https://en.wikipedia.org/wiki/Ron_Mann"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/clairtone/umc.cmc.1nvqkh3bt2m9phm78kxa6i6l1?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1861583050",
+            "rent_price": "$5.99",
+            "buy_price": "$5.99",
+            "price": "$5.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-17T13:02:56.381333",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/1oHTGQGzPOdoGOMduCpCvo1K901.jpg",
+      "studio": "Unknown",
+      "budget": 0,
+      "country": "Canada",
+      "original_language": "en",
+      "original_title": "Clairtone",
+      "crew": {
+        "director": "Ron Mann",
+        "cast": [
+          "Nina Munk",
+          "Mairéad Filgate",
+          "Nicholas Munk"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "display_title": "Clairtone",
+      "featured": false,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-18",
+      "imdb_rating": "6.3",
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score"
+      ],
+      "reissue_label": null,
+      "is_slop": false,
+      "_slop_reason": "manual_override",
+      "_slop_confidence": "strong",
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
         "auto_categorized": true,
         "manual_override": null
       },
