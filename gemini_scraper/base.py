@@ -77,6 +77,10 @@ class GeminiFinderBase:
         self.rate_limit = scraper_config.get('rate_limit', 1.0)
         self.cache_ttl_days = scraper_config.get('cache_ttl_days', 90)
         self.max_retries = scraper_config.get('max_retries', 3)
+        # Master kill switch: gemini_scraper.enabled=false makes every finder skip
+        # Gemini and fall through to its free/Playwright method (all finders gate
+        # on _init_gemini). Claude backends override _init_gemini, so unaffected.
+        self._gemini_enabled = scraper_config.get('enabled', True)
         self.last_request_time = 0
 
         # Base stats - subclasses extend via _get_extra_stats()
@@ -196,6 +200,11 @@ class GeminiFinderBase:
             return self.client is not None
 
         self._initialized = True
+
+        if not self._gemini_enabled:
+            logger.info(f"Gemini disabled by config (gemini_scraper.enabled=false) — "
+                        f"{self._finder_name} using free/Playwright fallbacks only")
+            return False
 
         api_key = _get_gemini_api_key()
         if not api_key:

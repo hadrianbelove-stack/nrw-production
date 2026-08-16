@@ -556,7 +556,7 @@ api:
 # Gemini-based scraper for YouTube trailers, RT scores, Wikipedia (primary), with Playwright fallback
 # Uses Google Search grounding for accurate movie data finding
 gemini_scraper:
-  enabled: true                    # Master kill switch - set false to use Playwright-only for all
+  enabled: false                   # Master kill switch — OFF (Aug 2026): lookups use free/Playwright fallbacks; capsules+quotes run on Claude-on-Max. Keeps Gemini billing disableable. Flip true to restore Gemini lookups.
   youtube_enabled: true            # YouTube-specific toggle - set false for Playwright-only trailers
   rt_enabled: true                 # RT-specific toggle - set false for Playwright-only RT
   rt_search_enabled: false         # Gemini URL search for RT (disabled — 0% success on indie films, Playwright-primary now)
