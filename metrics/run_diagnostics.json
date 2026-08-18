@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-08-17T08:49:43.614483",
-  "duration_seconds": 2421.032159,
+  "timestamp": "2026-08-18T08:43:01.451355",
+  "duration_seconds": 2289.980801,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,72 +8,72 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 6.147748,
+      "duration_seconds": 9.676213,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-08-15 to 2026-08-17 (incremental mode, 7 intaked)\n\u2705 Movie intake complete: 7 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-07-18 to 2026-08-17\n   \ud83d\udccb Pure Average (6 eps)\n\n\ud83d\udcca Miniseries intake"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-08-16 to 2026-08-18 (incremental mode, 18 intaked)\n\u2705 Movie intake complete: 18 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-07-19 to 2026-08-18\n   \ud83d\udccb \u5e7d\u5c71\u964d\u5996\u4f20 (6 eps)\n   \ud83d\udccb General Anesthesia ("
     },
     {
       "name": "Research reissue candidates (Pass D)",
       "success": true,
-      "duration_seconds": 0.107137,
+      "duration_seconds": 0.121989,
       "error": null,
       "output_preview": "Reissue research: nothing to do (all pending candidates already researched).\n"
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 374.233726,
+      "duration_seconds": 380.22689,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 167 festival slugs\nScanning 167 festivals for catalogs...\n  Progress: 75/167 slugs | 28 scanned | 815 films indexed\n  Progress: 100/167 slugs | 53 scanned | 1193 films indexed\n  Progress: 125/167 slugs | 78 scanned | 1512 films indexed\n  Progress: 150/167 slugs | 103 scanned | 2185 films indexed\n  Done: 120 festivals, 115 with films, 47 failed, 2335 total films\n  Active: 2335 | Expired: 0 | Unique: 161"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 167 festival slugs\nScanning 167 festivals for catalogs...\n  Progress: 75/167 slugs | 28 scanned | 1001 films indexed\n  Progress: 100/167 slugs | 53 scanned | 1366 films indexed\n  Progress: 125/167 slugs | 78 scanned | 1711 films indexed\n  Progress: 150/167 slugs | 103 scanned | 2168 films indexed\n  Done: 120 festivals, 115 with films, 47 failed, 2335 total films\n  Active: 2335 | Expired: 0 | Unique: 16"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 1004.176868,
+      "duration_seconds": 1119.13782,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 19591 total movies\n\ud83d\udd0d Raw tracking filter: 15224 movies\n\ud83d\udd0d Assigned tracking_movies list: 15224\n\ud83d\udd0d Found 15224 movies in tracking status\n  Priority queue (last 180 days): 699 movies\n  Older movies: 14525 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 15224 movies for digital availability...\n\n  \u26a1 Prefetching discovery data for 15224 movies (8 workers)...\n  \u26a1 Prefetch: 1000/15224 movies"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 19612 total movies\n\ud83d\udd0d Raw tracking filter: 15240 movies\n\ud83d\udd0d Assigned tracking_movies list: 15240\n\ud83d\udd0d Found 15240 movies in tracking status\n  Priority queue (last 180 days): 690 movies\n  Older movies: 14550 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 15240 movies for digital availability...\n\n  \u26a1 Prefetching discovery data for 15240 movies (8 workers)...\n  \u26a1 Prefetch: 1000/15240 movies"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 852.161836,
+      "duration_seconds": 519.405964,
       "error": null,
       "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 16 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Love & Other Crimes: Amazon not found\n      \u00b7 Love & Other Crimes: Fandango no"
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.799851,
+      "duration_seconds": 0.983808,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 1371 trailers and 182 subtitle files in B2 bucket\nSaved data.json: 0 stamped, 0 stale cleaned, 2 subs stamped\n\nStamp results:\n  Stamped:          0\n  Already had URL:  676\n  Stale cleaned:    0\n  Not in B2:        88\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 1371 trailers and 182 subtitle files in B2 bucket\nSaved data.json: 1 stamped, 0 stale cleaned, 2 subs stamped\n\nStamp results:\n  Stamped:          1\n  Already had URL:  672\n  Stale cleaned:    0\n  Not in B2:        93\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 170.40151,
+      "duration_seconds": 251.691603,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 262 of 764 wall movies (last 30 days)\n  \ud83c\udfac Chasing Home \u2014 Director Wikipedia added (Christopher Mills)\n  \ud83c\udfac Promised Sky \u2014 Director Wikipedia added (Erige Sehiri)\n  + The Last Sunday of High School \u2014 new services added\n  + Soulm8te \u2014 new services added\n  + Child's Play 2 \u2014 new services added\n  + Child's Play 3 \u2014 new services added\n  + Piggy Duster \u2014 new services added\n\n  \ud83d\udcca Gap fill results (170s, 262 movies):\n     Watch links updated:"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 262 of 766 wall movies (last 30 days)\n  \ud83c\udfac Cradle of Coaches \u2014 Director Wikipedia added (Scott Thompson)\n  + Chasing Home \u2014 new services added\n  + The Last Sunday of High School \u2014 new services added\n  + Soulm8te \u2014 new services added\n  + Seed of Chucky \u2014 new services added\n  + Piggy Duster \u2014 new services added\n  + Leviticus \u2014 new services added\n  + Unidentified \u2014 new services added\n  + Scary Movie \u2014 new services added\n  + The Mandalor"
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 0.927853,
+      "duration_seconds": 0.780163,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 6 movies missing trailers:\n  \u2022 Chasing Home\n  \u2022 No One Died: The Wing Bowl Story\n  \u2022 You Know What You Are\n  \u2022 Game Day Murders\n  \u2022 Promised Sky\n  \u2022 Hollow Girls\n  \u2717 Error re-enriching trailer for Chasing Home: YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'\n  \u2717 Error re-enriching trailer for No One Died: The Wing Bowl Story: YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'\n  \u2717 Er"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 6 movies missing trailers:\n  \u2022 Yellow Eyes\n  \u2022 49 Miles More\n  \u2022 Looking Up\n  \u2022 My Daughter's Father\n  \u2022 Horsegirls\n  \u2022 Cradle of Coaches\n  \u2717 Error re-enriching trailer for Yellow Eyes: YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'\n  \u2717 Error re-enriching trailer for 49 Miles More: YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'\n  \u2717 Error re-enriching trailer for Looking Up: You"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 10.299654,
+      "duration_seconds": 7.176513,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 84 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 26 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 84 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 18 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.563126,
+      "duration_seconds": 0.569337,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 4 movies (>90 days old) \u2192 data_archive.json\n   data.json: 760 movies | archive: 1298 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 15 movies (>90 days old) \u2192 data_archive.json\n   data.json: 751 movies | archive: 1312 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -84,28 +84,28 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 19591,
-    "tracking": 15219,
-    "available": 3980,
-    "data_movies": 760,
-    "movies_with_links": 738,
-    "movies_with_rt": 513,
-    "movies_with_wikipedia": 361,
-    "movies_with_trailers": 696
+    "total": 19612,
+    "tracking": 15232,
+    "available": 3988,
+    "data_movies": 751,
+    "movies_with_links": 729,
+    "movies_with_rt": 505,
+    "movies_with_wikipedia": 354,
+    "movies_with_trailers": 683
   },
   "enrichment_metrics": {
-    "timestamp": "2026-08-17T08:46:39.110422",
-    "movies_requested": 19,
-    "movies_enriched": 8,
-    "movies_deferred": 11,
+    "timestamp": "2026-08-18T08:38:39.678918",
+    "movies_requested": 24,
+    "movies_enriched": 12,
+    "movies_deferred": 12,
     "deferred_details": [
       {
         "title": "Hypomania",
         "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-08-17",
-        "discovered_at": "2026-08-17T08:32:09.287220",
+        "digital_date": "2026-08-28",
+        "discovered_at": "2026-08-18T08:29:44.237024",
         "discovery_source": "tmdb_type4",
-        "revert_count": 30,
+        "revert_count": 31,
         "first_reverted_at": "2026-08-17",
         "tmdb_platforms": []
       },
@@ -113,162 +113,200 @@
         "title": "Rainbow on Mars",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-08-14",
-        "discovered_at": "2026-08-17T08:32:15.703334",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 5,
-        "first_reverted_at": "2026-08-17",
-        "tmdb_platforms": []
-      },
-      {
-        "title": "Horsegirls",
-        "reason": "jw_revert:justwatch_no_valid_offers",
-        "digital_date": "2026-08-12",
-        "discovered_at": "2026-08-17T08:32:16.142634",
+        "discovered_at": "2026-08-18T08:29:45.797371",
         "discovery_source": "tmdb_type4",
         "revert_count": 6,
-        "first_reverted_at": "2026-08-17",
+        "first_reverted_at": "2026-08-18",
         "tmdb_platforms": []
       },
       {
         "title": "Side Effects May Include...",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-08-09",
-        "discovered_at": "2026-08-17T08:32:16.376755",
+        "discovered_at": "2026-08-18T08:29:46.788129",
         "discovery_source": "tmdb_type4",
-        "revert_count": 10,
-        "first_reverted_at": "2026-08-17",
+        "revert_count": 11,
+        "first_reverted_at": "2026-08-18",
         "tmdb_platforms": []
       },
       {
         "title": "Awake",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-08-08",
-        "discovered_at": "2026-08-17T08:32:16.580571",
+        "discovered_at": "2026-08-18T08:29:47.088186",
         "discovery_source": "tmdb_type4",
-        "revert_count": 11,
-        "first_reverted_at": "2026-08-17",
+        "revert_count": 12,
+        "first_reverted_at": "2026-08-18",
         "tmdb_platforms": []
       },
       {
         "title": "Rumours Of Madam Roach",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-07-26",
-        "discovered_at": "2026-08-17T08:32:17.179514",
+        "discovered_at": "2026-08-18T08:29:47.383072",
         "discovery_source": "tmdb_type4",
-        "revert_count": 24,
-        "first_reverted_at": "2026-08-17",
+        "revert_count": 25,
+        "first_reverted_at": "2026-08-18",
         "tmdb_platforms": []
       },
       {
         "title": "Last Chance To Save",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-07-18",
-        "discovered_at": "2026-08-17T08:32:17.382719",
+        "discovered_at": "2026-08-18T08:29:48.196868",
         "discovery_source": "tmdb_type4",
-        "revert_count": 32,
-        "first_reverted_at": "2026-08-17",
+        "revert_count": 33,
+        "first_reverted_at": "2026-08-18",
         "tmdb_platforms": []
       },
       {
         "title": "Chunks",
         "reason": "jw_revert:justwatch_no_valid_offers",
         "digital_date": "2026-07-17",
-        "discovered_at": "2026-08-17T08:32:17.600507",
+        "discovered_at": "2026-08-18T08:29:48.512669",
         "discovery_source": "tmdb_type4",
-        "revert_count": 32,
-        "first_reverted_at": "2026-08-17",
+        "revert_count": 33,
+        "first_reverted_at": "2026-08-18",
         "tmdb_platforms": []
       },
       {
         "title": "Forelock",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-07-01",
-        "discovered_at": "2026-08-17T08:32:17.873524",
+        "discovered_at": "2026-08-18T08:29:48.821039",
         "discovery_source": "tmdb_type4",
-        "revert_count": 49,
-        "first_reverted_at": "2026-08-17",
+        "revert_count": 50,
+        "first_reverted_at": "2026-08-18",
         "tmdb_platforms": []
       },
       {
         "title": "The Last Light",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-21",
-        "discovered_at": "2026-08-17T08:32:18.081602",
+        "discovered_at": "2026-08-18T08:29:49.186001",
         "discovery_source": "tmdb_type4",
-        "revert_count": 70,
-        "first_reverted_at": "2026-08-17",
+        "revert_count": 71,
+        "first_reverted_at": "2026-08-18",
         "tmdb_platforms": []
       },
       {
         "title": "Love & Other Crimes",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-06-19",
-        "discovered_at": "2026-08-17T08:32:18.297667",
+        "discovered_at": "2026-08-18T08:29:49.480777",
         "discovery_source": "tmdb_type4",
-        "revert_count": 61,
-        "first_reverted_at": "2026-08-17",
+        "revert_count": 62,
+        "first_reverted_at": "2026-08-18",
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Goody Goody",
+        "reason": "jw_revert:justwatch_no_valid_offers",
+        "digital_date": "2026-09-18",
+        "discovered_at": "2026-08-18T08:29:53.675042",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 1,
+        "first_reverted_at": "2026-08-18",
+        "tmdb_platforms": []
+      },
+      {
+        "title": "Them Bones",
+        "reason": "tmdb_fetch_failed",
+        "digital_date": "2026-08-14",
+        "discovered_at": "2026-05-02T16:53:47.018127",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 0,
+        "first_reverted_at": "",
         "tmdb_platforms": []
       }
     ],
-    "enrichment_duration_seconds": 851.18,
+    "enrichment_duration_seconds": 518.37,
     "error_details": [
       {
-        "timestamp": "2026-08-17T08:42:57.590085",
-        "title": "Promised Sky",
+        "timestamp": "2026-08-18T08:34:13.834878",
+        "title": "Rose of Nevada",
         "source": "trailer",
         "error_type": "TypeError",
         "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
       },
       {
-        "timestamp": "2026-08-17T08:43:08.956374",
-        "title": "Game Day Murders",
+        "timestamp": "2026-08-18T08:34:20.937752",
+        "title": "Toy Story 5",
         "source": "trailer",
         "error_type": "TypeError",
         "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
       },
       {
-        "timestamp": "2026-08-17T08:43:21.340826",
-        "title": "You Know What You Are",
+        "timestamp": "2026-08-18T08:34:33.728370",
+        "title": "Cradle of Coaches",
         "source": "trailer",
         "error_type": "TypeError",
         "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
       },
       {
-        "timestamp": "2026-08-17T08:43:39.733766",
+        "timestamp": "2026-08-18T08:34:44.759537",
+        "title": "Horsegirls",
+        "source": "trailer",
+        "error_type": "TypeError",
+        "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+      },
+      {
+        "timestamp": "2026-08-18T08:35:04.168926",
+        "title": "My Daughter's Father",
+        "source": "trailer",
+        "error_type": "TypeError",
+        "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+      },
+      {
+        "timestamp": "2026-08-18T08:35:22.646559",
         "title": "Piggy Duster",
         "source": "trailer",
         "error_type": "TypeError",
         "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
       },
       {
-        "timestamp": "2026-08-17T08:43:52.240027",
-        "title": "No One Died: The Wing Bowl Story",
+        "timestamp": "2026-08-18T08:35:31.154674",
+        "title": "Looking Up",
         "source": "trailer",
         "error_type": "TypeError",
         "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
       },
       {
-        "timestamp": "2026-08-17T08:44:00.047748",
+        "timestamp": "2026-08-18T08:35:57.491244",
+        "title": "49 Miles More",
+        "source": "trailer",
+        "error_type": "TypeError",
+        "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+      },
+      {
+        "timestamp": "2026-08-18T08:36:08.276132",
+        "title": "Tekkonkinkreet",
+        "source": "trailer",
+        "error_type": "TypeError",
+        "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+      },
+      {
+        "timestamp": "2026-08-18T08:36:16.953725",
         "title": "Rise of the Super Tromettes",
         "source": "trailer",
         "error_type": "TypeError",
         "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
       },
       {
-        "timestamp": "2026-08-17T08:44:13.193247",
+        "timestamp": "2026-08-18T08:36:30.796143",
         "title": "Soulm8te",
         "source": "trailer",
         "error_type": "TypeError",
         "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
       },
       {
-        "timestamp": "2026-08-17T08:44:25.844423",
-        "title": "Chasing Home",
+        "timestamp": "2026-08-18T08:36:42.923812",
+        "title": "Yellow Eyes",
         "source": "trailer",
         "error_type": "TypeError",
         "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
       }
     ],
-    "total_errors": 8
+    "total_errors": 12
   }
 }
