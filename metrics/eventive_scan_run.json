@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-08-20T08:13:59.451751",
+  "timestamp": "2026-08-21T08:14:47.773346",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 121,
     "festivals_with_films": 116,
     "festivals_failed": 47,
-    "total_films_indexed": 2411,
+    "total_films_indexed": 2413,
     "expired_filtered": 0,
-    "unique_active": 1656,
+    "unique_active": 1657,
     "tracking_matches": 78,
-    "wall_matches": 21,
-    "new_cached": 61,
+    "wall_matches": 31,
+    "new_cached": 71,
     "skipped_undated": 38
   },
   "tracking_matches": [
@@ -84,7 +84,7 @@
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1547697",
@@ -96,7 +96,7 @@
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1573191",
@@ -132,7 +132,7 @@
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1476000",
@@ -144,7 +144,7 @@
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1675324",
@@ -156,7 +156,7 @@
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1601087",
@@ -180,7 +180,7 @@
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1687466",
@@ -192,7 +192,7 @@
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1611914",
@@ -204,7 +204,7 @@
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1639386",
@@ -216,7 +216,7 @@
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 2,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1631918",
@@ -240,7 +240,7 @@
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1585144",
@@ -275,54 +275,6 @@
       "start": "2026-08-01T06:00:00.000Z",
       "end": "2026-09-01T05:59:00.000Z",
       "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1699419",
-      "nrw_title": "Acting Like Women",
-      "eventive_title": "Acting Like Women",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a7254bc954b0008ec1ebb41",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-05T06:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1689558",
-      "nrw_title": "The Endless Frontier",
-      "eventive_title": "The Endless Frontier",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a72337d7da10c4aa718c250",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-04T19:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1656944",
-      "nrw_title": "The [Conserv]atives",
-      "eventive_title": "The [Conserv]atives",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a7232fecf7a39743f8c24f7",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-05T06:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1639786",
-      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a723316c8ffab1d3434c934",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-05T06:00:00.000Z",
-      "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -903,6 +855,54 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1699419",
+      "nrw_title": "Acting Like Women",
+      "eventive_title": "Acting Like Women",
+      "festival": "Welcome to Port Townsend Film Festival 2026",
+      "link": "https://watch.eventive.org/ptff2026/play/6a7254bc954b0008ec1ebb41",
+      "start": "2026-09-28T15:00:00.000Z",
+      "end": "2026-10-05T06:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1689558",
+      "nrw_title": "The Endless Frontier",
+      "eventive_title": "The Endless Frontier",
+      "festival": "Welcome to Port Townsend Film Festival 2026",
+      "link": "https://watch.eventive.org/ptff2026/play/6a72337d7da10c4aa718c250",
+      "start": "2026-09-28T15:00:00.000Z",
+      "end": "2026-10-04T19:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1656944",
+      "nrw_title": "The [Conserv]atives",
+      "eventive_title": "The [Conserv]atives",
+      "festival": "Welcome to Port Townsend Film Festival 2026",
+      "link": "https://watch.eventive.org/ptff2026/play/6a7232fecf7a39743f8c24f7",
+      "start": "2026-09-28T15:00:00.000Z",
+      "end": "2026-10-05T06:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1639786",
+      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "festival": "Welcome to Port Townsend Film Festival 2026",
+      "link": "https://watch.eventive.org/ptff2026/play/6a723316c8ffab1d3434c934",
+      "start": "2026-09-28T15:00:00.000Z",
+      "end": "2026-10-05T06:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1561978",
       "nrw_title": "The Ark",
       "eventive_title": "The Ark",
@@ -977,12 +977,132 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1595126",
+      "nrw_title": "Far from Maine",
+      "eventive_title": "FAR FROM MAINE",
+      "festival": "Out On Film 2026",
+      "link": "https://watch.eventive.org/2026outonfilm/play/6a83780860e216715b8a770f",
+      "start": "2026-09-24T16:00:00.000Z",
+      "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1547697",
+      "nrw_title": "Free Beer Tomorrow",
+      "eventive_title": "FREE BEER TOMORROW",
+      "festival": "Out On Film 2026",
+      "link": "https://watch.eventive.org/2026outonfilm/play/6a85032fabbf27866161a428",
+      "start": "2026-09-24T09:00:00.000Z",
+      "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1474617",
+      "nrw_title": "The Mermaid",
+      "eventive_title": "MERMAID",
+      "festival": "Out On Film 2026",
+      "link": "https://watch.eventive.org/2026outonfilm/play/6a83780860e216715b8a770a",
+      "start": "2026-09-24T16:00:00.000Z",
+      "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1422120",
       "nrw_title": "Mermaid",
       "eventive_title": "MERMAID",
       "festival": "Out On Film 2026",
       "link": "https://watch.eventive.org/2026outonfilm/play/6a83780860e216715b8a770a",
       "start": "2026-09-24T16:00:00.000Z",
+      "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1476000",
+      "nrw_title": "Summer Lost",
+      "eventive_title": "SUMMER LOST",
+      "festival": "Out On Film 2026",
+      "link": "https://watch.eventive.org/2026outonfilm/play/6a83780860e216715b8a7714",
+      "start": "2026-09-24T16:00:00.000Z",
+      "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1675324",
+      "nrw_title": "Ephemera",
+      "eventive_title": "EPHEMERA",
+      "festival": "Out On Film 2026",
+      "link": "https://watch.eventive.org/2026outonfilm/play/6a850199bc02ceab074cadac",
+      "start": "2026-09-30T09:00:00.000Z",
+      "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1354628",
+      "nrw_title": "Ride or Die",
+      "eventive_title": "RIDE OR DIE",
+      "festival": "Out On Film 2026",
+      "link": "https://watch.eventive.org/2026outonfilm/play/6a85019abc02ceab074cadca",
+      "start": "2026-09-29T09:00:00.000Z",
+      "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1687466",
+      "nrw_title": "Test",
+      "eventive_title": "TEST",
+      "festival": "Out On Film 2026",
+      "link": "https://watch.eventive.org/2026outonfilm/play/6a85019abc02ceab074cadd4",
+      "start": "2026-09-26T09:00:00.000Z",
+      "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1611914",
+      "nrw_title": "Washed Up",
+      "eventive_title": "WASHED UP",
+      "festival": "Out On Film 2026",
+      "link": "https://watch.eventive.org/2026outonfilm/play/6a85019abc02ceab074cadd9",
+      "start": "2026-09-26T09:00:00.000Z",
+      "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1639386",
+      "nrw_title": "Beyond the Fire: The Life of Japan\u2019s First Pride Parade Pioneer",
+      "eventive_title": "BEYOND THE FIRE: THE LIFE OF JAPAN'S FIRST PRIDE PARADE PIONEER",
+      "festival": "Out On Film 2026",
+      "link": "https://watch.eventive.org/2026outonfilm/play/6a850199bc02ceab074cada7",
+      "start": "2026-10-03T09:00:00.000Z",
+      "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 2,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1585036",
+      "nrw_title": "Mickey & Richard",
+      "eventive_title": "MICKEY & RICHARD",
+      "festival": "Out On Film 2026",
+      "link": "https://watch.eventive.org/2026outonfilm/play/6a850199bc02ceab074cadbb",
+      "start": "2026-10-04T09:00:00.000Z",
       "end": "2026-10-12T04:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
@@ -997,54 +1117,6 @@
       "start": "2026-08-01T06:00:00.000Z",
       "end": "2026-09-01T05:59:00.000Z",
       "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1699419",
-      "nrw_title": "Acting Like Women",
-      "eventive_title": "Acting Like Women",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a7254bc954b0008ec1ebb41",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-05T06:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1689558",
-      "nrw_title": "The Endless Frontier",
-      "eventive_title": "The Endless Frontier",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a72337d7da10c4aa718c250",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-04T19:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1656944",
-      "nrw_title": "The [Conserv]atives",
-      "eventive_title": "The [Conserv]atives",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a7232fecf7a39743f8c24f7",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-05T06:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1639786",
-      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a723316c8ffab1d3434c934",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-05T06:00:00.000Z",
-      "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -1164,6 +1236,54 @@
       "link": "https://watch.eventive.org/morehousefilmfestival2026/play/6a7a23e50cf00e4c4db0cbcf",
       "start": "2026-09-27T13:00:00.000Z",
       "end": "2026-10-05T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1699419",
+      "nrw_title": "Acting Like Women",
+      "eventive_title": "Acting Like Women",
+      "festival": "Welcome to Port Townsend Film Festival 2026",
+      "link": "https://watch.eventive.org/ptff2026/play/6a7254bc954b0008ec1ebb41",
+      "start": "2026-09-28T15:00:00.000Z",
+      "end": "2026-10-05T06:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1689558",
+      "nrw_title": "The Endless Frontier",
+      "eventive_title": "The Endless Frontier",
+      "festival": "Welcome to Port Townsend Film Festival 2026",
+      "link": "https://watch.eventive.org/ptff2026/play/6a72337d7da10c4aa718c250",
+      "start": "2026-09-28T15:00:00.000Z",
+      "end": "2026-10-04T19:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1656944",
+      "nrw_title": "The [Conserv]atives",
+      "eventive_title": "The [Conserv]atives",
+      "festival": "Welcome to Port Townsend Film Festival 2026",
+      "link": "https://watch.eventive.org/ptff2026/play/6a7232fecf7a39743f8c24f7",
+      "start": "2026-09-28T15:00:00.000Z",
+      "end": "2026-10-05T06:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1639786",
+      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "festival": "Welcome to Port Townsend Film Festival 2026",
+      "link": "https://watch.eventive.org/ptff2026/play/6a723316c8ffab1d3434c934",
+      "start": "2026-09-28T15:00:00.000Z",
+      "end": "2026-10-05T06:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
