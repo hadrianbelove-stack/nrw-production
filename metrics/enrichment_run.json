@@ -1,267 +1,307 @@
 {
-  "timestamp": "2026-08-22T08:28:41.457275",
-  "movies_requested": 26,
-  "movies_enriched": 14,
-  "movies_deferred": 12,
+  "timestamp": "2026-08-23T08:36:41.261685",
+  "movies_requested": 36,
+  "movies_enriched": 27,
+  "movies_deferred": 9,
   "deferred_details": [
     {
       "title": "Rainbow on Mars",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-08-14",
-      "discovered_at": "2026-08-22T08:20:54.985371",
+      "discovered_at": "2026-08-23T08:23:19.187306",
       "discovery_source": "tmdb_type4",
-      "revert_count": 9,
-      "first_reverted_at": "2026-08-22",
+      "revert_count": 10,
+      "first_reverted_at": "2026-08-23",
       "tmdb_platforms": []
     },
     {
       "title": "Side Effects May Include...",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-08-09",
-      "discovered_at": "2026-08-22T08:20:55.220062",
+      "discovered_at": "2026-08-23T08:23:19.946756",
       "discovery_source": "tmdb_type4",
-      "revert_count": 14,
-      "first_reverted_at": "2026-08-22",
+      "revert_count": 15,
+      "first_reverted_at": "2026-08-23",
       "tmdb_platforms": []
     },
     {
       "title": "Awake",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-08-08",
-      "discovered_at": "2026-08-22T08:20:55.447108",
+      "discovered_at": "2026-08-23T08:23:20.242547",
       "discovery_source": "tmdb_type4",
-      "revert_count": 15,
-      "first_reverted_at": "2026-08-22",
+      "revert_count": 16,
+      "first_reverted_at": "2026-08-23",
       "tmdb_platforms": []
     },
     {
       "title": "Rumours of Madam Roach",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-26",
-      "discovered_at": "2026-08-22T08:20:55.754494",
+      "discovered_at": "2026-08-23T08:23:21.073656",
       "discovery_source": "tmdb_type4",
-      "revert_count": 28,
-      "first_reverted_at": "2026-08-22",
+      "revert_count": 29,
+      "first_reverted_at": "2026-08-23",
       "tmdb_platforms": []
     },
     {
       "title": "Last Chance To Save",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-18",
-      "discovered_at": "2026-08-22T08:20:55.987130",
+      "discovered_at": "2026-08-23T08:23:21.373870",
       "discovery_source": "tmdb_type4",
-      "revert_count": 36,
-      "first_reverted_at": "2026-08-22",
+      "revert_count": 37,
+      "first_reverted_at": "2026-08-23",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-08-22T08:20:56.220710",
+      "discovered_at": "2026-08-23T08:23:21.754288",
       "discovery_source": "tmdb_type4",
-      "revert_count": 36,
-      "first_reverted_at": "2026-08-22",
+      "revert_count": 37,
+      "first_reverted_at": "2026-08-23",
       "tmdb_platforms": []
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-08-22T08:20:56.535967",
+      "discovered_at": "2026-08-23T08:23:22.052836",
       "discovery_source": "tmdb_type4",
-      "revert_count": 53,
-      "first_reverted_at": "2026-08-22",
+      "revert_count": 54,
+      "first_reverted_at": "2026-08-23",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-08-22T08:20:56.786125",
+      "discovered_at": "2026-08-23T08:23:22.357152",
       "discovery_source": "tmdb_type4",
-      "revert_count": 74,
-      "first_reverted_at": "2026-08-22",
+      "revert_count": 75,
+      "first_reverted_at": "2026-08-23",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-08-22T08:20:57.039256",
+      "discovered_at": "2026-08-23T08:23:22.739505",
       "discovery_source": "tmdb_type4",
-      "revert_count": 65,
-      "first_reverted_at": "2026-08-22",
+      "revert_count": 66,
+      "first_reverted_at": "2026-08-23",
       "tmdb_platforms": []
     },
     {
-      "title": "Family",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-09-25",
-      "discovered_at": "2026-08-22T08:20:59.966558",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-22",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Hunting Matthew Nichols",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-10-31",
-      "discovered_at": "2026-08-22T08:21:06.116065",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-22",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "The Odyssey",
-      "reason": "jw_revert:justwatch_no_valid_offers",
-      "digital_date": "2026-11-17",
-      "discovered_at": "2026-08-22T08:21:07.024637",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-22",
-      "tmdb_platforms": []
-    },
-    {
-      "title": "Saturn",
+      "title": "Peter Asher: Everywhere Man",
       "reason": "zero_watch_links",
       "digital_date": "",
-      "discovered_at": "2026-07-29T10:36:12.458944",
+      "discovered_at": "2026-07-13T11:04:50.845868",
       "discovery_source": "provider_availability_check",
       "revert_count": 1,
-      "first_reverted_at": "2026-08-22",
-      "tmdb_platforms": [
-        "Amazon Prime Video",
-        "Amazon Prime Video with Ads",
-        "Apple TV Store"
-      ]
-    },
-    {
-      "title": "El Tonto Por Cristo",
-      "reason": "zero_watch_links",
-      "digital_date": "",
-      "discovered_at": "2026-08-16T08:20:41.531247",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-22",
+      "first_reverted_at": "2026-08-23",
       "tmdb_platforms": [
         "Amazon Video",
-        "Apple TV Store"
+        "Apple TV Store",
+        "Google Play Movies",
+        "YouTube",
+        "Fandango At Home"
       ]
-    },
-    {
-      "title": "Rosebush Pruning",
-      "reason": "zero_watch_links",
-      "digital_date": "2026-08-21",
-      "discovered_at": "2026-08-16T08:20:42.258008",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-08-22",
-      "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 448.49,
+  "enrichment_duration_seconds": 781.07,
   "error_details": [
     {
-      "timestamp": "2026-08-22T08:23:52.192089",
-      "title": "The Fence",
+      "timestamp": "2026-08-23T08:26:35.743364",
+      "title": "Saturn",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:24:17.854467",
-      "title": "Shadows of October: Israel Under Siege",
+      "timestamp": "2026-08-23T08:26:43.829571",
+      "title": "El Tonto Por Cristo",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:24:27.549947",
-      "title": "Rhys Darby: 25 Years",
+      "timestamp": "2026-08-23T08:26:50.965868",
+      "title": "Rosebush Pruning",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:24:43.003922",
-      "title": "Sunshine Women's Choir",
+      "timestamp": "2026-08-23T08:27:04.776987",
+      "title": "The Dynasty: UConn Huskies",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:24:55.054913",
+      "timestamp": "2026-08-23T08:27:18.563889",
+      "title": "Lion",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:27:48.023492",
+      "title": "The Sex Slave",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:28:02.854455",
+      "title": "A Monster Uncovered",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:28:13.495242",
+      "title": "Motor City",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:28:51.607754",
+      "title": "The Kidnapping of Arabella",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:29:03.586969",
+      "title": "The Marching Band",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:29:11.952612",
       "title": "Linda Perry: Let It Die Here",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:25:02.299956",
+      "timestamp": "2026-08-23T08:29:22.135640",
+      "title": "Drunken Noodles",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:29:30.368049",
       "title": "Piggy Duster",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:25:08.960223",
-      "title": "Saturn",
+      "timestamp": "2026-08-23T08:29:49.176674",
+      "title": "How to Divorce During the War",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:25:15.375343",
-      "title": "El Tonto Por Cristo",
+      "timestamp": "2026-08-23T08:30:02.562963",
+      "title": "The Magic Faraway Tree",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:25:21.475928",
-      "title": "Rosebush Pruning",
+      "timestamp": "2026-08-23T08:30:11.147785",
+      "title": "The Parking Spot",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:25:28.802651",
+      "timestamp": "2026-08-23T08:30:33.644099",
+      "title": "Peter Asher: Everywhere Man",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:30:40.940165",
+      "title": "Tekkonkinkreet",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:30:52.956647",
+      "title": "Hot Spot",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:31:13.875748",
       "title": "Rise of the Super Tromettes",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:25:47.429637",
-      "title": "Mister Middle Class",
-      "source": "trailer",
-      "error_type": "TypeError",
-      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
-    },
-    {
-      "timestamp": "2026-08-22T08:25:57.334426",
+      "timestamp": "2026-08-23T08:31:28.218276",
       "title": "Soulm8te",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:26:21.311621",
-      "title": "This Is Our City",
+      "timestamp": "2026-08-23T08:31:39.892391",
+      "title": "Tony",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     },
     {
-      "timestamp": "2026-08-22T08:26:30.620336",
-      "title": "The Legend of Juan Jose Mundo",
+      "timestamp": "2026-08-23T08:32:03.073594",
+      "title": "Spa Weekend",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:32:15.091743",
+      "title": "Insidious: Out of the Further",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:32:26.782779",
+      "title": "Mutiny",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:32:58.383196",
+      "title": "Pyaar Prema Kalyanam",
+      "source": "trailer",
+      "error_type": "TypeError",
+      "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
+    },
+    {
+      "timestamp": "2026-08-23T08:33:12.785436",
+      "title": "Crude Awakenings",
       "source": "trailer",
       "error_type": "TypeError",
       "error_message": "YouTubeTrailerScraper.find_trailer() got an unexpected keyword argument 'cast'"
     }
   ],
-  "total_errors": 14
+  "total_errors": 27
 }
