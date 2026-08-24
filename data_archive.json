@@ -1,6 +1,6 @@
 {
-  "archived_at": "2026-08-23T08:41:15.460104",
-  "count": 1357,
+  "archived_at": "2026-08-24T08:48:14.231810",
+  "count": 1359,
   "movies": [
     {
       "id": "896096",
@@ -120250,6 +120250,240 @@
       "_slop_confidence": "weak",
       "filters": {
         "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "keywords": [],
+      "_reissue": false
+    },
+    {
+      "id": "1698418",
+      "title": "Adili Idola Celebrity Roast: Fedi Nuril",
+      "digital_date": "2026-05-25",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Actor Fedi Nuril takes the hot seat as he faces hilarious jokes from a panel of six comedians and celebrities through the “Trilogy of Laughter”.",
+      "genres": [
+        "Comedy"
+      ],
+      "runtime": 173,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=vzfE_WT4jhQ",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/adili-idola-celebrity-roast-fedi-nuril",
+        "letterboxd": "https://letterboxd.com/film/adili-idola-celebrity-roast-fedi-nuril"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Netflix",
+            "link": "https://www.netflix.com/title/82703738"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-25T13:50:49.709307",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/9R87Ru2OiwoijZQlTnSSgPgCpQL.jpg",
+      "studio": "Comika",
+      "budget": 0,
+      "country": "Indonesia",
+      "original_language": "id",
+      "original_title": "Adili Idola Celebrity Roast: Fedi Nuril",
+      "display_title": "Adili Idola Celebrity Roast: Fedi Nuril",
+      "crew": {
+        "director": "Unknown",
+        "cast": [
+          "Fedi Nuril",
+          "Pandji Pragiwaksono",
+          "Nirina Zubir",
+          "Saykoji",
+          "Fatih Andhika"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-25",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "wikidata_distributors": [
+        "Utopia"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "detection",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Title matches original foreign title (language: id): 'Adili Idola Celebrity Roast: Fedi Nuril'"
+      ],
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "featured": false,
+      "reissue_label": null,
+      "is_slop": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link,major_streamer:netflix)",
+      "_slop_confidence": "weak",
+      "filters": {
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "keywords": [
+        "stand-up comedy",
+        "roast"
+      ],
+      "_reissue": false
+    },
+    {
+      "id": "1422120",
+      "title": "Mermaid",
+      "digital_date": "2026-05-25",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A Percocet-addicted ‘Florida Man’ finds a wounded mermaid at his lowest point. Fascination becomes a drug infused, one sided relationship — sending him further into decline. When word spreads about his secret, he’ll stop at nothing to protect her.",
+      "genres": [
+        "Drama",
+        "Comedy",
+        "Horror"
+      ],
+      "runtime": 105,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Mermaid_(2025_film)",
+        "trailer": "https://www.youtube.com/watch?v=B-wVS_8RQWA",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/mermaid-2025",
+        "metacritic": "https://www.metacritic.com/movie/mermaid/",
+        "imdb": "https://www.imdb.com/title/tt34435532/",
+        "letterboxd": "https://letterboxd.com/film/mermaid-2025",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1422120.mp4"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.217c7e2d-72a8-4f9f-be24-bb9d31fcdc82&tag=nrw04-20",
+            "rent_price": "$5.99",
+            "price": "$5.99",
+            "buy_price": "$14.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/mermaid/umc.cmc.1gxeswelwuj6opipxxtw0xa38?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1876707452",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Mermaid/4928287",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-05-25T13:24:08.222223",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/qHpurzepx8ERBtAiGq7bSXpMnDD.jpg",
+      "studio": "Bad Grey",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Mermaid",
+      "display_title": "Mermaid",
+      "crew": {
+        "director": "Tyler Cornack",
+        "cast": [
+          "Johnny Pemberton",
+          "Avery Potemri",
+          "Kevin Nealon",
+          "Kirk Fox",
+          "Tom Arnold"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-05-25",
+      "imdb_rating": "5.8",
+      "letterboxd_score": "3.0",
+      "wikidata_distributors": [
+        "Utopia"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "metacritic_score": "50",
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score"
+      ],
+      "featured": false,
+      "_watch_links_verified": "2026-05-26T20:46:32.881006",
+      "distributor": "Utopia",
+      "reissue_label": null,
+      "is_slop": false,
+      "_slop_reason": "manual_override",
+      "_slop_confidence": "strong",
+      "pull_quotes": [
+        {
+          "text": "a weird and wonderful thing.",
+          "critic": "Alyssa Christian",
+          "outlet": "Next Best Picture",
+          "source": "rt_critic",
+          "review_url": "https://nextbestpicture.com/mermaid/"
+        },
+        {
+          "text": "wickedly funny and unabashedly absurd",
+          "critic": "Avi Offer",
+          "outlet": "NYC Movie Guru",
+          "source": "rt_critic",
+          "review_url": "http://nycmovieguru.com/april10th26.html#mermaid26"
+        }
+      ],
+      "filters": {
+        "is_indie": true,
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
