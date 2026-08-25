@@ -5,6 +5,7 @@ Classes: GeminiYouTubeFinder, HybridYouTubeFinder
 Function: find_youtube_trailer(), validate_youtube_url_live()
 """
 
+import os
 import re
 import logging
 from typing import Optional, Dict, Any
@@ -276,7 +277,14 @@ class HybridYouTubeFinder:
 
     def __init__(self, cache_file: str = 'cache/youtube_trailer_cache.json'):
         """Initialize hybrid finder with both backends."""
-        self.gemini_finder = GeminiYouTubeFinder(cache_file=cache_file)
+        # NRW_YOUTUBE_BACKEND=claude routes the primary lookup to local
+        # `claude -p` on the Max plan (same pattern as NRW_CAPSULE_BACKEND /
+        # NRW_QUOTES_BACKEND); default stays Gemini
+        if os.environ.get('NRW_YOUTUBE_BACKEND', '').lower() == 'claude':
+            from gemini_scraper.claude_youtube import ClaudeYouTubeFinder
+            self.gemini_finder = ClaudeYouTubeFinder(cache_file=cache_file)
+        else:
+            self.gemini_finder = GeminiYouTubeFinder(cache_file=cache_file)
         self.playwright_finder = None  # Lazy load
         self.cache_file = cache_file
         self._validated_urls = set()  # URLs already confirmed live this session

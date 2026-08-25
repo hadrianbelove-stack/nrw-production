@@ -1082,7 +1082,11 @@ class DataGenerator:
             return False
         gemini_config = self.config.get('gemini_scraper', {})
         youtube_gemini_disabled = not gemini_config.get('enabled', True) or not gemini_config.get('youtube_enabled', True)
-        if GEMINI_AVAILABLE and not youtube_gemini_disabled:
+        # The Claude backend (local `claude -p` on the Max plan, ~$0) bypasses
+        # the paid-Gemini master switch — that switch exists to stop Gemini
+        # billing, not to force Playwright-only
+        claude_youtube = os.environ.get('NRW_YOUTUBE_BACKEND', '').lower() == 'claude'
+        if GEMINI_AVAILABLE and (claude_youtube or not youtube_gemini_disabled):
             self.trailer_finder = HybridYouTubeFinder(
                 cache_file='cache/youtube_trailer_cache.json'
             )

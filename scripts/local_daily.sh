@@ -58,6 +58,17 @@ echo "Refreshing YouTube cookies..." >> "$LOG"
     && echo "  Cookies refreshed" >> "$LOG" \
     || echo "  Cookie refresh failed — will use existing file" >> "$LOG"
 
+# Step 2a3: Trailer gap sweep — find YouTube trailers CI missed.
+# CI's waterfall is Playwright-only since the Gemini switch-off (Aug 2026);
+# this re-runs the misses with Claude on the Max plan (~$0) from this Mac.
+# Runs BEFORE hosting so a found trailer is downloaded, uploaded to B2, and
+# committed by the stamp step the same night. Capped (10/run, 3 attempts/film,
+# 20h cooldown) so most days it's seconds.
+echo "Trailer gap sweep..." >> "$LOG"
+NRW_YOUTUBE_BACKEND=claude /usr/bin/perl -e 'alarm(2400); exec @ARGV' -- \
+    /usr/bin/python3 scripts/trailer_gap_sweep.py >> "$LOG" 2>&1 \
+    || echo "  WARNING: trailer sweep failed" >> "$LOG"
+
 # Step 2b: Upload new trailers to B2 (download from YouTube + upload, no data.json writes)
 echo "Hosting new trailers..." >> "$LOG"
 /usr/bin/perl -e 'alarm(3600); exec @ARGV' -- \
