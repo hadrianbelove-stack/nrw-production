@@ -15,6 +15,7 @@ import yaml
 from datetime import datetime, timedelta
 import re
 import logging
+import inspect
 # NOTE: Scraper imports are LAZY (inside methods) to protect intake/discovery phases
 # If a scraper import fails, only enrichment breaks - not the whole pipeline
 # YouTube trailer finder: Try Gemini-based hybrid first, fall back to Playwright-only
@@ -1162,10 +1163,13 @@ class DataGenerator:
             director = next((c['name'] for c in crew_list if c.get('job') == 'Director'), None)
             cast = [c['name'] for c in cast_members[:3]] if cast_members else None
 
-            if GEMINI_AVAILABLE:
-                scraped_url = self.trailer_finder.find_trailer(title, year, director=director, cast=cast)
-            else:
-                scraped_url = self.trailer_finder.find_trailer(title, year)
+            # Pass only kwargs this finder accepts — the active finder is chosen by
+            # config (gemini_scraper.enabled), not by GEMINI_AVAILABLE, and the
+            # Playwright-only scraper has no cast param
+            finder_params = inspect.signature(self.trailer_finder.find_trailer).parameters
+            finder_kwargs = {k: v for k, v in {'director': director, 'cast': cast}.items()
+                             if k in finder_params}
+            scraped_url = self.trailer_finder.find_trailer(title, year, **finder_kwargs)
 
             if scraped_url and self._validate_youtube_url_live(scraped_url):
                 self.enrichment_stats['trailer_successes'] += 1
