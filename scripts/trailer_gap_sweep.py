@@ -64,6 +64,13 @@ def _title_sane(url, title, original_title):
         return True, ''  # oEmbed flaky — don't block on the guard itself
     if not video_title:
         return True, ''
+    # Fan/recap/collision content that word-matching alone lets through
+    # (Aug 2026 backfill caught: NFT project, review channels, 'Preview, Plot
+    # & What to Expect' recaps, news clips about a premiere)
+    for bad in ('review', 'reaction', 'explained', 'what to expect',
+                'full movie', 'nft', 'premiers at', 'premieres at'):
+        if bad in video_title:
+            return False, video_title
     for source in (title, original_title):
         words = _sig_words(source)
         if words and any(w in video_title for w in words):
