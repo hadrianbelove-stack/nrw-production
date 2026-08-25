@@ -26,6 +26,10 @@ class ClaudeLetterboxdQuoteScraper(ClaudeBackendMixin, LetterboxdQuoteScraper):
     """LetterboxdQuoteScraper whose Gemini calls run via local `claude -p` on Max."""
 
     _finder_name = 'ClaudeLetterboxdQuotes'
+    # Picking the punchiest verbatim quote (and dropping weak ones) is a taste
+    # call — pin to Opus. Free on the Max plan. Override with
+    # NRW_CLAUDE_QUOTES_MODEL if needed.
+    _claude_model = 'opus'
 
     def __init__(self):
         super().__init__()

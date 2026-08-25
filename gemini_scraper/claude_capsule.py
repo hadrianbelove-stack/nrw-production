@@ -24,6 +24,11 @@ class ClaudeCapsuleWriter(ClaudeBackendMixin, GeminiCapsuleWriter):
     """GeminiCapsuleWriter that generates via local `claude -p` on the Max plan."""
 
     _finder_name = 'ClaudeCapsule'
+    # Capsules are the marquee editorial prose — pin to Opus (better writing,
+    # stricter fact-verify). Free at the margin on the Max plan, so the only cost
+    # is a bit more of the nightly rate-limit budget. Override with
+    # NRW_CLAUDE_CAPSULE_MODEL / model= if a run needs a lighter model.
+    _claude_model = 'opus'
 
     def __init__(self, cache_file: str = 'cache/capsule_cache.json', model: str = None):
         super().__init__(cache_file=cache_file)

@@ -29,8 +29,10 @@ import logging
 
 logger = logging.getLogger('gemini_scraper')
 
-# Default model for local Claude Code finder runs. Sonnet balances quality vs the
-# Max plan's rate limits; per-finder subclasses may override _claude_model.
+# Default model for MECHANICAL Claude finders (URL/ID/date lookups, e.g.
+# ClaudeYouTubeFinder). Sonnet is plenty for fact-fetching and lighter on the Max
+# plan's rate limits. The TASTE finders — ClaudeCapsuleWriter and
+# ClaudeLetterboxdQuoteScraper — pin _claude_model = 'opus' on their own classes.
 DEFAULT_CLAUDE_MODEL = os.environ.get('NRW_CLAUDE_MODEL', 'sonnet')
 CLAUDE_TIMEOUT_SECONDS = int(os.environ.get('NRW_CLAUDE_TIMEOUT', '300'))
 
