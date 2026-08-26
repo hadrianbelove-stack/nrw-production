@@ -100,7 +100,7 @@ def eligible(m, window_start, today, max_attempts, cooldown_cutoff, suppress, ov
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--days', type=int, default=30)
+    ap.add_argument('--days', type=int, default=90)  # match the 90-day wall — don't abandon on-wall films at 30d
     ap.add_argument('--max-attempts', type=int, default=3)
     ap.add_argument('--cooldown-hours', type=float, default=20)
     ap.add_argument('--batch', type=int, default=10)

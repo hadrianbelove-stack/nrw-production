@@ -369,7 +369,49 @@ class HybridYouTubeFinder:
                 except Exception as e:
                     logger.error(f"Playwright fallback error: {e}")
 
+        # Final fallback: yt-dlp's own YouTube search. Free and contention-free
+        # (a direct search, no LLM or browser), so it catches obvious official
+        # trailers that the primary backends miss when they fail transiently —
+        # e.g. claude -p and Playwright both under load during the nightly batch.
+        try:
+            result = self._ytdlp_search(title, year)
+            if result:
+                self.stats['ytdlp_resolved'] = self.stats.get('ytdlp_resolved', 0) + 1
+                return result
+        except Exception as e:
+            logger.error(f"yt-dlp search fallback error for {title} ({year}): {e}")
+
         self.stats['total_failures'] += 1
+        return None
+
+    def _ytdlp_search(self, title: str, year: int) -> Optional[str]:
+        """Last-resort trailer lookup via yt-dlp's YouTube search.
+
+        Title-checked so an unrelated video that merely says "trailer" is
+        rejected; the live-URL check drops dead results. Returns a watch URL
+        or None.
+        """
+        import yt_dlp
+        query = f"ytsearch5:{title} {year} trailer"
+        opts = {'quiet': True, 'no_warnings': True, 'skip_download': True,
+                'extract_flat': True}
+        with yt_dlp.YoutubeDL(opts) as y:
+            info = y.extract_info(query, download=False)
+        title_words = {w for w in re.findall(r'\w+', title.lower()) if len(w) > 3}
+        for entry in (info or {}).get('entries', []) or []:
+            vid = entry.get('id')
+            vtitle = (entry.get('title') or '').lower()
+            if not vid:
+                continue
+            if 'trailer' not in vtitle and 'teaser' not in vtitle:
+                continue
+            # Require a significant title word to appear (skip only if the title
+            # has none >3 chars, matching the sweep's short-title handling).
+            if title_words and not (title_words & set(re.findall(r'\w+', vtitle))):
+                continue
+            url = f"https://www.youtube.com/watch?v={vid}"
+            if validate_youtube_url_live(url):
+                return url
         return None
 
     def get_stats(self) -> Dict[str, Any]:
