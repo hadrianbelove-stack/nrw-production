@@ -18,7 +18,9 @@ import concurrent.futures
 import json
 import os
 import re
+import shutil
 import subprocess
+import tempfile
 import time
 
 import yt_dlp
@@ -196,8 +198,17 @@ def download_trailer(movie, dry_run=False, cookies_browser=None, cookies_file=No
 
     # Use cookies for age-restricted content.
     # Prefer a cookies file (works from LaunchAgent) over live browser extraction (blocked by macOS sandbox).
+    cookie_tmp = None
     if cookies_file and os.path.exists(cookies_file):
-        ydl_opts['cookiefile'] = cookies_file
+        # yt-dlp writes the cookie jar back to cookiefile after every download,
+        # which cumulatively erodes YouTube's auth/age cookies over a run (an
+        # age-gated response can drop the session entirely). Point it at a
+        # throwaway copy so the master file — re-exported fresh each day by
+        # local_daily.sh — keeps its full age-verified session.
+        fd, cookie_tmp = tempfile.mkstemp(suffix='.txt', prefix='ytcookies_', dir=OUTPUT_DIR)
+        os.close(fd)
+        shutil.copy2(cookies_file, cookie_tmp)
+        ydl_opts['cookiefile'] = cookie_tmp
     elif cookies_browser:
         ydl_opts['cookiesfrombrowser'] = (cookies_browser,)
 
@@ -250,6 +261,13 @@ def download_trailer(movie, dry_run=False, cookies_browser=None, cookies_file=No
             return {'status': 'failed', 'detail': str(e)[:150]}
     except Exception as e:
         return {'status': 'failed', 'detail': str(e)[:150]}
+    finally:
+        # Discard the throwaway cookie copy so its eroded jar never becomes the master.
+        if cookie_tmp and os.path.exists(cookie_tmp):
+            try:
+                os.remove(cookie_tmp)
+            except OSError:
+                pass
 
 
 def main():
