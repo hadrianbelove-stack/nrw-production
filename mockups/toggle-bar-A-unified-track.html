@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NRW · Toggle Bar A — Unified Track (one cluster)</title>
+<!--
+  VARIANT A — ONE UNIFIED CONTROL TRACK.
+  The four view controls (SLOP slider · SELECTS · FESTS · PRE-ORDER) live inside
+  ONE glass pill-track, packed tight with hairline dividers between them. No dead
+  air between toggles — the surplus width goes to the outer margins, not the gaps.
+  GENRE + SEARCH balance on the right. Canonical order preserved. No VIEW label.
+  Production CSS mirrored: --ctl-h 36px, slop slider styling, switch styling,
+  token colors, real masthead clamp, real auto-fill minmax(320px,1fr) wall.
+-->
+<style>
+:root{
+  --accent-primary:#00d4aa; --accent-glow:rgba(0,212,170,0.3);
+  --screening-gold:#FFD700; --svc-preorder:#7c3aed; --svc-amazon-vod:#ff9500;
+  --text-secondary:#bbb; --ctl-h:36px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 100%);
+  background-attachment:fixed; color:#fff;
+  font-family:-apple-system,system-ui,'Segoe UI',Roboto,sans-serif; line-height:1.6; min-height:100vh;
+}
+/* ===== HEADER (mirrors production) ===== */
+header{position:sticky;top:0;z-index:100;padding:1.5rem 0 0;text-align:left;
+  background:rgba(8,8,12,0.88);backdrop-filter:blur(12px);}
+.cwide-hdr{padding:14px 2rem 0;}
+.masthead-row{display:flex;align-items:center;gap:24px;margin-bottom:10px;}
+header h1{font-weight:100;letter-spacing:0.24em;font-size:clamp(2rem,5.2vw,3.3rem);line-height:1;
+  white-space:nowrap;flex-shrink:0;background:linear-gradient(45deg,#fff,var(--accent-primary));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0;}
+.site-slogan{font-weight:500;font-size:0.78rem;letter-spacing:0.3em;text-transform:uppercase;
+  margin:10px 0 0;color:rgba(0,212,170,0.8);width:fit-content;}
+.mh-titles{flex:0 0 auto;min-width:0;}
+
+/* ===== CONTROL BAR — VARIANT A ===== */
+/* Row: [unified track cluster] .... [genre] [search] [about]
+   The cluster is left-anchored; genre+search+about anchor right. The middle
+   surplus falls between the two GROUPS, not between individual toggles, so the
+   four view controls read as one deliberate object. */
+.cwide-controls{display:flex;align-items:center;justify-content:space-between;
+  background:transparent;border:none;border-radius:0;padding:4px 2px 12px;gap:18px;}
+
+/* the unified glass track that holds all four view controls */
+.view-track{display:flex;align-items:center;flex:0 0 auto;gap:0;
+  height:var(--ctl-h);padding:3px;border-radius:calc(var(--ctl-h)/2);
+  border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.05);}
+.view-track .vt-divider{width:1px;align-self:stretch;margin:5px 4px;
+  background:rgba(255,255,255,0.12);flex:0 0 auto;}
+
+/* SLOP — the 3-stop slider, but seamless inside the track (no own border/bg) */
+.slop-inline{position:relative;display:flex;align-items:center;height:calc(var(--ctl-h) - 6px);
+  cursor:pointer;user-select:none;}
+.slop-inline .stop{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;
+  height:calc(var(--ctl-h) - 6px);padding:0 12px;font-size:0.66rem;font-weight:700;letter-spacing:0.09em;
+  text-transform:uppercase;color:rgba(255,255,255,0.5);white-space:nowrap;}
+.slop-inline .slop-knob{position:absolute;top:0;bottom:0;z-index:1;border-radius:calc(var(--ctl-h)/2);}
+.slop-inline[data-state="all"] .slop-knob{background:rgba(255,255,255,0.12);}
+.slop-inline[data-state="all"] .stop[data-i="0"]{color:rgba(255,255,255,0.92);}
+
+/* binary switches — compact, label hugs the track */
+.switch-cell{display:flex;align-items:center;gap:9px;height:calc(var(--ctl-h) - 6px);
+  padding:0 12px;cursor:pointer;user-select:none;flex:0 0 auto;}
+.sw-track{width:44px;height:22px;border-radius:11px;background:#1a1a1a;
+  border:1px solid rgba(255,255,255,0.22);position:relative;flex-shrink:0;}
+.sw-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;
+  background:rgba(255,255,255,0.55);}
+.sw-label{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  color:rgba(255,255,255,0.55);white-space:nowrap;}
+.switch-cell.active .sw-thumb{transform:translateX(22px);background:#0a0a0a;}
+#a-selects.active .sw-track{background:var(--accent-primary);}
+#a-selects.active .sw-label{color:var(--accent-primary);}
+#a-fests.active .sw-track{background:var(--screening-gold);}
+#a-fests.active .sw-label{color:var(--screening-gold);}
+#a-preorder.active .sw-track{background:var(--svc-preorder);}
+#a-preorder.active .sw-label{color:#a78bfa;}
+
+/* right cluster */
+.right-cluster{display:flex;align-items:center;gap:14px;flex:0 0 auto;margin-left:auto;}
+.genre-control{height:var(--ctl-h);font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  color:rgba(0,212,170,0.85);background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.4);
+  border-radius:calc(var(--ctl-h)/2);padding:0 16px;display:inline-flex;align-items:center;gap:8px;
+  cursor:pointer;white-space:nowrap;}
+.genre-control .caret{font-size:0.6rem;opacity:0.8;}
+.cwide-search{flex:0 0 280px;min-width:150px;position:relative;}
+.search-container{position:relative;display:flex;align-items:center;width:100%;}
+.search-mag{position:absolute;left:14px;width:15px;height:15px;pointer-events:none;color:var(--accent-primary);}
+#search-input{width:100%;height:var(--ctl-h);padding:0 1rem 0 2.3rem;border-radius:calc(var(--ctl-h)/2);
+  font-size:0.85rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;}
+#search-input::placeholder{color:#888;}
+.about-control{width:var(--ctl-h);height:var(--ctl-h);padding:0;display:inline-flex;align-items:center;
+  justify-content:center;font-size:1.05rem;line-height:1;cursor:pointer;color:rgba(0,212,170,0.7);
+  background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.4);border-radius:50%;flex:0 0 auto;}
+
+/* ===== DATE STRIP (fused, neon top edge) ===== */
+.date-strip{display:flex;align-items:center;justify-content:center;gap:14px;padding:9px 0;
+  border-top:2px solid var(--accent-primary);box-shadow:0 -1px 12px var(--accent-glow);
+  background:rgba(8,8,12,0.6);}
+.date-strip .ds-today{color:var(--accent-primary);font-weight:700;letter-spacing:0.14em;font-size:0.82rem;}
+.date-strip .ds-dot{color:#555;}
+.date-strip .ds-date{color:#eee;font-weight:700;letter-spacing:0.1em;font-size:0.82rem;}
+
+/* ===== WALL (mirrors production auto-fill minmax(320px,1fr)) ===== */
+main{padding:1.6rem 2rem 3rem;}
+.wall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.4rem;}
+@media(max-width:900px){.wall-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}}
+.movie-container{min-width:0;cursor:pointer;}
+.poster-wrap{position:relative;border-radius:15px;overflow:hidden;background:#14141f;aspect-ratio:2/3;
+  box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.poster-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.now-frame{position:absolute;top:0;left:0;right:0;padding:8px 0 6px;text-align:center;
+  background:linear-gradient(180deg,rgba(0,0,0,0.85),rgba(0,0,0,0));}
+.now-frame .svc{font-weight:800;letter-spacing:0.06em;font-size:0.82rem;}
+.now-frame .nowstream{display:block;font-size:0.52rem;letter-spacing:0.18em;color:rgba(255,255,255,0.75);margin-top:2px;}
+.score-row{position:absolute;left:8px;bottom:8px;display:flex;gap:6px;}
+.score-badge{display:flex;align-items:center;gap:3px;padding:3px 6px;border-radius:6px;
+  background:rgba(0,0,0,0.72);font-size:0.72rem;font-weight:700;}
+.score-badge.rt{color:#ff6b6b;} .score-badge.imdb{color:#f5c518;}
+.caption{padding:9px 2px 0;}
+.cap-title{color:#fff;font-weight:700;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cap-meta{color:var(--accent-primary);font-weight:600;font-size:0.85rem;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;margin-top:2px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="cwide-hdr">
+    <div class="masthead-row">
+      <div class="mh-titles">
+        <h1>THE&nbsp;NEW RELEASE&nbsp;WALL</h1>
+        <p class="site-slogan">What came out, every day.</p>
+      </div>
+    </div>
+    <div class="cwide-controls">
+      <!-- ONE unified track: SLOP · | · SELECTS · | · FESTS · | · PRE-ORDER -->
+      <div class="view-track">
+        <div class="slop-inline" data-state="all">
+          <div class="slop-knob" style="left:3px;width:96px;"></div>
+          <span class="stop" data-i="0">SLOP FILTER</span>
+          <span class="stop" data-i="1">SLOP FREE</span>
+          <span class="stop" data-i="2">SLOP ONLY</span>
+        </div>
+        <span class="vt-divider"></span>
+        <div class="switch-cell" id="a-selects"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">SELECTS</span></div>
+        <span class="vt-divider"></span>
+        <div class="switch-cell" id="a-fests"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">FESTS</span></div>
+        <span class="vt-divider"></span>
+        <div class="switch-cell" id="a-preorder"><div class="sw-track"><div class="sw-thumb"></div></div><span class="sw-label">PRE-ORDER</span></div>
+      </div>
+      <!-- right cluster: GENRE + SEARCH + about -->
+      <div class="right-cluster">
+        <button class="genre-control"><span>GENRE</span><span class="caret">▼</span></button>
+        <div class="cwide-search">
+          <div class="search-container">
+            <svg class="search-mag" viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.8"/><line x1="12.8" y1="12.8" x2="18" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="text" id="search-input" placeholder="Search title, director, cast…">
+          </div>
+        </div>
+        <button class="about-control">&#9432;</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="date-strip"><span class="ds-today">TODAY</span><span class="ds-dot">·</span><span class="ds-date">WED JUL 8</span></div>
+
+<main>
+  <div class="wall-grid" id="wall"></div>
+</main>
+
+<script>
+const MOVIES=[
+ {t:"Nothing to Lose (Jusqu'au bout)",d:"Nawell Madani",g:"Drama",n:"FRA",p:"https://image.tmdb.org/t/p/w500/3SKN8QZptMm8KfCCQtEmyh1Zkgz.jpg",svc:"NETFLIX",svcColor:"#E50914"},
+ {t:"Manas",d:"Marianna Brennand",g:"Drama",n:"BRA",p:"https://image.tmdb.org/t/p/w500/u5k3lHTwKPbrJ5xJX6MbALL0Hta.jpg",rt:"90%",imdb:"7.8"},
+ {t:"Bricks on Track: Building the LEGO F1 Drivers' Parade",d:"—",g:"Documentary",n:"USA",p:"https://image.tmdb.org/t/p/w500/AvlgyQlsKF4tmmmf5pUWgHAwSY1.jpg",svc:"PEACOCK",svcColor:"#fff"},
+ {t:"Black Box (Flight 298)",d:"Steven Quale",g:"Horror",n:"USA",p:"https://image.tmdb.org/t/p/w500/O7vJPEWsnLrKqPYHIHKG8zlEK1.jpg",imdb:"5.5"},
+ {t:"Demon Hunter: Time 2 Kill",d:"Zoe Kavanagh",g:"Action",n:"IRL",p:"https://image.tmdb.org/t/p/w500/iMRTw9x6WS6qPh98TWzxJks4rz1.jpg",imdb:"7.3"},
+ {t:"You're Dead to Me",d:"Juan Pablo Arias Munoz",g:"Horror",n:"USA",p:"https://image.tmdb.org/t/p/w500/8bHWetIMhtoFbPtEHblbdiHO5WG.jpg",imdb:"4.7"},
+ {t:"The Leaching",d:"Evan Showalter",g:"Horror",n:"USA",p:"https://image.tmdb.org/t/p/w500/8xdLmP9ksISVyNg0kKUlI3DWtQg.jpg"},
+ {t:"No Sunshine in Here (Aqui Não Entra Luz)",d:"Karol Maia",g:"Documentary",n:"BRA",p:"https://image.tmdb.org/t/p/w500/lpFvUruByCj7PR6ABBJQ7k5lCCr.jpg",rt:"98%",imdb:"6.5"},
+ {t:"Mickey",d:"Dano García",g:"Documentary",n:"MEX",p:"https://image.tmdb.org/t/p/w500/uGoiK0tujUeUK7OlaFSdG7puChJ.jpg",imdb:"7.6"},
+ {t:"Wood Street",d:"Caron Creighton",g:"Documentary",n:"USA",p:"https://image.tmdb.org/t/p/w500/jA8xUtK1U0MWkr2gWTcKJU2uCQA.jpg"},
+ {t:"Let Them Be Seen",d:"Nolitha Refilwe Mkulisi",g:"Documentary",n:"GER",p:"https://image.tmdb.org/t/p/w500/jDsNInymZrB1KGISVCPEg0ibEKM.jpg",rt:"87%"},
+ {t:"And She Didn't Die",d:"Zikethiwe Ngcobo",g:"Documentary",n:"RSA",p:"https://image.tmdb.org/t/p/w500/cCr6gQKMFbg4xPyCIvnxvij1SwY.jpg",rt:"60%",imdb:"7.6"},
+];
+const wall=document.getElementById('wall');
+wall.innerHTML=MOVIES.map(m=>`
+ <div class="movie-container">
+   <div class="poster-wrap">
+     <img src="${m.p}" alt="">
+     ${m.svc?`<div class="now-frame"><span class="svc" style="color:${m.svcColor}">${m.svc}</span><span class="nowstream">NOW STREAMING</span></div>`:''}
+     ${(m.rt||m.imdb)?`<div class="score-row">${m.rt?`<span class="score-badge rt">🍅 ${m.rt}</span>`:''}${m.imdb?`<span class="score-badge imdb">★ ${m.imdb}</span>`:''}</div>`:''}
+   </div>
+   <div class="caption">
+     <div class="cap-title">${m.t}</div>
+     <div class="cap-meta">${m.d} · ${m.g} · ${m.n}</div>
+   </div>
+ </div>`).join('');
+</script>
+</body>
+</html>
