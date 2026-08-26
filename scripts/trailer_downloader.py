@@ -164,7 +164,10 @@ def download_trailer(movie, dry_run=False, cookies_browser=None, cookies_file=No
         return {'status': 'dry_run', 'detail': f'Would download {movie["trailer_url"]}'}
 
     ydl_opts = {
-        'format': 'bestvideo[height<=1080][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best[height<=1080]',
+        # Prefer HLS (m3u8) formats. As of 2026 YouTube requires a PO token for
+        # the DASH avc1 streams (137/140), which now 403 mid-download. The HLS
+        # ladder (96 = 1080p) is avc1/H.264, muxed, and downloads without a token.
+        'format': 'best[height<=1080][protocol^=m3u8]/bestvideo[height<=1080][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best[height<=1080]',
         'merge_output_format': 'mp4',
         'outtmpl': output_path,
         'quiet': True,

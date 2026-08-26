@@ -38,6 +38,12 @@ from trailer_uploader import load_env, get_b2_api, get_remote_files, upload_file
 from trailer_downloader import download_trailer, extract_youtube_id
 
 BAD_URLS_FILE = os.path.join(PROJECT_ROOT, 'cache', 'bad_trailer_urls.json')
+# Blacklist reasons that may recover on their own (video re-uploaded, geo lifted).
+# Any other reason (wrong film, not a trailer, manual clear) is a permanent
+# curation decision and must never be re-hosted.
+TRANSIENT_BLACKLIST_REASONS = ('skipped_unavailable', 'skipped_region_locked')
+# Re-attempt a transient-blacklisted URL once this many days have passed.
+BLACKLIST_RECHECK_DAYS = 14
 
 
 def load_bad_urls():
@@ -71,6 +77,9 @@ def record_bad_url(youtube_url, title, year, reason):
 HOST_FAILURES_FILE = os.path.join(PROJECT_ROOT, 'cache', 'trailer_host_failures.json')
 HOST_FAILURE_TTL_DAYS = 3
 MAX_HOST_RETRIES = 3
+# Even after MAX_HOST_RETRIES, re-validate this often — a film whose failures
+# were transient (temporary yt-dlp/cookies outage) becomes hostable again.
+PERMANENT_RECHECK_DAYS = 14
 
 
 def load_host_failures():
@@ -81,17 +90,26 @@ def load_host_failures():
     expired (and count < MAX_HOST_RETRIES) are removed from the returned
     dict so they get retried, but their entries stay on disk so
     record_host_failure can read the previous count.
+
+    Entries that hit MAX_HOST_RETRIES are treated as permanent, but still
+    re-validated every PERMANENT_RECHECK_DAYS — a film whose failures were
+    transient becomes downloadable again and should not be stranded on the
+    YouTube fallback forever. If the recheck fails, record_host_failure
+    refreshes recorded_at and the film waits another full recheck window.
     """
     if not os.path.exists(HOST_FAILURES_FILE):
         return {}
     with open(HOST_FAILURES_FILE, 'r') as f:
         failures = json.load(f)
     cutoff = (datetime.now() - timedelta(days=HOST_FAILURE_TTL_DAYS)).isoformat()
+    recheck_cutoff = (datetime.now() - timedelta(days=PERMANENT_RECHECK_DAYS)).isoformat()
     # Return only entries that should be SKIPPED (still in cooldown or permanent)
     active = {}
     for mid, v in failures.items():
         if v.get('failure_count', 1) >= MAX_HOST_RETRIES:
-            active[mid] = v  # Permanent — too many failures
+            # Permanent, but retry once the recheck window has elapsed.
+            if v.get('recorded_at', '') >= recheck_cutoff:
+                active[mid] = v  # Too many failures, still within recheck cooldown
         elif v.get('recorded_at', '') >= cutoff:
             active[mid] = v  # Still within TTL cooldown
     return active
@@ -485,14 +503,27 @@ def host_new_trailers(movie_ids=None, limit=0, dry_run=False, cookies_browser=No
     for i, movie in enumerate(to_host, 1):
         print(f'[{i}/{total}] {movie["title"]} ({movie["year"]})...')
 
-        # Skip URLs blacklisted for more than 3 days (transient issues resolve sooner)
+        # Skip blacklisted URLs. Curated reasons (wrong film / not a trailer)
+        # are permanent — never re-host a known-bad trailer. Transient reasons
+        # (unavailable / region-locked) may recover, so re-attempt periodically:
+        # keep trying for the first BLACKLIST_GRACE_DAYS, go quiet until
+        # BLACKLIST_RECHECK_DAYS, then retry once (record_bad_url resets the clock).
         video_id = extract_youtube_id(movie['trailer_url'])
         if video_id and video_id in bad_urls:
-            recorded = bad_urls[video_id].get('recorded_at', '')
+            entry = bad_urls[video_id]
+            reason = entry.get('reason', 'unknown')
+            if reason not in TRANSIENT_BLACKLIST_REASONS:
+                print(f'    Skipped: blacklisted permanently ({reason})')
+                stats['skipped'] += 1
+                continue
+            recorded = entry.get('last_failed') or entry.get('recorded_at', '')
             if recorded:
-                days_ago = (datetime.now() - datetime.fromisoformat(recorded)).days
-                if days_ago >= BLACKLIST_GRACE_DAYS:
-                    print(f'    Skipped: blacklisted {days_ago} days ago ({bad_urls[video_id].get("reason", "unknown")})')
+                try:
+                    days_ago = (datetime.now() - datetime.fromisoformat(recorded)).days
+                except ValueError:
+                    days_ago = None
+                if days_ago is not None and BLACKLIST_GRACE_DAYS <= days_ago < BLACKLIST_RECHECK_DAYS:
+                    print(f'    Skipped: blacklisted {days_ago}d ago ({reason}), recheck at {BLACKLIST_RECHECK_DAYS}d')
                     stats['skipped'] += 1
                     continue
 
