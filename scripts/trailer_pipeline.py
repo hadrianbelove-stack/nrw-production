@@ -343,13 +343,21 @@ def download_and_upload_trailer(movie_id, title, year, youtube_url, bucket, buck
     result = download_trailer(movie_dict, cookies_browser=cookies_browser, cookies_file=cookies_file)
     status = result['status']
 
-    # Age-gated videos need LIVE browser cookies. An exported cookie file goes
-    # stale within minutes — YouTube rotates the session server-side while the
-    # browser is active, so the file's snapshot is rejected ("Sign in to confirm
-    # your age") even when freshly exported. Retry once straight from the browser.
-    if status == 'skipped_age_restricted' and cookies_file:
+    # An exported cookie file goes stale within minutes — YouTube rotates the
+    # session server-side while the browser is active, so the file's snapshot is
+    # rejected even when freshly exported. Two symptoms, same cause:
+    #   • age-gated videos → "Sign in to confirm your age"
+    #   • DASH media URLs  → "HTTP Error 403: Forbidden" mid-download (this is
+    #     now the default path since YouTube dropped HLS for many trailers)
+    # Live browser cookies stay valid and unlock 1080p DASH — retry from browser.
+    detail = (result.get('detail') or '')
+    needs_live = (
+        status == 'skipped_age_restricted'
+        or (status == 'failed' and ('403' in detail or 'forbidden' in detail.lower()))
+    )
+    if needs_live and cookies_file:
         fallback_browser = cookies_browser or 'safari'
-        print(f'    Age-restricted; retrying with live {fallback_browser} cookies...')
+        print(f'    {status} ({detail[:60]}); retrying with live {fallback_browser} cookies...')
         result = download_trailer(movie_dict, cookies_browser=fallback_browser, cookies_file=None)
         status = result['status']
 

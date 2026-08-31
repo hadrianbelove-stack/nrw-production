@@ -51,12 +51,16 @@ if [ "$STASHED" = true ]; then
 fi
 
 # Step 2a: Refresh YouTube cookies from Safari (Aqua session has keychain access)
+# Use python3.11 -m yt_dlp, NOT the /opt/homebrew/bin/yt-dlp CLI: only the
+# python3.11 binary holds the macOS Full Disk Access grant needed to read
+# Safari's Cookies.binarycookies. The CLI wrapper gets "Operation not permitted"
+# and the cookie file goes stale, which 403s every DASH download.
 echo "Refreshing YouTube cookies..." >> "$LOG"
-/opt/homebrew/bin/yt-dlp --cookies-from-browser safari \
+/opt/homebrew/bin/python3.11 -m yt_dlp --cookies-from-browser safari \
     --cookies cache/yt_cookies.txt --skip-download \
     'https://www.youtube.com/watch?v=dQw4w9WgXcQ' >> "$LOG" 2>&1 \
     && echo "  Cookies refreshed" >> "$LOG" \
-    || echo "  Cookie refresh failed — will use existing file" >> "$LOG"
+    || echo "  Cookie refresh FAILED (Full Disk Access?) — using stale file, DASH will 403" >> "$LOG"
 
 # Step 2a3: Trailer gap sweep — find YouTube trailers CI missed.
 # CI's waterfall is Playwright-only since the Gemini switch-off (Aug 2026);
