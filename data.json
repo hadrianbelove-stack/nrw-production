@@ -1,7 +1,104 @@
 {
-  "generated_at": "2026-08-30T13:52:58.927047",
-  "count": 790,
+  "generated_at": "2026-08-31T15:58:42.955129",
+  "count": 784,
   "movies": [
+    {
+      "id": "1273044",
+      "title": "Elementary",
+      "digital_date": "2026-08-31",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "In the Makarenko public elementary school in the Paris outskirts, children want to learn and to be cheered while teachers know they do not only teach, they also educate. With care, tenacity and efforts, children are trained to become not only responsible citizens but also human beings.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 105,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Film Movement Plus"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=ff-XiZzJLxw",
+        "rt": "https://www.rottentomatoes.com/m/elementary",
+        "justwatch": "https://www.justwatch.com/us/movie/apprendre",
+        "imdb": "https://www.imdb.com/title/tt32085975/",
+        "letterboxd": "https://letterboxd.com/film/elementary-2024",
+        "director_wiki": "https://en.wikipedia.org/wiki/Claire_Simon"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Film Movement Plus",
+            "link": "https://www.filmmovementplus.com/elementary"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-08-31T15:46:55.934880",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/7sYChrxwBwnGuYrqJpPzcMensw.jpg",
+      "studio": "Unknown",
+      "budget": 0,
+      "country": "France",
+      "original_language": "fr",
+      "original_title": "Apprendre",
+      "display_title": "Elementary (Apprendre)",
+      "crew": {
+        "director": "Claire Simon",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-08-31",
+      "imdb_rating": "6.6",
+      "letterboxd_score": "3.6",
+      "keywords": [
+        "paris, france",
+        "elementary school",
+        "school",
+        "creative process",
+        "social & cultural documentary",
+        "children learning",
+        "observational documentary",
+        "learning",
+        "student documentary"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "_imdb_votes": 112,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:5(no_wiki,no_rt,mid_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
     {
       "id": "1740614",
       "title": "Newton's 3rd Law",
@@ -496,7 +593,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-02",
         "discovered": "2026-08-30",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -4230,7 +4327,7 @@
         "available_start": "2026-10-02",
         "available_end": "2026-10-12",
         "discovered": "2026-08-27",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -4453,7 +4550,7 @@
         "available_start": "2026-10-02",
         "available_end": "2026-10-12",
         "discovered": "2026-08-27",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -4552,7 +4649,7 @@
         "available_start": "2026-10-02",
         "available_end": "2026-10-12",
         "discovered": "2026-08-27",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -7073,7 +7170,7 @@
         "available_start": "2026-09-18",
         "available_end": "2026-09-22",
         "discovered": "2026-08-25",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -7438,8 +7535,8 @@
       },
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_enrichment_attempts": 6,
-      "_last_enrichment_attempt": "2026-08-30",
+      "_enrichment_attempts": 7,
+      "_last_enrichment_attempt": "2026-08-31",
       "_buyonly_preorder": true,
       "imdb_rating": "8.0",
       "letterboxd_score": "3.9",
@@ -7449,9 +7546,9 @@
         "masked vigilante",
         "hero's fall"
       ],
-      "_wiki_language_count": 2,
+      "_wiki_language_count": 3,
       "metacritic_score": null,
-      "_imdb_votes": 3175,
+      "_imdb_votes": 3702,
       "_needs_review": false,
       "is_slop": false,
       "_slop_reason": "prestige_studio:warner bros. animation",
@@ -7475,7 +7572,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-08-30T13:49:10.720930",
+      "_watch_links_verified": "2026-08-31T15:55:30.865597",
       "_trailer_source": "gemini_playwright",
       "_tmdb_popularity": null,
       "buzz_score": 36,
@@ -9360,7 +9457,7 @@
         "available_start": "2026-09-18",
         "available_end": "2026-09-22",
         "discovered": "2026-08-23",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -13326,7 +13423,7 @@
         "available_start": "2026-09-26",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -13432,7 +13529,7 @@
         "available_start": "2026-09-30",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -13447,8 +13544,7 @@
         "manual_override": null
       },
       "featured": false,
-      "hidden": true,
-      "_coming_soon_capped": true
+      "hidden": false
     },
     {
       "id": "1325035",
@@ -13839,7 +13935,7 @@
         "available_start": "2026-09-24",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -13950,7 +14046,7 @@
         "available_start": "2026-09-26",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -14055,7 +14151,7 @@
         "available_start": "2026-10-03",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -14165,7 +14261,7 @@
         "available_start": "2026-10-04",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -14283,7 +14379,7 @@
         "available_start": "2026-09-24",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -14395,7 +14491,7 @@
         "available_start": "2026-09-24",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -14507,7 +14603,7 @@
         "available_start": "2026-09-29",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -15060,7 +15156,7 @@
         "available_start": "2026-09-24",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -16412,7 +16508,7 @@
           {
             "service": "Eventive",
             "link": "https://watch.eventive.org/chasinghomefilm/play/6a786a836cb3ade9e5e10c21",
-            "rent_price": "$13.57",
+            "rent_price": "$13.52",
             "price": "$13.52"
           }
         ]
@@ -16470,7 +16566,7 @@
         "available_start": null,
         "available_end": null,
         "discovered": "2026-08-17",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -16485,7 +16581,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-08-29T13:58:37.646165",
+      "_watch_links_verified": "2026-08-31T15:56:27.440494",
       "_tmdb_popularity": null,
       "buzz_score": 10,
       "notability": {
@@ -18353,7 +18449,7 @@
           {
             "service": "Barnes & Noble",
             "link": "https://www.barnesandnoble.com/w/dvd-ip-man-kung-fu-legend-ip-man-kung-fu-legend/1150159546",
-            "buy_price": "$20.99",
+            "buy_price": "$24.49",
             "price": "$20.99"
           }
         ],
@@ -18429,7 +18525,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-08-28T20:13:29.353919"
+      "_watch_links_verified": "2026-08-31T15:56:32.415885"
     },
     {
       "id": "1541305",
@@ -22568,7 +22664,7 @@
         "available_start": "2026-09-27",
         "available_end": "2026-10-05",
         "discovered": "2026-08-13",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -22772,7 +22868,7 @@
         "available_start": "2026-09-04",
         "available_end": "2026-09-14",
         "discovered": "2026-08-13",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -22881,7 +22977,7 @@
         "available_start": "2026-09-04",
         "available_end": "2026-09-14",
         "discovered": "2026-08-13",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -25507,7 +25603,7 @@
         "available_start": "2026-09-14",
         "available_end": "2026-10-01",
         "discovered": "2026-08-10",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -29426,7 +29522,7 @@
         "available_start": "2026-09-28",
         "available_end": "2026-10-05",
         "discovered": "2026-08-06",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -29669,7 +29765,7 @@
         "available_start": "2026-09-28",
         "available_end": "2026-10-04",
         "discovered": "2026-08-06",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -29773,7 +29869,7 @@
         "available_start": "2026-09-28",
         "available_end": "2026-10-05",
         "discovered": "2026-08-06",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -29879,7 +29975,7 @@
         "available_start": "2026-09-28",
         "available_end": "2026-10-05",
         "discovered": "2026-08-06",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -32432,7 +32528,7 @@
         "available_start": "2026-09-07",
         "available_end": "2026-09-14",
         "discovered": "2026-08-03",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -34052,7 +34148,7 @@
       },
       "links": {
         "wikipedia": "https://en.wikipedia.org/wiki/Soulm8te",
-        "trailer": "https://www.youtube.com/watch?v=L82W3IFqX18",
+        "trailer": "https://www.youtube.com/watch?v=DeQIh2ibHuo",
         "rt": "https://www.rottentomatoes.com/m/soulm8te",
         "justwatch": "https://www.justwatch.com/us/movie/soulm8te",
         "cast_wiki": {
@@ -34131,8 +34227,8 @@
       },
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_enrichment_attempts": 28,
-      "_last_enrichment_attempt": "2026-08-30",
+      "_enrichment_attempts": 29,
+      "_last_enrichment_attempt": "2026-08-31",
       "_buyonly_preorder": true,
       "imdb_rating": "5.8",
       "letterboxd_score": "2.6",
@@ -34158,7 +34254,7 @@
       ],
       "_trailer_source": "gemini_playwright",
       "metacritic_score": "40",
-      "_imdb_votes": 6241,
+      "_imdb_votes": 6343,
       "_needs_review": false,
       "is_slop": true,
       "_slop_reason": "score:4(no_rt,low_imdb)",
@@ -34181,7 +34277,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-08-30T13:52:23.907044",
+      "_watch_links_verified": "2026-08-31T15:58:18.425024",
       "digital_date": "2026-08-01",
       "_digital_date_source": "tmdb_type4"
     },
@@ -37351,7 +37447,7 @@
         "available_start": "2026-08-01",
         "available_end": "2026-09-01",
         "discovered": "2026-07-29",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -38271,7 +38367,7 @@
         "available_start": "2026-09-07",
         "available_end": "2026-09-14",
         "discovered": "2026-07-27",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -38615,7 +38711,7 @@
         "available_start": "2026-09-07",
         "available_end": "2026-09-14",
         "discovered": "2026-07-27",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -38736,7 +38832,7 @@
         "available_start": "2026-09-07",
         "available_end": "2026-09-14",
         "discovered": "2026-07-27",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -39190,7 +39286,7 @@
         "available_start": "2026-09-22",
         "available_end": "2026-09-28",
         "discovered": "2026-07-26",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -39289,7 +39385,7 @@
         "available_start": "2026-09-22",
         "available_end": "2026-09-23",
         "discovered": "2026-07-26",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -39886,8 +39982,8 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 35,
-      "_last_enrichment_attempt": "2026-08-30",
+      "_enrichment_attempts": 36,
+      "_last_enrichment_attempt": "2026-08-31",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "imdb_rating": "9.2",
@@ -49622,8 +49718,8 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 46,
-      "_last_enrichment_attempt": "2026-08-30",
+      "_enrichment_attempts": 47,
+      "_last_enrichment_attempt": "2026-08-31",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "imdb_rating": "6.1",
@@ -53198,7 +53294,7 @@
         "available_start": null,
         "available_end": null,
         "discovered": "2026-07-11",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -62614,7 +62710,7 @@
         "available_start": "2026-08-01",
         "available_end": "2026-09-01",
         "discovered": "2026-06-30",
-        "last_checked": "2026-08-30",
+        "last_checked": "2026-08-31",
         "status": "active"
       },
       "filters": {
@@ -93162,920 +93258,6 @@
       "_reissue": false
     },
     {
-      "id": "tv_322974",
-      "title": "Bring Me the Beauties: A Model Cult",
-      "digital_date": "2026-06-01",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Follows the Eternal Values cult of the ’80s and ’90s, led by Manhattan socialite Frederick von Mierers.",
-      "genres": [
-        "Documentary"
-      ],
-      "runtime": null,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "HBO Max Amazon Channel",
-          "HBO Max"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Bring_Me_the_Beauties:_A_Model_Cult",
-        "trailer": "https://www.youtube.com/watch?v=nOrPJVBkHaw",
-        "rt": null,
-        "justwatch": "https://www.justwatch.com/us/tv-show/bring-me-the-beauties-a-model-cult",
-        "cast_wiki": {
-          "Hoyt Richards": "https://en.wikipedia.org/wiki/Hoyt_Richards",
-          "Frederick von Mierers": "https://en.wikipedia.org/wiki/Bring_Me_the_Beauties%3A_A_Model_Cult"
-        },
-        "imdb": "https://www.imdb.com/title/tt42835175/",
-        "letterboxd": "https://letterboxd.com/film/our-magazine-no-9",
-        "director_wiki": "https://en.wikipedia.org/wiki/Chris_Smith_(filmmaker)",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/tv_322974.mp4"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "Max",
-            "link": "https://play.hbomax.com/video/watch/c695b171-d473-4b65-a344-e78d8651f3f1?utm_source=universal_search"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-05T12:13:36.855478",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "content_type": "limited_series",
-      "episode_count": 3,
-      "networks": [
-        "HBO"
-      ],
-      "poster": "https://image.tmdb.org/t/p/w500/afRnu3R75wLHyYdwlieK86BiV5d.jpg",
-      "studio": "HBO Documentary Films",
-      "budget": 0,
-      "country": "US",
-      "original_language": "en",
-      "original_title": "Bring Me the Beauties: A Model Cult",
-      "display_title": "Bring Me the Beauties: A Model Cult",
-      "crew": {
-        "director": "Chris Smith",
-        "cast": [
-          "Hoyt Richards",
-          "Frederick von Mierers",
-          "Dar Dixon",
-          "Fabio",
-          "Stephanie Barton-Farcas"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-05",
-      "imdb_rating": "7.3",
-      "letterboxd_score": null,
-      "keywords": [
-        "miniseries"
-      ],
-      "_trailer_source": "gemini_playwright",
-      "_digital_date_source": "first_air_date",
-      "_needs_review": false,
-      "is_slop": false,
-      "_slop_reason": "prestige_streaming:max",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "metacritic_score",
-        "letterboxd_score"
-      ],
-      "reissue_label": null,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": true,
-        "is_documentary": true,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "_slop_confidence": "strong",
-      "_reissue": false
-    },
-    {
-      "id": "1596168",
-      "title": "A Tribe Called Love",
-      "digital_date": "2026-06-01",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Set in a Somali neighbourhood in Toronto, teenagers Farah and Halima as they fall in love despite warnings to stay apart because they’re from different tribes. When Farah’s family relocates to Vancouver, the relationship ends abruptly — until they reconnect in their twenties in Toronto. But the same cultural barriers that once divided them soon resurface. Will their love be strong enough to rewrite their fate, or are some histories destined to repeat themselves?",
-      "genres": [
-        "Romance"
-      ],
-      "runtime": 95,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [
-          "Amazon Video"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=jOHn4xXqHII",
-        "rt": "https://www.rottentomatoes.com/m/a_tribe_called_love",
-        "justwatch": "https://www.justwatch.com/us/movie/a-tribe-called-love",
-        "cast_wiki": {
-          "Dalmar Abuzeid": "https://en.wikipedia.org/wiki/Dalmar_Abuzeid"
-        },
-        "imdb": "https://www.imdb.com/title/tt29224728/",
-        "letterboxd": "https://letterboxd.com/film/a-tribe-called-love",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1596168.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a35d7881-ed1e-4339-bbd4-78307c697a7e&tag=nrw04-20",
-            "rent_price": "$4.99",
-            "buy_price": "$9.99",
-            "price": "$4.99"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/a-tribe-called-love/umc.cmc.2so5s92bddxm1d6e47i7si9v?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1896509785",
-            "rent_price": "$4.99",
-            "buy_price": "$9.99",
-            "price": "$4.99"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-02T12:45:48.592016",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/u6Ffel5IFruW0D0JpYKFJiyzHe8.jpg",
-      "studio": "Mahaica Point Media",
-      "budget": 0,
-      "country": "Canada",
-      "original_language": "en",
-      "original_title": "A Tribe Called Love",
-      "display_title": "A Tribe Called Love",
-      "crew": {
-        "director": "Mohamed Ahmed",
-        "cast": [
-          "Dalmar Abuzeid",
-          "Feaven Abera",
-          "Omar Abdi",
-          "Yonis Mohamoud",
-          "Ahmed Ibrahim"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 2,
-      "_last_enrichment_attempt": "2026-06-02",
-      "imdb_rating": "8.7",
-      "letterboxd_score": null,
-      "keywords": [],
-      "_trailer_source": "gemini_playwright",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "wikipedia",
-        "metacritic_score",
-        "letterboxd_score"
-      ],
-      "reissue_label": null,
-      "featured": false,
-      "awards": "1 nomination total",
-      "filters": {
-        "is_indie": true,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": false,
-        "manual_override": null
-      },
-      "_watch_links_verified": "2026-06-03T14:13:15.276625",
-      "capsule": "Modern Romeo+Juliet story, set in a vibrant Somali neighborhood in Toronto. Blends *Scott Pilgrim*'s pop style with the community dynamics of *Do the Right Thing*.\n\nFirst narrative feature film shot in Canada by a Somali-Canadian filmmaker.",
-      "is_slop": false,
-      "_slop_confidence": "weak",
-      "_reissue": false
-    },
-    {
-      "id": "1669984",
-      "title": "Accidental Truth: Next - Beyond UFO Disclosure",
-      "digital_date": "2026-06-01",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "An amazing cast takes you on a journey beyond UFO Disclosure. It starts within the cement walls of Washington DC, and then guides you beyond your imagination. Prepare for an awesome adventure that will leave you questioning EVERYTHING.",
-      "genres": [
-        "Documentary"
-      ],
-      "runtime": 105,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [
-          "Amazon Video",
-          "Google Play Movies",
-          "YouTube"
-        ],
-        "buy": [
-          "Google Play Movies",
-          "YouTube"
-        ],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=RTTG9XjrZxk",
-        "rt": null,
-        "justwatch": "https://www.justwatch.com/us/movie/accidental-truth-next-beyond-ufo-disclosure",
-        "cast_wiki": {
-          "John B. Alexander": "https://en.wikipedia.org/wiki/John_B._Alexander"
-        },
-        "imdb": "https://www.imdb.com/title/tt40795889/",
-        "letterboxd": "https://letterboxd.com/film/accidental-truth-next-beyond-ufo-disclosure",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1669984.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.f03cf4d1-1478-4ed5-8ed0-aa5c1eaeb81f&tag=nrw04-20",
-            "rent_price": "$4.99",
-            "price": "$9.99",
-            "buy_price": "$14.99"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/accidental-truth-next-beyond-ufo-disclosure/umc.cmc.2q6ap7pfj8elqrp3ih7qvjx2m?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1895100088",
-            "rent_price": "$5.99",
-            "buy_price": "$19.99",
-            "price": "$5.99"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-01T15:57:00.547131",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/1LMHfyCeVria2ddez1zWWC3uEun.jpg",
-      "studio": "Ron James Television & Media",
-      "budget": 120000,
-      "country": "US",
-      "original_language": "en",
-      "original_title": "Accidental Truth: Next - Beyond UFO Disclosure",
-      "display_title": "Accidental Truth: Next - Beyond UFO Disclosure",
-      "crew": {
-        "director": "Ron James",
-        "cast": [
-          "John B. Alexander",
-          "Mike Bara",
-          "Ralph Blumenthal",
-          "Tim Burchett",
-          "Eric Burlison"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-01",
-      "imdb_rating": null,
-      "letterboxd_score": null,
-      "_trailer_source": "gemini_playwright",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "is_slop": true,
-      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "wikipedia",
-        "imdb_rating",
-        "metacritic_score",
-        "letterboxd_score"
-      ],
-      "reissue_label": null,
-      "featured": false,
-      "_watch_links_verified": "2026-06-18T13:39:27.519910",
-      "keywords": [],
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": true,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "_slop_confidence": "weak",
-      "capsule": "Sequel doc to **Ron James**'s award-winning *Accidental Truth: UFO Revelations*.\n\nNarrated by **[Matthew Modine](https://en.wikipedia.org/wiki/Matthew_Modine)** (*Stranger Things*), and featuring **[Thomas Jane](https://en.wikipedia.org/wiki/Thomas_Jane)** (*The Expanse*).\n\nOne of the final on-camera interviews given by the late **[Nick Pope](https://en.wikipedia.org/wiki/Nick_Pope_(journalist))**, renowned UAP researcher.",
-      "_reissue": false
-    },
-    {
-      "id": "768744",
-      "title": "My Hero Academia: World Heroes' Mission",
-      "digital_date": "2026-06-01",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "A mysterious group called Humarize strongly believes in the Quirk Singularity Doomsday theory which states that when quirks get mixed further in with future generations, that power will bring forth the end of humanity. In order to save everyone, the Pro-Heroes around the world ask UA Academy heroes-in-training to assist them and form a world-class selected hero team. It’s up to the heroes to save the world and the future of heroes in what is the most dangerous crisis to take place yet in My Hero Academia.",
-      "genres": [
-        "Animation",
-        "Action",
-        "Adventure",
-        "Science Fiction"
-      ],
-      "runtime": 105,
-      "year": 2021,
-      "rt_score": "87%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/My_Hero_Academia:_World_Heroes%27_Mission",
-        "trailer": "https://www.youtube.com/watch?v=0r4OB67me6I",
-        "rt": "https://www.rottentomatoes.com/m/my_hero_academia_world_heroes_mission",
-        "justwatch": "https://www.justwatch.com/us/movie/my-hero-academia-movie-3",
-        "cast_wiki": {
-          "Daiki Yamashita": "https://en.wikipedia.org/wiki/Daiki_Yamashita",
-          "Nobuhiko Okamoto": "https://en.wikipedia.org/wiki/Nobuhiko_Okamoto",
-          "Yuki Kaji": "https://en.wikipedia.org/wiki/Yuki_Kaji"
-        },
-        "metacritic": "https://www.metacritic.com/movie/my-hero-academia-world-heroes-mission/",
-        "imdb": "https://www.imdb.com/title/tt13544716/",
-        "letterboxd": "https://letterboxd.com/film/my-hero-academia-world-heroes-mission",
-        "director_wiki": "https://en.wikipedia.org/wiki/Kenji_Nagasaki",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/768744.mp4",
-        "trailer_hosted_subs": "https://f004.backblazeb2.com/file/NRW-TRAILERS/768744.en.vtt"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "Starz Roku Premium Channel",
-            "link": "https://therokuchannel.roku.com/details/599159757bc5526a9d90e884dff46b2d/my-hero-academia-world-heroes-mission?source=bing"
-          }
-        ],
-        "vod": [
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/my-hero-academia-world-heroes-mission/umc.cmc.55j4tp2zr2i8ib7rjfnkk48so?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1624528143",
-            "rent_price": "$4.99",
-            "buy_price": "$14.99",
-            "price": "$4.99"
-          },
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a51fc46c-e580-4153-a4f6-cfb42593f752&tag=nrw04-20",
-            "rent_price": "$5.99",
-            "buy_price": "$14.99",
-            "price": "$5.99"
-          },
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/My-Hero-Academia-World-Heroes-Mission-Original-Japanese-Version-/2037041",
-            "rent_price": "$5.99",
-            "buy_price": "$14.99",
-            "price": "$5.99"
-          },
-          {
-            "service": "Zavvi",
-            "link": "https://us.zavvi.com/p/dvd/my-hero-academia-world-heroes-mission/13553708/",
-            "buy_price": "$20.99",
-            "price": "$20.99"
-          },
-          {
-            "service": "Barnes & Noble",
-            "link": "https://www.barnesandnoble.com/w/dvd-my-hero-academia-world-heroes-mission-kenji-nagasaki/36905773",
-            "buy_price": "$24.49",
-            "price": "$24.49"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-01T15:56:58.650188",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/jzP5rPwwNqUGERlrUzKKljfyulf.jpg",
-      "studio": "BONES",
-      "budget": 0,
-      "country": "Japan",
-      "original_language": "ja",
-      "original_title": "僕のヒーローアカデミア THE MOVIE ワールド ヒーローズ ミッション",
-      "display_title": "My Hero Academia: World Heroes' Mission",
-      "crew": {
-        "director": "Kenji Nagasaki",
-        "cast": [
-          "Daiki Yamashita",
-          "Nobuhiko Okamoto",
-          "Yuki Kaji",
-          "Ryo Yoshizawa",
-          "Kazuya Nakai"
-        ]
-      },
-      "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-01",
-      "imdb_rating": "7.1",
-      "letterboxd_score": "3.4",
-      "_trailer_source": "gemini_playwright",
-      "metacritic_score": "51",
-      "_digital_date_source": "tmdb_type4",
-      "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
-      "status": "available",
-      "reissue_label": null,
-      "featured": false,
-      "keywords": [
-        "japan",
-        "hero",
-        "superhero",
-        "school",
-        "fighting",
-        "super power",
-        "shounen",
-        "anime"
-      ],
-      "filters": {
-        "is_indie": false,
-        "is_foreign": true,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "capsule": "Third film in the [My Hero Academia](https://en.wikipedia.org/wiki/My_Hero_Academia) trilogy.\n\nMassive anime theatrical hit here and in Japan. Opened #2 in North America behind *Dune*, but with a higher per-theater average.\n\nAnimator Suzuki drew \"stacks upon stacks\" of frames by hand for a single action sequence; co-workers felt tired just watching.",
-      "pull_quotes": [
-        {
-          "text": "Breathtaking animation.",
-          "critic": "Rafael Motamayor",
-          "outlet": "IGN Movies",
-          "source": "rt_critic",
-          "review_url": "https://www.ign.com/articles/my-hero-academia-world-heroes-mission-review"
-        },
-        {
-          "text": "one of the most accomplished anime studios in Japan, once again cuts loose with explosive colors, mind boggling 3DCG background pieces and razor-sharp action sequences.",
-          "critic": "Courtney Lanning",
-          "outlet": "Arkansas Democrat-Gazette",
-          "source": "rt_critic",
-          "review_url": "https://www.arkansasonline.com/news/2021/oct/29/world-heroes-mission/?entertainment-movies"
-        }
-      ],
-      "is_slop": false,
-      "_slop_confidence": "weak",
-      "_reissue": false
-    },
-    {
-      "id": "1380316",
-      "title": "Is God Is",
-      "digital_date": "2026-06-01",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Two sisters embark on an epic quest for revenge, confronting a charged family history that pushes them to extraordinary lengths.",
-      "genres": [
-        "Drama",
-        "Thriller"
-      ],
-      "runtime": 99,
-      "year": 2026,
-      "rt_score": "97%",
-      "providers": {
-        "rent": [
-          "Amazon Video"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Is_God_Is_(film)",
-        "trailer": "https://www.youtube.com/watch?v=pgtdkuNFoKk",
-        "rt": "https://www.rottentomatoes.com/m/is_god_is",
-        "justwatch": "https://www.justwatch.com/us/movie/is-god-is",
-        "cast_wiki": {
-          "Kara Young": "https://en.wikipedia.org/wiki/Kara_Young_(actress)",
-          "Mallori Johnson": "https://en.wikipedia.org/wiki/Mallori_Johnson",
-          "Vivica A. Fox": "https://en.wikipedia.org/wiki/Vivica_A._Fox"
-        },
-        "metacritic": "https://www.metacritic.com/movie/is-god-is/",
-        "imdb": "https://www.imdb.com/title/tt34379307/",
-        "letterboxd": "https://letterboxd.com/film/is-god-is",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1380316.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.2e30b34d-4b95-4c63-af45-1927d7aa38c3&tag=nrw04-20",
-            "rent_price": "$14.99",
-            "price": "$14.99",
-            "buy_price": "$19.99"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/is-god-is/umc.cmc.6hbydxuidk0rf4es9wua1fhku?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1895778034",
-            "rent_price": "$14.99",
-            "buy_price": "$19.99",
-            "price": "$14.99"
-          },
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Is-God-Is/4966588",
-            "rent_price": "$14.99",
-            "buy_price": "$19.99",
-            "price": "$14.99"
-          }
-        ],
-        "streaming": {
-          "service": "MGM Plus",
-          "link": "https://www.mgmplus.com/movie/is-god-is-2026"
-        }
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-01T15:55:42.666344",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/rCYQGHdoz7qwYsb6wXETJfUfDLX.jpg",
-      "studio": "Linden Productions",
-      "budget": 14800000,
-      "country": "United States of America",
-      "original_language": "en",
-      "original_title": "Is God Is",
-      "display_title": "Is God Is",
-      "crew": {
-        "director": "Aleshea Harris",
-        "cast": [
-          "Kara Young",
-          "Mallori Johnson",
-          "Vivica A. Fox",
-          "Sterling K. Brown",
-          "Janelle Monáe"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-01",
-      "imdb_rating": "7.3",
-      "letterboxd_score": "3.7",
-      "_trailer_source": "gemini_playwright",
-      "metacritic_score": "84",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "_slop_reason": "score:-1(good_imdb)",
-      "status": "available",
-      "reissue_label": null,
-      "featured": false,
-      "_watch_links_verified": "2026-06-16T15:13:41.599115",
-      "keywords": [
-        "child abuse",
-        "fire",
-        "twin sister",
-        "based on play or musical",
-        "twin brother",
-        "revenge",
-        "arson",
-        "family abandonment",
-        "domestic violence",
-        "rage",
-        "twins",
-        "all black cast",
-        "dying mother",
-        "disfigured face",
-        "burn victim",
-        "neo-western",
-        "disfigurement",
-        "bedridden",
-        "woman director",
-        "sister sister relationship",
-        "southern gothic",
-        "revenge thriller",
-        "abused child",
-        "female rage",
-        "father daughter estrangement",
-        "directorial debut"
-      ],
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "pull_quotes": [
-        {
-          "text": "Oh, to be a Black woman allowed to fully embrace her rage for the men who seek to destroy her. This sentiment feels core to Is God Is, the engrossing, unconventional, and disturbing revenge thriller from first-time filmmaker Aleshea Harris.",
-          "critic": "Carolyn Hinds",
-          "outlet": "Mediaversity Reviews",
-          "source": "rt_critic",
-          "review_url": "https://www.mediaversityreviews.com/film-reviews/2026/5/27/is-god-is"
-        },
-        {
-          "text": "It's less serious than a Warner Bros. cartoon.",
-          "critic": "Armond White",
-          "outlet": "National Review",
-          "source": "rt_critic",
-          "review_url": ""
-        }
-      ],
-      "is_slop": false,
-      "_slop_confidence": "weak",
-      "_reissue": false
-    },
-    {
-      "id": "1496179",
-      "title": "I’ve Seen All I Need to See",
-      "digital_date": "2026-06-01",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "After the sudden and violent death of her estranged sister, an actor leaves Los Angeles and returns to her hometown in search of answers.",
-      "genres": [
-        "Drama",
-        "Crime",
-        "Thriller"
-      ],
-      "runtime": 84,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [
-          "Amazon Video"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=qut7pMNm_68",
-        "rt": "https://www.rottentomatoes.com/m/ive_seen_all_i_need_to_see",
-        "justwatch": "https://www.justwatch.com/us/movie/ive-seen-all-i-need-to-see",
-        "letterboxd": "https://letterboxd.com/film/ive-seen-all-i-need-to-see",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1496179.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.539f1eba-c14e-4a4f-a5a5-dc09264c5462&tag=nrw04-20",
-            "rent_price": "$4.99",
-            "price": "$4.99",
-            "buy_price": "$9.99"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/ive-seen-all-i-need-to-see/umc.cmc.77u63drhaggwwnilp443g05j2?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1895595761",
-            "rent_price": "$5.99",
-            "buy_price": "$12.99",
-            "price": "$5.99"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-01T15:11:29.177463",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/m6FxHLENbAj66KnWmqeVylHrUiS.jpg",
-      "studio": "Coyote Blood LLC",
-      "budget": 0,
-      "country": "US",
-      "original_language": "en",
-      "original_title": "I’ve Seen All I Need to See",
-      "display_title": "I’ve Seen All I Need to See",
-      "crew": {
-        "director": "Zeshaan Younus",
-        "cast": [
-          "Renee Gagner",
-          "Rosie McDonald",
-          "Sydney McCarthy",
-          "John R. Smith Jnr.",
-          "Nick Samson"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-01",
-      "imdb_rating": null,
-      "letterboxd_score": "3.4",
-      "_trailer_source": "gemini_playwright",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "wikipedia",
-        "imdb_rating",
-        "metacritic_score"
-      ],
-      "reissue_label": null,
-      "featured": false,
-      "_watch_links_verified": "2026-06-03T14:13:17.084017",
-      "keywords": [],
-      "filters": {
-        "is_indie": true,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": false,
-        "manual_override": null
-      },
-      "capsule": "Experimental noir thriller.\n\nPakistani-Mexican-American filmmaker who cites Malick and black metal as big influences.\n\nShot in 10 days over six months. Won the Grand Jury Prize at [Flickers' Rhode Island International Film Festival](https://en.wikipedia.org/wiki/Rhode_Island_International_Film_Festival).",
-      "pull_quotes": [
-        {
-          "text": "frustrating and often exasperating watch.",
-          "critic": "Dulcie Pearce",
-          "outlet": "The Sun (UK)",
-          "source": "rt_critic",
-          "review_url": "https://www.thesun.co.uk/tv/38982002/hokum-film-review-dulcie-pearce/"
-        },
-        {
-          "text": "actors shot in closeup deliver lines looking pensive",
-          "critic": "Cath Clarke",
-          "outlet": "Guardian",
-          "source": "rt_critic",
-          "review_url": "https://www.theguardian.com/film/2026/apr/28/ive-seen-all-i-need-to-see-review-murky-indie-thriller-follows-woman-home-after-her-sister-is-murdered"
-        },
-        {
-          "text": "If a film could be aggressively emo, this is the one.",
-          "critic": "Bradley Gibson",
-          "outlet": "Film Threat",
-          "source": "rt_critic",
-          "review_url": "https://filmthreat.com/reviews/ive-seen-all-i-need-to-see/"
-        }
-      ],
-      "_slop_confidence": "weak",
-      "_reissue": false
-    },
-    {
-      "id": "1269644",
-      "title": "Amrum",
-      "digital_date": "2026-06-01",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "On Amrum Island in spring 1945, twelve-year-old Nanning hunts seals, fishes at night, and works the fields to help feed his family. When the war ends, his mother sinks into depression, and he must navigate new conflicts while struggling to find his own path.",
-      "genres": [
-        "Drama"
-      ],
-      "runtime": 93,
-      "year": 2025,
-      "rt_score": "98%",
-      "providers": {
-        "rent": [
-          "Amazon Video"
-        ],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Amrum_(film)",
-        "trailer": "https://www.youtube.com/watch?v=-izT0MKkvZY",
-        "rt": "https://www.rottentomatoes.com/m/amrum",
-        "justwatch": "https://www.justwatch.com/us/movie/amrum",
-        "cast_wiki": {
-          "Diane Kruger": "https://en.wikipedia.org/wiki/Diane_Kruger"
-        },
-        "metacritic": "https://www.metacritic.com/movie/amrum/",
-        "imdb": "https://www.imdb.com/title/tt22507216/",
-        "letterboxd": "https://letterboxd.com/film/amrum",
-        "director_wiki": "https://en.wikipedia.org/wiki/Fatih_Akin",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1269644.mp4",
-        "trailer_hosted_subs": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1269644.en.vtt"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.9daeb4e5-1378-4d8c-b100-b7777cefe3df&tag=nrw04-20",
-            "rent_price": "$5.99",
-            "price": "$5.99",
-            "buy_price": "$12.99"
-          },
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Amrum/4928757",
-            "rent_price": "$5.99",
-            "buy_price": "$12.99",
-            "price": "$5.99"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/amrum/umc.cmc.nsla0hyepxrzjzbuaifhpzno?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1888602512",
-            "rent_price": "$5.99",
-            "buy_price": "$7.99",
-            "price": "$5.99"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-01T15:09:03.004020",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/z87OLGYXojP3bJjp0EpbutpvGTy.jpg",
-      "studio": "Bombero International",
-      "budget": 0,
-      "country": "Germany",
-      "original_language": "de",
-      "original_title": "Amrum",
-      "display_title": "Amrum",
-      "crew": {
-        "director": "Fatih Akin",
-        "cast": [
-          "Jasper Billerbeck",
-          "Diane Kruger",
-          "Kian Köppke",
-          "Laura Tonke",
-          "Hark Bohm"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-01",
-      "imdb_rating": "7.2",
-      "letterboxd_score": "3.4",
-      "_trailer_source": "gemini_playwright",
-      "metacritic_score": "76",
-      "_digital_date_source": "detection",
-      "_needs_review": true,
-      "_quality_warnings": [
-        "Title matches original foreign title (language: de): 'Amrum'"
-      ],
-      "_slop_reason": "score:-1(good_imdb)",
-      "status": "available",
-      "reissue_label": null,
-      "featured": true,
-      "_watch_links_verified": "2026-06-30T11:16:39.164266",
-      "keywords": [
-        "island",
-        "germany",
-        "world war ii",
-        "north sea",
-        "coming of age",
-        "post world war ii"
-      ],
-      "filters": {
-        "is_indie": false,
-        "is_foreign": true,
-        "is_staff_pick": true,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "capsule": "**[RZA](https://en.wikipedia.org/wiki/RZA)**-directed action-exploitation throwback, presented by **[Quentin Tarantino](https://en.wikipedia.org/wiki/Quentin_Tarantino)**.\n\n**[RZA](https://en.wikipedia.org/wiki/RZA)** began developing this in 2011, rediscovered the script a decade later during the writer's strike, and finished it on a tour bus with [Nas](https://en.wikipedia.org/wiki/Nas).\n\nSet in Ohio.",
-      "pull_quotes": [
-        {
-          "text": "This really is 'a Hark Bohm Film by Fatih Akin,' which conversely has us more excited than we have been in a long time to see what Akin gets up to next.",
-          "critic": "David Opie",
-          "outlet": "IndieWire",
-          "source": "rt_critic",
-          "review_url": "https://www.indiewire.com/criticism/movies/amrum-review-fatih-akin-1235189194/"
-        },
-        {
-          "text": "Can a brainwashed boy in Hitler Youth learn to stop worrying and love being a Nazi hater? Beautifully directed.",
-          "critic": "Peter Travers",
-          "outlet": "The Travers Take",
-          "source": "rt_critic",
-          "review_url": "https://www.thetraverstake.com/amrum/"
-        }
-      ],
-      "is_slop": false,
-      "_slop_confidence": "weak",
-      "_reissue": false
-    },
-    {
       "id": "13754",
       "title": "Tekkonkinkreet",
       "year": 2006,
@@ -94121,7 +93303,7 @@
       "bootstrap_date": false,
       "manually_corrected": false,
       "runtime": 103,
-      "rt_score": "77%",
+      "rt_score": "78%",
       "studio": "Aniplex",
       "budget": 0,
       "country": "Japan",
@@ -94170,8 +93352,8 @@
         "manual_override": null
       },
       "display_title": "Tekkonkinkreet",
-      "_enrichment_attempts": 12,
-      "_last_enrichment_attempt": "2026-08-29",
+      "_enrichment_attempts": 13,
+      "_last_enrichment_attempt": "2026-08-31",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "pre_order_links": [
@@ -94180,16 +93362,6 @@
           "link": "https://us.zavvi.com/p/blu-ray/tekkon-kinkreet/15991088/",
           "buy_price": "$25.99",
           "price": "$25.99"
-        },
-        {
-          "service": "Amazon",
-          "link": "https://www.amazon.com/gp/video/detail/B0GXTCZFCD",
-          "type": "pre_order"
-        },
-        {
-          "service": "Fandango At Home",
-          "link": "https://athome.fandango.com/content/browse/details/Tekkonkinkreet/128801",
-          "type": "pre_order"
         }
       ],
       "imdb_rating": "7.5",
@@ -94227,8 +93399,8 @@
       "_reissue": true,
       "digital_date": "2026-09-01",
       "_wiki_language_count": 14,
-      "_imdb_votes": 15750,
-      "_watch_links_verified": "2026-08-29T14:01:34.315296"
+      "_imdb_votes": 15758,
+      "_watch_links_verified": "2026-08-31T15:58:42.727581"
     },
     {
       "id": "1497325",
@@ -95307,8 +94479,8 @@
   ],
   "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tF9w50iumYcQPYseQ6qL7X7",
   "_metadata": {
-    "last_discovery_write": "2026-08-30T13:38:00.854688",
-    "discovery_count": 807,
+    "last_discovery_write": "2026-08-31T15:46:55.934890",
+    "discovery_count": 802,
     "schema_version": "2.0"
   }
 }
