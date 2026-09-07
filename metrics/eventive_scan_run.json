@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-09-06T11:49:54.912071",
+  "timestamp": "2026-09-07T13:46:38.487975",
   "operation": "eventive_scan_pipeline",
   "stats": {
-    "festivals_scanned": 132,
-    "festivals_with_films": 127,
+    "festivals_scanned": 133,
+    "festivals_with_films": 128,
     "festivals_failed": 47,
-    "total_films_indexed": 2649,
+    "total_films_indexed": 2658,
     "expired_filtered": 0,
-    "unique_active": 1778,
-    "tracking_matches": 93,
+    "unique_active": 1787,
+    "tracking_matches": 97,
     "wall_matches": 35,
-    "new_cached": 84,
+    "new_cached": 88,
     "skipped_undated": 44
   },
   "tracking_matches": [
@@ -109,54 +109,6 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
-    },
-    {
-      "movie_id": "1631918",
-      "nrw_title": "Hunky Jesus",
-      "eventive_title": "Hunky Jesus",
-      "festival": "Flip the Script Fest 2026",
-      "link": "https://watch.eventive.org/flipthescriptfest/play/6a96db743787d16fbc4e1b3b",
-      "start": "2026-10-02T00:00:00.000Z",
-      "end": "2026-10-12T04:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1561978",
-      "nrw_title": "The Ark",
-      "eventive_title": "The Ark",
-      "festival": "SF CritterFest",
-      "link": "https://watch.eventive.org/sfcritterfest/play/6a71f391088fbab51ccc6547",
-      "start": "2026-09-17T07:00:00.000Z",
-      "end": "2026-09-21T06:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1585144",
-      "nrw_title": "Connection",
-      "eventive_title": "The Connection",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1049439",
-      "nrw_title": "The Golden Age",
-      "eventive_title": "The Golden Age",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
     },
     {
       "movie_id": "1556927",
@@ -279,40 +231,28 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1693624",
-      "nrw_title": "Moonchild: The Life and Music of Yusuf Salim",
-      "eventive_title": "Moonchild: The Life and Music of Yusuf Salim",
-      "festival": "2026 Richmond International Film Festival",
-      "link": "https://watch.eventive.org/riff/play/6a84ef8c7cb79d4db701eb30",
-      "start": "2026-09-22T16:00:00.000Z",
-      "end": "2026-09-28T03:45:00.000Z",
-      "status": "upcoming",
+      "movie_id": "1585144",
+      "nrw_title": "Connection",
+      "eventive_title": "The Connection",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
+      "start": "",
+      "end": "",
+      "status": "active",
       "match_tier": 1,
-      "nrw_status": "available"
+      "nrw_status": "tracking"
     },
     {
-      "movie_id": "1553362",
-      "nrw_title": "This is Pike County",
-      "eventive_title": "This is Pike County",
-      "festival": "2026 Richmond International Film Festival",
-      "link": "https://watch.eventive.org/riff/play/6a4e7a2a24702927bcb1766b",
-      "start": "2026-09-22T16:00:00.000Z",
-      "end": "2026-09-23T03:45:00.000Z",
-      "status": "upcoming",
+      "movie_id": "1049439",
+      "nrw_title": "The Golden Age",
+      "eventive_title": "The Golden Age",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
+      "start": "",
+      "end": "",
+      "status": "active",
       "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1454103",
-      "nrw_title": "Widow Champion",
-      "eventive_title": "Widow Champion",
-      "festival": "2026 Richmond International Film Festival",
-      "link": "https://watch.eventive.org/riff/play/6a646c4302dd449afd68be30",
-      "start": "2026-09-22T16:00:00.000Z",
-      "end": "2026-09-28T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
+      "nrw_status": "tracking"
     },
     {
       "movie_id": "1595126",
@@ -471,6 +411,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1631918",
+      "nrw_title": "Hunky Jesus",
+      "eventive_title": "Hunky Jesus",
+      "festival": "Flip the Script Fest 2026",
+      "link": "https://watch.eventive.org/flipthescriptfest/play/6a96db743787d16fbc4e1b3b",
+      "start": "2026-10-02T00:00:00.000Z",
+      "end": "2026-10-12T04:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1585036",
       "nrw_title": "Mickey & Richard",
       "eventive_title": "MICKEY & RICHARD",
@@ -478,6 +430,18 @@
       "link": "https://watch.eventive.org/2026outonfilm/play/6a850199bc02ceab074cadbb",
       "start": "2026-10-04T09:00:00.000Z",
       "end": "2026-10-12T04:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1561978",
+      "nrw_title": "The Ark",
+      "eventive_title": "The Ark",
+      "festival": "SF CritterFest",
+      "link": "https://watch.eventive.org/sfcritterfest/play/6a71f391088fbab51ccc6547",
+      "start": "2026-09-17T07:00:00.000Z",
+      "end": "2026-09-21T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
@@ -502,6 +466,18 @@
       "link": "https://watch.eventive.org/bostonfilmfestival2026/play/6a8cc86b7bccd388fb0fae71",
       "start": "2026-09-18T23:00:00.000Z",
       "end": "2026-09-22T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1474514",
+      "nrw_title": "Palestine Comedy Club",
+      "eventive_title": "Palestine Comedy Club",
+      "festival": "Toronto Palestine Film Festival",
+      "link": "https://watch.eventive.org/tpff/play/6a932c30b27cfc6e67479b72",
+      "start": "2026-10-04T21:30:00.000Z",
+      "end": "2026-10-10T03:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
@@ -927,6 +903,102 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1522065",
+      "nrw_title": "The Plan",
+      "eventive_title": "The Plan",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c6a",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1630504",
+      "nrw_title": "The Last Picture Shows",
+      "eventive_title": "The Last Picture Shows",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c63",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1596302",
+      "nrw_title": "The Oldest Person in the World",
+      "eventive_title": "The Oldest Person in the World",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c77",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1639786",
+      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c83",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1229906",
+      "nrw_title": "Family",
+      "eventive_title": "Family",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524cad",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1693624",
+      "nrw_title": "Moonchild: The Life and Music of Yusuf Salim",
+      "eventive_title": "Moonchild: The Life and Music of Yusuf Salim",
+      "festival": "2026 Richmond International Film Festival",
+      "link": "https://watch.eventive.org/riff/play/6a84ef8c7cb79d4db701eb30",
+      "start": "2026-09-22T16:00:00.000Z",
+      "end": "2026-09-28T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1553362",
+      "nrw_title": "This is Pike County",
+      "eventive_title": "This is Pike County",
+      "festival": "2026 Richmond International Film Festival",
+      "link": "https://watch.eventive.org/riff/play/6a4e7a2a24702927bcb1766b",
+      "start": "2026-09-22T16:00:00.000Z",
+      "end": "2026-09-23T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1454103",
+      "nrw_title": "Widow Champion",
+      "eventive_title": "Widow Champion",
+      "festival": "2026 Richmond International Film Festival",
+      "link": "https://watch.eventive.org/riff/play/6a646c4302dd449afd68be30",
+      "start": "2026-09-22T16:00:00.000Z",
+      "end": "2026-09-28T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1436981",
       "nrw_title": "Little Syria",
       "eventive_title": "Little Syria",
@@ -980,18 +1052,6 @@
       "eventive_title": "The [Conserv]atives",
       "festival": "Welcome to Port Townsend Film Festival 2026",
       "link": "https://watch.eventive.org/ptff2026/play/6a7232fecf7a39743f8c24f7",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-05T06:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1639786",
-      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a723316c8ffab1d3434c934",
       "start": "2026-09-28T15:00:00.000Z",
       "end": "2026-10-05T06:00:00.000Z",
       "status": "upcoming",
@@ -1117,18 +1177,6 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1474514",
-      "nrw_title": "Palestine Comedy Club",
-      "eventive_title": "Palestine Comedy Club",
-      "festival": "Toronto Palestine Film Festival",
-      "link": "https://watch.eventive.org/tpff/play/6a932c30b27cfc6e67479b72",
-      "start": "2026-10-04T21:30:00.000Z",
-      "end": "2026-10-10T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
     }
   ],
   "wall_matches": [
@@ -1177,18 +1225,6 @@
       "start": "2026-09-04T04:00:00.000Z",
       "end": "2026-09-14T03:59:00.000Z",
       "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1561978",
-      "nrw_title": "The Ark",
-      "eventive_title": "The Ark",
-      "festival": "SF CritterFest",
-      "link": "https://watch.eventive.org/sfcritterfest/play/6a71f391088fbab51ccc6547",
-      "start": "2026-09-17T07:00:00.000Z",
-      "end": "2026-09-21T06:59:00.000Z",
-      "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -1248,42 +1284,6 @@
       "link": "https://watch.eventive.org/colmdfilmfest/play/6a653995033cd3b63c1f4383",
       "start": "2026-09-07T14:00:00.000Z",
       "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1693624",
-      "nrw_title": "Moonchild: The Life and Music of Yusuf Salim",
-      "eventive_title": "Moonchild: The Life and Music of Yusuf Salim",
-      "festival": "2026 Richmond International Film Festival",
-      "link": "https://watch.eventive.org/riff/play/6a84ef8c7cb79d4db701eb30",
-      "start": "2026-09-22T16:00:00.000Z",
-      "end": "2026-09-28T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1553362",
-      "nrw_title": "This is Pike County",
-      "eventive_title": "This is Pike County",
-      "festival": "2026 Richmond International Film Festival",
-      "link": "https://watch.eventive.org/riff/play/6a4e7a2a24702927bcb1766b",
-      "start": "2026-09-22T16:00:00.000Z",
-      "end": "2026-09-23T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1454103",
-      "nrw_title": "Widow Champion",
-      "eventive_title": "Widow Champion",
-      "festival": "2026 Richmond International Film Festival",
-      "link": "https://watch.eventive.org/riff/play/6a646c4302dd449afd68be30",
-      "start": "2026-09-22T16:00:00.000Z",
-      "end": "2026-09-28T03:45:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
@@ -1421,6 +1421,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1561978",
+      "nrw_title": "The Ark",
+      "eventive_title": "The Ark",
+      "festival": "SF CritterFest",
+      "link": "https://watch.eventive.org/sfcritterfest/play/6a71f391088fbab51ccc6547",
+      "start": "2026-09-17T07:00:00.000Z",
+      "end": "2026-09-21T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1426940",
       "nrw_title": "Above the Line",
       "eventive_title": "Above the Line",
@@ -1440,6 +1452,66 @@
       "link": "https://watch.eventive.org/bostonfilmfestival2026/play/6a8cc86b7bccd388fb0fae71",
       "start": "2026-09-18T23:00:00.000Z",
       "end": "2026-09-22T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1474514",
+      "nrw_title": "Palestine Comedy Club",
+      "eventive_title": "Palestine Comedy Club",
+      "festival": "Toronto Palestine Film Festival",
+      "link": "https://watch.eventive.org/tpff/play/6a932c30b27cfc6e67479b72",
+      "start": "2026-10-04T21:30:00.000Z",
+      "end": "2026-10-10T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1639786",
+      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c83",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1693624",
+      "nrw_title": "Moonchild: The Life and Music of Yusuf Salim",
+      "eventive_title": "Moonchild: The Life and Music of Yusuf Salim",
+      "festival": "2026 Richmond International Film Festival",
+      "link": "https://watch.eventive.org/riff/play/6a84ef8c7cb79d4db701eb30",
+      "start": "2026-09-22T16:00:00.000Z",
+      "end": "2026-09-28T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1553362",
+      "nrw_title": "This is Pike County",
+      "eventive_title": "This is Pike County",
+      "festival": "2026 Richmond International Film Festival",
+      "link": "https://watch.eventive.org/riff/play/6a4e7a2a24702927bcb1766b",
+      "start": "2026-09-22T16:00:00.000Z",
+      "end": "2026-09-23T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1454103",
+      "nrw_title": "Widow Champion",
+      "eventive_title": "Widow Champion",
+      "festival": "2026 Richmond International Film Festival",
+      "link": "https://watch.eventive.org/riff/play/6a646c4302dd449afd68be30",
+      "start": "2026-09-22T16:00:00.000Z",
+      "end": "2026-09-28T03:45:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
@@ -1493,18 +1565,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1639786",
-      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a723316c8ffab1d3434c934",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-05T06:00:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1631326",
       "nrw_title": "Left Lane Straight",
       "eventive_title": "Left Lane Straight",
@@ -1538,18 +1598,6 @@
       "end": "2026-10-12T03:59:00.000Z",
       "status": "upcoming",
       "match_tier": 2,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1474514",
-      "nrw_title": "Palestine Comedy Club",
-      "eventive_title": "Palestine Comedy Club",
-      "festival": "Toronto Palestine Film Festival",
-      "link": "https://watch.eventive.org/tpff/play/6a932c30b27cfc6e67479b72",
-      "start": "2026-10-04T21:30:00.000Z",
-      "end": "2026-10-10T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
       "nrw_status": "available"
     }
   ]
