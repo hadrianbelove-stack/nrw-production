@@ -1,19 +1,139 @@
 {
-  "timestamp": "2026-09-07T13:46:38.487975",
+  "timestamp": "2026-09-08T12:22:08.097079",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 133,
     "festivals_with_films": 128,
     "festivals_failed": 47,
-    "total_films_indexed": 2658,
+    "total_films_indexed": 2616,
     "expired_filtered": 0,
-    "unique_active": 1787,
-    "tracking_matches": 97,
-    "wall_matches": 35,
-    "new_cached": 88,
-    "skipped_undated": 44
+    "unique_active": 1796,
+    "tracking_matches": 102,
+    "wall_matches": 38,
+    "new_cached": 95,
+    "skipped_undated": 45
   },
   "tracking_matches": [
+    {
+      "movie_id": "1556927",
+      "nrw_title": "The Call",
+      "eventive_title": "The Call",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653de7b82f405642f260c6",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1654805",
+      "nrw_title": "The Call",
+      "eventive_title": "The Call",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653de7b82f405642f260c6",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1593761",
+      "nrw_title": "The Funeral",
+      "eventive_title": "The Funeral",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653e71940b290ace428d7d",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1428960",
+      "nrw_title": "Masterpiece",
+      "eventive_title": "Masterpiece",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a668d3da80b0b402f79e241",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1589370",
+      "nrw_title": "The Ride",
+      "eventive_title": "The Ride",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653f29627037773e708a75",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1307748",
+      "nrw_title": "Ride",
+      "eventive_title": "The Ride",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653f29627037773e708a75",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1542736",
+      "nrw_title": "Strangers",
+      "eventive_title": "Strangers",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a6538df58ba766235d694b1",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1616528",
+      "nrw_title": "Strangers",
+      "eventive_title": "Strangers",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a6538df58ba766235d694b1",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "removed"
+    },
+    {
+      "movie_id": "1650210",
+      "nrw_title": "Sundown",
+      "eventive_title": "Sundown",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653995033cd3b63c1f4383",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1404615",
+      "nrw_title": "Sight Unseen",
+      "eventive_title": "The Sight Unseen",
+      "festival": "MCHRFF",
+      "link": "https://watch.eventive.org/morehousefilmfestival2026/play/6a7c8636e0e4f00dca1d6c2b",
+      "start": "2026-09-27T13:00:00.000Z",
+      "end": "2026-10-05T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
     {
       "movie_id": "1546068",
       "nrw_title": "3000 Lesbians Go To York",
@@ -109,150 +229,6 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
-    },
-    {
-      "movie_id": "1556927",
-      "nrw_title": "The Call",
-      "eventive_title": "The Call",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653de7b82f405642f260c6",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1654805",
-      "nrw_title": "The Call",
-      "eventive_title": "The Call",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653de7b82f405642f260c6",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1593761",
-      "nrw_title": "The Funeral",
-      "eventive_title": "The Funeral",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653e71940b290ace428d7d",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1428960",
-      "nrw_title": "Masterpiece",
-      "eventive_title": "Masterpiece",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a668d3da80b0b402f79e241",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1589370",
-      "nrw_title": "The Ride",
-      "eventive_title": "The Ride",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653f29627037773e708a75",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1307748",
-      "nrw_title": "Ride",
-      "eventive_title": "The Ride",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653f29627037773e708a75",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1542736",
-      "nrw_title": "Strangers",
-      "eventive_title": "Strangers",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a6538df58ba766235d694b1",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1616528",
-      "nrw_title": "Strangers",
-      "eventive_title": "Strangers",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a6538df58ba766235d694b1",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "removed"
-    },
-    {
-      "movie_id": "1650210",
-      "nrw_title": "Sundown",
-      "eventive_title": "Sundown",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653995033cd3b63c1f4383",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1404615",
-      "nrw_title": "Sight Unseen",
-      "eventive_title": "The Sight Unseen",
-      "festival": "MCHRFF",
-      "link": "https://watch.eventive.org/morehousefilmfestival2026/play/6a7c8636e0e4f00dca1d6c2b",
-      "start": "2026-09-27T13:00:00.000Z",
-      "end": "2026-10-05T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1585144",
-      "nrw_title": "Connection",
-      "eventive_title": "The Connection",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1049439",
-      "nrw_title": "The Golden Age",
-      "eventive_title": "The Golden Age",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
     },
     {
       "movie_id": "1595126",
@@ -435,6 +411,30 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1585144",
+      "nrw_title": "Connection",
+      "eventive_title": "The Connection",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1049439",
+      "nrw_title": "The Golden Age",
+      "eventive_title": "The Golden Age",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
       "movie_id": "1561978",
       "nrw_title": "The Ark",
       "eventive_title": "The Ark",
@@ -468,6 +468,42 @@
       "end": "2026-09-22T03:45:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1631326",
+      "nrw_title": "Left Lane Straight",
+      "eventive_title": "Left Lane Straight",
+      "festival": "2026 Immigration Film Fest",
+      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8faa2c662a541af6f359c5",
+      "start": "2026-10-02T13:00:00.000Z",
+      "end": "2026-10-12T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1647277",
+      "nrw_title": "The Gardener",
+      "eventive_title": "The Gardener",
+      "festival": "2026 Immigration Film Fest",
+      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8fa7735371e875f78385da",
+      "start": "2026-10-02T13:00:00.000Z",
+      "end": "2026-10-12T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1686463",
+      "nrw_title": "Girl Dad",
+      "eventive_title": "Girl | Dad",
+      "festival": "2026 Immigration Film Fest",
+      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8fa89fe6e4f954e46fa37b",
+      "start": "2026-10-02T13:00:00.000Z",
+      "end": "2026-10-12T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 2,
       "nrw_status": "available"
     },
     {
@@ -508,6 +544,18 @@
     },
     {
       "movie_id": "1701331",
+      "nrw_title": "Rescue",
+      "eventive_title": "The Rescue",
+      "festival": "BendFilm Festival 2021",
+      "link": "https://watch.eventive.org/bendfilm2021/play/613a6b935b360f009237bb62",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1743514",
       "nrw_title": "Rescue",
       "eventive_title": "The Rescue",
       "festival": "BendFilm Festival 2021",
@@ -912,7 +960,7 @@
       "end": "2026-10-19T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1630504",
@@ -924,7 +972,7 @@
       "end": "2026-10-19T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1596302",
@@ -936,7 +984,7 @@
       "end": "2026-10-19T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1639786",
@@ -958,6 +1006,42 @@
       "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524cad",
       "start": "2026-10-14T23:00:00.000Z",
       "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1680441",
+      "nrw_title": "Behind Closed Doors",
+      "eventive_title": "Behind Closed Doors",
+      "festival": "Iris Prize LGBTQ+ Film Festival 2026",
+      "link": "https://watch.eventive.org/irisprize2026/play/6a9eedacca6713339730ca6b",
+      "start": "2026-10-13T12:00:00.000Z",
+      "end": "2026-10-31T23:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "removed"
+    },
+    {
+      "movie_id": "1661494",
+      "nrw_title": "As I Am",
+      "eventive_title": "As I Am",
+      "festival": "Iris Prize LGBTQ+ Film Festival 2026",
+      "link": "https://watch.eventive.org/irisprize2026/play/6a9ef0dd6d52c16304911290",
+      "start": "2026-10-15T15:00:00.000Z",
+      "end": "2026-10-31T23:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1351979",
+      "nrw_title": "Close Encounters",
+      "eventive_title": "Close Encounters",
+      "festival": "Iris Prize LGBTQ+ Film Festival 2026",
+      "link": "https://watch.eventive.org/irisprize2026/play/6a9ef3c10603a7ab45580c9d",
+      "start": "2026-10-17T10:00:00.000Z",
+      "end": "2026-10-31T23:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "tracking"
@@ -997,6 +1081,18 @@
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
+    },
+    {
+      "movie_id": "1648489",
+      "nrw_title": "Future Tense",
+      "eventive_title": "Future Tense",
+      "festival": "2026 Richmond International Film Festival",
+      "link": "https://watch.eventive.org/riff/play/6a4ddb1f4c3f58475e2da58e",
+      "start": "2026-09-22T16:00:00.000Z",
+      "end": "2026-09-28T03:45:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "tracking"
     },
     {
       "movie_id": "1436981",
@@ -1056,42 +1152,6 @@
       "end": "2026-10-05T06:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1631326",
-      "nrw_title": "Left Lane Straight",
-      "eventive_title": "Left Lane Straight",
-      "festival": "2026 Immigration Film Fest",
-      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8faa2c662a541af6f359c5",
-      "start": "2026-10-02T13:00:00.000Z",
-      "end": "2026-10-12T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1647277",
-      "nrw_title": "The Gardener",
-      "eventive_title": "The Gardener",
-      "festival": "2026 Immigration Film Fest",
-      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8fa7735371e875f78385da",
-      "start": "2026-10-02T13:00:00.000Z",
-      "end": "2026-10-12T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1686463",
-      "nrw_title": "Girl Dad",
-      "eventive_title": "Girl | Dad",
-      "festival": "2026 Immigration Film Fest",
-      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8fa89fe6e4f954e46fa37b",
-      "start": "2026-10-02T13:00:00.000Z",
-      "end": "2026-10-12T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 2,
       "nrw_status": "available"
     },
     {
@@ -1181,6 +1241,66 @@
   ],
   "wall_matches": [
     {
+      "movie_id": "1654805",
+      "nrw_title": "The Call",
+      "eventive_title": "The Call",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653de7b82f405642f260c6",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1556927",
+      "nrw_title": "The Call",
+      "eventive_title": "The Call",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653de7b82f405642f260c6",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1428960",
+      "nrw_title": "Masterpiece",
+      "eventive_title": "Masterpiece",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a668d3da80b0b402f79e241",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1589370",
+      "nrw_title": "The Ride",
+      "eventive_title": "The Ride",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653f29627037773e708a75",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1650210",
+      "nrw_title": "Sundown",
+      "eventive_title": "Sundown",
+      "festival": "Columbia Maryland Film Festival",
+      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653995033cd3b63c1f4383",
+      "start": "2026-09-07T14:00:00.000Z",
+      "end": "2026-09-14T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1258157",
       "nrw_title": "Lakeview",
       "eventive_title": "Lakeview (2024)",
@@ -1225,66 +1345,6 @@
       "start": "2026-09-04T04:00:00.000Z",
       "end": "2026-09-14T03:59:00.000Z",
       "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1654805",
-      "nrw_title": "The Call",
-      "eventive_title": "The Call",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653de7b82f405642f260c6",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1556927",
-      "nrw_title": "The Call",
-      "eventive_title": "The Call",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653de7b82f405642f260c6",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1428960",
-      "nrw_title": "Masterpiece",
-      "eventive_title": "Masterpiece",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a668d3da80b0b402f79e241",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1589370",
-      "nrw_title": "The Ride",
-      "eventive_title": "The Ride",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653f29627037773e708a75",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1650210",
-      "nrw_title": "Sundown",
-      "eventive_title": "Sundown",
-      "festival": "Columbia Maryland Film Festival",
-      "link": "https://watch.eventive.org/colmdfilmfest/play/6a653995033cd3b63c1f4383",
-      "start": "2026-09-07T14:00:00.000Z",
-      "end": "2026-09-14T03:45:00.000Z",
-      "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -1457,6 +1517,42 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1631326",
+      "nrw_title": "Left Lane Straight",
+      "eventive_title": "Left Lane Straight",
+      "festival": "2026 Immigration Film Fest",
+      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8faa2c662a541af6f359c5",
+      "start": "2026-10-02T13:00:00.000Z",
+      "end": "2026-10-12T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1647277",
+      "nrw_title": "The Gardener",
+      "eventive_title": "The Gardener",
+      "festival": "2026 Immigration Film Fest",
+      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8fa7735371e875f78385da",
+      "start": "2026-10-02T13:00:00.000Z",
+      "end": "2026-10-12T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1686463",
+      "nrw_title": "Girl Dad",
+      "eventive_title": "Girl | Dad",
+      "festival": "2026 Immigration Film Fest",
+      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8fa89fe6e4f954e46fa37b",
+      "start": "2026-10-02T13:00:00.000Z",
+      "end": "2026-10-12T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 2,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1474514",
       "nrw_title": "Palestine Comedy Club",
       "eventive_title": "Palestine Comedy Club",
@@ -1464,6 +1560,42 @@
       "link": "https://watch.eventive.org/tpff/play/6a932c30b27cfc6e67479b72",
       "start": "2026-10-04T21:30:00.000Z",
       "end": "2026-10-10T03:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1522065",
+      "nrw_title": "The Plan",
+      "eventive_title": "The Plan",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c6a",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1630504",
+      "nrw_title": "The Last Picture Shows",
+      "eventive_title": "The Last Picture Shows",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c63",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1596302",
+      "nrw_title": "The Oldest Person in the World",
+      "eventive_title": "The Oldest Person in the World",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c77",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
@@ -1562,42 +1694,6 @@
       "end": "2026-10-05T06:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1631326",
-      "nrw_title": "Left Lane Straight",
-      "eventive_title": "Left Lane Straight",
-      "festival": "2026 Immigration Film Fest",
-      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8faa2c662a541af6f359c5",
-      "start": "2026-10-02T13:00:00.000Z",
-      "end": "2026-10-12T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1647277",
-      "nrw_title": "The Gardener",
-      "eventive_title": "The Gardener",
-      "festival": "2026 Immigration Film Fest",
-      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8fa7735371e875f78385da",
-      "start": "2026-10-02T13:00:00.000Z",
-      "end": "2026-10-12T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1686463",
-      "nrw_title": "Girl Dad",
-      "eventive_title": "Girl | Dad",
-      "festival": "2026 Immigration Film Fest",
-      "link": "https://watch.eventive.org/immigrationfilmfest26/play/6a8fa89fe6e4f954e46fa37b",
-      "start": "2026-10-02T13:00:00.000Z",
-      "end": "2026-10-12T03:59:00.000Z",
-      "status": "upcoming",
-      "match_tier": 2,
       "nrw_status": "available"
     }
   ]

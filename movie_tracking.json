@@ -20054,12 +20054,12 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 69,
+      "_jw_revert_count": 70,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1250841": {
       "title": "Hair of the Bear",
@@ -41148,10 +41148,10 @@
       "enriched": false,
       "enrichment_date": null,
       "_is_preorder": true,
-      "_transitioned_at": "2026-09-07",
-      "_jw_revert_count": 81,
+      "_transitioned_at": "2026-09-08",
+      "_jw_revert_count": 82,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1544405": {
       "title": "Der Rest ist Stille",
@@ -83887,14 +83887,24 @@
     },
     "1351979": {
       "title": "Close Encounters",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-10-17",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2024,
-      "premiere_date": "2024-09-28"
+      "premiere_date": "2024-09-28",
+      "_virtual_screening": true,
+      "_discovery_source": "provider_availability_check",
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-09-08",
+      "_transitioned_at": "2026-09-08"
     },
     "1351970": {
       "title": "Spring Wind Project 2 : Meet comrades again",
@@ -95808,7 +95818,7 @@
     },
     "1429011": {
       "title": "Charles Grodin: Rebel With a Cause",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
       "providers": {
         "rent": [],
@@ -95821,7 +95831,7 @@
       "has_providers": true,
       "year": 2025,
       "premiere_date": "2025-03-02",
-      "enriched": false,
+      "enriched": true,
       "links": {
         "trailer": "https://www.youtube.com/watch?v=KSAA6qdvKAc"
       },
@@ -95838,11 +95848,9 @@
       "manual_runtime": true,
       "imdb_id": "tt37047137",
       "_discovery_source": "provider_availability_check",
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "digital_date": "2026-09-07",
-      "_jw_revert_reason": "zero_watch_links",
-      "_jw_reverted_at": "2026-09-07",
-      "_jw_revert_count": 1
+      "enrichment_date": "2026-09-08"
     },
     "1428962": {
       "title": "Still Alive In Kingston",
@@ -133321,9 +133329,9 @@
       "festival": "Fantastic Fest",
       "has_providers": true,
       "enriched": true,
-      "enrichment_date": "2026-09-07",
+      "enrichment_date": "2026-09-08",
       "_discovery_source": "tmdb_type4",
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_buyonly_preorder": true
     },
     "1336112": {
@@ -135217,7 +135225,7 @@
       "festival": "Busan",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-09-06"
     },
@@ -167471,7 +167479,9 @@
       "first_seen": "2026-01-20",
       "digital_date": "2026-10-14",
       "providers": {
-        "rent": [],
+        "rent": [
+          "Eventive"
+        ],
         "buy": [],
         "streaming": []
       },
@@ -167869,18 +167879,22 @@
     "1596318": {
       "title": "Cookie Queens",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-20",
       "digital_date": "2026-09-08",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-09-07"
+      "enrichment_date": "2026-09-08",
+      "_transitioned_at": "2026-09-08"
     },
     "1596306": {
       "title": "Kikuyu Land",
@@ -188202,7 +188216,9 @@
       "first_seen": "2026-02-23",
       "digital_date": "2026-10-14",
       "providers": {
-        "rent": [],
+        "rent": [
+          "Eventive"
+        ],
         "buy": [],
         "streaming": []
       },
@@ -201961,12 +201977,12 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 52,
+      "_jw_revert_count": 53,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1407885": {
       "title": "Pelangi di Mars",
@@ -201983,12 +201999,12 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 25,
+      "_jw_revert_count": 26,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1376412": {
       "title": "La guerre des prix",
@@ -208526,12 +208542,12 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 11,
+      "_jw_revert_count": 12,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1480608": {
       "title": "Lapönia",
@@ -219742,7 +219758,8 @@
       "digital_date": "2026-04-29",
       "providers": {
         "rent": [
-          "YouTube"
+          "YouTube",
+          "Eventive"
         ],
         "buy": [
           "YouTube"
@@ -220239,12 +220256,22 @@
     "1661494": {
       "title": "As I Am",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-04-26",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-10-15",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_virtual_screening": true,
+      "_discovery_source": "provider_availability_check",
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-09-08",
+      "_transitioned_at": "2026-09-08"
     },
     "993324": {
       "title": "Wasterville",
@@ -230146,11 +230173,14 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "enriched": true,
-      "enrichment_date": "2026-09-07",
-      "_transitioned_at": "2026-09-07",
+      "enriched": false,
+      "_transitioned_at": "2026-09-08",
       "_buyonly_preorder": true,
-      "is_slop": false
+      "is_slop": false,
+      "digital_date": "2026-08-25",
+      "_jw_revert_reason": "zero_watch_links",
+      "_jw_reverted_at": "2026-09-08",
+      "_jw_revert_count": 1
     },
     "tv_310511": {
       "title": "ChermChey",
@@ -234977,16 +235007,16 @@
         "streaming": []
       },
       "intake_pass": "A",
-      "_jw_revert_count": 90,
+      "_jw_revert_count": 91,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1646124": {
       "title": "Tiger's Rampage",
@@ -236667,7 +236697,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-09-06"
     },
@@ -249808,7 +249838,9 @@
       "intake_date": "2026-07-05",
       "digital_date": "2026-10-14",
       "providers": {
-        "rent": [],
+        "rent": [
+          "Eventive"
+        ],
         "buy": [],
         "streaming": []
       },
@@ -250894,12 +250926,16 @@
       },
       "intake_pass": "B",
       "has_providers": true,
-      "_discovery_source": "provider_availability_check",
-      "enriched": true,
-      "enrichment_date": "2026-09-06",
-      "_transitioned_at": "2026-09-03",
+      "_discovery_source": "tmdb_type4",
+      "enriched": false,
+      "_transitioned_at": "2026-09-08",
       "_buyonly_preorder": true,
-      "_is_preorder": true
+      "_is_preorder": true,
+      "digital_date": "2026-09-08",
+      "is_slop": false,
+      "_jw_revert_reason": "zero_watch_links",
+      "_jw_reverted_at": "2026-09-08",
+      "_jw_revert_count": 1
     },
     "862756": {
       "title": "Truck Driver",
@@ -252801,10 +252837,10 @@
       "enriched": false,
       "enrichment_date": null,
       "has_providers": true,
-      "_transitioned_at": "2026-09-07",
-      "_jw_revert_count": 52,
+      "_transitioned_at": "2026-09-08",
+      "_jw_revert_count": 53,
       "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1616674": {
       "title": "Me Before Me",
@@ -253338,9 +253374,9 @@
       "intake_pass": "A",
       "has_providers": true,
       "enriched": true,
-      "enrichment_date": "2026-09-07",
+      "enrichment_date": "2026-09-08",
       "_discovery_source": "tmdb_type4",
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_buyonly_preorder": true,
       "is_slop": true
     },
@@ -253539,13 +253575,13 @@
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 44,
+      "_jw_revert_count": 45,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1714933": {
       "title": "Wrecked",
@@ -257770,9 +257806,9 @@
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-09-07",
+      "enrichment_date": "2026-09-08",
       "has_providers": true,
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_buyonly_preorder": true,
       "is_slop": true
     },
@@ -257820,18 +257856,23 @@
     "1433367": {
       "title": "One Night Only",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-07-29",
       "digital_date": "2026-09-08",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Fantasia",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
       "_is_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-08-25"
+      "enrichment_date": "2026-09-08",
+      "_transitioned_at": "2026-09-08",
+      "is_slop": false
     },
     "tv_328735": {
       "title": "The Idaho Murders: College Nightmare",
@@ -261036,13 +261077,13 @@
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 31,
+      "_jw_revert_count": 32,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1744541": {
       "title": "Picture",
@@ -261406,7 +261447,7 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-08-07",
-      "digital_date": "2026-09-05",
+      "digital_date": "2026-09-04",
       "providers": {
         "rent": [],
         "buy": [],
@@ -261417,7 +261458,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-09-05"
     },
@@ -261890,13 +261931,13 @@
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 30,
+      "_jw_revert_count": 31,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1630030": {
       "title": "Mystery of Chang'an",
@@ -261951,17 +261992,21 @@
     "1355142": {
       "title": "Lockjaw",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-08-08",
       "digital_date": "2026-09-08",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
       "_is_preorder": true,
-      "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-08-08",
-      "_jw_revert_count": 1
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-09-08",
+      "_transitioned_at": "2026-09-08"
     },
     "1745603": {
       "title": "Peregrine Falcon",
@@ -265387,7 +265432,7 @@
     "1288445": {
       "title": "Mutiny",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-08-20",
       "providers": {
         "rent": [],
@@ -265397,18 +265442,14 @@
         "streaming": []
       },
       "intake_pass": "B",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "enriched": true,
-      "enrichment_date": "2026-08-23",
-      "_transitioned_at": "2026-08-23",
+      "enrichment_date": "2026-09-08",
+      "_transitioned_at": "2026-09-08",
       "_buyonly_preorder": true,
       "digital_date": "2026-09-08",
-      "_type4_pending": true,
-      "_is_preorder": true,
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-09-04",
-      "_jw_revert_count": 1
+      "_is_preorder": true
     },
     "1208274": {
       "title": "Little Dreamerz",
@@ -268221,13 +268262,13 @@
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 11,
+      "_jw_revert_count": 12,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-09-07",
+      "_transitioned_at": "2026-09-08",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-07"
+      "_jw_reverted_at": "2026-09-08"
     },
     "1708364": {
       "title": "Föld és vas",
@@ -268511,11 +268552,13 @@
       "providers": {},
       "intake_pass": "B",
       "has_providers": true,
-      "_discovery_source": "provider_availability_check",
+      "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "enriched": true,
-      "enrichment_date": "2026-09-06"
+      "enrichment_date": "2026-09-08",
+      "digital_date": "2026-09-22",
+      "_type4_pending": true
     },
     "822653": {
       "title": "Puella Magi Madoka Magica the Movie -Walpurgisnacht: Rising-",
@@ -269115,7 +269158,7 @@
       ],
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-09-07"
     },
@@ -272105,7 +272148,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-04"
+      "_jw_reverted_at": "2026-09-04",
+      "_skip_provider_discovery": true
     },
     "1711926": {
       "title": "Ephemera",
@@ -272707,7 +272751,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-09-07"
     },
@@ -273049,7 +273093,7 @@
       "providers": {},
       "intake_pass": "A",
       "has_providers": false,
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-09-07"
     },
@@ -273508,7 +273552,7 @@
       "digital_date": "2026-09-07",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-09-07"
     },
@@ -273621,7 +273665,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-09-07"
     },
@@ -273798,6 +273842,1718 @@
       "intake_date": "2026-09-07",
       "networks": [
         "ZDFinfo"
+      ],
+      "has_providers": false
+    },
+    "1759875": {
+      "title": "The Militia",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-09-08",
+      "digital_date": "2026-09-08",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-09-08",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-09-08"
+    },
+    "1664003": {
+      "title": "Stavros Halkias: Uncle Stav",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-09-08",
+      "digital_date": "2026-09-08",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-09-08",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-09-08"
+    },
+    "1160078": {
+      "title": "Sylvanian Families: The Movie",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-09-08",
+      "digital_date": "2026-09-08",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-09-08",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-09-08"
+    },
+    "1718834": {
+      "title": "26F Seeking Friend",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-09-08",
+      "digital_date": "2026-09-07",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-09-08",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-09-08"
+    },
+    "1758072": {
+      "title": "Il était une Voix... Céline Dion",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1756951": {
+      "title": "I nisidiani",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1747627": {
+      "title": "On The Edge",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1377237": {
+      "title": "Runner",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1716855": {
+      "title": "Un renversement",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1743677": {
+      "title": "Rapinoe",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1692852": {
+      "title": "Children Untold",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1570650": {
+      "title": "Toy Gun Bandit",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1541330": {
+      "title": "Stuffed",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1535659": {
+      "title": "In the Heart of the South",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1520592": {
+      "title": "River",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1241907": {
+      "title": "The Housewife",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1050981": {
+      "title": "Being Heumann",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": "2026-11-12",
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-09-08",
+      "_jw_revert_count": 1
+    },
+    "31767": {
+      "title": "The Devils",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1747726": {
+      "title": "Low Lies the Land",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1747669": {
+      "title": "The Ultra Runner",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1744043": {
+      "title": "Black Sunflowers",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1744003": {
+      "title": "The Secret Lives of Baba Segi's Wives",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1743976": {
+      "title": "After Elena",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1743597": {
+      "title": "The Remotes",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1736323": {
+      "title": "Salvation",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1736025": {
+      "title": "Magazine",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1735917": {
+      "title": "Man in Motion: The Rick Hansen Story",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1734769": {
+      "title": "In Alaska",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1625126": {
+      "title": "Faith",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1562777": {
+      "title": "The Stunt Driver",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1559269": {
+      "title": "Everybody Wants to F*ck Me",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1551451": {
+      "title": "Girl Group",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1551179": {
+      "title": "Glaxo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1489932": {
+      "title": "Always Lalisa",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1484181": {
+      "title": "The Smell of Apples",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1481651": {
+      "title": "What Lies Between Us",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1472679": {
+      "title": "Arne Goes to Space",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1444454": {
+      "title": "Diary of a Mad Old Man",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1376284": {
+      "title": "The Julia Set",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1341804": {
+      "title": "Idda",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1280076": {
+      "title": "Four Seasons in Java",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1244113": {
+      "title": "Trash Mountain",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1090025": {
+      "title": "Le Faux Soir",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1051646": {
+      "title": "The Face of Horror",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1753410": {
+      "title": "The Hummingbird Paints Fragrant Songs",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1744056": {
+      "title": "Gail",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1743999": {
+      "title": "The bovine with the curved horns",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1736798": {
+      "title": "Nosotros",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1735867": {
+      "title": "Masc",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1733336": {
+      "title": "Edward Said: Between Worlds",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1729732": {
+      "title": "Growth of the Soil",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1723076": {
+      "title": "The Betrayers",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1703273": {
+      "title": "L'Autre",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1653830": {
+      "title": "Krux",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1641750": {
+      "title": "Purgatory",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1634230": {
+      "title": "Watcha Want",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1632659": {
+      "title": "Lemonade",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1619996": {
+      "title": "Long Long Night",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1608727": {
+      "title": "Vintage Violence",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1606687": {
+      "title": "Still Night, Burning House",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1577319": {
+      "title": "Ancestors",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1575461": {
+      "title": "Evil Genius",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1537546": {
+      "title": "Babies",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1517127": {
+      "title": "Drifter",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1479429": {
+      "title": "The Surgeon",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1469469": {
+      "title": "Smudge the Blades",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1437396": {
+      "title": "Your Mother Your Mother Your Mother",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1381221": {
+      "title": "Misty Green",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1370191": {
+      "title": "Tender Loving Care",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1307474": {
+      "title": "On Behalf of My Son",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": "2026-11-20",
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-09-08",
+      "_jw_revert_count": 1
+    },
+    "1286656": {
+      "title": "I Play Rocky",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1747730": {
+      "title": "Blindspot Berlin",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1744054": {
+      "title": "Cheyenne",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1744013": {
+      "title": "The Black Box is Orange",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1737842": {
+      "title": "The Daughters of Abraham",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1737839": {
+      "title": "Head to Head",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1737837": {
+      "title": "Pretenders",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1736318": {
+      "title": "We Are Born Good",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1735910": {
+      "title": "Silenced Nights",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1584855": {
+      "title": "Paradise Lost",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1575391": {
+      "title": "Back in Black",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1567265": {
+      "title": "Onwards and Sideways",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1563760": {
+      "title": "How We Stand",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1544905": {
+      "title": "All That She Wants",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1522690": {
+      "title": "The Lost Children of Tuam",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1476832": {
+      "title": "The Life and Deaths of Wilson Shedd",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1391239": {
+      "title": "The Debut",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1324042": {
+      "title": "The Final Act",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1127282": {
+      "title": "Prima Facie",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "487802": {
+      "title": "The Last Photograph",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1750329": {
+      "title": "Re/Pair",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1744889": {
+      "title": "Kick On",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1744708": {
+      "title": "Like Magic",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1743994": {
+      "title": "Sunburn",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1743993": {
+      "title": "Neverman",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1737849": {
+      "title": "Zjili: A Story of Sisterhood and The Burdens of Excess",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1737831": {
+      "title": "Strong Son",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1713897": {
+      "title": "PELECHIAN PROJECT",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1688799": {
+      "title": "Darlene Love: I Know Where I've Been",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1671257": {
+      "title": "Voices",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1648489": {
+      "title": "Future Tense",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-09-08",
+      "digital_date": "2026-09-22",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "_virtual_screening": true,
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-09-08",
+      "_transitioned_at": "2026-09-08"
+    },
+    "1599230": {
+      "title": "Elsinore",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1575904": {
+      "title": "God Bless You, Mr. Kopu",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1514333": {
+      "title": "Wild Wild East",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1504211": {
+      "title": "Love Is the Monster",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1490068": {
+      "title": "Seventeen",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1480276": {
+      "title": "Inherit",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1473439": {
+      "title": "Bad Lieutenant: Tokyo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "865567": {
+      "title": "Where the River Begins",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1747742": {
+      "title": "Tehran, Under the Skin",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1744009": {
+      "title": "Thirteen in Gaza",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1743514": {
+      "title": "Rescue",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1736324": {
+      "title": "The Fortunate Isles",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1727905": {
+      "title": "Ba's Book",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1727146": {
+      "title": "Ladies and Gentlemen, Brian Mulroney",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1556887": {
+      "title": "Sisters",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1460933": {
+      "title": "Angh",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1432701": {
+      "title": "Brace Your Heart",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1288069": {
+      "title": "Tenzing",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": "2026-10-15",
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "_discovery_source": "tmdb_type4",
+      "_type4_pending": true,
+      "_is_preorder": true,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-09-08",
+      "_jw_revert_count": 1
+    },
+    "21626": {
+      "title": "Kissed",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1751351": {
+      "title": "111 Echoes from Halifax",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1747920": {
+      "title": "Neil Peart: No One's Disciple",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1736689": {
+      "title": "Phoolan",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1709585": {
+      "title": "Djinn Wedding",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1693083": {
+      "title": "Memories of a Forest",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1684663": {
+      "title": "Anchors Aweigh",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1613284": {
+      "title": "The Age Of Goodbyes",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1418428": {
+      "title": "The Assassin(s)",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1287365": {
+      "title": "The Liberation",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1159810": {
+      "title": "The World Before",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "21058": {
+      "title": "Spring in a Small Town",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-09-08",
+      "digital_date": "2026-09-08",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Fandango At Home",
+          "FlixFling"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Fandango At Home",
+          "FlixFling"
+        ],
+        "streaming": [
+          "FlixFling"
+        ]
+      },
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-09-08",
+      "_transitioned_at": "2026-09-08"
+    },
+    "1748664": {
+      "title": "Captain Newfoundland",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1744046": {
+      "title": "Bleeding Hearts",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1658272": {
+      "title": "Happily Ever After",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1536163": {
+      "title": "Up Against It",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "125368": {
+      "title": "Ten Dark Women",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1690780": {
+      "title": "The Road Not Taken",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1411598": {
+      "title": "HALF",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1748995": {
+      "title": "The Banquet",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1692932": {
+      "title": "Strange Spirits",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1247662": {
+      "title": "Villeneuve: The Rise of a Legend",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1099216": {
+      "title": "Two Cuckolds Go Swimming",
+      "year": 2025,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1765852": {
+      "title": "Tears of The Meniscus",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1751440": {
+      "title": "Al Tuck My Blues Away",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1750198": {
+      "title": "Stitches",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1708394": {
+      "title": "Stitches",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "1422106": {
+      "title": "Warla",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-09-08",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "C",
+      "festival": "Toronto/TIFF",
+      "has_providers": false
+    },
+    "tv_332352": {
+      "title": "Fuck la planète : le choix du réchauffement",
+      "content_type": "limited_series",
+      "tmdb_id": 332352,
+      "status": "tracking",
+      "first_air_date": "2026-09-08",
+      "digital_date": "2026-09-08",
+      "episode_count": 3,
+      "runtime": 45,
+      "poster": "https://image.tmdb.org/t/p/w500/aYaQyIagtw4uJAjzq5rqpV5GfB9.jpg",
+      "synopsis": "Jakarta Is Sinking, the Sea Is Rising - Why Were the Warnings Ignored? Scientists warned of the consequences of industrialization as early as the 19th century. Yet political and economic interests repeatedly delayed effective climate action. Through compelling historical testimony, this account traces decades of missed warnings and asks when the consequences of inaction will finally become impossible to ignore.",
+      "genres": [
+        "Documentary",
+        "War & Politics",
+        "Animation"
+      ],
+      "original_language": "fr",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-09-08",
+      "networks": [
+        "ARTE"
       ],
       "has_providers": false
     }
