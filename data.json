@@ -1,7 +1,885 @@
 {
-  "generated_at": "2026-09-11T13:03:48.432185",
-  "count": 809,
+  "generated_at": "2026-09-12T12:25:09.438118",
+  "count": 812,
   "movies": [
+    {
+      "id": "1378742",
+      "title": "Drive Through Fire",
+      "digital_date": "2026-09-11",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "The story follows an addict war veteran turned rideshare driver who helps a terrified passenger escape a human trafficking ring serving wealthy clients.",
+      "genres": [
+        "Action",
+        "Crime",
+        "Thriller"
+      ],
+      "runtime": 0,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=AbNbFz0D0oA",
+        "rt": "https://www.rottentomatoes.com/m/drive_through_fire",
+        "justwatch": "https://www.justwatch.com/us/movie/drive-through-fire",
+        "cast_wiki": {
+          "Michael Jai White": "https://en.wikipedia.org/wiki/Michael_Jai_White",
+          "Dan Bakkedahl": "https://en.wikipedia.org/wiki/Dan_Bakkedahl"
+        },
+        "imdb": "https://www.imdb.com/title/tt33512134/",
+        "letterboxd": "https://letterboxd.com/film/drive-through-fire"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Drive-Through-Fire/5125525",
+            "rent_price": "$6.99",
+            "buy_price": "$14.99",
+            "price": "$6.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-09-12T12:09:19.482549",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/jCZ9cJR8DY0sxSuwUX0tDQBtDAS.jpg",
+      "studio": "Red Sea Media",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Drive Through Fire",
+      "display_title": "Drive Through Fire",
+      "crew": {
+        "director": "Lauren Bond",
+        "cast": [
+          "Michael Jai White",
+          "Dan Bakkedahl",
+          "Jim Carlson",
+          "Jennifer Bond",
+          "Kate Duffy"
+        ]
+      },
+      "_discovery_source": "tmdb_type4",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-09-12",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [],
+      "_trailer_source": "gemini_playwright",
+      "_imdb_votes": null,
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1408162",
+      "title": "Vishwanath & Sons",
+      "digital_date": "2026-09-12",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Sanjay Vishwanath is an acclaimed professional handgunner in his 40s with a major stake in fame and wealth. When he comes across a woman named Maddy in her 20s, their dynamic poses many issues that they must come to terms with.",
+      "genres": [
+        "Drama",
+        "Romance"
+      ],
+      "runtime": 161,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Vishwanath_%26_Sons",
+        "trailer": "https://www.youtube.com/watch?v=95xXBEsmWLU",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/vishwanath-and-sons",
+        "cast_wiki": {
+          "Suriya": "https://en.wikipedia.org/wiki/Suriya",
+          "Mamitha Baiju": "https://en.wikipedia.org/wiki/Mamitha_Baiju",
+          "Radhika Sarathkumar": "https://en.wikipedia.org/wiki/Radikaa_Sarathkumar"
+        },
+        "imdb": "https://www.imdb.com/title/tt35836025/",
+        "letterboxd": "https://letterboxd.com/film/vishwanath-sons",
+        "director_wiki": "https://en.wikipedia.org/wiki/Venky_Atluri"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Netflix",
+            "link": "https://www.netflix.com/title/82034837"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-09-12T12:09:18.340557",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/mLsvCffzpxxDwC7yVLJSLLjgzoq.jpg",
+      "studio": "Sithara Entertainments",
+      "budget": 0,
+      "country": "India",
+      "original_language": "ta",
+      "original_title": "விஸ்வநாத் & சன்ஸ்",
+      "display_title": "Vishwanath & Sons (விஸ்வநாத் & சன்ஸ்)",
+      "crew": {
+        "director": "Venky Atluri",
+        "cast": [
+          "Suriya",
+          "Mamitha Baiju",
+          "Radhika Sarathkumar",
+          "Raveena Tandon",
+          "Sunil"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-09-12",
+      "imdb_rating": "7.5",
+      "letterboxd_score": "3.2",
+      "keywords": [
+        "age-gap relationship"
+      ],
+      "_wiki_language_count": 3,
+      "_trailer_source": "gemini_playwright",
+      "_imdb_votes": 3400,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:ta",
+      "_slop_confidence": "strong",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "metacritic_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1169516",
+      "title": "Welcome To The Jungle",
+      "digital_date": "2026-09-12",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A group of quirky characters gets stuck in a dangerous jungle during a chaotic mission. Filled with confusion, criminals, and hilarious situations, they must work together to survive and find their way out.",
+      "genres": [
+        "Action",
+        "Comedy",
+        "Adventure"
+      ],
+      "runtime": 170,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Hulu"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Welcome_to_the_Jungle_(2026_film)",
+        "trailer": "https://www.youtube.com/watch?v=1eW_7MUgse0",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/welcome-to-the-jungle-2024",
+        "cast_wiki": {
+          "Akshay Kumar": "https://en.wikipedia.org/wiki/Akshay_Kumar",
+          "Suniel Shetty": "https://en.wikipedia.org/wiki/Suniel_Shetty",
+          "Arshad Warsi": "https://en.wikipedia.org/wiki/Arshad_Warsi"
+        },
+        "imdb": "https://www.imdb.com/title/tt28540171/",
+        "letterboxd": "https://letterboxd.com/film/welcome-to-the-jungle-2026",
+        "director_wiki": "https://en.wikipedia.org/wiki/Ahmed_Khan_(choreographer)"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Hulu",
+            "link": "https://www.hulu.com/watch/9c4390ef-07ed-4401-8b0d-681bde63390c"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-09-12T12:09:17.642624",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/1JlfUuvvX5xLP2LIDah4JhWUtTx.jpg",
+      "studio": "Base Industries Group",
+      "budget": 0,
+      "country": "India",
+      "original_language": "hi",
+      "original_title": "Welcome To The Jungle",
+      "display_title": "Welcome To The Jungle",
+      "crew": {
+        "director": "Ahmed Khan",
+        "cast": [
+          "Akshay Kumar",
+          "Suniel Shetty",
+          "Arshad Warsi",
+          "Jacqueline Fernandez",
+          "Disha Patani"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-09-12",
+      "imdb_rating": "4.0",
+      "letterboxd_score": "2.2",
+      "keywords": [],
+      "_wiki_language_count": 2,
+      "_trailer_source": "gemini_playwright",
+      "_imdb_votes": 23241,
+      "_digital_date_source": "detection",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Title matches original foreign title (language: hi): 'Welcome To The Jungle'"
+      ],
+      "is_slop": true,
+      "_slop_reason": "indian_cinema_no_crossover:hi",
+      "_slop_confidence": "strong",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "metacritic_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1636593",
+      "title": "Us in the End",
+      "digital_date": "2026-09-12",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Cisco and Cheska, a long-term couple, embark on a final \"break-up trip\" to decide whether to let go or fight for their relationship after years of growing apart due to conflicting ambitions.",
+      "genres": [
+        "Romance",
+        "Drama"
+      ],
+      "runtime": 103,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix"
+        ]
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Tayo_sa_Wakas",
+        "trailer": "https://www.youtube.com/watch?v=E1kcUHGLlnI",
+        "rt": "https://www.rottentomatoes.com/m/us_in_the_end",
+        "justwatch": "https://www.justwatch.com/us/movie/tayo-sa-wakas",
+        "cast_wiki": {
+          "Belle Mariano": "https://en.wikipedia.org/wiki/Belle_Mariano",
+          "Donny Pangilinan": "https://en.wikipedia.org/wiki/Donny_Pangilinan",
+          "Epy Quizon": "https://en.wikipedia.org/wiki/Epy_Quizon"
+        },
+        "imdb": "https://www.imdb.com/title/tt39554253/",
+        "letterboxd": "https://letterboxd.com/film/us-in-the-end",
+        "director_wiki": "https://en.wikipedia.org/wiki/Cathy_Garcia-Sampana"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Netflix",
+            "link": "https://www.netflix.com/title/82968729"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-09-12T12:09:16.491447",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/jWK3fep9bswDb6EuarNgoIihDBa.jpg",
+      "studio": "Star Cinema – ABS-CBN Film Productions",
+      "budget": 0,
+      "country": "Philippines",
+      "original_language": "tl",
+      "original_title": "Tayo sa Wakas",
+      "display_title": "Us in the End (Tayo sa Wakas)",
+      "crew": {
+        "director": "Cathy Garcia-Sampana",
+        "cast": [
+          "Belle Mariano",
+          "Donny Pangilinan",
+          "Epy Quizon",
+          "Joross Gamboa",
+          "Yayo Aguila"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-09-12",
+      "imdb_rating": "8.6",
+      "letterboxd_score": "3.2",
+      "keywords": [
+        "philippines"
+      ],
+      "_wiki_language_count": 1,
+      "_trailer_source": "tmdb_official",
+      "_imdb_votes": 90,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_slop_reason": "score:0(no_rt,good_imdb,major_streamer:netflix)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "metacritic_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1482938",
+      "title": "Union County",
+      "digital_date": "2026-10-02",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Assigned to a county-mandated drug court program, Cody Parsons embarks on the tenuous journey toward recovery amid the opioid epidemic in rural Ohio.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 97,
+      "year": 2026,
+      "rt_score": "95%",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Union_County_(film)",
+        "trailer": "https://www.youtube.com/watch?v=DB9tOeAG2x8",
+        "rt": "https://www.rottentomatoes.com/m/union_county",
+        "justwatch": "https://www.justwatch.com/us/movie/union-county",
+        "cast_wiki": {
+          "Will Poulter": "https://en.wikipedia.org/wiki/Will_Poulter",
+          "Noah Centineo": "https://en.wikipedia.org/wiki/Noah_Centineo",
+          "Elise Kibler": "https://en.wikipedia.org/wiki/Elise_Kibler"
+        },
+        "metacritic": "https://www.metacritic.com/movie/union-county/",
+        "imdb": "https://www.imdb.com/title/tt36981462/",
+        "letterboxd": "https://letterboxd.com/film/union-county-2026"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Union-County/5088027",
+            "buy_price": "$14.99",
+            "price": "$14.99"
+          }
+        ]
+      },
+      "pre_order_links": [
+        {
+          "service": "Fandango At Home",
+          "link": "https://athome.fandango.com/content/browse/details/Union-County/5088027",
+          "buy_price": "$14.99",
+          "price": "$14.99"
+        }
+      ],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-09-12T12:09:15.170404",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/73Dt773ChYDF5ZgTPDyH6E7qZhs.jpg",
+      "studio": "Seaview Productions",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Union County",
+      "display_title": "Union County",
+      "crew": {
+        "director": "Adam Meeks",
+        "cast": [
+          "Will Poulter",
+          "Noah Centineo",
+          "Elise Kibler",
+          "Emily Meade",
+          "Danny Wolohan"
+        ]
+      },
+      "_discovery_source": "tmdb_type4",
+      "_is_preorder": true,
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-09-12",
+      "_buyonly_preorder": true,
+      "_digital_date_source": "tmdb_type4",
+      "imdb_rating": "6.9",
+      "letterboxd_score": "3.6",
+      "keywords": [
+        "drug addiction",
+        "ohio",
+        "relapse",
+        "halfway house",
+        "brother brother relationship",
+        "foster brother",
+        "opioid epidemic"
+      ],
+      "_wiki_language_count": 4,
+      "wikidata_distributors": [
+        "Oscilloscope"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "metacritic_score": "77",
+      "_imdb_votes": 249,
+      "_needs_review": false,
+      "_slop_reason": "score:1(mid_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "watch_links"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_watch_links_verified": "2026-09-12T12:20:48.013259"
+    },
+    {
+      "id": "1063020",
+      "title": "Emergency Interrogation Room: The Final",
+      "digital_date": "2026-09-12",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Movie based on the Emergency Interrogation Room series.",
+      "genres": [
+        "Crime"
+      ],
+      "runtime": 0,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Amazon Prime Video",
+          "Amazon Prime Video with Ads"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=bXwZKbyGyOY",
+        "rt": "https://www.rottentomatoes.com/m/emergency_interrogation_room_the_final",
+        "justwatch": "https://www.justwatch.com/us/movie/kinkyu-torishirabeshitsu-onna-tomodachi",
+        "cast_wiki": {
+          "Yuki Amami": "https://en.wikipedia.org/wiki/Y%C5%ABki_Amami",
+          "Tetsushi Tanaka": "https://en.wikipedia.org/wiki/Tetsushi_Tanaka",
+          "Fumiyo Kohinata": "https://en.wikipedia.org/wiki/Fumiyo_Kohinata"
+        },
+        "imdb": "https://www.imdb.com/title/tt39310683/",
+        "letterboxd": "https://letterboxd.com/film/emergency-interrogation-room-the-final"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Amazon Prime Video",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.ad80a85d-3012-4cee-81cc-844364e3c73b"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-09-12T12:09:13.785299",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/qQHoGkpzO6KSOhUjJmEdNGuJt2z.jpg",
+      "studio": "TOHO",
+      "budget": 0,
+      "country": "Japan",
+      "original_language": "ja",
+      "original_title": "劇場版 緊急取調室 THE FINAL",
+      "display_title": "Emergency Interrogation Room: The Final",
+      "crew": {
+        "director": "Jôta Tsunehiro",
+        "cast": [
+          "Yuki Amami",
+          "Tetsushi Tanaka",
+          "Fumiyo Kohinata",
+          "Mokomichi Hayami",
+          "Kosuke Suzuki"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-09-12",
+      "imdb_rating": "6.6",
+      "letterboxd_score": null,
+      "keywords": [
+        "police interrogation",
+        "based on tv series",
+        "interrogation room"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "_imdb_votes": 21,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_rt,mid_imdb,major_streamer:amazon prime video)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1497831",
+      "title": "Memori",
+      "digital_date": "2026-09-12",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "When a doctor is diagnosed with early onset Alzheimer's, his estranged son struggles to reconnect by reviving their shared memories, only to find the past harder to recover than expected. As both face personal upheavals, the family must confront pride, pain and lost time to rediscover the bond they thought they had lost forever.",
+      "genres": [
+        "Drama"
+      ],
+      "runtime": 98,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=z5MhkJtyxiw",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/memori",
+        "cast_wiki": {
+          "Diana Danielle": "https://en.wikipedia.org/wiki/Diana_Danielle"
+        },
+        "imdb": "https://www.imdb.com/title/tt33097441/",
+        "letterboxd": "https://letterboxd.com/film/memori-2025"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.153ee6df-e9bb-48f4-a778-0ff5ce3a80c9&tag=nrw04-20",
+            "rent_price": "$2.99",
+            "buy_price": "$9.99",
+            "price": "$2.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-09-12T12:09:12.275391",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/kCJHXNU2bZPh9U0jOE94n9aJyap.jpg",
+      "studio": "Creative Stew",
+      "budget": 0,
+      "country": "Malaysia",
+      "original_language": "ms",
+      "original_title": "Memori",
+      "display_title": "Memori",
+      "crew": {
+        "director": "Abid Hussain",
+        "cast": [
+          "Hilal Azman",
+          "Hisyam Hamid",
+          "Diana Danielle",
+          "Anas Ridzuan",
+          "Anand Rajaram"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-09-12",
+      "imdb_rating": "7.3",
+      "letterboxd_score": null,
+      "keywords": [
+        "son",
+        "alzheimer's disease"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "_imdb_votes": 109,
+      "_digital_date_source": "detection",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Title matches original foreign title (language: ms): 'Memori'"
+      ],
+      "is_slop": true,
+      "_slop_reason": "score:4(no_wiki,no_rt,good_imdb,no_rt_link)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": true,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "813418",
+      "title": "Hot Spot",
+      "digital_date": "2026-09-08",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Set in a near future society ruled by sentient A.I., a private eye investigates a murder case only to discover a rebel group capable of undermining the digital overlord. As the detective's identity slowly unravels, his world enters a state of hypnotic meltdown.",
+      "genres": [
+        "Science Fiction",
+        "Action",
+        "Crime",
+        "Fantasy",
+        "Thriller"
+      ],
+      "runtime": 101,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": "https://en.wikipedia.org/wiki/Hot_Spot_(2026_film)",
+        "trailer": "https://www.youtube.com/watch?v=x54MPGBWXA8",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/hot-spot-2026",
+        "cast_wiki": {
+          "Andrzej Konopka": "https://en.wikipedia.org/wiki/Andrzej_Konopka_(actor)",
+          "Noomi Rapace": "https://en.wikipedia.org/wiki/Noomi_Rapace",
+          "Reika Kirishima": "https://en.wikipedia.org/wiki/Reika_Kirishima"
+        },
+        "metacritic": "https://www.metacritic.com/movie/hot-spot/",
+        "imdb": "https://www.imdb.com/title/tt14119302/",
+        "letterboxd": "https://letterboxd.com/film/hot-spot-2026",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/813418.mp4",
+        "director_wiki": "https://en.wikipedia.org/wiki/Agnieszka_Smoczy%C5%84ska"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.89a120ba-0d4c-42a9-8a8c-8422c14e435b&tag=nrw04-20",
+            "rent_price": "$19.99",
+            "buy_price": "$24.99",
+            "price": "$19.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/hot-spot/umc.cmc.3xb3euyy4va6j7k7iqt6onkds?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A6800085910",
+            "rent_price": "$19.99",
+            "buy_price": "$24.99",
+            "price": "$19.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Hot-Spot/5125394",
+            "rent_price": "$19.99",
+            "buy_price": "$24.99",
+            "price": "$19.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-09-12T12:09:03.399403",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/42egzT6e4CIEdrEo4Xc31DKyGjA.jpg",
+      "studio": "Madants",
+      "budget": 6000000,
+      "country": "Poland",
+      "original_language": "en",
+      "original_title": "Hot Spot",
+      "display_title": "Hot Spot",
+      "crew": {
+        "director": "Agnieszka Smoczyńska",
+        "cast": [
+          "Andrzej Konopka",
+          "Noomi Rapace",
+          "Reika Kirishima",
+          "Filippa Kaye",
+          "George Aurimas Cris"
+        ]
+      },
+      "_discovery_source": "tmdb_type4",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-09-12",
+      "imdb_rating": "4.3",
+      "letterboxd_score": "2.2",
+      "keywords": [
+        "artificial intelligence (a.i.)",
+        "telepathy",
+        "post-apocalyptic future",
+        "hypnosis",
+        "private detective",
+        "vagrant",
+        "woman director",
+        "seizure",
+        "cybercrime",
+        "self-driving car",
+        "public execution",
+        "independent film",
+        "authoritarian regime",
+        "psychic powers",
+        "absurd",
+        "sentient-artificial-intelligence"
+      ],
+      "_wiki_language_count": 3,
+      "_trailer_source": "gemini_playwright",
+      "metacritic_score": "28",
+      "_imdb_votes": 382,
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Amazon' not in TMDB providers for this title (TMDB has: ['fandango at home'])",
+        "Service 'Apple TV' not in TMDB providers for this title (TMDB has: ['fandango at home'])"
+      ],
+      "is_slop": true,
+      "_slop_reason": "score:5(no_rt,low_imdb,no_rt_link)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
     {
       "id": "1530131",
       "title": "Sunshine Girls",
@@ -40,6 +918,11 @@
         {
           "service": "Eventive",
           "link": "https://watch.eventive.org/2026outonfilm/play/6a83780860e216715b8a7719"
+        },
+        {
+          "service": "Amazon",
+          "link": "https://www.amazon.com/gp/video/detail/B0H1PC6JPB",
+          "type": "pre_order"
         }
       ],
       "_enrichment_status": "completed",
@@ -93,7 +976,7 @@
         "available_start": "2026-09-24",
         "available_end": "2026-10-12",
         "discovered": "2026-09-11",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -114,7 +997,7 @@
     {
       "id": "1701141",
       "title": "Gator Face",
-      "digital_date": "2026-09-15",
+      "digital_date": "2026-09-12",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "A Florida vacation becomes a blood-soaked fight for survival when a group of friends are hunted through the swamps by a savage cult that feeds its victims to ravenous alligators in the name of an ancient reptilian god.",
@@ -140,15 +1023,16 @@
           {
             "service": "Amazon",
             "link": "https://www.amazon.com/gp/video/detail/B0GXVKDQ15?tag=nrw04-20"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Gator-Face/5007808",
+            "rent_price": "$6.99",
+            "buy_price": "$12.99",
+            "price": "$6.99"
           }
         ]
       },
-      "pre_order_links": [
-        {
-          "service": "Amazon",
-          "link": "https://www.amazon.com/gp/video/detail/B0GXVKDQ15?tag=nrw04-20"
-        }
-      ],
       "_enrichment_status": "completed",
       "_discovered_at": "2026-09-11T12:45:52.798977",
       "_tmdb_fetch_failed": false,
@@ -171,7 +1055,6 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_is_preorder": true,
       "_enrichment_attempts": 1,
       "_last_enrichment_attempt": "2026-09-11",
       "imdb_rating": "8.4",
@@ -207,87 +1090,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
-    },
-    {
-      "id": "1753880",
-      "title": "Daughters of 9/11",
-      "digital_date": "2026-09-12",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Twenty-five years after the deadliest terrorist attack on American soil, Elizabeth Miller, Jessica Trant and FBI special agent Frank Pellegrino confront whether the man accused of masterminding the attacks, Khalid Sheikh Mohammed (KSM), will ever face justice.",
-      "genres": [
-        "Documentary"
-      ],
-      "runtime": 97,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {},
-      "links": {
-        "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=l-gFAI_fFcc",
-        "rt": null,
-        "letterboxd": "https://letterboxd.com/film/daughters-of-9-11",
-        "director_wiki": "https://en.wikipedia.org/wiki/Marc_Levin",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1753880.mp4"
-      },
-      "watch_links": {},
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-09-11T12:45:52.518582",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/aTtyDfXC2JGO1mBq37el05DEjxO.jpg",
-      "studio": "Wolf Entertainment",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "original_title": "Daughters of 9/11",
-      "display_title": "Daughters of 9/11",
-      "crew": {
-        "director": "Marc Levin",
-        "cast": []
-      },
-      "_discovery_source": "tmdb_type4",
-      "_is_preorder": true,
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-09-11",
-      "imdb_rating": null,
-      "letterboxd_score": null,
-      "keywords": [
-        "9/11"
-      ],
-      "_trailer_source": "gemini_playwright",
-      "_digital_date_source": "tmdb_type4",
-      "_needs_review": false,
-      "is_slop": true,
-      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
-      "status": "available",
-      "_enrichment_gaps": [
-        "watch_links",
-        "rt_score",
-        "wikipedia",
-        "imdb_rating",
-        "metacritic_score",
-        "letterboxd_score"
-      ],
-      "reissue_label": null,
-      "_reissue": false,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": true,
-        "auto_categorized": true,
-        "manual_override": null
-      },
       "featured": false,
-      "_rt_retry_count": 3,
-      "_rt_last_retry": "2026-09-12T04:27:26.502749"
+      "_watch_links_verified": "2026-09-12T12:20:54.807206"
     },
     {
       "id": "1558568",
@@ -583,7 +1387,7 @@
         "available_start": "2026-08-11",
         "available_end": "2026-11-01",
         "discovered": "2026-09-11",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -688,7 +1492,7 @@
         "available_start": "2026-09-04",
         "available_end": "2026-10-01",
         "discovered": "2026-09-11",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -1232,7 +2036,7 @@
         "available_start": "2026-09-21",
         "available_end": "2026-09-26",
         "discovered": "2026-09-10",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -1493,7 +2297,7 @@
         "available_start": "2026-09-21",
         "available_end": "2026-09-26",
         "discovered": "2026-09-10",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -1607,7 +2411,7 @@
         "available_start": "2026-09-21",
         "available_end": "2026-09-26",
         "discovered": "2026-09-10",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -1931,7 +2735,7 @@
         "available_start": "2026-09-21",
         "available_end": "2026-09-26",
         "discovered": "2026-09-10",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -2648,7 +3452,7 @@
         "available_start": "2026-10-21",
         "available_end": "2026-10-24",
         "discovered": "2026-09-09",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -2896,7 +3700,7 @@
         "available_start": "2026-10-13",
         "available_end": "2026-10-16",
         "discovered": "2026-09-09",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -2997,7 +3801,7 @@
         "available_start": "2026-10-14",
         "available_end": "2026-10-17",
         "discovered": "2026-09-09",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -3104,7 +3908,7 @@
         "available_start": "2026-10-16",
         "available_end": "2026-10-19",
         "discovered": "2026-09-09",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -3206,7 +4010,7 @@
         "available_start": "2026-09-28",
         "available_end": "2026-10-06",
         "discovered": "2026-09-09",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -3318,7 +4122,7 @@
         "available_start": "2026-10-15",
         "available_end": "2026-10-18",
         "discovered": "2026-09-09",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -3440,7 +4244,7 @@
         "available_start": "2026-10-22",
         "available_end": "2026-10-25",
         "discovered": "2026-09-09",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -3553,7 +4357,7 @@
         "available_start": "2026-10-23",
         "available_end": "2026-10-26",
         "discovered": "2026-09-09",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -3871,10 +4675,7 @@
         },
         "imdb": "https://www.imdb.com/title/tt35617054/"
       },
-      "watch_links": {
-        "streaming": [],
-        "vod": []
-      },
+      "watch_links": {},
       "pre_order_links": [
         {
           "service": "Amazon Video",
@@ -3919,8 +4720,8 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 3,
-      "_last_enrichment_attempt": "2026-09-11",
+      "_enrichment_attempts": 4,
+      "_last_enrichment_attempt": "2026-09-12",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "imdb_rating": "7.8",
@@ -3930,7 +4731,7 @@
         "miniseries"
       ],
       "_trailer_source": "gemini_playwright",
-      "_imdb_votes": 133,
+      "_imdb_votes": 157,
       "_needs_review": false,
       "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
       "_slop_confidence": "weak",
@@ -4300,7 +5101,7 @@
         "available_start": "2026-09-22",
         "available_end": "2026-09-28",
         "discovered": "2026-09-08",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -4828,7 +5629,7 @@
         "available_start": "2026-10-15",
         "available_end": "2026-10-31",
         "discovered": "2026-09-08",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -4932,7 +5733,7 @@
         "available_start": "2026-10-17",
         "available_end": "2026-10-31",
         "discovered": "2026-09-08",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -5493,7 +6294,7 @@
         "available_start": "2026-10-14",
         "available_end": "2026-10-19",
         "discovered": "2026-09-07",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -5609,7 +6410,7 @@
         "available_start": "2026-10-14",
         "available_end": "2026-10-19",
         "discovered": "2026-09-07",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -5832,7 +6633,7 @@
         "available_start": "2026-10-14",
         "available_end": "2026-10-19",
         "discovered": "2026-09-07",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -8874,7 +9675,7 @@
         "available_start": "2026-09-22",
         "available_end": "2026-09-28",
         "discovered": "2026-09-04",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -10551,7 +11352,7 @@
           {
             "service": "Amazon",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.96ff7b37-15e3-4e2e-a73c-6dfb81e5d74a&tag=nrw04-20",
-            "rent_price": "$4.99",
+            "rent_price": "$2.99",
             "buy_price": "$9.99",
             "price": "$4.99"
           },
@@ -10621,7 +11422,8 @@
       },
       "featured": false,
       "_rt_retry_count": 3,
-      "_rt_last_retry": "2026-09-05T19:35:02.372176"
+      "_rt_last_retry": "2026-09-05T19:35:02.372176",
+      "_watch_links_verified": "2026-09-12T12:21:56.980420"
     },
     {
       "id": "1599947",
@@ -13760,7 +14562,7 @@
         "available_start": "2026-10-04",
         "available_end": "2026-10-10",
         "discovered": "2026-09-01",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -14317,7 +15119,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-02",
         "discovered": "2026-08-30",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -18390,7 +19192,7 @@
         "available_start": "2026-10-02",
         "available_end": "2026-10-12",
         "discovered": "2026-08-27",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -18637,7 +19439,7 @@
         "available_start": "2026-10-02",
         "available_end": "2026-10-12",
         "discovered": "2026-08-27",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -18735,7 +19537,7 @@
         "available_start": "2026-10-02",
         "available_end": "2026-10-12",
         "discovered": "2026-08-27",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -21216,7 +22018,7 @@
         "available_start": "2026-09-18",
         "available_end": "2026-09-22",
         "discovered": "2026-08-25",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -23170,7 +23972,7 @@
         "available_start": "2026-09-18",
         "available_end": "2026-09-22",
         "discovered": "2026-08-23",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -26491,7 +27293,7 @@
           {
             "service": "Amazon",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.dd0d0147-ef67-4403-94d6-ef4b1cb4af16&tag=nrw04-20",
-            "rent_price": "$3.99",
+            "rent_price": "$4.99",
             "buy_price": "$12.99",
             "price": "$4.99"
           },
@@ -26584,7 +27386,7 @@
         "awards": "none found",
         "yearend_lists": "none found"
       },
-      "_watch_links_verified": "2026-09-09T13:06:58.766649"
+      "_watch_links_verified": "2026-09-12T12:23:30.808689"
     },
     {
       "id": "1741201",
@@ -27091,6 +27893,16 @@
         {
           "service": "Eventive",
           "link": "https://watch.eventive.org/2026outonfilm/play/6a85019abc02ceab074cadd4"
+        },
+        {
+          "service": "Amazon",
+          "link": "https://www.amazon.com/gp/video/detail/B0GX83BT5X",
+          "type": "pre_order"
+        },
+        {
+          "service": "Fandango At Home",
+          "link": "https://athome.fandango.com/content/browse/details/This-Is-Not-a-Test/4880644",
+          "type": "pre_order"
         }
       ],
       "_enrichment_status": "completed",
@@ -27144,7 +27956,7 @@
         "available_start": "2026-09-26",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -27250,7 +28062,7 @@
         "available_start": "2026-09-30",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -27657,7 +28469,7 @@
         "available_start": "2026-09-24",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -27714,6 +28526,11 @@
         {
           "service": "Eventive",
           "link": "https://watch.eventive.org/2026outonfilm/play/6a85019abc02ceab074cadd9"
+        },
+        {
+          "service": "Amazon",
+          "link": "https://www.amazon.com/gp/video/detail/B0H9Y677N2",
+          "type": "pre_order"
         }
       ],
       "_enrichment_status": "completed",
@@ -27768,7 +28585,7 @@
         "available_start": "2026-09-26",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -27873,7 +28690,7 @@
         "available_start": "2026-10-03",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -27982,7 +28799,7 @@
         "available_start": "2026-10-04",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -28099,7 +28916,7 @@
         "available_start": "2026-09-24",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -28221,7 +29038,7 @@
         "available_start": "2026-09-24",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -28333,7 +29150,7 @@
         "available_start": "2026-09-29",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -28887,7 +29704,7 @@
         "available_start": "2026-09-24",
         "available_end": "2026-10-12",
         "discovered": "2026-08-20",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -30248,7 +31065,7 @@
           {
             "service": "Eventive",
             "link": "https://watch.eventive.org/chasinghomefilm/play/6a786a836cb3ade9e5e10c21",
-            "rent_price": "$13.54",
+            "rent_price": "$13.49",
             "price": "$13.52"
           }
         ]
@@ -30306,7 +31123,7 @@
         "available_start": null,
         "available_end": null,
         "discovered": "2026-08-17",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -30321,7 +31138,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-09-11T13:01:57.107854",
+      "_watch_links_verified": "2026-09-12T12:23:55.918456",
       "_tmdb_popularity": null,
       "buzz_score": 10,
       "notability": {
@@ -35202,7 +36019,7 @@
     {
       "id": "1472844",
       "title": "Everyone Is Lying to You for Money",
-      "digital_date": "2026-08-14",
+      "digital_date": "2026-08-22",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "With any and all things crypto being pushed by celebrities, influencers, and politicians alike, actor-turned-author and director Ben McKenzie decides to investigate. Leveraging his celebrity status to gain access to eager prospectors, McKenzie finds himself unraveling the loosely regulated world of cryptocurrency. This skeptical but evenhanded take on the present and future of what we consider money gives a firsthand account of the chaotic financial frontier of our time.",
@@ -35302,14 +36119,24 @@
         "is_foreign": false,
         "is_staff_pick": false,
         "is_restoration": false,
-        "is_virtual_screening": false,
+        "is_virtual_screening": true,
         "is_series": false,
         "is_documentary": true,
         "auto_categorized": true,
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-09-11T13:02:37.077904"
+      "_watch_links_verified": "2026-09-11T13:02:37.077904",
+      "virtual_screening_info": {
+        "platform": "Eventive",
+        "screening_slug": "everyoneislying",
+        "screening_name": "Everyone Is Lying to You for Money",
+        "available_start": "2026-08-22",
+        "available_end": "2028-09-07",
+        "discovered": "2026-09-12",
+        "last_checked": "2026-09-12",
+        "status": "active"
+      }
     },
     {
       "id": "tv_330176",
@@ -36059,7 +36886,7 @@
         "available_start": "2026-09-27",
         "available_end": "2026-10-05",
         "discovered": "2026-08-13",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -36257,7 +37084,7 @@
         "available_start": "2026-09-04",
         "available_end": "2026-09-14",
         "discovered": "2026-08-13",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -36363,7 +37190,7 @@
         "available_start": "2026-09-04",
         "available_end": "2026-09-14",
         "discovered": "2026-08-13",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -38911,7 +39738,7 @@
         "available_start": "2026-09-14",
         "available_end": "2026-10-01",
         "discovered": "2026-08-10",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -42851,7 +43678,7 @@
         "available_start": "2026-09-28",
         "available_end": "2026-10-05",
         "discovered": "2026-08-06",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -43094,7 +43921,7 @@
         "available_start": "2026-09-28",
         "available_end": "2026-10-04",
         "discovered": "2026-08-06",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -43198,7 +44025,7 @@
         "available_start": "2026-10-14",
         "available_end": "2026-10-19",
         "discovered": "2026-08-06",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -43305,7 +44132,7 @@
         "available_start": "2026-09-28",
         "available_end": "2026-10-05",
         "discovered": "2026-08-06",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -45853,7 +46680,7 @@
         "available_start": "2026-09-07",
         "available_end": "2026-09-14",
         "discovered": "2026-08-03",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -47487,10 +48314,7 @@
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1307118.mp4",
         "director_wiki": "https://en.wikipedia.org/wiki/Kate_Dolan"
       },
-      "watch_links": {
-        "streaming": [],
-        "vod": []
-      },
+      "watch_links": {},
       "pre_order_links": [
         {
           "service": "Amazon Video",
@@ -47534,8 +48358,8 @@
       },
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_enrichment_attempts": 40,
-      "_last_enrichment_attempt": "2026-09-11",
+      "_enrichment_attempts": 41,
+      "_last_enrichment_attempt": "2026-09-12",
       "_buyonly_preorder": true,
       "imdb_rating": "5.8",
       "letterboxd_score": "2.6",
@@ -47561,7 +48385,7 @@
       ],
       "_trailer_source": "gemini_playwright",
       "metacritic_score": "40",
-      "_imdb_votes": 6913,
+      "_imdb_votes": 6944,
       "_needs_review": false,
       "is_slop": true,
       "_slop_reason": "score:4(no_rt,low_imdb)",
@@ -51663,7 +52487,7 @@
         "available_start": "2026-09-07",
         "available_end": "2026-09-14",
         "discovered": "2026-07-27",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -51997,7 +52821,7 @@
         "available_start": "2026-09-07",
         "available_end": "2026-09-14",
         "discovered": "2026-07-27",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -52103,7 +52927,7 @@
         "available_start": "2026-09-07",
         "available_end": "2026-09-14",
         "discovered": "2026-07-27",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -52557,7 +53381,7 @@
         "available_start": "2026-09-22",
         "available_end": "2026-09-28",
         "discovered": "2026-07-26",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -52656,7 +53480,7 @@
         "available_start": "2026-09-22",
         "available_end": "2026-09-23",
         "discovered": "2026-07-26",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -53215,17 +54039,14 @@
       },
       "links": {
         "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=ftVieq2AE-M",
+        "trailer": "https://www.youtube.com/watch?v=0xyfsceeqnw",
         "rt": "https://www.rottentomatoes.com/m/piggy_duster",
         "justwatch": "https://www.justwatch.com/us/movie/piggy-duster",
         "imdb": "https://www.imdb.com/title/tt20867954/",
         "letterboxd": "https://letterboxd.com/film/piggy-duster",
         "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1353760.mp4"
       },
-      "watch_links": {
-        "streaming": [],
-        "vod": []
-      },
+      "watch_links": {},
       "pre_order_links": [
         {
           "service": "Amazon Video",
@@ -53262,8 +54083,8 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 47,
-      "_last_enrichment_attempt": "2026-09-11",
+      "_enrichment_attempts": 48,
+      "_last_enrichment_attempt": "2026-09-12",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "imdb_rating": "9.2",
@@ -62970,10 +63791,7 @@
         "imdb": "https://www.imdb.com/title/tt34329963/",
         "letterboxd": "https://letterboxd.com/film/rise-of-the-super-tromettes"
       },
-      "watch_links": {
-        "streaming": [],
-        "vod": []
-      },
+      "watch_links": {},
       "pre_order_links": [
         {
           "service": "Barnes & Noble",
@@ -63002,11 +63820,11 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 58,
-      "_last_enrichment_attempt": "2026-09-11",
+      "_enrichment_attempts": 59,
+      "_last_enrichment_attempt": "2026-09-12",
       "_is_preorder": true,
       "_buyonly_preorder": true,
-      "imdb_rating": "6.1",
+      "imdb_rating": "6.8",
       "letterboxd_score": null,
       "keywords": [],
       "_imdb_votes": 9,
@@ -66578,7 +67396,7 @@
         "available_start": null,
         "available_end": null,
         "discovered": "2026-07-11",
-        "last_checked": "2026-09-11",
+        "last_checked": "2026-09-12",
         "status": "active"
       },
       "filters": {
@@ -95395,454 +96213,6 @@
       "_watch_links_verified": "2026-07-08T10:29:14.546143"
     },
     {
-      "id": "1711071",
-      "title": "The Jealous Bride",
-      "digital_date": "2026-06-13",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "As Meg prepares for her wedding, the return of a woman from her fiancé's past ignites a wave of jealousy she can't contain. Consumed by doubt, she soon spirals into a dangerous obsession that threatens to destroy her love, her faith and her future.",
-      "genres": [
-        "TV Movie",
-        "Thriller"
-      ],
-      "runtime": 87,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {},
-      "links": {
-        "wikipedia": null,
-        "rt": "https://www.rottentomatoes.com/m/the_jealous_bride",
-        "justwatch": "https://www.justwatch.com/us/movie/the-jealous-bride",
-        "cast_wiki": {
-          "Amber Stevens West": "https://en.wikipedia.org/wiki/Amber_Stevens_West",
-          "Michael Xavier": "https://en.wikipedia.org/wiki/Michael_Xavier"
-        },
-        "letterboxd": "https://letterboxd.com/film/the-jealous-bride",
-        "trailer": "https://www.youtube.com/watch?v=ia99gpn0EKw",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1711071.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.f5abe566-2524-449c-9942-32c8dcb092ed&tag=nrw04-20",
-            "rent_price": "$2.99",
-            "price": "$2.99",
-            "buy_price": "$4.99"
-          },
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/The-Jealous-Bride/5013221",
-            "rent_price": "$2.99",
-            "buy_price": "$4.99",
-            "price": "$2.99"
-          }
-        ],
-        "streaming": [
-          {
-            "service": "Lifetime",
-            "link": "https://www.mylifetime.com/movies/the-jealous-bride"
-          }
-        ]
-      },
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-13T12:25:05.769045",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/fCdtM7FKPjimt0XijKlwOSv9E0v.jpg",
-      "studio": "Unknown",
-      "budget": 0,
-      "country": "US",
-      "original_language": "en",
-      "original_title": "The Jealous Bride",
-      "display_title": "The Jealous Bride",
-      "crew": {
-        "director": "Troy Scott",
-        "cast": [
-          "Amber Stevens West",
-          "Michael Xavier",
-          "Donna Benedicto"
-        ]
-      },
-      "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-13",
-      "imdb_rating": null,
-      "letterboxd_score": null,
-      "keywords": [],
-      "_digital_date_source": "tmdb_type4",
-      "_needs_review": false,
-      "is_slop": true,
-      "_slop_reason": "manual_override",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "wikipedia",
-        "imdb_rating",
-        "metacritic_score",
-        "letterboxd_score"
-      ],
-      "reissue_label": null,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "_watch_links_verified": "2026-07-05T10:29:01.312337",
-      "capsule": "Lifetime faith-based thriller. A bride-to-be's world unravels when her fiancé's ex reappears, unleashing a wave of jealousy that spirals into dangerous obsession.",
-      "_trailer_retry_count": 1,
-      "_trailer_last_retry": "2026-06-19T14:34:42.820755",
-      "_trailer_source": "tmdb_official",
-      "_slop_confidence": "strong",
-      "_reissue": false
-    },
-    {
-      "id": "1536559",
-      "title": "Double Happiness",
-      "digital_date": "2026-06-13",
-      "bootstrap_date": false,
-      "manually_corrected": true,
-      "synopsis": "Groom-to-be Tim must pull off two perfect weddings on the same night, at the same five-star hotel, all without his divorced parents discovering each other.",
-      "genres": [
-        "Drama"
-      ],
-      "runtime": 130,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "Netflix",
-          "Netflix Standard with Ads"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Double_Happiness_(film)",
-        "trailer": "https://www.youtube.com/watch?v=7pz95I3layc",
-        "rt": "https://www.rottentomatoes.com/m/900117061",
-        "justwatch": "https://www.justwatch.com/us/movie/double-happiness-2026",
-        "cast_wiki": {
-          "Liu Kuan-ting": "https://en.wikipedia.org/wiki/Liu_Kuan-ting",
-          "Jennifer Yu": "https://en.wikipedia.org/wiki/Jennifer_Yu_(actress)",
-          "Yang Kuei-mei": "https://en.wikipedia.org/wiki/Yang_Kuei-mei"
-        },
-        "imdb": "https://www.imdb.com/title/tt38067963/",
-        "letterboxd": "https://letterboxd.com/film/double-happiness-2025",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1536559.mp4"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "Netflix",
-            "link": "https://www.netflix.com/title/82711657"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-13T12:11:31.699573",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/1MzikEP1A09dZFuQu5DBxJFPNH7.jpg",
-      "studio": "Splash Pictures Inc.",
-      "budget": 0,
-      "country": "Taiwan",
-      "original_language": "zh",
-      "original_title": "雙囍",
-      "display_title": "Double Happiness",
-      "crew": {
-        "director": "Joseph Hsu",
-        "cast": [
-          "Liu Kuan-ting",
-          "Jennifer Yu",
-          "Yang Kuei-mei",
-          "Tenky Tin Kai-Man",
-          "Tou Tsung-hua"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-13",
-      "imdb_rating": "7.9",
-      "letterboxd_score": "3.7",
-      "keywords": [],
-      "_trailer_source": "gemini_playwright",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "_slop_reason": "manual_override",
-      "status": "available",
-      "_enrichment_gaps": [
-        "metacritic_score"
-      ],
-      "reissue_label": null,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": true,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "capsule": "Taiwanese comedy-drama.\n\nA meticulous chef thrown into a wedding day nightmare: orchestrating two elaborate ceremonies simultaneously to keep his divorced parents from discovering each other.\n\nWorld Premiere at the Tokyo International Film Festival.",
-      "pull_quotes": [
-        {
-          "text": "this all could have been avoided if he didn’t leave his vape in the toilet.",
-          "critic": "@notsailor",
-          "outlet": "Letterboxd",
-          "source": "letterboxd",
-          "review_url": "https://letterboxd.com/notsailor/film/double-happiness-2025/"
-        }
-      ],
-      "is_slop": false,
-      "_slop_confidence": "strong",
-      "_reissue": false
-    },
-    {
-      "id": "1608277",
-      "title": "Toh, Ti Ani Fuji",
-      "digital_date": "2026-06-13",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "In a world where love is filtered, scored and predicted, a couple in Pune, India, collides in a fierce, consuming romance. What begins in urgency and desire slowly fractures. Time intrudes. Ambition shifts. Affection turns conditional. What once felt infinite begins to bruise and break. Seven years later, beneath the shadow of Mount Fuji, they meet again. Japan is quieter. The air is thinner.  They are no longer who they were. Carrying different lives, different scars, they stand face to face with a past that never truly left them.  Can love survive its own history or does it merely haunt those who try to return to it? Toh, Ti Ani Fuji is an intimate, visually driven meditation on love, memory and the fragile, devastating hope of second chances.",
-      "genres": [
-        "Romance",
-        "Drama"
-      ],
-      "runtime": 134,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "YouTube TV"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Toh_Ti_Ani_Fuji",
-        "trailer": "https://www.youtube.com/watch?v=TJBXMheNyQM",
-        "rt": "https://www.rottentomatoes.com/m/toh_ti_ani_fuji",
-        "justwatch": "https://www.justwatch.com/us/movie/toh-ti-ani-fuji",
-        "cast_wiki": {
-          "Lalit Prabhakar": "https://en.wikipedia.org/wiki/Lalit_Prabhakar",
-          "Mrinmayee Godbole": "https://en.wikipedia.org/wiki/Mrinmayee_Godbole"
-        },
-        "imdb": "https://www.imdb.com/title/tt21364576/",
-        "letterboxd": "https://letterboxd.com/film/toh-ti-ani-fuji",
-        "director_wiki": "https://en.wikipedia.org/wiki/Mohit_Takalkar",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1608277.mp4",
-        "trailer_hosted_subs": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1608277.en.vtt"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "YouTube",
-            "link": "https://tv.youtube.com/browse/UCVekyIXLPyPaNHoQpsI1CMw"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-13T12:07:23.734203",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/1JGkVOvJZEwVOHzmdRvkc7dPI6r.jpg",
-      "studio": "Platoon One Films",
-      "budget": 0,
-      "country": "India",
-      "original_language": "mr",
-      "original_title": "तो ती आणि फुजी",
-      "display_title": "Toh, Ti Ani Fuji (तो ती आणि फुजी)",
-      "crew": {
-        "director": "Mohit Takalkar",
-        "cast": [
-          "Lalit Prabhakar",
-          "Mrinmayee Godbole",
-          "Omprakash Shinde",
-          "Kabir Deven",
-          "Natsuko Fuji"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-13",
-      "imdb_rating": "5.8",
-      "letterboxd_score": null,
-      "keywords": [],
-      "_trailer_source": "gemini_playwright",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "is_slop": true,
-      "_slop_reason": "manual_override",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "wikipedia",
-        "metacritic_score",
-        "letterboxd_score"
-      ],
-      "reissue_label": null,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": true,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "capsule": "A Marathi romantic drama that literally spans continents. It charts a Pune couple's passionate but fracturing romance, culminating in a poignant reunion years later beneath Japan's Mount Fuji.\n\nDirected by acclaimed theatre and film director **[Mohit Takalkar](https://en.wikipedia.org/wiki/Mohit_Takalkar)** (*Medium Spicy*).",
-      "pull_quotes": [
-        {
-          "text": "i would never treat Lalit like that... vismay deserves better. 10/10 cinematography.",
-          "critic": "@5warali",
-          "outlet": "Letterboxd",
-          "source": "letterboxd",
-          "review_url": "https://letterboxd.com/5warali/film/toh-ti-ani-fuji/"
-        },
-        {
-          "text": "In other words, make sure to always use protection, kids.",
-          "critic": "@Abhineet",
-          "outlet": "Letterboxd",
-          "source": "letterboxd",
-          "review_url": "https://letterboxd.com/abhineet97/film/toh-ti-ani-fuji/"
-        }
-      ],
-      "_slop_confidence": "strong",
-      "_reissue": false
-    },
-    {
-      "id": "1254590",
-      "title": "Kalamkaval",
-      "digital_date": "2026-06-13",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Early 2010s. A routine Kerala Police inquiry in the quiet village of Kottayikonam takes an unexpected turn when a trail of seemingly minor clues unravels into a string of disturbing cases. The investigation soon crosses into Tamil Nadu, revealing unsolved mysteries that have lingered for years.",
-      "genres": [
-        "Crime",
-        "Drama",
-        "Thriller"
-      ],
-      "runtime": 144,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "YouTube TV"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Kalamkaval",
-        "trailer": "https://www.youtube.com/watch?v=LvUnF8oApaM",
-        "rt": "https://www.rottentomatoes.com/m/kalamkaval",
-        "justwatch": "https://www.justwatch.com/us/movie/kalamkaval",
-        "cast_wiki": {
-          "Vinayakan": "https://en.wikipedia.org/wiki/Vinayakan",
-          "Mammootty": "https://en.wikipedia.org/wiki/Mammootty",
-          "Rajisha Vijayan": "https://en.wikipedia.org/wiki/Rajisha_Vijayan"
-        },
-        "imdb": "https://www.imdb.com/title/tt33500164/",
-        "letterboxd": "https://letterboxd.com/film/kalamkaval",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1254590.mp4",
-        "trailer_hosted_subs": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1254590.en.vtt"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "YouTube",
-            "link": "https://tv.youtube.com/browse/UC4623t-TJTI-yCmfL3wC3IA"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-06-13T11:50:58.317092",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/5vdogNH72GrriiZ45H8U7CPWGfO.jpg",
-      "studio": "Mammootty Kampany",
-      "budget": 0,
-      "country": "India",
-      "original_language": "ml",
-      "original_title": "കളങ്കാവൽ",
-      "display_title": "Kalamkaval (കളങ്കാവൽ)",
-      "crew": {
-        "director": "Jithin K Jose",
-        "cast": [
-          "Vinayakan",
-          "Mammootty",
-          "Rajisha Vijayan",
-          "Shruti Ramachandran",
-          "Kunchan"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-06-13",
-      "imdb_rating": "7.2",
-      "letterboxd_score": "3.3",
-      "keywords": [],
-      "_trailer_source": "gemini_playwright",
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "_slop_reason": "indian_cinema_no_crossover:ml",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "metacritic_score"
-      ],
-      "reissue_label": null,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": true,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "pull_quotes": [
-        {
-          "text": "Just another slow-burn serial killer despite some of its original takes.",
-          "critic": "S. R. Praveen",
-          "outlet": "The Hindu",
-          "source": "rt_critic",
-          "review_url": "https://www.thehindu.com/entertainment/movies/kalamkaval-movie-review-mammotty-vinayakan-slow-burn-thriller-jithin-k-jose-cyanide-mohan/article70361688.ece"
-        },
-        {
-          "text": "The film's greatest achievement is showing Mammootty in a role Malayalam audiences rarely get to see.",
-          "critic": "@Gautham S Krishna",
-          "outlet": "Letterboxd",
-          "source": "letterboxd",
-          "review_url": "https://letterboxd.com/gauthamskrishna/film/kalamkaval/"
-        }
-      ],
-      "capsule": "Malayalam-language psychological thriller. Inspired by the Hindi crime drama series *[Dahaad](https://en.wikipedia.org/wiki/Dahaad)*.",
-      "is_slop": true,
-      "_slop_confidence": "strong",
-      "_reissue": false
-    },
-    {
       "id": "13754",
       "title": "Tekkonkinkreet",
       "year": 2006,
@@ -97072,8 +97442,8 @@
   ],
   "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tF9w50iumYcQPYseQ6qL7X7",
   "_metadata": {
-    "last_discovery_write": "2026-09-11T12:45:54.161178",
-    "discovery_count": 834,
+    "last_discovery_write": "2026-09-12T12:09:19.482559",
+    "discovery_count": 830,
     "schema_version": "2.0"
   }
 }
