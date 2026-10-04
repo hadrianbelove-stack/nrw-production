@@ -2697,11 +2697,22 @@
     "1419406": {
       "title": "The Shadow's Edge",
       "premiere_date": "2025-08-16",
-      "digital_date": null,
-      "has_providers": false,
+      "has_providers": true,
       "status": "tracking",
       "added": "2025-09-06T16:47:46.143361",
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "providers": {
+        "rent": [],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "enriched": true,
+      "enrichment_date": "2026-10-04",
+      "_transitioned_at": "2026-10-04",
+      "_buyonly_preorder": true
     },
     "1532580": {
       "title": "Mountain",
@@ -9779,7 +9790,9 @@
       "added": "2025-10-16T13:33:15.695599",
       "year": 2025,
       "providers": {
-        "rent": [],
+        "rent": [
+          "Eventive"
+        ],
         "buy": [],
         "streaming": []
       },
@@ -20232,7 +20245,7 @@
       "year": 2025,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 95,
+      "_jw_revert_count": 96,
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-10-04",
@@ -41396,7 +41409,7 @@
       "enrichment_date": null,
       "_is_preorder": true,
       "_transitioned_at": "2026-10-04",
-      "_jw_revert_count": 107,
+      "_jw_revert_count": 108,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -89887,7 +89900,7 @@
     },
     "1000866": {
       "title": "The Marching Band",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
       "providers": {
         "rent": [
@@ -89908,12 +89921,10 @@
       "year": 2024,
       "premiere_date": "2024-11-27",
       "_discovery_source": "provider_availability_check",
-      "enriched": false,
+      "enriched": true,
       "_transitioned_at": "2026-10-04",
       "digital_date": "2026-10-04",
-      "_jw_revert_reason": "zero_watch_links",
-      "_jw_reverted_at": "2026-10-04",
-      "_jw_revert_count": 1
+      "enrichment_date": "2026-10-04"
     },
     "999142": {
       "title": "Rabia",
@@ -124184,7 +124195,7 @@
       "festival": "Cannes",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -134573,7 +134584,7 @@
       "festival": "Fantastic Fest",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -176756,7 +176767,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -179214,7 +179225,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -203633,7 +203644,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 78,
+      "_jw_revert_count": 79,
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-10-04",
@@ -203655,7 +203666,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 51,
+      "_jw_revert_count": 52,
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-10-04",
@@ -210224,7 +210235,7 @@
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 37,
+      "_jw_revert_count": 38,
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-10-04",
@@ -230553,7 +230564,8 @@
       "_discovery_source": "provider_availability_check",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-30"
+      "_jw_reverted_at": "2026-09-30",
+      "_skip_provider_discovery": true
     },
     "1694164": {
       "title": "Death at the Dinner Party",
@@ -236974,7 +236986,7 @@
         "streaming": []
       },
       "intake_pass": "A",
-      "_jw_revert_count": 116,
+      "_jw_revert_count": 117,
       "_skip_provider_discovery": true,
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
@@ -244931,7 +244943,7 @@
         ]
       },
       "intake_pass": "A",
-      "_jw_revert_count": 12,
+      "_jw_revert_count": 13,
       "_skip_provider_discovery": true,
       "has_providers": true,
       "enriched": false,
@@ -255088,7 +255100,7 @@
       "enrichment_date": null,
       "has_providers": true,
       "_transitioned_at": "2026-10-04",
-      "_jw_revert_count": 78,
+      "_jw_revert_count": 79,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -255826,7 +255838,7 @@
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 70,
+      "_jw_revert_count": 71,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
@@ -256337,7 +256349,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-10-01"
     },
@@ -263412,7 +263424,7 @@
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 57,
+      "_jw_revert_count": 58,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
@@ -264292,7 +264304,7 @@
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 56,
+      "_jw_revert_count": 57,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
@@ -268407,7 +268419,7 @@
       "providers": {},
       "intake_pass": "B",
       "has_providers": false,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-10-02"
     },
@@ -268750,7 +268762,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-10-02"
     },
@@ -270764,7 +270776,7 @@
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 37,
+      "_jw_revert_count": 38,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
@@ -272951,9 +272963,8 @@
       "providers": {},
       "intake_pass": "C",
       "festival": "Venice",
-      "has_providers": false,
-      "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "enriched": true,
@@ -279161,7 +279172,7 @@
       "enrichment_date": null,
       "has_providers": true,
       "_transitioned_at": "2026-10-04",
-      "_jw_revert_count": 22,
+      "_jw_revert_count": 23,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -280743,7 +280754,7 @@
       "intake_pass": "B",
       "_discovery_source": "tmdb_type4",
       "_is_preorder": true,
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
@@ -288884,7 +288895,7 @@
       "enrichment_date": null,
       "has_providers": true,
       "_transitioned_at": "2026-10-04",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -289236,7 +289247,9 @@
       "intake_date": "2026-09-28",
       "digital_date": "2026-09-28",
       "providers": {
-        "rent": [],
+        "rent": [
+          "Eventive"
+        ],
         "buy": [],
         "streaming": []
       },
@@ -289733,7 +289746,8 @@
       "intake_pass": "A",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-30"
+      "_jw_reverted_at": "2026-09-30",
+      "_skip_provider_discovery": true
     },
     "1784287": {
       "title": "Content",
@@ -290021,7 +290035,8 @@
       "festival": "NYFF",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-09-30"
+      "_jw_reverted_at": "2026-09-30",
+      "_skip_provider_discovery": true
     },
     "1783999": {
       "title": "Extraordinary Aliens",
@@ -290202,7 +290217,7 @@
       "digital_date": "2026-10-01",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-10-01"
     },
@@ -290358,7 +290373,7 @@
       "digital_date": "2026-09-30",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-10-01"
     },
@@ -291143,7 +291158,7 @@
       "digital_date": "2026-10-02",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-10-02"
     },
@@ -291209,7 +291224,7 @@
       "digital_date": "2026-10-01",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-10-02"
     },
@@ -291760,7 +291775,7 @@
       "digital_date": "2026-10-03",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -291772,7 +291787,7 @@
       "digital_date": "2026-10-02",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -292042,7 +292057,7 @@
       "digital_date": "2026-07-23",
       "providers": {},
       "intake_pass": "B",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -292134,7 +292149,7 @@
       "digital_date": "2025-10-31",
       "providers": {},
       "intake_pass": "B",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-10-04"
     },
@@ -292517,6 +292532,72 @@
       "networks": [
         "Netflix",
         "TVING"
+      ],
+      "has_providers": false
+    },
+    "1787958": {
+      "title": "Geese - Live from Forest Hills, New York, 2026",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-10-04",
+      "digital_date": "2026-10-03",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-10-04"
+    },
+    "tv_330200": {
+      "title": "Peccato",
+      "content_type": "limited_series",
+      "tmdb_id": 330200,
+      "status": "tracking",
+      "first_air_date": "2026-10-02",
+      "digital_date": "2026-10-02",
+      "episode_count": 6,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/kgpbj2EQOVHYa18TN4oNW6N4crk.jpg",
+      "synopsis": "2049. Emanuela Fanelli is 63 years old and lives alone in a small isolated mountain village in Valle d'Aosta. She doesn't act anymore, she shied away from cameras and has been forgotten by the showbiz. Through a ironic and speculative tone, Peccato interrogates on the reasons of the actress' retreat, by a \"what if\" narrative that goes back through Fanelli's carreer and the mysterious scandal that caused her downfall.",
+      "genres": [
+        "Comedy"
+      ],
+      "original_language": "it",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-10-04",
+      "networks": [
+        "HBO Max"
+      ],
+      "has_providers": false
+    },
+    "tv_336808": {
+      "title": "Love in Thailand",
+      "content_type": "limited_series",
+      "tmdb_id": 336808,
+      "status": "tracking",
+      "first_air_date": "2026-09-23",
+      "digital_date": "2026-09-23",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/uWGwIu3ElRCpi80AyAcvcJhZD2p.jpg",
+      "synopsis": "Set in Thailand, it follows the story of Joon-seo, who falls in love with So-jin, a golf resort heiress after approaching her while concealing his true identity.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-10-04",
+      "networks": [
+        "iQIYI International",
+        "Vigloo",
+        "DramaBox"
       ],
       "has_providers": false
     }
