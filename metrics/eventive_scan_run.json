@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-10-07T15:07:02.856374",
+  "timestamp": "2026-10-08T14:59:01.109355",
   "operation": "eventive_scan_pipeline",
   "stats": {
-    "festivals_scanned": 146,
-    "festivals_with_films": 141,
+    "festivals_scanned": 145,
+    "festivals_with_films": 140,
     "festivals_failed": 47,
-    "total_films_indexed": 3046,
+    "total_films_indexed": 3029,
     "expired_filtered": 0,
-    "unique_active": 2053,
-    "tracking_matches": 172,
-    "wall_matches": 91,
-    "new_cached": 216,
+    "unique_active": 2038,
+    "tracking_matches": 169,
+    "wall_matches": 101,
+    "new_cached": 223,
     "skipped_undated": 47
   },
   "tracking_matches": [
@@ -227,66 +227,6 @@
       "start": "2026-10-04T09:00:00.000Z",
       "end": "2026-10-12T04:00:00.000Z",
       "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1699419",
-      "nrw_title": "Acting Like Women",
-      "eventive_title": "Acting Like Women",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a7254bc954b0008ec1ebb41",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1689558",
-      "nrw_title": "The Endless Frontier",
-      "eventive_title": "The Endless Frontier",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a72337d7da10c4aa718c250",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1722471",
-      "nrw_title": "The Last Place on Earth",
-      "eventive_title": "The Last Place on Earth",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a7232a6cf7f1ad182235723",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1656944",
-      "nrw_title": "The [Conserv]atives",
-      "eventive_title": "The [Conserv]atives",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a7232fecf7a39743f8c24f7",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1639786",
-      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "festival": "#EOFF2026",
-      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c83",
-      "start": "2026-10-14T23:00:00.000Z",
-      "end": "2026-10-19T06:59:00.000Z",
-      "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -651,6 +591,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1415913",
+      "nrw_title": "The Obelisk",
+      "eventive_title": "The Obelisk",
+      "festival": "MONIFF 2026 Film Festival",
+      "link": "https://watch.eventive.org/moniff2026/play/6ac67c07893806b91e6b32b4",
+      "start": "2026-10-06T12:00:00.000Z",
+      "end": "2026-10-16T03:45:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
       "movie_id": "1643321",
       "nrw_title": "She Cries Murder",
       "eventive_title": "She Cries Murder",
@@ -999,18 +951,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1318711",
-      "nrw_title": "Sugar Island",
-      "eventive_title": "Sugar Island",
-      "festival": "Black in Latin America Virtual Film Series",
-      "link": "https://watch.eventive.org/blackinlatinamerica/play/6a9928cfc60b018bc44e46a9",
-      "start": "2026-09-25T12:00:00.000Z",
-      "end": "2026-10-16T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1680441",
       "nrw_title": "Behind Closed Doors",
       "eventive_title": "Behind Closed Doors",
@@ -1047,14 +987,14 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1618192",
-      "nrw_title": "The Old Man and the Parrot",
-      "eventive_title": "The Old Man and the Parrot",
-      "festival": "Welcome to the OUTshine LGBTQ+ Film Festival, Fall Edition \ud83c\udf1f 28 Years of Presenting Queer Film in South Florida!",
-      "link": "https://watch.eventive.org/outshinefall2026/play/6aac9ff2460173a2f41afda6",
-      "start": "2026-10-26T00:00:00.000Z",
-      "end": "2026-11-02T04:59:00.000Z",
-      "status": "upcoming",
+      "movie_id": "1318711",
+      "nrw_title": "Sugar Island",
+      "eventive_title": "Sugar Island",
+      "festival": "Black in Latin America Virtual Film Series",
+      "link": "https://watch.eventive.org/blackinlatinamerica/play/6a9928cfc60b018bc44e46a9",
+      "start": "2026-09-25T12:00:00.000Z",
+      "end": "2026-10-16T03:59:00.000Z",
+      "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -1071,11 +1011,23 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1591027",
-      "nrw_title": "Tadaima",
-      "eventive_title": "Tadaima",
-      "festival": "Films of Remembrance On Demand",
-      "link": "https://watch.eventive.org/for-on-demand/play/6695b277bf22b6004f82e7e7",
+      "movie_id": "1585144",
+      "nrw_title": "Connection",
+      "eventive_title": "The Connection",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1049439",
+      "nrw_title": "The Golden Age",
+      "eventive_title": "The Golden Age",
+      "festival": "ILLUMINATE Film Festival",
+      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
       "start": "",
       "end": "",
       "status": "active",
@@ -1131,6 +1083,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1618192",
+      "nrw_title": "The Old Man and the Parrot",
+      "eventive_title": "The Old Man and the Parrot",
+      "festival": "Welcome to the OUTshine LGBTQ+ Film Festival, Fall Edition \ud83c\udf1f 28 Years of Presenting Queer Film in South Florida!",
+      "link": "https://watch.eventive.org/outshinefall2026/play/6aac9ff2460173a2f41afda6",
+      "start": "2026-10-26T00:00:00.000Z",
+      "end": "2026-11-02T04:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1604573",
       "nrw_title": "Isolation",
       "eventive_title": "Isolation",
@@ -1165,30 +1129,6 @@
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
-    },
-    {
-      "movie_id": "1585144",
-      "nrw_title": "Connection",
-      "eventive_title": "The Connection",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/637d1a2f9bfb3100688801d1",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1049439",
-      "nrw_title": "The Golden Age",
-      "eventive_title": "The Golden Age",
-      "festival": "ILLUMINATE Film Festival",
-      "link": "https://watch.eventive.org/illuminate/play/619c2294a1f61b00d3d1cdd2",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
     },
     {
       "movie_id": "1701331",
@@ -1455,6 +1395,18 @@
       "nrw_status": "tracking"
     },
     {
+      "movie_id": "1591027",
+      "nrw_title": "Tadaima",
+      "eventive_title": "Tadaima",
+      "festival": "Films of Remembrance On Demand",
+      "link": "https://watch.eventive.org/for-on-demand/play/6695b277bf22b6004f82e7e7",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
       "movie_id": "1560360",
       "nrw_title": "Baristas vs Billionaires",
       "eventive_title": "Baristas vs Billionaires",
@@ -1587,6 +1539,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1639786",
+      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c83",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1229906",
       "nrw_title": "Family",
       "eventive_title": "Family",
@@ -1644,7 +1608,7 @@
       "end": "2026-10-26T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1654961",
@@ -1656,7 +1620,7 @@
       "end": "2026-10-26T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1587902",
@@ -1704,7 +1668,7 @@
       "end": "2026-10-26T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1399696",
@@ -1740,7 +1704,7 @@
       "end": "2026-10-26T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1543742",
@@ -1752,7 +1716,7 @@
       "end": "2026-10-26T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1763963",
@@ -1776,7 +1740,7 @@
       "end": "2026-10-26T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1587048",
@@ -1800,7 +1764,7 @@
       "end": "2026-10-26T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1434326",
@@ -1812,7 +1776,7 @@
       "end": "2026-10-26T06:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1528037",
@@ -1992,7 +1956,7 @@
       "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1658162",
@@ -2004,7 +1968,7 @@
       "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1658185",
@@ -2016,7 +1980,7 @@
       "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1599556",
@@ -2028,7 +1992,7 @@
       "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1449737",
@@ -2040,7 +2004,7 @@
       "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1497960",
@@ -2052,7 +2016,7 @@
       "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "846580",
@@ -2064,7 +2028,7 @@
       "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1464549",
@@ -2076,7 +2040,7 @@
       "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     }
   ],
   "wall_matches": [
@@ -2233,66 +2197,6 @@
       "start": "2026-10-04T09:00:00.000Z",
       "end": "2026-10-12T04:00:00.000Z",
       "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1699419",
-      "nrw_title": "Acting Like Women",
-      "eventive_title": "Acting Like Women",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a7254bc954b0008ec1ebb41",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1689558",
-      "nrw_title": "The Endless Frontier",
-      "eventive_title": "The Endless Frontier",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a72337d7da10c4aa718c250",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1722471",
-      "nrw_title": "The Last Place on Earth",
-      "eventive_title": "The Last Place on Earth",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a7232a6cf7f1ad182235723",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1656944",
-      "nrw_title": "The [Conserv]atives",
-      "eventive_title": "The [Conserv]atives",
-      "festival": "Welcome to Port Townsend Film Festival 2026",
-      "link": "https://watch.eventive.org/ptff2026/play/6a7232fecf7a39743f8c24f7",
-      "start": "2026-09-28T15:00:00.000Z",
-      "end": "2026-10-08T06:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1639786",
-      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
-      "festival": "#EOFF2026",
-      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c83",
-      "start": "2026-10-14T23:00:00.000Z",
-      "end": "2026-10-19T06:59:00.000Z",
-      "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -2849,18 +2753,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1318711",
-      "nrw_title": "Sugar Island",
-      "eventive_title": "Sugar Island",
-      "festival": "Black in Latin America Virtual Film Series",
-      "link": "https://watch.eventive.org/blackinlatinamerica/play/6a9928cfc60b018bc44e46a9",
-      "start": "2026-09-25T12:00:00.000Z",
-      "end": "2026-10-16T03:59:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1661494",
       "nrw_title": "As I Am",
       "eventive_title": "As I Am",
@@ -2885,14 +2777,14 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1618192",
-      "nrw_title": "The Old Man and the Parrot",
-      "eventive_title": "The Old Man and the Parrot",
-      "festival": "Welcome to the OUTshine LGBTQ+ Film Festival, Fall Edition \ud83c\udf1f 28 Years of Presenting Queer Film in South Florida!",
-      "link": "https://watch.eventive.org/outshinefall2026/play/6aac9ff2460173a2f41afda6",
-      "start": "2026-10-26T00:00:00.000Z",
-      "end": "2026-11-02T04:59:00.000Z",
-      "status": "upcoming",
+      "movie_id": "1318711",
+      "nrw_title": "Sugar Island",
+      "eventive_title": "Sugar Island",
+      "festival": "Black in Latin America Virtual Film Series",
+      "link": "https://watch.eventive.org/blackinlatinamerica/play/6a9928cfc60b018bc44e46a9",
+      "start": "2026-09-25T12:00:00.000Z",
+      "end": "2026-10-16T03:59:00.000Z",
+      "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -2928,6 +2820,18 @@
       "link": "https://watch.eventive.org/saff2026/play/6a9442f2fcc7d08b41fb1254",
       "start": "2026-11-06T08:00:00.000Z",
       "end": "2026-11-21T07:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1618192",
+      "nrw_title": "The Old Man and the Parrot",
+      "eventive_title": "The Old Man and the Parrot",
+      "festival": "Welcome to the OUTshine LGBTQ+ Film Festival, Fall Edition \ud83c\udf1f 28 Years of Presenting Queer Film in South Florida!",
+      "link": "https://watch.eventive.org/outshinefall2026/play/6aac9ff2460173a2f41afda6",
+      "start": "2026-10-26T00:00:00.000Z",
+      "end": "2026-11-02T04:59:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
@@ -3005,6 +2909,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1639786",
+      "nrw_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "eventive_title": "Transforming the Beautiful Game: The Clyde Best Story",
+      "festival": "#EOFF2026",
+      "link": "https://watch.eventive.org/eoff2026/play/6a9dd1eff2891b741e524c83",
+      "start": "2026-10-14T23:00:00.000Z",
+      "end": "2026-10-19T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1229906",
       "nrw_title": "Family",
       "eventive_title": "Family",
@@ -3041,11 +2957,35 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1575467",
+      "nrw_title": "The Audition",
+      "eventive_title": "The Audition",
+      "festival": "La Femme International Film Festival USA 2026",
+      "link": "https://watch.eventive.org/lafemmeusa2026/play/6ac5a7e9997b3bf987ee3486",
+      "start": "2026-10-22T07:01:00.000Z",
+      "end": "2026-10-26T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1587902",
       "nrw_title": "Cardboard",
       "eventive_title": "Cardboard",
       "festival": "La Femme International Film Festival USA 2026",
       "link": "https://watch.eventive.org/lafemmeusa2026/play/6ac45dbe3c7a35291699abed",
+      "start": "2026-10-22T07:01:00.000Z",
+      "end": "2026-10-26T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1625043",
+      "nrw_title": "Escort",
+      "eventive_title": "The Escort",
+      "festival": "La Femme International Film Festival USA 2026",
+      "link": "https://watch.eventive.org/lafemmeusa2026/play/6ac5a880223be9931bc1cbd1",
       "start": "2026-10-22T07:01:00.000Z",
       "end": "2026-10-26T06:59:00.000Z",
       "status": "upcoming",
@@ -3077,6 +3017,30 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1379418",
+      "nrw_title": "Retreat",
+      "eventive_title": "Retreat",
+      "festival": "La Femme International Film Festival USA 2026",
+      "link": "https://watch.eventive.org/lafemmeusa2026/play/6ac598fbc6b65e0c03d5b5f9",
+      "start": "2026-10-22T07:01:00.000Z",
+      "end": "2026-10-26T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1543742",
+      "nrw_title": "Tetanus",
+      "eventive_title": "Tetanus",
+      "festival": "La Femme International Film Festival USA 2026",
+      "link": "https://watch.eventive.org/lafemmeusa2026/play/6ac5a7940cf655c6c95d2b17",
+      "start": "2026-10-22T07:01:00.000Z",
+      "end": "2026-10-26T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1763963",
       "nrw_title": "Karen Williams: I Had To Laugh",
       "eventive_title": "Karen Williams: I Had To Laugh",
@@ -3089,11 +3053,47 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1596266",
+      "nrw_title": "Seized",
+      "eventive_title": "Seized",
+      "festival": "La Femme International Film Festival USA 2026",
+      "link": "https://watch.eventive.org/lafemmeusa2026/play/6ac59f5ec6b65e0c03d61c46",
+      "start": "2026-10-22T07:01:00.000Z",
+      "end": "2026-10-26T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1587048",
       "nrw_title": "Hambre",
       "eventive_title": "Hambre",
       "festival": "La Femme International Film Festival USA 2026",
       "link": "https://watch.eventive.org/lafemmeusa2026/play/6ac46a46b78cb41d3869aff8",
+      "start": "2026-10-22T07:01:00.000Z",
+      "end": "2026-10-26T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1620308",
+      "nrw_title": "Still Life",
+      "eventive_title": "Still Life",
+      "festival": "La Femme International Film Festival USA 2026",
+      "link": "https://watch.eventive.org/lafemmeusa2026/play/6ac5a067fac38eaf7216e325",
+      "start": "2026-10-22T07:01:00.000Z",
+      "end": "2026-10-26T06:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1434326",
+      "nrw_title": "Street Smart",
+      "eventive_title": "Street Smart",
+      "festival": "La Femme International Film Festival USA 2026",
+      "link": "https://watch.eventive.org/lafemmeusa2026/play/6ac5a0d3fac38eaf7216eb97",
       "start": "2026-10-22T07:01:00.000Z",
       "end": "2026-10-26T06:59:00.000Z",
       "status": "upcoming",
@@ -3168,6 +3168,90 @@
       "link": "https://watch.eventive.org/hobnobben/play/6aa59cb39564378e20e70cf6",
       "start": "2026-10-25T15:15:00.000Z",
       "end": "2026-11-11T04:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1662623",
+      "nrw_title": "Dear Ancestor",
+      "eventive_title": "Dear Ancestor",
+      "festival": "ALT EFF 2026",
+      "link": "https://watch.eventive.org/alteff26/play/6ac65525ec7b141ad15449b1",
+      "start": "2026-12-02T18:30:00.000Z",
+      "end": "2026-12-13T18:29:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1658162",
+      "nrw_title": "Eternal Snow",
+      "eventive_title": "Eternal Snow",
+      "festival": "ALT EFF 2026",
+      "link": "https://watch.eventive.org/alteff26/play/6ac65525ec7b141ad15449b6",
+      "start": "2026-12-02T18:30:00.000Z",
+      "end": "2026-12-13T18:29:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1658185",
+      "nrw_title": "Heat",
+      "eventive_title": "Heat",
+      "festival": "ALT EFF 2026",
+      "link": "https://watch.eventive.org/alteff26/play/6ac65525ec7b141ad15449de",
+      "start": "2026-12-02T18:30:00.000Z",
+      "end": "2026-12-13T18:29:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1599556",
+      "nrw_title": "River of Spirits",
+      "eventive_title": "River of Spirits",
+      "festival": "ALT EFF 2026",
+      "link": "https://watch.eventive.org/alteff26/play/6ac65525ec7b141ad15449ca",
+      "start": "2026-12-02T18:30:00.000Z",
+      "end": "2026-12-13T18:29:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1449737",
+      "nrw_title": "Shifting Baselines",
+      "eventive_title": "Shifting Baselines",
+      "festival": "ALT EFF 2026",
+      "link": "https://watch.eventive.org/alteff26/play/6ac65525ec7b141ad15449cf",
+      "start": "2026-12-02T18:30:00.000Z",
+      "end": "2026-12-13T18:29:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1497960",
+      "nrw_title": "The Guardian of Stories",
+      "eventive_title": "The Guardian of Stories",
+      "festival": "ALT EFF 2026",
+      "link": "https://watch.eventive.org/alteff26/play/6ac6547f680dcad016ba206e",
+      "start": "2026-12-02T18:30:00.000Z",
+      "end": "2026-12-13T18:29:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1464549",
+      "nrw_title": "The Lake",
+      "eventive_title": "The Lake",
+      "festival": "ALT EFF 2026",
+      "link": "https://watch.eventive.org/alteff26/play/6ac65525ec7b141ad15449d9",
+      "start": "2026-12-02T18:30:00.000Z",
+      "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
