@@ -13,87 +13,117 @@
   'use strict';
   var TOKEN_KEY = 'nrw_plex_token';
   var SERVER_KEY = 'nrw_plex_server';
-  var OWNED_KEY = 'nrw_plex_owned';   // sessionStorage cache of the owned id list
-  var SECTION = '4';
+  var LIBMAP_KEY = 'nrw_plex_libmap'; // sessionStorage cache of { tmdbId: ratingKey }
 
-  var _owned = null; // Set of tmdb id strings
+  var _map = null; // { [tmdbId]: ratingKey }
 
   function trimSlash(s) { return (s || '').replace(/\/+$/, ''); }
   function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
   function getServer() { try { return trimSlash(localStorage.getItem(SERVER_KEY) || ''); } catch (e) { return ''; } }
   function isUnlocked() { return !!(getToken() && getServer()); }
 
-  function loadCachedOwned() {
-    if (_owned) return _owned;
+  function loadCachedMap() {
+    if (_map) return _map;
     try {
-      var raw = sessionStorage.getItem(OWNED_KEY);
-      if (raw) { _owned = new Set(JSON.parse(raw)); return _owned; }
+      var raw = sessionStorage.getItem(LIBMAP_KEY);
+      if (raw) { _map = JSON.parse(raw); return _map; }
     } catch (e) {}
     return null;
   }
+  function clearCache() {
+    _map = null;
+    try { sessionStorage.removeItem(LIBMAP_KEY); } catch (e) {}
+  }
 
-  // Fetch the owner's library once and build the owned-id Set. Cached in
-  // sessionStorage so navigating the wall doesn't refetch. Silent no-op when
-  // locked; falls back to any cached set on error.
+  function getJson(url) {
+    return fetch(url, { headers: { Accept: 'application/json', 'X-Plex-Token': getToken() } })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+
+  // Section keys differ per server, so discover every movie library rather
+  // than hardcoding one.
+  function movieSectionKeys(server) {
+    return getJson(server + '/library/sections').then(function (data) {
+      var dirs = (data.MediaContainer && data.MediaContainer.Directory) || [];
+      return dirs.filter(function (d) { return d.type === 'movie'; })
+                 .map(function (d) { return String(d.key); });
+    });
+  }
+
+  // Fetch the owner's movie libraries once and build the tmdb -> ratingKey map.
+  // Cached in sessionStorage so navigating the wall doesn't refetch. Silent
+  // no-op when locked; falls back to any cached map on error.
   function loadOwned() {
     if (!isUnlocked()) return Promise.resolve(null);
-    var cached = loadCachedOwned();
+    var cached = loadCachedMap();
     if (cached) return Promise.resolve(cached);
-    var url = getServer() + '/library/sections/' + SECTION + '/all?includeGuids=1';
-    return fetch(url, { headers: { Accept: 'application/json', 'X-Plex-Token': getToken() } })
-      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function (data) {
-        var items = (data.MediaContainer && data.MediaContainer.Metadata) || [];
-        var ids = [];
-        for (var i = 0; i < items.length; i++) {
-          var guids = items[i].Guid || [];
-          for (var j = 0; j < guids.length; j++) {
-            var id = guids[j].id || '';
-            if (id.indexOf('tmdb://') === 0) { ids.push(id.slice(7)); break; }
+    var server = getServer();
+    return movieSectionKeys(server)
+      .then(function (keys) {
+        return Promise.all(keys.map(function (k) {
+          return getJson(server + '/library/sections/' + k + '/all?includeGuids=1');
+        }));
+      })
+      .then(function (results) {
+        var map = {};
+        for (var r = 0; r < results.length; r++) {
+          var items = (results[r].MediaContainer && results[r].MediaContainer.Metadata) || [];
+          for (var i = 0; i < items.length; i++) {
+            var guids = items[i].Guid || [];
+            for (var j = 0; j < guids.length; j++) {
+              var id = guids[j].id || '';
+              if (id.indexOf('tmdb://') === 0) { map[id.slice(7)] = String(items[i].ratingKey); break; }
+            }
           }
         }
-        _owned = new Set(ids);
-        try { sessionStorage.setItem(OWNED_KEY, JSON.stringify(ids)); } catch (e) {}
-        if (global.console) console.log('[NRWPlex] ' + ids.length + ' owned films');
-        return _owned;
+        _map = map;
+        try { sessionStorage.setItem(LIBMAP_KEY, JSON.stringify(map)); } catch (e) {}
+        if (global.console) console.log('[NRWPlex] ' + Object.keys(map).length + ' owned films');
+        return _map;
       })
       .catch(function (e) {
         if (global.console) console.log('[NRWPlex] library fetch failed:', e && e.message);
-        return loadCachedOwned();
+        return loadCachedMap();
       });
   }
 
-  function owns(id) {
-    var set = _owned || loadCachedOwned();
-    return !!(set && set.has(String(id)));
+  function ratingKey(id) {
+    var map = _map || loadCachedMap();
+    return (map && map[String(id)]) || null;
   }
+  function owns(id) { return !!ratingKey(id); }
 
-  function watchUrl(id) { return 'watch.html?m=' + encodeURIComponent(id); }
+  // Carry the ratingKey so watch.html (opened in a fresh tab with no session
+  // cache) can start playback without refetching the whole library.
+  function watchUrl(id) {
+    var rk = ratingKey(id);
+    return 'watch.html?m=' + encodeURIComponent(id) + (rk ? '&k=' + encodeURIComponent(rk) : '');
+  }
 
   function unlock(token, server) {
     try {
       localStorage.setItem(TOKEN_KEY, (token || '').trim());
       localStorage.setItem(SERVER_KEY, trimSlash((server || '').trim()));
-      sessionStorage.removeItem(OWNED_KEY);
-      _owned = null;
     } catch (e) {}
+    clearCache();
   }
   function lock() {
     try {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(SERVER_KEY);
-      sessionStorage.removeItem(OWNED_KEY);
     } catch (e) {}
-    _owned = null;
+    clearCache();
   }
 
   global.NRWPlex = {
     isUnlocked: isUnlocked,
     loadOwned: loadOwned,
     owns: owns,
+    ratingKey: ratingKey,
     watchUrl: watchUrl,
     unlock: unlock,
     lock: lock,
+    clearCache: clearCache,
     getServer: getServer,
     getToken: getToken,
   };

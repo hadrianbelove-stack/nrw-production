@@ -116,7 +116,7 @@ const NRW = {
                     const warm = () => { if (window.NRWPlex) NRWPlex.loadOwned().catch(() => {}); };
                     if (window.NRWPlex) { warm(); return; }
                     const s = document.createElement('script');
-                    s.src = 'assets/nrw-plex.js?v=1';
+                    s.src = 'assets/nrw-plex.js?v=2';
                     s.onload = warm;
                     document.head.appendChild(s);
                 })();

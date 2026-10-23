@@ -84,6 +84,7 @@
 <footer>NRW · Private screening — your library, your server</footer>
 
 <script src="assets/hls.min.js"></script>
+<script src="assets/nrw-plex.js?v=2"></script>
 <script>
 (function(){
   "use strict";
@@ -109,6 +110,7 @@
     if (t){ localStorage.setItem(TOKEN_KEY, t); changed = true; }
     if (sv){ localStorage.setItem(SERVER_KEY, sv); changed = true; }
     if (changed){
+      if (window.NRWPlex) NRWPlex.clearCache();
       history.replaceState(null, "", location.pathname + location.search);
     }
   }
@@ -141,6 +143,7 @@
       if(t && s && s !== 'https:'){
         localStorage.setItem(TOKEN_KEY, t);
         localStorage.setItem(SERVER_KEY, s);
+        if (window.NRWPlex) NRWPlex.clearCache();
         location.reload();
       }
     };
@@ -266,14 +269,22 @@
       if(String(movies[i].id) === String(mId)){ movie = movies[i]; break; }
     }
     if(!movie){ messageScreen("Film not found","That film isn't on the wall right now."); return; }
-    if(!movie.plex || !movie.plex.ratingKey){
-      messageScreen("Not in your library","This film isn't in your personal library.", deepLinkUrl(movie));
-      return;
-    }
     if(!token){ lockedScreen(movie); return; }
     var server = getServer(movie);
     if(!server){ messageScreen("No server","This device doesn't know your server address yet. Re-unlock with a #server= link."); return; }
-    playScreen(movie, server, movie.plex.ratingKey, token);
+    // ratingKey: carried from the wall (&k=), else looked up live in the
+    // owner's library — data.json deliberately holds no Plex data.
+    var known = (movie.plex && movie.plex.ratingKey) || qs("k");
+    var lookup = known ? Promise.resolve(known)
+      : (window.NRWPlex ? NRWPlex.loadOwned().then(function(){ return NRWPlex.ratingKey(mId); })
+                        : Promise.resolve(null));
+    return lookup.then(function(rk){
+      if(!rk){
+        messageScreen("Not in your library","This film isn't in your personal library.", deepLinkUrl(movie));
+        return;
+      }
+      playScreen(movie, server, rk, token);
+    });
   }).catch(function(){
     messageScreen("Couldn't load","The wall data failed to load. Try again in a moment.");
   });

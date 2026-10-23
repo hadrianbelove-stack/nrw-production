@@ -16,7 +16,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const TOKEN_KEY = 'nrw_plex_token';
 const SERVER_KEY = 'nrw_plex_server';
 const LIBMAP_KEY = 'nrw_plex_libmap';
-const SECTION = '4'; // movie library section key on the owner's server
 
 let _memMap = null; // { [tmdbId]: ratingKey }
 let _lastDiag = '';  // human-readable result of the last library fetch
@@ -68,50 +67,63 @@ async function loadCachedMap() {
   return _memMap;
 }
 
+/** GET a Plex JSON endpoint; throws with a human-readable reason on failure. */
+async function plexJson(server, path, token) {
+  const res = await fetch(trimSlash(server) + path, {
+    headers: { Accept: 'application/json', 'X-Plex-Token': token },
+  });
+  if (!res.ok) {
+    throw new Error('HTTP ' + res.status + (res.status === 401 ? ' — token rejected' : ''));
+  }
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch (pe) {
+    throw new Error('server returned non-JSON (' + text.slice(0, 40).replace(/\s+/g, ' ') + '…)');
+  }
+}
+
 /**
- * Fetch the owner's movie library and rebuild the tmdb -> ratingKey map.
- * Falls back to the cached map on any failure (offline, expired token) so the
- * app never breaks — the owner just sees stale membership until the next success.
+ * Fetch the owner's movie libraries and rebuild the tmdb -> ratingKey map.
+ * Section keys differ per server, so every movie-type library is discovered
+ * rather than hardcoded. Falls back to the cached map on any failure (offline,
+ * expired token) so the app never breaks — the owner just sees stale
+ * membership until the next success.
  */
 export async function refreshLibraryMap() {
   const { token, server } = await getPlexConfig();
   if (!token || !server) return null;
   try {
-    const url = `${trimSlash(server)}/library/sections/${SECTION}/all?includeGuids=1`;
-    const res = await fetch(url, {
-      headers: { Accept: 'application/json', 'X-Plex-Token': token },
-    });
-    if (!res.ok) {
-      _lastDiag = 'HTTP ' + res.status + (res.status === 401 ? ' — token rejected' : '');
-      console.log('[Plex] library fetch', _lastDiag);
-      return await loadCachedMap();
-    }
-    const text = await res.text();
-    let data;
-    try { data = JSON.parse(text); }
-    catch (pe) {
-      _lastDiag = 'server returned non-JSON (' + text.slice(0, 40).replace(/\s+/g, ' ') + '…)';
-      return await loadCachedMap();
-    }
-    const items = (data.MediaContainer && data.MediaContainer.Metadata) || [];
+    const sections = await plexJson(server, '/library/sections', token);
+    const keys = ((sections.MediaContainer && sections.MediaContainer.Directory) || [])
+      .filter((d) => d.type === 'movie')
+      .map((d) => String(d.key));
+    const results = await Promise.all(
+      keys.map((k) => plexJson(server, `/library/sections/${k}/all?includeGuids=1`, token)),
+    );
     const map = {};
-    for (let i = 0; i < items.length; i++) {
-      const guids = items[i].Guid || [];
-      for (let j = 0; j < guids.length; j++) {
-        const id = guids[j].id || '';
-        if (id.indexOf('tmdb://') === 0) {
-          map[id.slice(7)] = String(items[i].ratingKey);
-          break;
+    let itemCount = 0;
+    for (const data of results) {
+      const items = (data.MediaContainer && data.MediaContainer.Metadata) || [];
+      itemCount += items.length;
+      for (let i = 0; i < items.length; i++) {
+        const guids = items[i].Guid || [];
+        for (let j = 0; j < guids.length; j++) {
+          const id = guids[j].id || '';
+          if (id.indexOf('tmdb://') === 0) {
+            map[id.slice(7)] = String(items[i].ratingKey);
+            break;
+          }
         }
       }
     }
     _memMap = map;
     await AsyncStorage.setItem(LIBMAP_KEY, JSON.stringify(map));
-    _lastDiag = items.length + ' items, ' + Object.keys(map).length + ' with tmdb ids';
+    _lastDiag = keys.length + ' movie libraries, ' + itemCount + ' items, ' +
+      Object.keys(map).length + ' with tmdb ids';
     console.log('[Plex] library map: ' + _lastDiag);
     return map;
   } catch (e) {
-    _lastDiag = 'network error: ' + (e && e.message ? e.message : e);
+    _lastDiag = (e && e.message ? e.message : 'network error: ' + e);
     console.log('[Plex] library fetch failed:', _lastDiag);
     return await loadCachedMap();
   }
