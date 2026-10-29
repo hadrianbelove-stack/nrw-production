@@ -78,7 +78,7 @@ const UnlockScreen = () => {
         Connect your personal server once. Your key stays on this device only.
       </Text>
 
-      <Text style={styles.label}>PLEX ACCESS TOKEN</Text>
+      <Text style={styles.label}>ACCESS TOKEN</Text>
       <TextInput
         style={styles.input}
         value={token}

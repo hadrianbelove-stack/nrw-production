@@ -132,7 +132,7 @@
       '<div class="card">'+poster+
       '<h2>Unlock this device</h2>'+
       '<p>Connect your personal server once. Your key stays on this device only, and also unlocks the NRW buttons on the wall.</p>'+
-      '<input type="password" id="tokin" placeholder="Plex access token" autocomplete="off">'+
+      '<input type="password" id="tokin" placeholder="Access token" autocomplete="off">'+
       '<input type="text" id="srvin" placeholder="https://…plex.direct:PORT" autocomplete="off" value="'+esc(curServer)+'">'+
       '<div><button class="act" id="unlockbtn">Unlock</button></div>'+
       '</div>'
@@ -154,7 +154,7 @@
       '<div class="card">'+
       '<h2>'+esc(title)+'</h2>'+
       '<p>'+esc(body)+'</p>'+
-      (plexUrl ? '<a class="plexfall" href="'+esc(plexUrl)+'">Open in Plex instead</a>' : '')+
+      (plexUrl ? '<a class="plexfall" href="'+esc(plexUrl)+'">Open in server app instead</a>' : '')+
       '</div>'
     );
   }

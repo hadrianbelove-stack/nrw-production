@@ -112,8 +112,19 @@ const NRW = {
                 // Personal Plex (owner-only): ensure the NRWPlex module is loaded
                 // (index.html may not include the <script> yet — it's behind a
                 // concurrent edit), then warm the owned-films set if unlocked.
-                (function ensureNRWPlex() {
-                    const warm = () => { if (window.NRWPlex) NRWPlex.loadOwned().catch(() => {}); };
+                // The library fetch is async and can resolve after a lightbox has
+                // already rendered (e.g. a direct ?m= link opens immediately on
+                // load) — if that happens, _buildLightboxButtons already ran with
+                // an empty map and the NRW button never appears. Re-render the open
+                // lightbox once the fetch lands so it isn't a one-shot check.
+                (() => {
+                    const warm = () => {
+                        if (!window.NRWPlex) return;
+                        NRWPlex.loadOwned().then(() => {
+                            const lb = document.getElementById('poster-lightbox');
+                            if (lb && lb.classList.contains('active')) this.updateLightbox();
+                        }).catch(() => {});
+                    };
                     if (window.NRWPlex) { warm(); return; }
                     const s = document.createElement('script');
                     s.src = 'assets/nrw-plex.js?v=2';

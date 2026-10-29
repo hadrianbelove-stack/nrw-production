@@ -93,7 +93,17 @@ const NRWMobile = {
             });
 
             // Personal Plex (owner-only): warm the owned-films set if unlocked.
-            if (window.NRWPlex) NRWPlex.loadOwned().catch(() => {});
+            // The fetch is async and can resolve after the sheet has already
+            // rendered (e.g. a ?m= deep link opens immediately on load) — if so,
+            // re-render it so the NRW button isn't a one-shot check that missed.
+            if (window.NRWPlex) {
+                NRWPlex.loadOwned().then(() => {
+                    if (this.currentView === 1) {
+                        const movie = this.filteredMovies[this.currentMovieIndex];
+                        if (movie) this.updateSheetContent(movie);
+                    }
+                }).catch(() => {});
+            }
 
             this.sortMovies();
             this.setupFilters();
