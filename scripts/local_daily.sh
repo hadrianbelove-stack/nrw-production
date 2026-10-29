@@ -17,10 +17,47 @@ if [ -f "$SENTINEL" ]; then
     exit 0
 fi
 
+# Log it AND pop a Mac notification, so a stuck job can't sit unnoticed in
+# the log for days (the Oct 26-29 2026 trailer jam went unseen for 3 days).
+alert() {
+    echo "  ALERT: $1" >> "$LOG"
+    /usr/bin/osascript -e "display notification \"$1\" with title \"NRW nightly job\"" >/dev/null 2>&1 || true
+}
+
+data_json_ok() {
+    /usr/bin/python3 -c "import json; json.load(open('data.json'))" 2>/dev/null
+}
+
+# One run at a time. launchd fires every 30 min and runs can also be started
+# by hand; two overlapping runs both stash, pull, stamp and push data.json
+# (a manual run and the 30-min retry overlapped on Oct 29 2026).
+LOCK_DIR="/var/tmp/nrw_daily.lock"
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+    OTHER_PID=$(cat "$LOCK_DIR/pid" 2>/dev/null)
+    if [ -n "$OTHER_PID" ] && kill -0 "$OTHER_PID" 2>/dev/null; then
+        echo "=== NRW Local Daily: $(date) — another run (pid $OTHER_PID) is still going; skipping ===" >> "$LOG"
+        exit 0
+    fi
+    echo "=== NRW Local Daily: $(date) — clearing stale lock (pid ${OTHER_PID:-unknown} is gone) ===" >> "$LOG"
+    rm -rf "$LOCK_DIR"
+    mkdir "$LOCK_DIR" || exit 1
+fi
+echo $$ > "$LOCK_DIR/pid"
+trap 'rm -rf "$LOCK_DIR"' EXIT
+
 echo "" >> "$LOG"
 echo "=== NRW Local Daily: $(date) ===" >> "$LOG"
 
 cd "$PROJECT_DIR" || { echo "ERROR: Cannot cd to $PROJECT_DIR" >> "$LOG"; exit 1; }
+
+# Never run on top of a half-finished rebase left by an earlier run or a
+# manual session: it strands data.json with conflict markers and every later
+# pull fails. Aborting it here could wipe someone's uncommitted work, so stop
+# and leave it for a person.
+if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then
+    alert "A git rebase is stuck in nrw-production. Skipping tonight's trailer run until it is resolved."
+    exit 1
+fi
 
 # Step 1: Pull latest from GitHub
 # Strategy: discard local data.json changes (CI version is authoritative),
@@ -40,14 +77,27 @@ if ! /usr/bin/git diff --quiet || ! /usr/bin/git diff --cached --quiet; then
     echo "  Stashed local changes" >> "$LOG"
 fi
 
-/usr/bin/git pull --rebase origin main >> "$LOG" 2>&1
-if [ $? -ne 0 ]; then
+PULL_OK=true
+if ! /usr/bin/git pull --rebase origin main >> "$LOG" 2>&1; then
+    PULL_OK=false
     echo "WARNING: git pull failed" >> "$LOG"
+    # Back out THIS run's half-finished rebase (local changes are stashed, so
+    # the abort only rewinds to the pre-pull commit) instead of leaving it.
+    if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then
+        /usr/bin/git rebase --abort >> "$LOG" 2>&1
+        echo "  Aborted this run's failed rebase" >> "$LOG"
+    fi
+    alert "Could not sync with GitHub. Trailers still upload, but stamping is skipped this run."
 fi
 
 if [ "$STASHED" = true ]; then
     /usr/bin/git stash pop >> "$LOG" 2>&1 || echo "WARNING: stash pop had conflicts — resolve manually" >> "$LOG"
     echo "  Restored local changes" >> "$LOG"
+fi
+
+if ! data_json_ok; then
+    alert "data.json is not valid JSON after the pull. Skipping this run."
+    exit 1
 fi
 
 # Step 2a: Refresh YouTube cookies from Safari (Aqua session has keychain access)
@@ -68,10 +118,14 @@ echo "Refreshing YouTube cookies..." >> "$LOG"
 # Runs BEFORE hosting so a found trailer is downloaded, uploaded to B2, and
 # committed by the stamp step the same night. Capped (10/run, 3 attempts/film,
 # 20h cooldown) so most days it's seconds.
-echo "Trailer gap sweep..." >> "$LOG"
-NRW_YOUTUBE_BACKEND=claude /usr/bin/perl -e 'alarm(2400); exec @ARGV' -- \
-    /usr/bin/python3 scripts/trailer_gap_sweep.py >> "$LOG" 2>&1 \
-    || echo "  WARNING: trailer sweep failed" >> "$LOG"
+if [ "$PULL_OK" = true ]; then
+    echo "Trailer gap sweep..." >> "$LOG"
+    NRW_YOUTUBE_BACKEND=claude /usr/bin/perl -e 'alarm(2400); exec @ARGV' -- \
+        /usr/bin/python3 scripts/trailer_gap_sweep.py >> "$LOG" 2>&1 \
+        || echo "  WARNING: trailer sweep failed" >> "$LOG"
+else
+    echo "Trailer gap sweep skipped (not synced with GitHub)" >> "$LOG"
+fi
 
 # Step 2b: Upload new trailers to B2 (download from YouTube + upload, no data.json writes)
 echo "Hosting new trailers..." >> "$LOG"
@@ -81,10 +135,16 @@ echo "Hosting new trailers..." >> "$LOG"
 # Step 3: Stamp hosted trailer URLs into data.json and push to GitHub
 # This eliminates the ~19-hour gap where trailers show as YouTube fallbacks.
 # Safe: CI finishes 5+ hours before this runs. Stamp is idempotent.
-echo "Stamping hosted trailer URLs..." >> "$LOG"
-/opt/homebrew/bin/python3.11 scripts/trailer_pipeline.py stamp >> "$LOG" 2>&1
+if [ "$PULL_OK" = true ]; then
+    echo "Stamping hosted trailer URLs..." >> "$LOG"
+    /opt/homebrew/bin/python3.11 scripts/trailer_pipeline.py stamp >> "$LOG" 2>&1
+else
+    echo "Trailer stamping skipped (not synced with GitHub)" >> "$LOG"
+fi
 
-if ! /usr/bin/git diff --quiet data.json 2>/dev/null; then
+if [ "$PULL_OK" = true ] && ! /usr/bin/git diff --quiet data.json 2>/dev/null && ! data_json_ok; then
+    alert "data.json broke during trailer stamping. NOT committing it."
+elif [ "$PULL_OK" = true ] && ! /usr/bin/git diff --quiet data.json 2>/dev/null; then
     echo "  Pushing stamped trailers to GitHub..." >> "$LOG"
     if NRW_ALLOW_DATA_COMMIT=1 /usr/bin/git commit data.json -m "Local trailer stamp — APPROVED: DELETE" >> "$LOG" 2>&1; then
         if /usr/bin/git push origin main >> "$LOG" 2>&1; then
@@ -105,12 +165,18 @@ fi
 # hosting does: the Mac's IP works. Capped (15/run, 3 attempts/film, 2-day
 # cooldown) so most days it's a few seconds. Once a link lands, CI's nightly
 # quote scrape + the merge side-fill pick up the critic quotes automatically.
-echo "RT-link gap sweep..." >> "$LOG"
-/usr/bin/perl -e 'alarm(1200); exec @ARGV' -- \
-    /usr/bin/python3 scripts/rt_gap_sweep.py >> "$LOG" 2>&1 \
-    || echo "  WARNING: RT sweep failed" >> "$LOG"
+if [ "$PULL_OK" = true ]; then
+    echo "RT-link gap sweep..." >> "$LOG"
+    /usr/bin/perl -e 'alarm(1200); exec @ARGV' -- \
+        /usr/bin/python3 scripts/rt_gap_sweep.py >> "$LOG" 2>&1 \
+        || echo "  WARNING: RT sweep failed" >> "$LOG"
+else
+    echo "RT-link gap sweep skipped (not synced with GitHub)" >> "$LOG"
+fi
 
-if ! /usr/bin/git diff --quiet data.json 2>/dev/null; then
+if [ "$PULL_OK" = true ] && ! /usr/bin/git diff --quiet data.json 2>/dev/null && ! data_json_ok; then
+    alert "data.json broke during the RT sweep. NOT committing it."
+elif [ "$PULL_OK" = true ] && ! /usr/bin/git diff --quiet data.json 2>/dev/null; then
     echo "  Pushing RT stamps to GitHub..." >> "$LOG"
     if NRW_ALLOW_DATA_COMMIT=1 /usr/bin/git commit data.json -m "Local RT stamp — APPROVED: DELETE" >> "$LOG" 2>&1; then
         if /usr/bin/git push origin main >> "$LOG" 2>&1; then

@@ -60,6 +60,14 @@ def _slug_sane(url, title, year):
     return True
 
 
+def _year(m):
+    """The film's year as an int, or None when data.json has none (or junk)."""
+    try:
+        return int(str(m.get('year') or '')[:4])
+    except ValueError:
+        return None
+
+
 def eligible(m, window_start, today, max_attempts, cooldown_cutoff):
     dd = m.get('digital_date') or ''
     if not (window_start <= dd <= today):
@@ -93,6 +101,12 @@ def main():
     data = json.load(open('data.json'))
     targets = [m for m in data.get('movies', [])
                if eligible(m, window_start, today, args.max_attempts, cooldown_cutoff)]
+    # RT search needs a year. One year-less film used to crash the whole sweep
+    # (int(None)), so skip it by name instead of blocking every other film.
+    for m in targets:
+        if _year(m) is None:
+            print(f"RT sweep: skipping {m.get('title')} ({m.get('id')}) — no year in data.json")
+    targets = [m for m in targets if _year(m) is not None]
     if not targets:
         print("RT sweep: no eligible films (all linked, locked, capped, or cooling down)")
         return 0
@@ -107,7 +121,7 @@ def main():
     found = {}
     tried = []
     for m in targets:
-        title, year = m.get('title'), m.get('year')
+        title, year = m.get('title'), _year(m)
         mid = str(m.get('id'))
         tried.append(mid)
         # Force a real re-query. The finder short-circuits a cached miss for
@@ -118,7 +132,7 @@ def main():
         # and the Playwright scraper's dict (inner short-circuit) are loaded
         # separately — so drop it from both. Drop only a MISS (url falsy);
         # never clobber a real hit.
-        _key = f"{title}_{int(year)}"
+        _key = f"{title}_{year}"
         _pw = finder._get_playwright_scraper()
         for _c in (finder.gemini_finder.cache, getattr(_pw, 'cache', None)):
             if _c is None:
@@ -128,7 +142,7 @@ def main():
                 _c.pop(_key, None)
         try:
             r = finder.find_rt_score(
-                title, int(year),
+                title, year,
                 director=(m.get('crew') or {}).get('director'),
                 original_language=m.get('original_language'),
                 original_title=m.get('original_title'),
