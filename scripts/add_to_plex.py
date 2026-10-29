@@ -40,12 +40,12 @@ def movie_section_keys(server, token):
     return [d['key'] for d in data.get('Directory', []) if d.get('type') == 'movie']
 
 
-def find_in_library(server, token, keys, title):
+def find_in_library(server, token, keys, title, year):
     title_lower = title.lower()
     for key in keys:
         data = plex_get(server, token, f'/library/sections/{key}/all')
         for item in data.get('Metadata', []):
-            if item.get('title', '').lower() == title_lower:
+            if item.get('title', '').lower() == title_lower and item.get('year') == year:
                 return item
     return None
 
@@ -93,17 +93,27 @@ def main():
     print(f'OK — {dst_size} bytes, verified.')
 
     print('Triggering Plex library scan...')
-    keys = movie_section_keys(server, token)
-    for key in keys:
-        plex_get(server, token, f'/library/sections/{key}/refresh')
+    try:
+        keys = movie_section_keys(server, token)
+        for key in keys:
+            plex_get(server, token, f'/library/sections/{key}/refresh')
+    except requests.RequestException as e:
+        print(f'File copied to {dest_path} OK, but could not reach Plex to scan '
+              f'({e}). Check the server and re-run the scan manually.')
+        return
 
     print('Waiting for Plex to pick it up (up to 60s)...')
     found = None
-    for _ in range(12):
-        time.sleep(5)
-        found = find_in_library(server, token, keys, args.title)
-        if found:
-            break
+    try:
+        for _ in range(12):
+            time.sleep(5)
+            found = find_in_library(server, token, keys, args.title, args.year)
+            if found:
+                break
+    except requests.RequestException as e:
+        print(f'File copied to {dest_path} OK, but lost contact with Plex while '
+              f'checking ({e}). Check the Plex app yourself before deleting the source.')
+        return
 
     if not found:
         print('Not showing up in Plex yet after 60s. The file is safely on the NAS at '
