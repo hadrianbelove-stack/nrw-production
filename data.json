@@ -1,62 +1,291 @@
 {
-  "generated_at": "2026-11-01T15:36:00.782430",
-  "count": 1080,
+  "generated_at": "2026-11-02T18:24:43.226927",
+  "count": 1075,
   "movies": [
     {
-      "id": "1773368",
-      "title": "A Danish Christmas",
-      "digital_date": "2026-11-02",
+      "id": "1814761",
+      "title": "Last Stream",
+      "digital_date": "2026-10-31",
       "bootstrap_date": false,
       "manually_corrected": false,
-      "synopsis": "Marie helps her family's Copenhagen inn at Christmas when Ryan arrives, and she mistakes him for a travel writer. She curates a tour in search of hygge and the two find a connection as well.",
+      "synopsis": "Desperate for views, a fading streamer stages a fake haunting connected to an unsolved case. The stream spirals into a real-time nightmare watched by tens of thousands and someone in the chat seems to know exactly how the night will end.",
       "genres": [
-        "Romance",
-        "TV Movie"
+        "Horror"
       ],
-      "runtime": 84,
-      "year": 2026,
+      "runtime": 75,
+      "year": null,
       "rt_score": null,
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "links": {
         "wikipedia": null,
-        "trailer": null,
-        "rt": "https://www.rottentomatoes.com/m/a_danish_christmas",
-        "cast_wiki": {
-          "Emilie Ullerup": "https://en.wikipedia.org/wiki/Emilie_Ullerup",
-          "Corey Sevier": "https://en.wikipedia.org/wiki/Corey_Sevier"
-        },
-        "imdb": "https://www.imdb.com/title/tt46066911/",
-        "letterboxd": "https://letterboxd.com/film/a-danish-christmas"
+        "trailer": "https://www.youtube.com/watch?v=4kKBchjwp3Y",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/last-stream",
+        "imdb": "https://www.imdb.com/title/tt44120119/"
       },
-      "watch_links": {},
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Amazon Prime Video",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.126f8748-f847-482f-8e35-b4978c4cf121"
+          }
+        ],
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.126f8748-f847-482f-8e35-b4978c4cf121&tag=nrw04-20",
+            "rent_price": "$2.99",
+            "buy_price": "$9.99",
+            "price": "$2.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/last-stream/umc.cmc.469b5xh66k0mdsee9dfk3xp4y?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A6827853226",
+            "rent_price": "$3.99",
+            "buy_price": "$11.99",
+            "price": "$3.99"
+          }
+        ]
+      },
       "pre_order_links": [],
       "_enrichment_status": "completed",
-      "_discovered_at": "2026-11-01T14:54:50.279050",
+      "_discovered_at": "2026-11-02T17:51:28.577784",
       "_tmdb_fetch_failed": false,
       "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/1fdNNzXLhFW0uXfbK88bJGUi8HP.jpg",
-      "studio": "Studio TF1 America",
+      "poster": null,
+      "studio": "Unknown",
       "budget": 0,
       "country": "US",
       "original_language": "en",
-      "original_title": "A Danish Christmas",
-      "display_title": "A Danish Christmas",
+      "original_title": "Last Stream",
+      "display_title": "Last Stream",
       "crew": {
-        "director": "Colin Theys",
+        "director": "Unknown",
         "cast": [
-          "Emilie Ullerup",
-          "Corey Sevier"
+          "Jason Henne",
+          "Kamryn Emory"
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_is_preorder": true,
       "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-11-01",
+      "_last_enrichment_attempt": "2026-11-02",
       "imdb_rating": null,
       "letterboxd_score": null,
       "keywords": [],
+      "_trailer_source": "gemini_playwright",
       "_imdb_votes": null,
       "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link,major_streamer:amazon prime video)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1749567",
+      "title": "The Lock In",
+      "digital_date": "2026-11-01",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A naive man on a first date is trapped inside a pub turned underground fight arena, forced to survive a night he is completely unprepared for.",
+      "genres": [
+        "Action"
+      ],
+      "runtime": 110,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=9LMiIP1Nxk4",
+        "rt": "https://www.rottentomatoes.com/m/the_lock_in",
+        "justwatch": "https://www.justwatch.com/us/movie/the-lock-in",
+        "cast_wiki": {
+          "Keith Vitali": "https://en.wikipedia.org/wiki/Keith_Vitali"
+        },
+        "letterboxd": "https://letterboxd.com/film/the-lock-in-2026"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.28edf1f6-0e7d-40f6-8242-4076d7b28b9a&tag=nrw04-20",
+            "rent_price": "$2.99",
+            "buy_price": "$9.99",
+            "price": "$2.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/The-Lock-In/5247542",
+            "rent_price": "$6.99",
+            "buy_price": "$12.99",
+            "price": "$6.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-11-02T17:51:28.073128",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/wA1DsZfrnvB8VEgu535tfk7lf0.jpg",
+      "studio": "Unknown",
+      "budget": 0,
+      "country": "US",
+      "original_language": "en",
+      "original_title": "The Lock In",
+      "display_title": "The Lock In",
+      "crew": {
+        "director": "Nathan Geering",
+        "cast": [
+          "Nathan Geering",
+          "Drew Sinclair",
+          "Keith Vitali",
+          "Paul Preston",
+          "Connor Lee Dye"
+        ]
+      },
+      "_discovery_source": "tmdb_type4",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-11-02",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [
+        "martial arts",
+        "kung fu"
+      ],
+      "wikidata_distributors": [
+        "Focus Features",
+        "UIP-Dunafilm"
+      ],
+      "_trailer_source": "gemini_playwright",
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false
+    },
+    {
+      "id": "1559261",
+      "title": "Galaxymphony - The Final Odyssey",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "The DR Symphony Orchestra breaks the sound barrier and takes you out into the galaxies — to a place between reality and fantasy with soundtracks from Star Wars, The Mandalorian, Star Trek, Dune, and many more.  Join the orchestra on the third and final symphonic journey through musical universes and cinematic galaxies — all the way to the outermost asteroids and back to Earth again..\r 1. A New Hope  2. Raised By Wolves  3. Rebel Moon  4. Dune (1984)  5. Dune (2021)  6. Star Trek Into Darkness  7. War of the Worlds  8. Valerian and the City of a  Thousand Planets  9. Hyperspace  10. Armageddon  11. Rogue One  12. The Book of Boba Fett  13. The Empire Strikes Back  14. Return of the Jedi  15. Revenge of the Sith  16. The Mandalorian  17. The Phantom Menace",
+      "genres": [
+        "Music"
+      ],
+      "runtime": 82,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Stingray Classica Amazon Channel"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": null,
+        "rt": "https://www.rottentomatoes.com/m/ultraman_tiga_the_final_odyssey",
+        "justwatch": "https://www.justwatch.com/us/movie/galaxymphony-the-final-odyssey",
+        "cast_wiki": {
+          "Jakob Stegelmann": "https://en.wikipedia.org/wiki/Jakob_Stegelmann"
+        },
+        "letterboxd": "https://letterboxd.com/film/galaxymphony-the-final-odyssey"
+      },
+      "watch_links": {},
+      "pre_order_links": [
+        {
+          "service": "Barnes & Noble",
+          "link": "https://www.barnesandnoble.com/w/dvd-galaxymphony-the-final-odyssey-danish-national-symphony-orchestra/1148393344",
+          "buy_price": "$34.99",
+          "price": "$34.99"
+        }
+      ],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-11-02T17:51:21.047958",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/qIF0DwqG3HFjZ7SYDpYNhcruhqS.jpg",
+      "studio": "Unknown",
+      "budget": 0,
+      "country": "DK",
+      "original_language": "en",
+      "original_title": "Galaxymphony - The Final Odyssey",
+      "display_title": "Galaxymphony - The Final Odyssey",
+      "crew": {
+        "director": "Unknown",
+        "cast": [
+          "Jakob Stegelmann",
+          "Sinne Eeg",
+          "Isabel Schwartzbach",
+          "Kristoffer Appel",
+          "David Bateson"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-11-02",
+      "_is_preorder": true,
+      "_buyonly_preorder": true,
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [
+        "concert"
+      ],
+      "_digital_date_source": "detection",
       "_needs_review": false,
       "is_slop": true,
       "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
@@ -86,7 +315,7 @@
       },
       "featured": false,
       "_trailer_retry_count": 1,
-      "_trailer_last_retry": "2026-11-01T15:35:37.404661"
+      "_trailer_last_retry": "2026-11-02T18:24:37.086941"
     },
     {
       "id": "135397",
@@ -1921,7 +2150,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-02",
         "discovered": "2026-10-31",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -2131,7 +2360,7 @@
         "available_start": "2026-10-30",
         "available_end": "2026-11-06",
         "discovered": "2026-10-31",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -4020,7 +4249,7 @@
         "available_start": "2026-11-20",
         "available_end": "2026-12-06",
         "discovered": "2026-10-30",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -6358,7 +6587,7 @@
         "available_start": "2026-11-08",
         "available_end": "2026-11-16",
         "discovered": "2026-10-28",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -6463,7 +6692,7 @@
         "available_start": "2026-11-01",
         "available_end": "2026-11-07",
         "discovered": "2026-10-28",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -6658,12 +6887,6 @@
           }
         ]
       },
-      "pre_order_links": [
-        {
-          "service": "Eventive",
-          "link": "https://watch.eventive.org/cinemassf2026/play/6abd958a57aed2e492f21181"
-        }
-      ],
       "_enrichment_status": "completed",
       "_discovered_at": "2026-10-28T14:51:15.679552",
       "_tmdb_fetch_failed": false,
@@ -6685,7 +6908,6 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_is_preorder": true,
       "_enrichment_attempts": 1,
       "_last_enrichment_attempt": "2026-10-28",
       "imdb_rating": null,
@@ -6716,9 +6938,9 @@
         "screening_slug": "cinemassf2026",
         "screening_name": "18th San Francisco Latino Film Festival",
         "available_start": "2026-11-02",
-        "available_end": "2026-11-09",
+        "available_end": "2026-11-07",
         "discovered": "2026-10-28",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -6894,7 +7116,7 @@
     {
       "id": "1300610",
       "title": "Oca",
-      "digital_date": "2026-10-30",
+      "digital_date": "2026-10-25",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "Rafaela is a young nun who belongs to a precarious congregation. For some time, a recurring dream has haunted her. At the same time, she is sent to a nearby town in search of the new archbishop. Along the way, she will experience extraordinary encounters that will either advance or retreat from her path.",
@@ -6980,10 +7202,10 @@
         "platform": "Eventive",
         "screening_slug": "cinemassf2026",
         "screening_name": "2026 San Francisco Latino Film Festival",
-        "available_start": "2026-10-30",
-        "available_end": "2026-11-09",
+        "available_start": "2026-10-25",
+        "available_end": "2026-11-07",
         "discovered": "2026-10-28",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -8256,7 +8478,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-02",
         "discovered": "2026-10-27",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -8830,11 +9052,11 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "nofs",
-        "screening_name": "2026 New Orleans Film Festival",
+        "screening_name": "2026 French Film Festival",
         "available_start": "2026-10-23",
         "available_end": "2026-11-02",
         "discovered": "2026-10-26",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -9289,7 +9511,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-09",
         "discovered": "2026-10-26",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -9592,7 +9814,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-09",
         "discovered": "2026-10-26",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -9687,7 +9909,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-09",
         "discovered": "2026-10-26",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -9786,7 +10008,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-09",
         "discovered": "2026-10-26",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -9885,7 +10107,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-09",
         "discovered": "2026-10-26",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -9992,7 +10214,7 @@
         "available_start": "2026-10-24",
         "available_end": "2026-11-11",
         "discovered": "2026-10-26",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -10095,7 +10317,7 @@
         "available_start": "2026-10-23",
         "available_end": "2026-11-02",
         "discovered": "2026-10-27",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "_rt_retry_count": 3,
@@ -10175,7 +10397,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-09",
         "discovered": "2026-10-27",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "_rt_retry_count": 3,
@@ -10757,11 +10979,11 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "nofs",
-        "screening_name": "2026 New Orleans Film Festival",
+        "screening_name": "2026 French Film Festival",
         "available_start": "2026-10-23",
         "available_end": "2026-11-02",
         "discovered": "2026-10-25",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -11176,7 +11398,7 @@
         "available_start": "2026-11-27",
         "available_end": "2026-12-14",
         "discovered": "2026-10-25",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -18289,7 +18511,7 @@
         "available_start": "2026-11-22",
         "available_end": "2026-11-23",
         "discovered": "2026-10-20",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -18697,7 +18919,7 @@
         "available_start": "2026-10-24",
         "available_end": "2026-11-11",
         "discovered": "2026-10-19",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -21461,7 +21683,7 @@
         "available_start": "2026-11-06",
         "available_end": "2026-11-14",
         "discovered": "2026-10-17",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -24352,8 +24574,8 @@
         "manual_override": null
       },
       "featured": false,
-      "_trailer_retry_count": 4,
-      "_trailer_last_retry": "2026-10-26T15:49:28.901803",
+      "_trailer_retry_count": 5,
+      "_trailer_last_retry": "2026-11-02T18:24:37.175711",
       "_rt_retry_count": 3,
       "_rt_last_retry": "2026-10-17T00:01:13.226304"
     },
@@ -25102,7 +25324,7 @@
         "available_start": "2026-11-05",
         "available_end": "2026-11-16",
         "discovered": "2026-10-15",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -25557,7 +25779,7 @@
         "available_start": "2026-11-05",
         "available_end": "2026-11-16",
         "discovered": "2026-10-15",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -25612,6 +25834,13 @@
           {
             "service": "Amazon",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.260e7a1a-9573-4b99-ac11-86f5e948d91b&tag=nrw04-20",
+            "rent_price": "$5.99",
+            "buy_price": "$14.99",
+            "price": "$5.99"
+          },
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/Occupational-Hazard-The-First-Coral-Reefers/5354054",
             "rent_price": "$5.99",
             "buy_price": "$14.99",
             "price": "$5.99"
@@ -25680,7 +25909,7 @@
       },
       "featured": false,
       "metacritic_score": null,
-      "_watch_links_verified": "2026-10-31T14:50:02.627043"
+      "_watch_links_verified": "2026-11-02T18:21:59.069748"
     },
     {
       "id": "1490214",
@@ -25917,7 +26146,7 @@
         "available_start": "2026-11-05",
         "available_end": "2026-11-16",
         "discovered": "2026-10-15",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -27777,7 +28006,7 @@
         "available_start": "2026-11-21",
         "available_end": "2026-11-29",
         "discovered": "2026-10-14",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -27893,7 +28122,7 @@
         "available_start": "2026-11-21",
         "available_end": "2026-11-29",
         "discovered": "2026-10-14",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -28007,7 +28236,7 @@
         "available_start": "2026-11-21",
         "available_end": "2026-11-29",
         "discovered": "2026-10-14",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -28127,7 +28356,7 @@
         "available_start": "2026-11-21",
         "available_end": "2026-11-29",
         "discovered": "2026-10-14",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -31604,7 +31833,7 @@
         "available_start": "2026-11-06",
         "available_end": "2026-11-21",
         "discovered": "2026-10-12",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       }
     },
@@ -32341,7 +32570,7 @@
         "available_start": "2026-09-22",
         "available_end": "2027-01-22",
         "discovered": "2026-10-10",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -34886,7 +35115,7 @@
         "available_start": "2027-01-22",
         "available_end": "2027-02-01",
         "discovered": "2026-10-09",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -35679,7 +35908,7 @@
         "available_start": "2027-01-22",
         "available_end": "2027-02-01",
         "discovered": "2026-10-09",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -37991,7 +38220,7 @@
         "available_start": "2026-12-02",
         "available_end": "2026-12-13",
         "discovered": "2026-10-07",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -38006,8 +38235,7 @@
         "manual_override": null
       },
       "featured": false,
-      "hidden": true,
-      "_coming_soon_capped": true,
+      "hidden": false,
       "_trailer_retry_count": 4,
       "_trailer_last_retry": "2026-10-29T15:43:40.639665"
     },
@@ -38108,7 +38336,7 @@
         "available_start": "2026-12-02",
         "available_end": "2026-12-13",
         "discovered": "2026-10-07",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -38123,8 +38351,7 @@
         "manual_override": null
       },
       "featured": false,
-      "hidden": true,
-      "_coming_soon_capped": true
+      "hidden": false
     },
     {
       "id": "1658162",
@@ -38213,7 +38440,7 @@
         "available_start": "2026-12-02",
         "available_end": "2026-12-13",
         "discovered": "2026-10-07",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -38228,8 +38455,7 @@
         "manual_override": null
       },
       "featured": false,
-      "hidden": true,
-      "_coming_soon_capped": true
+      "hidden": false
     },
     {
       "id": "1662623",
@@ -38317,7 +38543,7 @@
         "available_start": "2026-12-02",
         "available_end": "2026-12-13",
         "discovered": "2026-10-07",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -38332,8 +38558,7 @@
         "manual_override": null
       },
       "featured": false,
-      "hidden": true,
-      "_coming_soon_capped": true
+      "hidden": false
     },
     {
       "id": "1396640",
@@ -38503,7 +38728,7 @@
             "service": "Amazon",
             "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.92d76722-3ebc-4360-b5e2-9df6d281613e&tag=nrw04-20",
             "rent_price": "$5.99",
-            "buy_price": "$7.99",
+            "buy_price": "$12.99",
             "price": "$5.99"
           },
           {
@@ -38588,7 +38813,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-11-01T15:33:19.361492"
+      "_watch_links_verified": "2026-11-02T18:23:13.717895"
     },
     {
       "id": "1629373",
@@ -39225,7 +39450,7 @@
         "available_start": "2026-12-02",
         "available_end": "2026-12-13",
         "discovered": "2026-10-07",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -39240,8 +39465,7 @@
         "manual_override": null
       },
       "featured": false,
-      "hidden": true,
-      "_coming_soon_capped": true
+      "hidden": false
     },
     {
       "id": "1514026",
@@ -39462,7 +39686,7 @@
         "available_start": "2026-12-02",
         "available_end": "2026-12-13",
         "discovered": "2026-10-07",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -39477,8 +39701,7 @@
         "manual_override": null
       },
       "featured": false,
-      "hidden": true,
-      "_coming_soon_capped": true,
+      "hidden": false,
       "_trailer_retry_count": 4,
       "_trailer_last_retry": "2026-10-29T15:44:08.162740",
       "_trailer_source": "gemini_playwright"
@@ -39692,7 +39915,7 @@
         "available_start": "2026-12-02",
         "available_end": "2026-12-13",
         "discovered": "2026-10-07",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -39707,8 +39930,7 @@
         "manual_override": null
       },
       "featured": false,
-      "hidden": true,
-      "_coming_soon_capped": true
+      "hidden": false
     },
     {
       "id": "1361955",
@@ -40851,7 +41073,7 @@
           {
             "service": "Apple TV",
             "link": "https://tv.apple.com/us/movie/colony/umc.cmc.2o7rihh36draw9h7t5scg0mxk?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A6805023470",
-            "rent_price": "$9.99",
+            "rent_price": "$5.99",
             "buy_price": "$14.99",
             "price": "$9.99"
           },
@@ -40927,7 +41149,8 @@
         "auto_categorized": true,
         "manual_override": null
       },
-      "featured": false
+      "featured": false,
+      "_watch_links_verified": "2026-11-02T18:23:26.188024"
     },
     {
       "id": "352552",
@@ -42881,7 +43104,7 @@
         "available_start": "2026-10-05",
         "available_end": "2026-11-05",
         "discovered": "2026-10-06",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       }
     },
@@ -49034,11 +49257,11 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "nofs",
-        "screening_name": "2026 New Orleans Film Festival",
+        "screening_name": "2026 French Film Festival",
         "available_start": "2026-10-23",
         "available_end": "2026-11-02",
         "discovered": "2026-10-01",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -49474,7 +49697,7 @@
         "available_start": "2026-11-08",
         "available_end": "2026-11-16",
         "discovered": "2026-10-01",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -50985,7 +51208,7 @@
         "available_start": "2026-10-30",
         "available_end": "2026-11-16",
         "discovered": "2026-09-30",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -51315,7 +51538,7 @@
         "available_start": "2026-11-06",
         "available_end": "2026-11-21",
         "discovered": "2026-09-30",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -53620,8 +53843,8 @@
           {
             "service": "Apple TV",
             "link": "https://tv.apple.com/us/movie/his-monster/umc.cmc.6vqkn8vyzgur37grk3t6afcpn?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A6805173531",
-            "rent_price": "$1.99",
-            "buy_price": "$3.99",
+            "rent_price": "$4.99",
+            "buy_price": "$9.99",
             "price": "$4.99"
           },
           {
@@ -53706,7 +53929,7 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-10-17T12:55:45.833988",
+      "_watch_links_verified": "2026-11-02T18:23:50.125121",
       "hidden": true
     },
     {
@@ -55245,7 +55468,7 @@
         "available_start": "2026-10-23",
         "available_end": "2026-11-02",
         "discovered": "2026-09-27",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -55346,11 +55569,11 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "nofs",
-        "screening_name": "2026 New Orleans Film Festival",
+        "screening_name": "2026 French Film Festival",
         "available_start": "2026-10-23",
         "available_end": "2026-11-02",
         "discovered": "2026-09-27",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -55454,11 +55677,11 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "nofs",
-        "screening_name": "2026 New Orleans Film Festival",
+        "screening_name": "2026 French Film Festival",
         "available_start": "2026-10-23",
         "available_end": "2026-11-02",
         "discovered": "2026-09-27",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -56094,11 +56317,11 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "nofs",
-        "screening_name": "2026 New Orleans Film Festival",
+        "screening_name": "2026 French Film Festival",
         "available_start": "2026-10-23",
         "available_end": "2026-11-02",
         "discovered": "2026-09-27",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -56193,11 +56416,11 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "nofs",
-        "screening_name": "2026 New Orleans Film Festival",
+        "screening_name": "2026 French Film Festival",
         "available_start": "2026-10-23",
         "available_end": "2026-11-02",
         "discovered": "2026-09-27",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -56301,11 +56524,11 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "nofs",
-        "screening_name": "2026 New Orleans Film Festival",
+        "screening_name": "2026 French Film Festival",
         "available_start": "2026-10-23",
         "available_end": "2026-11-02",
         "discovered": "2026-09-27",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -59414,7 +59637,7 @@
         "available_start": "2026-10-30",
         "available_end": "2026-11-16",
         "discovered": "2026-09-25",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -59736,7 +59959,7 @@
         "available_start": "2026-10-30",
         "available_end": "2026-11-16",
         "discovered": "2026-09-25",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -59833,7 +60056,7 @@
         "available_start": "2026-10-30",
         "available_end": "2026-11-16",
         "discovered": "2026-09-25",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -59932,7 +60155,7 @@
         "available_start": "2026-10-30",
         "available_end": "2026-11-16",
         "discovered": "2026-09-25",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -60032,7 +60255,7 @@
         "available_start": "2026-11-04",
         "available_end": "2026-11-12",
         "discovered": "2026-09-25",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -62374,7 +62597,7 @@
         "available_start": "2026-10-29",
         "available_end": "2026-11-08",
         "discovered": "2026-09-23",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -63570,7 +63793,7 @@
         "available_start": "2026-09-22",
         "available_end": "2027-01-22",
         "discovered": "2026-09-22",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -63664,7 +63887,7 @@
         "available_start": "2026-09-22",
         "available_end": "2027-01-22",
         "discovered": "2026-09-22",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -63763,7 +63986,7 @@
         "available_start": "2026-09-22",
         "available_end": "2027-01-22",
         "discovered": "2026-09-22",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -63889,7 +64112,7 @@
         "available_start": "2026-09-22",
         "available_end": "2027-01-22",
         "discovered": "2026-09-22",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -63986,7 +64209,7 @@
         "available_start": "2026-09-22",
         "available_end": "2027-01-22",
         "discovered": "2026-09-22",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -64171,7 +64394,7 @@
         "available_start": "2026-10-21",
         "available_end": "2026-11-02",
         "discovered": "2026-09-22",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -64390,7 +64613,7 @@
         "available_start": "2026-09-22",
         "available_end": "2027-01-22",
         "discovered": "2026-09-23",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       }
     },
@@ -64494,7 +64717,7 @@
         "available_start": "2026-09-22",
         "available_end": "2027-01-22",
         "discovered": "2026-09-22",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -64675,11 +64898,11 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 42,
-      "_last_enrichment_attempt": "2026-11-01",
+      "_enrichment_attempts": 43,
+      "_last_enrichment_attempt": "2026-11-02",
       "_is_preorder": true,
       "_buyonly_preorder": true,
-      "imdb_rating": "8.4",
+      "imdb_rating": "8.5",
       "letterboxd_score": null,
       "keywords": [
         "clown",
@@ -64699,7 +64922,7 @@
         "campy humor"
       ],
       "_trailer_source": "gemini_playwright",
-      "_imdb_votes": 136,
+      "_imdb_votes": 137,
       "_needs_review": false,
       "is_slop": true,
       "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
@@ -68359,7 +68582,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-02",
         "discovered": "2026-09-18",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -71126,11 +71349,11 @@
         ]
       },
       "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 48,
-      "_last_enrichment_attempt": "2026-11-01",
+      "_enrichment_attempts": 49,
+      "_last_enrichment_attempt": "2026-11-02",
       "_is_preorder": true,
       "_buyonly_preorder": true,
-      "imdb_rating": "5.2",
+      "imdb_rating": "5.3",
       "letterboxd_score": "2.8",
       "keywords": [
         "supernatural",
@@ -71145,7 +71368,7 @@
       ],
       "_wiki_language_count": 1,
       "_trailer_source": "gemini_playwright",
-      "_imdb_votes": 1294,
+      "_imdb_votes": 1307,
       "_needs_review": false,
       "is_slop": true,
       "_slop_reason": "score:5(no_rt,no_imdb,no_rt_link)",
@@ -71623,7 +71846,7 @@
     {
       "id": "1676527",
       "title": "The Haunting of Pennhurst",
-      "digital_date": "2026-10-23",
+      "digital_date": "2026-09-28",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "Once a notorious institution for people with disabilities, Pennhurst finally closed after decades of abuse in 1987. Now those doors are reopening, as a group of disabled performers reframe the narrative around the site's harmful history – as a haunted house.",
@@ -71698,12 +71921,12 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "nashfilmfest2026",
-        "screening_name": "2026 New Orleans Film Festival",
-        "available_start": "2026-10-23",
-        "available_end": "2026-11-02",
+        "screening_name": "2026 Nashville Film Festival",
+        "available_start": "2026-09-28",
+        "available_end": "2026-10-06",
         "discovered": "2026-09-15",
         "last_checked": "2026-11-01",
-        "status": "active"
+        "status": "expired"
       },
       "filters": {
         "is_indie": false,
@@ -71719,7 +71942,8 @@
       "featured": false,
       "_trailer_retry_count": 5,
       "_trailer_last_retry": "2026-10-15T14:10:58.079279",
-      "_watch_links_verified": "2026-10-23T14:05:38.541418"
+      "_watch_links_verified": "2026-10-23T14:05:38.541418",
+      "hidden": true
     },
     {
       "id": "1240889",
@@ -71979,7 +72203,7 @@
     {
       "id": "1486759",
       "title": "Seahorse",
-      "digital_date": "2026-10-23",
+      "digital_date": "2026-09-28",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "Nola, a sous chef, is seeking stability after a stay in a mental health facility. After a hectic dinner shift, she crashes her bike—and wakes to find her estranged, unhoused father, standing over her. As she takes him in, old wounds resurface, and her world unravels. Caught between past and present, love and loss, Nola must navigate grief, forgiveness, and the fragile hope of healing.",
@@ -72061,12 +72285,12 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "nashfilmfest2026",
-        "screening_name": "2026 New Orleans Film Festival",
-        "available_start": "2026-10-23",
-        "available_end": "2026-11-02",
+        "screening_name": "2026 Nashville Film Festival",
+        "available_start": "2026-09-28",
+        "available_end": "2026-10-06",
         "discovered": "2026-09-15",
         "last_checked": "2026-11-01",
-        "status": "active"
+        "status": "expired"
       },
       "filters": {
         "is_indie": false,
@@ -72080,7 +72304,8 @@
         "manual_override": null
       },
       "featured": false,
-      "_watch_links_verified": "2026-09-30T15:00:52.351989"
+      "_watch_links_verified": "2026-09-30T15:00:52.351989",
+      "hidden": true
     },
     {
       "id": "1530072",
@@ -73524,7 +73749,7 @@
         "available_start": "2026-10-24",
         "available_end": "2026-11-11",
         "discovered": "2026-09-13",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -73726,7 +73951,7 @@
         "available_start": "2026-10-23",
         "available_end": "2026-11-11",
         "discovered": "2026-09-13",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -73831,7 +74056,7 @@
         "available_start": "2026-10-24",
         "available_end": "2026-11-11",
         "discovered": "2026-09-13",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -74026,7 +74251,7 @@
         "available_start": "2026-10-25",
         "available_end": "2026-11-11",
         "discovered": "2026-09-13",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -74381,7 +74606,7 @@
         "available_start": "2026-10-25",
         "available_end": "2026-11-11",
         "discovered": "2026-09-13",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -74478,7 +74703,7 @@
         "available_start": "2026-10-25",
         "available_end": "2026-11-11",
         "discovered": "2026-09-13",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -75887,7 +76112,7 @@
         "available_start": "2026-08-11",
         "available_end": "2026-12-01",
         "discovered": "2026-09-11",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -77981,7 +78206,7 @@
         "available_start": "2027-01-22",
         "available_end": "2027-02-01",
         "discovered": "2026-09-09",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -78084,7 +78309,7 @@
         "available_start": "2027-01-22",
         "available_end": "2027-02-01",
         "discovered": "2026-09-09",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -78280,7 +78505,7 @@
         "available_start": "2026-10-30",
         "available_end": "2026-11-16",
         "discovered": "2026-09-09",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -78977,8 +79202,8 @@
         ]
       },
       "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 54,
-      "_last_enrichment_attempt": "2026-11-01",
+      "_enrichment_attempts": 55,
+      "_last_enrichment_attempt": "2026-11-02",
       "_is_preorder": true,
       "_buyonly_preorder": true,
       "imdb_rating": "7.6",
@@ -78988,7 +79213,7 @@
         "miniseries"
       ],
       "_trailer_source": "gemini_playwright",
-      "_imdb_votes": 1573,
+      "_imdb_votes": 1597,
       "_needs_review": false,
       "_slop_reason": "score:1(no_wiki,good_imdb)",
       "_slop_confidence": "weak",
@@ -88745,7 +88970,7 @@
         "available_start": "2026-10-26",
         "available_end": "2026-11-02",
         "discovered": "2026-08-30",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -103443,7 +103668,7 @@
         "available_start": null,
         "available_end": null,
         "discovered": "2026-08-17",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       },
       "filters": {
@@ -105999,100 +106224,6 @@
       "_rt_last_retry": "2026-08-17T02:12:10.411109"
     },
     {
-      "id": "1229882",
-      "title": "Roleplay",
-      "digital_date": "2026-08-03",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "College students confront sexual violence on their campus through a transformative theater process. This urgent coming of age story follows young adults grappling with sex, consent, identity, and power on their paths to adulthood.",
-      "genres": [
-        "Drama",
-        "Documentary"
-      ],
-      "runtime": 85,
-      "year": 2024,
-      "rt_score": "100%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Role_Play",
-        "rt": "https://www.rottentomatoes.com/m/roleplay_2024",
-        "justwatch": "https://www.justwatch.com/us/movie/roleplay",
-        "imdb": "https://www.imdb.com/title/tt30825927/",
-        "letterboxd": "https://letterboxd.com/film/roleplay",
-        "trailer": "https://www.youtube.com/watch?v=OoQi1kzFnBQ",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1229882.mp4"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "Kanopy",
-            "link": "https://www.kanopy.com/product/justwatch-15557429"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-08-15T08:17:39.856517",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/nxRSufHExNJkEBxYviiFtGmtfc4.jpg",
-      "studio": "Unknown",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "original_title": "Roleplay",
-      "display_title": "Roleplay",
-      "crew": {
-        "director": "Katie Mathews",
-        "cast": [
-          "Aaron Avidon",
-          "Carl Briggs Jr.",
-          "Ross Brill",
-          "Alexandra J. Elam",
-          "Shannon Flaherty"
-        ]
-      },
-      "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-08-15",
-      "imdb_rating": "6.5",
-      "letterboxd_score": "3.5",
-      "keywords": [
-        "coming of age"
-      ],
-      "_wiki_language_count": 12,
-      "_imdb_votes": 23,
-      "_digital_date_source": "tmdb_type4",
-      "_needs_review": false,
-      "is_slop": true,
-      "_slop_reason": "score:4(no_rt,mid_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "trailer",
-        "metacritic_score"
-      ],
-      "reissue_label": null,
-      "_reissue": false,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": true,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false
-    },
-    {
       "id": "871316",
       "title": "Rising Up at Night",
       "digital_date": "2026-08-15",
@@ -108094,7 +108225,7 @@
         "available_start": "2026-08-22",
         "available_end": "2028-09-07",
         "discovered": "2026-09-12",
-        "last_checked": "2026-11-01",
+        "last_checked": "2026-11-02",
         "status": "active"
       }
     },
@@ -115012,7 +115143,7 @@
     {
       "id": "1715779",
       "title": "Zenón and the Rebel Boats",
-      "digital_date": "2026-10-23",
+      "digital_date": "2026-08-08",
       "bootstrap_date": false,
       "manually_corrected": false,
       "synopsis": "After being displaced from his home by the U.S. Navy to build a military base, Puerto Rican fisherman Carlos “Taso” Zenón pledged his life to fight against the military occupation of the island of Vieques. Alongside Puerto Rican fishermen and activists, Zenón organized countless efforts to halt U.S. war games in the Caribbean Sea. Never-before-seen archival footage reveals the artisanal strategies implemented by fearless fishermen to defy warships, inspiring one of the most influential environmental and anti-war movements in the Caribbean.",
@@ -115085,9 +115216,9 @@
       "virtual_screening_info": {
         "platform": "Eventive",
         "screening_slug": "bsff26",
-        "screening_name": "2026 New Orleans Film Festival",
-        "available_start": "2026-10-23",
-        "available_end": "2026-11-02",
+        "screening_name": "Zenón and the Rebel Boats",
+        "available_start": "2026-08-08",
+        "available_end": "2026-08-10",
         "discovered": "2026-08-06",
         "last_checked": "2026-08-14",
         "status": "expired"
@@ -116622,186 +116753,6 @@
       "_rt_last_retry": "2026-08-07T02:24:39.852543"
     },
     {
-      "id": "157336",
-      "title": "Interstellar",
-      "digital_date": "2026-08-03",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel and conquer the vast distances involved in an interstellar voyage.",
-      "genres": [
-        "Adventure",
-        "Drama",
-        "Science Fiction"
-      ],
-      "runtime": 169,
-      "year": 2014,
-      "rt_score": "73%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Interstellar_(film)",
-        "trailer": "https://www.youtube.com/watch?v=zSWdZVtXT7E",
-        "rt": "https://www.rottentomatoes.com/m/interstellar_2014",
-        "justwatch": "https://www.justwatch.com/us/movie/interstellar",
-        "cast_wiki": {
-          "Matthew McConaughey": "https://en.wikipedia.org/wiki/Matthew_McConaughey",
-          "Anne Hathaway": "https://en.wikipedia.org/wiki/Anne_Hathaway",
-          "Michael Caine": "https://en.wikipedia.org/wiki/Michael_Caine"
-        },
-        "metacritic": "https://www.metacritic.com/movie/interstellar/",
-        "imdb": "https://www.imdb.com/title/tt0816692/",
-        "letterboxd": "https://letterboxd.com/film/interstellar",
-        "director_wiki": "https://en.wikipedia.org/wiki/Christopher_Nolan",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/157336.mp4"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "Amazon Prime Video",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.91c15743-d78a-4667-9b48-fbd8ed9cacbc"
-          },
-          {
-            "service": "Hulu",
-            "link": "https://www.hulu.com/watch/2fa384bd-a85d-45d8-9f39-e8bb91dc9e3b"
-          },
-          {
-            "service": "Paramount+",
-            "link": "https://www.paramountplus.com/movies/interstellar/pogPZ4svoLUp1fNjrr4osk0HOjN3r2b9?searchReferral=publisher&source=search-feeds"
-          }
-        ],
-        "vod": [
-          {
-            "service": "JustWatch TV",
-            "link": "https://www.justwatch.com/us/movie/interstellar?package=jwt",
-            "rent_price": "$3.99",
-            "price": "$3.99"
-          },
-          {
-            "service": "FlixFling",
-            "link": "https://www.flixfling.com/justwatch/26482",
-            "rent_price": "$3.99",
-            "price": "$3.99"
-          },
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.52ec8525-26bc-4c01-b96c-714074a9fe86&tag=nrw04-20",
-            "rent_price": "$4.99",
-            "buy_price": "$7.99",
-            "price": "$4.99"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/interstellar/umc.cmc.1vrwat5k1ucm5k42q97ioqyq3?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A960891136",
-            "rent_price": "$4.99",
-            "buy_price": "$16.99",
-            "price": "$4.99"
-          },
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Interstellar/608646",
-            "rent_price": "$4.99",
-            "buy_price": "$16.99",
-            "price": "$4.99"
-          },
-          {
-            "service": "Barnes & Noble",
-            "link": "https://www.barnesandnoble.com/w/dvd-interstellar-christopher-nolan/25554297",
-            "buy_price": "$9.59",
-            "price": "$9.59"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-08-05T10:35:41.410930",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg",
-      "studio": "Legendary Pictures",
-      "budget": 165000000,
-      "country": "United States of America",
-      "original_language": "en",
-      "original_title": "Interstellar",
-      "display_title": "Interstellar",
-      "crew": {
-        "director": "Christopher Nolan",
-        "cast": [
-          "Matthew McConaughey",
-          "Anne Hathaway",
-          "Michael Caine",
-          "Jessica Chastain",
-          "Casey Affleck"
-        ]
-      },
-      "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-08-05",
-      "imdb_rating": "8.7",
-      "letterboxd_score": "4.5",
-      "keywords": [
-        "spacecraft",
-        "race against time",
-        "artificial intelligence (a.i.)",
-        "nasa",
-        "time warp",
-        "dystopia",
-        "expedition",
-        "time travel",
-        "space travel",
-        "wormhole",
-        "famine",
-        "hibernation",
-        "black hole",
-        "quantum mechanics",
-        "family relationships",
-        "space",
-        "planet",
-        "astronaut",
-        "scientist",
-        "single father",
-        "space station",
-        "gravity",
-        "space adventure",
-        "time-manipulation",
-        "cryonics",
-        "father daughter relationship",
-        "2060s",
-        "audacious",
-        "enthusiastic",
-        "epic sci-fi"
-      ],
-      "_wiki_language_count": 85,
-      "_trailer_source": "gemini_playwright",
-      "metacritic_score": "74",
-      "_imdb_votes": 2578320,
-      "_digital_date_source": "tmdb_type4",
-      "_needs_review": false,
-      "_slop_reason": "score:1(no_rt,good_imdb,no_rt_link,major_streamer:amazon prime video)",
-      "_slop_confidence": "weak",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score"
-      ],
-      "reissue_label": null,
-      "_reissue": false,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": true,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "_watch_links_verified": "2026-09-01T13:22:09.691750"
-    },
-    {
       "id": "1421594",
       "title": "Inside the Trustor Scandal",
       "digital_date": "2026-08-05",
@@ -117237,117 +117188,6 @@
       "_watch_links_verified": "2026-08-13T09:36:42.127347"
     },
     {
-      "id": "1470329",
-      "title": "Another World",
-      "digital_date": "2026-08-03",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "Gudo is a Soul Keeper, a spirit who guides human souls into their next life. When he befriends a young girl named Yuri, he discovers that her untimely death has left her cursed with unresolved rage and regret. As Yuri’s soul teeters on the edge of annihilation, Gudo embarks on a dangerous journey to stop her from unleashing horrible destruction on both the human world and the spirit realm.",
-      "genres": [
-        "Animation",
-        "Drama",
-        "Fantasy"
-      ],
-      "runtime": 112,
-      "year": 2025,
-      "rt_score": "86%",
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Another_World_(2025_film)",
-        "trailer": "https://www.youtube.com/watch?v=8aGwU0zsQzA",
-        "rt": "https://www.rottentomatoes.com/m/another_world_2025",
-        "justwatch": "https://www.justwatch.com/us/movie/another-world-2025",
-        "cast_wiki": {
-          "Louis Cheung": "https://en.wikipedia.org/wiki/Louis_Cheung"
-        },
-        "metacritic": "https://www.metacritic.com/movie/another-world-2026/",
-        "imdb": "https://www.imdb.com/title/tt36639436/",
-        "letterboxd": "https://letterboxd.com/film/another-world-2025-2",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1470329.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.66de5d9d-45ff-4508-8c62-21ab05fe9d2c&tag=nrw04-20",
-            "rent_price": "$5.99",
-            "buy_price": "$14.99",
-            "price": "$5.99"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/another-world/umc.cmc.iks69bdufweprztez3vs3i0t?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1896789596",
-            "rent_price": "$5.99",
-            "buy_price": "$14.99",
-            "price": "$5.99"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-08-05T10:35:32.926212",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/xASHAAVfLCUNOSQcxM5xtp8cRqo.jpg",
-      "studio": "Point Five Creations",
-      "budget": 0,
-      "country": "Hong Kong",
-      "original_language": "cn",
-      "original_title": "世外",
-      "display_title": "Another World",
-      "crew": {
-        "director": "Tommy Ng Kai-Chung",
-        "cast": [
-          "Chung Suet-Ying",
-          "Christy Choi Hiu-Tung",
-          "Louis Cheung",
-          "Kay Tse On-Kei",
-          "Will Or Wai-Lam"
-        ]
-      },
-      "_discovery_source": "tmdb_type4",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-08-05",
-      "imdb_rating": "7.2",
-      "letterboxd_score": "3.7",
-      "keywords": [
-        "based on novel or book",
-        "reincarnation",
-        "adult animation"
-      ],
-      "_wiki_language_count": 3,
-      "_trailer_source": "gemini_playwright",
-      "metacritic_score": "74",
-      "_imdb_votes": 594,
-      "_digital_date_source": "tmdb_type4",
-      "_needs_review": false,
-      "_slop_reason": "score:2(no_rt,good_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score"
-      ],
-      "reissue_label": null,
-      "_reissue": false,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": true,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "_watch_links_verified": "2026-08-06T10:58:23.019219"
-    },
-    {
       "id": "1465988",
       "title": "The Degenerate: The Life and Films of Andy Milligan",
       "digital_date": "2026-08-05",
@@ -117563,128 +117403,6 @@
       },
       "featured": false,
       "_watch_links_verified": "2026-08-06T10:58:24.069825"
-    },
-    {
-      "id": "1571485",
-      "title": "Bowie: The Final Act",
-      "digital_date": "2026-08-03",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "The final creative chapter of one of music’s most iconic artists. Featuring rare interviews with those who knew and worked alongside Bowie as well as famous fans and figures who have been inspired by his artistry, the film will uncover the strategy behind Bowie’s artistic resurrection and the inexhaustible extraordinary creativity that defined his final decade, in which he released his critically acclaimed album Blackstar just two days before he died. This was an emergence from the turbulence of the 1990s, when Bowie had found himself at odds with a changing industry but pushed on to headline Glastonbury in 2000.",
-      "genres": [
-        "Documentary",
-        "Music"
-      ],
-      "runtime": 90,
-      "year": 2025,
-      "rt_score": "100%",
-      "providers": {
-        "rent": [
-          "Apple TV Store"
-        ],
-        "buy": [
-          "Apple TV Store"
-        ],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Bowie:_The_Final_Act",
-        "trailer": "https://www.youtube.com/watch?v=cI_wsraMdRo",
-        "rt": "https://www.rottentomatoes.com/m/freddie_mercury_the_final_act",
-        "justwatch": "https://www.justwatch.com/us/movie/bowie-the-final-act",
-        "cast_wiki": {
-          "David Bowie": "https://en.wikipedia.org/wiki/David_Bowie",
-          "Gary Kemp": "https://en.wikipedia.org/wiki/Gary_Kemp"
-        },
-        "imdb": "https://www.imdb.com/title/tt38796013/",
-        "letterboxd": "https://letterboxd.com/film/bowie-the-final-act"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/david-bowie-the-final-act/umc.cmc.4r3neguk6m5iube18eak6cpoh?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A1861049946",
-            "rent_price": "$3.99",
-            "buy_price": "$15.99",
-            "price": "$3.99"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-08-05T10:35:18.855578",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/tPG2I0qr61aE5xZwbM9WiT3nHxJ.jpg",
-      "studio": "Dogwoof",
-      "budget": 0,
-      "country": "United Kingdom",
-      "original_language": "en",
-      "original_title": "Bowie: The Final Act",
-      "display_title": "Bowie: The Final Act",
-      "crew": {
-        "director": "Jonathan Stiasny",
-        "cast": [
-          "David Bowie",
-          "Mike Garson",
-          "Gary Kemp",
-          "Earl Slick",
-          "Goldie"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-08-05",
-      "imdb_rating": "7.2",
-      "letterboxd_score": "3.4",
-      "keywords": [
-        "musician",
-        "icon",
-        "tribute",
-        "portrait of an artist",
-        "musical journey",
-        "quest for identity",
-        "artistic legacy",
-        "life and career",
-        "bowie",
-        "famous song",
-        "english musician",
-        "documentary portrait",
-        "biographical documentary",
-        "artistic process",
-        "gay's icon",
-        "90s style",
-        "artistic identity"
-      ],
-      "_wiki_language_count": 1,
-      "_trailer_source": "gemini_playwright",
-      "_imdb_votes": 634,
-      "_digital_date_source": "detection",
-      "_needs_review": true,
-      "_quality_warnings": [
-        "Title changed from tracking: 'David Bowie: The Final Act' -> 'Bowie: The Final Act'"
-      ],
-      "is_slop": false,
-      "_slop_reason": "prestige_studio:dogwoof",
-      "_slop_confidence": "strong",
-      "status": "available",
-      "_enrichment_gaps": [
-        "metacritic_score"
-      ],
-      "reissue_label": null,
-      "_reissue": false,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": true,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false
     },
     {
       "id": "1739639",
@@ -117909,82 +117627,6 @@
       "featured": false
     },
     {
-      "id": "1506794",
-      "title": "A Very Straight Neck",
-      "digital_date": "2026-08-03",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "A woman descends into a surreal odyssey of fragmented memories after waking with excruciating neck pain.",
-      "genres": [
-        "Drama"
-      ],
-      "runtime": 11,
-      "year": 2025,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "Criterion Channel"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/A_Very_Straight_Neck",
-        "trailer": "https://www.youtube.com/watch?v=6qLxvv4SFDw",
-        "rt": null,
-        "justwatch": "https://www.justwatch.com/us/movie/a-very-straight-neck",
-        "director_wiki": "https://en.wikipedia.org/wiki/Neo_Sora",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1506794.mp4"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "Criterion",
-            "link": "https://www.criterionchannel.com/videos/a-very-straight-neck"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "under_60min",
-      "_discovered_at": "2026-08-04T10:37:22.673378",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/pEsJTVJuuz5Ey4Co8507NSOtMR3.jpg",
-      "studio": "Zakkubalan",
-      "budget": 0,
-      "country": "Japan",
-      "original_language": "ja",
-      "original_title": "まっすぐな首",
-      "display_title": "A Very Straight Neck",
-      "crew": {
-        "director": "Neo Sora",
-        "cast": [
-          "Sakura Ando",
-          "Kodachi Kitagata"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-08-04",
-      "reissue_label": null,
-      "_reissue": false,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": true,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "_watch_links_verified": "2026-08-04T10:56:47.102854",
-      "_rt_retry_count": 3,
-      "_rt_last_retry": "2026-08-05T04:32:07.772676"
-    },
-    {
       "id": "1650210",
       "title": "Sundown",
       "digital_date": "2026-09-07",
@@ -118207,130 +117849,6 @@
       "_rt_retry_count": 3,
       "_rt_last_retry": "2026-08-09T07:14:16.370245",
       "hidden": true
-    },
-    {
-      "id": "1741076",
-      "title": "The Soap Star Murder Mystery",
-      "digital_date": "2026-08-03",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "A soap star moves to the suburbs after a terrifying stalking incident. A shocking murder pulls her into a web of intrigue where no one can be trusted.",
-      "genres": [
-        "Thriller"
-      ],
-      "runtime": 80,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [
-          "Amazon Video",
-          "Apple TV Store"
-        ],
-        "buy": [
-          "Amazon Video",
-          "Apple TV Store"
-        ],
-        "streaming": []
-      },
-      "links": {
-        "wikipedia": null,
-        "trailer": "https://www.youtube.com/watch?v=G2Wu1sFM2PA",
-        "rt": "https://www.rottentomatoes.com/m/the_soap_star_murder_mystery",
-        "justwatch": "https://www.justwatch.com/us/movie/the-soap-star-murder-mystery",
-        "cast_wiki": {
-          "Meredith Thomas": "https://en.wikipedia.org/wiki/Meredith_Thomas_(actress)",
-          "McKenzie Westmore": "https://en.wikipedia.org/wiki/McKenzie_Westmore"
-        },
-        "imdb": "https://www.imdb.com/title/tt40444362/",
-        "letterboxd": "https://letterboxd.com/film/the-soap-star-murder-mystery",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1741076.mp4"
-      },
-      "watch_links": {
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.e51148d7-fe4a-4166-b6ba-9cea90d17d6c&tag=nrw04-20",
-            "rent_price": "$2.99",
-            "buy_price": "$9.99",
-            "price": "$2.99"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/the-soap-star-murder-mystery/umc.cmc.4axpqtufxaj4eawshuvj9wqy8?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A6782284016",
-            "rent_price": "$4.99",
-            "buy_price": "$9.99",
-            "price": "$4.99"
-          }
-        ],
-        "streaming": [
-          {
-            "service": "Plex Player",
-            "link": "https://watch.plex.tv/embed/movie/the-soap-star-murder-mystery?referrer=JustWatch"
-          },
-          {
-            "service": "Plex Channel",
-            "link": "https://www.justwatch.com/us/movie/the-soap-star-murder-mystery?package=plc"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-08-03T11:21:14.053264",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/cwoveTuM8EJQ67AyKhBW95z4C2P.jpg",
-      "studio": "Traplight Pictures",
-      "budget": 0,
-      "country": "United States of America",
-      "original_language": "en",
-      "original_title": "The Soap Star Murder Mystery",
-      "display_title": "The Soap Star Murder Mystery",
-      "crew": {
-        "director": "Jamie Odessa",
-        "cast": [
-          "Meredith Thomas",
-          "McKenzie Westmore",
-          "Chris Lemchi",
-          "Chelsi Stancil",
-          "Jake Melamed"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-08-03",
-      "imdb_rating": null,
-      "letterboxd_score": null,
-      "keywords": [],
-      "_imdb_votes": null,
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "is_slop": true,
-      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
-      "_slop_confidence": "weak",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "trailer",
-        "wikipedia",
-        "imdb_rating",
-        "metacritic_score",
-        "letterboxd_score"
-      ],
-      "reissue_label": null,
-      "_reissue": false,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": false,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "_watch_links_verified": "2026-08-12T09:24:58.905186"
     },
     {
       "id": "1709725",
@@ -118890,144 +118408,6 @@
       "_rt_last_retry": "2026-08-11T00:02:16.016202",
       "_watch_links_verified": "2026-08-10T09:36:53.064575",
       "hidden": true
-    },
-    {
-      "id": "1421552",
-      "title": "Panda Plan: The Magical Tribe",
-      "digital_date": "2026-08-03",
-      "bootstrap_date": false,
-      "manually_corrected": false,
-      "synopsis": "The panda \"Huhu\" is about to move into a brand new panda enclosure when he's suddenly confronted by international robbers. Huhu falls off a cliff while battling the robbers, only to awaken to discover he's in a mysterious tribe. To return to the enclosure, this intriguing team helps the tribe solve various problems...",
-      "genres": [
-        "Action",
-        "Comedy",
-        "Family",
-        "Fantasy"
-      ],
-      "runtime": 100,
-      "year": 2026,
-      "rt_score": null,
-      "providers": {
-        "rent": [],
-        "buy": [],
-        "streaming": [
-          "Hi-YAH"
-        ]
-      },
-      "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Panda_Plan:_The_Magical_Tribe",
-        "trailer": "https://www.youtube.com/watch?v=5TcI0J8pfus",
-        "rt": null,
-        "justwatch": "https://www.justwatch.com/us/movie/panda-plan-the-magical-tribe",
-        "cast_wiki": {
-          "Jackie Chan": "https://en.wikipedia.org/wiki/Jackie_Chan",
-          "Ma Li": "https://en.wikipedia.org/wiki/Ma_Li_(actress)"
-        },
-        "imdb": "https://www.imdb.com/title/tt35514520/",
-        "letterboxd": "https://letterboxd.com/film/panda-plan-the-magical-tribe",
-        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1421552.mp4",
-        "trailer_hosted_subs": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1421552.en.vtt"
-      },
-      "watch_links": {
-        "streaming": [
-          {
-            "service": "Hi-YAH",
-            "link": "https://www.hiyahtv.com/panda-plan-2-the-magical-tribe"
-          }
-        ],
-        "vod": [
-          {
-            "service": "Amazon",
-            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.93292dc0-7e53-4a1a-bd61-a6c10905e33b&tag=nrw04-20",
-            "rent_price": "$5.99",
-            "buy_price": "$12.99",
-            "price": "$5.99"
-          },
-          {
-            "service": "Apple TV",
-            "link": "https://tv.apple.com/us/movie/panda-plan-the-magical-tribe/umc.cmc.5h3eskizoszb2ozi89c2wz705?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A6779499550",
-            "rent_price": "$5.99",
-            "buy_price": "$12.99",
-            "price": "$5.99"
-          },
-          {
-            "service": "Fandango",
-            "link": "https://athome.fandango.com/content/browse/details/Panda-Plan-The-Magical-Tribe/5025415",
-            "rent_price": "$5.99",
-            "buy_price": "$12.99",
-            "price": "$5.99"
-          }
-        ]
-      },
-      "pre_order_links": [],
-      "_enrichment_status": "completed",
-      "_discovered_at": "2026-08-03T11:21:04.342070",
-      "_tmdb_fetch_failed": false,
-      "_minimal_entry": false,
-      "poster": "https://image.tmdb.org/t/p/w500/ph8CrRJIW8ORoaJUCFLGYYFNywr.jpg",
-      "studio": "Emei Film Studio",
-      "budget": 0,
-      "country": "China",
-      "original_language": "zh",
-      "original_title": "熊猫计划之部落奇遇记",
-      "display_title": "Panda Plan: The Magical Tribe",
-      "crew": {
-        "director": "Derek Hui Wang-Yu",
-        "cast": [
-          "Jackie Chan",
-          "Ma Li",
-          "Qiao Shan",
-          "Yu Yang",
-          "Wang Yinglu"
-        ]
-      },
-      "_discovery_source": "provider_availability_check",
-      "_enrichment_attempts": 1,
-      "_last_enrichment_attempt": "2026-08-03",
-      "imdb_rating": "4.5",
-      "letterboxd_score": "2.6",
-      "keywords": [
-        "friendship",
-        "hero",
-        "tribe",
-        "forest",
-        "panda",
-        "family",
-        "fantasy",
-        "comedy",
-        "action",
-        "adventure"
-      ],
-      "_wiki_language_count": 4,
-      "_trailer_source": "gemini_playwright",
-      "_imdb_votes": 545,
-      "_digital_date_source": "detection",
-      "_needs_review": false,
-      "is_slop": true,
-      "_slop_reason": "score:5(no_rt,low_imdb,no_rt_link)",
-      "_slop_confidence": "weak",
-      "status": "available",
-      "_enrichment_gaps": [
-        "rt_score",
-        "metacritic_score"
-      ],
-      "reissue_label": null,
-      "_reissue": false,
-      "filters": {
-        "is_indie": false,
-        "is_foreign": true,
-        "is_staff_pick": false,
-        "is_restoration": false,
-        "is_virtual_screening": false,
-        "is_series": false,
-        "is_documentary": false,
-        "auto_categorized": true,
-        "manual_override": null
-      },
-      "featured": false,
-      "_rt_retry_count": 3,
-      "_rt_last_retry": "2026-08-04T02:10:53.905788",
-      "_watch_links_verified": "2026-08-13T09:36:52.958307"
     },
     {
       "id": "1503166",
@@ -122575,8 +121955,8 @@
   ],
   "latest_playlist_url": "https://www.youtube.com/playlist?list=PLFCewXXu8_tF9w50iumYcQPYseQ6qL7X7",
   "_metadata": {
-    "last_discovery_write": "2026-11-01T14:54:50.537132",
-    "discovery_count": 1120,
+    "last_discovery_write": "2026-11-02T17:51:28.845351",
+    "discovery_count": 1121,
     "schema_version": "2.0"
   }
 }
