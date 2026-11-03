@@ -1,57 +1,102 @@
 {
-  "timestamp": "2026-11-02T18:18:50.217366",
-  "movies_requested": 45,
-  "movies_enriched": 9,
-  "movies_deferred": 36,
+  "timestamp": "2026-11-03T16:31:59.118603",
+  "movies_requested": 65,
+  "movies_enriched": 27,
+  "movies_deferred": 38,
   "deferred_details": [
+    {
+      "title": "Primetime",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-11-03",
+      "discovered_at": "2026-10-16T13:11:28.647449",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-11-03",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Amazon Video",
+        "Apple TV Store",
+        "Plex"
+      ]
+    },
+    {
+      "title": "Resident Evil",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "2026-11-03",
+      "discovered_at": "2026-10-09T15:02:52.098142",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-11-03",
+      "tmdb_platforms": [],
+      "jw_platforms": [
+        "Amazon Video",
+        "Apple TV Store"
+      ]
+    },
+    {
+      "title": "Beware Boi\u00fana",
+      "reason": "jw_revert:justwatch_theatrical_pvod",
+      "digital_date": "",
+      "discovered_at": "2026-11-03T15:55:34.822622",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-11-03",
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ],
+      "jw_platforms": [
+        "Amazon Video",
+        "Apple TV Store"
+      ]
+    },
     {
       "title": "A Danish Christmas",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-11-02",
-      "discovered_at": "2026-11-01T14:54:50.279050",
+      "discovered_at": "2026-11-03T15:55:36.090921",
       "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 2,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "The Dungeon: West Virginia Penitentiary",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-30",
-      "discovered_at": "2026-11-02T17:51:10.201842",
+      "discovered_at": "2026-11-03T15:55:38.202870",
       "discovery_source": "tmdb_type4",
-      "revert_count": 5,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 6,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "A Night in Paradiso",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-30",
-      "discovered_at": "2026-11-02T17:51:10.475737",
+      "discovered_at": "2026-11-03T15:55:38.617084",
       "discovery_source": "tmdb_type4",
-      "revert_count": 5,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 6,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "29 Seconds to Midnight",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-29",
-      "discovered_at": "2026-11-02T17:51:11.139441",
+      "discovered_at": "2026-11-03T15:55:39.634910",
       "discovery_source": "tmdb_type4",
-      "revert_count": 6,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 7,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Honorable",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-28",
-      "discovered_at": "2026-11-02T17:51:11.646078",
+      "discovered_at": "2026-11-03T15:55:40.045585",
       "discovery_source": "provider_availability_check",
-      "revert_count": 6,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 7,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [
         "Eventive"
       ]
@@ -60,10 +105,10 @@
       "title": "Forgotten Island",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-10-27",
-      "discovered_at": "2026-11-02T17:51:11.968229",
+      "discovered_at": "2026-11-03T15:55:40.372670",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-11-02",
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [
         "Fandango At Home"
       ],
@@ -77,10 +122,10 @@
       "title": "Verity",
       "reason": "jw_revert:justwatch_theatrical_pvod",
       "digital_date": "2026-10-27",
-      "discovered_at": "2026-11-02T17:51:12.230745",
+      "discovered_at": "2026-11-03T15:55:40.779054",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-11-02",
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [],
       "jw_platforms": [
         "Amazon Video",
@@ -92,40 +137,50 @@
       "title": "Things Greater Than Us",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-27",
-      "discovered_at": "2026-11-02T17:51:12.506785",
+      "discovered_at": "2026-11-03T15:55:41.105483",
       "discovery_source": "tmdb_type4",
-      "revert_count": 8,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 9,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Beyond the Clouds",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-25",
-      "discovered_at": "2026-11-02T17:51:12.863830",
+      "discovered_at": "2026-11-03T15:55:41.625003",
       "discovery_source": "tmdb_type4",
-      "revert_count": 10,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 11,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Castration Movie Chapter iii.ii Junior Ghosts\u2014Premorphic Drift; a fragmentary passage",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-10-23",
-      "discovered_at": "2026-11-02T17:51:13.133641",
+      "discovered_at": "2026-11-03T15:55:42.032875",
       "discovery_source": "tmdb_type4",
-      "revert_count": 11,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 12,
+      "first_reverted_at": "2026-11-03",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Apple Music Live: Troye Sivan",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-10-13",
+      "discovered_at": "2026-11-03T15:55:42.351748",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Genevieve's Garden",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-11",
-      "discovered_at": "2026-11-02T17:51:13.468835",
+      "discovered_at": "2026-11-03T15:55:42.772354",
       "discovery_source": "provider_availability_check",
-      "revert_count": 23,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 24,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [
         "Eventive"
       ]
@@ -134,10 +189,10 @@
       "title": "We Are Not Invisible: Doulas and the Work of Survival",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-11",
-      "discovered_at": "2026-11-02T17:51:13.720283",
+      "discovered_at": "2026-11-03T15:55:43.106136",
       "discovery_source": "provider_availability_check",
-      "revert_count": 23,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 24,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [
         "Eventive"
       ]
@@ -146,10 +201,10 @@
       "title": "PHINDA",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-11",
-      "discovered_at": "2026-11-02T17:51:14.015557",
+      "discovered_at": "2026-11-03T15:55:43.540555",
       "discovery_source": "provider_availability_check",
-      "revert_count": 23,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 24,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [
         "Eventive"
       ]
@@ -158,10 +213,10 @@
       "title": "Fork in the Road",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-10",
-      "discovered_at": "2026-11-02T17:51:14.256400",
+      "discovered_at": "2026-11-03T15:55:43.895269",
       "discovery_source": "provider_availability_check",
-      "revert_count": 24,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 25,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [
         "Eventive"
       ]
@@ -170,10 +225,10 @@
       "title": "The Protectors",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-10",
-      "discovered_at": "2026-11-02T17:51:14.510829",
+      "discovered_at": "2026-11-03T15:55:44.233695",
       "discovery_source": "provider_availability_check",
-      "revert_count": 24,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 25,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [
         "Eventive"
       ]
@@ -182,10 +237,10 @@
       "title": "The Florist",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-10-09",
-      "discovered_at": "2026-11-02T17:51:14.842480",
+      "discovered_at": "2026-11-03T15:55:44.636289",
       "discovery_source": "tmdb_type4",
-      "revert_count": 26,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 27,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [
         "Fandango At Home"
       ]
@@ -194,216 +249,202 @@
       "title": "Nightmare Hospital",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-08",
-      "discovered_at": "2026-11-02T17:51:15.123738",
+      "discovered_at": "2026-11-03T15:55:44.966332",
       "discovery_source": "tmdb_type4",
-      "revert_count": 37,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 38,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Mystery Science Theater 3000: The RiffTrax Experiments \u2014 Sting of Death",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-10-08",
-      "discovered_at": "2026-11-02T17:51:15.427697",
+      "discovered_at": "2026-11-03T15:55:45.376957",
       "discovery_source": "tmdb_type4",
-      "revert_count": 25,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 26,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Mike Hanford: LIVE IN TORONTO",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-08",
-      "discovered_at": "2026-11-02T17:51:15.682680",
+      "discovered_at": "2026-11-03T15:55:45.699614",
       "discovery_source": "tmdb_type4",
-      "revert_count": 27,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 28,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Tomorrow Protocol",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-02",
-      "discovered_at": "2026-11-02T17:51:15.954494",
+      "discovered_at": "2026-11-03T15:55:46.103587",
       "discovery_source": "tmdb_type4",
-      "revert_count": 33,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 34,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Daughters of 9/11",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-09-12",
-      "discovered_at": "2026-11-02T17:51:16.457238",
+      "discovered_at": "2026-11-03T15:55:46.628677",
       "discovery_source": "tmdb_type4",
-      "revert_count": 52,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 53,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Guerrilla Filmmaker",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-08-29",
-      "discovered_at": "2026-11-02T17:51:16.725281",
+      "discovered_at": "2026-11-03T15:55:46.956914",
       "discovery_source": "tmdb_type4",
-      "revert_count": 67,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 68,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "The Essentials 2",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-08-29",
-      "discovered_at": "2026-11-02T17:51:17.034239",
+      "discovered_at": "2026-11-03T15:55:47.372644",
       "discovery_source": "tmdb_type4",
-      "revert_count": 67,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 68,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Rainbow on Mars",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-08-14",
-      "discovered_at": "2026-11-02T17:51:17.301567",
+      "discovered_at": "2026-11-03T15:55:47.697671",
       "discovery_source": "tmdb_type4",
-      "revert_count": 81,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 82,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Side Effects May Include...",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-08-09",
-      "discovered_at": "2026-11-02T17:51:17.773157",
+      "discovered_at": "2026-11-03T15:55:48.122391",
       "discovery_source": "tmdb_type4",
-      "revert_count": 86,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 87,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Awake",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-08-08",
-      "discovered_at": "2026-11-02T17:51:18.024382",
+      "discovered_at": "2026-11-03T15:55:48.463178",
       "discovery_source": "tmdb_type4",
-      "revert_count": 87,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 88,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Rumours of Madam Roach",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-26",
-      "discovered_at": "2026-11-02T17:51:18.365491",
+      "discovered_at": "2026-11-03T15:55:48.797948",
       "discovery_source": "tmdb_type4",
-      "revert_count": 100,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 101,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Last Chance To Save",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-18",
-      "discovered_at": "2026-11-02T17:51:18.701119",
+      "discovered_at": "2026-11-03T15:55:49.209982",
       "discovery_source": "tmdb_type4",
-      "revert_count": 108,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 109,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Chunks",
       "reason": "jw_revert:justwatch_no_valid_offers",
       "digital_date": "2026-07-17",
-      "discovered_at": "2026-11-02T17:51:18.964652",
+      "discovered_at": "2026-11-03T15:55:49.538598",
       "discovery_source": "tmdb_type4",
-      "revert_count": 108,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 109,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Forelock",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-07-01",
-      "discovered_at": "2026-11-02T17:51:19.274862",
+      "discovered_at": "2026-11-03T15:55:49.954341",
       "discovery_source": "tmdb_type4",
-      "revert_count": 125,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 126,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "The Last Light",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-21",
-      "discovered_at": "2026-11-02T17:51:19.532277",
+      "discovered_at": "2026-11-03T15:55:50.295246",
       "discovery_source": "tmdb_type4",
-      "revert_count": 146,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 147,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Love & Other Crimes",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-19",
-      "discovered_at": "2026-11-02T17:51:19.852620",
+      "discovered_at": "2026-11-03T15:55:50.734860",
       "discovery_source": "tmdb_type4",
-      "revert_count": 137,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 138,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": []
     },
     {
       "title": "Big Break",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-18",
-      "discovered_at": "2026-11-02T17:51:20.122395",
+      "discovered_at": "2026-11-03T15:55:51.082245",
       "discovery_source": "tmdb_type4",
-      "revert_count": 42,
-      "first_reverted_at": "2026-11-02",
+      "revert_count": 43,
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [
         "Eventive"
       ]
     },
     {
-      "title": "Wicker",
+      "title": "Sense and Sensibility",
       "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-12-01",
-      "discovered_at": "2026-11-02T17:51:23.621170",
+      "digital_date": "2026-11-03",
+      "discovered_at": "2026-11-03T15:56:16.136910",
       "discovery_source": "tmdb_type4",
       "revert_count": 1,
-      "first_reverted_at": "2026-11-02",
-      "tmdb_platforms": [
-        "Fandango At Home"
-      ],
+      "first_reverted_at": "2026-11-03",
+      "tmdb_platforms": [],
       "jw_platforms": [
-        "Fandango At Home"
+        "Amazon Video",
+        "Apple TV Store"
       ]
     },
     {
-      "title": "Wildwood",
-      "reason": "jw_revert:justwatch_theatrical_pvod",
-      "digital_date": "2026-12-08",
-      "discovered_at": "2026-11-02T17:51:26.318229",
-      "discovery_source": "tmdb_type4",
+      "title": "A Marble in the Jar",
+      "reason": "zero_watch_links",
+      "digital_date": "",
+      "discovered_at": "2026-10-17T12:12:38.437350",
+      "discovery_source": "provider_availability_check",
       "revert_count": 1,
-      "first_reverted_at": "2026-11-02",
+      "first_reverted_at": "2026-11-03",
       "tmdb_platforms": [
-        "Fandango At Home"
-      ],
-      "jw_platforms": [
-        "Fandango At Home"
+        "Amazon Video"
       ]
-    },
-    {
-      "title": "Apple Music Live: Troye Sivan",
-      "reason": "jw_revert:justwatch_no_match",
-      "digital_date": "2026-10-13",
-      "discovered_at": "2026-11-02T17:51:28.845341",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-11-02",
-      "tmdb_platforms": []
     }
   ],
-  "enrichment_duration_seconds": 1640.04,
+  "enrichment_duration_seconds": 2138.24,
   "error_details": [],
   "total_errors": 0
 }
