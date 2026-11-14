@@ -51,79 +51,6 @@ def _capsule_titles():
         return set()
 
 
-REASONS = {
-    "justwatch_no_valid_offers": "JustWatch has the film, no live offers yet",
-    "justwatch_no_match": "JustWatch can't find it",
-    "justwatch_theatrical_pvod": "Old PVOD hold (rule removed; re-checked next run)",
-    "zero_watch_links": "No watch links after enrichment",
-}
-
-HELD_LIST_MIN_VOTES = 20   # list held films at least this well known (TMDB votes = ranking only)
-HELD_LIST_MAX = 20
-
-
-def held_back(ms, run_date):
-    """Every film held in tracking because JustWatch can't confirm it yet.
-
-    A hold is a wait, re-checked daily then weekly (pipeline/holds.py) — this list is
-    how a big film stuck in a hold gets noticed without spot checks. TMDB votes only
-    rank the list; JustWatch alone decides availability.
-    """
-    try:
-        trk = json.load(open("movie_tracking.json"))
-    except Exception:
-        print("Held back: movie_tracking.json unreadable — skipped (→ Concerns)\n")
-        return
-    trk = trk.get("movies", trk)
-    held = [(mid, r) for mid, r in trk.items()
-            if r.get("status") == "tracking" and r.get("_jw_revert_reason")]
-    today = date.fromisoformat(run_date) if run_date else date.today()
-
-    def days_since(d):
-        try:
-            return (today - date.fromisoformat(str(d)[:10])).days
-        except Exception:
-            return None
-
-    weekly = sum(1 for _, r in held if r.get("_jw_revert_count", 0) >= 4)
-    no_match = [r for _, r in held if r.get("_jw_revert_reason") == "justwatch_no_match"]
-    new_nm = sum(1 for r in no_match if (days_since(r.get("_jw_reverted_at")) or 99) < 7)
-    print(f"Held back — waiting on JustWatch: {len(held)} film(s) "
-          f"({weekly} on weekly re-checks). JustWatch can't find {len(no_match)} of them "
-          f"({new_nm} new this week).")
-    big = sorted((x for x in held if (x[1].get("_tmdb_votes") or 0) >= HELD_LIST_MIN_VOTES),
-                 key=lambda x: -(x[1].get("_tmdb_votes") or 0))
-    for mid, r in big[:HELD_LIST_MAX]:
-        since = r.get("_jw_reverted_at") or "?"
-        ds = days_since(since)
-        print(f'  • {r.get("title")} ({r.get("year")}) — {REASONS.get(r["_jw_revert_reason"], r["_jw_revert_reason"])}'
-              f' | held since {since}{f" ({ds}d)" if ds is not None else ""}'
-              f' | {r.get("_tmdb_votes")} TMDB votes | id {mid}')
-    if len(big) > HELD_LIST_MAX:
-        print(f"  ({len(big) - HELD_LIST_MAX} more with {HELD_LIST_MIN_VOTES}+ TMDB votes not listed)")
-    unranked = sum(1 for _, r in held if r.get("_tmdb_votes") is None)
-    if unranked:
-        print(f"  ({unranked} not yet ranked — popularity is fetched at their next check)")
-
-    # Films that landed today after a hold: dated the day JustWatch confirmed them.
-    landed = []
-    for m in ms:
-        r = trk.get(str(m.get("id"))) or {}
-        if str(m.get("_discovered_at", ""))[:10] == run_date and r.get("_held_since"):
-            landed.append((m, r))
-    if landed:
-        print(f"\nLanded after a hold: {len(landed)}")
-        for m, r in sorted(landed, key=lambda x: not x[1].get("_date_needs_review")):
-            before = r.get("_date_before_hold")
-            flag = (" — DATE NEEDS REVIEW: JustWatch wasn't checking it during the hold, so "
-                    "it kept its earlier unconfirmed date" if r.get("_date_needs_review")
-                    else " — dated the day JustWatch confirmed it")
-            print(f'  • {m.get("title")} ({m.get("year")}) — dated {m.get("digital_date")}, '
-                  f'held since {r.get("_held_since")}'
-                  f'{f", earlier unconfirmed date {before}" if before else ""}{flag}')
-    print()
-
-
 def overnight():
     data = json.load(open("data.json"))
     ms = data["movies"] if isinstance(data, dict) else data
@@ -134,6 +61,13 @@ def overnight():
     except Exception:
         enr = {}
     deferred = enr.get("deferred_details", [])
+    REASONS = {
+        "justwatch_no_valid_offers": "Coming soon (JustWatch has no live offers yet)",
+        "justwatch_theatrical_pvod": "In theaters / PVOD only",
+        "justwatch_no_match": "No JustWatch listing yet",
+        "zero_watch_links": "No watch links after enrichment",
+    }
+
     def humanize(r):
         return REASONS.get(r.split("jw_revert:")[-1], r.split("jw_revert:")[-1])
 
@@ -143,8 +77,6 @@ def overnight():
 
     def first_rev(d):
         return d.get("first_reverted_at") or str(d.get("discovered_at", ""))[:10]
-
-    held_back(ms, run_date)
 
     new_rel = [m for m in ms if str(m.get("_discovered_at", ""))[:10] == run_date]
     print(f"New Releases: {len(new_rel)}")

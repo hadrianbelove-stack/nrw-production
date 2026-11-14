@@ -260,12 +260,6 @@ class DataGenerator:
                      '_type4_false_positive', '_providers_false_positive',
                      '_type4_pending']:
             movie.pop(flag, None)
-        # Date arrived = no longer a pre-order. A leftover _is_preorder used to re-trigger
-        # discovery's pre-order bypass after a failed graduation, looping the film on and
-        # off the wall every run (Nov 2026). Buy-only pre-orders keep _buyonly_preorder
-        # until enrichment's store-page check decides.
-        if (movie.get('digital_date') or '') <= datetime.now().strftime('%Y-%m-%d'):
-            movie.pop('_is_preorder', None)
         newly_available_ids.append(movie_id)
         self.add_movie_to_site_immediately(movie_id, movie)
 
@@ -1784,22 +1778,6 @@ class DataGenerator:
 
         return new_cached
 
-    @staticmethod
-    def _return_screening_to_tracking(tracking_movie):
-        """Expired screening → back to tracking, so discovery can find a regular VOD
-        release later. Drops the screening markers so that re-discovery goes through
-        the normal JustWatch check, not the virtual-screening bypass."""
-        tracking_movie['status'] = 'tracking'
-        tracking_movie.pop('digital_date', None)
-        tracking_movie.pop('_virtual_screening', None)
-        _vs = ('eventive', 'shift72', 'sundance', 'festivalplayer')
-        provs = tracking_movie.get('providers')
-        if isinstance(provs, dict):
-            for k in ('streaming', 'rent', 'buy'):
-                if isinstance(provs.get(k), list):
-                    provs[k] = [p for p in provs[k]
-                                if not (isinstance(p, str) and any(v in p.lower() for v in _vs))]
-
     def check_virtual_screening_expirations(self):
         """
         Check virtual screening links for expiration.
@@ -1837,17 +1815,8 @@ class DataGenerator:
             title = movie.get('title', 'Unknown')
             screening_info = movie.get('virtual_screening_info', {})
 
-            # Already expired: display marks expiry during enrichment, which runs BEFORE
-            # this check, so skipping these meant an expired screening was never returned
-            # to tracking and its later regular VOD release was never discovered.
+            # Skip already-expired movies
             if screening_info.get('status') == 'expired':
-                _x_mid = str(movie.get('id', ''))
-                _x_rec = tracking_data.get('movies', {}).get(_x_mid) if tracking_data else None
-                if _x_rec and _x_rec.get('status') == 'available':
-                    self._return_screening_to_tracking(_x_rec)
-                    expired_count += 1  # triggers the tracking save below
-                    modified = True
-                    print(f"  ↩ {title} — screening expired; returned to tracking for VOD re-discovery")
                 continue
 
             # Find the screening link to check
@@ -1881,7 +1850,10 @@ class DataGenerator:
 
                 movie_id = str(movie.get('id', ''))
                 if movie_id and movie_id in tracking_data.get('movies', {}):
-                    self._return_screening_to_tracking(tracking_data['movies'][movie_id])
+                    tracking_movie = tracking_data['movies'][movie_id]
+                    tracking_movie['status'] = 'tracking'
+                    if 'digital_date' in tracking_movie:
+                        del tracking_movie['digital_date']
                     print(f"    → Returned to tracking for VOD re-discovery")
 
             # Check 1: Date-based expiration (available_end in the past)

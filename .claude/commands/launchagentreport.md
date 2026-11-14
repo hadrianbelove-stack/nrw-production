@@ -43,7 +43,7 @@ except Exception:
 deferred = enr.get('deferred_details', [])
 REASONS = {
   'justwatch_no_valid_offers': 'Coming soon (JustWatch has no live offers yet)',
-  'justwatch_theatrical_pvod': 'Old PVOD hold (rule removed Nov 2026; re-checked next run)',
+  'justwatch_theatrical_pvod': 'In theaters / PVOD only',
   'justwatch_no_match': 'No JustWatch listing yet',
   'zero_watch_links': 'No watch links after enrichment',
 }

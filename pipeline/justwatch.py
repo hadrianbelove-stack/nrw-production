@@ -22,7 +22,6 @@ import requests
 import logging
 import re
 import unicodedata
-from datetime import datetime, timezone
 from typing import Dict, Optional, List, Any
 
 
@@ -83,27 +82,6 @@ class JustWatchClient:
         # Simple in-memory cache
         self._cache: Dict[str, Dict] = {}
 
-        # Set by search_movie when its last None came from an API/network error
-        # (not a genuine no-match). Callers must not count that as a failed check.
-        self.last_error: Optional[str] = None
-
-    @staticmethod
-    def _offer_not_live_yet(offer: Dict) -> bool:
-        """True if JustWatch dates this offer in the future (a store pre-order).
-
-        availableFromTime is JustWatch's own go-live time for an offer: Verity's Amazon
-        rental reads 2026-10-27 and Other Mommy's 2026-11-10 — their digital release
-        days. This is what keeps pre-order rentals of films still in theaters off the
-        wall now that the old PVOD price gate is gone.
-        """
-        af = offer.get('availableFromTime')
-        if not af:
-            return False
-        try:
-            return datetime.fromisoformat(str(af).replace('Z', '+00:00')) > datetime.now(timezone.utc)
-        except ValueError:
-            return False
-
     @staticmethod
     def _normalize_title(title: str) -> str:
         """Normalize title for comparison.
@@ -154,18 +132,12 @@ class JustWatchClient:
             title: Movie title
             year: Release year (helps disambiguate)
             content_type: 'movie' or 'tv' — determines JustWatch objectTypes filter
-            original_title: Original language title (matched alongside title, and
-                searched on its own when the title search finds no match)
+            original_title: Original language title (checked alongside title)
             director: Director name for disambiguation when multiple titles match
-            tmdb_id: TMDB id — strongest match signal, and part of the cache key so
-                two same-title, same-year films never share one result
 
         Returns:
-            Movie data with offers, or None if not found. When None is caused by an
-            API/network error rather than a genuine no-match, self.last_error is set:
-            callers must not count an error as a failed availability check.
+            Movie data with offers, or None if not found
         """
-        self.last_error = None
         # Normalize year to int (handle string input from enrichment pipeline)
         if year is not None:
             try:
@@ -176,51 +148,11 @@ class JustWatchClient:
         object_type = 'SHOW' if content_type == 'tv' else 'MOVIE'
         orig_suffix = f"_{original_title}" if original_title and original_title.lower() != title.lower() else ''
         dir_suffix = f"_{director}" if director else ''
-        tmdb_suffix = f"_tmdb{tmdb_id}" if tmdb_id else ''
-        cache_key = f"{title}_{year or 'any'}_{object_type}{orig_suffix}{dir_suffix}{tmdb_suffix}"
+        cache_key = f"{title}_{year or 'any'}_{object_type}{orig_suffix}{dir_suffix}"
         if cache_key in self._cache:
             self.stats['cache_hits'] += 1
             return self._cache[cache_key]
 
-        # Accept a result under our title OR the original title.
-        # Never accept a result based on year alone — that picks wrong movies.
-        titles_to_match = {self._normalize_title(title)}
-        norm_orig = self._normalize_title(original_title) if original_title else ''
-        if norm_orig:
-            titles_to_match.add(norm_orig)
-
-        # Search by title; if that finds no match, search by the original title
-        # (foreign films are often indexed under it).
-        search_queries = [title]
-        if norm_orig and norm_orig != self._normalize_title(title):
-            search_queries.append(original_title)
-
-        try:
-            for search_query in search_queries:
-                edges = self._search_edges(search_query, object_type)
-                if edges is None:  # API/network error — self.last_error is set
-                    return None
-                best_match = self._best_match(edges, titles_to_match, year, director, tmdb_id)
-                if best_match:
-                    self.stats['successes'] += 1
-                    self._cache[cache_key] = best_match
-                    return best_match
-        except Exception as e:
-            self.logger.error(f"JustWatch API error: {e}")
-            self.stats['failures'] += 1
-            self.last_error = f"unexpected: {type(e).__name__}"
-            return None
-
-        self.logger.debug(f"No title match for '{title}' in JustWatch results")
-        self.stats['failures'] += 1
-        return None
-
-    def _search_edges(self, search_query: str, object_type: str) -> Optional[List[Dict]]:
-        """One JustWatch popularTitles search (top 10 results).
-
-        Returns the result edges (possibly empty), or None on an API/network error,
-        with self.last_error set.
-        """
         query = f'''
         query SearchMovies($country: Country!, $searchQuery: String!, $first: Int!) {{
           popularTitles(
@@ -254,7 +186,6 @@ class JustWatchClient:
                   retailPrice(language: "en")
                   currency
                   standardWebURL
-                  availableFromTime
                   package {{
                     clearName
                     technicalName
@@ -268,7 +199,7 @@ class JustWatchClient:
 
         variables = {
             'country': self.country,
-            'searchQuery': search_query,
+            'searchQuery': title,
             'first': 10  # Get top 10 results for better matching
         }
 
@@ -282,77 +213,89 @@ class JustWatchClient:
             )
             response.raise_for_status()
             data = response.json()
+
+            if 'errors' in data:
+                self.logger.warning(f"JustWatch API errors: {data['errors']}")
+                self.stats['failures'] += 1
+                return None
+
+            edges = data.get('data', {}).get('popularTitles', {}).get('edges', [])
+
+            if not edges:
+                # JW_DIAG (temporary): a blocked/throttled datacenter IP returns
+                # HTTP 200 with zero edges — indistinguishable from a genuine
+                # no-match unless we surface the status + body. Printed so it is
+                # captured in CI logs (where logger output may be suppressed).
+                _diag = (f"JW_DIAG empty-result '{title}' — HTTP {response.status_code}, "
+                         f"0 edges, body[:200]={response.text[:200]!r}")
+                self.logger.warning(_diag)
+                print(f"      {_diag}")
+                self.stats['failures'] += 1
+                return None
+
+            # Find best match: require title match (against title OR original_title).
+            # Never accept a result based on year alone — that picks wrong movies.
+            titles_to_match = {self._normalize_title(title)}
+            if original_title and original_title.lower() != title.lower():
+                norm_orig = self._normalize_title(original_title)
+                if norm_orig:
+                    titles_to_match.add(norm_orig)
+
+            best_match = None
+
+            # Pass 1: TMDB ID match (strongest — unique identifier, zero false positives)
+            if tmdb_id:
+                tmdb_id_str = str(tmdb_id)
+                for edge in edges:
+                    node = edge['node']
+                    ext_ids = node.get('content', {}).get('externalIds', {})
+                    if ext_ids and str(ext_ids.get('tmdbId', '')) == tmdb_id_str:
+                        best_match = node
+                        break
+
+            # Pass 2: title + exact year
+            if not best_match:
+                for edge in edges:
+                    node = edge['node']
+                    content = node.get('content', {})
+                    node_title_norm = self._normalize_title(content.get('title', ''))
+                    if node_title_norm in titles_to_match and year and content.get('originalReleaseYear') == year:
+                        best_match = node
+                        break
+
+            # Pass 3: title + director (same title + same director = same film)
+            if not best_match and director:
+                director_lower = director.lower()
+                for edge in edges:
+                    node = edge['node']
+                    content = node.get('content', {})
+                    node_title_norm = self._normalize_title(content.get('title', ''))
+                    if node_title_norm in titles_to_match:
+                        credits = content.get('credits', [])
+                        for credit in credits:
+                            if credit.get('role') == 'DIRECTOR' and credit.get('name', '').lower() == director_lower:
+                                best_match = node
+                                break
+                        if best_match:
+                            break
+
+            if not best_match:
+                self.logger.debug(f"No title match for '{title}' in JustWatch results")
+                self.stats['failures'] += 1
+                return None
+
+            self.stats['successes'] += 1
+            self._cache[cache_key] = best_match
+            return best_match
+
         except requests.RequestException as e:
             self.logger.error(f"JustWatch API request failed: {e}")
             self.stats['failures'] += 1
-            self.last_error = f"request_failed: {type(e).__name__}"
             return None
-        except ValueError as e:  # non-JSON body
-            self.logger.error(f"JustWatch API returned non-JSON: {e}")
+        except Exception as e:
+            self.logger.error(f"JustWatch API error: {e}")
             self.stats['failures'] += 1
-            self.last_error = 'bad_response'
             return None
-
-        if 'errors' in data:
-            self.logger.warning(f"JustWatch API errors: {data['errors']}")
-            self.stats['failures'] += 1
-            self.last_error = 'graphql_errors'
-            return None
-
-        edges = (data.get('data') or {}).get('popularTitles', {}).get('edges', []) or []
-
-        if not edges:
-            # JW_DIAG (temporary): a blocked/throttled datacenter IP returns
-            # HTTP 200 with zero edges — indistinguishable from a genuine
-            # no-match unless we surface the status + body. Printed so it is
-            # captured in CI logs (where logger output may be suppressed).
-            _diag = (f"JW_DIAG empty-result '{search_query}' — HTTP {response.status_code}, "
-                     f"0 edges, body[:200]={response.text[:200]!r}")
-            self.logger.warning(_diag)
-            print(f"      {_diag}")
-        return edges
-
-    def _best_match(self, edges, titles_to_match, year, director, tmdb_id):
-        """Pick the search result that is this film, or None."""
-        def _content(edge):
-            return (edge.get('node') or {}).get('content') or {}
-
-        def _title_hit(edge):
-            return self._normalize_title(_content(edge).get('title', '')) in titles_to_match
-
-        # Pass 1: TMDB ID match (strongest — unique identifier, zero false positives)
-        if tmdb_id:
-            for edge in edges:
-                ext_ids = _content(edge).get('externalIds') or {}
-                if str(ext_ids.get('tmdbId', '')) == str(tmdb_id):
-                    return edge['node']
-
-        title_hits = [e for e in edges if _title_hit(e)]
-
-        # Pass 2: title + exact year
-        if year:
-            for edge in title_hits:
-                if _content(edge).get('originalReleaseYear') == year:
-                    return edge['node']
-
-        # Pass 3: title + director (same title + same director = same film)
-        if director:
-            director_lower = director.lower()
-            for edge in title_hits:
-                for credit in _content(edge).get('credits') or []:
-                    if credit.get('role') == 'DIRECTOR' and (credit.get('name') or '').lower() == director_lower:
-                        return edge['node']
-
-        # Pass 4/5: only when exactly ONE result carries this title, so two same-title
-        # films never get confused:
-        #   - year off by one (festival-premiere year vs release year), or
-        #   - no year known (series often have none on our side).
-        if len(title_hits) == 1:
-            jw_year = _content(title_hits[0]).get('originalReleaseYear')
-            if not year or (jw_year and abs(jw_year - year) <= 1):
-                return title_hits[0]['node']
-
-        return None
 
     def get_watch_links(
         self,
@@ -412,10 +355,6 @@ class JustWatchClient:
             price = offer.get('retailPrice')
 
             if not url or not service:
-                continue
-
-            # JustWatch says this offer only goes live later — a pre-order, not watchable
-            if self._offer_not_live_yet(offer):
                 continue
 
             # Skip excluded services (e.g. Philo, fuboTV)
@@ -586,10 +525,6 @@ class JustWatchClient:
             if not url or not service:
                 continue
 
-            # JustWatch says this offer only goes live later — a pre-order, not watchable
-            if self._offer_not_live_yet(offer):
-                continue
-
             if any(excluded in service.lower() for excluded in excluded_lower):
                 continue
 
@@ -621,6 +556,13 @@ class JustWatchClient:
                 if service not in buy_names:
                     buy_names.append(service)
 
+        # Detect theatrical (CINEMA) offers — signals movie is still in theaters.
+        # Collected from raw offers before filtering so we catch all cinema services.
+        cinema_offers = [o for o in offers
+                         if o.get('monetizationType') == 'CINEMA'
+                         and o.get('standardWebURL') and o.get('package', {}).get('clearName')]
+        has_cinema = bool(cinema_offers)
+
         # Prefer HD prices: sort rent/buy so HD comes first per service
         _ptype_order = {'HD': 0, '4K': 1, 'SD': 2}
         rent_offers.sort(key=lambda o: _ptype_order.get(o.get('_ptype', ''), 99))
@@ -629,6 +571,20 @@ class JustWatchClient:
         has_streaming = bool(streaming_offers)
         has_rent = bool(rent_offers)
         has_buy = bool(buy_offers)
+
+        # Minimum filtered rent price — used to distinguish PVOD ($15+) from
+        # legitimate day-and-date releases with normal rental pricing (<$15).
+        min_rent_price = None
+        if has_cinema and rent_offers:
+            prices = []
+            for o in rent_offers:
+                p = o.get('price')
+                if p:
+                    try:
+                        prices.append(float(str(p).replace('$', '').strip()))
+                    except (ValueError, TypeError):
+                        pass
+            min_rent_price = min(prices) if prices else None
 
         # Determine verification status
         if has_rent or has_streaming:
@@ -669,6 +625,8 @@ class JustWatchClient:
             'has_rent': has_rent,
             'has_buy': has_buy,
             'buy_only': buy_only,
+            'has_cinema': has_cinema,
+            'min_rent_price': min_rent_price,
             '_presentation_types': sorted(presentation_types),
             'provider_names': {
                 'streaming': streaming_names,

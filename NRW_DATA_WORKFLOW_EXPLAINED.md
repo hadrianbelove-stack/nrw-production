@@ -260,23 +260,6 @@ How it works:
 - Exceptions: pre-orders with future dates, virtual screenings, manually-added movies, and movies with watch link overrides are NOT reverted
 - The wall health report shows reverted movies for 3 days, then stops alerting (pipeline keeps retrying silently)
 
-### Holds are waits, never drops (Nov 2026)
-A film JustWatch can't confirm yet (no match, no valid offer, zero links) is **held** in tracking —
-`pipeline/holds.py` is the only writer of hold fields:
-- Checked every run for its first 4 checks, then **weekly** (`_jw_last_checked`), for up to a year.
-  The old 4-strike permanent skip (`_skip_provider_discovery`) is retired; the flag is cleared at the next check.
-- **JustWatch errors/outages never count** as a check (`JustWatchClient.last_error`; the health canary re-runs every 15 min).
-- **No PVOD gate**: a premium rental while still in theaters is watchable, so it goes on the wall.
-  Real pre-orders need positive evidence — JustWatch dating the offer in the future (`availableFromTime`),
-  a future Type 4 date, or a visible "Pre-order" label on the store page (`_is_held_rent_preorder` /
-  `_detect_buyonly_preorder`). Buy-only alone is not a pre-order.
-- **Date after a hold**: a film checked within 14 days lands dated the day JustWatch confirmed it
-  (`_digital_date_source: jw_first_verified`, which enrichment won't overwrite with TMDB). A long-unchecked
-  backlog film keeps its earlier date and gets `_date_needs_review` — the morning report lists both.
-- Pre-order markers are cleared whenever a hold is recorded, so a failed pre-order graduation can't loop.
-- A festival film that later lands on a regular platform moves to the main wall, dated its VOD date (`_vod_since`).
-- The morning report's **Held back** section lists every held film, ranked by TMDB votes (ranking only).
-
 ---
 
 ## **Key Principles**
