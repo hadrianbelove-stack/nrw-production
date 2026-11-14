@@ -65145,7 +65145,7 @@
     },
     "83533": {
       "title": "Avatar: Fire and Ash",
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2025-12-17",
       "digital_date": "2026-03-31",
       "providers": {
@@ -65159,8 +65159,11 @@
       "_discovery_source": "tmdb_type4",
       "enriched": true,
       "enrichment_date": "2026-03-31",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1599598": {
       "title": "A Cookie for Caspian",
@@ -91139,7 +91142,7 @@
     },
     "1012180": {
       "title": "Identity",
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-04",
       "digital_date": "2026-04-24",
       "providers": {
@@ -91160,8 +91163,11 @@
       "enrichment_date": "2026-05-22",
       "_added_manually": true,
       "_transitioned_at": "2026-05-22",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "666154": {
       "title": "Kayara",
@@ -119895,7 +119901,7 @@
     "1275983": {
       "title": "Sabbath Queen",
       "year": 2024,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-05-03",
       "providers": {
@@ -119911,8 +119917,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-05-03",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1275982": {
       "title": "Hacking Hate",
@@ -121989,7 +121998,7 @@
     "1233655": {
       "title": "Omaha",
       "year": 2025,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-04-27",
       "providers": {
@@ -122005,8 +122014,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-04-27",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "575476": {
       "title": "Luz",
@@ -122053,7 +122065,7 @@
     "1400736": {
       "title": "Ricky",
       "year": 2025,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "providers": {
         "rent": [],
@@ -122068,9 +122080,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-05-06",
-      "_buyonly_preorder": true,
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1400731": {
       "title": "André Is an Idiot",
@@ -128240,7 +128254,7 @@
     "1399462": {
       "title": "Calle Málaga",
       "year": 2025,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-05-12",
       "providers": {
@@ -128256,8 +128270,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-05-12",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "639988": {
       "title": "No Other Choice",
@@ -128734,7 +128751,7 @@
     "1242265": {
       "title": "Fuze",
       "year": 2025,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-05-20",
       "providers": {
@@ -128751,8 +128768,11 @@
       "enriched": true,
       "enrichment_date": "2026-05-20",
       "_transitioned_at": "2026-05-20",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1184941": {
       "title": "Blue Heron",
@@ -129004,7 +129024,7 @@
     "1339713": {
       "title": "Obsession",
       "year": 2025,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-06-02",
       "providers": {},
@@ -129012,10 +129032,11 @@
       "festival": "Toronto/TIFF",
       "has_providers": false,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
-      "_is_preorder": true,
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1339435": {
       "title": "At the Place of Ghosts",
@@ -129567,7 +129588,7 @@
     "1364953": {
       "title": "Mārama",
       "year": 2025,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-05-14",
       "providers": {
@@ -129585,8 +129606,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-05-14",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1274757": {
       "title": "Forastera",
@@ -129602,7 +129626,7 @@
     "1242332": {
       "title": "Normal",
       "year": 2025,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "digital_date": "2026-05-18",
       "providers": {},
@@ -129610,12 +129634,13 @@
       "festival": "Toronto/TIFF",
       "has_providers": false,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
-      "_is_preorder": true,
       "enriched": true,
       "enrichment_date": "2026-05-19",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1235286": {
       "title": "Nomad Shadow",
@@ -131896,7 +131921,7 @@
     "1360812": {
       "title": "An Autumn Summer",
       "year": 2024,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-06",
       "providers": {
         "rent": [],
@@ -131911,9 +131936,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-05-14",
-      "_buyonly_preorder": true,
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1358124": {
       "title": "Hero Camp!",
@@ -175858,17 +175885,18 @@
     "1116201": {
       "title": "Iron Lung",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-01-30",
       "digital_date": "2026-05-31",
       "providers": {},
       "intake_pass": "B",
       "has_providers": false,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
-      "_is_preorder": true,
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1094314": {
       "title": "Mayasabha: The Hall of Illusion",
@@ -193874,7 +193902,7 @@
     "1602783": {
       "title": "Thaai Kizhavi",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-02-27",
       "digital_date": "2026-04-20",
       "providers": {
@@ -193889,8 +193917,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-04-23",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1600162": {
       "title": "A Little Dream of Me",
@@ -194528,19 +194559,20 @@
     "1327819": {
       "title": "Hoppers",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-02-28",
       "digital_date": "2026-06-17",
       "providers": {},
       "intake_pass": "B",
       "has_providers": false,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
-      "_is_preorder": true,
       "enriched": true,
       "enrichment_date": "2026-05-06",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1167802": {
       "title": "This Place",
@@ -197779,7 +197811,7 @@
     "1469458": {
       "title": "Sambhavam Adhyayam Onnu",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-03-06",
       "digital_date": "2026-04-18",
       "providers": {
@@ -197794,8 +197826,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-04-23",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1439881": {
       "title": "Imposters",
@@ -201252,7 +201287,7 @@
     "1227877": {
       "title": "I Love Boosters",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-03-10",
       "providers": {
         "rent": [],
@@ -201268,9 +201303,11 @@
       "enriched": true,
       "enrichment_date": "2026-05-24",
       "_transitioned_at": "2026-05-24",
-      "_buyonly_preorder": true,
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1211598": {
       "title": "Kill Me",
@@ -201438,7 +201475,7 @@
     "1266127": {
       "title": "Ready or Not 2: Here I Come",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-03-10",
       "digital_date": "2026-05-05",
       "providers": {
@@ -201450,12 +201487,13 @@
       "festival": "SXSW",
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "_is_preorder": true,
-      "_preorder_source": "tmdb_type4",
       "enriched": true,
       "enrichment_date": "2026-05-06",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1084187": {
       "title": "Pretty Lethal",
@@ -201597,7 +201635,7 @@
     "1390300": {
       "title": "Over Your Dead Body",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-03-10",
       "digital_date": "2026-04-27",
       "providers": {
@@ -201613,8 +201651,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-04-27",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1328501": {
       "title": "The Peril at Pincer Point",
@@ -203318,7 +203359,7 @@
     "1430077": {
       "title": "HOKUM",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-03-12",
       "providers": {
         "rent": [],
@@ -203333,10 +203374,12 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-05-12",
-      "_buyonly_preorder": true,
       "_added_manually": true,
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "tv_316343": {
       "title": "Une Femme à Kosyam",
@@ -206940,7 +206983,7 @@
     "1325734": {
       "title": "The Drama",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-03-19",
       "digital_date": "2026-05-05",
       "providers": {
@@ -206952,11 +206995,13 @@
       "festival": "SXSW",
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "_is_preorder": true,
       "enriched": true,
       "enrichment_date": "2026-05-06",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "tv_316811": {
       "title": "Braunschlag 1986",
@@ -212958,7 +213003,7 @@
     "1226863": {
       "title": "The Super Mario Galaxy Movie",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-04-01",
       "digital_date": "2026-05-19",
       "providers": {
@@ -212969,14 +213014,14 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "tmdb_type4",
-      "_is_preorder": true,
-      "_preorder_source": "tmdb_type4",
       "enriched": true,
       "enrichment_date": "2026-05-19",
-      "_buyonly_preorder": true,
       "_added_manually": true,
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1046699": {
       "title": "Behind the Palm Trees",
@@ -215547,7 +215592,7 @@
     "1455079": {
       "title": "You, Me & Tuscany",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-04-09",
       "digital_date": "2026-04-09",
       "providers": {
@@ -215563,8 +215608,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-04-11",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1432241": {
       "title": "Cinco Tipos de Medo",
@@ -219398,7 +219446,7 @@
     "1634949": {
       "title": "Lorne",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-04-17",
       "digital_date": "2026-05-04",
       "providers": {
@@ -219413,8 +219461,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-05-04",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1628323": {
       "title": "The Three Urns",
@@ -219717,7 +219768,7 @@
     "1102883": {
       "title": "Mother Mary",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-04-17",
       "digital_date": "2026-05-19",
       "providers": {
@@ -219732,8 +219783,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-05-19",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "952569": {
       "title": "Born in the USSR: 35 Up",
@@ -224127,7 +224181,7 @@
     "898704": {
       "title": "Desert Warrior",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-04-24",
       "digital_date": "2026-04-27",
       "providers": {
@@ -224142,8 +224196,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-04-27",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "697094": {
       "title": "No Return Possible",
@@ -226423,7 +226480,7 @@
     "1127384": {
       "title": "Deep Water",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "first_seen": "2026-04-30",
       "providers": {
         "rent": [],
@@ -226438,9 +226495,11 @@
       "enriched": true,
       "enrichment_date": "2026-05-22",
       "_transitioned_at": "2026-05-21",
-      "_buyonly_preorder": true,
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "896453": {
       "title": "Flashback",
@@ -228636,17 +228695,18 @@
     "931285": {
       "title": "Mortal Kombat II",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "intake_date": "2026-05-06",
       "digital_date": "2026-06-09",
       "providers": {},
       "intake_pass": "B",
       "has_providers": false,
       "_discovery_source": "tmdb_type4",
-      "_type4_pending": true,
-      "_is_preorder": true,
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1688666": {
       "title": "1995 - Hopes and Betrayals",
@@ -234997,7 +235057,7 @@
     "1304313": {
       "title": "Lee Cronin's The Mummy",
       "year": 2026,
-      "status": "removed",
+      "status": "tracking",
       "intake_date": "2026-05-19",
       "digital_date": "2026-05-19",
       "providers": {
@@ -235011,8 +235071,11 @@
       "enrichment_date": "2026-05-20",
       "_discovery_source": "tmdb_type4",
       "_transitioned_at": "2026-05-20",
-      "removed_date": "2026-05-28",
-      "removed_reason": "theatrical_pvod_audit"
+      "_restored_from": {
+        "removed_reason": "theatrical_pvod_audit",
+        "removed_date": "2026-05-28",
+        "restored_date": "2026-11-13"
+      }
     },
     "1697924": {
       "title": "In Pieces: Live at The Other Palace",
