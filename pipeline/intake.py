@@ -11,11 +11,26 @@ Plus miniseries intake (TMDB /discover/tv with type=Miniseries).
 
 import json
 import os
+import re
 import time
 import requests
 from datetime import date, datetime, timedelta
 from utils.datetime_utils import get_today
 from utils.http_client import create_retry_session
+
+
+def _title_has_blocked_keyword(title, keywords):
+    """True if the title contains a blocked keyword as a whole word/phrase.
+
+    Whole-word, not substring: 'ROH' (Ring of Honor) must not block "Prohibition" or
+    "Rohingya", and 'Stardom' must not block a documentary called "…Stardom".
+    """
+    t = (title or '').lower()
+    for kw in keywords:
+        k = (kw or '').lower().strip()
+        if k and re.search(r'(?<!\w)' + re.escape(k) + r'(?!\w)', t):
+            return True
+    return False
 
 
 class MovieIntake:
@@ -606,7 +621,7 @@ class MovieIntake:
 
                     # Skip blocked title keywords (wrestling events, sports broadcasts)
                     blocked_keywords = self.config.get('tracking', {}).get('blocked_title_keywords', [])
-                    if blocked_keywords and any(kw.lower() in title.lower() for kw in blocked_keywords):
+                    if blocked_keywords and _title_has_blocked_keyword(title, blocked_keywords):
                         self.intake_stats.setdefault('blocked_by_filter', 0)
                         self.intake_stats['blocked_by_filter'] += 1
                         if debug:
@@ -1023,7 +1038,7 @@ class MovieIntake:
                     # Skip blocked title keywords (wrestling events, sports broadcasts)
                     title = movie.get('title', 'Unknown')
                     blocked_keywords = self.config.get('tracking', {}).get('blocked_title_keywords', [])
-                    if blocked_keywords and any(kw.lower() in title.lower() for kw in blocked_keywords):
+                    if blocked_keywords and _title_has_blocked_keyword(title, blocked_keywords):
                         self.intake_stats.setdefault('blocked_by_filter', 0)
                         self.intake_stats['blocked_by_filter'] += 1
                         continue

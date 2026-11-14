@@ -19,6 +19,7 @@ import time
 import requests
 from datetime import datetime, timedelta
 
+from pipeline import holds
 from pipeline.provider_names import normalize_watch_links
 
 
@@ -40,7 +41,8 @@ class ProviderDiscoverer:
         self.tmdb_key = ctx.tmdb_key
         self.host = host
         self._jw_client = None  # Lazy-initialized for verification gate
-        self._jw_healthy = None  # JW_BREAKER: run-scoped health (None=unchecked, True/False=canary result)
+        self._jw_healthy = None  # JW_BREAKER: health (None=unchecked, True/False=canary result)
+        self._jw_healthy_at = 0.0  # when _jw_healthy was measured (re-checked after the TTL)
 
     # ------------------------------------------------------------------
     # JustWatch verification gate
@@ -52,14 +54,17 @@ class ProviderDiscoverer:
     # match" answers cannot be trusted. Title+year matching is enough here.
     _JW_CANARY_TITLES = [("Oppenheimer", 2023), ("Barbie", 2023), ("Dune: Part Two", 2024)]
 
+    _JW_HEALTH_TTL_S = 900  # re-run the canary every 15 min, so a mid-run outage is caught
+
     def _check_jw_health(self):
         """Confirm JustWatch is reachable by looking up known-available control titles.
-        Result is cached for the whole run. Returns True if healthy, False if degraded."""
-        if self._jw_healthy is not None:
+        Result is cached for _JW_HEALTH_TTL_S. Returns True if healthy, False if degraded."""
+        if self._jw_healthy is not None and (time.time() - self._jw_healthy_at) < self._JW_HEALTH_TTL_S:
             return self._jw_healthy
         if self._jw_client is None:
             from pipeline.justwatch import JustWatchClient
             self._jw_client = JustWatchClient(logger=self.logger)
+        self._jw_healthy_at = time.time()
         for _title, _year in self._JW_CANARY_TITLES:
             try:
                 if self._jw_client.verify_availability(_title, _year) is not None:
@@ -145,7 +150,11 @@ class ProviderDiscoverer:
             return {'verified': True, '_bypass': 'override'}
         # Pre-orders already on wall — date arrived, let enrichment handle them.
         # Blocking here would leave them stuck as pre-orders forever.
-        if movie.get('_type4_pending') or movie.get('_is_preorder') or movie.get('_buyonly_preorder'):
+        # Not for films with holds: a pre-order marker that survived a failed
+        # graduation used to re-trigger this bypass every run, re-adding and purging
+        # the film forever (66 films looping, Nov 2026). Held films get a real check.
+        if (movie.get('_type4_pending') or movie.get('_is_preorder') or movie.get('_buyonly_preorder')) \
+                and not movie.get('_jw_revert_count'):
             return {'verified': True, '_bypass': 'preorder_graduation'}
         # Virtual screenings (Eventive, Shift72, Sundance) have their own links, not on JW
         _vs_platforms = {'eventive', 'shift72', 'sundance'}
@@ -156,17 +165,12 @@ class ProviderDiscoverer:
                for p in all_providers if isinstance(p, str)):
             return {'verified': True, '_bypass': 'virtual_screening'}
 
-        # Revert ceiling: stop wasting API calls on perpetual failures.
-        # Lowered 10 → 4 (Jun 2026): a film that fails JW 4 days running is almost
-        # never going to verify; the old ceiling of 10 meant ~10 days of churn and
-        # report noise per stuck title before discovery finally gave up.
-        REVERT_CEILING = 4
-        revert_count = movie.get('_jw_revert_count', 0)
-        if revert_count >= REVERT_CEILING:
-            movie['_skip_provider_discovery'] = True
-            self.logger.info(f"Revert ceiling reached for {title} ({revert_count} reverts) — skipping future discovery")
-            print(f"  ⛔ {title} — {revert_count} reverts, skipping permanently")
-            return None
+        # A hold is a WAIT, never a drop (pipeline/holds.py): held films are checked
+        # every run for their first few checks, then weekly, for up to a year. The old
+        # 4-strike permanent skip (_skip_provider_discovery) silently lost 443 films.
+        was_skipped = bool(movie.pop('_skip_provider_discovery', None))
+        if not holds.due_for_check(movie):
+            return None  # waiting for this film's weekly re-check — no strike
 
         # Lazy-init JustWatch client
         if self._jw_client is None:
@@ -178,36 +182,52 @@ class ProviderDiscoverer:
                       'Shahid VIP', 'Viki', 'Futo'])
         amazon_tag = self.enrichment._get_amazon_affiliate_tag() if self.enrichment else None
 
-        try:
-            result = self._jw_client.verify_availability(
+        def _verify(orig_title, director):
+            return self._jw_client.verify_availability(
                 title, year,
                 excluded_services=excl_list,
                 affiliate_tag=amazon_tag,
                 content_type=content_type,
-                original_title=original_title,
+                original_title=orig_title,
+                director=director,
                 tmdb_id=tmdb_id
             )
+
+        try:
+            result = _verify(original_title, movie.get('_director'))
+            # Weak first match (no match, or a different film with our title): retry
+            # once with the original title + director from TMDB metadata. Discovery's
+            # tracking records don't carry them, which made its JustWatch match weaker
+            # than enrichment's. Saved on the record so later checks use them directly.
+            if (result is None and not self._jw_client.last_error) or \
+                    (result is not None and result.get('match_confidence') == 'first_result'):
+                if self._fill_match_metadata(movie_id, movie):
+                    retry = _verify(movie.get('original_title'), movie.get('_director'))
+                    if retry is not None or self._jw_client.last_error:
+                        result = retry
         except Exception as e:
             # Fail-open: if JW is down, let the movie through to enrichment
             self.logger.warning(f"JW verification error for {title}: {e} — allowing through")
             return {'verified': True, '_fail_open': True}
 
+        if result is None and self._jw_client.last_error:
+            # API/network error (incl. throttling) — not an answer about the film.
+            print(f"  ⏸ {title} — JustWatch error ({self._jw_client.last_error}), "
+                  f"leaving in tracking (no strike)")
+            return None
+
         if result is None or not result.get('verified'):
-            # JW_BREAKER: result is None means "no match" — but a blocked/throttled
-            # JustWatch returns the same thing (HTTP 200, empty results). Before we
-            # revert (which inflates the revert count toward the 4-revert permanent-
-            # skip ceiling), confirm JW is actually healthy. If it's down, leave the
-            # movie untouched in tracking — re-checked next run, no count poisoning.
+            # JW_BREAKER: a blocked JustWatch returns HTTP 200 with empty results, which
+            # looks like "no match". Confirm JW is healthy before counting this check.
             if result is None and not self._check_jw_health():
-                print(f"  ⏸ {title} — JW unreachable, leaving in tracking (no revert recorded)")
+                print(f"  ⏸ {title} — JW unreachable, leaving in tracking (no strike)")
                 return None
-            # Increment revert count and log — always print so blocked titles are visible
-            revert_count += 1
-            movie['_jw_revert_count'] = revert_count
-            reason = 'justwatch_no_match' if result is None else 'justwatch_no_valid_offers'
-            movie['_jw_revert_reason'] = reason
-            movie.setdefault('_jw_reverted_at', datetime.now().strftime('%Y-%m-%d'))
-            print(f"  🚫 {title} — JW verification failed ({reason}), staying in tracking (attempt #{revert_count})")
+            # A title mismatch ('first_result') means JustWatch didn't find THIS film.
+            no_match = result is None or result.get('match_confidence') == 'first_result'
+            reason = 'justwatch_no_match' if no_match else 'justwatch_no_valid_offers'
+            self._fill_match_metadata(movie_id, movie)  # popularity for the "Held back" report
+            count = holds.record_hold(movie, reason)
+            print(f"  🚫 {title} — not on JustWatch yet ({reason}), held in tracking (check #{count})")
             return None
 
         # Cache watch_links for enrichment to reuse (avoids redundant JW call)
@@ -219,12 +239,54 @@ class ProviderDiscoverer:
                 'source': 'discovery_pre_verification'
             }
 
-        # Clear revert history on success
-        movie.pop('_jw_revert_count', None)
-        movie.pop('_jw_revert_reason', None)
-        movie.pop('_jw_reverted_at', None)
+        # Verified. A film held because JustWatch had no offer reaches the wall dated
+        # the day JustWatch confirmed it (not TMDB's earlier, unconfirmed date) — when
+        # it was being checked. A long-unchecked backlog film keeps its date, flagged.
+        held_since = movie.get('_jw_reverted_at')
+        recent = holds.recently_checked(movie, was_skipped)
+        held_reason = holds.clear_hold(movie)
+        if held_reason in holds.NO_OFFER_REASONS:
+            movie['_held_since'] = held_since
+            if holds.date_after_hold(movie, held_reason, recently_checked=recent):
+                print(f"  📅 {title} — confirmed after a hold since {held_since}; dated {movie['digital_date']}")
+            elif movie.get('_date_needs_review'):
+                print(f"  📅 {title} — confirmed after an unchecked hold since {held_since}; "
+                      f"kept date {movie.get('digital_date')} (flagged for review)")
 
         return result
+
+    def _fill_match_metadata(self, movie_id, movie):
+        """Store original title, director and TMDB popularity on a tracking record.
+
+        TMDB metadata only — used to match JustWatch more reliably and to rank the
+        morning report's "Held back" list. Never used to decide availability.
+        Fetched once per film. Returns True if a fetch happened this call.
+        """
+        if movie.get('_match_meta_fetched'):
+            return False
+        try:
+            if str(movie_id).startswith('tv_'):
+                details = self.host.get_tv_details(str(movie_id).replace('tv_', ''))
+                orig = (details or {}).get('original_name')
+                directors = [c.get('name') for c in (details or {}).get('created_by') or []]
+            else:
+                details = self.host.get_movie_details(movie_id)
+                orig = (details or {}).get('original_title')
+                directors = [c.get('name') for c in ((details or {}).get('credits') or {}).get('crew') or []
+                             if c.get('job') == 'Director']
+        except Exception as e:
+            self.logger.warning(f"Match metadata fetch failed for {movie.get('title', movie_id)}: {e}")
+            return False
+        if not details:
+            return False
+        movie['_match_meta_fetched'] = datetime.now().strftime('%Y-%m-%d')
+        if orig and not movie.get('original_title'):
+            movie['original_title'] = orig
+        if directors and directors[0] and not movie.get('_director'):
+            movie['_director'] = directors[0]
+        movie['_tmdb_popularity'] = details.get('popularity')
+        movie['_tmdb_votes'] = details.get('vote_count')
+        return True
 
     # ------------------------------------------------------------------
     # Main discovery entry point
@@ -562,7 +624,7 @@ class ProviderDiscoverer:
                                 pass
 
                 # SECONDARY: Provider availability check (for ~44% of movies without Type 4)
-                if not type4_found and movie['status'] == 'tracking' and not movie.get('_skip_provider_discovery'):
+                if not type4_found and movie['status'] == 'tracking':
                     # Provider payload from the parallel prefetch; live fallback when
                     # absent (movie not prefetched, or a malformed Type 4 date left
                     # the loop here without a prefetched provider payload). The
@@ -667,20 +729,33 @@ class ProviderDiscoverer:
                             # Preserve any pre-existing digital_date so a HOLD below can restore it
                             # (the block further down sets digital_date=today in anticipation of transition).
                             _orig_digital_date = movie.get('digital_date')
-                            # Buy-only pre-order guard: only transition if rent/streaming appeared
+                            # Buy-only pre-order guard. JustWatch lists a pre-order and a
+                            # released buy-only film the same way (a BUY offer), so "still
+                            # buy-only" doesn't mean "still a pre-order". Re-check weekly:
+                            # falling through re-runs the store-page pre-order check in
+                            # enrichment, which graduates it unless the page says pre-order.
                             if movie.get('_buyonly_preorder'):
                                 if not rent_names and not stream_names:
-                                    continue  # Still buy-only — keep as pre-order on wall
-                                # Rent/streaming found — clear pre-order, fall through to transition
-                                movie.pop('_buyonly_preorder', None)
-                                movie.pop('_is_preorder', None)
-                                print(f"  ✓ {movie['title']} — buy-only pre-order graduated (rent/streaming found)")
+                                    _bo_last = movie.get('_buyonly_checked')
+                                    _bo_since = holds.days_between(_bo_last, holds.today_str()) if _bo_last else None
+                                    if _bo_since is not None and _bo_since < holds.HOLD_RECHECK_DAYS:
+                                        continue  # re-checked recently — keep as pre-order on wall
+                                    movie['_buyonly_checked'] = holds.today_str()
+                                else:
+                                    # Rent/streaming found — clear pre-order, fall through to transition
+                                    movie.pop('_buyonly_preorder', None)
+                                    movie.pop('_is_preorder', None)
+                                    print(f"  ✓ {movie['title']} — buy-only pre-order graduated (rent/streaming found)")
 
                             if not movie.get('digital_date'):
                                 # For VS bypass, use screening start_time as digital_date
                                 _resolved_date = None
-                                if movie.get('_virtual_screening') and _mid in getattr(self.enrichment, 'watch_links_cache', {}):
-                                    _vs_cache = self.enrichment.watch_links_cache[_mid]
+                                # str(movie_id), not _mid: _mid is only set in the VS-bypass
+                                # branch above, so here it was stale (another film's id) or
+                                # unbound — a NameError that aborted the rest of discovery.
+                                _vs_mid = str(movie_id)
+                                if movie.get('_virtual_screening') and _vs_mid in getattr(self.enrichment, 'watch_links_cache', {}):
+                                    _vs_cache = self.enrichment.watch_links_cache[_vs_mid]
                                     _vs_start = _vs_cache.get('start_time', '')
                                     if _vs_start:
                                         try:
@@ -931,8 +1006,14 @@ class ProviderDiscoverer:
         if not url:
             return None
 
-        preorder_signals = ['preorder', 'available for pre-order', 'available to pre-order']
-        available_signals = ['buy now', 'rent now', 'watch now']
+        # Matched against VISIBLE text (inner_text), never script/JSON text. Checked against
+        # live Amazon pages (Nov 2026): a released film reads "Rent HD $9.99  Buy HD $19.99";
+        # a pre-order reads "Pre-order UHD $24.99 · Pre-order Price Guarantee". The old
+        # 'buy now' / 'rent now' words never appear on Amazon, so no buy-only film was ever
+        # confirmed released (0 of 147), and 'preorder' only matched hidden script text.
+        preorder_signals = ['pre-order', 'preorder', 'available for pre-order', 'available to pre-order']
+        available_signals = ['rent hd', 'buy hd', 'rent sd', 'buy sd', 'rent uhd', 'buy uhd',
+                             'rent 4k', 'buy 4k', 'buy now', 'rent now', 'watch now']
 
         try:
             from playwright_manager import get_playwright_manager
@@ -969,10 +1050,11 @@ class ProviderDiscoverer:
                 elif is_amazon:
                     page.wait_for_timeout(random.randint(1500, 2500))
 
-                body_text = (page.text_content('body') or '').lower()
+                raw_text = (page.text_content('body') or '').lower()
+                body_text = (page.inner_text('body') or '').lower()  # visible text only
 
                 # Amazon CAPTCHA detection — default to pre-order if blocked
-                if is_amazon and ('captcha' in body_text or 'not a robot' in body_text or 'automated access' in body_text):
+                if is_amazon and ('captcha' in raw_text or 'not a robot' in raw_text or 'automated access' in raw_text):
                     msg = f"Amazon CAPTCHA wall hit for '{title}' — store page unreadable, holding as pre-order this run"
                     self.logger.warning(msg)
                     print(f"  ⚠️ {msg}")
@@ -1007,13 +1089,15 @@ class ProviderDiscoverer:
         """
         Determine if a buy-only JustWatch result is a pre-order or genuine release.
 
-        Decision logic:
+        Decision logic — a pre-order needs POSITIVE evidence (same rule as
+        _is_held_rent_preorder). Anything else is a released buy-only film:
         1. Manual override in config.preorder_overrides → immediate verdict
         2. Type 4 future date → pre-order (with that date)
         3. Page check (Playwright visits store page):
-           - 'available' → genuine release (only way to confirm genuine)
-           - 'pre-order' or inconclusive → pre-order (safer default)
-        Type 4 past date alone does NOT confirm genuine — only page check does.
+           - 'pre-order' (visible "Pre-order" label, or a CAPTCHA wall) → pre-order
+           - 'available' or inconclusive → genuine release
+        The old default (inconclusive → pre-order) plus page words Amazon never uses
+        meant no buy-only film was ever confirmed released (0 of 147, Nov 2026).
 
         Returns:
             dict: {
@@ -1025,7 +1109,7 @@ class ProviderDiscoverer:
             }
         """
         result = {
-            'is_preorder': True,  # default: safer to assume pre-order
+            'is_preorder': False,  # pre-order only on positive evidence
             'override': None,
             'preorder_date': None,
             'type4_date': None,
@@ -1062,19 +1146,17 @@ class ProviderDiscoverer:
             except ValueError:
                 pass
 
-        # Step 2: Page check — the ONLY way to confirm genuine release
+        # Step 2: Page check — a pre-order needs a positive "Pre-order" reading
         page_verdict = self._check_preorder_page(jw_result, title)
-        if page_verdict == 'available':
-            result['is_preorder'] = False
-            result['verified_genuine'] = True
-            print(f"  ✓ {title} — buy-only, page confirms available")
-        elif page_verdict == 'pre-order':
+        if page_verdict == 'pre-order':
             result['is_preorder'] = True
             print(f"  🏷️  {title} — buy-only, page confirms pre-order")
+        elif page_verdict == 'available':
+            result['verified_genuine'] = True
+            print(f"  ✓ {title} — buy-only, page confirms available")
         else:
-            # Inconclusive — default to pre-order (safer)
-            result['is_preorder'] = True
-            print(f"  🏷️  {title} — buy-only, page check inconclusive → treating as pre-order")
+            # Inconclusive — JustWatch lists a buy offer and nothing says pre-order
+            print(f"  ✓ {title} — buy-only, page check inconclusive → treating as released")
 
         return result
 
@@ -1595,8 +1677,16 @@ class ProviderDiscoverer:
                             unsaved_count += 1
                             print(f"  + {title} — new services added")
 
-                    # Pre-order graduation
-                    if is_preorder and (result.get('has_rent') or result.get('has_streaming')):
+                    # Pre-order graduation: rent/streaming appeared, or a buy-only
+                    # "pre-order" whose date has passed (or never had one) and whose store
+                    # page no longer reads as a pre-order. JustWatch lists pre-order buys
+                    # and released buys the same way, so buy-only alone proves nothing.
+                    _graduate = bool(is_preorder and (result.get('has_rent') or result.get('has_streaming')))
+                    if (not _graduate and is_preorder and movie.get('_buyonly_preorder')
+                            and result.get('buy_only')
+                            and (movie.get('digital_date') or '') <= today_str):
+                        _graduate = not self._detect_buyonly_preorder(result, movie_id, title)['is_preorder']
+                    if _graduate:
                         movie.pop('_is_preorder', None)
                         movie.pop('_buyonly_preorder', None)
                         movie.pop('pre_order_links', None)
@@ -1651,7 +1741,8 @@ class ProviderDiscoverer:
                                     tracking_changed = True
                                 preorders_flagged += 1
                                 unsaved_count += 1
-                            elif _gf_detect['verified_genuine']:
+                            else:
+                                # Released (no positive pre-order evidence) — stop re-checking
                                 movie['_buyonly_verified'] = True
                                 unsaved_count += 1
 

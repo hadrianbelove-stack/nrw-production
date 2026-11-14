@@ -626,6 +626,30 @@ class DisplayGenerator:
                     screening_link = vod.get('link', '')
                     screening_service = vod.get('service', '')
 
+            # A festival film that has since landed on a regular platform (Amazon, Apple,
+            # Netflix...) is a normal digital release: main wall, dated to the day its
+            # regular VOD first appeared (owner's call, Nov 2026). Before this, any
+            # festival link kept it in FESTS only, or hidden once the screening expired
+            # (The History of Concrete, Steal This Story, Please!, His Monster...).
+            if is_virtual_screening:
+                _vs_vod = vod if isinstance(vod, list) else ([vod] if isinstance(vod, dict) else [])
+                _vs_stream = watch_links.get('streaming') or []
+                if isinstance(_vs_stream, dict):
+                    _vs_stream = [_vs_stream]
+                _regular = [v for v in list(_vs_vod) + list(_vs_stream)
+                            if isinstance(v, dict) and v.get('link') and not _check_virtual_screening_vod(v)]
+                if _regular:
+                    is_virtual_screening = False
+                    _today_vs = datetime.now().strftime('%Y-%m-%d')
+                    movie.setdefault('_vod_since', _today_vs)
+                    movie['digital_date'] = movie['_vod_since']
+                    if movie['_vod_since'] <= _today_vs:
+                        movie.pop('_is_preorder', None)
+                    # Un-hide only an expired-screening hide (never a Coming Soon cap)
+                    if (movie.get('hidden') and not movie.get('_coming_soon_capped')
+                            and (movie.get('virtual_screening_info') or {}).get('status') == 'expired'):
+                        movie.pop('hidden', None)
+
             categories['is_virtual_screening'] = is_virtual_screening
 
             # Populate virtual_screening_info metadata for expiration tracking

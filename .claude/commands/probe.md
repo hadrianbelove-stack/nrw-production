@@ -75,7 +75,8 @@ for movie_id, tracking_data in matches:
                  '_enrichment_gaps','_skip_provider_discovery','_type4_false_positive',
                  '_providers_false_positive','_reverted_from_available','_false_positive_source',
                  '_jw_revert_count','_jw_revert_reason','_jw_reverted_at','_type4_pending',
-                 '_is_preorder','_buyonly_preorder','_added_manually','manually_corrected']
+                 '_is_preorder','_buyonly_preorder','_added_manually','manually_corrected',
+                 '_jw_last_checked','_held_since','_date_needs_review','_buyonly_checked']
     for k in flag_keys:
         v = tracking_data.get(k) or wall.get(k)
         if v is not None and v is not False and v != [] and v != '':
@@ -196,7 +197,7 @@ Take the output above and write a clean markdown report with these sections. Use
 
 **Header**: Movie title, year, TMDB ID, NRW status (tracking/available/on wall)
 
-**Pipeline Flags** (only if any exist): Explain what each flag means in plain terms. Flag `_skip_provider_discovery=True` means "provider discovery is permanently blocked — the pipeline will never check this again." `_jw_revert_count=10` means "JustWatch rejected this movie 10 times." Be specific about consequences.
+**Pipeline Flags** (only if any exist): Explain what each flag means in plain terms. Flag `_skip_provider_discovery=True` is a legacy marker from the retired 4-strike permanent skip (Nov 2026) — it's cleared at the film's next check; held films are now re-checked weekly (`_jw_last_checked`, see pipeline/holds.py). `_date_needs_review=True` means "JustWatch confirmed it after a long unchecked hold — its date wasn't confirmed, check it." `_jw_revert_count=10` means "JustWatch rejected this movie 10 times." Be specific about consequences.
 
 **What's on the Wall** (only if status=available): RT score, IMDb rating, Wikipedia link, trailer status, all watch links with prices.
 
