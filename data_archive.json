@@ -1,6 +1,6 @@
 {
-  "archived_at": "2026-11-15T15:59:28.385622",
-  "count": 2140,
+  "archived_at": "2026-11-16T18:25:00.175234",
+  "count": 2145,
   "movies": [
     {
       "id": "896096",
@@ -208608,6 +208608,555 @@
         "manual_override": null
       },
       "featured": false
+    },
+    {
+      "id": "tv_331999",
+      "title": "Disney Sidekick Adventures",
+      "digital_date": "2026-08-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "",
+      "genres": [],
+      "runtime": null,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Disney Plus"
+        ]
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=fmhI0uBoNeI",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/tv-show/disney-sidekick-adventures",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/tv_331999.mp4"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Disney+",
+            "link": "https://www.disneyplus.com/browse/entity-6037d617-2654-40c0-8d8c-3ac8384ca4cd"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-08-27T18:47:40.358598",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "content_type": "limited_series",
+      "episode_count": 2,
+      "networks": [],
+      "poster": null,
+      "studio": "Unknown",
+      "budget": 0,
+      "country": "US",
+      "original_language": "en",
+      "original_title": "Disney Sidekick Adventures",
+      "display_title": "Disney Sidekick Adventures",
+      "crew": {
+        "director": "Unknown",
+        "cast": []
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-08-27",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [],
+      "_digital_date_source": "first_air_date",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Disney+' not in TMDB providers for this title (TMDB has: ['disney plus'])"
+      ],
+      "is_slop": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb,no_rt_link,major_streamer:disney+)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": true,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_rt_retry_count": 3,
+      "_rt_last_retry": "2026-08-28T10:29:59.262709"
+    },
+    {
+      "id": "1748883",
+      "title": "Cradle of Coaches",
+      "digital_date": "2026-08-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "This documentary delves into the history of remarkable leaders, their groundbreaking achievements, and the profound connections that have shaped football’s greatest coaching legacy.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 120,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=ia3BEfL8JnY",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/cradle-of-coaches",
+        "imdb": "https://www.imdb.com/title/tt44091318/",
+        "letterboxd": "https://letterboxd.com/film/cradle-of-coaches",
+        "director_wiki": "https://en.wikipedia.org/wiki/Scott_Thompson_(actor)",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1748883.mp4"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Peacock",
+            "link": "https://www.peacocktv.com/watch/asset/movies/cradle-of-coaches/41ecf191-c802-335c-a569-7012090a6e82"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-08-18T08:29:44.759353",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/uSYZTGXMt9pSgIPjXCJjJhy2OD1.jpg",
+      "studio": "RESLV",
+      "budget": 0,
+      "country": "United States of America",
+      "original_language": "en",
+      "original_title": "Cradle of Coaches",
+      "display_title": "Cradle of Coaches",
+      "crew": {
+        "director": "Scott Thompson",
+        "cast": []
+      },
+      "_discovery_source": "tmdb_type4",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-08-18",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [],
+      "_imdb_votes": null,
+      "_digital_date_source": "tmdb_type4",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_rt_retry_count": 3,
+      "_rt_last_retry": "2026-08-19T02:31:10.247301",
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Obscure - skip",
+        "festival": "none found — bypassed festival circuit entirely, straight-to-streaming on Peacock",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
+    },
+    {
+      "id": "1740332",
+      "title": "Chasing Home",
+      "digital_date": "2026-08-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "A 30-year-old British-Mexican comic creator visits her parents to secure a deposit for her first flat, only to find help won’t come because her mother, 51, is pregnant.",
+      "genres": [
+        "Comedy"
+      ],
+      "runtime": 75,
+      "year": 2026,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Eventive"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=5xmJZTZs140",
+        "rt": "https://www.rottentomatoes.com/m/chasing_home",
+        "justwatch": "https://www.justwatch.com/us/movie/chasing-home",
+        "imdb": "https://www.imdb.com/title/tt36121977/",
+        "letterboxd": "https://letterboxd.com/film/chasing-home",
+        "director_wiki": "https://en.wikipedia.org/wiki/Christopher_Mills_(director)",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1740332.mp4"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Eventive",
+            "link": "https://watch.eventive.org/chasinghomefilm/play/6a786a836cb3ade9e5e10c21",
+            "rent_price": "$13.46",
+            "price": "$13.52"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-08-17T08:32:26.232904",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/z4dXfni9U5pq29pFZOcKztgR7U7.jpg",
+      "studio": "Bolt Narrative",
+      "budget": 0,
+      "country": "US",
+      "original_language": "en",
+      "original_title": "Chasing Home",
+      "display_title": "Chasing Home",
+      "crew": {
+        "director": "Christopher Mills",
+        "cast": [
+          "Ana Torre",
+          "Silvana Montoya",
+          "Christopher Lyne",
+          "Grecia De la Paz",
+          "Díana Bermudez"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-08-17",
+      "imdb_rating": "9.1",
+      "letterboxd_score": null,
+      "keywords": [
+        "mexican",
+        "british comedy"
+      ],
+      "_imdb_votes": 12,
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "_slop_reason": "score:3(no_wiki,no_rt,good_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "wikipedia",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "virtual_screening_info": {
+        "platform": "Eventive",
+        "screening_slug": "chasinghomefilm",
+        "screening_name": "Chasing Home: A British-Mexican Comedy",
+        "available_start": null,
+        "available_end": null,
+        "discovered": "2026-08-17",
+        "last_checked": "2026-11-16",
+        "status": "active"
+      },
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": true,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_watch_links_verified": "2026-09-16T13:36:14.401695",
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Obscure - skip",
+        "festival": "none found",
+        "awards": "none found",
+        "yearend_lists": "none found"
+      }
+    },
+    {
+      "id": "1365271",
+      "title": "No One Died: The Wing Bowl Story",
+      "digital_date": "2026-08-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "Chronicles the origins of the Wing Bowl and its evolution into a stunt.",
+      "genres": [
+        "Documentary"
+      ],
+      "runtime": 90,
+      "year": 2024,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=_Taop7_GAhU",
+        "rt": "https://www.rottentomatoes.com/m/no_one_died_the_wing_bowl_story",
+        "justwatch": "https://www.justwatch.com/us/movie/no-one-died-the-wing-bowl-story",
+        "letterboxd": "https://letterboxd.com/film/no-one-died-the-wing-bowl-story",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1365271.mp4"
+      },
+      "watch_links": {
+        "vod": [
+          {
+            "service": "Amazon",
+            "link": "https://watch.amazon.com/detail?gti=amzn1.dv.gti.a1c8e8eb-6825-4eb3-b1fd-d2998ba75234&tag=nrw04-20",
+            "rent_price": "$5.99",
+            "buy_price": "$12.99",
+            "price": "$5.99"
+          },
+          {
+            "service": "Apple TV",
+            "link": "https://tv.apple.com/us/movie/no-one-died-the-wing-bowl-story/umc.cmc.6y7a8b646xsvmy9qq6tvmup3d?at=1000l3V2&ct=app_tv&itscg=30200&itsct=justwatch_tv&playableId=tvs.sbd.9001%3A6793384819",
+            "rent_price": "$5.99",
+            "buy_price": "$10.99",
+            "price": "$5.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-08-17T08:32:24.130862",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/kWDWMajRf56nx2y8nljLpXE8Eyl.jpg",
+      "studio": "Unknown",
+      "budget": 0,
+      "country": "US",
+      "original_language": "en",
+      "original_title": "No One Died: The Wing Bowl Story",
+      "display_title": "No One Died: The Wing Bowl Story",
+      "crew": {
+        "director": "Pat Taggart",
+        "cast": [
+          "Bill Simmons",
+          "Joey Chestnut",
+          "Angelo Cataldi",
+          "Molly Schuyler"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-08-17",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [],
+      "_digital_date_source": "detection",
+      "_needs_review": false,
+      "is_slop": true,
+      "_slop_reason": "score:6(no_wiki,no_rt,no_imdb)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": true,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_watch_links_verified": "2026-08-23T08:37:48.177048",
+      "_tmdb_popularity": null,
+      "buzz_score": 10,
+      "notability": {
+        "buzz_score": 10,
+        "quadrant": "Hidden gem",
+        "festival": "Philadelphia Film Festival 2024 (world premiere, two screenings); Florida Film Festival 2025 (Documentary Competition); Calgary Underground Film Festival 2025 (international premiere); FirstGlance Film Festival Philadelphia 2025 (28th Annual)",
+        "awards": "Calgary Underground Film Festival 2025: Jury Award for Best Documentary Feature; Audience Award for Best Documentary Feature",
+        "yearend_lists": "none found"
+      }
+    },
+    {
+      "id": "1493296",
+      "title": "You Know What You Are",
+      "digital_date": "2026-08-17",
+      "bootstrap_date": false,
+      "manually_corrected": false,
+      "synopsis": "In a quiet town, young vampire Faith seeks solitude to battle her violent urges. When she forms unexpected bonds with a group of misfits, she’s forced to confront her true nature in this fresh take on the vampire myth.",
+      "genres": [
+        "Drama",
+        "Horror"
+      ],
+      "runtime": 74,
+      "year": 2025,
+      "rt_score": null,
+      "providers": {
+        "rent": [
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
+      "links": {
+        "wikipedia": null,
+        "trailer": "https://www.youtube.com/watch?v=P7PqRDJiWkU",
+        "rt": null,
+        "justwatch": "https://www.justwatch.com/us/movie/you-know-what-you-are",
+        "letterboxd": "https://letterboxd.com/film/you-know-what-you-are",
+        "trailer_hosted": "https://f004.backblazeb2.com/file/NRW-TRAILERS/1493296.mp4"
+      },
+      "watch_links": {
+        "streaming": [
+          {
+            "service": "Fawesome",
+            "link": "https://fawesome.tv/movies/10829025/you-know-what-you-are?utm_source=justwatch&utm_medium=feed"
+          }
+        ],
+        "vod": [
+          {
+            "service": "Fandango",
+            "link": "https://athome.fandango.com/content/browse/details/You-Know-What-You-Are/5083911",
+            "rent_price": "$3.99",
+            "buy_price": "$9.99",
+            "price": "$3.99"
+          }
+        ]
+      },
+      "pre_order_links": [],
+      "_enrichment_status": "completed",
+      "_discovered_at": "2026-08-17T08:32:20.896023",
+      "_tmdb_fetch_failed": false,
+      "_minimal_entry": false,
+      "poster": "https://image.tmdb.org/t/p/w500/6iHi7EWaiYsh7TTDdgzlJlkTdfT.jpg",
+      "studio": "Unknown",
+      "budget": 0,
+      "country": "US",
+      "original_language": "en",
+      "original_title": "You Know What You Are",
+      "display_title": "You Know What You Are",
+      "crew": {
+        "director": "Rose Trimboli",
+        "cast": [
+          "Eloise Lola Gordon",
+          "Jenna Brando",
+          "Mav Bier",
+          "Jeremy Gill",
+          "Paolo Kossi"
+        ]
+      },
+      "_discovery_source": "provider_availability_check",
+      "_enrichment_attempts": 1,
+      "_last_enrichment_attempt": "2026-08-17",
+      "imdb_rating": null,
+      "letterboxd_score": null,
+      "keywords": [],
+      "_digital_date_source": "detection",
+      "_needs_review": true,
+      "_quality_warnings": [
+        "Service 'Fawesome' not in TMDB providers for this title (TMDB has: ['fandango at home'])"
+      ],
+      "is_slop": true,
+      "_slop_reason": "score:7(no_wiki,no_rt,no_imdb,no_rt_link)",
+      "_slop_confidence": "weak",
+      "status": "available",
+      "_enrichment_gaps": [
+        "rt_score",
+        "trailer",
+        "wikipedia",
+        "imdb_rating",
+        "metacritic_score",
+        "letterboxd_score"
+      ],
+      "reissue_label": null,
+      "_reissue": false,
+      "filters": {
+        "is_indie": false,
+        "is_foreign": false,
+        "is_staff_pick": false,
+        "is_restoration": false,
+        "is_virtual_screening": false,
+        "is_series": false,
+        "is_documentary": false,
+        "auto_categorized": true,
+        "manual_override": null
+      },
+      "featured": false,
+      "_rt_retry_count": 3,
+      "_rt_last_retry": "2026-08-18T02:02:42.876325",
+      "_tmdb_popularity": null,
+      "buzz_score": 5,
+      "notability": {
+        "buzz_score": 5,
+        "quadrant": "Hidden gem",
+        "festival": "Portland Horror Film Festival 2025 (Pacific Northwest premiere); Philadelphia Unnamed Film Festival X / PUFF 2025 (East Coast premiere); Toronto International Women's Film Festival",
+        "awards": "Best Horror, Toronto International Women's Film Festival",
+        "yearend_lists": "none found"
+      }
     }
   ]
 }
