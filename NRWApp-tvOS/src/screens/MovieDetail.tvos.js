@@ -38,7 +38,7 @@ import {
 import { fetchMovies } from '../services/api';
 import { trackWatchButtonTap } from '../services/analytics.tvos';
 import { getSharedMovieList, takePendingTrailerIndex } from './sharedMovieList';
-import { getRatingKey } from '../services/plexClient.tvos';
+import { getRatingKey, onLibraryMapChange } from '../services/plexClient.tvos';
 import { renderMarkdownSpans } from '../utils/markdown';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -615,12 +615,15 @@ const MovieDetailTvOS = () => {
 
   // Personal Plex (owner-only): does THIS film exist in the unlocked library?
   // getRatingKey resolves from the in-memory map loaded at app start; null on
-  // un-unlocked devices, so the NRW button never appears for testers.
+  // un-unlocked devices, so the NRW button never appears for testers. Re-check
+  // when the start-up fetch lands, in case this screen opened before it did.
   const [nrwRatingKey, setNrwRatingKey] = useState(null);
   useEffect(() => {
     let active = true;
-    getRatingKey(movie?.id).then((rk) => { if (active) setNrwRatingKey(rk); });
-    return () => { active = false; };
+    const check = () => getRatingKey(movie?.id).then((rk) => { if (active) setNrwRatingKey(rk); });
+    check();
+    const unsubscribe = onLibraryMapChange(check);
+    return () => { active = false; unsubscribe(); };
   }, [movie]);
 
   // Trailer button ref → node handle for nextFocusUp on watch buttons

@@ -19,8 +19,19 @@ const LIBMAP_KEY = 'nrw_plex_libmap';
 
 let _memMap = null; // { [tmdbId]: ratingKey }
 let _lastDiag = '';  // human-readable result of the last library fetch
+const _listeners = new Set();
 
 export function getLastDiag() { return _lastDiag; }
+
+/**
+ * Call fn each time a fresh library map lands. The start-up fetch can take
+ * ~20s on a large library, so a screen that rendered before it finished
+ * re-checks here instead of missing a film it owns. Returns an unsubscribe.
+ */
+export function onLibraryMapChange(fn) {
+  _listeners.add(fn);
+  return () => { _listeners.delete(fn); };
+}
 
 function encodeQuery(obj) {
   return Object.keys(obj)
@@ -121,6 +132,9 @@ export async function refreshLibraryMap() {
     _lastDiag = keys.length + ' movie libraries, ' + itemCount + ' items, ' +
       Object.keys(map).length + ' with tmdb ids';
     console.log('[Plex] library map: ' + _lastDiag);
+    _listeners.forEach((fn) => {
+      try { fn(); } catch (le) { console.log('[Plex] library listener failed:', le && le.message); }
+    });
     return map;
   } catch (e) {
     _lastDiag = (e && e.message ? e.message : 'network error: ' + e);
