@@ -67,6 +67,20 @@ def inject_notability_into(movies_list):
     return injected
 
 
+FESTIVAL_SERVICES = ('eventive',)
+FESTIVAL_URL_PATTERNS = ('eventive.org', 'festivalplayer.sundance.org', 'shift72.com')
+
+
+def is_festival_link(entry):
+    """A watch-link entry that is a festival screening (Eventive, Sundance, Shift72), not a
+    store or streaming service. Shared by the display pass and the screening expiry check."""
+    if not isinstance(entry, dict):
+        return False
+    svc = (entry.get('service') or '').lower()
+    link = (entry.get('link') or entry.get('url') or '').lower()
+    return svc in FESTIVAL_SERVICES or any(p in link for p in FESTIVAL_URL_PATTERNS)
+
+
 class DisplayGenerator:
     """Prepares movies for final display output in data.json.
 
@@ -540,19 +554,21 @@ class DisplayGenerator:
         restoration_count = 0
         virtual_screening_count = 0
         documentary_count = 0
-        screening_services = ['eventive']
-        screening_url_patterns = ['eventive.org', 'festivalplayer.sundance.org', 'shift72.com']
 
         def _check_virtual_screening_vod(entry):
             """Check if a single vod entry is from a virtual screening platform."""
-            svc = entry.get('service', '').lower()
-            link = entry.get('link', '') or ''
-            if svc in screening_services:
-                return True
-            for pattern in screening_url_patterns:
-                if pattern in link.lower():
-                    return True
-            return False
+            return is_festival_link(entry)
+
+        def _entries(v):
+            return v if isinstance(v, list) else ([v] if isinstance(v, dict) else [])
+
+        def _has_real_links(m):
+            """A way to watch it that is NOT a festival screening: a store or a streaming
+            service. Then it is a normal release, whatever festival link it also has."""
+            wl = m.get('watch_links') or {}
+            return any(isinstance(e, dict) and (e.get('link') or e.get('url'))
+                       and not _check_virtual_screening_vod(e)
+                       for k in ('vod', 'streaming') for e in _entries(wl.get(k)))
 
         for movie in display_movies:
             movie_id = str(movie.get('id'))
@@ -625,6 +641,33 @@ class DisplayGenerator:
                     is_virtual_screening = True
                     screening_link = vod.get('link', '')
                     screening_service = vod.get('service', '')
+
+            if is_virtual_screening and _has_real_links(movie):
+                # Real store/streaming links: a normal release on the main wall. The festival
+                # link is a temporary extra -- shown while its screening runs, dropped once it
+                # ends -- and never decides where the film lives (Nov 2026: The History of
+                # Concrete sat in Fests, rentable on 4 stores; others were hidden when their
+                # screening ended although Amazon had them).
+                is_virtual_screening = False
+                _vsi = movie.get('virtual_screening_info') or {}
+                _end = _vsi.get('available_end') or ''
+                _today_vs = datetime.now().strftime('%Y-%m-%d')
+                if _vsi.get('status') == 'expired' or (_end and _end < _today_vs):
+                    _wl = movie.get('watch_links') or {}
+                    for _k in ('vod', 'streaming'):
+                        if isinstance(_wl.get(_k), list):
+                            _wl[_k] = [e for e in _wl[_k] if not (isinstance(e, dict) and _check_virtual_screening_vod(e))]
+                    if _vsi:
+                        _vsi['status'] = 'expired'
+                # Undo what the festival handling did to it: hidden when its screening ended
+                # (not an owner revert, not a film waiting for a JustWatch check, not the
+                # Coming Soon cap), or flagged a pre-order dated its screening start.
+                if (movie.get('hidden') and _vsi and movie.get('_enrichment_status') != 'reverted'
+                        and not movie.get('_jw_unconfirmed') and not movie.get('_coming_soon_capped')):
+                    movie.pop('hidden', None)
+                if movie.get('_is_preorder') and _vsi.get('available_start') and \
+                        movie.get('digital_date') == _vsi.get('available_start'):
+                    movie.pop('_is_preorder', None)
 
             categories['is_virtual_screening'] = is_virtual_screening
 

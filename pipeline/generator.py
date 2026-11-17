@@ -1836,15 +1836,27 @@ class DataGenerator:
                 if svc == 'eventive' or 'eventive.org' in link or 'festivalplayer' in link or 'shift72.com' in link:
                     screening_link = link
 
+            def _real_link(e):
+                from pipeline.display import is_festival_link
+                return (isinstance(e, dict) and bool(e.get('link') or e.get('url'))
+                        and not is_festival_link(e))
+
             def _expire_movie(reason):
-                """Mark a screening as expired, hide it, return to tracking."""
+                """Mark a screening as expired, hide it, return to tracking -- unless the film
+                also has a real store/streaming link: then only the screening lapses (display.py
+                drops its link) and the film stays on the wall."""
                 nonlocal expired_count, modified
                 expired_count += 1
                 screening_info['status'] = 'expired'
                 screening_info['last_checked'] = today_str
                 movie['virtual_screening_info'] = screening_info
-                movie['hidden'] = True
                 modified = True
+                _wl = movie.get('watch_links') or {}
+                if any(_real_link(e) for k in ('vod', 'streaming')
+                       for e in (_wl.get(k) if isinstance(_wl.get(k), list) else [_wl.get(k)])):
+                    print(f"  ⏹ Screening ended: {title} — stays on the wall (rentable/streaming elsewhere)")
+                    return
+                movie['hidden'] = True
                 slug = screening_info.get('screening_slug', '?')
                 print(f"  ❌ Expired: {title} ({slug}) — {reason}")
 
