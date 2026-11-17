@@ -21,7 +21,7 @@
     <meta name="twitter:title" content="The New Release Wall">
     <meta name="twitter:description" content="What came out, every day.">
     <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="mobile.css?v=107">
+    <link rel="stylesheet" href="mobile.css?v=108">
     <!-- Start the data download in parallel with CSS/JS instead of after them (audit #5) -->
     <link rel="preload" href="../data.json" as="fetch" crossorigin="anonymous">
     <link rel="icon" type="image/png" href="../favicon.png">
@@ -65,6 +65,10 @@
                     <div class="sw-track"><div class="sw-thumb"></div></div>
                     <span class="sw-label">PRE-ORDER</span>
                 </div>
+                <div class="switch-cell" id="saved-toggle">
+                    <div class="sw-track"><div class="sw-thumb"></div></div>
+                    <span class="sw-label">SAVED</span>
+                </div>
             </div>
             <div class="filter-row" id="filters">
                 <button class="genre-control" id="genre-control" type="button"><span class="genre-text">GENRE</span><span class="caret">▼</span></button>
@@ -94,7 +98,7 @@
         <div class="genre-sheet about-sheet" id="about-sheet">
             <div class="genre-sheet-handle"></div>
             <div class="genre-sheet-head"><span>What is this?</span><button class="genre-sheet-clear" id="about-sheet-close" type="button">Close</button></div>
-            <p class="about-sheet-body">The New Release Wall is a hand-curated video store of all the new arrivals. What came out, every day, every platform. With the <strong>SLOP</strong>-filter, you can narrow the feed to films with wider releases. <strong>SELECTS</strong> &#9733; are our picks of note. <strong>FESTS</strong> are &ldquo;virtual screenings&rdquo; from festivals, that you can watch from home for a limited time. <strong>PRE-ORDER</strong> is what&rsquo;s coming. No algorithm, no feed. Bringing back browsing.</p>
+            <p class="about-sheet-body">The New Release Wall is a hand-curated video store of all the new arrivals. What came out, every day, every platform. With the <strong>SLOP</strong>-filter, you can narrow the feed to films with wider releases. <strong>SELECTS</strong> &#9733; are our picks of note. <strong>FESTS</strong> are &ldquo;virtual screenings&rdquo; from festivals, that you can watch from home for a limited time. <strong>PRE-ORDER</strong> is what&rsquo;s coming. Tap &#9734; Save on any film to keep it in <strong>SAVED</strong>, your own list on this device. No algorithm, no feed. Bringing back browsing.</p>
         </div>
     </div>
 
@@ -157,6 +161,7 @@
 
     <script src="../assets/shared-config.js?v=7"></script>
     <script src="../assets/nrw-plex.js?v=2"></script>
-    <script src="mobile.js?v=112"></script>
+    <script src="../assets/nrw-saved.js?v=1"></script>
+    <script src="mobile.js?v=113"></script>
 </body>
 </html>

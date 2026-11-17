@@ -34,7 +34,7 @@
     <meta name="twitter:title" content="The New Release Wall">
     <meta name="twitter:description" content="What came out, every day.">
     <meta name="twitter:image" content="https://hadrianbelove-stack.github.io/nrw-production/assets/share-card.png">
-    <link rel="stylesheet" href="assets/styles.css?v=124">
+    <link rel="stylesheet" href="assets/styles.css?v=125">
     <!-- Start the data download in parallel with CSS/JS instead of after them (audit #5) -->
     <link rel="preload" href="data.json" as="fetch" crossorigin="anonymous">
 </head>
@@ -81,6 +81,10 @@
                         <div class="sw-track"><div class="sw-thumb"></div></div>
                         <span class="sw-label">PRE-ORDER</span>
                     </div>
+                    <div class="switch-cell" id="saved-toggle">
+                        <div class="sw-track"><div class="sw-thumb"></div></div>
+                        <span class="sw-label">SAVED</span>
+                    </div>
                 </div>
                 </div>
                 <div class="genre-slot">
@@ -112,7 +116,7 @@
                     <button class="about-control" id="about-toggle" type="button" aria-expanded="false" aria-label="What is this?" title="What is this?">&#9432;</button>
                     <div class="about-pop" id="about-pop" role="dialog" aria-label="What is this?">
                         <div class="about-pop-head"><span>What is this?</span><button class="about-close" id="about-close" type="button" aria-label="Close">&times;</button></div>
-                        <p class="about-pop-body">The New Release Wall is a hand-curated video store of all the new arrivals. What came out, every day, every platform. With the <strong>SLOP</strong>-filter, you can narrow the feed to films with wider releases. <strong>SELECTS</strong> &#9733; are our picks of note. <strong>FESTS</strong> are &ldquo;virtual screenings&rdquo; from festivals, that you can watch from home for a limited time. <strong>PRE-ORDER</strong> is what&rsquo;s coming. No algorithm, no feed. Bringing back browsing.</p>
+                        <p class="about-pop-body">The New Release Wall is a hand-curated video store of all the new arrivals. What came out, every day, every platform. With the <strong>SLOP</strong>-filter, you can narrow the feed to films with wider releases. <strong>SELECTS</strong> &#9733; are our picks of note. <strong>FESTS</strong> are &ldquo;virtual screenings&rdquo; from festivals, that you can watch from home for a limited time. <strong>PRE-ORDER</strong> is what&rsquo;s coming. Tap &#9734; on any poster to keep it in <strong>SAVED</strong>, your own list on this device. No algorithm, no feed. Bringing back browsing.</p>
                     </div>
                 </div>
             </div>
@@ -150,6 +154,7 @@
                                 <div class="lightbox-title-sub">
                                     <span class="lightbox-reissue-pill" id="lightbox-reissue-label" style="display:none;"></span>
                                     <span class="lightbox-date" id="lightbox-date"></span>
+                                    <button class="lightbox-save" id="lightbox-save" type="button" aria-pressed="false">&#9734; SAVE</button>
                                 </div>
                             </div>
                             <div class="lightbox-meta" id="lightbox-meta"></div>
@@ -168,6 +173,7 @@
     </div>
 
     <script src="assets/shared-config.js?v=7"></script>
-    <script src="assets/app.js?v=102"></script>
+    <script src="assets/nrw-saved.js?v=1"></script>
+    <script src="assets/app.js?v=103"></script>
 </body>
 </html>

@@ -14,6 +14,7 @@ const NRW = {
     showFest: false,           // When true, show virtual screening movies
     showPreorders: false,      // When true, show pre-order movies at the top
     showHighlightsOnly: false, // When true, show only staff picks (HIGHLIGHTS toggle)
+    showSaved: false,          // When true, show only this browser's starred films (SAVED toggle)
     searchQuery: '',     // Current search query
     displayedCount: CONFIG.moviesPerPage,  // How many movies currently shown
     loadIncrement: CONFIG.moviesPerPage,   // How many to add when clicking "More"
@@ -109,6 +110,10 @@ const NRW = {
                     return !!m.digital_date;
                 });
 
+                // Saved list (per-browser): refresh the stored copy of every
+                // starred film that's still on the wall (assets/nrw-saved.js).
+                if (window.NRWSaved) NRWSaved.sync(this.allMovies, m => NRWConfig.isStaffPick(m, this.staffPicks));
+
                 // Personal Plex (owner-only): ensure the NRWPlex module is loaded
                 // (index.html may not include the <script> yet — it's behind a
                 // concurrent edit), then warm the owned-films set if unlocked.
@@ -159,6 +164,9 @@ const NRW = {
         document.getElementById('wall').addEventListener('click', (e) => {
             if (e.target.tagName === 'A') return;
             if (e.target.closest('[data-trailer-reel]')) return;
+            // ☆ on the poster saves/unsaves — never opens the lightbox
+            const star = e.target.closest('.save-star[data-save-id]');
+            if (star) { this.toggleSaved(star.dataset.saveId); return; }
 
             // Find the movie card — try multiple selectors for robustness
             const container = e.target.closest('.movie-container');
@@ -289,6 +297,7 @@ const NRW = {
             'highlights-toggle': 'NRW Selects — our hand-picked films of note. Click to show only Selects.',
             'fest-toggle': 'Virtual festival screenings you can watch from home. Click to show only fests.',
             'preorder-toggle': 'Upcoming releases available to pre-order now. Click to show only pre-orders.',
+            'saved-toggle': 'Your saved films (tap \u2606 on any poster). Kept on this device only. Click to show only saved.',
         };
         Object.entries(TOGGLE_HELP).forEach(([id, help]) => {
             const el = document.getElementById(id);
@@ -390,6 +399,51 @@ const NRW = {
                 this.renderWallWithMore();
             });
         }
+
+        // Saved toggle — show only this browser's starred films
+        const savedToggle = document.getElementById('saved-toggle');
+        if (savedToggle) {
+            savedToggle.classList.toggle('active', this.showSaved);
+            savedToggle.addEventListener('click', () => {
+                this._clearSearchForView();  // search bypasses views — clicking one exits search
+                this.showSaved = !this.showSaved;
+                savedToggle.classList.toggle('active', this.showSaved);
+                if (this.showSaved) this.setExclusiveView('saved');
+                this.displayedCount = this.loadIncrement;
+                this.updateFilterDescription();
+                this.applyFilter();
+                this.renderWallWithMore();
+            });
+        }
+    },
+
+    // Star / unstar a film (wall ☆ or lightbox SAVE). Stored per browser by
+    // NRWSaved. In the SAVED view an unstarred card stays (dimmed) until the
+    // view is left, so the grid doesn't jump and a mis-tap is one tap to undo.
+    toggleSaved(movieId) {
+        if (!window.NRWSaved) return;
+        const id = String(movieId);
+        const movie = this.filteredMovies.find(m => String(m.id) === id)
+            || this.allMovies.find(m => String(m.id) === id)
+            || this.lightboxMovies.find(m => String(m.id) === id);
+        if (!movie) return;
+        const saved = NRWSaved.toggle(movie, NRWConfig.isStaffPick(movie, this.staffPicks));
+        document.querySelectorAll(`.save-star[data-save-id="${CSS.escape(id)}"]`).forEach(el => {
+            el.classList.toggle('is-saved', saved);
+            el.setAttribute('aria-pressed', String(saved));
+            el.textContent = saved ? '\u2605' : '\u2606';
+            el.closest('.movie-container')?.classList.toggle('unsaved', this.showSaved && !saved);
+        });
+        this._syncLightboxSave(movie);
+    },
+
+    _syncLightboxSave(movie) {
+        const btn = document.getElementById('lightbox-save');
+        if (!btn || !movie || btn.dataset.saveId !== String(movie.id)) return;
+        const saved = !!(window.NRWSaved && NRWSaved.has(movie.id));
+        btn.classList.toggle('is-saved', saved);
+        btn.setAttribute('aria-pressed', String(saved));
+        btn.textContent = saved ? '\u2605 SAVED' : '\u2606 SAVE';
     },
 
     // The whole filter bar is ONE exclusive group: the nine genre chips plus
@@ -405,6 +459,7 @@ const NRW = {
         if (winner !== 'selects')   { this.showHighlightsOnly = false; document.getElementById('highlights-toggle')?.classList.remove('active'); }
         if (winner !== 'fests')     { this.showFest = false;           document.getElementById('fest-toggle')?.classList.remove('active'); }
         if (winner !== 'preorders') { this.showPreorders = false;      document.getElementById('preorder-toggle')?.classList.remove('active'); }
+        if (winner !== 'saved')     { this.showSaved = false;          document.getElementById('saved-toggle')?.classList.remove('active'); }
         if (winner !== 'slop')      { this.slopMode = 'all';           this.syncSlopToggle(); }
     },
 
@@ -587,6 +642,16 @@ const NRW = {
         const query = this.searchQuery;
         const activeGenre = this.activeFilters.size ? [...this.activeFilters][0] : null;
 
+        // SAVED: every starred film, most recently starred first — slop, fests,
+        // pre-orders and films aged off the wall (stored copies) all included.
+        if (this.showSaved && !query) {
+            this.filteredMovies = window.NRWSaved ? NRWSaved.list(this.allMovies) : [];
+            this._updateFilterChip();
+            this._syncToggleAria();
+            this._syncSearchActiveState();
+            return;
+        }
+
         this.filteredMovies = this.allMovies.filter(movie => {
             // Search bypasses all view modes
             if (query) return this.matchesSearch(movie, query);
@@ -692,6 +757,7 @@ const NRW = {
         set('highlights-toggle', this.showHighlightsOnly);
         set('fest-toggle', this.showFest);
         set('preorder-toggle', this.showPreorders);
+        set('saved-toggle', this.showSaved);
         set('slop-free-toggle', this.slopMode !== 'all');
     },
 
@@ -721,7 +787,9 @@ const NRW = {
     },
 
     renderWallWithMore() {
-        const sortedMovies = [...this.filteredMovies].sort((a, b) => {
+        // SAVED keeps its most-recently-starred order; every other view is by date
+        const savedView = this.showSaved && !this.searchQuery;
+        const sortedMovies = savedView ? [...this.filteredMovies] : [...this.filteredMovies].sort((a, b) => {
             return new Date(b.digital_date) - new Date(a.digital_date);
         });
 
@@ -803,6 +871,8 @@ const NRW = {
             const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
             wall.innerHTML = this.searchQuery
                 ? `<div class="wall-empty">No results for &ldquo;${esc(this.searchQuery)}&rdquo;<span class="wall-empty-hint">Try a different title, director, or cast</span></div>`
+                : this.showSaved
+                ? `<div class="wall-empty">Nothing saved yet<span class="wall-empty-hint">Tap &#9734; on any poster to save it here. Your list stays on this device.</span></div>`
                 : `<div class="wall-empty">No movies found<span class="wall-empty-hint">Try a different filter</span></div>`;
             return;
         }
@@ -859,8 +929,12 @@ const NRW = {
         // Virtual-screening view groups by availability (now / soon), not arrival date
         const vsStart = m => (m.virtual_screening_info && m.virtual_screening_info.available_start) || '';
         const vsEnd = m => (m.virtual_screening_info && m.virtual_screening_info.available_end) || '';
+        const savedView = this.showSaved && !this.searchQuery;
         let orderedMovies;
-        if (this.showFest) {
+        if (savedView) {
+            // SAVED: keep the most-recently-starred order from NRWSaved.list()
+            orderedMovies = movies;
+        } else if (this.showFest) {
             const vsNow = movies.filter(m => { const s = vsStart(m); return !s || s <= today; })
                                 .sort((a, b) => (vsEnd(a) || '9999-99-99').localeCompare(vsEnd(b) || '9999-99-99'));
             const vsSoon = movies.filter(m => { const s = vsStart(m); return s && s > today; })
@@ -885,7 +959,7 @@ const NRW = {
         // The big section banner at the top still stays. Default wall, SELECTS,
         // FESTS, SLOP, and search keep the date-river rendering.
         const activeGenre = this.activeFilters.size ? [...this.activeFilters][0] : null;
-        const packed = !this.searchQuery && !this.showFest && (!!activeGenre || this.showPreorders);
+        const packed = !this.searchQuery && !this.showFest && (!!activeGenre || this.showPreorders || this.showSaved);
 
         // Date strips: single active filter recolors them; each view has its own color
         const singleFilter = this.activeFilters.size === 1 ? [...this.activeFilters][0] : null;
@@ -893,6 +967,7 @@ const NRW = {
         const dateStripColor = this.showHighlightsOnly ? '#00d4aa'
             : this.showFest ? '#FFD700'
             : this.showPreorders ? '#7c3aed'
+            : this.showSaved ? '#ffffff'
             : this.slopMode === 'only' ? '#ff9500'
             : (filterColor || 'var(--accent-primary)');
         const stripHtml = (day, rest, color, extraClass = '', titleAttr = '', lead = '') =>
@@ -924,6 +999,8 @@ const NRW = {
             html += stripHtml('SLOP', 'THE CONTENT RIVER', '#ff9500', ' section-banner');
         } else if (this.showPreorders) {
             html += stripHtml('PRE-ORDER', 'COMING SOON', '#7c3aed', ' section-banner');
+        } else if (savedView) {
+            html += stripHtml('SAVED', 'YOUR LIST', '#ffffff', ' section-banner');
         }
 
         orderedMovies.forEach(movie => {
@@ -1005,6 +1082,7 @@ const NRW = {
 
             const isStaffPick = NRWConfig.isStaffPick(movie, this.staffPicks);
             const staffPickClass = isStaffPick ? ' staff-pick-movie' : '';
+            const isSaved = !!(window.NRWSaved && NRWSaved.has(movie.id));
 
             const formatShortDate = NRW.formatShortDate;
 
@@ -1112,6 +1190,7 @@ const NRW = {
                                  onerror="this.style.display='none';"
                                  ${movie.poster ? '' : 'style="display:none"'}>
                             ${cardScoreHtml}
+                            <button class="save-star${isSaved ? ' is-saved' : ''}" data-save-id="${movie.id}" aria-pressed="${isSaved}" aria-label="Save to your list" title="${isSaved ? 'Saved \u2014 click to remove' : 'Save to your list'}">${isSaved ? '&#9733;' : '&#9734;'}</button>
                             <button class="expand-btn" data-movie-id="${movie.id}" aria-label="View fullscreen">&#x26F6;</button>
                         </div>
                     </div>
@@ -1863,6 +1942,14 @@ const NRW = {
                 parts.push(dateText);
             }
             dateEl.textContent = parts.join(' \u00b7 ');
+        }
+
+        // SAVE button (per-browser saved list) — end of the date line
+        const saveBtn = document.getElementById('lightbox-save');
+        if (saveBtn) {
+            saveBtn.style.display = window.NRWSaved ? '' : 'none';
+            saveBtn.dataset.saveId = String(movie.id);
+            this._syncLightboxSave(movie);
         }
 
         // Staff Pick badge
@@ -2619,7 +2706,7 @@ const NRW = {
     // from the top grid row; Down drops back into the wall. The toggles are <div>s,
     // so they're made focusable + Enter/Space-activatable here.
     setupHeaderKeyboardNav() {
-        const toggleIds = ['preorder-toggle', 'fest-toggle', 'slop-free-toggle', 'highlights-toggle'];
+        const toggleIds = ['slop-free-toggle', 'highlights-toggle', 'fest-toggle', 'preorder-toggle', 'saved-toggle'];
         toggleIds.forEach(id => {
             const t = document.getElementById(id);
             if (t) { t.setAttribute('tabindex', '0'); t.setAttribute('role', 'button'); }
@@ -2776,6 +2863,9 @@ const NRW = {
 
         // Handle clicks on document body for lightbox/trailer elements
         document.body.addEventListener('click', (e) => {
+            // Lightbox SAVE button
+            const lbSave = e.target.closest('#lightbox-save[data-save-id]');
+            if (lbSave) { this.toggleSaved(lbSave.dataset.saveId); return; }
             // Lightbox nav buttons (< and >)
             if (e.target.closest('.lb-nav-prev')) { this.lightboxNav(-1); return; }
             if (e.target.closest('.lb-nav-next')) { this.lightboxNav(1); return; }

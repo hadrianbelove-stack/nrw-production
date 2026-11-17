@@ -280,6 +280,16 @@ body {
 #fest-toggle.active .sw-label { color: var(--screening-gold); }
 #preorder-toggle.active .sw-track { background: #7c3aed; }
 #preorder-toggle.active .sw-label { color: #a78bfa; }  /* readable tint; track fill stays #7c3aed */
+#saved-toggle.active .sw-track { background: #ffffff; }
+#saved-toggle.active .sw-label { color: #ffffff; }
+/* Four switches (SAVED added) on one phone-width row: tighter track + spacing */
+@media (max-width: 440px) {
+  .toggle-row { gap: 4px; }
+  .switch-cell { gap: 4px; }
+  .sw-track { width: 30px; }
+  .switch-cell.active .sw-thumb { transform: translateX(8px); }
+  .sw-label { letter-spacing: 0.03em; }
+}
 .search-container {
   flex: 1;
   position: relative;
@@ -599,6 +609,23 @@ body {
   text-transform: uppercase;
   z-index: 3;
 }
+
+/* Saved ★ on a grid tile (per-browser list) — bottom-right, clear of scores */
+.saved-badge {
+  position: absolute;
+  bottom: 3px; right: 3px;
+  width: 16px; height: 16px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 0.6rem;
+  line-height: 1;
+  border-radius: 3px;
+  z-index: 3;
+}
+.saved-badge[hidden] { display: none; }
+/* SAVED view: a tile unstarred in place dims until the view is left */
+.grid-item.unsaved { opacity: 0.4; }
 
 /* Pre-order badge */
 .grid-item-poster .preorder-badge {
@@ -1119,6 +1146,25 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 .btn-share svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* Save + Share share one row (no extra bar height) */
+.sheet-save-share { display: flex; gap: 8px; }
+.sheet-save-share > * { flex: 1 1 0; min-width: 0; }
+.btn-save {
+  height: 46px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.45);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-size: 0.82rem;
+  font-family: var(--font);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-save.is-saved { background: #fff; border-color: #fff; color: #0a0a0a; }
+.btn-save:active { transform: scale(0.98); }
 .btn-share:active { background: rgba(0,212,170,0.12); transform: scale(0.98); }
 
 /* Brand-colored streaming button (matches mockup .btn-stream) */

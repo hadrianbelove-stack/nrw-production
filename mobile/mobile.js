@@ -17,6 +17,7 @@ const NRWMobile = {
     hideFest: true,
     showPreorders: false,
     showHighlightsOnly: false,
+    showSaved: false,  // SAVED view: this browser's starred films (assets/nrw-saved.js)
     searchQuery: '',
     currentView: 0,
     currentMovieIndex: 0,
@@ -91,6 +92,10 @@ const NRWMobile = {
                 if (m._enrichment_status === 'reverted') return false;
                 return !!m.digital_date;
             });
+
+            // Saved list (per-browser): refresh the stored copy of every starred
+            // film that's still on the wall (assets/nrw-saved.js).
+            if (window.NRWSaved) NRWSaved.sync(this.allMovies, m => NRWConfig.isStaffPick(m, this.staffPicks));
 
             // Personal Plex (owner-only): warm the owned-films set if unlocked.
             // The fetch is async and can resolve after the sheet has already
@@ -307,6 +312,23 @@ const NRWMobile = {
             });
         }
 
+        // Saved toggle — show only this browser's starred films
+        const savedToggle = document.getElementById('saved-toggle');
+        if (savedToggle) {
+            savedToggle.classList.toggle('active', this.showSaved);
+            savedToggle.addEventListener('click', () => {
+                this._clearSearchForView();  // search bypasses views — tapping one exits search
+                this.showSaved = !this.showSaved;
+                savedToggle.classList.toggle('active', this.showSaved);
+                if (this.showSaved) this.setExclusiveView('saved');
+                this.updateFilterDesc();
+                this.applyFilter();
+                this.buildGrid();
+                this.setView(0);
+                this.dom.gridView.scrollTop = 0;
+            });
+        }
+
         // ABOUT affordance (audit F22): ⓘ opens a "What is this?" bottom sheet.
         const aboutControl = document.getElementById('about-control');
         const aboutBackdrop = document.getElementById('about-backdrop');
@@ -344,6 +366,7 @@ const NRWMobile = {
             selects:   () => { this.showHighlightsOnly = false; document.getElementById('highlights-toggle')?.classList.remove('active'); },
             fests:     () => { this.hideFest = true;            document.getElementById('fest-toggle')?.classList.remove('active'); },
             preorders: () => { this.showPreorders = false;      document.getElementById('preorder-toggle')?.classList.remove('active'); },
+            saved:     () => { this.showSaved = false;          document.getElementById('saved-toggle')?.classList.remove('active'); },
             slop:      () => {
                 this.slopMode = 'all';
                 const st = document.getElementById('slop-free-toggle');
@@ -419,6 +442,14 @@ const NRWMobile = {
     applyFilter() {
         const filters = this.activeFilters;
 
+        // SAVED: every starred film, most recently starred first — slop, fests,
+        // pre-orders and films aged off the wall (stored copies) all included.
+        if (this.showSaved && !this.searchQuery) {
+            this.filteredMovies = window.NRWSaved ? NRWSaved.list(this.allMovies) : [];
+            this._syncSearchActiveState();
+            return;
+        }
+
         this.filteredMovies = this.allMovies.filter(movie => {
             // Toggles are view modes — an active search bypasses ALL of them
             if (!this.searchQuery) {
@@ -487,7 +518,7 @@ const NRWMobile = {
     // posters into one continuous 3-col grid, each cell carrying a small muted
     // date instead. Default / SELECTS / FESTS / search are unchanged.
     isPackedMode() {
-        return (!this.searchQuery && (this.activeFilters.size > 0 || this.showPreorders));
+        return (!this.searchQuery && (this.activeFilters.size > 0 || this.showPreorders || this.showSaved));
     },
 
     buildGrid() {
@@ -509,6 +540,9 @@ const NRWMobile = {
         }
         if (!packed && this.slopMode === 'only' && this.filteredMovies.length > 0) {
             this.gridEntries.push({ type: 'date', dateStr: 'slop' });
+        }
+        if (this.showSaved && !this.searchQuery && this.filteredMovies.length > 0) {
+            this.gridEntries.push({ type: 'date', dateStr: 'saved' });
         }
 
         this.filteredMovies.forEach((movie, i) => {
@@ -562,6 +596,8 @@ const NRWMobile = {
         if (this.gridEntries.length === 0) {
             this.dom.gridView.innerHTML = this.searchQuery
                 ? '<div class="loading"><p>No results for &ldquo;' + this.esc(this.searchQuery) + '&rdquo;</p><p class="empty-hint">Try a different title, director, or cast</p></div>'
+                : this.showSaved
+                ? '<div class="loading"><p>Nothing saved yet</p><p class="empty-hint">Open any film and tap &#9734; Save to keep it here. Your list stays on this device.</p></div>'
                 : '<div class="loading"><p>No movies found</p><p class="empty-hint">Try a different filter</p></div>';
             return;
         }
@@ -613,7 +649,7 @@ const NRWMobile = {
     createDateRowHeader(dateStr) {
         const row = document.createElement('div');
         // Section banners (the view header) render ~2x the date dividers
-        const SECTION_TYPES = ['pre-order', 'fest', 'fest-now', 'fest-soon', 'highlights', 'slop'];
+        const SECTION_TYPES = ['pre-order', 'fest', 'fest-now', 'fest-soon', 'highlights', 'slop', 'saved'];
         row.className = 'date-row-header' + (SECTION_TYPES.includes(dateStr) ? ' section-banner' : '');
 
         // Neon sticky banner: colored day + white rest; color follows section / active filter
@@ -633,6 +669,8 @@ const NRWMobile = {
             day = 'SELECTS'; rest = 'OF NOTE'; color = '#00d4aa';
         } else if (dateStr === 'slop') {
             day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#ff9500';  // matches SLOP ONLY toggle orange
+        } else if (dateStr === 'saved') {
+            day = 'SAVED'; rest = 'YOUR LIST'; color = '#ffffff';
         } else {
             const d = new Date(dateStr + 'T12:00:00');
             day = d.toLocaleDateString('en', { weekday: 'short' });
@@ -744,6 +782,12 @@ const NRWMobile = {
             badge.textContent = (movie.reissue_label || 'RESTORATION').toUpperCase();
             badgeTarget.appendChild(badge);
         }
+        // Saved ★ (per-browser list) — bottom-right, clear of the scores
+        const savedBadge = document.createElement('span');
+        savedBadge.className = 'saved-badge';
+        savedBadge.textContent = '\u2605';
+        savedBadge.hidden = !(window.NRWSaved && NRWSaved.has(movie.id));
+        badgeTarget.appendChild(savedBadge);
         if (movie.rt_score || movie.imdb_rating) {
             const scoreRow = document.createElement('div');
             scoreRow.style.cssText = 'position:absolute;bottom:3px;left:3px;display:flex;gap:2px;z-index:3;';
@@ -1315,12 +1359,38 @@ const NRWMobile = {
             }
         }
 
-        // Share (teal outline)
-        bar += '<button class="btn-share" onclick="NRWMobile.shareCurrent()">' +
-            this.SHARE_SVG + '<span>Share</span></button>';
+        // Save (white outline) + Share (teal outline), side by side
+        const isSaved = !!(window.NRWSaved && NRWSaved.has(movie.id));
+        bar += '<div class="sheet-save-share">' +
+            (window.NRWSaved
+                ? '<button class="btn-save' + (isSaved ? ' is-saved' : '') + '" id="sheet-save" aria-pressed="' + isSaved +
+                  '" onclick="NRWMobile.toggleSavedCurrent()">' + (isSaved ? '\u2605 Saved' : '\u2606 Save') + '</button>'
+                : '') +
+            '<button class="btn-share" onclick="NRWMobile.shareCurrent()">' +
+            this.SHARE_SVG + '<span>Share</span></button></div>';
 
         btnbar.innerHTML = bar;
         btnbar.scrollTop = 0;
+    },
+
+    // Star / unstar the film open in the sheet. In the SAVED view an unstarred
+    // tile stays (dimmed) until the view is left, so a mis-tap is one tap to undo.
+    toggleSavedCurrent() {
+        const movie = this.filteredMovies[this.currentMovieIndex];
+        if (!movie || !window.NRWSaved) return;
+        const saved = NRWSaved.toggle(movie, NRWConfig.isStaffPick(movie, this.staffPicks));
+        const btn = document.getElementById('sheet-save');
+        if (btn) {
+            btn.classList.toggle('is-saved', saved);
+            btn.setAttribute('aria-pressed', String(saved));
+            btn.textContent = saved ? '\u2605 Saved' : '\u2606 Save';
+        }
+        const tile = document.querySelector('.grid-item[data-index="' + this.currentMovieIndex + '"]');
+        if (tile) {
+            const badge = tile.querySelector('.saved-badge');
+            if (badge) badge.hidden = !saved;
+            tile.classList.toggle('unsaved', this.showSaved && !saved);
+        }
     },
 
     // "MORE ⌄" pill: visible only while the sheet content has unscrolled
