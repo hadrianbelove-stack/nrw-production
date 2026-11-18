@@ -33,6 +33,7 @@ import {
 } from '../services/analytics.tvos';
 import { setSharedMovieList, setSearchMovieList } from './sharedMovieList';
 import SearchIcon from '../components/SearchIcon.tvos';
+import { isSaved, savedList, syncSaved, useSavedVersion } from '../services/savedStore.tvos';
 
 // Filter options - matches web categories
 const FILTERS = [
@@ -369,6 +370,8 @@ const DateRowStrip = ({ stripKey, stripColor }) => {
     day = 'SELECTS'; rest = 'OF NOTE'; color = '#00d4aa';
   } else if (stripKey === 'SLOP') {
     day = 'SLOP'; rest = 'THE CONTENT RIVER'; color = '#ff9500';
+  } else if (stripKey === 'SAVED') {
+    day = 'SAVED'; rest = 'YOUR LIST'; color = '#ffffff';
   } else {
     const d = new Date(stripKey + 'T12:00:00');
     if (isNaN(d.getTime())) {
@@ -381,7 +384,7 @@ const DateRowStrip = ({ stripKey, stripColor }) => {
   }
 
   // Section banners (the active view) render ~2x the per-date strips
-  const isSection = ['PRE-ORDER', 'SCREENING', 'HIGHLIGHTS', 'SLOP'].includes(stripKey);
+  const isSection = ['PRE-ORDER', 'SCREENING', 'HIGHLIGHTS', 'SLOP', 'SAVED'].includes(stripKey);
 
   return (
     <View
@@ -625,6 +628,8 @@ const HomeScreenTvOS = () => {
   const [hideFest, setHideFest] = useState(true); // default: hide fests (matches desktop default)
   const [showPreorders, setShowPreorders] = useState(false);
   const [showHighlightsOnly, setShowHighlightsOnly] = useState(false);
+  const [showSaved, setShowSaved] = useState(false); // SAVED view: this TV's saved films
+  const savedVersion = useSavedVersion();             // bumps on load + every save/unsave
 
   // View toggles (Selects / Fests / Pre-Orders) are mutually exclusive: at most
   // one is active. Each toggle maps to the single winning view, or 'none' when
@@ -633,12 +638,14 @@ const HomeScreenTvOS = () => {
     setShowHighlightsOnly(view === 'selects');
     setHideFest(view !== 'fests');
     setShowPreorders(view === 'preorders');
+    setShowSaved(view === 'saved');
     setSlopMode('all'); // slop resets to its resting default when another view wins (matches desktop)
     setActiveFilters(new Set()); // view toggles are mutually exclusive with genre filters
   }, []);
   const toggleShowHighlights = useCallback(() => showExclusiveView(showHighlightsOnly ? 'none' : 'selects'), [showHighlightsOnly, showExclusiveView]);
   const toggleHideFest = useCallback(() => showExclusiveView(hideFest ? 'fests' : 'none'), [hideFest, showExclusiveView]);
   const toggleShowPreorders = useCallback(() => showExclusiveView(showPreorders ? 'none' : 'preorders'), [showPreorders, showExclusiveView]);
+  const toggleShowSaved = useCallback(() => showExclusiveView(showSaved ? 'none' : 'saved'), [showSaved, showExclusiveView]);
   // Slop toggle cycles all → free → only → all. Every click makes slop the exclusive
   // view: it clears the active genre AND the Selects/Fests/Pre-Orders toggles on every
   // click, regardless of the resulting state (matches desktop setExclusiveView('slop')).
@@ -649,6 +656,7 @@ const HomeScreenTvOS = () => {
     setShowHighlightsOnly(false);
     setHideFest(true);
     setShowPreorders(false);
+    setShowSaved(false);
   }, [slopMode]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -660,7 +668,7 @@ const HomeScreenTvOS = () => {
   // Reset to first page whenever filters change
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly]);
+  }, [activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly, showSaved]);
 
   // Release the one-shot preferred-focus flag once the target card has had a
   // chance to claim focus, so it won't keep stealing focus on later re-renders.
@@ -763,11 +771,31 @@ const HomeScreenTvOS = () => {
     setShowHighlightsOnly(false);
     setHideFest(true);
     setShowPreorders(false);
+    setShowSaved(false);
     setSlopMode('all'); // slop resets to its resting default when a genre wins (matches desktop)
   }, []);
 
+  // Keep each saved film's stored copy current while it's still on the wall
+  useEffect(() => {
+    if (filteredMovies && filteredMovies.length) syncSaved(filteredMovies);
+  }, [filteredMovies]);
+
+  // SAVED view list, captured when the view opens (and once the store loads).
+  // Unsaving from the detail screen doesn't pull the card out from under the
+  // focus engine — it just loses its star until the view is left.
+  const savedLoaded = savedVersion > 0;
+  const savedMovies = useMemo(
+    () => (showSaved ? savedList(filteredMovies) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [showSaved, filteredMovies, savedLoaded]
+  );
+
   // Get movies based on active filters (multi-select with OR logic - cumulative)
   const displayMovies = useMemo(() => {
+    // SAVED: every saved film, most recently saved first — slop, fests,
+    // pre-orders and films aged off the wall (stored copies) all included.
+    if (showSaved) return savedMovies;
+
     let movies = filteredMovies;
 
     // Slop mode: free=hide slop, all=show all, only=show only slop (matches desktop 3-state)
@@ -848,7 +876,7 @@ const HomeScreenTvOS = () => {
       }
       return false;
     });
-  }, [filteredMovies, activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly]);
+  }, [filteredMovies, activeFilters, slopMode, hideFest, showPreorders, showHighlightsOnly, showSaved, savedMovies]);
 
   // Genre-filtered views pack into one continuous grid: no per-date strip rows
   // (a full-width strip over 1-2 filtered cards wastes a row). Each card shows
@@ -903,6 +931,16 @@ const HomeScreenTvOS = () => {
 
     const items = [];
     let mIdx = 0;  // global movie ordinal — drives focus refs and row/col math
+
+    // SAVED: one "SAVED · YOUR LIST" banner, then one packed grid in saved
+    // order (no buckets, no date strips — each card shows its own date).
+    if (showSaved) {
+      items.push({ type: 'date', id: 'date-saved-top', date: 'SAVED' });
+      displayMovies.forEach((movie, index) => {
+        items.push({ type: 'movie', id: movie.tmdb_id || movie.id || `saved-${index}`, movie, mIdx: mIdx++, stripKey: 'SAVED', showDate: true });
+      });
+      return items;
+    }
 
     // 0. HIGHLIGHTS strip at the top when the toggle is on
     if (showHighlightsOnly) {
@@ -976,7 +1014,7 @@ const HomeScreenTvOS = () => {
     }
 
     return items;
-  }, [displayMovies, latestPlaylistUrl, visibleCount, showHighlightsOnly, slopMode, genrePacked]);
+  }, [displayMovies, latestPlaylistUrl, visibleCount, showHighlightsOnly, slopMode, genrePacked, showSaved]);
 
   // Group the flat list into rows: strips/trailers/load-more are full-width rows,
   // movies chunk into rows of NUM_COLUMNS. Focus math works on (row, col) of movie rows.
@@ -1253,6 +1291,7 @@ const HomeScreenTvOS = () => {
                   onBlur={() => handleMovieBlur(mIdx)}
                   hasTVPreferredFocus={(giveInitialFocus && isFirstMovie) || pendingFocusMIdx === mIdx}
                   showDate={showDate}
+                  isSaved={isSaved(movie.id)}
                   testID={`movie-card-${mIdx}`}
                   nextFocusUp={nextFocusUp}
                   nextFocusDown={nextFocusDown}
@@ -1279,7 +1318,9 @@ const HomeScreenTvOS = () => {
         </View>
       );
     },
-    [movieGrid, stripKeyByIdx, dateStripColor, genrePacked, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, registerItemRef, registerWrapperRef, giveInitialFocus, pendingFocusMIdx]
+    // savedVersion: re-render so wall stars track saves made on the detail screen
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [movieGrid, stripKeyByIdx, dateStripColor, genrePacked, handleMovieSelect, handleMovieFocus, handleMovieBlur, handleOpenFullscreen, headerNodeHandle, lastFilterNodeHandle, itemNodeHandles, registerItemRef, registerWrapperRef, giveInitialFocus, pendingFocusMIdx, savedVersion]
   );
 
   // Key extractor
@@ -1334,7 +1375,7 @@ const HomeScreenTvOS = () => {
   return (
     <View style={styles.container}>
       {/* Header: masthead = wordmark + slogan only; below it one control bar:
-          SLOP FILTER · SELECTS · FESTS · PRE-ORDER · GENRE · SEARCH (matches web) */}
+          SLOP FILTER · SELECTS · FESTS · PRE-ORDER · SAVED · GENRE · SEARCH (matches web) */}
       <View style={styles.header}>
         <View style={styles.headerTopRow}>
           <View>
@@ -1371,6 +1412,15 @@ const HomeScreenTvOS = () => {
               accentColor="#7c3aed"
               accessibilityLabel={showPreorders ? 'Showing pre-orders' : 'Pre-orders hidden'}
               onPress={toggleShowPreorders}
+            />
+          </View>
+          <View style={styles.barCell}>
+            <MetaToggle
+              isActive={showSaved}
+              label="SAVED"
+              accentColor="#ffffff"
+              accessibilityLabel={showSaved ? 'Showing your saved films' : 'Show your saved films'}
+              onPress={toggleShowSaved}
             />
           </View>
           <View style={styles.barCell}>
@@ -1412,7 +1462,7 @@ const HomeScreenTvOS = () => {
         data={rowData}
         renderItem={renderRow}
         keyExtractor={keyExtractor}
-        extraData={itemNodeHandles}
+        extraData={[itemNodeHandles, savedVersion]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         // removeClippedSubviews intentionally omitted — it destroys native view registrations

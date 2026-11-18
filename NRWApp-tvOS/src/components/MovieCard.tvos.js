@@ -104,6 +104,7 @@ const MovieCard = forwardRef(({
   isFeatured = false,
   hasTVPreferredFocus = false,
   showDate = false,
+  isSaved = false,
   testID,
   nextFocusUp,
   nextFocusDown,
@@ -423,6 +424,12 @@ const MovieCard = forwardRef(({
             </View>
           )}
 
+          {/* Saved ★ (this TV's list) — bottom-right, clear of the score badges */}
+          {isSaved && (
+            <View style={styles.savedBadge}>
+              <Text style={styles.savedBadgeText}>★</Text>
+            </View>
+          )}
           {/* Staff pick permanent border overlay (outside clip container so it glows) */}
           {isStaffPick && !isFocused && <View style={styles.staffPickBorder} />}
           {/* Double-border focus ring: black halo behind teal ring */}
@@ -509,6 +516,23 @@ const styles = StyleSheet.create({
     fontSize: Typography.tvos.body,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  savedBadge: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 7,
+  },
+  savedBadgeText: {
+    color: '#ffffff',
+    fontSize: 24,
+    lineHeight: 28,
   },
   restorationCardBadge: {
     position: 'absolute',

@@ -39,6 +39,7 @@ import { fetchMovies } from '../services/api';
 import { trackWatchButtonTap } from '../services/analytics.tvos';
 import { getSharedMovieList, takePendingTrailerIndex } from './sharedMovieList';
 import { getRatingKey, onLibraryMapChange } from '../services/plexClient.tvos';
+import { isSaved, toggleSaved, useSavedVersion } from '../services/savedStore.tvos';
 import { renderMarkdownSpans } from '../utils/markdown';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -185,6 +186,56 @@ const nrwBtnStyles = StyleSheet.create({
   text: {
     color: '#000', fontSize: 26, fontWeight: '800', letterSpacing: 3,
   },
+});
+
+// SAVE — this TV's saved list. Own row below the watch buttons (reached with
+// DOWN): LEFT/RIGHT on this screen flip films, so it can't sit beside TRAILER.
+const SaveButton = ({ saved, onPress }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const onFocus = useCallback(() => {
+    setIsFocused(true);
+    Animated.spring(scaleAnim, { toValue: 1.05, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+  const onBlur = useCallback(() => {
+    setIsFocused(false);
+    Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
+  }, [scaleAnim]);
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      activeOpacity={0.9}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={saved ? 'Saved. Press to remove from your list' : 'Save to your list'}
+      testID="action-btn-save"
+      style={{ flex: 1 }}
+    >
+      <Animated.View style={[
+        saveBtnStyles.button,
+        saved && saveBtnStyles.saved,
+        isFocused && saveBtnStyles.focused,
+        { transform: [{ scale: scaleAnim }] },
+      ]}>
+        <Text style={[saveBtnStyles.text, saved && saveBtnStyles.textSaved]}>
+          {saved ? '★  SAVED' : '☆  SAVE'}
+        </Text>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
+const saveBtnStyles = StyleSheet.create({
+  button: {
+    height: 56, borderRadius: 8, borderWidth: 2, borderColor: 'rgba(255,255,255,0.45)',
+    backgroundColor: 'transparent', alignItems: 'center', justifyContent: 'center',
+  },
+  saved: { backgroundColor: '#ffffff', borderColor: '#ffffff' },
+  focused: { borderColor: Colors.focusBorderHighlight, borderWidth: 4 },
+  text: { color: '#ffffff', fontSize: 24, fontWeight: '700', letterSpacing: 3 },
+  textSaved: { color: '#0a0a0a' },
 });
 
 // VOD button — split layout (40% logo / 60% price) matching site's .vod-btn
@@ -618,6 +669,10 @@ const MovieDetailTvOS = () => {
   // un-unlocked devices, so the NRW button never appears for testers. Re-check
   // when the start-up fetch lands, in case this screen opened before it did.
   const [nrwRatingKey, setNrwRatingKey] = useState(null);
+
+  // Saved list — useSavedVersion re-renders this screen on every save/unsave
+  useSavedVersion();
+  const movieSaved = isSaved(movie?.id);
   useEffect(() => {
     let active = true;
     const check = () => getRatingKey(movie?.id).then((rk) => { if (active) setNrwRatingKey(rk); });
@@ -1011,6 +1066,16 @@ const MovieDetailTvOS = () => {
                     title: movie?.title,
                     year: movie?.year,
                   })}
+                />
+              </View>
+            )}
+
+            {/* 10c. SAVE — this TV's saved list (SAVED toggle on the wall) */}
+            {movie?.id != null && (
+              <View style={styles.vodRow}>
+                <SaveButton
+                  saved={movieSaved}
+                  onPress={() => toggleSaved(movie)}
                 />
               </View>
             )}
