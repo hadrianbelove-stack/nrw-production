@@ -28,6 +28,17 @@ data_json_ok() {
     /usr/bin/python3 -c "import json; json.load(open('data.json'))" 2>/dev/null
 }
 
+# Is GitHub's daily update (daily-check.yml) queued or running right now? It takes about an
+# hour and pushes data.json at the end; a push from this Mac in that hour makes its final merge
+# conflict and the WHOLE day's update is lost (Nov 17 2026: a 10:02 RT stamp landed inside the
+# 9:00-10:08 run). If gh can't answer (offline), carry on as before.
+ci_running() {
+    local st
+    st=$(gh run list --repo hadrianbelove-stack/nrw-production --workflow daily-check.yml \
+         --limit 1 --json status -q '.[0].status' 2>/dev/null) || return 1
+    [ -n "$st" ] && [ "$st" != "completed" ]
+}
+
 # One run at a time. launchd fires every 30 min and runs can also be started
 # by hand; two overlapping runs both stash, pull, stamp and push data.json
 # (a manual run and the 30-min retry overlapped on Oct 29 2026).
@@ -49,6 +60,13 @@ echo "" >> "$LOG"
 echo "=== NRW Local Daily: $(date) ===" >> "$LOG"
 
 cd "$PROJECT_DIR" || { echo "ERROR: Cannot cd to $PROJECT_DIR" >> "$LOG"; exit 1; }
+
+# GitHub's update is running: do nothing this cycle (no pull, no stamps, no push); the next
+# 30-minute run picks up its results and does tonight's work then.
+if ci_running; then
+    echo "  GitHub's daily update is running — skipping this cycle so the two don't collide" >> "$LOG"
+    exit 0
+fi
 
 # Never run on top of a half-finished rebase left by an earlier run or a
 # manual session: it strands data.json with conflict markers and every later
@@ -146,7 +164,10 @@ if [ "$PULL_OK" = true ] && ! /usr/bin/git diff --quiet data.json 2>/dev/null &&
     alert "data.json broke during trailer stamping. NOT committing it."
 elif [ "$PULL_OK" = true ] && ! /usr/bin/git diff --quiet data.json 2>/dev/null; then
     echo "  Pushing stamped trailers to GitHub..." >> "$LOG"
-    if NRW_ALLOW_DATA_COMMIT=1 /usr/bin/git commit data.json -m "Local trailer stamp — APPROVED: DELETE" >> "$LOG" 2>&1; then
+    if ci_running; then
+        /usr/bin/git checkout -- data.json >> "$LOG" 2>&1
+        echo "  GitHub's daily update started meanwhile — not pushing; redone next cycle" >> "$LOG"
+    elif NRW_ALLOW_DATA_COMMIT=1 /usr/bin/git commit data.json -m "Local trailer stamp — APPROVED: DELETE" >> "$LOG" 2>&1; then
         if /usr/bin/git push origin main >> "$LOG" 2>&1; then
             echo "  Pushed successfully" >> "$LOG"
         else
@@ -178,7 +199,10 @@ if [ "$PULL_OK" = true ] && ! /usr/bin/git diff --quiet data.json 2>/dev/null &&
     alert "data.json broke during the RT sweep. NOT committing it."
 elif [ "$PULL_OK" = true ] && ! /usr/bin/git diff --quiet data.json 2>/dev/null; then
     echo "  Pushing RT stamps to GitHub..." >> "$LOG"
-    if NRW_ALLOW_DATA_COMMIT=1 /usr/bin/git commit data.json -m "Local RT stamp — APPROVED: DELETE" >> "$LOG" 2>&1; then
+    if ci_running; then
+        /usr/bin/git checkout -- data.json >> "$LOG" 2>&1
+        echo "  GitHub's daily update started meanwhile — not pushing; redone next cycle" >> "$LOG"
+    elif NRW_ALLOW_DATA_COMMIT=1 /usr/bin/git commit data.json -m "Local RT stamp — APPROVED: DELETE" >> "$LOG" 2>&1; then
         if /usr/bin/git push origin main >> "$LOG" 2>&1; then
             echo "  Pushed successfully" >> "$LOG"
         else
