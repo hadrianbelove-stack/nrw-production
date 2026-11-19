@@ -22,7 +22,17 @@ SCRAPER_DEFAULTS = {
 
 # Enrichment Safety Limits
 MAX_ENRICHMENT_BATCH = 100  # Maximum movies to enrich in a single run
-ENRICHMENT_LOOP_TIMEOUT_MINUTES = 120  # Overall timeout for enrichment loop
+ENRICHMENT_LOOP_TIMEOUT_MINUTES = 50  # No new film is started this long after the enrichment
+# phase began (the clock includes the pre-order link finder and IMDb load before the loop). The
+# daily orchestrator kills --enrich at 60 min (daily_orchestrator.py); 50 leaves room for one more
+# film (5-min cap) plus the final saves, so the phase stops itself and saves (unprocessed films stay
+# queued for the next run) instead of being killed with nothing saved. (The final saves include
+# apply_admin_overrides, which in CI rebuilds the distributor lookup over the network: about a
+# minute, longer if Wikipedia is slow.) The purge and the metrics run right after the data.json
+# save; trailer hosting comes last and starts no new download after 55 min (one already running
+# can outlast the kill; the nightly local run hosts the rest)
+PREORDER_LINK_FINDER_MAX_MINUTES = 15  # The pre-order link finder (before the loop) stops
+# starting new films after this long, so it can't eat the loop's time (soonest releases first)
 MAX_ENRICHMENT_ATTEMPTS = 5  # Maximum catch-up retry attempts per movie (1 initial + 4 retries)
 RETRY_BACKOFF_DAYS = [1, 3, 7, 14]  # Days to wait after attempt 1, 2, 3, 4 before retrying
 

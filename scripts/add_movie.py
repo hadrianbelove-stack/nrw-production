@@ -150,8 +150,10 @@ def main():
             '_added_manually': True,
             '_added_at': date_cls.today().isoformat(),
         })
-        # Clear any revert flags
-        for key in ['_jw_revert_reason', '_jw_reverted_at', '_jw_reverted', '_reverted_from_available']:
+        # Clear any revert flags (incl. an owner Revert: re-added by hand, it no longer waits)
+        for key in ['_jw_revert_reason', '_jw_reverted_at', '_jw_reverted', '_reverted_from_available',
+                    '_reverted_by_owner', '_reverted_by_owner_at', '_added_manually_before_revert',
+                    '_revert_page_preorder', '_revert_restoration']:
             tracking_data['movies'][tmdb_id].pop(key, None)
     else:
         tracking_data['movies'][tmdb_id] = tracking_entry
@@ -174,6 +176,13 @@ def main():
     if existing_index is not None:
         # Movie exists — clean revert flags and reset for re-enrichment
         movie = data['movies'][existing_index]
+        # Off the wall (a revert's or a JustWatch wait's hide), or a --date asked for: the wall
+        # shows the date tracking gets, not the old one (enrichment keeps a manual date as is).
+        if args.date or movie.get('hidden') or movie.get('_enrichment_status') == 'reverted':
+            if movie.get('digital_date') != digital_date:
+                print(f"   Date {movie.get('digital_date') or 'none'} -> {digital_date}")
+            movie['digital_date'] = digital_date
+            movie['_digital_date_source'] = 'manual_override'
         revert_keys = ['_jw_reverted', '_jw_revert_reason', '_enrichment_status',
                         '_jw_reverted_at', '_reverted_from_available']
         for key in revert_keys:
@@ -184,6 +193,11 @@ def main():
         if movie.get('status') == 'tracking':
             del movie['status']
             print(f"   Cleared status=tracking")
+        # Put back by hand: a revert's hide goes too (nothing else lifts it), and it is no
+        # longer waiting on a JustWatch check -- the enrichment that follows checks it.
+        for key in ('hidden', '_jw_unconfirmed'):
+            if movie.pop(key, None) is not None:
+                print(f"   Cleared {key}")
         movie['_added_manually'] = True
         movie['_enrichment_attempts'] = 0
         print(f"   ✅ Existing entry cleaned for re-enrichment")

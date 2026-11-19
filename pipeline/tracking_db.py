@@ -70,10 +70,28 @@ class TrackingDB:
                 self.logger.info(f"TrackingDB: fresh DB — importing from {self.json_path}")
                 count = self.import_json(self.json_path)
                 self.logger.info(f"TrackingDB: imported {count} movies from JSON")
-            elif os.path.getmtime(self.json_path) > os.path.getmtime(self.db_path):
-                self.logger.info(f"TrackingDB: JSON is newer than DB — re-syncing from {self.json_path}")
+            else:
+                self.resync_if_stale()
+
+    def resync_if_stale(self) -> None:
+        """Re-import movie_tracking.json when it is newer than the DB: a `git pull` brought in
+        the day's CI work. A long-running process (the admin) must re-read it before its next
+        save, or it exports its old copy over the pulled file and a commit pushes that,
+        undoing the day's tracking changes. (save_all stamps the DB after its own export, so
+        a process's own saves never look newer.)"""
+        try:
+            stale = (os.path.exists(self.json_path) and os.path.exists(self.db_path)
+                     and os.path.getmtime(self.json_path) > os.path.getmtime(self.db_path))
+        except OSError:
+            return
+        if stale:
+            self.logger.info(f"TrackingDB: JSON is newer than DB — re-syncing from {self.json_path}")
+            try:
                 count = self.import_json(self.json_path)
-                self.logger.info(f"TrackingDB: re-synced {count} movies from JSON")
+            except ValueError as e:   # never swallowed: saving over it would lose the pulled work
+                raise RuntimeError(f"{self.json_path} is not valid JSON (a merge conflict?). Fix it in a "
+                                   f"chat window first; nothing was saved. ({e})") from e
+            self.logger.info(f"TrackingDB: re-synced {count} movies from JSON")
 
     # ------------------------------------------------------------------
     # Bulk load/save  (matches the old 'load whole file / save whole file'
@@ -97,6 +115,7 @@ class TrackingDB:
         Also re-exports movie_tracking.json so Git commits still work.
         """
         movies = db_dict.get('movies', {})
+        self.last_export_error = None   # set when the JSON export fails (the DB write succeeded)
         conn = self._connect()
         try:
             conn.execute("BEGIN EXCLUSIVE")
@@ -128,7 +147,14 @@ class TrackingDB:
                 # Pass db_dict directly — avoids re-reading all rows from SQLite
                 self.export_json(self.json_path, data=db_dict)
             except Exception as e:
+                self.last_export_error = str(e)
                 self.logger.warning(f"TrackingDB: JSON export failed (DB write succeeded): {e}")
+        try:
+            # The DB now holds this content: stamp it no older than the JSON, so only a file
+            # changed from outside (a git pull) reads as newer (resync_if_stale).
+            os.utime(self.db_path, None)
+        except OSError:
+            pass
 
         return True
 
@@ -220,9 +246,12 @@ def get_tracking_db(logger: Optional[logging.Logger] = None) -> 'TrackingDB':
     Return the shared TrackingDB instance (created on first call).
 
     Pass `logger` on first call to attach a logger — ignored on subsequent calls
-    since the singleton already exists.
+    since the singleton already exists. Every call re-reads movie_tracking.json if a
+    `git pull` changed it since (the admin runs for days; see resync_if_stale).
     """
     global _shared_instance
     if _shared_instance is None:
         _shared_instance = TrackingDB(logger=logger)
+    else:
+        _shared_instance.resync_if_stale()
     return _shared_instance

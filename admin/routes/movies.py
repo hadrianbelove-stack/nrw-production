@@ -11,6 +11,7 @@ from admin.config import FEATURED_FILE
 from admin.logging_setup import logger
 from admin.tmdb import get_tmdb_api_key
 from admin.utils import load_json, mark_changes_pending
+from pipeline import putback
 from pipeline.tracking_db import get_tracking_db
 
 bp = Blueprint('movies', __name__)
@@ -111,29 +112,8 @@ def add_movie() -> dict:
                     'error': 'Digital date must be in YYYY-MM-DD format'
                 })
 
-        # Load movie tracking database
-        tracking_data = get_tracking_db().load_all()
-
-        # Check if movie already exists in tracking
-        existing_in_tracking = tmdb_id in tracking_data.get('movies', {})
-
-        # Check if movie already exists in data.json
-        try:
-            with open('data.json', 'r') as f:
-                site_data = json.load(f)
-            existing_in_data = any(str(m.get('id')) == tmdb_id for m in site_data.get('movies', []))
-        except FileNotFoundError:
-            site_data = {'movies': []}
-            existing_in_data = False
-
-        # If already in data.json, that's a real duplicate
-        if existing_in_data:
-            return jsonify({
-                'success': False,
-                'error': f'Movie already exists on site'
-            })
-
-        # Fetch TMDB data (required if title not provided)
+        # Fetch TMDB data first (required if title not provided): the files are read after these
+        # lookups, so a `git pull` landing during them is never overwritten.
         tmdb_data = {}
         director = None
         api_key = get_tmdb_api_key()
@@ -169,6 +149,36 @@ def add_movie() -> dict:
                         logger.info(f"Found director for {tmdb_id}: {director}")
             except Exception as e:
                 logger.warning(f"Failed to fetch TMDB data for {tmdb_id}: {e}")
+
+        # Load movie tracking database
+        tracking_data = get_tracking_db().load_all()
+
+        # Check if movie already exists in tracking
+        existing_in_tracking = tmdb_id in tracking_data.get('movies', {})
+
+        # Check if movie already exists in data.json
+        try:
+            with open('data.json', 'r') as f:
+                site_data = json.load(f)
+            existing_in_data = any(str(m.get('id')) == tmdb_id for m in site_data.get('movies', []))
+        except FileNotFoundError:
+            site_data = {'movies': []}
+            existing_in_data = False
+
+        # If already in data.json, that's a real duplicate -- unless it's a reverted film's
+        # hidden entry (off the wall, waiting to come out), which this form can't put back.
+        if existing_in_data:
+            if any(str(m.get('id')) == tmdb_id and m.get('_enrichment_status') == 'reverted'
+                   for m in site_data.get('movies', [])):
+                return jsonify({
+                    'success': False,
+                    'error': ('This film was reverted (off the wall until it is out). To put it back '
+                              'now, use /add-movie in a chat window.')
+                })
+            return jsonify({
+                'success': False,
+                'error': f'Movie already exists on site'
+            })
 
         # Use TMDB title if not provided
         if not title:
@@ -247,6 +257,12 @@ def add_movie() -> dict:
             tracking_data['movies'][tmdb_id]['digital_date'] = digital_date
             tracking_data['movies'][tmdb_id]['status'] = 'available'
             tracking_data['movies'][tmdb_id]['last_manual_edit'] = now
+            # Re-added by hand: no longer the owner's revert (scripts/add_movie.py clears the
+            # same), or a later automatic hold would make it one again.
+            for _k in ('_jw_revert_reason', '_jw_reverted_at', '_jw_reverted', '_reverted_from_available',
+                       '_reverted_by_owner', '_reverted_by_owner_at', '_added_manually_before_revert',
+                       '_revert_page_preorder', '_revert_restoration'):
+                tracking_data['movies'][tmdb_id].pop(_k, None)
             if watch_link and watch_link.get('url'):
                 if 'watch_links' not in tracking_data['movies'][tmdb_id]:
                     tracking_data['movies'][tmdb_id]['watch_links'] = {}
@@ -342,6 +358,141 @@ def add_movie() -> dict:
         })
 
 
+def _in_site_folder():
+    """The admin works in the site repo itself (a test or a copy elsewhere never commits it)."""
+    import os
+    from admin.config import SITE_ROOT
+    return os.path.realpath(os.getcwd()) == os.path.realpath(SITE_ROOT)
+
+
+def _daily_update_running():
+    """True while today's GitHub update (daily-check.yml) is queued or running. Its final push
+    rebases on whatever lands meanwhile, and a revert of a recent film can conflict with the
+    day's changes to it -- then that day's whole update fails to publish. None when gh can't
+    tell (not installed, offline): the revert goes ahead, as before this check."""
+    import shutil
+    import subprocess
+    from admin.config import SITE_ROOT
+    gh = shutil.which('gh') or '/opt/homebrew/bin/gh'
+    try:
+        r = subprocess.run([gh, 'run', 'list', '--workflow', 'daily-check.yml', '--limit', '1',
+                            '--json', 'status'], cwd=SITE_ROOT, capture_output=True, text=True,
+                           timeout=20)
+        runs = json.loads(r.stdout or 'null') if r.returncode == 0 else None
+    except (OSError, subprocess.SubprocessError, ValueError):
+        return None
+    if not isinstance(runs, list):
+        return None
+    return bool(runs) and runs[0].get('status') != 'completed'
+
+
+def _catch_up_with_github():
+    """Before a Revert: bring this checkout up to GitHub (fast-forward only) when today's update
+    just landed and the Mac hasn't pulled it yet -- a revert committed on the old copy can't be
+    pushed and blocks the daily sync. None when up to date, caught up, not on main (the publish
+    step says so), or git can't tell (offline: as before this check); else why not."""
+    import subprocess
+    from admin.config import SITE_ROOT
+
+    def git(*a, timeout=30):
+        r = subprocess.run(['git', *a], cwd=SITE_ROOT, capture_output=True, text=True, timeout=timeout)
+        return r.returncode, ((r.stdout or '') + (r.stderr or '')).strip()
+    try:
+        rc, branch = git('branch', '--show-current')
+        if rc != 0 or branch != 'main':
+            return None
+        if git('fetch', '-q', 'origin', 'main')[0] != 0:
+            return None
+        rc, behind = git('rev-list', '--count', 'main..origin/main')
+        if rc != 0 or behind in ('', '0'):
+            return None
+        rc, out = git('merge', '--ff-only', 'origin/main')
+        return None if rc == 0 else (out[-200:] or 'the fast-forward failed')
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
+def _publish_revert(title):
+    """Commit and push the revert's two files (data.json + movie_tracking.json) the way a /flow
+    save does. Only when the admin works in the site repo itself, so a test or a copy elsewhere
+    never commits the real repo. None on success, else what went wrong."""
+    if not _in_site_folder():
+        return 'the admin is not running in the site folder, so nothing was committed'
+    from admin.routes.curate_flow import _git_commit_push
+    return _git_commit_push(['data.json', 'movie_tracking.json'],
+                            f'Revert {title} — not out yet, back on its own when it is')
+
+
+@bp.route('/revert-movie', methods=['POST'])
+def revert_movie() -> dict:
+    """Revert: the film isn't really out yet (wrongly marked new, usually the pre-order
+    problem). The opposite of Remove: it comes off the wall now and comes back on its own
+    the day it's really out (JustWatch checks it every run). Never for a removed title."""
+    try:
+        data = request.json or {}
+        movie_id = str(data.get('movie_id', '')).strip()
+        if not movie_id:
+            return jsonify({'success': False, 'error': 'Movie ID is required'})
+
+        if _in_site_folder():
+            if _daily_update_running():
+                return jsonify({'success': False, 'error': (
+                    "Today's update is running on GitHub right now. Nothing was changed: revert "
+                    "after it finishes (usually within the hour), so the two don't collide.")})
+            behind = _catch_up_with_github()
+            if behind:
+                return jsonify({'success': False, 'error': (
+                    "Today's update is on GitHub but this computer couldn't catch up with it. "
+                    f"Nothing was changed: ask in a chat window. git said: {behind}")})
+
+        tracking_data = get_tracking_db().load_all()
+        movie = tracking_data.get('movies', {}).get(movie_id)
+        if not movie:
+            return jsonify({'success': False, 'error': f'Movie {movie_id} not found in tracking database'})
+        title = movie.get('title', 'Unknown')
+        try:   # the wall knows a restoration its tracking record may not (display.py's year gap)
+            with open('data.json', 'r') as f:
+                _entry = next((m for m in json.load(f).get('movies', []) if str(m.get('id')) == movie_id), None)
+        except (OSError, ValueError):
+            _entry = None
+        if not putback.owner_revert(movie, wall_entry=_entry):
+            return jsonify({'success': False, 'error': f'"{title}" was removed for good — removed titles are never reverted'})
+        _tdb = get_tracking_db()
+        if not _tdb.save_all(tracking_data) or getattr(_tdb, 'last_export_error', None):
+            return jsonify({'success': False, 'error': (
+                f'"{title}": the tracking file could not be saved, so nothing was published. '
+                'Try again; if it keeps failing, ask in a chat window.')})
+        logger.info(f"Reverted movie {movie_id} ({title}): back to waiting, checked daily")
+
+        try:
+            with open('data.json', 'r') as f:
+                site_data = json.load(f)
+            if putback.revert_wall_entry(site_data, movie_id):
+                safe_write_json('data.json', site_data)
+        except Exception as e:
+            logger.error(f"Failed to update data.json: {e}")
+            return jsonify({'success': False, 'error': f'Reverted in tracking but failed to update data.json: {e}'})
+
+        message = f'"{title}" reverted — off the wall until it\'s really out (checked daily)'
+        caveat = putback.revert_caveat(movie, has_override=movie_id in (load_json(
+            'overrides/watch_links_overrides.json') or {}))
+        if caveat:
+            message += f'. Note: {caveat}'
+        # Saved and published right here, both files together: "Save Changes" can't commit a
+        # revert (the pre-commit hook needs movie_tracking.json with data.json), and the next
+        # local sync resets uncommitted data files -- the revert would be lost.
+        warning = _publish_revert(title)
+        if warning:
+            logger.warning(f"Revert of {movie_id} ({title}) not published: {warning}")
+            message += f'. NOT PUBLISHED YET: {warning}'
+        else:
+            message += '. Saved and published.'
+        return jsonify({'success': True, 'message': message, 'title': title, 'warning': warning})
+    except Exception as e:
+        logger.error(f"Error reverting movie: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+
 @bp.route('/remove-movie', methods=['POST'])
 def remove_movie() -> dict:
     """Remove a movie from the New Arrivals Wall."""
@@ -363,10 +514,15 @@ def remove_movie() -> dict:
         movie = tracking_data['movies'][movie_id]
         title = movie.get('title', 'Unknown')
 
-        # Clear digital_date so it won't be included in future regenerations
+        # A curator removal: status 'removed' (like /remove), so discovery and the purge
+        # treat it as one. It used to only null the date and leave status 'available' —
+        # an orphan that nothing would ever re-check or reconcile.
         movie['digital_date'] = None
         movie['removed_from_wall'] = True
         movie['removed_at'] = datetime.now().isoformat()
+        movie['status'] = 'removed'
+        movie['removed_date'] = datetime.now().strftime('%Y-%m-%d')
+        movie['removed_reason'] = 'manual_removal'
 
         get_tracking_db().save_all(tracking_data)
         logger.info(f"Cleared digital_date for movie {movie_id} ({title}) in tracking")

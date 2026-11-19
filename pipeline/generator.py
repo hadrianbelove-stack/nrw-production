@@ -48,7 +48,7 @@ except ImportError:
 from pipeline.context import PipelineContext
 from pipeline.provider_names import simplify_provider_name
 from pipeline.intake import MovieIntake
-from pipeline.discoverer import ProviderDiscoverer
+from pipeline.discoverer import ProviderDiscoverer, strip_festival_links
 from pipeline.enricher import MovieEnricher
 from pipeline.display import DisplayGenerator
 from pipeline.archive import ArchiveManager
@@ -240,7 +240,7 @@ class DataGenerator:
         """Intake Apple Music Live specials — delegates to pipeline/intake.py"""
         return self._intake.intake_apple_music_live(debug=debug)
 
-    def _transition_movie_to_available(self, movie_id, movie, source, newly_available_ids):
+    def _transition_movie_to_available(self, movie_id, movie, source, newly_available_ids, add_to_site=True):
         """Transition a movie from tracking to available status.
 
         Shared logic for both Type 4 and provider discovery paths.
@@ -257,9 +257,14 @@ class DataGenerator:
         # Clear ALL revert/false-positive flags from any prior state
         for flag in ['_reverted_from_available', '_false_positive_source',
                      '_jw_revert_reason', '_jw_reverted_at', '_jw_reverted',
+                     '_jw_revert_count', '_jw_last_checked', '_jw_legacy_last_check',
+                     '_reverted_by_owner', '_reverted_by_owner_at', '_revert_page_preorder',
+                     '_revert_restoration',
                      '_type4_false_positive', '_providers_false_positive',
                      '_type4_pending']:
             movie.pop(flag, None)
+        if not add_to_site:
+            return   # out, but released too long ago for the wall (owner, Nov 2026: > 30 days)
         newly_available_ids.append(movie_id)
         self.add_movie_to_site_immediately(movie_id, movie)
 
@@ -333,18 +338,113 @@ class DataGenerator:
                 return None
 
             data = response.json()
+            # The EARLIEST US digital date, not the first one TMDB happens to list:
+            # TMDB lists e.g. I Swear's 2026-08-22 Netflix date before its 2026-06-02
+            # rental date. A film goes on the wall the day it first became watchable.
+            dates = []
             for entry in data.get('results', []):
                 if entry.get('iso_3166_1') == 'US':
                     for release in entry.get('release_dates', []):
                         if release.get('type') == 4:  # Type 4 = Digital
                             release_date = release.get('release_date', '')
                             if release_date:
-                                # Return YYYY-MM-DD portion only
-                                return release_date[:10]
-            return None
+                                dates.append(release_date[:10])  # YYYY-MM-DD portion only
+            return min(dates) if dates else None
         except Exception as e:
             self.logger.debug(f"Type 4 date lookup failed for {movie_id}: {e}")
             return None
+
+    def fetch_tmdb_us_release_dates(self, movie_id):
+        """(earliest US theatrical date, earliest US digital date) from TMDB, either may be
+        None; None (not a pair) when TMDB couldn't answer — an unknown date, not a missing
+        one. Used only to date a film put back after a hold (pipeline/putback.py)."""
+        try:
+            response = requests.get(f"https://api.themoviedb.org/3/movie/{movie_id}/release_dates",
+                                    params={'api_key': self.tmdb_key}, timeout=10)
+            if response.status_code != 200:
+                return None
+            theatrical, digital = [], []
+            for entry in response.json().get('results', []):
+                if entry.get('iso_3166_1') != 'US':
+                    continue
+                for release in entry.get('release_dates', []):
+                    day = (release.get('release_date') or '')[:10]
+                    if not day:
+                        continue
+                    if release.get('type') in (2, 3):   # limited / theatrical
+                        theatrical.append(day)
+                    elif release.get('type') == 4:      # digital
+                        digital.append(day)
+            return (min(theatrical) if theatrical else None), (min(digital) if digital else None)
+        except Exception as e:
+            self.logger.debug(f"US release dates lookup failed for {movie_id}: {e}")
+            return None
+
+    @staticmethod
+    def _sync_entry_on_transition(entry, rec):
+        """A film that just came out (tracking -> available) already has a wall entry: carry
+        the tracking record's state over. Pre-order flags the record dropped (a buy-only
+        graduation, a put-back) — otherwise enrichment still treats it as a pre-order and
+        wipes its links the same day — and its date (a put-back's evidence date; buy-only
+        pre-orders have none, and dateless entries show nowhere). A returned festival
+        screening loses its old festival link and flags, or the display step re-hides it
+        under the screening's date. A sent-back entry (an owner Revert) loses its revert
+        marks, and old enrichment attempts are forgotten: this is a new arrival, so the
+        5-attempt cap counts only this one. True if anything changed."""
+        today = datetime.now().strftime('%Y-%m-%d')
+        changed = False
+        for flag in ('_buyonly_preorder', '_is_preorder'):
+            if entry.get(flag) and not rec.get(flag):
+                entry.pop(flag, None)
+                # Now on the main wall: if enrichment can't check it this run (batch limit,
+                # time limit) it waits hidden, like a put-back (enricher._hide_unchecked_putbacks).
+                entry['_preorder_synced_on'] = today
+                changed = True
+        if not entry.get('_is_preorder') and entry.pop('pre_order_links', None) is not None:
+            changed = True
+        for k in ('_jw_reverted', '_jw_revert_reason', '_enrichment_attempts', '_last_enrichment_attempt'):
+            if entry.pop(k, None) is not None:
+                changed = True
+        if entry.get('status') == 'tracking':
+            entry['status'] = 'available'
+            changed = True
+        if rec.get('digital_date') and entry.get('digital_date') != rec['digital_date']:
+            entry['digital_date'] = rec['digital_date']
+            changed = True
+        if rec.get('_digital_date_source') and entry.get('_digital_date_source') != rec['_digital_date_source']:
+            entry['_digital_date_source'] = rec['_digital_date_source']
+            changed = True
+        if rec.get('_screening_expired'):
+            if strip_festival_links(entry.get('watch_links')):
+                changed = True
+            for k in ('virtual_screening_info', '_virtual_screening'):
+                if entry.pop(k, None) is not None:
+                    changed = True
+            if (entry.get('filters') or {}).get('is_virtual_screening'):
+                entry['filters']['is_virtual_screening'] = False
+                changed = True
+        return changed
+
+    def update_wall_entry_date(self, movie_id, new_date):
+        """A pending film's TMDB date moved: move its existing wall entry (the PRE-ORDER
+        lane) too. Never creates an entry. True if it changed one."""
+        try:
+            if not os.path.exists('data.json'):
+                return False
+            with open('data.json', 'r') as f:
+                data = json.load(f)
+            for m in data.get('movies', []):
+                if str(m.get('id')) == str(movie_id):
+                    if m.get('digital_date') == new_date:
+                        return False
+                    m['digital_date'] = new_date
+                    m['_digital_date_source'] = 'tmdb_type4'
+                    data['generated_at'] = datetime.now().isoformat()
+                    return bool(self.storage.atomic_write_json(data, 'data.json', backup=True))
+            return False
+        except Exception as e:
+            self.logger.warning(f"Could not move the wall date of {movie_id}: {e}")
+            return False
 
     # CJK / Japanese / Korean (+ fullwidth) ranges — NRW does not show this
     # lettering on any surface, and it renders as tofu boxes on Roku.
@@ -428,11 +528,16 @@ class DataGenerator:
 
                 # Re-discovery of a previously hidden movie (e.g., pre-sale that has now genuinely released)
                 if existing_entry.get('hidden'):
-                    existing_entry.pop('hidden', None)
+                    # Hidden until enrichment re-checks it on JustWatch (an error deferred it):
+                    # enrichment shows it again once its pre-check passes.
+                    if not existing_entry.get('_jw_unconfirmed'):
+                        existing_entry.pop('hidden', None)
                     existing_entry['digital_date'] = movie_data.get('digital_date', datetime.now().strftime('%Y-%m-%d'))
                     existing_entry['providers'] = movie_data.get('providers', {})
                     existing_entry['_enrichment_status'] = 'pending'
                     existing_entry['_discovered_at'] = datetime.now().isoformat()
+                    if movie_data.get('status') == 'available':
+                        self._sync_entry_on_transition(existing_entry, movie_data)
 
                     updated_data = existing_data.copy() if 'existing_data' in locals() and existing_data else {}
                     updated_data['movies'] = data_movies
@@ -444,6 +549,19 @@ class DataGenerator:
                     else:
                         self.logger.error(f"Failed to unhide {title} ({movie_id}) in data.json")
                         print(f"   ❌ Failed to unhide {title} in data.json")
+                    return True
+
+                # It just came out (only _transition_movie_to_available passes 'available'):
+                # bring the existing entry up to date with the tracking record.
+                if movie_data.get('status') == 'available' and self._sync_entry_on_transition(existing_entry, movie_data):
+                    updated_data = existing_data.copy() if 'existing_data' in locals() and existing_data else {}
+                    updated_data['movies'] = data_movies
+                    updated_data['generated_at'] = datetime.now().isoformat()
+                    if self.storage.atomic_write_json(updated_data, 'data.json', backup=True):
+                        print(f"   📝 {title} already in data.json - entry updated (pre-order flags / date)")
+                    else:
+                        self.logger.error(f"Failed to update {title} ({movie_id}) in data.json")
+                        print(f"   ❌ Failed to update {title} in data.json")
                     return True
 
                 self.logger.info(f"Movie {title} ({movie_id}) already in data.json - skipping")
@@ -1778,6 +1896,29 @@ class DataGenerator:
 
         return new_cached
 
+    @staticmethod
+    def _return_screening_to_tracking(tracking_movie, screening_end=None):
+        """Expired screening → back to tracking, so discovery finds a regular release.
+
+        `_screening_expired` turns off the virtual-screening JustWatch bypass for it
+        (TMDB still lists 'Eventive' for some), and stale pre-order markers are
+        dropped so the pre-order bypass can't put it back unchecked either: JustWatch
+        must confirm it like any other film. `_screening_ended` (the screening's last
+        day): TMDB sometimes lists the festival screening as a digital release, and
+        put-back dating must not use that date (pipeline/putback.py).
+
+        Never for a title the owner REMOVED: remove = never back on the wall; only a
+        waiting film is returned (owner, Nov 2026: "we don't want to revert removed titles")."""
+        if tracking_movie.get('status') == 'removed':
+            return
+        tracking_movie['status'] = 'tracking'
+        tracking_movie['_screening_expired'] = True
+        tracking_movie.setdefault('_screening_returned_at', datetime.now().strftime('%Y-%m-%d'))
+        if screening_end and not tracking_movie.get('_screening_ended'):
+            tracking_movie['_screening_ended'] = str(screening_end)[:10]
+        for k in ('digital_date', '_virtual_screening', '_is_preorder', '_type4_pending'):
+            tracking_movie.pop(k, None)
+
     def check_virtual_screening_expirations(self):
         """
         Check virtual screening links for expiration.
@@ -1794,29 +1935,79 @@ class DataGenerator:
         movies = data.get('movies', [])
         screening_movies = [m for m in movies if m.get('filters', {}).get('is_virtual_screening')]
 
+        # Load tracking database for status reset
+        tracking_path = 'movie_tracking.json'
+        tracking_data = self.storage.tracking_db.load_all()
+
+        # Screenings that already LEFT the wall (aged into the archive, or dropped) while
+        # tracking still says 'available': nothing re-checked them, so their regular
+        # releases were never found (133 at HEAD, Nov 2026, e.g. Montreal, My Beautiful —
+        # on Amazon since 2026-11-04). Return each once; JustWatch then checks it daily.
+        off_wall_returned = 0
+        try:
+            with open('data_archive.json', 'r') as f:
+                _arc = json.load(f)
+            _arc = _arc.get('movies', _arc) if isinstance(_arc, dict) else _arc
+            _arc = _arc.values() if isinstance(_arc, dict) else _arc
+            # id -> the screening's last day (None if unknown)
+            archived_vs = {str(m.get('id')): (m.get('virtual_screening_info') or {}).get('available_end')
+                           for m in _arc if isinstance(m, dict)
+                           and ((m.get('filters') or {}).get('is_virtual_screening') or m.get('virtual_screening_info'))}
+        except (OSError, ValueError):
+            archived_vs = {}
+        on_wall = {str(m.get('id')) for m in movies}
+        for _mid, _rec in ((tracking_data or {}).get('movies') or {}).items():
+            if (_rec.get('status') == 'available' and not _rec.get('_screening_expired')
+                    and str(_mid) not in on_wall
+                    and (_rec.get('_virtual_screening') or str(_mid) in archived_vs)):
+                self._return_screening_to_tracking(_rec, archived_vs.get(str(_mid)))
+                off_wall_returned += 1
+                print(f"  ↩ {_rec.get('title', _mid)} — screening already off the wall; returned to "
+                      f"tracking (checked daily for a regular release)")
+        if off_wall_returned and not screening_movies:
+            self.storage.atomic_write_json(tracking_data, tracking_path, backup=True)
+            print(f"  💾 Updated movie_tracking.json ({off_wall_returned} screening(s) returned)")
+
         if not screening_movies:
             print("  No virtual screening movies found")
             return
 
         print(f"  Checking {len(screening_movies)} virtual screening movies...")
         active_count = 0
-        expired_count = 0
+        expired_count = off_wall_returned  # a return also needs the tracking save below
         today_str = datetime.now().strftime('%Y-%m-%d')
-        modified = False
+        modified = bool(off_wall_returned)
 
         # Load manual end dates from config as fallback
         config_end_dates = self.config.get('screening_end_dates', {})
-
-        # Load tracking database for status reset
-        tracking_path = 'movie_tracking.json'
-        tracking_data = self.storage.tracking_db.load_all()
 
         for movie in screening_movies:
             title = movie.get('title', 'Unknown')
             screening_info = movie.get('virtual_screening_info', {})
 
-            # Skip already-expired movies
+            # Already expired. Enrichment's display step marks expiry BEFORE this check
+            # runs, so skipping these meant no expired screening was ever returned to
+            # tracking, and its later regular release was never found (169 of 170 at
+            # HEAD, Nov 2026). Return each one once; JustWatch then checks it daily.
+            _x_end = screening_info.get('available_end') or ''
+            _x_start = screening_info.get('available_start') or ''
+            _x_seen = (screening_info.get('last_checked') or '')[:10]
+            if (screening_info.get('status') == 'expired' and _x_end >= today_str
+                    and _x_start and _x_seen and _x_start > _x_seen):
+                # A stale 'expired' from an EARLIER screening: the window the record now shows
+                # starts after the day it was marked expired and hasn't ended (Hollow Girls:
+                # marked expired in August, screening Dec 13-21). Check it like an active one
+                # below. (One marked expired DURING its window -- a dead link -- stays ended.)
+                screening_info['status'] = 'active'
+                movie['virtual_screening_info'] = screening_info
+                modified = True
             if screening_info.get('status') == 'expired':
+                _x_rec = (tracking_data or {}).get('movies', {}).get(str(movie.get('id', '')))
+                if _x_rec and _x_rec.get('status') == 'available' and not _x_rec.get('_screening_expired'):
+                    self._return_screening_to_tracking(_x_rec, screening_info.get('available_end'))
+                    expired_count += 1  # triggers the tracking save below
+                    modified = True
+                    print(f"  ↩ {title} — screening ended; returned to tracking (checked daily for a regular release)")
                 continue
 
             # Find the screening link to check
@@ -1862,10 +2053,8 @@ class DataGenerator:
 
                 movie_id = str(movie.get('id', ''))
                 if movie_id and movie_id in tracking_data.get('movies', {}):
-                    tracking_movie = tracking_data['movies'][movie_id]
-                    tracking_movie['status'] = 'tracking'
-                    if 'digital_date' in tracking_movie:
-                        del tracking_movie['digital_date']
+                    self._return_screening_to_tracking(tracking_data['movies'][movie_id],
+                                                       screening_info.get('available_end'))
                     print(f"    → Returned to tracking for VOD re-discovery")
 
             # Check 1: Date-based expiration (available_end in the past)

@@ -30,6 +30,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import load_env
 from gemini_scraper import GeminiCapsuleWriter
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from curate_list import _in_window  # /curate's window: dated in it, or landed in it
 
 
 def make_writer(args):
@@ -247,8 +249,8 @@ def cmd_batch(args):
     # Sort by most recent digital_date
     movies.sort(key=lambda m: m.get('digital_date', '') or '', reverse=True)
 
-    # Optional window: only process films whose digital_date is within --days
-    # of today (matches the /curate 7-day window — no need to capsule the whole wall).
+    # Optional window: only films new in the last --days — dated in it, or landed on the
+    # wall in it (a put-back keeps its older date); the same rule as /curate's window.
     from_date = None
     if args.days:
         from datetime import date, timedelta
@@ -265,8 +267,7 @@ def cmd_batch(args):
             continue
 
         if from_date is not None:
-            dd = m.get('digital_date', '') or ''
-            if not (from_date <= dd <= today):
+            if not _in_window(m, from_date, today):
                 continue
 
         cache_key = f"{title}_{year}"

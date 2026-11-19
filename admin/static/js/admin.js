@@ -211,7 +211,7 @@ function addQuote(movieId) {
 // Remove movie
 // ============================================
 function removeMovie(movieId, title) {
-    if (!confirm(`Remove "${title}" from the New Arrivals Wall?\n\nThis will remove the movie from the site.`)) {
+    if (!confirm(`Remove "${title}" for good?\n\nIt will never come back on the wall.\n(A film that just isn't out yet? Use Revert instead.)`)) {
         return;
     }
 
@@ -240,6 +240,42 @@ function removeMovie(movieId, title) {
             showSuccess(data.message || 'Movie removed');
         } else {
             alert(data.error || 'Failed to remove movie');
+        }
+    })
+    .catch(error => { alert('Error: ' + error); });
+}
+
+// ============================================
+// Revert movie — not really out yet (the opposite of Remove: it comes back)
+// ============================================
+function revertMovie(movieId, title) {
+    if (!confirm(`Revert "${title}"?\n\nIt isn't really out yet (e.g. a pre-order). It comes off the wall now and comes back on its own the day it's really out.`)) {
+        return;
+    }
+    fetch('/revert-movie', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ movie_id: movieId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const row = document.querySelector(`.movie-row[data-movie-id="${movieId}"]`);
+            const panel = document.querySelector(`.ep[data-movie-id="${movieId}"]`);
+            [row, panel].forEach(el => {
+                if (!el) return;
+                el.style.transition = 'opacity 0.3s';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            });
+            // The revert saves and publishes itself (nothing for "Save Changes" to do).
+            if (data.warning) {
+                alert(data.message);
+            } else {
+                showSuccess(data.message || 'Movie reverted');
+            }
+        } else {
+            alert(data.error || 'Failed to revert movie');
         }
     })
     .catch(error => { alert('Error: ' + error); });

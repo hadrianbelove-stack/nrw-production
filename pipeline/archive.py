@@ -10,6 +10,8 @@ import json
 import os
 from datetime import datetime, timedelta
 
+from constants import MAX_ENRICHMENT_ATTEMPTS
+
 
 class ArchiveManager:
     """Manages data.json lifecycle: safe saves, archival, and purging.
@@ -96,8 +98,12 @@ class ArchiveManager:
         to_archive = []
         for m in movies:
             dd = m.get('digital_date') or ''
-            # Archive if digital_date exists, is in the past, and older than cutoff
-            if dd and dd <= today and dd < cutoff:
+            # Archive if digital_date exists, is in the past, and older than cutoff — but
+            # not a film still waiting for enrichment's JustWatch check (hidden after an
+            # error or the batch limit): archived unchecked, nothing would check it again.
+            # (Once its retries run out it is archived as usual; /morning reports it stuck.)
+            waiting = m.get('_jw_unconfirmed') and m.get('_enrichment_attempts', 0) < MAX_ENRICHMENT_ATTEMPTS
+            if dd and dd <= today and dd < cutoff and not waiting:
                 to_archive.append(m)
             else:
                 keep.append(m)
@@ -116,10 +122,25 @@ class ArchiveManager:
             except Exception:
                 archive_movies = []
 
-        # Dedupe by ID before appending
-        existing_ids = {str(m.get('id')) for m in archive_movies}
-        new_archived = [m for m in to_archive if str(m.get('id')) not in existing_ids]
+        # Dedupe by ID before appending. A stale shell already archived for this ID (the
+        # purge archives the 'reverted' copy of a pulled film) must not block the film's
+        # real entry when it later ages out — replace the shell (98 films had lost their
+        # real copy this way by Nov 2026). A real archived entry is never replaced.
+        def _is_shell(m):
+            return m.get('_enrichment_status') == 'reverted' or m.get('status') == 'tracking'
+        position = {str(m.get('id')): i for i, m in enumerate(archive_movies)}
+        new_archived = []
+        replaced = 0
+        for m in to_archive:
+            k = str(m.get('id'))
+            if k not in position:
+                new_archived.append(m)
+            elif _is_shell(archive_movies[position[k]]) and not _is_shell(m):
+                archive_movies[position[k]] = m
+                replaced += 1
         archive_movies.extend(new_archived)
+        if replaced:
+            print(f"   ↺ Replaced {replaced} stale 'reverted' archive shell(s) with the real entry")
 
         # Save archive FIRST (before modifying data.json) — atomic so a crash
         # mid-write doesn't destroy the archive before data.json is trimmed.
@@ -142,10 +163,12 @@ class ArchiveManager:
     def purge_removed_movies(self, movies_list=None):
         """Remove movies with status='removed' or _enrichment_status='reverted'.
 
-        Handles two cases:
+        Handles three cases:
         1. Manually removed movies (status='removed' in movie_tracking.json)
         2. JW-reverted movies (_enrichment_status='reverted') — discovered
            but only available on excluded platforms, shouldn't be on the wall
+        3. Films the owner reverted (tracking: still waiting, _reverted_by_owner) whose
+           entry is on the wall anyway — a stale write (marked as reverted first)
 
         When movies_list is provided, filters in-memory and returns the filtered list
         (caller is responsible for saving). When None, reads/writes data.json directly.
@@ -155,8 +178,15 @@ class ArchiveManager:
             Filtered list when movies_list provided, None otherwise.
         """
         # Get manually removed IDs from tracking
+        from pipeline import putback
         from pipeline.tracking_db import get_tracking_db
-        removed_ids = {str(mid) for mid, _ in get_tracking_db().find_by_status('removed')}
+        _db = get_tracking_db()
+        removed_ids = {str(mid) for mid, _ in _db.find_by_status('removed')}
+        # Sent back by the owner (Revert) and still waiting to come out: off the wall even when
+        # a stale data.json write brought its entry back unmarked (marked first, so the archive
+        # keeps a shell, never a copy that would block its real entry later).
+        owner_reverted = {str(mid) for mid, rec in _db.find_by_status('tracking')
+                          if putback.is_owner_reverted(rec)}
 
         if movies_list is not None:
             movies = movies_list
@@ -174,6 +204,9 @@ class ArchiveManager:
             if str(m.get('id')) in removed_ids:
                 to_purge_removed.append(m)
             elif m.get('_enrichment_status') == 'reverted':
+                to_purge_reverted.append(m)
+            elif str(m.get('id')) in owner_reverted:
+                putback.mark_reverted_entry(m)
                 to_purge_reverted.append(m)
             else:
                 keep.append(m)

@@ -47,3 +47,28 @@ When adding entries, consider: should this become a Critical Rule in CLAUDE.md? 
 **What went wrong:** Concluded "Dances With Films isn't a tracked festival" as the sole explanation for why a movie wasn't intaken, without checking that Passes A and B intake ALL movies from TMDB regardless of festival. Presented a single hypothesis as fact.
 **Correct approach:** Never conclude how a system works without reading the actual code for ALL relevant passes/phases. Multiple hypotheses are mandatory.
 **Rule added:** CLAUDE.md Diagnosis Rules: "Verify system behavior before concluding."
+
+### 2026-11-14 - Pre-release pulls with no way back; a rushed fix shipped, then was reverted
+**What went wrong:** Since January, each wave of pre-releases and anomalies triggering early arrivals was answered by pulling films into a state nothing re-checks. Discovery only re-checks status `tracking`.
+- Jan 20: "available, no date" for about 1,000 films after the Jan 10 bulk-detection anomaly.
+- Mar 27: a Type 4 change transitioned 1,335 films and put 22 on the wall.
+- Apr 24–29: one-off `removed` sweeps.
+- Apr–Jun: hand removals of "not released yet" films (Project Hail Mary, Paradise, Anastacia, I Swear, Billie Eilish).
+- May 28: the PVOD price gate, and a sweep that set 28 films to `removed`.
+- June: a 4-strike permanent skip (443 films).
+- Ongoing: buy-only date erasure, and expired screenings left hidden.
+
+Lessons were learned and then undone: no JustWatch gate in discovery (removed Mar 26, re-added May 9); no permanent skips (removed Apr 22, re-added May 9 and Jun 16); "unsure must not block" (April, then the May buy-only detector).
+
+On Nov 13 a fix (fb05b935) removed the PVOD gate without knowing it was quietly the main defense against pre-order listings during theatrical runs. It also loosened JustWatch matching and changed dating without evidence. An independent review confirmed 31 problems, and a replay showed it would have put 108 true pre-releases on the wall early. It was reverted Nov 14 (78303fd6) before the CI run.
+**Correct approach:**
+- A hold is a wait: checked every run until the film lands, dated from evidence, never on a day JustWatch said "no offer".
+- Date from JustWatch's own first record of a real way to watch the film, not one store's offer start. Amazon re-lists older films: Dolly came out 2026-03-31, and Amazon's offer says 2026-10-22.
+- A held film gets no shortcut onto the wall. JustWatch decides, every run.
+- Fix the put-back side separately from what counts as a pre-release, in small steps.
+- Before changing a rule, read its history: what it silently protects against.
+- Ship pipeline changes only after an independent review, a full dry run on real data, and the owner's OK on a plain-English summary.
+- Tests run the real modules on real records.
+
+**Rule added:** Any rule that holds a film back must state how the film gets back on, and must be tested against the films it would hold.
+

@@ -7,6 +7,8 @@ Remove a movie from the NRW wall permanently. This is a pull → work → push a
 
 **Argument**: $ARGUMENTS (movie title or TMDB ID)
 
+**Remove is ONLY for a title the owner never wants on the wall** (not a film, wrong film, duplicate, out of scope): it is gone for good — discovery never checks it again. **If the film just isn't out yet** (wrongly marked new — usually the pre-order problem: still in theaters, a pre-order listing, a premature signal), **STOP: that is `/revert`, not `/remove`.** Revert is the opposite: the film comes back on its own the day it's really out. Using `/remove` for not-yet-released films lost Project Hail Mary, I Swear, Paradise, Anastacia and the Billie Eilish concert film (Apr–Jun 2026).
+
 ---
 
 ## Step 1 — Pull latest from CI

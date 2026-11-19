@@ -24,6 +24,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import load_env
 from gemini_scraper import PullQuoteFinder
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from curate_list import _in_window  # /curate's window: dated in it, or landed in it
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
@@ -86,8 +88,9 @@ def convert_to_combined_format(title, year, quotes):
 def main():
     parser = argparse.ArgumentParser(description='Batch scrape pull quotes for wall movies')
     parser.add_argument('--days', type=int, default=7,
-                        help='Scrape films whose digital_date is within the last N days (default: 7, matches the '
-                             'curate window). This is the normal limit — catches up across missed days, drops older films.')
+                        help='Scrape films new in the last N days (default: 7) — digital_date in the window, or '
+                             'landed on the wall in it (a put-back keeps its older date); the same rule as /curate. '
+                             'This is the normal limit — catches up across missed days, drops older films.')
     parser.add_argument('--limit', type=int, default=None,
                         help='Optional hard cap on movie count (default: none — the date window is the limit)')
     parser.add_argument('--all', action='store_true',
@@ -149,8 +152,7 @@ def main():
         # Date window (skipped by --all): recent arrivals only — excludes old films
         # AND future-dated pre-orders (which have no reviews yet).
         if not args.all:
-            dd = m.get('digital_date') or ''
-            if not (_window_start <= dd <= _today):
+            if not _in_window(m, _window_start, _today):  # same window as /curate
                 continue
 
         cache_key = f"{title}_{year}"

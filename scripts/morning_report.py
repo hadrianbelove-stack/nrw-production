@@ -13,11 +13,12 @@ import json
 import os
 import signal
 import sys
+from collections import Counter
 from datetime import date, timedelta
 
 # Reuse /curate's exact slop-candidate + reviewed logic so the two never disagree.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from curate_list import _skip_old, _load, REVIEWED
+from curate_list import _skip_old, _load, _in_window, REVIEWED
 
 signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
@@ -51,6 +52,112 @@ def _capsule_titles():
         return set()
 
 
+HOLD_LABELS = {
+    "justwatch_no_valid_offers": "JustWatch has it, no offer yet",
+    "justwatch_no_match": "JustWatch can't find it",
+    "justwatch_theatrical_pvod": "in theaters, still a pre-order",
+    "zero_watch_links": "no watch links yet",
+    "owner_revert": "you sent it back (not out yet)",
+}
+DATE_SOURCES = {
+    "jw_first_offer": "the day JustWatch first listed a way to watch it",
+    "putback_evidence": "TMDB's digital release date",
+    "jw_first_verified": "the day JustWatch first confirmed it",
+    "putback_after_hold": "the day after it was last seen not out yet",
+    "putback_review": "no date evidence — the day JustWatch confirmed it",
+    "jw_offer_start": "the day Amazon's rental went live (after you reverted it)",
+}
+
+
+def held_and_put_back(ms, run_date):
+    """Films held because they aren't out yet are checked every run until they land
+    (pipeline/putback.py). Held films are COUNTED (chronic holds aren't listed — report
+    noise rule); every film PUT BACK today is listed, with how it was dated, whether
+    it is on the wall or went straight to the archive, and any date to review."""
+    try:
+        trk = json.load(open("movie_tracking.json"))
+        trk = trk.get("movies", trk)
+    except Exception:
+        print("\n⚠ Held / put back: movie_tracking.json unreadable — skipped (→ Concerns)")
+        return
+    held = [r for r in trk.values() if r.get("status") == "tracking" and r.get("_jw_revert_reason")]
+
+    checked = held   # every held film is checked daily, reverted reissues included
+    if checked:
+        # A film you sent back stays "you sent it back" whatever its latest check said.
+        by = Counter(HOLD_LABELS["owner_revert"] if r.get("_reverted_by_owner")
+                     else HOLD_LABELS.get(r["_jw_revert_reason"], r["_jw_revert_reason"]) for r in checked)
+        parts = ", ".join(f"{n} {label}" for label, n in by.most_common())
+        print(f"\nHeld, checked daily until they come out: {len(checked)} ({parts})")
+    # Films you sent back that are taking long: JustWatch can't find one, or it has waited a
+    # week with its TMDB date passed (or none) and nothing new on JustWatch -- out only on a
+    # store whose page can't be read, say. Few (each one is your own revert). Information only:
+    # each is still checked daily and comes back by itself.
+    stale = []
+    for r in held:
+        rev = str(r.get("_reverted_by_owner") or "")[:10]
+        if not rev:
+            continue
+        try:
+            waited = (date.fromisoformat(run_date[:10]) - date.fromisoformat(rev)).days
+        except ValueError:
+            continue
+        dd = str(r.get("digital_date") or "")[:10]
+        if (r.get("_jw_revert_reason") == "justwatch_no_match"
+                or (waited >= 7 and (not dd or dd <= run_date[:10]))):
+            stale.append((r, waited))
+    if stale:
+        print(f"Sent back by you, still waiting: {len(stale)} — each is checked daily and comes back by "
+              f"itself when JustWatch shows it watchable:")
+        for r, waited in sorted(stale, key=lambda x: -x[1]):
+            why = ("JustWatch can't find it" if r.get("_jw_revert_reason") == "justwatch_no_match"
+                   else f"waiting {waited} days, nothing new on JustWatch")
+            print(f'  • {r.get("title")} ({r.get("year")}) — sent back {str(r["_reverted_by_owner"])[:10]}; {why}')
+    # On the wall but hidden: JustWatch couldn't check them in enrichment (an error, or the
+    # 100-film limit). Re-checked first next run; shown once the check passes.
+    waiting = [m for m in ms if m.get("_jw_unconfirmed")]
+    stuck = [m for m in waiting if (m.get("_enrichment_attempts") or 0) >= 5]
+    if len(waiting) > len(stuck):
+        print(f"Waiting hidden for a JustWatch check (error or enrichment limit): {len(waiting) - len(stuck)} — "
+              f"re-checked first next run")
+    if stuck:
+        print(f"⚠ Hidden and stuck (→ Concerns): {len(stuck)} — enrichment failed 5 times since "
+              f"they arrived, so they are no longer retried (/enrich <id> retries one):")
+        for m in stuck:
+            print(f'  • {m.get("title")} ({m.get("year")}) — hidden since {m.get("_jw_unconfirmed")}; '
+                  f'last enrichment: {m.get("_enrichment_status") or "unknown"}')
+    # Only put-backs that stuck: a film sent back again later in the same run is still
+    # held (counted above), not "put back".
+    back = [(mid, r) for mid, r in trk.items()
+            if str(r.get("_put_back_on", ""))[:10] == run_date and r.get("status") == "available"]
+    if not back:
+        return
+    on_wall = {str(m.get("id")) for m in ms if not m.get("hidden")}
+    hidden_on_wall = {str(m.get("id")) for m in ms if m.get("hidden")}
+    try:
+        arc = json.load(open("data_archive.json"))
+        arc = arc.get("movies", arc) if isinstance(arc, dict) else arc
+        in_archive = {str(m.get("id")) for m in (arc.values() if isinstance(arc, dict) else arc)
+                      if isinstance(m, dict) and m.get("_enrichment_status") != "reverted"}
+    except Exception:
+        in_archive = set()
+    review = sum(1 for _, r in back if r.get("_date_needs_review"))
+    print(f"\nPut back today (came out after a hold): {len(back)}"
+          f"{f' — {review} need a date check (→ Concerns)' if review else ''}")
+    for mid, r in sorted(back, key=lambda x: (not x[1].get("_date_needs_review"), x[1].get("digital_date") or "")):
+        where = ("wall" if mid in on_wall else "archive (out more than 90 days)" if mid in in_archive
+                 else "hidden — waiting for a JustWatch check" if mid in hidden_on_wall
+                 and any(str(m.get("id")) == mid and m.get("_jw_unconfirmed") for m in ms)
+                 else "NOT on the wall or archive — check (→ Concerns)")
+        if r.get("_date_needs_review"):
+            how = (f"DATE NEEDS REVIEW — dated {r.get('digital_date') or 'no date'} "
+                   f"({DATE_SOURCES.get(r.get('_digital_date_source'), r.get('_digital_date_source'))}): "
+                   f"weak evidence — the hold went unchecked, or TMDB couldn't be reached")
+        else:
+            how = f"dated {r.get('digital_date')} ({DATE_SOURCES.get(r.get('_digital_date_source'), r.get('_digital_date_source'))})"
+        print(f'  • {r.get("title")} ({r.get("year")}) — {how} | held since {r.get("_held_since") or "?"} | {where}')
+
+
 def overnight():
     data = json.load(open("data.json"))
     ms = data["movies"] if isinstance(data, dict) else data
@@ -63,7 +170,7 @@ def overnight():
     deferred = enr.get("deferred_details", [])
     REASONS = {
         "justwatch_no_valid_offers": "Coming soon (JustWatch has no live offers yet)",
-        "justwatch_theatrical_pvod": "In theaters / PVOD only",
+        "justwatch_theatrical_pvod": "In theaters, still a pre-order",
         "justwatch_no_match": "No JustWatch listing yet",
         "zero_watch_links": "No watch links after enrichment",
     }
@@ -81,7 +188,9 @@ def overnight():
     new_rel = [m for m in ms if str(m.get("_discovered_at", ""))[:10] == run_date]
     print(f"New Releases: {len(new_rel)}")
     for m in sorted(new_rel, key=lambda m: not m.get("is_slop")):
-        print(f'  • {m.get("title")} ({m.get("year")}) — {"slop" if m.get("is_slop") else "shown"}')
+        _shown = ("hidden — waiting for a JustWatch check" if m.get("_jw_unconfirmed")
+                  else "pre-order" if m.get("_is_preorder") else "shown")
+        print(f'  • {m.get("title")} ({m.get("year")}) — {"slop" if m.get("is_slop") else _shown}')
 
     reverts = [d for d in deferred if str(d.get("reason", "")).startswith("jw_revert:")]
     new_rev = [d for d in reverts if first_rev(d) == run_date]
@@ -91,6 +200,8 @@ def overnight():
         print(f'  • {d.get("title")} [{d.get("digital_date") or "—"}] — {humanize(d.get("reason",""))} | {plats(d)}')
     if hidden:
         print(f"  ({hidden} chronic/aged revert(s) not listed)")
+
+    held_and_put_back(ms, run_date)
 
     other = [d for d in deferred if not str(d.get("reason", "")).startswith("jw_revert:")]
     if other:
@@ -104,6 +215,14 @@ def overnight():
         print(f"\nHeld as pre-order (waiting on store availability): {len(held)}")
         for d in held:
             print(f'  • {d.get("title")}')
+
+    # JustWatch errors / outage during discovery — only appears if it actually happened.
+    # Those films just wait (no strike) and are checked again next run.
+    _res = disc.get("results", {})
+    if _res.get("jw_errors") or _res.get("jw_healthy") is False:
+        print(f"\n⚠ JustWatch trouble during discovery (→ Concerns): {_res.get('jw_errors') or 0} lookup "
+              f"error(s){'; outage detected' if _res.get('jw_healthy') is False else ''} — those films "
+              f"wait for the next run (no strike)")
 
     # Store-page CAPTCHA blocks — only appears if it actually happened
     captchas = disc.get("captcha_block_titles", [])
@@ -144,8 +263,9 @@ def backlog():
     # Capsule presence — same source /curate Stage 4 uses.
     ct = _capsule_titles()
 
-    arrivals = [m for m in data["movies"]
-                if from_date <= m.get("digital_date", "") <= today]
+    # Same window as /curate: dated this week, or landed this week with an older date
+    # (a film put back after a hold keeps its real date).
+    arrivals = [m for m in data["movies"] if _in_window(m, from_date, today)]
     arrivals.sort(key=lambda m: m.get("digital_date", ""), reverse=True)
 
     rev = _load(REVIEWED, {})
@@ -206,7 +326,7 @@ def quotes():
     rev = _load(REVIEWED, {})
     cy = date.today().year
     cands = [m for m in data["movies"]
-             if from_date <= m.get("digital_date", "") <= today
+             if _in_window(m, from_date, today)
              and any(n in ("capsule", "quotes") for n in _needs_work(m, ct, rev, cy))]
 
     # Entry lookup mirrors get_quotes.py: exact "{title}_{year}" key, then

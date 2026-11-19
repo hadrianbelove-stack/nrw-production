@@ -78,8 +78,16 @@ def _buzz(m):
 
 
 def _in_window(m, from_date, today):
+    """New this window: digital date in the window, OR the film landed on the wall in
+    the window (a film put back after a hold keeps its real, older date — without
+    this it would never reach curation)."""
+    if m.get("_jw_unconfirmed") or m.get("_enrichment_status") == "reverted":
+        # hidden until its JustWatch check passes, or sent back to tracking (an owner
+        # Revert, purged next run): not on the wall, nothing to curate
+        return False
     dd = m.get("digital_date", "") or ""
-    return from_date <= dd <= today
+    landed = str(m.get("_discovered_at", "") or "")[:10]
+    return (from_date <= dd <= today) or (bool(dd) and dd <= today and from_date <= landed <= today)
 
 
 def _skip_old(m, current_year):
