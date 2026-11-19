@@ -1,57 +1,152 @@
 {
-  "timestamp": "2026-11-19T06:45:55.546757",
-  "movies_requested": 11,
-  "movies_enriched": 3,
-  "movies_deferred": 8,
+  "timestamp": "2026-11-19T17:30:21.274624",
+  "movies_requested": 17,
+  "movies_enriched": 0,
+  "movies_deferred": 17,
   "deferred_details": [
     {
-      "title": "He Said, She Said: Till Death Do Us Part",
+      "title": "Gordon",
       "reason": "jw_error_retry",
-      "digital_date": "2026-11-17",
-      "discovered_at": "2026-11-19T06:27:37.102004",
+      "digital_date": "2026-11-18",
+      "discovered_at": "2026-11-19T17:12:01.957601",
       "discovery_source": "provider_availability_check",
       "revert_count": 0,
       "first_reverted_at": "",
       "tmdb_platforms": [
-        "Paramount+ Amazon Channel"
+        "Netflix",
+        "Netflix Standard with Ads"
       ]
     },
     {
-      "title": "A Course Called Ireland",
+      "title": "Student of the Year: After Dark",
       "reason": "jw_error_retry",
-      "digital_date": "2026-10-25",
-      "discovered_at": "2026-11-19T06:27:37.499045",
+      "digital_date": "2026-11-13",
+      "discovered_at": "2026-11-19T17:12:02.375532",
       "discovery_source": "provider_availability_check",
       "revert_count": 0,
       "first_reverted_at": "",
       "tmdb_platforms": [
-        "Paramount Plus Premium",
-        "Paramount Plus Essential",
-        "Paramount Plus Apple TV channel",
-        "Paramount+ Amazon Channel"
+        "Hulu"
       ]
     },
     {
-      "title": "Marco: The Invented Truth",
+      "title": "Clangold",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-13",
+      "discovered_at": "2026-11-19T17:12:02.867170",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "HBO Max Amazon Channel",
+        "HBO Max"
+      ]
+    },
+    {
+      "title": "Murder in Galicia",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-13",
+      "discovered_at": "2026-11-19T17:12:03.283964",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ]
+    },
+    {
+      "title": "How Deep Is Your Love",
       "reason": "jw_error_retry",
       "digital_date": "2026-11-19",
-      "discovered_at": "2026-11-19T06:27:43.161092",
+      "discovered_at": "2026-11-19T17:12:04.740067",
       "discovery_source": "provider_availability_check",
       "revert_count": 0,
       "first_reverted_at": "",
       "tmdb_platforms": [
-        "aha"
+        "OVID"
       ]
     },
     {
-      "title": "Frostbite",
+      "title": "One Night Out with Alan Cumming",
       "reason": "jw_error_retry",
-      "digital_date": "2026-12-18",
-      "discovered_at": "2026-11-19T06:27:49.146837",
+      "digital_date": "2026-11-19",
+      "discovered_at": "2026-11-19T17:12:07.792504",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
+    },
+    {
+      "title": "Red Snow",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-12-11",
+      "discovered_at": "2026-11-19T17:12:27.455735",
       "discovery_source": "tmdb_type4",
       "revert_count": 0,
       "first_reverted_at": "",
       "tmdb_platforms": []
+    },
+    {
+      "title": "#Cult",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-19",
+      "discovered_at": "2026-11-19T17:12:28.415666",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ]
+    },
+    {
+      "title": "Lunar Sway",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-12-08",
+      "discovered_at": "2026-11-19T17:15:05.258693",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "How to Rob a Bank",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-12-08",
+      "discovered_at": "2026-11-19T06:30:06.430328",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-11-18",
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ]
+    },
+    {
+      "title": "Victorian Psycho",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-12-15",
+      "discovered_at": "2026-11-19T06:30:05.144133",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 1,
+      "first_reverted_at": "2026-11-18",
+      "tmdb_platforms": [
+        "Fandango At Home"
+      ]
+    },
+    {
+      "title": "Portrait of Many Faces",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-18",
+      "discovered_at": "2026-11-19T06:28:19.223424",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Eros Now Select Apple TV channel"
+      ]
     },
     {
       "title": "The Body in the Locker",
@@ -74,43 +169,56 @@
       ]
     },
     {
-      "title": "Portrait of Many Faces",
+      "title": "Frostbite",
       "reason": "jw_error_retry",
-      "digital_date": "2026-11-18",
-      "discovered_at": "2026-11-19T06:28:19.223424",
+      "digital_date": "2026-12-18",
+      "discovered_at": "2026-11-19T06:27:49.146837",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Marco: The Invented Truth",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-19",
+      "discovered_at": "2026-11-19T06:27:43.161092",
       "discovery_source": "provider_availability_check",
       "revert_count": 0,
       "first_reverted_at": "",
       "tmdb_platforms": [
-        "Eros Now Select Apple TV channel"
+        "aha"
       ]
     },
     {
-      "title": "Victorian Psycho",
+      "title": "A Course Called Ireland",
       "reason": "jw_error_retry",
-      "digital_date": "2026-12-15",
-      "discovered_at": "2026-11-19T06:30:05.144133",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-11-18",
+      "digital_date": "2026-10-25",
+      "discovered_at": "2026-11-19T06:27:37.499045",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
       "tmdb_platforms": [
-        "Fandango At Home"
+        "Paramount Plus Premium",
+        "Paramount Plus Essential",
+        "Paramount Plus Apple TV channel",
+        "Paramount+ Amazon Channel"
       ]
     },
     {
-      "title": "How to Rob a Bank",
+      "title": "He Said, She Said: Till Death Do Us Part",
       "reason": "jw_error_retry",
-      "digital_date": "2026-12-08",
-      "discovered_at": "2026-11-19T06:30:06.430328",
-      "discovery_source": "tmdb_type4",
-      "revert_count": 1,
-      "first_reverted_at": "2026-11-18",
+      "digital_date": "2026-11-17",
+      "discovered_at": "2026-11-19T06:27:37.102004",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
       "tmdb_platforms": [
-        "Fandango At Home"
+        "Paramount+ Amazon Channel"
       ]
     }
   ],
-  "enrichment_duration_seconds": 947.45,
+  "enrichment_duration_seconds": 889.53,
   "error_details": [],
   "total_errors": 0
 }
