@@ -20,10 +20,29 @@ Usage:
 
 import requests
 import logging
+import os
 import re
+import threading
+import time
 import unicodedata
 from datetime import datetime, timezone
 from typing import Dict, Optional, List, Any
+
+
+# Request pacing and back-off, shared by every client in the process (discovery, its health
+# canary, enrichment). Nov 19 2026: the Step 1 run asked JustWatch about ~600 held films in a few
+# minutes from GitHub's servers and 523 of 623 lookups failed -- every one a film left waiting.
+_PACE_LOCK = threading.Lock()
+_PACE = {'last': 0.0, 'refusals_in_a_row': 0, 'paused_once': False, 'given_up': False}
+_RETRY_STATUSES = frozenset({403, 429, 500, 502, 503, 504})
+
+
+def _min_interval():
+    return float(os.environ.get('NRW_JW_MIN_INTERVAL', '0.5'))
+
+
+def _backoff():
+    return () if os.environ.get('NRW_JW_RETRY') == '0' else (5, 15, 45, 90)
 
 
 class JustWatchClient:
@@ -122,6 +141,57 @@ class JustWatchClient:
             return True
         return False
 
+    def _post_paced(self, payload):
+        """POST to JustWatch, paced (NRW_JW_MIN_INTERVAL seconds apart, default 0.5) and retried
+        with back-off on a refusal (429, 403, 5xx) or a timeout -- Retry-After honoured. If
+        JustWatch keeps refusing (3 lookups in a row out of retries), pause 5 minutes once; if it
+        still refuses, stop asking for the rest of this run: each film is left waiting with no
+        strike (a JustWatch error never counts against a film) and checked again next run."""
+        waits = _backoff()
+        if _PACE['given_up']:
+            raise requests.ConnectionError('JustWatch refused repeatedly this run; not asking again')
+        for attempt in range(len(waits) + 1):
+            with _PACE_LOCK:
+                gap = _PACE['last'] + _min_interval() - time.monotonic()
+                if gap > 0:
+                    time.sleep(gap)
+                _PACE['last'] = time.monotonic()
+            try:
+                response = self.session.post(self.API_URL, json=payload, timeout=15)
+            except (requests.Timeout, requests.ConnectionError) as e:
+                if attempt < len(waits):
+                    self.logger.warning(f"JustWatch {type(e).__name__}: retrying in {waits[attempt]}s")
+                    time.sleep(waits[attempt])
+                    continue
+                self._note_refusal()
+                raise
+            if response.status_code in _RETRY_STATUSES and attempt < len(waits):
+                ra = (response.headers or {}).get('Retry-After') if hasattr(response, 'headers') else None
+                delay = min(int(ra), 120) if ra and str(ra).isdigit() else waits[attempt]
+                self.logger.warning(f"JustWatch HTTP {response.status_code}: retrying in {delay}s")
+                time.sleep(delay)
+                continue
+            if response.status_code in _RETRY_STATUSES:
+                self._note_refusal()
+            else:
+                _PACE['refusals_in_a_row'] = 0
+            return response
+        return response
+
+    def _note_refusal(self):
+        with _PACE_LOCK:
+            _PACE['refusals_in_a_row'] += 1
+            if _PACE['refusals_in_a_row'] < 3 or not _backoff():
+                return
+            if not _PACE['paused_once']:
+                _PACE['paused_once'], _PACE['refusals_in_a_row'] = True, 0
+                self.logger.warning('JustWatch keeps refusing: pausing 5 minutes')
+                time.sleep(300)
+            else:
+                _PACE['given_up'] = True
+                self.logger.error('JustWatch still refusing after a pause: no more lookups this run '
+                                  '(films wait, no strike, checked next run)')
+
     def search_movie(
         self,
         title: str,
@@ -218,11 +288,7 @@ class JustWatchClient:
         self.stats['queries'] += 1
 
         try:
-            response = self.session.post(
-                self.API_URL,
-                json={'query': query, 'variables': variables},
-                timeout=15
-            )
+            response = self._post_paced({'query': query, 'variables': variables})
             response.raise_for_status()
             data = response.json()
 

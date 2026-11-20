@@ -35,3 +35,16 @@ def _real_io_outside_step1(request):
         for (mod, attr), real in _REAL_IO.items():
             if getattr(mod, attr) is not real:
                 setattr(mod, attr, real)
+
+
+@pytest.fixture(autouse=True)
+def _justwatch_unpaced(monkeypatch):
+    """Tests fake JustWatch: no pacing between requests, no back-off waits (pipeline/justwatch.py),
+    and a fresh breaker state for every test."""
+    monkeypatch.setenv('NRW_JW_MIN_INTERVAL', '0')
+    monkeypatch.setenv('NRW_JW_RETRY', '0')
+    try:
+        from pipeline import justwatch as _jw
+        _jw._PACE.update(last=0.0, refusals_in_a_row=0, paused_once=False, given_up=False)
+    except Exception:
+        pass

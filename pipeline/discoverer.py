@@ -102,6 +102,7 @@ class ProviderDiscoverer:
         self._pending_putbacks = {}  # held films confirmed this run, put back at the wall move
         self._jw_lookups = 0  # JustWatch lookups this run (metrics)
         self._jw_errors = 0   # lookups that failed — films left waiting, no strike (metrics)
+        self._jw_error_kinds = {}   # what kind of failure (metrics: diagnose a JustWatch block)
         self._page_verdicts = {}  # (day, store URL) -> store page verdict: read once a day
 
     # ------------------------------------------------------------------
@@ -194,6 +195,10 @@ class ProviderDiscoverer:
             self.logger.warning(f"Deferred reissue provider check failed for "
                                 f"{movie.get('title', movie_id)}: {e}")
         return False
+
+    def _note_jw_error(self, kind):
+        kinds = self.__dict__.setdefault('_jw_error_kinds', {})
+        kinds[str(kind)[:60]] = kinds.get(str(kind)[:60], 0) + 1
 
     def _verify_before_wall(self, movie_id, movie, buyonly=False):
         """JustWatch pre-check before adding a movie to the wall.
@@ -294,6 +299,7 @@ class ProviderDiscoverer:
             # JustWatch error, not an answer about the film: nothing goes on the wall
             # unconfirmed, no strike, checked again next run.
             self._jw_errors += 1
+            self._note_jw_error(type(e).__name__)
             self.logger.warning(f"JW verification error for {title}: {e}")
             print(f"  ⏸ {title} — JustWatch error ({type(e).__name__}: {str(e)[:80]}), "
                   f"leaving in tracking (no strike)")
@@ -305,6 +311,7 @@ class ProviderDiscoverer:
         # no strike, re-checked next run.
         if result is None and getattr(self._jw_client, 'last_error', None):
             self._jw_errors += 1
+            self._note_jw_error(self._jw_client.last_error)
             print(f"  ⏸ {title} — JustWatch error ({self._jw_client.last_error}), "
                   f"leaving in tracking (no strike)")
             if was_skipped:
@@ -541,10 +548,12 @@ class ProviderDiscoverer:
                 tmdb_id=str(movie_id).replace('tv_', ''))
         except Exception as e:
             self._jw_errors += 1
+            self._note_jw_error(type(e).__name__)
             self.logger.warning(f"Buy-only daily check failed for {movie.get('title', movie_id)}: {e}")
             return None
         if r is None and getattr(self._jw_client, 'last_error', None):
             self._jw_errors += 1  # an API/network error: counted for /morning, nothing recorded
+            self._note_jw_error(self._jw_client.last_error)
             return None
         if not r or r.get('match_confidence') == 'first_result':
             return None
@@ -733,6 +742,7 @@ class ProviderDiscoverer:
         self._pending_putbacks = {}
         self._jw_lookups = 0
         self._jw_errors = 0
+        self._jw_error_kinds = {}
 
         print(f'DB loaded: {len(db.get("movies", {}))} total movies')
 
@@ -1335,6 +1345,7 @@ class ProviderDiscoverer:
                     'jw_healthy': self._jw_healthy,  # JW_BREAKER: None=not checked, False=outage detected
                     'jw_lookups': self._jw_lookups,
                     'jw_errors': self._jw_errors,  # films left waiting after a JustWatch error (no strike)
+                    'jw_error_kinds': dict(getattr(self, '_jw_error_kinds', {})),
                     'scan_tag': scan_tag.strip() if scan_tag else None
                 },
                 'transition_details': transition_details[:100],
