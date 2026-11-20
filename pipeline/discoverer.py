@@ -3,12 +3,13 @@ Provider Discovery — checks tracking movies for digital availability.
 
 Handles three phases:
   - check_tracking_movies: TMDB Type 4 + provider availability polling
-  - daily_gap_fill: Re-queries JustWatch for all wall movies, finds late services,
-    graduates pre-orders, retroactively flags buy-only pre-orders
+  - daily_gap_fill: Re-queries JustWatch for recent wall movies, finds late services
   - reenrich_watch_link_gaps: Re-enriches movies with missing/unverified watch links
 
-Also contains the buy-only pre-order detection pipeline:
-  _detect_buyonly_preorder → _check_preorder_page (Playwright store visit)
+Also contains the one pre-order test (owner, Nov 2026): before a film with a rent or buy
+offer goes on the wall, its store page is read (Amazon first). "Pre-order" → it waits in
+tracking, listed only in the PRE-ORDER view, re-tested every night; otherwise it's out.
+  _hold_if_preorder → _store_verdict → _check_preorder_page (Playwright store visit)
 """
 
 import json
@@ -143,10 +144,6 @@ class ProviderDiscoverer:
             return {'verified': True, '_bypass': 'apple_music_live'}
         if hasattr(self.host, 'watch_links_overrides') and str(movie_id) in self.host.watch_links_overrides:
             return {'verified': True, '_bypass': 'override'}
-        # Pre-orders already on wall — date arrived, let enrichment handle them.
-        # Blocking here would leave them stuck as pre-orders forever.
-        if movie.get('_type4_pending') or movie.get('_is_preorder') or movie.get('_buyonly_preorder'):
-            return {'verified': True, '_bypass': 'preorder_graduation'}
         # Virtual screenings (Eventive, Shift72, Sundance) have their own links, not on JW
         _vs_platforms = {'eventive', 'shift72', 'sundance'}
         all_providers = (movie.get('providers', {}).get('streaming', [])
@@ -162,7 +159,8 @@ class ProviderDiscoverer:
         # report noise per stuck title before discovery finally gave up.
         REVERT_CEILING = 4
         revert_count = movie.get('_jw_revert_count', 0)
-        if revert_count >= REVERT_CEILING:
+        # A pre-order held by the store page test is re-tested every night until it's out.
+        if revert_count >= REVERT_CEILING and not movie.get('_rent_preorder_held'):
             movie['_skip_provider_discovery'] = True
             self.logger.info(f"Revert ceiling reached for {title} ({revert_count} reverts) — skipping future discovery")
             print(f"  ⛔ {title} — {revert_count} reverts, skipping permanently")
@@ -300,23 +298,22 @@ class ProviderDiscoverer:
         """
         from concurrent.futures import ThreadPoolExecutor, as_completed
 
+        today = datetime.now().strftime('%Y-%m-%d')
+
         def _work(item):
             movie_id, movie = item
             out = {}
-            # _type4_pending movies reuse a stored date — the loop makes no fresh
-            # Type 4 call for them, so don't spend one here either.
-            if not movie.get('_type4_pending'):
-                td = self.host.fetch_tmdb_type4_date(movie_id)
-                out['type4_date'] = td
-                # The loop consults providers only when there's no usable Type 4
-                # date (a valid past/future date short-circuits it). Mirror that so
-                # we never fetch payloads the loop won't read. (A malformed-but-
-                # non-empty date is rare and handled by the caller's live fallback.)
-                if not td:
-                    data, errors, failed = self._fetch_providers(movie_id, movie)
-                    out['provider_data'] = data
-                    out['provider_errors'] = errors
-                    out['provider_failed'] = failed
+            td = self.host.fetch_tmdb_type4_date(movie_id)
+            out['type4_date'] = td
+            # The loop consults providers unless the Type 4 date has arrived (an
+            # arrived date short-circuits it; a future date doesn't). Mirror that so
+            # we never fetch payloads the loop won't read. (A malformed-but-
+            # non-empty date is rare and handled by the caller's live fallback.)
+            if not td or td > today:
+                data, errors, failed = self._fetch_providers(movie_id, movie)
+                out['provider_data'] = data
+                out['provider_errors'] = errors
+                out['provider_failed'] = failed
             return movie_id, out
 
         results = {}
@@ -480,89 +477,52 @@ class ProviderDiscoverer:
                     else:
                         continue  # still no change — keep waiting, skip the normal binary checks
 
-                # PRIMARY: Type 4 digital release check (authoritative, gives accurate date)
+                # PRIMARY: Type 4 digital release check.
+                # A TMDB date by itself never puts a film on the wall (owner, Nov 2026): an
+                # arrived date sends it to the JustWatch check and the store page test; a
+                # future date does nothing except date a confirmed pre-order in the
+                # PRE-ORDER view. (_type4_pending was the retired "future TMDB date =
+                # pre-order on the wall" flag.)
                 type4_found = False
+                type4_date = None
                 if movie['status'] == 'tracking':
                     today_dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-
-                    if movie.get('_type4_pending'):
-                        # Already have a Type 4 date stored — check if it has arrived
-                        pending_date = movie.get('digital_date')
-                        if pending_date:
-                            try:
-                                pending_dt = datetime.strptime(pending_date, '%Y-%m-%d')
-                                if pending_dt <= today_dt:
-                                    # Date arrived — verify JW before transitioning
-                                    jw_result = self._verify_before_wall(movie_id, movie)
-                                    if jw_result is None:
-                                        type4_found = True  # Don't fall through to provider check
-                                        continue
-                                    self.host._transition_movie_to_available(
-                                        movie_id, movie, 'tmdb_type4', newly_available_ids)
-                                    newly_digital += 1
-                                    transition_details.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'source': 'tmdb_type4', 'timestamp': datetime.now().isoformat()})
-                                    self.logger.info(f"Type 4 pending released: {movie['title']} — {pending_date}")
-                                    print(f"  📅 {movie['title']} — pending Type 4 arrived ({pending_date})")
-                                else:
-                                    days_until = (pending_dt - today_dt).days
-                                    # Ensure pending movie is on wall as pre-order (migrates existing pending movies)
-                                    if not movie.get('_is_preorder'):
-                                        movie['_is_preorder'] = True
-                                        self.host.add_movie_to_site_immediately(movie_id, movie)
-                                        newly_available_ids.append(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
-                                        print(f"  🏷️ {movie['title']} — added to wall as pre-order ({pending_date})")
-                                    self.logger.debug(f"Type 4 still pending: {movie['title']} — {days_until}d until {pending_date}")
-                            except ValueError:
-                                pass
-                            type4_found = True  # Skip provider check — valid pending date
-                        else:
-                            # Bad state: pending flag with no date — clear and fall through to provider check
-                            movie.pop('_type4_pending', None)
-                            self.logger.warning(f"Cleared _type4_pending with no digital_date: {movie.get('title', movie_id)}")
-
+                    movie.pop('_type4_pending', None)
+                    # Type 4 date from the parallel prefetch; live fallback if this movie
+                    # wasn't prefetched (e.g. an un-deferred reissue).
+                    _pf = prefetched.get(movie_id)
+                    if _pf is not None and 'type4_date' in _pf:
+                        type4_date = _pf['type4_date']
                     else:
-                        # Fresh lookup — Type 4 date from the parallel prefetch.
-                        # Live fallback if this movie wasn't prefetched (e.g. an
-                        # un-deferred reissue), so results stay identical to serial.
-                        _pf = prefetched.get(movie_id)
-                        if _pf is not None and 'type4_date' in _pf:
-                            type4_date = _pf['type4_date']
-                        else:
-                            type4_date = self.host.fetch_tmdb_type4_date(movie_id)
-                        if type4_date:
-                            try:
-                                type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
-                                if type4_dt <= today_dt:
-                                    # Past or today — verify JW before transitioning
-                                    movie['digital_date'] = type4_date
-                                    jw_result = self._verify_before_wall(movie_id, movie)
-                                    if jw_result is None:
-                                        type4_found = True  # Don't fall through to provider check
-                                        continue
-                                    self.host._transition_movie_to_available(
-                                        movie_id, movie, 'tmdb_type4', newly_available_ids)
-                                    newly_digital += 1
-                                    transition_details.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'source': 'tmdb_type4', 'timestamp': datetime.now().isoformat()})
-                                    type4_found = True
-                                    self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {type4_date}")
-                                    print(f"  📅 {movie['title']} — digital release {type4_date}")
-                                else:
-                                    # Future date — add to wall as pre-order, enrich immediately (trailers, Wiki, RT)
-                                    days_until = (type4_dt - today_dt).days
-                                    movie['digital_date'] = type4_date
-                                    movie['_discovery_source'] = 'tmdb_type4'
-                                    movie['_type4_pending'] = True
-                                    movie['_is_preorder'] = True
-                                    type4_found = True  # Skip provider check
-                                    self.host.add_movie_to_site_immediately(movie_id, movie)
-                                    newly_available_ids.append(str(movie_id))  # Enrich on entry (trailers, Wiki, RT)
-                                    self.logger.info(f"Type 4 future: {movie['title']} — {days_until}d until {type4_date} [pre-order on wall]")
-                                    print(f"  ⏳ {movie['title']} — digital in {days_until}d ({type4_date}) [pre-order on wall]")
-                            except ValueError:
-                                pass
+                        type4_date = self.host.fetch_tmdb_type4_date(movie_id)
+                    if type4_date:
+                        try:
+                            type4_dt = datetime.strptime(type4_date, '%Y-%m-%d')
+                            if type4_dt <= today_dt:
+                                # Arrived — verify JW, then the store page test
+                                type4_found = True  # Don't fall through to provider check
+                                movie['digital_date'] = type4_date
+                                jw_result = self._verify_before_wall(movie_id, movie)
+                                if jw_result is None:
+                                    continue
+                                _held = self._hold_if_preorder(movie_id, movie, jw_result, None,
+                                                               newly_available_ids, held_preorder_details)
+                                if _held:
+                                    if _held == 'preorder':
+                                        rent_preorders_held += 1
+                                    continue
+                                self._release(movie_id, movie, 'tmdb_type4', newly_available_ids)
+                                newly_digital += 1
+                                transition_details.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'source': 'tmdb_type4', 'timestamp': datetime.now().isoformat()})
+                                self.logger.info(f"Type 4 discovery: {movie['title']} — digital release {movie['digital_date']}")
+                                print(f"  📅 {movie['title']} — digital release {movie['digital_date']}")
+                        except ValueError:
+                            type4_date = None
 
-                # SECONDARY: Provider availability check (for ~44% of movies without Type 4)
-                if not type4_found and movie['status'] == 'tracking' and not movie.get('_skip_provider_discovery'):
+                # SECONDARY: Provider availability check (films without an arrived Type 4 date).
+                # Held pre-orders are re-tested every night, past the 4-check stop.
+                if (not type4_found and movie['status'] == 'tracking'
+                        and (not movie.get('_skip_provider_discovery') or movie.get('_rent_preorder_held'))):
                     # Provider payload from the parallel prefetch; live fallback when
                     # absent (movie not prefetched, or a malformed Type 4 date left
                     # the loop here without a prefetched provider payload). The
@@ -592,6 +552,9 @@ class ProviderDiscoverer:
                         stream_names = [p.get('provider_name', '') for p in stream_providers]
 
                         has_providers = bool(rent_names or buy_names or stream_names)
+                        # A held pre-order is re-tested every night, whatever TMDB lists.
+                        if movie.get('_rent_preorder_held'):
+                            has_providers = True
 
                         # Virtual screening platforms (Eventive, Shift72, Sundance) may not appear
                         # in TMDB provider data. If tracking already has a VS platform AND a cached
@@ -664,18 +627,8 @@ class ProviderDiscoverer:
                         # DISCOVERY IS STRICTLY BINARY.
                         # Transition provider-discovered movie
                         if has_providers and movie['status'] == 'tracking':
-                            # Preserve any pre-existing digital_date so a HOLD below can restore it
-                            # (the block further down sets digital_date=today in anticipation of transition).
-                            _orig_digital_date = movie.get('digital_date')
-                            # Buy-only pre-order guard: only transition if rent/streaming appeared
-                            if movie.get('_buyonly_preorder'):
-                                if not rent_names and not stream_names:
-                                    continue  # Still buy-only — keep as pre-order on wall
-                                # Rent/streaming found — clear pre-order, fall through to transition
-                                movie.pop('_buyonly_preorder', None)
-                                movie.pop('_is_preorder', None)
-                                print(f"  ✓ {movie['title']} — buy-only pre-order graduated (rent/streaming found)")
-
+                            _vs_future = False  # a future festival screening keeps its pre-order label
+                            _orig_digital_date = movie.get('digital_date')  # restored if it waits
                             if not movie.get('digital_date'):
                                 # For VS bypass, use screening start_time as digital_date
                                 _resolved_date = None
@@ -700,6 +653,7 @@ class ProviderDiscoverer:
                                     # Future screening = pre-order (hidden unless filter active)
                                     if _resolved_date > datetime.now().strftime('%Y-%m-%d'):
                                         movie['_is_preorder'] = True
+                                        _vs_future = True
                                 elif not movie.get('_virtual_screening'):
                                     # Only non-VS movies get today's date as fallback;
                                     # VS movies wait for display phase to resolve from Eventive data
@@ -722,28 +676,23 @@ class ProviderDiscoverer:
                                 if jw_result is None:
                                     continue  # Stay in tracking
 
-                            # Pre-order guard: JustWatch lists store pre-order rentals (Amazon,
-                            # Apple, Fandango at Home) as ordinary RENT offers with a price. For
-                            # pre-orders the only accurate source is the store page, so verify every
-                            # rent-listed VOD transition there before going live; if the page reads
-                            # as a pre-order, hold in tracking and re-check next run (no fake price).
-                            if self._is_held_rent_preorder(movie_id, movie, jw_result):
-                                # Undo the speculative digital_date set above — real date comes at release
-                                if _orig_digital_date is None:
-                                    movie.pop('digital_date', None)
+                            # The store page test: a rent or buy offer goes on the wall only if
+                            # the store page doesn't say "Pre-order". A future TMDB date (if
+                            # any) is the confirmed pre-order's display date.
+                            _display_date = type4_date if (type4_date or '') > datetime.now().strftime('%Y-%m-%d') else None
+                            _held = self._hold_if_preorder(movie_id, movie, jw_result, _display_date,
+                                                           newly_available_ids, held_preorder_details)
+                            if _held:
+                                if _held == 'preorder':
+                                    rent_preorders_held += 1
+                                elif _orig_digital_date is None:
+                                    movie.pop('digital_date', None)  # undo the speculative date above
                                 else:
                                     movie['digital_date'] = _orig_digital_date
-                                movie['_rent_preorder_held'] = datetime.now().strftime('%Y-%m-%d')
-                                rent_preorders_held += 1
-                                held_preorder_details.append({'movie_id': str(movie_id), 'title': movie.get('title', '')})
-                                self.logger.info(f"Rent pre-order held: {movie['title']} ({movie_id}) — Amazon page not yet available")
-                                print(f"  ⏳ {movie['title']} — rent-listed pre-order (Amazon not yet available), holding in tracking")
                                 continue  # stay in tracking
 
-                            # Genuine release — clear any stale hold flag and transition
-                            movie.pop('_rent_preorder_held', None)
-                            self.host._transition_movie_to_available(
-                                movie_id, movie, 'provider_availability_check', newly_available_ids)
+                            self._release(movie_id, movie, 'provider_availability_check',
+                                          newly_available_ids, keep_preorder_label=_vs_future)
                             newly_digital += 1
                             transition_details.append({'movie_id': movie_id, 'title': movie.get('title', ''), 'source': 'provider_availability_check', 'timestamp': datetime.now().isoformat()})
 
@@ -901,12 +850,13 @@ class ProviderDiscoverer:
         return newly_digital
 
     # ------------------------------------------------------------------
-    # Buy-only pre-order detection
+    # Pre-order test: the store page decides (owner, Nov 2026)
     # ------------------------------------------------------------------
 
     def _check_preorder_page(self, jw_result, title):
         """
-        Visit the store URL from a buy-only JW result and scan for pre-order vs available signals.
+        Visit the store page from a JW result (Amazon link first) and scan for pre-order vs
+        available signals.
 
         Uses Playwright to render the actual page (needed for SPAs like Fandango and
         bot-protected sites like Amazon). Scans rendered body text for button words.
@@ -916,23 +866,18 @@ class ProviderDiscoverer:
             title: Movie title (for logging)
 
         Returns:
-            str: 'pre-order', 'available', or None (could not determine)
+            str: 'pre-order', 'available', 'captcha' (robot check), 'disc_only' (only a
+            disc store lists it), or None (nothing readable)
         """
-        # Extract the first VOD link URL from JW result
-        vod_links = jw_result.get('watch_links', {}).get('vod', [])
+        vod_links = [e['link'] for e in jw_result.get('watch_links', {}).get('vod', [])
+                     if isinstance(e, dict) and e.get('link')]
         if not vod_links:
             return None
-
-        url = None
-        for entry in vod_links:
-            if isinstance(entry, dict) and entry.get('link'):
-                url = entry['link']
-                break
-        if not url:
-            return None
-
-        preorder_signals = ['preorder', 'available for pre-order', 'available to pre-order']
-        available_signals = ['buy now', 'rent now', 'watch now']
+        # Barnes & Noble sells discs (DVD/Blu-ray), not digital copies.
+        digital_links = [link for link in vod_links if 'barnesandnoble.com' not in link.lower()]
+        if not digital_links:
+            return 'disc_only'
+        url = next((link for link in digital_links if 'amazon.com' in link.lower()), digital_links[0])
 
         try:
             from playwright_manager import get_playwright_manager
@@ -969,31 +914,30 @@ class ProviderDiscoverer:
                 elif is_amazon:
                     page.wait_for_timeout(random.randint(1500, 2500))
 
-                body_text = (page.text_content('body') or '').lower()
+                # Read what the page SHOWS. Every Amazon page carries "isPreorder":false in
+                # its hidden data, so the bare word "preorder" in the page code is not a
+                # signal (it held every Amazon rental/purchase as a "pre-order" — Nov 2026).
+                hidden = page.text_content('body') or ''
+                visible = re.sub(r'\s+', ' ', page.inner_text('body') or '').lower()
 
-                # Amazon CAPTCHA detection — default to pre-order if blocked
-                if is_amazon and ('captcha' in body_text or 'not a robot' in body_text or 'automated access' in body_text):
-                    msg = f"Amazon CAPTCHA wall hit for '{title}' — store page unreadable, holding as pre-order this run"
+                # Amazon robot check — unreadable tonight, re-tested tomorrow
+                if is_amazon and any(s in visible for s in ('not a robot', 'automated access',
+                                                            'enter the characters you see')):
+                    msg = f"Amazon CAPTCHA wall hit for '{title}' — store page unreadable, re-tested tomorrow"
                     self.logger.warning(msg)
                     print(f"  ⚠️ {msg}")
                     # Record for the morning report so a real CAPTCHA event is visible
                     if isinstance(getattr(self, '_captcha_blocks', None), list):
                         self._captcha_blocks.append(title)
-                    return 'pre-order'
+                    return 'captcha'
 
-                has_preorder = any(signal in body_text for signal in preorder_signals)
-                has_available = any(signal in body_text for signal in available_signals)
-
-                if has_preorder and not has_available:
-                    return 'pre-order'
-                elif has_available and not has_preorder:
+                # A visible Rent/Buy button means it's out, whatever else the page says.
+                if re.search(r'\b(?:rent|buy) (?:uhd|hd|sd|4k)\b|\b(?:buy|rent|watch) now\b|\bwatch with prime\b', visible):
                     return 'available'
-                elif has_preorder and has_available:
-                    # Both signals — pre-order takes precedence (safer)
+                # Pre-order: the page says so, or Amazon's own flag says so.
+                if re.search(r'\bpre-?order', visible) or (is_amazon and re.search(r'isPreorder\\?"\s*:\s*true', hidden)):
                     return 'pre-order'
-                else:
-                    # Neither signal found — page may not have rendered properly
-                    return None
+                return None  # nothing readable — not a pre-order
 
             finally:
                 page.close()
@@ -1003,119 +947,96 @@ class ProviderDiscoverer:
             self.logger.warning(f"Pre-order page check failed for {title} ({url}): {e}")
             return None
 
-    def _detect_buyonly_preorder(self, jw_result, movie_id, title):
+    def _store_verdict(self, movie_id, movie, jw_result):
         """
-        Determine if a buy-only JustWatch result is a pre-order or genuine release.
+        The one pre-order test. JustWatch lists store pre-orders (Amazon/Apple/Fandango at
+        Home) as ordinary rent or buy offers, so the store page is the only accurate source.
+        Returns 'out', 'preorder' or 'wait' (can't tell tonight — re-tested tomorrow):
 
-        Decision logic:
-        1. Manual override in config.preorder_overrides → immediate verdict
-        2. Type 4 future date → pre-order (with that date)
-        3. Page check (Playwright visits store page):
-           - 'available' → genuine release (only way to confirm genuine)
-           - 'pre-order' or inconclusive → pre-order (safer default)
-        Type 4 past date alone does NOT confirm genuine — only page check does.
-
-        Returns:
-            dict: {
-                'is_preorder': bool,
-                'override': True|False|None (manual override value),
-                'preorder_date': str|None (future Type 4 date),
-                'type4_date': str|None (any Type 4 date found),
-                'verified_genuine': bool (page check confirmed available),
-            }
+          - bypass results (manual add, override, virtual screening, JW fail-open) → 'out'
+          - streaming, or no rent/buy offer → 'out' (streaming has no pre-orders)
+          - preorder_overrides[id] False/True → forced 'out' / forced 'preorder'
+          - page says pre-order → 'preorder'; robot check or disc store only → 'wait'
+          - anything else → 'out' (a rental is a rental at any price; buy-only is buyable)
         """
-        result = {
-            'is_preorder': True,  # default: safer to assume pre-order
-            'override': None,
-            'preorder_date': None,
-            'type4_date': None,
-            'verified_genuine': False,
-        }
-
-        # Step 0: Manual override
-        overrides = self.config.get('preorder_overrides', {})
-        override_val = overrides.get(str(movie_id))
-        if override_val is True:
-            result['override'] = True
-            result['is_preorder'] = True
-            return result
-        elif override_val is False:
-            result['override'] = False
-            result['is_preorder'] = False
-            result['verified_genuine'] = True
-            return result
-
-        # Step 1: Type 4 date — provides date info, but past date alone ≠ genuine
-        type4_date = self.host.fetch_tmdb_type4_date(movie_id)
-        if type4_date:
-            result['type4_date'] = type4_date
-            try:
-                t4dt = datetime.strptime(type4_date, '%Y-%m-%d')
-                today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-                if t4dt > today:
-                    # Future date — definitively a pre-order
-                    result['preorder_date'] = type4_date
-                    result['is_preorder'] = True
-                    print(f"  🏷️  {title} — buy-only, Type 4 future date ({type4_date})")
-                    return result
-                # Past date — informational only, still need page check
-            except ValueError:
-                pass
-
-        # Step 2: Page check — the ONLY way to confirm genuine release
-        page_verdict = self._check_preorder_page(jw_result, title)
-        if page_verdict == 'available':
-            result['is_preorder'] = False
-            result['verified_genuine'] = True
-            print(f"  ✓ {title} — buy-only, page confirms available")
-        elif page_verdict == 'pre-order':
-            result['is_preorder'] = True
-            print(f"  🏷️  {title} — buy-only, page confirms pre-order")
-        else:
-            # Inconclusive — default to pre-order (safer)
-            result['is_preorder'] = True
-            print(f"  🏷️  {title} — buy-only, page check inconclusive → treating as pre-order")
-
-        return result
-
-    def _is_held_rent_preorder(self, movie_id, movie, jw_result):
-        """
-        Hold a rent-listed VOD title in tracking if it's actually a store pre-order.
-
-        JustWatch reports store pre-order RENTALS (Amazon/Apple/Fandango at Home) as
-        ordinary RENT offers with a price, so the only accurate source is the store page.
-        We HOLD only on a positive pre-order signal: the scraper reads an explicit
-        "Pre-order" label reliably but can't confirm "available", so "hold unless available"
-        would freeze real rentals. (Buy-only pre-orders are handled by _detect_buyonly_preorder.)
-
-          - has streaming / no rent → False (transition; streaming has no pre-orders)
-          - preorder_overrides[id] False/True → forced genuine / forced hold
-          - page says 'pre-order' (or CAPTCHA) → True (hold); else → False (transition)
-
-        Held titles stay status='tracking', re-checked each run, go live once the page no
-        longer reads as a pre-order. Escape hatch: preorder_overrides[id] = false.
-        """
-        # Bypass results (manual add, override, virtual screening, JW fail-open) carry no
-        # offer metadata — never hold those.
         if not isinstance(jw_result, dict) or jw_result.get('_bypass') or jw_result.get('_fail_open'):
-            return False
+            return 'out'
+        if jw_result.get('has_streaming') or not (jw_result.get('has_rent') or jw_result.get('has_buy')):
+            return 'out'
 
-        # Verify any rent-listed VOD transition with no subscription (streaming) home —
-        # that's where store pre-orders hide. Streaming services have no pre-order concept.
-        if not (jw_result.get('has_rent') and not jw_result.get('has_streaming')):
-            return False
-
-        # Manual override wins over the page check.
         override = self.config.get('preorder_overrides', {}).get(str(movie_id))
         if override is False:
-            return False
+            return 'out'
         if override is True:
-            return True
+            return 'preorder'
 
-        # Confirm against the actual store page (Playwright; CAPTCHA → 'pre-order').
-        # Hold ONLY on a positive pre-order verdict — we can't reliably confirm 'available'.
-        verdict = self._check_preorder_page(jw_result, movie.get('title', ''))
-        return verdict == 'pre-order'
+        page = self._check_preorder_page(jw_result, movie.get('title', ''))
+        if page == 'pre-order':
+            return 'preorder'
+        if page in ('captcha', 'disc_only'):
+            return 'wait'
+        return 'out'
+
+    def _hold_if_preorder(self, movie_id, movie, jw_result, display_date,
+                          newly_available_ids, held_details):
+        """
+        Hold a pre-order (owner, Nov 2026): if the store page says "Pre-order", the film
+        stays in tracking, is listed only in the PRE-ORDER view (dated by TMDB's future
+        date when TMDB has one), and is re-tested every night.
+
+        Returns 'preorder' (held), 'wait' (stays in tracking, not listed — re-tested
+        tomorrow) or None (out: the caller puts it on the main wall).
+        """
+        title = movie.get('title', '')
+        if (movie.get('_rent_preorder_held') and isinstance(jw_result, dict)
+                and jw_result.get('_fail_open')):
+            # JustWatch unreachable tonight: a known pre-order waits for tomorrow's test.
+            print(f"  ⏸ {title} — pre-order, JustWatch unreachable; re-tested tomorrow")
+            return 'wait'
+        verdict = self._store_verdict(movie_id, movie, jw_result)
+        if verdict == 'out':
+            return None
+        if verdict == 'wait':
+            print(f"  ⏸ {title} — store page unreadable tonight, or only a disc store lists it; re-tested tomorrow")
+            return 'wait'
+
+        today = datetime.now().strftime('%Y-%m-%d')
+        movie['_rent_preorder_held'] = today
+        movie['_is_preorder'] = True
+        if display_date:
+            movie['digital_date'] = display_date
+        else:
+            movie.pop('digital_date', None)
+        if not movie.get('_preorder_listed'):
+            movie['_preorder_listed'] = today
+            is_new_to_site = not self.host.site_has_movie(movie_id)
+            self.host.add_movie_to_site_immediately(movie_id, movie)
+            if is_new_to_site:
+                newly_available_ids.append(str(movie_id))  # enrich on entry (poster, trailer, Wiki, RT)
+        held_details.append({'movie_id': str(movie_id), 'title': title})
+        self.logger.info(f"Pre-order held: {title} ({movie_id}) — store page reads Pre-order")
+        print(f"  ⏳ {title} — store page reads Pre-order: PRE-ORDER view only, re-tested nightly")
+        return 'preorder'
+
+    def _release(self, movie_id, movie, source, newly_available_ids, keep_preorder_label=False):
+        """
+        Out: onto the main wall. A pre-order released by the store page test is dated the
+        night its page stopped saying "Pre-order". Leftover labels from the retired
+        pre-order labelers are cleared so a released film can't stay in the PRE-ORDER view.
+        """
+        if movie.pop('_rent_preorder_held', None):
+            movie['digital_date'] = datetime.now().strftime('%Y-%m-%d')
+        # Festival screenings manage their own pre-order label (upcoming screening).
+        _provs = movie.get('providers') or {}
+        _is_screening = bool(
+            movie.get('_virtual_screening') or (movie.get('filters') or {}).get('is_virtual_screening')
+            or any(isinstance(p, str) and any(vs in p.lower() for vs in ('eventive', 'shift72', 'sundance'))
+                   for p in (_provs.get('streaming') or []) + (_provs.get('rent') or []) + (_provs.get('buy') or [])))
+        if not keep_preorder_label and not _is_screening:
+            movie.pop('_is_preorder', None)
+        for flag in ('_preorder_listed', '_buyonly_preorder', '_buyonly_verified'):
+            movie.pop(flag, None)
+        self.host._transition_movie_to_available(movie_id, movie, source, newly_available_ids)
 
     # ------------------------------------------------------------------
     # Watch link gap fill and re-enrichment
@@ -1595,8 +1516,10 @@ class ProviderDiscoverer:
                             unsaved_count += 1
                             print(f"  + {title} — new services added")
 
-                    # Pre-order graduation
-                    if is_preorder and (result.get('has_rent') or result.get('has_streaming')):
+                    # Pre-order graduation (not for a film still in tracking: only discovery's
+                    # store page test may move that one to the main wall).
+                    _still_tracking = ((tracking_data or {}).get('movies', {}).get(movie_id) or {}).get('status') == 'tracking'
+                    if is_preorder and not _still_tracking and (result.get('has_rent') or result.get('has_streaming')):
                         movie.pop('_is_preorder', None)
                         movie.pop('_buyonly_preorder', None)
                         movie.pop('pre_order_links', None)
@@ -1632,28 +1555,6 @@ class ProviderDiscoverer:
                             tracking_data['movies'][movie_id].pop('_buyonly_preorder', None)
                             tracking_changed = True
 
-                    # Retroactive buy-only pre-order detection
-                    if not is_preorder and result.get('buy_only') and not (result.get('has_rent') or result.get('has_streaming')):
-                        if not movie.get('_buyonly_verified'):
-                            _gf_detect = self._detect_buyonly_preorder(result, movie_id, title)
-
-                            if _gf_detect['is_preorder']:
-                                movie['_is_preorder'] = True
-                                movie['_buyonly_preorder'] = True
-                                _jw_vod = new_links.get('vod', []) if new_links else []
-                                if _jw_vod:
-                                    movie['pre_order_links'] = _jw_vod
-                                if _gf_detect['preorder_date']:
-                                    movie['digital_date'] = _gf_detect['preorder_date']
-                                movie['watch_links'] = {}
-                                if tracking_data and tracking_data.get('movies', {}).get(movie_id):
-                                    tracking_data['movies'][movie_id]['_buyonly_preorder'] = True
-                                    tracking_changed = True
-                                preorders_flagged += 1
-                                unsaved_count += 1
-                            elif _gf_detect['verified_genuine']:
-                                movie['_buyonly_verified'] = True
-                                unsaved_count += 1
 
                 # --- Wikipedia fill (only if missing) ---
                 # Curator lock: skip films whose Wikipedia was deliberately cleared

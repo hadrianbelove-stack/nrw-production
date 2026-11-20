@@ -533,15 +533,38 @@ class DisplayGenerator:
                     _preorder_synced += 1
                 continue
             # No override — check tracking for flag that was lost from data.json
+            # (only for a pre-order confirmed by the store page test)
             if movie_id in tracking_data:
                 tracking_movie = tracking_data[movie_id]
-                if tracking_movie.get('_is_preorder') and not movie.get('_is_preorder'):
-                    dd = movie.get('digital_date', '')
+                if (tracking_movie.get('_is_preorder') and tracking_movie.get('_rent_preorder_held')
+                        and not movie.get('_is_preorder')):
+                    dd = movie.get('digital_date') or ''
                     if dd > _today_sync:
                         movie['_is_preorder'] = True
                         _preorder_synced += 1
         if _preorder_synced > 0:
             print(f"\U0001f3f7\ufe0f  Synced {_preorder_synced} pre-order flag(s) from tracking \u2192 data.json")
+
+        # A pre-order listing needs the store page test (owner, Nov 2026). A film still
+        # waiting in tracking whose label came from a retired rule (a TMDB date, the old
+        # buy-only labeler) is not a confirmed pre-order: keep it off the site until
+        # discovery releases it (the site writer un-hides it then) or the page confirms it.
+        _unconfirmed = 0
+        for movie in display_movies:
+            movie_id = str(movie.get('id'))
+            if not movie.get('_is_preorder') or (movie.get('filters') or {}).get('is_virtual_screening'):
+                continue
+            tracking_movie = tracking_data.get(movie_id) or {}
+            if (tracking_movie.get('status') == 'tracking' and not tracking_movie.get('_rent_preorder_held')
+                    and _preorder_overrides.get(movie_id) is not True):
+                if not movie.get('hidden'):
+                    movie['hidden'] = True
+                    _unconfirmed += 1
+                movie['_preorder_unconfirmed'] = True
+            elif movie.pop('_preorder_unconfirmed', None):
+                movie['hidden'] = False  # confirmed by the page test (or an override) — list it
+        if _unconfirmed:
+            print(f"🏷️  Kept {_unconfirmed} unconfirmed pre-order(s) off the site (no store page test yet)")
 
         # Load screening name mapping and manual end dates from config
         screening_names_map = self.ctx.config.get('screening_names', {})
@@ -854,10 +877,9 @@ class DisplayGenerator:
         # Coming Soon cap — never publish a pre-order more than COMING_SOON_MAX_DAYS
         # ahead of release. Far-future placeholders / pre-orders are hidden (NOT
         # deleted — they stay tracked and curation auto-restores) and reappear on
-        # their own once the date is within the window. Mirrors the enrichment-side
-        # cap. We tag our own hides with _coming_soon_capped so un-hiding can never
-        # clobber an expired-screening hide.
-        COMING_SOON_MAX_DAYS = 30  # keep in sync with enricher.py
+        # their own once the date is within the window. We tag our own hides with
+        # _coming_soon_capped so un-hiding can never clobber an expired-screening hide.
+        COMING_SOON_MAX_DAYS = 30
         _cs_cap = (datetime.now() + timedelta(days=COMING_SOON_MAX_DAYS)).strftime('%Y-%m-%d')
         _cs_hidden = 0
         for movie in display_movies:
@@ -871,7 +893,8 @@ class DisplayGenerator:
                 # Was capped before; now within the window (or no longer a pre-order)
                 # — restore it. Only films WE capped carry this marker.
                 movie.pop('_coming_soon_capped', None)
-                movie['hidden'] = False
+                if not movie.get('_preorder_unconfirmed'):
+                    movie['hidden'] = False
         if _cs_hidden:
             print(f"⏳ Coming Soon cap: hid {_cs_hidden} pre-order(s) dated >{COMING_SOON_MAX_DAYS}d out")
 

@@ -376,6 +376,15 @@ class DataGenerator:
             base = (title or original_title or '').strip()
         return base
 
+    def site_has_movie(self, movie_id):
+        """True if data.json already has an entry for this movie."""
+        try:
+            with open('data.json', 'r') as f:
+                movies = json.load(f).get('movies', [])
+        except (OSError, ValueError):
+            return False
+        return any(str(m.get('id')) == str(movie_id) for m in movies)
+
     def add_movie_to_site_immediately(self, movie_id, movie_data):
         """
         Write minimal movie entry to data.json for immediate display.
@@ -426,10 +435,35 @@ class DataGenerator:
                 title = movie_data.get('title', f'Movie {movie_id}')
                 existing_entry = data_movies[existing_index]
 
+                # The pre-order label follows the store page test (owner, Nov 2026): a held
+                # pre-order is listed only in the PRE-ORDER view; the night it's released it
+                # moves to the main wall, dated that night. Festival screenings keep their
+                # own label lifecycle.
+                _preorder_synced = False
+                if not (existing_entry.get('filters') or {}).get('is_virtual_screening'):
+                    _wants_preorder = bool(movie_data.get('_is_preorder'))
+                    if bool(existing_entry.get('_is_preorder')) != _wants_preorder:
+                        _preorder_synced = True
+                        if _wants_preorder:
+                            existing_entry['_is_preorder'] = True
+                        else:
+                            for _flag in ('_is_preorder', '_buyonly_preorder', 'pre_order_links',
+                                          '_preorder_unconfirmed'):
+                                existing_entry.pop(_flag, None)
+                            existing_entry['providers'] = movie_data.get('providers', {})
+                            existing_entry['_enrichment_status'] = 'pending'
+                            existing_entry['_discovered_at'] = datetime.now().isoformat()
+                    if _preorder_synced or (_wants_preorder and existing_entry.get('digital_date') != movie_data.get('digital_date')):
+                        _preorder_synced = True
+                        existing_entry['digital_date'] = movie_data.get('digital_date') or ''
+
                 # Re-discovery of a previously hidden movie (e.g., pre-sale that has now genuinely released)
                 if existing_entry.get('hidden'):
                     existing_entry.pop('hidden', None)
-                    existing_entry['digital_date'] = movie_data.get('digital_date', datetime.now().strftime('%Y-%m-%d'))
+                    if existing_entry.get('_is_preorder'):
+                        existing_entry['digital_date'] = movie_data.get('digital_date') or ''  # display date, may be none
+                    else:
+                        existing_entry['digital_date'] = movie_data.get('digital_date', datetime.now().strftime('%Y-%m-%d'))
                     existing_entry['providers'] = movie_data.get('providers', {})
                     existing_entry['_enrichment_status'] = 'pending'
                     existing_entry['_discovered_at'] = datetime.now().isoformat()
@@ -444,6 +478,19 @@ class DataGenerator:
                     else:
                         self.logger.error(f"Failed to unhide {title} ({movie_id}) in data.json")
                         print(f"   ❌ Failed to unhide {title} in data.json")
+                    return True
+
+                if _preorder_synced:
+                    updated_data = existing_data.copy() if 'existing_data' in locals() and existing_data else {}
+                    updated_data['movies'] = data_movies
+                    updated_data['generated_at'] = datetime.now().isoformat()
+                    _where = 'PRE-ORDER view' if existing_entry.get('_is_preorder') else 'main wall'
+                    if self.storage.atomic_write_json(updated_data, 'data.json', backup=True):
+                        self.logger.info(f"Pre-order label synced: {title} ({movie_id}) → {_where}")
+                        print(f"   🏷️ {title} → {_where} ({existing_entry.get('digital_date') or 'no date'})")
+                    else:
+                        self.logger.error(f"Failed to sync pre-order label for {title} ({movie_id}) in data.json")
+                        print(f"   ❌ Failed to sync pre-order label for {title} in data.json")
                     return True
 
                 self.logger.info(f"Movie {title} ({movie_id}) already in data.json - skipping")
@@ -476,9 +523,12 @@ class DataGenerator:
                 '_enrichment_status': 'pending'
             })
 
-            # Copy pre-order flag if set (Type 4 pending movies surfaced on wall)
+            # Copy pre-order flag if set (a held pre-order, or an upcoming festival screening).
+            # A pre-order's date is only its display date — undated stays undated, not today.
             if movie_data.get('_is_preorder'):
                 basic_entry['_is_preorder'] = True
+                if not movie_data.get('digital_date'):
+                    basic_entry['digital_date'] = ''
 
             # Add to beginning of movies list (newest first)
             data_movies.insert(0, basic_entry)
