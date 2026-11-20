@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-20T05:51:04.476065",
-  "duration_seconds": 4280.140466,
+  "timestamp": "2026-11-20T17:13:39.136187",
+  "duration_seconds": 3215.292116,
   "overall_success": true,
   "failure_count": 0,
   "warning_count": 0,
@@ -8,72 +8,72 @@
     {
       "name": "Intake new premieres from TMDB",
       "success": true,
-      "duration_seconds": 10.347741,
+      "duration_seconds": 8.873936,
       "error": null,
-      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-11-19 to 2026-11-20 (incremental mode, 2 intaked)\n\u2705 Movie intake complete: 2 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-10-21 to 2026-11-20\n\n\ud83d\udcca Miniseries intake complete: 0 new series ad"
+      "output_preview": "\ud83d\udd0d Running intake for new premieres...\n\ud83d\udcca Intake metrics saved to metrics/intake_run.json: 2026-11-19 to 2026-11-20 (incremental mode, 5 intaked)\n\u2705 Movie intake complete: 5 new movies added\n\n\ud83d\udd0d Running intake for new miniseries...\n\n============================================================\nMINISERIES INTAKE - Discovering new limited series\n============================================================\n\ud83d\udcc5 Checking miniseries from 2026-10-21 to 2026-11-20\n   \ud83d\udccb OK Angels (4 eps)\n\n\ud83d\udcca Miniseries intake co"
     },
     {
       "name": "Research reissue candidates (Pass D)",
       "success": true,
-      "duration_seconds": 0.090794,
+      "duration_seconds": 0.0902,
       "error": null,
       "output_preview": "Reissue research: nothing to do (all pending candidates already researched).\n"
     },
     {
       "name": "Scan Eventive for virtual screenings",
       "success": true,
-      "duration_seconds": 445.161598,
+      "duration_seconds": 456.541648,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 182 festival slugs\nScanning 182 festivals for catalogs...\n  Progress: 25/182 slugs | 25 scanned | 1255 films indexed\n  Progress: 100/182 slugs | 53 scanned | 1678 films indexed\n  Progress: 125/182 slugs | 78 scanned | 1982 films indexed\n  Progress: 150/182 slugs | 103 scanned | 2373 films indexed\n  Progress: 175/182 slugs | 128 scanned | 2647 films indexed\n  Done: 135 festivals, 130 with films, 47 fail"
+      "output_preview": "\n\ud83c\udfac Scanning Eventive for virtual screenings...\nFetching Eventive festival directory...\n  Found 182 festival slugs\nScanning 182 festivals for catalogs...\n  Progress: 25/182 slugs | 25 scanned | 1289 films indexed\n  Progress: 100/182 slugs | 53 scanned | 1678 films indexed\n  Progress: 125/182 slugs | 78 scanned | 1982 films indexed\n  Progress: 150/182 slugs | 103 scanned | 2373 films indexed\n  Progress: 175/182 slugs | 128 scanned | 2647 films indexed\n  Done: 135 festivals, 130 with films, 47 fail"
     },
     {
       "name": "Discover provider availability for tracking movies",
       "success": true,
-      "duration_seconds": 695.264403,
+      "duration_seconds": 1261.476832,
       "error": null,
-      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 23785 total movies\n\ud83d\udd0d Raw tracking filter: 18522 movies\n\ud83d\udd0d Assigned tracking_movies list: 18522\n\ud83d\udd0d Found 18522 movies in tracking status\n  Priority queue (last 180 days): 847 movies\n  Older movies: 17675 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 18522 movies for digital availability...\n\n  \u26a1 Prefetching discovery data for 18522 movies (8 workers)...\n  \u26a1 Prefetch: 1000/18522 movies"
+      "output_preview": "\n\ud83d\udd0d Discovering provider availability for tracking movies...\nDB loaded: 23791 total movies\n\ud83d\udd0d Raw tracking filter: 18476 movies\n\ud83d\udd0d Assigned tracking_movies list: 18476\n\ud83d\udd0d Found 18476 movies in tracking status\n  Priority queue (last 180 days): 850 movies\n  Older movies: 17626 movies\n  Note: Both priority and older titles will be processed in the same run\n\n\ud83c\udfac Checking 18476 movies for digital availability...\n\n  \u26a1 Prefetching discovery data for 18476 movies (8 workers)...\n  \u26a1 Prefetch: 1000/18476 movies"
     },
     {
       "name": "Enrich newly available movies with metadata",
       "success": true,
-      "duration_seconds": 2714.807879,
+      "duration_seconds": 1087.576583,
       "error": null,
-      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 31 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Big City Pizza: Amazon not found\n      \u00b7 Big City Pizza: Fandango not found\n  "
+      "output_preview": "\n\ud83c\udfa8 Running enrichment for newly available movies...\n\ud83c\udfa8 Starting enrichment phase...\n\n  \ud83d\udd0d Pre-order link finder: 28 movies within 14d window\n[PlaywrightManager] Initializing shared Playwright instance...\n[PlaywrightManager] No event loop detected - safe to proceed\n[PlaywrightManager] Playwright instance created\n[PlaywrightManager] Launching chromium browser (headless=True)...\n[PlaywrightManager] Browser launched\n      \u00b7 Big City Pizza: Amazon not found\n      \u00b7 Big City Pizza: Fandango not found\n  "
     },
     {
       "name": "Stamp hosted trailer URLs into data.json",
       "success": true,
-      "duration_seconds": 1.552552,
+      "duration_seconds": 1.284419,
       "error": null,
-      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 2489 trailers and 452 subtitle files in B2 bucket\nSaved data.json: 22 stamped, 0 stale cleaned, 1 subs stamped\n\nStamp results:\n  Stamped:          22\n  Already had URL:  1059\n  Stale cleaned:    0\n  Not in B2:        91\n"
+      "output_preview": "=== Trailer Pipeline: stamp ===\n\nConnecting to B2...\nFound 2500 trailers and 454 subtitle files in B2 bucket\n\nStamp results:\n  Stamped:          0\n  Already had URL:  1090\n  Stale cleaned:    0\n  Not in B2:        88\n"
     },
     {
       "name": "Refresh watch links and Wikipedia for all wall movies",
       "success": true,
-      "duration_seconds": 390.150595,
+      "duration_seconds": 372.701768,
       "error": null,
-      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 494 of 1172 wall movies (last 30 days)\n  \ud83c\udfac City Lights \u2014 Director Wikipedia added (Duniya Vijay)\n  \ud83c\udfac Chasing Home \u2014 Director Wikipedia added (Christopher Mills)\n  \ud83c\udfac The Odyssey \u2014 Director Wikipedia added (Christopher Nolan)\n  + Tiger Island \u2014 new services added\n  \ud83d\udcda Tiger Island \u2014 Wikipedia link added\n  \ud83c\udfac Pitfall \u2014 Director Wikipedia added (James Kondelik)\n  \ud83c\udfac Montreal, My Beautiful \u2014 Director Wikipedia added (Xiaodan He)\n  \ud83c\udfac Ghost i"
+      "output_preview": "\n\ud83d\udd04 Running daily gap fill for all wall movies...\n  \ud83d\udcca Processing 504 of 1178 wall movies (last 30 days)\n  \ud83c\udfac Primetime Preacher$ \u2014 Director Wikipedia added (Joe Berlinger)\n  \ud83c\udfac Last Meal \u2014 Director Wikipedia added (\u00d6zcan Deniz)\n  \ud83c\udfac I, Object \u2014 Director Wikipedia added (Andrew Niccol)\n  \ud83c\udfac Everybody to Kenmure Street \u2014 Director Wikipedia added (Felipe Bustos Sierra)\n  \ud83c\udfac Terrestrial \u2014 Director Wikipedia added (Steve Pink)\n  + Never Stop Chasing \u2014 new services added\n  + Chasing Home \u2014 new services adde"
     },
     {
       "name": "Retry trailer discovery for movies missing trailers",
       "success": true,
-      "duration_seconds": 0.669036,
+      "duration_seconds": 0.660324,
       "error": null,
-      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 3 movies missing trailers:\n  \u2022 True North: Canadian Myths and Black Power\n  \u2022 1-800-On-Her-Own\n  \u2022 The Divine Tragedy\n  \u2713 Cache hit: True North: Canadian Myths and Black Power (2025)\n  \u25cb True North: Canadian Myths and Black Power \u2014 no trailer found (attempt 1/5)\n  \u2713 Cache hit: 1-800-On-Her-Own (2024)\n  \u25cb 1-800-On-Her-Own \u2014 no trailer found (attempt 1/5)\n  \u2713 Cache hit: The Divine Tragedy (2026)\n  \u25cb The Divine Tragedy \u2014 no trailer found (atte"
+      "output_preview": "\n\ud83c\udfac Re-enriching movies with missing trailers...\n\ud83c\udfac Found 1 movies missing trailers:\n  \u2022 From Baseball to Bloodshed - When Unconditional Love Turns Deadly\n  \u2713 Cache hit: From Baseball to Bloodshed - When Unconditional Love Turns Deadly (2026)\n  \u25cb From Baseball to Bloodshed - When Unconditional Love Turns Deadly \u2014 no trailer found (attempt 1/5)\n\u2705 Trailer gap fill: 0/1 movies got trailers\n\u2705 Trailer re-enrichment complete: 0 movies updated\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Check virtual screening link expirations",
       "success": true,
-      "duration_seconds": 21.193091,
+      "duration_seconds": 25.157357,
       "error": null,
-      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 221 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 56 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83c\udfaa Checking virtual screening links...\n  Checking 220 virtual screening movies...\n  \ud83d\udcbe Updated data.json\n  \ud83d\udcca Results: 56 active, 0 expired\n\u2705 Virtual screening check complete\n\ud83d\udccb Phase complete\n"
     },
     {
       "name": "Archive movies older than 90 days",
       "success": true,
-      "duration_seconds": 0.688968,
+      "duration_seconds": 0.703671,
       "error": null,
-      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 5 movies (>90 days old) \u2192 data_archive.json\n   data.json: 1167 movies | archive: 2188 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
+      "output_preview": "\n\ud83d\udce6 Archiving movies older than 90 days...\n\ud83d\udce6 Archived 3 movies (>90 days old) \u2192 data_archive.json\n   data.json: 1175 movies | archive: 2191 total\n\u2705 Archive complete\n\ud83d\udccb Phase complete\n"
     }
   ],
   "health_issues": [],
@@ -84,137 +84,29 @@
   "failures": [],
   "warnings": [],
   "data_quality": {
-    "total": 23785,
-    "tracking": 18470,
-    "available": 4923,
-    "data_movies": 1167,
-    "movies_with_links": 1144,
-    "movies_with_rt": 849,
-    "movies_with_wikipedia": 508,
-    "movies_with_trailers": 1106
+    "total": 23791,
+    "tracking": 18464,
+    "available": 4935,
+    "data_movies": 1175,
+    "movies_with_links": 1152,
+    "movies_with_rt": 856,
+    "movies_with_wikipedia": 512,
+    "movies_with_trailers": 1115
   },
   "enrichment_metrics": {
-    "timestamp": "2026-11-20T05:44:09.094269",
-    "movies_requested": 83,
-    "movies_enriched": 67,
-    "movies_deferred": 16,
+    "timestamp": "2026-11-20T17:06:57.838639",
+    "movies_requested": 24,
+    "movies_enriched": 12,
+    "movies_deferred": 12,
     "deferred_details": [
-      {
-        "title": "The River",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-11-17",
-        "discovered_at": "2026-11-20T04:57:23.243537",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 6,
-        "first_reverted_at": "2026-11-20",
-        "tmdb_platforms": [
-          "Eventive"
-        ]
-      },
-      {
-        "title": "Fleas",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-11-10",
-        "discovered_at": "2026-11-20T04:57:23.498018",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 12,
-        "first_reverted_at": "2026-11-20",
-        "tmdb_platforms": [
-          "Eventive"
-        ]
-      },
-      {
-        "title": "Honorable",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-10-28",
-        "discovered_at": "2026-11-20T04:57:24.113159",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 22,
-        "first_reverted_at": "2026-11-20",
-        "tmdb_platforms": [
-          "Eventive"
-        ]
-      },
-      {
-        "title": "We Are Not Invisible: Doulas and the Work of Survival",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-10-11",
-        "discovered_at": "2026-11-20T04:57:24.479480",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 38,
-        "first_reverted_at": "2026-11-20",
-        "tmdb_platforms": [
-          "Eventive"
-        ]
-      },
-      {
-        "title": "PHINDA",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-10-11",
-        "discovered_at": "2026-11-20T04:57:24.871731",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 38,
-        "first_reverted_at": "2026-11-20",
-        "tmdb_platforms": [
-          "Eventive"
-        ]
-      },
-      {
-        "title": "Fork in the Road",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-10-10",
-        "discovered_at": "2026-11-20T04:57:25.235455",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 39,
-        "first_reverted_at": "2026-11-20",
-        "tmdb_platforms": [
-          "Eventive"
-        ]
-      },
-      {
-        "title": "The Protectors",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-10-10",
-        "discovered_at": "2026-11-20T04:57:25.498715",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 39,
-        "first_reverted_at": "2026-11-20",
-        "tmdb_platforms": [
-          "Eventive"
-        ]
-      },
-      {
-        "title": "Big Break",
-        "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-06-18",
-        "discovered_at": "2026-11-20T04:57:33.395234",
-        "discovery_source": "tmdb_type4",
-        "revert_count": 57,
-        "first_reverted_at": "2026-11-20",
-        "tmdb_platforms": [
-          "Eventive"
-        ]
-      },
       {
         "title": "The Ark",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-11-20",
-        "discovered_at": "2026-11-20T04:57:41.701308",
+        "discovered_at": "2026-11-20T16:48:17.654922",
         "discovery_source": "provider_availability_check",
-        "revert_count": 1,
+        "revert_count": 2,
         "first_reverted_at": "2026-11-20",
-        "tmdb_platforms": [
-          "Eventive"
-        ]
-      },
-      {
-        "title": "F**cking War",
-        "reason": "under_60min",
-        "digital_date": "2026-11-20",
-        "discovered_at": "2026-11-20T04:57:42.076895",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 0,
-        "first_reverted_at": "",
         "tmdb_platforms": [
           "Eventive"
         ]
@@ -223,9 +115,9 @@
         "title": "Receptions",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-11-20",
-        "discovered_at": "2026-11-20T04:57:43.059179",
+        "discovered_at": "2026-11-20T16:48:17.917998",
         "discovery_source": "provider_availability_check",
-        "revert_count": 1,
+        "revert_count": 2,
         "first_reverted_at": "2026-11-20",
         "tmdb_platforms": [
           "Eventive"
@@ -235,7 +127,19 @@
         "title": "Making Megaforce",
         "reason": "jw_revert:justwatch_no_match",
         "digital_date": "2026-11-20",
-        "discovered_at": "2026-11-20T04:58:08.033052",
+        "discovered_at": "2026-11-20T16:48:18.209936",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 3,
+        "first_reverted_at": "2026-11-20",
+        "tmdb_platforms": [
+          "Eventive"
+        ]
+      },
+      {
+        "title": "Zen\u00f3n and the Rebel Boats",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-11-20",
+        "discovered_at": "2026-11-20T16:48:18.797602",
         "discovery_source": "provider_availability_check",
         "revert_count": 2,
         "first_reverted_at": "2026-11-20",
@@ -244,62 +148,103 @@
         ]
       },
       {
-        "title": "Dear England",
-        "reason": "under_60min",
-        "digital_date": "2026-11-20",
-        "discovered_at": "2026-11-20T04:58:24.048459",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 0,
-        "first_reverted_at": "",
-        "tmdb_platforms": [
-          "Amazon Video",
-          "Apple TV Store",
-          "Fandango At Home"
-        ]
-      },
-      {
-        "title": "Tiger Island",
-        "reason": "under_60min",
-        "digital_date": "2026-11-20",
-        "discovered_at": "2026-11-20T04:58:25.346741",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 0,
-        "first_reverted_at": "",
-        "tmdb_platforms": [
-          "PBS Documentaries Amazon Channel",
-          "Amazon Video",
-          "Apple TV Store"
-        ]
-      },
-      {
-        "title": "Zen\u00f3n and the Rebel Boats",
+        "title": "The River",
         "reason": "jw_revert:justwatch_no_match",
-        "digital_date": "2026-11-20",
-        "discovered_at": "2026-11-20T04:58:31.682704",
-        "discovery_source": "provider_availability_check",
-        "revert_count": 1,
+        "digital_date": "2026-11-17",
+        "discovered_at": "2026-11-20T16:48:20.158450",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 7,
         "first_reverted_at": "2026-11-20",
         "tmdb_platforms": [
           "Eventive"
         ]
       },
       {
-        "title": "A Course Called Ireland",
-        "reason": "under_60min",
-        "digital_date": "2026-10-25",
-        "discovered_at": "2026-11-19T06:27:37.499045",
+        "title": "Fleas",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-11-10",
+        "discovered_at": "2026-11-20T16:48:20.430109",
         "discovery_source": "provider_availability_check",
-        "revert_count": 0,
-        "first_reverted_at": "",
+        "revert_count": 13,
+        "first_reverted_at": "2026-11-20",
         "tmdb_platforms": [
-          "Paramount Plus Premium",
-          "Paramount Plus Essential",
-          "Paramount Plus Apple TV channel",
-          "Paramount+ Amazon Channel"
+          "Eventive"
+        ]
+      },
+      {
+        "title": "Honorable",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-10-28",
+        "discovered_at": "2026-11-20T16:48:20.715027",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 23,
+        "first_reverted_at": "2026-11-20",
+        "tmdb_platforms": [
+          "Eventive"
+        ]
+      },
+      {
+        "title": "We Are Not Invisible: Doulas and the Work of Survival",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-10-11",
+        "discovered_at": "2026-11-20T16:48:21.044562",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 39,
+        "first_reverted_at": "2026-11-20",
+        "tmdb_platforms": [
+          "Eventive"
+        ]
+      },
+      {
+        "title": "PHINDA",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-10-11",
+        "discovered_at": "2026-11-20T16:48:21.321244",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 39,
+        "first_reverted_at": "2026-11-20",
+        "tmdb_platforms": [
+          "Eventive"
+        ]
+      },
+      {
+        "title": "Fork in the Road",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-10-10",
+        "discovered_at": "2026-11-20T16:48:21.642579",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 40,
+        "first_reverted_at": "2026-11-20",
+        "tmdb_platforms": [
+          "Eventive"
+        ]
+      },
+      {
+        "title": "The Protectors",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-10-10",
+        "discovered_at": "2026-11-20T16:48:21.908956",
+        "discovery_source": "provider_availability_check",
+        "revert_count": 40,
+        "first_reverted_at": "2026-11-20",
+        "tmdb_platforms": [
+          "Eventive"
+        ]
+      },
+      {
+        "title": "Big Break",
+        "reason": "jw_revert:justwatch_no_match",
+        "digital_date": "2026-06-18",
+        "discovered_at": "2026-11-20T16:48:22.577685",
+        "discovery_source": "tmdb_type4",
+        "revert_count": 58,
+        "first_reverted_at": "2026-11-20",
+        "tmdb_platforms": [
+          "Eventive"
         ]
       }
     ],
-    "enrichment_duration_seconds": 2713.21,
+    "enrichment_duration_seconds": 1086.37,
     "error_details": [],
     "total_errors": 0
   }

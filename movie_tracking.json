@@ -6669,11 +6669,24 @@
     "1479481": {
       "title": "Terrestrial",
       "premiere_date": "2025-07-20",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-11-20",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-06T16:48:06.705495",
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "providers": {
+        "rent": [
+          "Apple TV Store"
+        ],
+        "buy": [
+          "Apple TV Store"
+        ],
+        "streaming": []
+      },
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_transitioned_at": "2026-11-20"
     },
     "1518672": {
       "title": "The Breakup",
@@ -15913,9 +15926,9 @@
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-07-31",
       "digital_date": "2026-11-20",
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-20",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-11-20"
     },
     "1561900": {
       "title": "Pura Sangre",
@@ -32889,13 +32902,23 @@
     },
     "1427833": {
       "title": "A Mouse Hunt for Christmas",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-11-07",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-20",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Angel Studios"
+        ]
+      },
       "discovery_pass": "B",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_transitioned_at": "2026-11-20"
     },
     "1418565": {
       "title": "Fwends",
@@ -36001,9 +36024,9 @@
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-06-20",
       "digital_date": "2026-11-20",
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-20",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-11-20"
     },
     "1569696": {
       "title": "Voice",
@@ -74551,7 +74574,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-20",
-      "_jw_revert_count": 12,
+      "_jw_revert_count": 13,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_last_checked": "2026-11-20",
       "_jw_revert_reason": "justwatch_no_match",
@@ -80091,7 +80114,9 @@
       "status": "available",
       "first_seen": "2026-01-03",
       "providers": {
-        "rent": [],
+        "rent": [
+          "Eventive"
+        ],
         "buy": [],
         "streaming": []
       },
@@ -105413,14 +105438,30 @@
     },
     "1453227": {
       "title": "Bird in Hand",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-04",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-20",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Fandango At Home"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Fandango At Home"
+        ],
+        "streaming": []
+      },
       "intake_pass": "backfill",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
-      "premiere_date": "2025-06-06"
+      "premiere_date": "2025-06-06",
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_transitioned_at": "2026-11-20"
     },
     "1432635": {
       "title": "The Good Luck",
@@ -170953,13 +170994,23 @@
     "1484620": {
       "title": "Everybody to Kenmure Street",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-20",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-20",
+      "providers": {
+        "rent": [
+          "Jolt Film"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_transitioned_at": "2026-11-20"
     },
     "1480856": {
       "title": "Hanging by a Wire",
@@ -180882,7 +180933,7 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_screening_expired": true,
       "_screening_returned_at": "2026-11-19",
       "digital_date": "2026-11-20",
@@ -223948,7 +223999,7 @@
       "intake_pass": "B",
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-11-19",
       "_jw_last_checked": "2026-11-19",
@@ -244706,7 +244757,9 @@
       ],
       "original_language": "en",
       "providers": {
-        "rent": [],
+        "rent": [
+          "Eventive"
+        ],
         "buy": [
           "Amazon Video",
           "Apple TV Store"
@@ -248936,7 +248989,7 @@
         ]
       },
       "intake_pass": "A",
-      "_jw_revert_count": 57,
+      "_jw_revert_count": 58,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
@@ -262433,12 +262486,22 @@
     "1127861": {
       "title": "I, Object",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-07-22",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-20",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Angel Studios"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_transitioned_at": "2026-11-20"
     },
     "1708236": {
       "title": "Los Vampires",
@@ -263767,7 +263830,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-20",
-      "_jw_revert_count": 22,
+      "_jw_revert_count": 23,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_last_checked": "2026-11-20",
       "_jw_revert_reason": "justwatch_no_match",
@@ -267325,9 +267388,9 @@
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-08-10",
       "digital_date": "2026-11-20",
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-20",
-      "_jw_revert_count": 1
+      "_jw_reverted_at": "2026-11-20"
     },
     "1715309": {
       "title": "We Are Not Dreaming",
@@ -273127,12 +273190,23 @@
     "1737129": {
       "title": "HB2ME",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-08-21",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-20",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_transitioned_at": "2026-11-20"
     },
     "1287536": {
       "title": "Dora and the Search for Sol Dorado",
@@ -276296,7 +276370,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-20",
-      "_jw_revert_count": 39,
+      "_jw_revert_count": 40,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-20"
@@ -291837,7 +291911,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-20",
-      "_jw_revert_count": 38,
+      "_jw_revert_count": 39,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-20"
@@ -291867,7 +291941,7 @@
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-10-19",
       "digital_date": "2026-11-20",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-20"
     },
@@ -291891,7 +291965,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-20",
-      "_jw_revert_count": 39,
+      "_jw_revert_count": 40,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-20"
@@ -291916,7 +291990,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-20",
-      "_jw_revert_count": 38,
+      "_jw_revert_count": 39,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-20"
@@ -292040,23 +292114,27 @@
     "1468447": {
       "title": "Oh Season",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-09-23",
       "providers": {
-        "rent": [],
+        "rent": [
+          "Amazon Video"
+        ],
         "buy": [],
         "streaming": []
       },
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": false,
+      "has_providers": true,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
-      "enrichment_date": "2026-10-11",
-      "_transitioned_at": "2026-10-11",
+      "enrichment_date": "2026-11-20",
+      "_transitioned_at": "2026-11-20",
       "_screening_expired": true,
       "_screening_returned_at": "2026-11-19",
-      "_screening_ended": "2026-10-19"
+      "_screening_ended": "2026-10-19",
+      "digital_date": "2026-11-20",
+      "is_slop": true
     },
     "1445150": {
       "title": "Maybe We Should",
@@ -296518,12 +296596,24 @@
     "1456196": {
       "title": "Thella Kaagitham",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-10-01",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-20",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_transitioned_at": "2026-11-20"
     },
     "1439171": {
       "title": "Traces of Justice",
@@ -310664,7 +310754,7 @@
       "providers": {},
       "intake_pass": "B",
       "has_providers": false,
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-18",
       "_jw_legacy_last_check": "2026-11-18"
@@ -313318,12 +313408,20 @@
     "1561834": {
       "title": "Last Dinner",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-10-29",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-19",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-11-20"
     },
     "1552079": {
       "title": "The Last Roman God",
@@ -323627,12 +323725,24 @@
     "1827136": {
       "title": "From Baseball to Bloodshed - When Unconditional Love Turns Deadly",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-11-16",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-20",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [
+          "Amazon Video"
+        ],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_transitioned_at": "2026-11-20"
     },
     "1825932": {
       "title": "A Deadly Proposal",
@@ -323995,7 +324105,7 @@
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
       "_transitioned_at": "2026-11-20",
-      "_jw_revert_count": 6,
+      "_jw_revert_count": 7,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_last_checked": "2026-11-20",
       "_jw_revert_reason": "justwatch_no_match",
@@ -324948,7 +325058,8 @@
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-19",
-      "_jw_last_checked": "2026-11-20"
+      "_jw_last_checked": "2026-11-20",
+      "_skip_provider_discovery": true
     },
     "1827320": {
       "title": "A Cidade e os Mapas",
@@ -325653,7 +325764,7 @@
       "digital_date": "2026-11-20",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-20",
       "_jw_last_checked": "2026-11-20"
@@ -325679,16 +325790,22 @@
     "1595124": {
       "title": "Steps",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-11-20",
       "digital_date": "2026-11-20",
-      "providers": {},
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "A",
-      "_jw_revert_count": 2,
-      "_jw_revert_reason": "justwatch_no_valid_offers",
-      "_jw_reverted_at": "2026-11-20",
       "_jw_last_checked": "2026-11-20",
-      "_jw_last_refuted": "2026-11-20"
+      "_jw_last_refuted": "2026-11-20",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-11-20"
     },
     "1568060": {
       "title": "Perfect Liars",
@@ -325716,7 +325833,7 @@
       "digital_date": "2026-11-20",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-20",
       "_jw_last_checked": "2026-11-20"
@@ -325765,7 +325882,7 @@
       "digital_date": "2016-04-26",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_valid_offers",
       "_jw_reverted_at": "2026-11-20",
       "_jw_last_checked": "2026-11-20",
@@ -326352,10 +326469,13 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-11-20",
-      "digital_date": null,
+      "digital_date": "2026-11-19",
       "providers": {},
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": false,
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-11-20"
     },
     "1650093": {
       "title": "Letters This Christmas",
@@ -326376,6 +326496,91 @@
       "enriched": true,
       "enrichment_date": "2026-11-20",
       "_transitioned_at": "2026-11-20"
+    },
+    "1791730": {
+      "title": "Primetime Preacher$",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-11-20",
+      "digital_date": "2026-11-20",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-11-20",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-11-20"
+    },
+    "1831786": {
+      "title": "Sufferfest",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-20",
+      "digital_date": "2026-08-19",
+      "providers": {},
+      "intake_pass": "B",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-11-20"
+    },
+    "1735403": {
+      "title": "Brindavihari",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1698932": {
+      "title": "Kaali Kheti",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1831755": {
+      "title": "Kulpash",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-20",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_342674": {
+      "title": "OK Angels",
+      "content_type": "limited_series",
+      "tmdb_id": 342674,
+      "status": "tracking",
+      "first_air_date": "2026-11-20",
+      "digital_date": "2026-11-20",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": null,
+      "synopsis": "OK Angels, a high-stakes vertical drama series where ambition, glamour, and fierce competition collide. With 7 girls living under one mansion and ₱100M at stake, alliances will be tested and secrets will unravel in a game where everyone wants to come out on top.",
+      "genres": [],
+      "original_language": "tl",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-11-20",
+      "networks": [
+        "YouTube",
+        "OxinFilms"
+      ],
+      "has_providers": false
     }
   }
 }
