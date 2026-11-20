@@ -1,92 +1,136 @@
 {
-  "timestamp": "2026-11-19T17:30:21.274624",
-  "movies_requested": 17,
-  "movies_enriched": 0,
-  "movies_deferred": 17,
+  "timestamp": "2026-11-20T01:49:26.839980",
+  "movies_requested": 29,
+  "movies_enriched": 1,
+  "movies_deferred": 28,
   "deferred_details": [
     {
-      "title": "Gordon",
+      "title": "After This Death",
       "reason": "jw_error_retry",
-      "digital_date": "2026-11-18",
-      "discovered_at": "2026-11-19T17:12:01.957601",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 0,
-      "first_reverted_at": "",
-      "tmdb_platforms": [
-        "Netflix",
-        "Netflix Standard with Ads"
-      ]
-    },
-    {
-      "title": "Student of the Year: After Dark",
-      "reason": "jw_error_retry",
-      "digital_date": "2026-11-13",
-      "discovered_at": "2026-11-19T17:12:02.375532",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 0,
-      "first_reverted_at": "",
-      "tmdb_platforms": [
-        "Hulu"
-      ]
-    },
-    {
-      "title": "Clangold",
-      "reason": "jw_error_retry",
-      "digital_date": "2026-11-13",
-      "discovered_at": "2026-11-19T17:12:02.867170",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 0,
-      "first_reverted_at": "",
-      "tmdb_platforms": [
-        "HBO Max Amazon Channel",
-        "HBO Max"
-      ]
-    },
-    {
-      "title": "Murder in Galicia",
-      "reason": "jw_error_retry",
-      "digital_date": "2026-11-13",
-      "discovered_at": "2026-11-19T17:12:03.283964",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 0,
-      "first_reverted_at": "",
-      "tmdb_platforms": [
-        "Netflix",
-        "Netflix Standard with Ads"
-      ]
-    },
-    {
-      "title": "How Deep Is Your Love",
-      "reason": "jw_error_retry",
-      "digital_date": "2026-11-19",
-      "discovered_at": "2026-11-19T17:12:04.740067",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 0,
-      "first_reverted_at": "",
-      "tmdb_platforms": [
-        "OVID"
-      ]
-    },
-    {
-      "title": "One Night Out with Alan Cumming",
-      "reason": "jw_error_retry",
-      "digital_date": "2026-11-19",
-      "discovered_at": "2026-11-19T17:12:07.792504",
-      "discovery_source": "provider_availability_check",
-      "revert_count": 0,
-      "first_reverted_at": "",
-      "tmdb_platforms": [
-        "Amazon Video"
-      ]
-    },
-    {
-      "title": "Red Snow",
-      "reason": "jw_error_retry",
-      "digital_date": "2026-12-11",
-      "discovered_at": "2026-11-19T17:12:27.455735",
+      "digital_date": "2026-11-20",
+      "discovered_at": "2026-11-06T15:46:30.173013",
       "discovery_source": "tmdb_type4",
       "revert_count": 0,
       "first_reverted_at": "",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Vile",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-20",
+      "discovered_at": "2026-11-09T18:15:15.750494",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Best Pancakes in the County",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-20",
+      "discovered_at": "2026-11-14T14:53:45.752546",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Law of Beasts",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-18",
+      "discovered_at": "2026-11-20T00:52:08.648153",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ]
+    },
+    {
+      "title": "Gipsy Kings Featuring Tonino Baliardo",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-20",
+      "discovered_at": "2026-11-20T00:52:33.572615",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Perfect Liars",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-20",
+      "discovered_at": "2026-11-20T00:52:34.589859",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "The Roses",
+      "reason": "jw_error_retry",
+      "digital_date": "2025-10-21",
+      "discovered_at": "2026-11-20T00:52:35.703303",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Ezra",
+      "reason": "jw_error_retry",
+      "digital_date": "2024-06-25",
+      "discovered_at": "2026-11-20T00:52:36.229318",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Path of Titans 4 - DUCK DYNASTY",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-26",
+      "discovered_at": "2026-11-20T00:52:36.847132",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": []
+    },
+    {
+      "title": "Francesca Next Door",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-19",
+      "discovered_at": "2026-11-20T00:53:21.023378",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Kocowa Amazon Channel"
+      ]
+    },
+    {
+      "title": "Balearic",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-10",
+      "discovered_at": "2026-11-20T00:53:37.145421",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Philo",
+        "Fandor",
+        "Fandor Amazon Channel"
+      ]
+    },
+    {
+      "title": "Lunar Sway",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-12-08",
+      "discovered_at": "2026-11-19T17:15:05.258693",
+      "discovery_source": "tmdb_type4",
+      "revert_count": 2,
+      "first_reverted_at": "2026-11-20",
       "tmdb_platforms": []
     },
     {
@@ -103,14 +147,89 @@
       ]
     },
     {
-      "title": "Lunar Sway",
+      "title": "Red Snow",
       "reason": "jw_error_retry",
-      "digital_date": "2026-12-08",
-      "discovered_at": "2026-11-19T17:15:05.258693",
+      "digital_date": "2026-12-11",
+      "discovered_at": "2026-11-19T17:12:27.455735",
       "discovery_source": "tmdb_type4",
-      "revert_count": 1,
+      "revert_count": 0,
       "first_reverted_at": "",
       "tmdb_platforms": []
+    },
+    {
+      "title": "One Night Out with Alan Cumming",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-19",
+      "discovered_at": "2026-11-19T17:12:07.792504",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Amazon Video"
+      ]
+    },
+    {
+      "title": "How Deep Is Your Love",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-19",
+      "discovered_at": "2026-11-19T17:12:04.740067",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "OVID"
+      ]
+    },
+    {
+      "title": "Murder in Galicia",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-13",
+      "discovered_at": "2026-11-19T17:12:03.283964",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ]
+    },
+    {
+      "title": "Clangold",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-13",
+      "discovered_at": "2026-11-19T17:12:02.867170",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "HBO Max Amazon Channel",
+        "HBO Max"
+      ]
+    },
+    {
+      "title": "Student of the Year: After Dark",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-13",
+      "discovered_at": "2026-11-19T17:12:02.375532",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Hulu"
+      ]
+    },
+    {
+      "title": "Gordon",
+      "reason": "jw_error_retry",
+      "digital_date": "2026-11-18",
+      "discovered_at": "2026-11-19T17:12:01.957601",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 0,
+      "first_reverted_at": "",
+      "tmdb_platforms": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ]
     },
     {
       "title": "How to Rob a Bank",
@@ -218,7 +337,7 @@
       ]
     }
   ],
-  "enrichment_duration_seconds": 889.53,
+  "enrichment_duration_seconds": 2086.07,
   "error_details": [],
   "total_errors": 0
 }
