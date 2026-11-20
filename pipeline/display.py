@@ -81,6 +81,24 @@ def is_festival_link(entry):
     return svc in FESTIVAL_SERVICES or any(p in link for p in FESTIVAL_URL_PATTERNS)
 
 
+def strip_festival_services(tracking_movie):
+    """An ended screening is an ordinary tracking film again (owner, Nov 2026): drop the
+    festival platforms from its tracking providers, so discovery's JustWatch check decides
+    instead of the festival shortcut (which let ended screenings onto the wall with no
+    links, Nov 20 2026). Returns True if anything changed."""
+    changed = bool(tracking_movie.pop('_virtual_screening', None))
+    providers = tracking_movie.get('providers') or {}
+    for kind in ('streaming', 'rent', 'buy'):
+        names = providers.get(kind)
+        if isinstance(names, list):
+            kept = [p for p in names if not (isinstance(p, str)
+                    and any(vs in p.lower() for vs in ('eventive', 'shift72', 'sundance')))]
+            if len(kept) != len(names):
+                providers[kind] = kept
+                changed = True
+    return changed
+
+
 class DisplayGenerator:
     """Prepares movies for final display output in data.json.
 

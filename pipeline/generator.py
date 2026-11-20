@@ -1844,11 +1844,6 @@ class DataGenerator:
         movies = data.get('movies', [])
         screening_movies = [m for m in movies if m.get('filters', {}).get('is_virtual_screening')]
 
-        if not screening_movies:
-            print("  No virtual screening movies found")
-            return
-
-        print(f"  Checking {len(screening_movies)} virtual screening movies...")
         active_count = 0
         expired_count = 0
         today_str = datetime.now().strftime('%Y-%m-%d')
@@ -1860,6 +1855,41 @@ class DataGenerator:
         # Load tracking database for status reset
         tracking_path = 'movie_tracking.json'
         tracking_data = self.storage.tracking_db.load_all()
+
+        from pipeline.display import is_festival_link, strip_festival_services
+
+        def _back_to_tracking(movie_id):
+            """Return an ended screening to tracking as an ordinary film (owner, Nov 2026)."""
+            tracking_movie = tracking_data.get('movies', {}).get(movie_id)
+            if not tracking_movie:
+                return
+            tracking_movie['status'] = 'tracking'
+            tracking_movie.pop('digital_date', None)
+            strip_festival_services(tracking_movie)
+            print(f"    → Returned to tracking for VOD re-discovery")
+
+        # An ended screening that has lost its festival link and has no real link must not
+        # sit on the wall: hide it and return it to tracking (Nov 20 2026: 8 ended screenings
+        # reached the main wall with no links because they no longer looked like screenings).
+        for movie in movies:
+            _vsi = movie.get('virtual_screening_info') or {}
+            if (_vsi.get('status') != 'expired' or movie.get('hidden')
+                    or movie.get('filters', {}).get('is_virtual_screening')):
+                continue
+            _wl = movie.get('watch_links') or {}
+            if any(isinstance(e, dict) and bool(e.get('link') or e.get('url')) and not is_festival_link(e)
+                   for k in ('vod', 'streaming') for e in (_wl.get(k) if isinstance(_wl.get(k), list) else [_wl.get(k)])):
+                continue  # rentable/streaming elsewhere: a normal release
+            movie['hidden'] = True
+            expired_count += 1
+            modified = True
+            print(f"  ❌ Ended screening with no watch link: {movie.get('title', 'Unknown')} — off the wall")
+            _back_to_tracking(str(movie.get('id', '')))
+
+        if not screening_movies:
+            print("  No virtual screening movies found")
+
+        print(f"  Checking {len(screening_movies)} virtual screening movies...")
 
         for movie in screening_movies:
             title = movie.get('title', 'Unknown')
@@ -1910,13 +1940,7 @@ class DataGenerator:
                 slug = screening_info.get('screening_slug', '?')
                 print(f"  ❌ Expired: {title} ({slug}) — {reason}")
 
-                movie_id = str(movie.get('id', ''))
-                if movie_id and movie_id in tracking_data.get('movies', {}):
-                    tracking_movie = tracking_data['movies'][movie_id]
-                    tracking_movie['status'] = 'tracking'
-                    if 'digital_date' in tracking_movie:
-                        del tracking_movie['digital_date']
-                    print(f"    → Returned to tracking for VOD re-discovery")
+                _back_to_tracking(str(movie.get('id', '')))
 
             # Check 1: Date-based expiration (available_end in the past)
             slug = screening_info.get('screening_slug', '')

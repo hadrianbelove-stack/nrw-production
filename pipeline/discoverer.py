@@ -477,6 +477,12 @@ class ProviderDiscoverer:
                     else:
                         continue  # still no change — keep waiting, skip the normal binary checks
 
+                # Legacy marker (Step 1, Nov 2026) of an ended screening: make the film an
+                # ordinary tracking film once — drop its festival services so JustWatch decides.
+                if movie['status'] == 'tracking' and movie.pop('_screening_expired', None):
+                    from pipeline.display import strip_festival_services
+                    strip_festival_services(movie)
+
                 # PRIMARY: Type 4 digital release check.
                 # A TMDB date by itself never puts a film on the wall (owner, Nov 2026): an
                 # arrived date sends it to the JustWatch check and the store page test; a
@@ -618,6 +624,19 @@ class ProviderDiscoverer:
                                         print(f"  ⏭ {movie['title']} — VS bypass skipped: HTTP {_head.status_code}")
                                 except requests.RequestException:
                                     print(f"  ⏭ {movie['title']} — VS bypass skipped: link unreachable")
+
+                        # Not a screening (no festival platform of its own — e.g. an ended
+                        # screening back in tracking): a festival platform TMDB still lists
+                        # (Eventive) is no way to watch it and must not take the festival
+                        # shortcut past JustWatch (Nov 20 2026: 8 ended screenings reached the
+                        # main wall with no links that way).
+                        if not _is_virtual_screening:
+                            _fest = ('eventive', 'shift72', 'sundance')
+                            rent_names = [n for n in rent_names if not any(f in n.lower() for f in _fest)]
+                            buy_names = [n for n in buy_names if not any(f in n.lower() for f in _fest)]
+                            stream_names = [n for n in stream_names if not any(f in n.lower() for f in _fest)]
+                            has_providers = (bool(rent_names or buy_names or stream_names)
+                                             or bool(movie.get('_rent_preorder_held')))
 
                         movie['has_providers'] = has_providers
 

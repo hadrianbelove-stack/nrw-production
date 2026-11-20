@@ -289,6 +289,63 @@ def test_a_robot_check_or_a_disc_only_store_waits_without_a_listing(night):
         assert mid not in wall
 
 
+# --- ended festival screenings are ordinary tracking films ----------------------------------
+
+def test_an_ended_screening_that_tmdb_lists_on_eventive_is_not_released(night):
+    """Nov 20 2026: ended screenings back in tracking skipped JustWatch via the festival
+    shortcut (TMDB still lists Eventive) and reached the main wall with no links."""
+    movies, wall, calls = night(
+        {'1': film('Ended Fest Film', _screening_expired=True, providers={'rent': ['Eventive'], 'buy': [], 'streaming': []}),
+         '2': film('Ended Earlier', providers={'rent': [], 'buy': [], 'streaming': []})},
+        providers={'1': tmdb(rent=['Eventive']), '2': tmdb(rent=['Eventive'])})
+    for mid in ('1', '2'):
+        assert movies[mid]['status'] == 'tracking' and mid not in wall
+    assert calls['jw'] == []
+    assert movies['1']['providers']['rent'] == [] and '_screening_expired' not in movies['1']
+
+
+def test_an_ended_screening_now_on_a_real_store_goes_through_the_normal_checks(night):
+    movies, wall, calls = night(
+        {'1': film('Fest Film On Amazon', _screening_expired=True, providers={'rent': ['Eventive'], 'buy': [], 'streaming': []})},
+        providers={'1': tmdb(rent=['Eventive', 'Amazon Video'])},
+        jw={'Fest Film On Amazon': offers(rent=True)},
+        page={'Fest Film On Amazon': 'available'})
+    assert calls['jw'] == ['Fest Film On Amazon'] and calls['page'] == ['Fest Film On Amazon']
+    assert movies['1']['status'] == 'available'
+
+
+def test_a_live_screening_still_takes_the_festival_path(night):
+    movies, _, calls = night({'1': film('Live Fest Film', providers={'rent': ['Eventive'], 'buy': [], 'streaming': []})},
+                             providers={'1': tmdb(rent=['Eventive'])})
+    assert movies['1']['status'] == 'available'
+    assert calls['jw'] == [], 'live screenings have their own links, not on JustWatch'
+
+
+def test_check_screenings_takes_an_ended_no_link_screening_off_the_wall(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / 'backups').mkdir()
+    ended = {'status': 'expired', 'available_end': '2026-10-21'}
+    site = [{'id': '1', 'title': 'No Links', 'virtual_screening_info': dict(ended), 'watch_links': {},
+             'filters': {'is_virtual_screening': False}, 'digital_date': TODAY},
+            {'id': '2', 'title': 'On Amazon', 'virtual_screening_info': dict(ended),
+             'watch_links': {'vod': [{'service': 'Amazon', 'link': AMAZON}]},
+             'filters': {'is_virtual_screening': False}, 'digital_date': TODAY}]
+    (tmp_path / 'data.json').write_text(json.dumps({'movies': site}))
+    tracked = {'1': film('No Links', status='available', digital_date=TODAY, _virtual_screening=True,
+                         providers={'rent': ['Eventive'], 'buy': [], 'streaming': []}),
+               '2': film('On Amazon', status='available', digital_date=TODAY)}
+    with patch.object(DataGenerator, 'load_config', return_value={'api': {'tmdb_api_key': 'x'}}):
+        gen = DataGenerator()
+    gen.storage.tracking_db = FakeTrackingDB(tracked)
+    gen.check_virtual_screening_expirations()
+    wall = {str(m['id']): m for m in json.loads((tmp_path / 'data.json').read_text())['movies']}
+    assert wall['1']['hidden'] is True and not wall['2'].get('hidden')
+    t = gen.storage.tracking_db.db['movies']
+    assert t['1']['status'] == 'tracking' and 'digital_date' not in t['1']
+    assert t['1']['providers']['rent'] == [] and '_virtual_screening' not in t['1']
+    assert t['2']['status'] == 'available'
+
+
 # --- the page reader: what real Amazon pages looked like on Nov 19, 2026 ---------------------
 
 # Every Amazon page carries this in its hidden data, pre-order or not.
