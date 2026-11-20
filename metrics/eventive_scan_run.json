@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-11-20T00:31:13.164697",
+  "timestamp": "2026-11-20T04:47:19.914440",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 135,
     "festivals_with_films": 130,
     "festivals_failed": 47,
-    "total_films_indexed": 2803,
+    "total_films_indexed": 2800,
     "expired_filtered": 0,
-    "unique_active": 1862,
+    "unique_active": 1860,
     "tracking_matches": 124,
     "wall_matches": 59,
     "new_cached": 129,
@@ -178,6 +178,18 @@
       "link": "https://watch.eventive.org/corkfilmfest/play/6accde40ea5c6a16822b4fd7",
       "start": "2026-11-21T00:01:00.000Z",
       "end": "2026-11-29T23:59:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1436695",
+      "nrw_title": "Redemption",
+      "eventive_title": "THE REDEMPTION",
+      "festival": "Southern Screen Festival 2026",
+      "link": "https://watch.eventive.org/southernscreenfestival2026/play/6ad657616ba442848b4126e2",
+      "start": "2026-11-21T18:00:00.000Z",
+      "end": "2026-11-23T05:30:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
@@ -359,18 +371,6 @@
       "start": "2026-09-22T07:00:00.000Z",
       "end": "2027-01-22T09:00:00.000Z",
       "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1436695",
-      "nrw_title": "Redemption",
-      "eventive_title": "THE REDEMPTION",
-      "festival": "Southern Screen Festival 2026",
-      "link": "https://watch.eventive.org/southernscreenfestival2026/play/6ad657616ba442848b4126e2",
-      "start": "2026-11-21T18:00:00.000Z",
-      "end": "2026-11-23T05:30:00.000Z",
-      "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -963,90 +963,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1591027",
-      "nrw_title": "Tadaima",
-      "eventive_title": "Tadaima",
-      "festival": "Films of Remembrance On Demand",
-      "link": "https://watch.eventive.org/for-on-demand/play/6695b277bf22b6004f82e7e7",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1519249",
-      "nrw_title": "The River",
-      "eventive_title": "THE RIVER",
-      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
-      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
-      "start": "2026-11-13T03:00:00.000Z",
-      "end": "2026-11-27T05:00:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1376339",
-      "nrw_title": "The River",
-      "eventive_title": "THE RIVER",
-      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
-      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
-      "start": "2026-11-13T03:00:00.000Z",
-      "end": "2026-11-27T05:00:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1538176",
-      "nrw_title": "River",
-      "eventive_title": "THE RIVER",
-      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
-      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
-      "start": "2026-11-13T03:00:00.000Z",
-      "end": "2026-11-27T05:00:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1520592",
-      "nrw_title": "River",
-      "eventive_title": "THE RIVER",
-      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
-      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
-      "start": "2026-11-13T03:00:00.000Z",
-      "end": "2026-11-27T05:00:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1805759",
-      "nrw_title": "The River",
-      "eventive_title": "THE RIVER",
-      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
-      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
-      "start": "2026-11-13T03:00:00.000Z",
-      "end": "2026-11-27T05:00:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1492339",
-      "nrw_title": "The Quiet Diplomat",
-      "eventive_title": "The Quiet Diplomat",
-      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
-      "link": "https://watch.eventive.org/2026lvifsf/play/6af0e927eafcd84765f29c4e",
-      "start": "2026-11-12T23:00:00.000Z",
-      "end": "2026-11-27T01:00:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1701331",
       "nrw_title": "Rescue",
       "eventive_title": "The Rescue",
@@ -1311,6 +1227,18 @@
       "nrw_status": "tracking"
     },
     {
+      "movie_id": "1591027",
+      "nrw_title": "Tadaima",
+      "eventive_title": "Tadaima",
+      "festival": "Films of Remembrance On Demand",
+      "link": "https://watch.eventive.org/for-on-demand/play/6695b277bf22b6004f82e7e7",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
       "movie_id": "1560360",
       "nrw_title": "Baristas vs Billionaires",
       "eventive_title": "Baristas vs Billionaires",
@@ -1501,6 +1429,78 @@
       "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
+    },
+    {
+      "movie_id": "1519249",
+      "nrw_title": "The River",
+      "eventive_title": "THE RIVER",
+      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
+      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
+      "start": "2026-11-13T03:00:00.000Z",
+      "end": "2026-11-27T05:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1376339",
+      "nrw_title": "The River",
+      "eventive_title": "THE RIVER",
+      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
+      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
+      "start": "2026-11-13T03:00:00.000Z",
+      "end": "2026-11-27T05:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1538176",
+      "nrw_title": "River",
+      "eventive_title": "THE RIVER",
+      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
+      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
+      "start": "2026-11-13T03:00:00.000Z",
+      "end": "2026-11-27T05:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1520592",
+      "nrw_title": "River",
+      "eventive_title": "THE RIVER",
+      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
+      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
+      "start": "2026-11-13T03:00:00.000Z",
+      "end": "2026-11-27T05:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1805759",
+      "nrw_title": "The River",
+      "eventive_title": "THE RIVER",
+      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
+      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
+      "start": "2026-11-13T03:00:00.000Z",
+      "end": "2026-11-27T05:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1492339",
+      "nrw_title": "The Quiet Diplomat",
+      "eventive_title": "The Quiet Diplomat",
+      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
+      "link": "https://watch.eventive.org/2026lvifsf/play/6af0e927eafcd84765f29c4e",
+      "start": "2026-11-12T23:00:00.000Z",
+      "end": "2026-11-27T01:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
     }
   ],
   "wall_matches": [
@@ -1625,6 +1625,18 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1436695",
+      "nrw_title": "Redemption",
+      "eventive_title": "THE REDEMPTION",
+      "festival": "Southern Screen Festival 2026",
+      "link": "https://watch.eventive.org/southernscreenfestival2026/play/6ad657616ba442848b4126e2",
+      "start": "2026-11-21T18:00:00.000Z",
+      "end": "2026-11-23T05:30:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1638280",
       "nrw_title": "Derek vs Derek",
       "eventive_title": "Derek vs Derek",
@@ -1717,18 +1729,6 @@
       "start": "2026-09-22T07:00:00.000Z",
       "end": "2027-01-22T09:00:00.000Z",
       "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1436695",
-      "nrw_title": "Redemption",
-      "eventive_title": "THE REDEMPTION",
-      "festival": "Southern Screen Festival 2026",
-      "link": "https://watch.eventive.org/southernscreenfestival2026/play/6ad657616ba442848b4126e2",
-      "start": "2026-11-21T18:00:00.000Z",
-      "end": "2026-11-23T05:30:00.000Z",
-      "status": "upcoming",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -2045,54 +2045,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1520592",
-      "nrw_title": "River",
-      "eventive_title": "THE RIVER",
-      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
-      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
-      "start": "2026-11-13T03:00:00.000Z",
-      "end": "2026-11-27T05:00:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1538176",
-      "nrw_title": "River",
-      "eventive_title": "THE RIVER",
-      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
-      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
-      "start": "2026-11-13T03:00:00.000Z",
-      "end": "2026-11-27T05:00:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1376339",
-      "nrw_title": "The River",
-      "eventive_title": "THE RIVER",
-      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
-      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
-      "start": "2026-11-13T03:00:00.000Z",
-      "end": "2026-11-27T05:00:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1519249",
-      "nrw_title": "The River",
-      "eventive_title": "THE RIVER",
-      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
-      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
-      "start": "2026-11-13T03:00:00.000Z",
-      "end": "2026-11-27T05:00:00.000Z",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1687466",
       "nrw_title": "Test",
       "eventive_title": "Test",
@@ -2209,6 +2161,54 @@
       "start": "2027-01-22T07:00:00.000Z",
       "end": "2027-02-01T06:59:00.000Z",
       "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1520592",
+      "nrw_title": "River",
+      "eventive_title": "THE RIVER",
+      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
+      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
+      "start": "2026-11-13T03:00:00.000Z",
+      "end": "2026-11-27T05:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1538176",
+      "nrw_title": "River",
+      "eventive_title": "THE RIVER",
+      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
+      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
+      "start": "2026-11-13T03:00:00.000Z",
+      "end": "2026-11-27T05:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1376339",
+      "nrw_title": "The River",
+      "eventive_title": "THE RIVER",
+      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
+      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
+      "start": "2026-11-13T03:00:00.000Z",
+      "end": "2026-11-27T05:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1519249",
+      "nrw_title": "The River",
+      "eventive_title": "THE RIVER",
+      "festival": "2026 Las Vegas International Film & Screenwriting Festival",
+      "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
+      "start": "2026-11-13T03:00:00.000Z",
+      "end": "2026-11-27T05:00:00.000Z",
+      "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
     }
