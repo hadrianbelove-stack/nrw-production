@@ -869,15 +869,9 @@ class DisplayGenerator:
                 movie['_coming_soon_capped'] = True
             elif movie.get('_coming_soon_capped'):
                 # Was capped before; now within the window (or no longer a pre-order)
-                # — restore it. Only films WE capped carry this marker. Not one enrichment
-                # just hid because JustWatch couldn't confirm it (_jw_unconfirmed): that
-                # hide lifts only when its JustWatch check passes.
+                # — restore it. Only films WE capped carry this marker.
                 movie.pop('_coming_soon_capped', None)
-                # ... nor an ended festival screening this pass just hid (Labors of Love: capped
-                # when dated 2027, then its screening read as ended -- un-hidden in Fests).
-                if not movie.get('_jw_unconfirmed') and \
-                        (movie.get('virtual_screening_info') or {}).get('status') != 'expired':
-                    movie['hidden'] = False
+                movie['hidden'] = False
         if _cs_hidden:
             print(f"⏳ Coming Soon cap: hid {_cs_hidden} pre-order(s) dated >{COMING_SOON_MAX_DAYS}d out")
 

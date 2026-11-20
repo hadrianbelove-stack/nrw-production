@@ -196,7 +196,7 @@ Take the output above and write a clean markdown report with these sections. Use
 
 **Header**: Movie title, year, TMDB ID, NRW status (tracking/available/on wall)
 
-**Pipeline Flags** (only if any exist): Explain what each flag means in plain terms. Flag `_skip_provider_discovery=True` means "held under the old 4-strike skip (retired Nov 2026) and not yet re-checked successfully — it is checked on JustWatch every run; the flag only tells put-back dating that it went unchecked for months." `_jw_revert_count=10` means "JustWatch rejected this movie 10 times." Be specific about consequences.
+**Pipeline Flags** (only if any exist): Explain what each flag means in plain terms. Flag `_skip_provider_discovery=True` means "provider discovery is permanently blocked — the pipeline will never check this again." `_jw_revert_count=10` means "JustWatch rejected this movie 10 times." Be specific about consequences.
 
 **What's on the Wall** (only if status=available): RT score, IMDb rating, Wikipedia link, trailer status, all watch links with prices.
 

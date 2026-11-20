@@ -24,12 +24,6 @@ from admin.health import load_health_status
 from admin.logging_setup import logger
 from admin.utils import load_json, mark_changes_pending, has_pending_changes
 
-import os as _os
-import sys as _sys
-from admin.config import SITE_ROOT as _SITE_ROOT
-_sys.path.insert(0, _os.path.join(_SITE_ROOT, 'scripts'))
-from curate_list import _in_window  # noqa: E402  /curate's window (dated in it, or landed in it)
-
 bp = Blueprint('today', __name__)
 
 QUEUE_WINDOW_DAYS = 14
@@ -161,9 +155,8 @@ def today_dashboard():
     queue = []        # needs curation (or recently curated, shown as done)
     slop_review = []  # auto-flagged guesses awaiting confirm/rescue
     for m in movies:
-        # Same rule as /curate and /flow: dated in the window, or landed on the wall in it
-        # (a film put back after a hold keeps its real, older date).
-        if not _in_window(m, window_start, today_str):
+        dd = m.get('digital_date', '') or ''
+        if not (window_start <= dd <= today_str):
             continue
         shaped = _present_movie(m, featured, overrides, quotes_cache)
         if m.get('_is_slop_guess') is not None:

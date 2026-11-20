@@ -183,14 +183,9 @@ def _git_commit_push(files, message):
     rc, out = _git(['commit', '-m', f'{message} APPROVED: DELETE', '--', *files],
                    env=env)
     if rc != 0:
-        if not ('nothing to commit' in out or 'no changes added to commit' in out
-                or 'nothing added to commit' in out):
-            return f'commit failed: {out[-300:]}'
-        # Nothing new to commit. Saved and published -- unless an earlier save's commit never
-        # reached GitHub (its push failed): push that now rather than call it published.
-        rc, ahead = _git(['rev-list', '--count', 'origin/main..main'])
-        if rc != 0 or ahead.strip() in ('', '0'):
+        if 'nothing to commit' in out or 'no changes added to commit' in out:
             return None
+        return f'commit failed: {out[-300:]}'
 
     rc, out = _git(['push', 'origin', 'main'])
     if rc == 0:

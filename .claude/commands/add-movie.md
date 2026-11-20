@@ -35,13 +35,7 @@ Ask the user to confirm the correct ID before proceeding.
 
 ---
 
-## Step 2 — Wait out today's update, then pull latest from CI
-
-```bash
-gh run list --workflow daily-check.yml --limit 1 --json status
-```
-
-If the status is anything but `completed`, today's update is still running on GitHub: stop and add the film after it finishes (usually within the hour). A push meanwhile can collide with the update's own push (certain for a film you reverted: the update rechecks it), and then that day's whole update fails to publish. If `gh` can't answer, go ahead.
+## Step 2 — Pull latest from CI first
 
 **CRITICAL**: Always pull before modifying data files to avoid overwriting CI discoveries.
 
@@ -63,10 +57,7 @@ in_wall = any(str(m.get('id')) == mid for m in d['movies'])
 in_tracking = mid in t.get('movies', {})
 if in_wall:
     m = next(m for m in d['movies'] if str(m.get('id')) == mid)
-    if m.get('hidden') or m.get('_enrichment_status') == 'reverted':
-        print(f'REVERTED/HIDDEN: {m[\"title\"]} is not on the wall -- safe to add (this puts it back)')
-    else:
-        print(f'ALREADY ON WALL: {m[\"title\"]} (links: {sum(len(v) for v in m.get(\"watch_links\",{}).values())})')
+    print(f'ALREADY ON WALL: {m[\"title\"]} (links: {sum(len(v) for v in m.get(\"watch_links\",{}).values())})')
 elif in_tracking:
     mt = t['movies'][mid]
     print(f'IN TRACKING: {mt.get(\"title\")} status={mt.get(\"status\")}')
@@ -75,7 +66,7 @@ else:
 "
 ```
 
-If already on wall with links, stop and tell the user. REVERTED/HIDDEN (a film the owner sent back, or one hidden for another reason) is fine: adding it puts it back on the wall. If in tracking as "tracking" (not yet available), that's fine — the script will set it to available.
+If already on wall with links, stop and tell the user. If in tracking as "tracking" (not yet available), that's fine — the script will set it to available.
 
 ---
 
@@ -95,8 +86,6 @@ For a movie you know had an earlier digital date (recovery):
 ```bash
 /usr/bin/python3 scripts/add_movie.py $TMDB_ID --date YYYY-MM-DD
 ```
-
-A film the owner reverted (REVERTED/HIDDEN above) goes back dated today unless `--date` is given. To undo a mis-clicked revert, pass `--date` with the date it had on the wall.
 
 ---
 
@@ -121,7 +110,7 @@ Watch the output for:
 
 ## Step 6 — Commit and push immediately
 
-Push RIGHT AWAY, before CI's nightly run (scheduled 7:30 AM UTC: 11:30 PM PST / 12:30 AM PDT; GitHub often starts it later).
+Push RIGHT AWAY before CI runs (CI runs at 9 AM UTC / 2 AM Pacific daily).
 
 ```bash
 git add data.json movie_tracking.json

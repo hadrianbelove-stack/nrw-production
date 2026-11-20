@@ -280,7 +280,7 @@
                 {% endif %}
             </div>
             <div class="incomplete-dot">{% if enrich_failed %}<span class="enrich-fail" title="Enrichment {{ movie.get('_enrichment_status', 'failed') }}">!</span>{% elif incomplete %}<span class="inc-flag" title="Incomplete data"></span>{% endif %}</div>
-            <button class="trash-btn" onclick="event.stopPropagation(); removeMovie('{{ movie_id }}', {{ movie.title|tojson|forceescape }})" title="Remove">&#128465;</button>
+            <button class="trash-btn" onclick="event.stopPropagation(); removeMovie('{{ movie_id }}', '{{ movie.title|e }}')" title="Remove">&#128465;</button>
             <div></div>
         </div>
 
@@ -392,8 +392,7 @@
                     </div>
                     <div class="ep-actions">
                         <a href="/pull-quotes/{{ movie_id }}" class="quote-btn" title="Full quote curation page">Quotes Page</a>
-                        <button class="rv-btn" onclick="revertMovie('{{ movie_id }}', {{ movie.title|tojson|forceescape }})" title="Not really out yet: off the wall until it is, then back on its own">Revert (not out yet)</button>
-                        <button class="rm-btn" onclick="removeMovie('{{ movie_id }}', {{ movie.title|tojson|forceescape }})" title="Gone for good: never back on the wall">Remove from wall</button>
+                        <button class="rm-btn" onclick="removeMovie('{{ movie_id }}', '{{ movie.title|e }}')">Remove from wall</button>
                     </div>
                 </div>
             </div>

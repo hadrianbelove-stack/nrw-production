@@ -13,13 +13,9 @@ import signal
 import time
 from datetime import datetime, timedelta
 
-from pipeline import putback
-from pipeline.discoverer import FESTIVAL_PLATFORMS, strip_festival_links
-
 from constants import (
     MAX_ENRICHMENT_BATCH,
     ENRICHMENT_LOOP_TIMEOUT_MINUTES,
-    PREORDER_LINK_FINDER_MAX_MINUTES,
     MAX_ENRICHMENT_ATTEMPTS,
     RETRY_BACKOFF_DAYS,
 )
@@ -525,10 +521,6 @@ class MovieEnricher:
             # deduped, list-shaped) — see normalize_watch_links in
             # pipeline/provider_names.py. Nothing to rename here.
             result['watch_links'] = watch_links_raw or {}
-            if movie_data.get('_screening_expired'):
-                # A returned festival screening: its own (expired) festival page is not a
-                # release, whichever source (cache, JustWatch, scraper) brought it back.
-                strip_festival_links(result['watch_links'])
 
             if result['watch_links']:
                 enrichment_results['watch_links'] = 'success'
@@ -615,23 +607,10 @@ class MovieEnricher:
             result['_digital_date_source'] = 'manual_override'
             enrichment_results['digital_date'] = 'skipped_manual'
             self.ctx.logger.info(f"Digital Date: Preserved manual date {movie_data['digital_date']} for {title}")
-        elif movie_data.get('_digital_date_source') in putback.PROTECTED_SOURCES and movie_data.get('digital_date'):
-            # Put back after a hold: dated from evidence (pipeline/putback.py). Keep it --
-            # TMDB's date was never confirmed watchable.
-            result['digital_date'] = movie_data['digital_date']
-            result['_digital_date_source'] = movie_data['_digital_date_source']
-            enrichment_results['digital_date'] = 'skipped_putback'
         else:
             try:
                 type4_date = self.host.fetch_tmdb_type4_date(movie_id)
-                _floor = movie_data.get('_jw_last_refuted')
-                if type4_date and _floor and type4_date <= _floor and movie_data.get('digital_date'):
-                    # Never onto or before a day a check proved it not out yet (a buy-only
-                    # pre-order graduated today keeps today, not TMDB's earlier buy-only date).
-                    result['digital_date'] = movie_data['digital_date']
-                    result['_digital_date_source'] = movie_data.get('_digital_date_source') or 'detection'
-                    enrichment_results['digital_date'] = 'skipped_refuted'
-                elif type4_date:
+                if type4_date:
                     result['digital_date'] = type4_date
                     result['_digital_date_source'] = 'tmdb_type4'
                     enrichment_results['digital_date'] = 'success'
@@ -705,34 +684,6 @@ class MovieEnricher:
     # Main enrichment orchestrator
     # ------------------------------------------------------------------
 
-    @staticmethod
-    def _hide_unchecked_putbacks(ids, existing_movies, movie_lookup, tracking_data):
-        """Films put back TODAY -- or pre-orders today's transition moved onto the main
-        wall -- that enrichment can't check this run (batch limit, loop timeout) wait hidden
-        until their JustWatch pre-check runs next run (catch-up queues _jw_unconfirmed films
-        first). A film coming back from a hold is often still a PVOD or pre-order rental,
-        which only that check catches."""
-        today = datetime.now().strftime('%Y-%m-%d')
-        hidden = 0
-        for mid in ids:
-            mid = str(mid)
-            rec = ((tracking_data or {}).get('movies') or {}).get(mid) or {}
-            if mid not in movie_lookup:
-                continue
-            m = existing_movies[movie_lookup[mid]]
-            # Put back today, or a pre-order moved onto the main wall by today's transition
-            # (a buy-only graduation: TMDB's listing alone can do it).
-            if (str(rec.get('_put_back_on', ''))[:10] != today
-                    and str(m.get('_preorder_synced_on', ''))[:10] != today):
-                continue
-            if not m.get('_jw_unconfirmed'):
-                m['hidden'] = True
-                m['_jw_unconfirmed'] = today
-                hidden += 1
-        if hidden:
-            print(f"  \u23f8 {hidden} film(s) put back today wait hidden until enrichment checks them next run")
-        return hidden
-
     def enrich_newly_available_movies(self, target_id=None) -> int:
         """
         Enrich movies listed in metrics/newly_available.json.
@@ -770,10 +721,6 @@ class MovieEnricher:
         self.ctx.logger.info(f"Enrichment loaded data.json: {_initial_movie_count} movies")
         tracking_data = None      # Loaded before catch-up (batch) or before main loop (single)
         tracking_changed = False  # Track whether movie_tracking.json needs saving
-        _new_ids = set()          # films discovery put on the wall THIS run (not catch-up)
-        _jw_deferred = set()      # films whose JustWatch pre-check failed this run (no strike)
-        _po_graduations = {}      # past-date pre-orders queued for a JustWatch re-check (catch-up)
-        _processed = set()        # films the loop actually reached this run
 
         # Single-movie mode: skip queue building, enrich just this one
         if target_id:
@@ -793,7 +740,6 @@ class MovieEnricher:
                     with open(newly_available_file, 'r') as f:
                         newly_available = json.load(f)
                     movie_ids_to_enrich = [str(mid) for mid in newly_available.get('movie_ids', [])]
-                    _new_ids = set(movie_ids_to_enrich)
                     state_date = newly_available.get('date', 'unknown')
 
                     today = datetime.now().strftime('%Y-%m-%d')
@@ -823,20 +769,12 @@ class MovieEnricher:
 
             if _plf_candidates:
                 print(f"\n  \U0001f50d Pre-order link finder: {len(_plf_candidates)} movies within {_plf_days}d window")
-                # Soonest release first; the rest wait for the next run once the time budget is
-                # spent (57 films took ~half an hour on 2026-10-02, eating the enrichment loop's
-                # time -- its clock starts with this phase).
-                _plf_candidates.sort(key=lambda _c: _c.get('digital_date') or '')
                 _plf_found = 0
                 try:
                     self.ctx.enrichment_service._init_vod_scraper()
                     _scraper = self.ctx.enrichment_service.vod_scraper
                     if _scraper and _scraper is not False:
-                        for _plf_i, _m in enumerate(_plf_candidates):
-                            if (time.time() - _enrich_start) > PREORDER_LINK_FINDER_MAX_MINUTES * 60:
-                                print(f"  ⏱ Pre-order link finder: {PREORDER_LINK_FINDER_MAX_MINUTES}-min budget "
-                                      f"used; {len(_plf_candidates) - _plf_i} film(s) wait for the next run")
-                                break
+                        for _m in _plf_candidates:
                             _title = _m.get('title', '')
                             _year = _m.get('year', '')
                             _director = _m.get('crew', {}).get('director')
@@ -896,28 +834,7 @@ class MovieEnricher:
             # (RT, Metacritic, Wikipedia, trailer, IMDb) are often legitimately nonexistent.
             # Watch link gaps are handled by the separate reenrich_watch_link_gaps() pass.
             seen_ids = set(movie_ids_to_enrich)
-            # A title the owner REMOVED is never re-queued or re-statused here, even if its wall
-            # entry outlived the removal (the end-of-run purge drops it): removed = never back.
-            _removed = {mid for mid, rec in ((tracking_data or {}).get('movies') or {}).items()
-                        if (rec or {}).get('status') == 'removed'}
-            seen_ids.update(_removed)
-            # A film the owner sent back (Revert) waits off the wall until it's really out: its
-            # leftover entry is never re-queued here -- a passing pre-check would put it back on
-            # the wall and erase the hold. The same for any reverted entry; the purge drops both.
-            seen_ids.update(mid for mid, rec in ((tracking_data or {}).get('movies') or {}).items()
-                            if putback.is_owner_reverted(rec))
-            seen_ids.update(str(m.get('id')) for m in existing_movies
-                            if m.get('id') and m.get('_enrichment_status') == 'reverted')
-            # Hidden after a JustWatch error: re-checked first -- their pre-check decides
-            # whether they are shown again (no strike while JustWatch is down).
-            catchup_ids = [str(m.get('id')) for m in existing_movies
-                           if m.get('id') and m.get('_jw_unconfirmed') and str(m.get('id')) not in seen_ids
-                           and m.get('_enrichment_attempts', 0) < MAX_ENRICHMENT_ATTEMPTS]
-            seen_ids.update(catchup_ids)
-            # Past-date pre-orders: their JustWatch pre-check decides; their pre-order flags
-            # are cleared only once it passes (popped up front, they dropped onto the main
-            # wall unchecked whenever JustWatch or TMDB failed, or another film was enriched).
-            _po_forced = self.ctx.config.get('preorder_overrides', {})
+            catchup_ids = []
             catchup_cutoff = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
             today_catchup = datetime.now().strftime('%Y-%m-%d')
             for movie in existing_movies:
@@ -926,11 +843,6 @@ class MovieEnricher:
                     continue
                 # Pre-order handling in catch-up
                 if movie.get('_is_preorder'):
-                    if (not movie.get('_buyonly_preorder') and ((((tracking_data or {}).get('movies')
-                            or {}).get(movie_id) or {}).get('_buyonly_preorder'))):
-                        # Buy-only by its tracking record though its wall entry lost the flag:
-                        # discovery's daily buy-only check decides, as for any buy-only pre-order.
-                        continue
                     # Graduate pre-orders that already have real watch links
                     # BUT only if digital_date has actually passed — links can exist
                     # before release (pre-order purchase pages, early availability signals)
@@ -938,12 +850,16 @@ class MovieEnricher:
                     has_real_links = bool(wl.get('streaming')) or bool(wl.get('vod'))
                     dd = movie.get('digital_date', '')
                     date_has_passed = dd and dd <= today_catchup
-                    if movie.get('_buyonly_preorder') and has_real_links and date_has_passed:
-                        # A buy-only pre-order graduates only in discovery's daily check, once a
-                        # rental or streaming offer is LIVE -- stores list pre-order rentals as
-                        # plain RENT offers. Links and a passed date prove nothing: it stays a
-                        # pre-order here.
-                        continue
+                    if has_real_links and date_has_passed:
+                        movie.pop('_is_preorder', None)
+                        movie.pop('_buyonly_preorder', None)
+                        movie.pop('pre_order_links', None)
+                        if tracking_data and tracking_data.get('movies', {}).get(movie_id):
+                            tracking_data['movies'][movie_id].pop('_is_preorder', None)
+                            tracking_data['movies'][movie_id].pop('_buyonly_preorder', None)
+                            tracking_changed = True
+                        print(f"  \U0001f393 {movie.get('title')} \u2014 pre-order graduated (real links exist)")
+                        # Fall through to normal catch-up enrichment
                     elif movie.get('_buyonly_preorder'):
                         dd = movie.get('digital_date', '')
                         if not dd or dd > today_catchup:
@@ -977,20 +893,11 @@ class MovieEnricher:
                     dd = movie.get('digital_date', '')
                     if dd > today_catchup:
                         continue  # Future -- skip enrichment (link scan handles these)
-                    # A check proved it not out on or after its date (discovery's store check, the
-                    # gap fill's): graduating it here would date it on that very day. Discovery and
-                    # the gap fill check it again every run and decide.
-                    _lr_po = putback.last_refuted_day(
-                        (((tracking_data or {}).get('movies') or {}).get(movie_id) or {}))
-                    if _lr_po and dd and _lr_po >= dd[:10]:
-                        continue
-                    # Date arrived: its JustWatch pre-check decides (queued below) -- enrich, or
-                    # revert like any movie. If JustWatch can't answer, or it isn't queued, it
-                    # simply stays a pre-order. A manual pre-order override stays put.
-                    if _po_forced.get(movie_id) is not True:
-                        _po_graduations[movie_id] = True
-                        catchup_ids.append(movie_id)
-                    continue
+                    # Date arrived -- no longer a pre-order
+                    movie.pop('_is_preorder', None)
+                    movie.pop('pre_order_links', None)
+                    print(f"  \U0001f3f7\ufe0f  {movie.get('title')} \u2014 pre-order ended (date {dd})")
+                    # Fall through to normal catch-up -> enrich or revert like any movie
                 digital_date = movie.get('digital_date', '')
                 status = movie.get('_enrichment_status', '')
                 attempts = movie.get('_enrichment_attempts', 0)
@@ -1017,16 +924,9 @@ class MovieEnricher:
             # Enforce batch limit -- new discoveries take priority over catch-up retries
             new_count = len(movie_ids_to_enrich) - len(catchup_ids)
             if len(movie_ids_to_enrich) > MAX_ENRICHMENT_BATCH:
-                _cut = movie_ids_to_enrich[MAX_ENRICHMENT_BATCH:]
+                dropped = len(movie_ids_to_enrich) - MAX_ENRICHMENT_BATCH
                 movie_ids_to_enrich = movie_ids_to_enrich[:MAX_ENRICHMENT_BATCH]
-                _cut_new = max(0, new_count - MAX_ENRICHMENT_BATCH)
-                print(f"  \u26a0\ufe0f Batch limit: {len(_cut)} deferred to the next run "
-                      f"({_cut_new} new, {len(_cut) - _cut_new} catch-up)")
-                self._hide_unchecked_putbacks(_cut, existing_movies, movie_lookup, tracking_data)
-
-            _po_queued = [g for g in _po_graduations if g in set(movie_ids_to_enrich)]
-            if _po_queued:
-                print(f"  \U0001f3f7\ufe0f  {len(_po_queued)} pre-order(s) past their date queued for a JustWatch re-check")
+                print(f"  \u26a0\ufe0f Batch limit: {dropped} catch-up retries deferred (new discoveries prioritized)")
 
             if not movie_ids_to_enrich:
                 print("\u2705 No movies to enrich (no new arrivals, no catch-up needed)")
@@ -1091,15 +991,11 @@ class MovieEnricher:
         signal.signal(signal.SIGALRM, _per_movie_timeout_handler)
 
         for movie_id in movie_ids_to_enrich:
-            # Safety net: bail out if enrichment has been running too long -- timed from the
-            # start of the phase, not of this loop: the pre-order link finder before it can
-            # take half an hour, and CI kills the phase at 60 min with nothing saved.
-            if (time.time() - _enrich_start) > _loop_timeout:
+            # Safety net: bail out if enrichment has been running too long
+            if (time.time() - _loop_start) > _loop_timeout:
                 _remaining = len(movie_ids_to_enrich) - movie_ids_to_enrich.index(movie_id)
-                print(f"  \u23f0 Enrichment phase passed {ENRICHMENT_LOOP_TIMEOUT_MINUTES} min \u2014 stopping. {_remaining} remaining movies will be retried next run.")
+                print(f"  \u23f0 Enrichment loop exceeded {ENRICHMENT_LOOP_TIMEOUT_MINUTES} min \u2014 stopping. {_remaining} remaining movies will be retried next run.")
                 deferred_details.append(_deferred_entry(f'({_remaining} movies)', 'loop_timeout'))
-                self._hide_unchecked_putbacks(movie_ids_to_enrich[len(movie_ids_to_enrich) - _remaining:],
-                                              existing_movies, movie_lookup, tracking_data)
                 break
 
             movie_id = str(movie_id)  # Ensure consistent string format for lookup
@@ -1115,24 +1011,10 @@ class MovieEnricher:
 
             movie_data = tracking_data['movies'][movie_id]
             movie_index = movie_lookup[movie_id]
-            if movie_data.get('status') == 'removed':
-                # Removed by the owner: never enriched, reverted or brought back (the purge
-                # at the end of this run drops its stale entry).
-                print(f"  \u23ed\ufe0f  {movie_data.get('title', movie_id)} \u2014 removed by the owner, skipping")
-                continue
-            if putback.is_owner_reverted(movie_data):
-                # Sent back by the owner, not out yet: discovery puts it back when JustWatch shows
-                # it out (that clears the flag). Enriching it here would show it again (a stale
-                # newly_available.json, --enrich-id). The purge drops its entry.
-                print(f"  \u23ed\ufe0f  {movie_data.get('title', movie_id)} \u2014 sent back by the owner "
-                      f"(not out yet), waiting; skipping")
-                continue
-            _processed.add(movie_id)
 
             signal.alarm(_PER_MOVIE_TIMEOUT_S)
             try:
                 # Track enrichment attempts and timestamp for backoff scheduling
-                _prev_attempt_stamp = existing_movies[movie_index].get('_last_enrichment_attempt')
                 existing_movies[movie_index]['_enrichment_attempts'] = \
                     existing_movies[movie_index].get('_enrichment_attempts', 0) + 1
                 existing_movies[movie_index]['_last_enrichment_attempt'] = datetime.now().strftime('%Y-%m-%d')
@@ -1145,9 +1027,6 @@ class MovieEnricher:
                     movie_details = self.host.get_movie_details(movie_id)
                 if not movie_details:
                     existing_movies[movie_index]['_enrichment_status'] = 'failed'
-                    # Its JustWatch pre-check can't run either: a film put back today waits hidden,
-                    # as for a batch cut (it may still be a pre-order or PVOD rental).
-                    self._hide_unchecked_putbacks([movie_id], existing_movies, movie_lookup, tracking_data)
                     print(f"  \u2717 Could not fetch TMDB details for {movie_data.get('title', movie_id)} \u2014 marked failed for retry")
                     deferred_details.append(_deferred_entry(movie_data.get('title', str(movie_id)), 'tmdb_fetch_failed', movie_index, tracking_data['movies'].get(movie_id)))
                     continue
@@ -1165,34 +1044,22 @@ class MovieEnricher:
                 _original_title = existing_movies[movie_index].get('original_title')
                 _director = existing_movies[movie_index].get('crew', {}).get('director') if existing_movies[movie_index].get('crew') else None
                 _content_type_jw = 'tv' if str(movie_id).startswith('tv_') else 'movie'
-                # Apple Music Live specials are a JustWatch blind spot (discovery already
-                # bypasses JW for them): exempt them like curator adds, or they are re-added
-                # and purged every run (Troye Sivan, Nov 2026).
                 _is_manual = (movie_data.get('_added_manually')
-                              or existing_movies[movie_index].get('_added_manually')
-                              or movie_data.get('_apple_music_live')
-                              or existing_movies[movie_index].get('_apple_music_live'))
+                              or existing_movies[movie_index].get('_added_manually'))
                 _has_override = str(movie_id) in self.host.watch_links_overrides
-                # Never for an expired screening put back as a regular release: it must pass
-                # JustWatch and the PVOD/zero-links checks like any film (a stale flag kept it).
-                _is_virtual_screening = (not movie_data.get('_screening_expired')) and bool(
-                    movie_data.get('_virtual_screening')
-                    or existing_movies[movie_index].get('_virtual_screening')
-                    or movie_data.get('filters', {}).get('is_virtual_screening')
-                    or existing_movies[movie_index].get('filters', {}).get('is_virtual_screening'))
+                _is_virtual_screening = (movie_data.get('_virtual_screening')
+                                         or existing_movies[movie_index].get('_virtual_screening')
+                                         or movie_data.get('filters', {}).get('is_virtual_screening')
+                                         or existing_movies[movie_index].get('filters', {}).get('is_virtual_screening'))
                 _jw_verified = False
                 _revert_reason = 'justwatch_error'
                 _jw_result = None  # may stay None if the JW call below raises
-                _jw_error = None   # a JustWatch API/network error: never a strike
                 try:
                     if not hasattr(self.ctx.enrichment_service, '_justwatch_client') or self.ctx.enrichment_service._justwatch_client is None:
                         from pipeline.justwatch import JustWatchClient
                         self.ctx.enrichment_service._justwatch_client = JustWatchClient(logger=self.ctx.logger)
                     _amazon_tag = self.ctx.enrichment_service._get_amazon_affiliate_tag()
                     _excl_list = self.ctx.enrichment_service.config.get('tracking', {}).get('excluded_services', ['fuboTV', 'Philo', 'Sun Nxt', 'Google Play Movies', 'Google Play', 'Shahid VIP', 'Viki', 'Futo'])
-                    if movie_data.get('_screening_expired'):
-                        # Its own (expired) festival page is not a release (same rule as discovery)
-                        _excl_list = list(_excl_list) + FESTIVAL_PLATFORMS
                     _jw_result = self.ctx.enrichment_service._justwatch_client.verify_availability(
                         _title, _year, excluded_services=_excl_list,
                         affiliate_tag=_amazon_tag, content_type=_content_type_jw,
@@ -1202,28 +1069,22 @@ class MovieEnricher:
                     if _jw_result is None:
                         _jw_verified = False
                         _revert_reason = "justwatch_no_match"
-                        _jw_error = getattr(self.ctx.enrichment_service._justwatch_client, 'last_error', None)
                     elif not _jw_result['verified']:
                         _jw_verified = False
-                        # A different film's result (title mismatch) means JustWatch didn't find ours
-                        _revert_reason = ("justwatch_no_match" if _jw_result.get('match_confidence') == 'first_result'
-                                          else "justwatch_no_valid_offers")
+                        _revert_reason = "justwatch_no_valid_offers"
                     else:
                         _jw_verified = True
                         _revert_reason = None
-                        # Still in theaters: the pre-order labeler checks it (store page, Amazon's
-                        # live rental, TMDB's digital date). A $19.99 rental while in theaters is
-                        # rentable -- the old "$15+ rental = not out" block (May 28 2026) held
-                        # Verity, Other Mommy and 30 more real releases. Only a film the labeler
-                        # finds still a pre-order goes back to waiting (checked daily).
-                        if (_jw_result.get('has_cinema') and not _jw_result.get('has_streaming')
-                                and _jw_result.get('has_rent')):
-                            _held_po = self.discoverer._is_held_rent_preorder(movie_id, movie_data, _jw_result)
-                            if _held_po and _held_po != 'captcha':
+                        # CINEMA + price check: theatrical ticket offer alongside a high-price
+                        # ($15+) rental is PVOD/pre-purchase, not a genuine digital release.
+                        # Pass-throughs: streaming available (day-and-date on Netflix/Max etc.),
+                        # or normal rental pricing (<$15, legitimate day-and-date VOD).
+                        if _jw_result.get('has_cinema') and not _jw_result.get('has_streaming'):
+                            _min_rent = _jw_result.get('min_rent_price')
+                            if _min_rent is None or _min_rent >= 15.0:
                                 _jw_verified = False
                                 _revert_reason = 'justwatch_theatrical_pvod'
-                                tracking_data['movies'][movie_id]['_rent_preorder_held'] = datetime.now().strftime('%Y-%m-%d')
-                                print(f"  🎬  {_title} — in theaters and still a pre-order (labeler), back to waiting")
+                                print(f"  🎬  {_title} — CINEMA offer + rent ${_min_rent or 'none'} → theatrical/PVOD, reverting")
                         # Cache pre-verified watch_links so enrichment skips redundant JW search
                         _wl = _jw_result.get('watch_links', {})
                         if _wl:
@@ -1299,7 +1160,7 @@ class MovieEnricher:
                             else:
                                 # Genuine buy-only release confirmed by page check
                                 existing_movies[movie_index]['_buyonly_verified'] = True
-                                if _bo_detect['type4_date'] and movie_data.get('_digital_date_source') not in putback.PROTECTED_SOURCES:
+                                if _bo_detect['type4_date']:
                                     existing_movies[movie_index]['digital_date'] = _bo_detect['type4_date']
                                     existing_movies[movie_index]['_digital_date_source'] = 'tmdb_type4'
                         else:
@@ -1308,58 +1169,14 @@ class MovieEnricher:
                             if existing_movies[movie_index].get('_is_preorder'):
                                 dd = existing_movies[movie_index].get('digital_date', '')
                                 today_str = datetime.now().strftime('%Y-%m-%d')
-                                # Buy-only by its wall entry OR its tracking record: the pre-order labeler
-                                # decides (discovery's rule) -- stores list pre-order rentals as RENT.
-                                _bo_any = (existing_movies[movie_index].get('_buyonly_preorder')
-                                           or movie_data.get('_buyonly_preorder'))
-                                if dd <= today_str and _bo_any and self.discoverer._detect_buyonly_preorder(
-                                        _jw_result, movie_id, _title)['is_preorder']:
-                                    print(f'  \u23f3 {_title} \u2014 buy-only pre-order, no rental or stream live yet: discovery decides')
-                                elif dd <= today_str:
+                                if dd <= today_str:
                                     existing_movies[movie_index].pop('_is_preorder', None)
-                                    existing_movies[movie_index].pop('_buyonly_preorder', None)
                                     print(f"  \U0001f3f7\ufe0f  {_title} \u2014 pre-order flag cleared (date passed, no longer buy-only)")
                                 else:
                                     print(f"  \U0001f3f7\ufe0f  {_title} \u2014 keeping pre-order (date {dd} still future despite JW not buy-only)")
 
                 except Exception as _jw_err:
-                    _jw_error = f"{type(_jw_err).__name__}: {str(_jw_err)[:120]}"
-                    self.ctx.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} \u2014 retrying next run (no strike)")
-
-                # A blocked JustWatch answers "no match" too: confirm it is reachable before
-                # counting a no-match against the film (the same canary discovery uses).
-                # An outage can also return titles with empty offer lists ("no valid offers").
-                if (not _jw_error and (_jw_result is None or not _jw_result.get('verified'))
-                        and not _is_manual and not _has_override
-                        and not _is_virtual_screening and getattr(self, 'discoverer', None) is not None
-                        and not self.discoverer._check_jw_health()):
-                    _jw_error = 'justwatch_unreachable'
-
-                # JustWatch error/outage: not an answer about this film. No revert, no strike,
-                # and the attempt is not counted -- enrichment retries it next run.
-                if _jw_error and not _is_manual and not _has_override and not _is_virtual_screening:
-                    existing_movies[movie_index]['_enrichment_attempts'] = max(
-                        0, existing_movies[movie_index].get('_enrichment_attempts', 1) - 1)
-                    # Give back the timestamp too, or catch-up never retries a first attempt
-                    # (pending + stamped + 0 attempts) and restarts the backoff for others.
-                    if _prev_attempt_stamp:
-                        existing_movies[movie_index]['_last_enrichment_attempt'] = _prev_attempt_stamp
-                    else:
-                        existing_movies[movie_index].pop('_last_enrichment_attempt', None)
-                    # Not confirmed on JustWatch: a film that arrived this run (or never got this
-                    # check) waits HIDDEN, never on the wall unconfirmed -- an outage would
-                    # otherwise publish pre-orders and PVOD rentals. Tracking untouched: no strike.
-                    # Catch-up re-checks it first next run; its passing pre-check shows it again.
-                    _entry_e = existing_movies[movie_index]
-                    if (movie_id in _new_ids or _entry_e.get('_jw_unconfirmed')
-                            or _entry_e.get('_enrichment_status') in (None, '', 'pending')):
-                        _entry_e['hidden'] = True
-                        _entry_e.setdefault('_jw_unconfirmed', datetime.now().strftime('%Y-%m-%d'))
-                    _jw_deferred.add(movie_id)
-                    print(f"  \u23f8 {_title} \u2014 JustWatch error ({_jw_error}), retrying next run (no strike)")
-                    deferred_details.append(_deferred_entry(_title, 'jw_error_retry', movie_index, tracking_data['movies'].get(movie_id)))
-                    signal.alarm(0)
-                    continue
+                    self.ctx.logger.warning(f"JustWatch pre-check error for {_title}: {_jw_err} \u2014 proceeding with enrichment")
 
                 # Coming Soon exemption: JustWatch has the title indexed but no live
                 # offers yet (justwatch_no_valid_offers) and the digital date is near-
@@ -1391,9 +1208,6 @@ class MovieEnricher:
                     tracking_data['movies'][movie_id]['status'] = 'tracking'
                     tracking_data['movies'][movie_id]['_jw_revert_reason'] = _revert_reason
                     tracking_data['movies'][movie_id].setdefault('_jw_reverted_at', _today_iso)
-                    tracking_data['movies'][movie_id]['_jw_last_checked'] = _today_iso
-                    if _revert_reason in putback.REFUTING_REASONS:
-                        putback.note_refuted(tracking_data['movies'][movie_id], _today_iso)
                     _revert_count = tracking_data['movies'][movie_id].get('_jw_revert_count', 0) + 1
                     tracking_data['movies'][movie_id]['_jw_revert_count'] = _revert_count
                     existing_movies[movie_index]['_jw_reverted'] = True
@@ -1416,19 +1230,6 @@ class MovieEnricher:
                 elif not _jw_verified:
                     _skip_reason = 'manual add' if _is_manual else 'watch link override'
                     print(f"  \u23ed\ufe0f  {_title} \u2014 JW pre-check failed but skipping revert ({_skip_reason})")
-
-                # Its JustWatch pre-check has now run (passed, coming soon, or curator-exempt):
-                # a film hidden after an earlier JustWatch error is shown again.
-                if existing_movies[movie_index].pop('_jw_unconfirmed', None):
-                    existing_movies[movie_index].pop('hidden', None)
-                    print(f"  \u2713 {_title} \u2014 JustWatch pre-check passed after an earlier error; shown again")
-                # A pre-order past its date that JustWatch has now confirmed (the pre-check above
-                # cleared its flag): out now -- its pre-order links and tracking flag go too.
-                if movie_id in _po_graduations and not existing_movies[movie_index].get('_is_preorder'):
-                    existing_movies[movie_index].pop('pre_order_links', None)
-                    if tracking_data['movies'][movie_id].pop('_is_preorder', None) is not None:
-                        tracking_changed = True
-                    print(f"  \U0001f393 {_title} \u2014 pre-order date passed and JustWatch confirmed it")
 
                 # Propagate _added_manually from data.json entry to movie_data so
                 # get_enrichment_only_fields can see it (tracking save may lose the flag)
@@ -1503,8 +1304,7 @@ class MovieEnricher:
                     # BUT only if digital_date has actually passed -- future-dated movies
                     # with links are still pre-orders (the links are purchase pre-order URLs)
                     # Buy-only pre-orders never clear here -- they wait for discovery to find rent/streaming
-                    if has_real_links and existing_movies[movie_index].get('_is_preorder') and not (
-                            existing_movies[movie_index].get('_buyonly_preorder') or movie_data.get('_buyonly_preorder')):
+                    if has_real_links and existing_movies[movie_index].get('_is_preorder') and not existing_movies[movie_index].get('_buyonly_preorder'):
                         dd = existing_movies[movie_index].get('digital_date', '')
                         today_str = datetime.now().strftime('%Y-%m-%d')
                         if dd <= today_str:
@@ -1608,8 +1408,6 @@ class MovieEnricher:
             # may have already set it True. Resetting would silently discard those changes.
             for mid in movie_ids_to_enrich:
                 mid = str(mid)
-                if mid in _jw_deferred or mid not in _processed:
-                    continue  # not checked this run (JustWatch error, or never reached): no stamp, no pull
                 if mid in movie_lookup:
                     movie = existing_movies[movie_lookup[mid]]
                     if movie.get('_enrichment_status') == 'completed' and mid in tracking_data.get('movies', {}):
@@ -1633,13 +1431,11 @@ class MovieEnricher:
                                 _enrich_success += 1
                                 print(f"  \u23ed\ufe0f  {_title_zl} \u2014 zero links but pre-order (future date {_dd_zl}), keeping")
                             # Guard: virtual screenings (own lifecycle)
-                            elif (movie.get('filters', {}).get('is_virtual_screening')
-                                  and not tracking_data['movies'][mid].get('_screening_expired')):
+                            elif movie.get('filters', {}).get('is_virtual_screening'):
                                 _enrich_success += 1
                                 print(f"  \u23ed\ufe0f  {_title_zl} \u2014 zero links but virtual screening, keeping")
                             # Guard: manually-added movies (curator decision)
-                            elif (movie.get('_added_manually') or tracking_data['movies'][mid].get('_added_manually')
-                                  or movie.get('_apple_music_live') or tracking_data['movies'][mid].get('_apple_music_live')):
+                            elif movie.get('_added_manually') or tracking_data['movies'][mid].get('_added_manually'):
                                 _enrich_success += 1
                                 print(f"  \u23ed\ufe0f  {_title_zl} \u2014 zero links but manually added, keeping")
                             # Guard: watch link overrides
@@ -1652,8 +1448,6 @@ class MovieEnricher:
                                 tracking_data['movies'][mid]['status'] = 'tracking'
                                 tracking_data['movies'][mid]['_jw_revert_reason'] = 'zero_watch_links'
                                 tracking_data['movies'][mid].setdefault('_jw_reverted_at', _today_zl)
-                                tracking_data['movies'][mid]['_jw_last_checked'] = _today_zl
-                                putback.note_refuted(tracking_data['movies'][mid], _today_zl)
                                 tracking_data['movies'][mid]['_jw_revert_count'] = _zl_revert_count
                                 tracking_data['movies'][mid]['enriched'] = False
                                 tracking_data['movies'][mid].pop('enrichment_date', None)
@@ -1683,9 +1477,6 @@ class MovieEnricher:
 
         # Categorize all movies (backfills any missing categories from prior runs)
         existing_movies, _ = self.host.apply_admin_overrides(existing_movies)
-        # It returns a NEW list (editorial ordering re-sorts it): re-index, or hosting below
-        # reads another film's entry at a film's old position.
-        movie_lookup = {str(m.get('id', '')): i for i, m in enumerate(existing_movies) if m.get('id')}
 
         # Save enrichment results to data.json BEFORE trailer hosting
         # Uses safe save with reload-merge to prevent lost updates
@@ -1693,50 +1484,17 @@ class MovieEnricher:
             return 0
         print(f"\u2705 Enriched {enriched_count}/{len(movie_ids_to_enrich)} movies ({len(existing_movies)} total, was {_initial_movie_count} at load)")
 
-        # Disk-level purge: remove reverted/removed movies from the saved data.json.
-        # Runs AFTER the safe_save because the merge-rescue in safe_save can re-add
-        # reverted movies from disk. The no-argument form reads data.json, filters out
-        # reverted/removed movies, archives them, and writes back clean.
-        # The purge and the metrics come BEFORE trailer hosting: one slow download can run
-        # past the orchestrator's 60-minute kill. Hosting re-saves only when it hosted
-        # something; then the disk purge runs again (that save can re-add reverted entries).
-        self.host.purge_removed_movies()
-
-        # Write enrichment metrics
-        try:
-            enrichment_metrics = {
-                "timestamp": datetime.now().isoformat(),
-                "movies_requested": len(movie_ids_to_enrich),
-                "movies_enriched": enriched_count,
-                "movies_deferred": len(movie_ids_to_enrich) - enriched_count,
-                "deferred_details": deferred_details,
-                "enrichment_duration_seconds": round(time.time() - _enrich_start, 2),
-                "error_details": self._error_details[:100],
-                "total_errors": len(self._error_details),
-            }
-            with open('metrics/enrichment_run.json', 'w') as f:
-                json.dump(enrichment_metrics, f, indent=2)
-        except Exception as e:
-            print(f"\u26a0\ufe0f Could not write enrichment metrics: {e}")
-
         # Post-enrichment: Host trailers for newly enriched movies
         trailer_config = self.ctx.config.get('trailer_hosting', {})
-        hosted_count = 0
         if trailer_config.get('enabled', False) and trailer_config.get('pipeline_integration', False):
             print("\U0001f3ac Hosting trailers for newly enriched movies...")
+            hosted_count = 0
             for movie_id in movie_ids_to_enrich:
                 movie_id = str(movie_id)
-                if movie_id not in _processed or movie_id not in movie_lookup:
-                    continue   # only films the loop reached (a removed or owner-reverted film never is)
-                if time.time() - _enrich_start > (ENRICHMENT_LOOP_TIMEOUT_MINUTES + 5) * 60:
-                    # The orchestrator kills --enrich at 60 min: start no new download after 55.
-                    # The nightly local run hosts the rest.
-                    print("  \u23f1 Trailer hosting: the phase's time is used up; the nightly local run hosts the rest")
-                    break
+                if movie_id not in movie_lookup:
+                    continue
                 movie_index = movie_lookup[movie_id]
                 movie = existing_movies[movie_index]
-                if movie.get('_enrichment_status') == 'reverted':
-                    continue   # this run's own JustWatch check sent it back: purged, not shown
                 trailer_url = movie.get('links', {}).get('trailer')
                 if trailer_url and not movie.get('links', {}).get('trailer_hosted'):
                     hosted_url = self.host.host_trailer_for_movie(
@@ -1756,8 +1514,29 @@ class MovieEnricher:
                 print("  No new trailers to host")
         else:
             print("\U0001f3ac Trailer hosting: disabled (config)")
-        if hosted_count:
-            self.host.purge_removed_movies()   # the hosting save can re-add reverted entries
+
+        # Disk-level purge: remove reverted/removed movies from the saved data.json.
+        # Runs AFTER all safe_save calls because the merge-rescue in safe_save can
+        # re-add reverted movies from disk. The no-argument form reads data.json,
+        # filters out reverted/removed movies, archives them, and writes back clean.
+        self.host.purge_removed_movies()
+
+        # Write enrichment metrics
+        try:
+            enrichment_metrics = {
+                "timestamp": datetime.now().isoformat(),
+                "movies_requested": len(movie_ids_to_enrich),
+                "movies_enriched": enriched_count,
+                "movies_deferred": len(movie_ids_to_enrich) - enriched_count,
+                "deferred_details": deferred_details,
+                "enrichment_duration_seconds": round(time.time() - _enrich_start, 2),
+                "error_details": self._error_details[:100],
+                "total_errors": len(self._error_details),
+            }
+            with open('metrics/enrichment_run.json', 'w') as f:
+                json.dump(enrichment_metrics, f, indent=2)
+        except Exception as e:
+            print(f"\u26a0\ufe0f Could not write enrichment metrics: {e}")
 
         # Purge reverted/removed movies from the in-memory list and archive them.
         # Must happen BEFORE any subsequent save to prevent the merge-rescue from

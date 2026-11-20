@@ -20,29 +20,9 @@ Usage:
 
 import requests
 import logging
-import os
 import re
-import threading
-import time
 import unicodedata
-from datetime import datetime, timezone
 from typing import Dict, Optional, List, Any
-
-
-# Request pacing and back-off, shared by every client in the process (discovery, its health
-# canary, enrichment). Nov 19 2026: the Step 1 run asked JustWatch about ~600 held films in a few
-# minutes from GitHub's servers and 523 of 623 lookups failed -- every one a film left waiting.
-_PACE_LOCK = threading.Lock()
-_PACE = {'last': 0.0, 'refusals_in_a_row': 0, 'paused_once': False, 'given_up': False}
-_RETRY_STATUSES = frozenset({403, 429, 500, 502, 503, 504})
-
-
-def _min_interval():
-    return float(os.environ.get('NRW_JW_MIN_INTERVAL', '0.5'))
-
-
-def _backoff():
-    return () if os.environ.get('NRW_JW_RETRY') == '0' else (5, 15, 45, 90)
 
 
 class JustWatchClient:
@@ -102,11 +82,6 @@ class JustWatchClient:
         # Simple in-memory cache
         self._cache: Dict[str, Dict] = {}
 
-        # Set when search_movie's last None came from an API/network error rather
-        # than a genuine no-match. Callers must never count an error as a failed
-        # availability check (an outage used to burn holds toward a permanent skip).
-        self.last_error: Optional[str] = None
-
     @staticmethod
     def _normalize_title(title: str) -> str:
         """Normalize title for comparison.
@@ -141,57 +116,6 @@ class JustWatchClient:
             return True
         return False
 
-    def _post_paced(self, payload):
-        """POST to JustWatch, paced (NRW_JW_MIN_INTERVAL seconds apart, default 0.5) and retried
-        with back-off on a refusal (429, 403, 5xx) or a timeout -- Retry-After honoured. If
-        JustWatch keeps refusing (3 lookups in a row out of retries), pause 5 minutes once; if it
-        still refuses, stop asking for the rest of this run: each film is left waiting with no
-        strike (a JustWatch error never counts against a film) and checked again next run."""
-        waits = _backoff()
-        if _PACE['given_up']:
-            raise requests.ConnectionError('JustWatch refused repeatedly this run; not asking again')
-        for attempt in range(len(waits) + 1):
-            with _PACE_LOCK:
-                gap = _PACE['last'] + _min_interval() - time.monotonic()
-                if gap > 0:
-                    time.sleep(gap)
-                _PACE['last'] = time.monotonic()
-            try:
-                response = self.session.post(self.API_URL, json=payload, timeout=15)
-            except (requests.Timeout, requests.ConnectionError) as e:
-                if attempt < len(waits):
-                    self.logger.warning(f"JustWatch {type(e).__name__}: retrying in {waits[attempt]}s")
-                    time.sleep(waits[attempt])
-                    continue
-                self._note_refusal()
-                raise
-            if response.status_code in _RETRY_STATUSES and attempt < len(waits):
-                ra = (response.headers or {}).get('Retry-After') if hasattr(response, 'headers') else None
-                delay = min(int(ra), 120) if ra and str(ra).isdigit() else waits[attempt]
-                self.logger.warning(f"JustWatch HTTP {response.status_code}: retrying in {delay}s")
-                time.sleep(delay)
-                continue
-            if response.status_code in _RETRY_STATUSES:
-                self._note_refusal()
-            else:
-                _PACE['refusals_in_a_row'] = 0
-            return response
-        return response
-
-    def _note_refusal(self):
-        with _PACE_LOCK:
-            _PACE['refusals_in_a_row'] += 1
-            if _PACE['refusals_in_a_row'] < 3 or not _backoff():
-                return
-            if not _PACE['paused_once']:
-                _PACE['paused_once'], _PACE['refusals_in_a_row'] = True, 0
-                self.logger.warning('JustWatch keeps refusing: pausing 5 minutes')
-                time.sleep(300)
-            else:
-                _PACE['given_up'] = True
-                self.logger.error('JustWatch still refusing after a pause: no more lookups this run '
-                                  '(films wait, no strike, checked next run)')
-
     def search_movie(
         self,
         title: str,
@@ -221,14 +145,10 @@ class JustWatchClient:
             except (ValueError, TypeError):
                 year = None
 
-        self.last_error = None
         object_type = 'SHOW' if content_type == 'tv' else 'MOVIE'
         orig_suffix = f"_{original_title}" if original_title and original_title.lower() != title.lower() else ''
         dir_suffix = f"_{director}" if director else ''
-        # TMDB id in the key: two different films with the same title and year must
-        # never share one cached JustWatch match.
-        tmdb_suffix = f"_tmdb{tmdb_id}" if tmdb_id else ''
-        cache_key = f"{title}_{year or 'any'}_{object_type}{orig_suffix}{dir_suffix}{tmdb_suffix}"
+        cache_key = f"{title}_{year or 'any'}_{object_type}{orig_suffix}{dir_suffix}"
         if cache_key in self._cache:
             self.stats['cache_hits'] += 1
             return self._cache[cache_key]
@@ -266,8 +186,6 @@ class JustWatchClient:
                   retailPrice(language: "en")
                   currency
                   standardWebURL
-                  availableFromTime
-                  dateCreated
                   package {{
                     clearName
                     technicalName
@@ -288,14 +206,17 @@ class JustWatchClient:
         self.stats['queries'] += 1
 
         try:
-            response = self._post_paced({'query': query, 'variables': variables})
+            response = self.session.post(
+                self.API_URL,
+                json={'query': query, 'variables': variables},
+                timeout=15
+            )
             response.raise_for_status()
             data = response.json()
 
             if 'errors' in data:
                 self.logger.warning(f"JustWatch API errors: {data['errors']}")
                 self.stats['failures'] += 1
-                self.last_error = 'graphql_errors'
                 return None
 
             edges = data.get('data', {}).get('popularTitles', {}).get('edges', [])
@@ -332,22 +253,13 @@ class JustWatchClient:
                         best_match = node
                         break
 
-            def _other_film(node):
-                # JustWatch names a DIFFERENT TMDB film for this result: never adopt
-                # it by title (a same-title, same-year film gave Ephemera and
-                # Sisterhood another movie's watch links).
-                ext = (node.get('content') or {}).get('externalIds') or {}
-                theirs = str(ext.get('tmdbId') or '')
-                return bool(tmdb_id) and bool(theirs) and theirs != str(tmdb_id)
-
             # Pass 2: title + exact year
             if not best_match:
                 for edge in edges:
                     node = edge['node']
                     content = node.get('content', {})
                     node_title_norm = self._normalize_title(content.get('title', ''))
-                    if node_title_norm in titles_to_match and year and content.get('originalReleaseYear') == year \
-                            and not _other_film(node):
+                    if node_title_norm in titles_to_match and year and content.get('originalReleaseYear') == year:
                         best_match = node
                         break
 
@@ -358,7 +270,7 @@ class JustWatchClient:
                     node = edge['node']
                     content = node.get('content', {})
                     node_title_norm = self._normalize_title(content.get('title', ''))
-                    if node_title_norm in titles_to_match and not _other_film(node):
+                    if node_title_norm in titles_to_match:
                         credits = content.get('credits', [])
                         for credit in credits:
                             if credit.get('role') == 'DIRECTOR' and credit.get('name', '').lower() == director_lower:
@@ -379,12 +291,10 @@ class JustWatchClient:
         except requests.RequestException as e:
             self.logger.error(f"JustWatch API request failed: {e}")
             self.stats['failures'] += 1
-            self.last_error = f"request_failed: {type(e).__name__}"
             return None
         except Exception as e:
             self.logger.error(f"JustWatch API error: {e}")
             self.stats['failures'] += 1
-            self.last_error = f"unexpected: {type(e).__name__}"
             return None
 
     def get_watch_links(
@@ -601,21 +511,6 @@ class JustWatchClient:
         buy_names = []
 
         presentation_types = set()
-        qualifying_created = []  # JustWatch's record date of each offer counted below
-        stream_created = []      # ... of each streaming offer (no pre-orders on streaming)
-        # A rental JustWatch shows as live NOW: Amazon with its offer start passed. Other
-        # stores list pre-order rentals as plain RENT offers (Fandango At Home: DreamQuil,
-        # "available to watch on Dec 4 — preorder", Nov 2026), Apple's store included: its
-        # RENT offer appears from the theater opening, its offer start the theatrical date
-        # (Project Hail Mary: recorded 2026-03-20, out 2026-05-12; Resident Evil, Sense and
-        # Sensibility, Spa Weekend in the Nov 14 replies).
-        has_live_rent = False
-        live_rent_starts = []  # offer start days of those live Amazon rentals
-        live_rent_start_times = []  # ... and their full times (a revert compares moments)
-        future_offer_starts = []    # rent/buy offers whose start is still ahead (any store): a pre-order --
-                                    # Amazon's start is its release, Apple's its theater opening
-        has_past_offer_start = False        # ... and whether any rent/buy offer's start has passed
-        _now_iso = datetime.now(timezone.utc).isoformat()
 
         for offer in offers:
             mtype = offer.get('monetizationType')
@@ -647,38 +542,16 @@ class JustWatchClient:
                 continue
 
             offer_data = {'service': service, 'link': url, 'price': price, '_ptype': ptype}
-            # Record date of a real way to watch it (not a theater listing, not a disc)
-            if mtype in ('FLATRATE', 'ADS', 'FREE', 'RENT', 'BUY') and ptype not in ('DVD', 'BLURAY', 'BLURAY_4K'):
-                qualifying_created.append(str(offer.get('dateCreated') or '')[:10])
 
             if mtype in ('FLATRATE', 'ADS', 'FREE'):
                 streaming_offers.append(offer_data)
-                stream_created.append(str(offer.get('dateCreated') or ''))
                 if service not in streaming_names:
                     streaming_names.append(service)
             elif mtype == 'RENT':
                 rent_offers.append(offer_data)
                 if service not in rent_names:
                     rent_names.append(service)
-                # JustWatch's own name for Amazon's store: 'Amazon Video' / technicalName
-                # 'amazon' (raw replies, Nov 2026).
-                _af = str(offer.get('availableFromTime') or '')
-                _tech = str((offer.get('package') or {}).get('technicalName') or '').lower()
-                _is_amazon = _tech == 'amazon' or service == 'Amazon Video'
-                if _is_amazon and _af and _af <= _now_iso:
-                    has_live_rent = True
-                    live_rent_starts.append(_af[:10])
-                    live_rent_start_times.append(_af)
-                if _af and _af > _now_iso:
-                    future_offer_starts.append(_af[:10])
-                elif _af:
-                    has_past_offer_start = True
             elif mtype == 'BUY':
-                _afb = str(offer.get('availableFromTime') or '')
-                if _afb and _afb > _now_iso:
-                    future_offer_starts.append(_afb[:10])
-                elif _afb:
-                    has_past_offer_start = True
                 buy_offers.append(offer_data)
                 if service not in buy_names:
                     buy_names.append(service)
@@ -735,22 +608,6 @@ class JustWatchClient:
 
         buy_only = has_buy and not has_rent and not has_streaming
 
-        # The days JustWatch first recorded each real way to watch it (dateCreated of the
-        # offers counted above), earliest first. Used only to DATE a film put back after a
-        # hold (pipeline/putback.py), never to decide availability. The earliest matches the
-        # real digital release for fresh films (Verity 2026-10-27, Other Mommy 2026-11-10)
-        # AND for older ones whose Amazon offer start is a later re-listing (Dolly: Apple
-        # 2026-03-31 vs Amazon 2026-10-22). Skips JustWatch's 2000-07-14 placeholder,
-        # anything before the film's year, and any future date.
-        _today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-        _lo = f"{max(int(year) - 1, 2001)}-01-01" if str(year or '').isdigit() else '2001-01-01'
-        offer_dates = sorted({d for d in qualifying_created if len(d) == 10 and _lo <= d <= _today})
-        # The same for streaming offers alone: a film the owner reverted comes back on a NEW
-        # one (pipeline/putback.py owner_revert_putback) — a store listing can be a pre-order.
-        stream_offer_dates = sorted({d[:10] for d in stream_created if len(d[:10]) == 10 and _lo <= d[:10] <= _today})
-        # As recorded (a day, or a full time when JustWatch gives one): a revert compares moments.
-        stream_offer_times = sorted({d for d in stream_created if len(d[:10]) == 10 and _lo <= d[:10] <= _today})
-
         if presentation_types:
             self.logger.debug(f"JustWatch presentationTypes for {title}: {presentation_types}")
 
@@ -766,17 +623,8 @@ class JustWatchClient:
             'jw_url': jw_url,
             'has_streaming': has_streaming,
             'has_rent': has_rent,
-            'has_live_rent': has_live_rent,
-            'live_rent_starts': sorted(set(live_rent_starts)),
-            'live_rent_start_times': sorted(set(live_rent_start_times)),
-            'future_offer_starts': sorted(set(future_offer_starts)),
-            'has_past_offer_start': has_past_offer_start,
             'has_buy': has_buy,
             'buy_only': buy_only,
-            'offer_dates': offer_dates,
-            'stream_offer_dates': stream_offer_dates,
-            'stream_offer_times': stream_offer_times,
-            'first_offer_date': offer_dates[0] if offer_dates else None,
             'has_cinema': has_cinema,
             'min_rent_price': min_rent_price,
             '_presentation_types': sorted(presentation_types),

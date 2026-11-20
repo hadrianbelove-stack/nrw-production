@@ -50,10 +50,8 @@ Then present this report in order:
   - **New Releases** = films that newly landed **and stuck** on the wall this run (a full successful transition). List each, shown vs slop.
   - **Reverted** = films that transitioned then got sent back **this run only** (new reversions, with the reason). Chronic/recurring reverters are not listed, just counted — that's noise. Reasons are humanized; **Platforms** prefers `jw_platforms` (what JustWatch actually saw), falling back to `tmdb_platforms`, "—" if neither.
   - Any non-revert deferrals (timeout/error) are pulled out for Concerns.
-  - **Held** = one line: how many films are held because they aren't out yet, by reason. Each is checked every run until it lands — just the count, never a list (noise).
-  - **Put back today** = films that came out after a hold, landed this run, and are still on after enrichment. List each with its date and how it was dated, and whether it's on the wall or went straight to the archive (out more than 90 days). Any **DATE NEEDS REVIEW** line goes to Concerns — that film had no date evidence and went unchecked during its hold, so it is dated today (visible) for the owner to confirm. Any "NOT on the wall or archive" line goes to Concerns too.
 
-*(Logic lives in the script — reads data.json + metrics/discovery_run.json + metrics/enrichment_run.json + movie_tracking.json (held / put back). New Releases = films first discovered this run, shown vs slop; Reverted = new jw_revert deferrals this run, humanized + platforms; other deferrals split out for Concerns.)*
+*(Logic lives in the script — reads data.json + metrics/discovery_run.json + metrics/enrichment_run.json. New Releases = films first discovered this run, shown vs slop; Reverted = new jw_revert deferrals this run, humanized + platforms; other deferrals split out for Concerns.)*
 
 - **Any phase failures or warnings** → list in Concerns
 

@@ -51,9 +51,7 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
 
             repository.getMovies().fold(
                 onSuccess = { movies ->
-                    // ‹ › navigation and the trailer player step only through films on the wall
-                    // (never hidden / reverted ones); the opened film itself is still found
-                    movieList = movies.filter { it.hidden != true && it.enrichmentStatus != "reverted" }
+                    movieList = movies
                     val index = movies.indexOfFirst { it.id == movieId }
                     val movie = if (index >= 0) movies[index] else null
 
@@ -63,10 +61,9 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
                             movie = movie,
                             watchOptions = movie.getWatchOptions(),
                             infoOptions = movie.getInfoOptions(),
-                            // position within the wall list that ‹ › steps through
-                            currentIndex = movieList.indexOfFirst { it.id == movieId }.coerceAtLeast(0),
-                            totalMovies = movieList.size,
-                            canNavigate = movieList.size > 1
+                            currentIndex = index,
+                            totalMovies = movies.size,
+                            canNavigate = movies.size > 1
                         )
                     } else {
                         _uiState.value = _uiState.value.copy(

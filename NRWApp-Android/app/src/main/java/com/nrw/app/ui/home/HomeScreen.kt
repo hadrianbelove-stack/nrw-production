@@ -197,11 +197,10 @@ fun HomeScreen(
             )
         }
 
-        // Full-screen search overlay — searches the FULL list (bypasses wall filters), but never
-        // films kept off the wall (hidden / reverted), like every other device
+        // Full-screen search overlay — searches the FULL list (bypasses wall filters)
         if (searchOverlayOpen) {
             SearchOverlay(
-                movies = uiState.movies.filter { it.hidden != true && it.enrichmentStatus != "reverted" },
+                movies = uiState.movies,
                 onMovieClick = onMovieClick,
                 onDismiss = { searchOverlayOpen = false }
             )
