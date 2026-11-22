@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-11-21T15:39:49.331135",
+  "timestamp": "2026-11-22T02:01:39.642243",
   "operation": "eventive_scan_pipeline",
   "stats": {
     "festivals_scanned": 134,
     "festivals_with_films": 129,
     "festivals_failed": 47,
-    "total_films_indexed": 2754,
+    "total_films_indexed": 2752,
     "expired_filtered": 0,
     "unique_active": 1826,
     "tracking_matches": 122,
-    "wall_matches": 58,
-    "new_cached": 126,
+    "wall_matches": 61,
+    "new_cached": 129,
     "skipped_undated": 54
   },
   "tracking_matches": [
@@ -276,7 +276,7 @@
       "end": "2026-12-21T05:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1600580",
@@ -288,7 +288,7 @@
       "end": "2026-12-21T05:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1799772",
@@ -300,7 +300,7 @@
       "end": "2026-12-21T05:00:00.000Z",
       "status": "upcoming",
       "match_tier": 1,
-      "nrw_status": "tracking"
+      "nrw_status": "available"
     },
     {
       "movie_id": "1638280",
@@ -483,18 +483,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1436695",
-      "nrw_title": "Redemption",
-      "eventive_title": "THE REDEMPTION",
-      "festival": "Southern Screen Festival 2026",
-      "link": "https://watch.eventive.org/southernscreenfestival2026/play/6ad657616ba442848b4126e2",
-      "start": "2026-11-21T18:00:00.000Z",
-      "end": "2026-11-23T05:30:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1585144",
       "nrw_title": "Connection",
       "eventive_title": "The Connection",
@@ -635,6 +623,18 @@
       "start": "2026-12-02T18:30:00.000Z",
       "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1436695",
+      "nrw_title": "Redemption",
+      "eventive_title": "THE REDEMPTION",
+      "festival": "Southern Screen Festival 2026",
+      "link": "https://watch.eventive.org/southernscreenfestival2026/play/6ad657616ba442848b4126e2",
+      "start": "2026-11-21T18:00:00.000Z",
+      "end": "2026-11-23T05:30:00.000Z",
+      "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -951,66 +951,6 @@
       "nrw_status": "tracking"
     },
     {
-      "movie_id": "1604573",
-      "nrw_title": "Isolation",
-      "eventive_title": "Isolation",
-      "festival": "Fun Film Fest - Hybrid 2030",
-      "link": "https://watch.eventive.org/funvirtual/play/5f29de2dc7183a007837116f",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1160608",
-      "nrw_title": "Isolation",
-      "eventive_title": "Isolation",
-      "festival": "Fun Film Fest - Hybrid 2030",
-      "link": "https://watch.eventive.org/funvirtual/play/5f29de2dc7183a007837116f",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
-      "movie_id": "1408335",
-      "nrw_title": "Isolation",
-      "eventive_title": "Isolation",
-      "festival": "Fun Film Fest - Hybrid 2030",
-      "link": "https://watch.eventive.org/funvirtual/play/5f29de2dc7183a007837116f",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1038263",
-      "nrw_title": "Maria",
-      "eventive_title": "MARIA",
-      "festival": "Rendez-vous French Film Festival 2026",
-      "link": "https://watch.eventive.org/rendezvousfrenchfilmfestival/play/6246a6455152c4004cfa6c66",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
-      "movie_id": "1364208",
-      "nrw_title": "Testament",
-      "eventive_title": "TESTAMENT",
-      "festival": "Rendez-vous French Film Festival 2026",
-      "link": "https://watch.eventive.org/rendezvousfrenchfilmfestival/play/65c14de5c3ce16004f36e465",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "tracking"
-    },
-    {
       "movie_id": "1519249",
       "nrw_title": "The River",
       "eventive_title": "THE RIVER",
@@ -1083,6 +1023,42 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1604573",
+      "nrw_title": "Isolation",
+      "eventive_title": "Isolation",
+      "festival": "Fun Film Fest - Hybrid 2030",
+      "link": "https://watch.eventive.org/funvirtual/play/5f29de2dc7183a007837116f",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1160608",
+      "nrw_title": "Isolation",
+      "eventive_title": "Isolation",
+      "festival": "Fun Film Fest - Hybrid 2030",
+      "link": "https://watch.eventive.org/funvirtual/play/5f29de2dc7183a007837116f",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1408335",
+      "nrw_title": "Isolation",
+      "eventive_title": "Isolation",
+      "festival": "Fun Film Fest - Hybrid 2030",
+      "link": "https://watch.eventive.org/funvirtual/play/5f29de2dc7183a007837116f",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1701331",
       "nrw_title": "Rescue",
       "eventive_title": "The Rescue",
@@ -1112,6 +1088,30 @@
       "eventive_title": "Torn",
       "festival": "BendFilm Festival 2021",
       "link": "https://watch.eventive.org/bendfilm2021/play/613a6be2eacf900030435ea4",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "tracking"
+    },
+    {
+      "movie_id": "1038263",
+      "nrw_title": "Maria",
+      "eventive_title": "MARIA",
+      "festival": "Rendez-vous French Film Festival 2026",
+      "link": "https://watch.eventive.org/rendezvousfrenchfilmfestival/play/6246a6455152c4004cfa6c66",
+      "start": "",
+      "end": "",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1364208",
+      "nrw_title": "Testament",
+      "eventive_title": "TESTAMENT",
+      "festival": "Rendez-vous French Film Festival 2026",
+      "link": "https://watch.eventive.org/rendezvousfrenchfilmfestival/play/65c14de5c3ce16004f36e465",
       "start": "",
       "end": "",
       "status": "active",
@@ -1661,6 +1661,42 @@
       "nrw_status": "available"
     },
     {
+      "movie_id": "1799772",
+      "nrw_title": "Traces",
+      "eventive_title": "Traces",
+      "festival": "European Union Film Festival Online 2026",
+      "link": "https://watch.eventive.org/euffonline2026/play/6b008d9ef364d4fbcba3412b",
+      "start": "2026-12-01T05:00:00.000Z",
+      "end": "2026-12-21T05:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1600580",
+      "nrw_title": "Traces",
+      "eventive_title": "Traces",
+      "festival": "European Union Film Festival Online 2026",
+      "link": "https://watch.eventive.org/euffonline2026/play/6b008d9ef364d4fbcba3412b",
+      "start": "2026-12-01T05:00:00.000Z",
+      "end": "2026-12-21T05:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1595277",
+      "nrw_title": "Traces",
+      "eventive_title": "Traces",
+      "festival": "European Union Film Festival Online 2026",
+      "link": "https://watch.eventive.org/euffonline2026/play/6b008d9ef364d4fbcba3412b",
+      "start": "2026-12-01T05:00:00.000Z",
+      "end": "2026-12-21T05:00:00.000Z",
+      "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
       "movie_id": "1638280",
       "nrw_title": "Derek vs Derek",
       "eventive_title": "Derek vs Derek",
@@ -1769,18 +1805,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1436695",
-      "nrw_title": "Redemption",
-      "eventive_title": "THE REDEMPTION",
-      "festival": "Southern Screen Festival 2026",
-      "link": "https://watch.eventive.org/southernscreenfestival2026/play/6ad657616ba442848b4126e2",
-      "start": "2026-11-21T18:00:00.000Z",
-      "end": "2026-11-23T05:30:00.000Z",
-      "status": "upcoming",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1739113",
       "nrw_title": "Rebound",
       "eventive_title": "The Rebound",
@@ -1861,6 +1885,18 @@
       "start": "2026-12-02T18:30:00.000Z",
       "end": "2026-12-13T18:29:00.000Z",
       "status": "upcoming",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1436695",
+      "nrw_title": "Redemption",
+      "eventive_title": "THE REDEMPTION",
+      "festival": "Southern Screen Festival 2026",
+      "link": "https://watch.eventive.org/southernscreenfestival2026/play/6ad657616ba442848b4126e2",
+      "start": "2026-11-21T18:00:00.000Z",
+      "end": "2026-11-23T05:30:00.000Z",
+      "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
     },
@@ -2069,18 +2105,6 @@
       "nrw_status": "available"
     },
     {
-      "movie_id": "1408335",
-      "nrw_title": "Isolation",
-      "eventive_title": "Isolation",
-      "festival": "Fun Film Fest - Hybrid 2030",
-      "link": "https://watch.eventive.org/funvirtual/play/5f29de2dc7183a007837116f",
-      "start": "",
-      "end": "",
-      "status": "active",
-      "match_tier": 1,
-      "nrw_status": "available"
-    },
-    {
       "movie_id": "1520592",
       "nrw_title": "River",
       "eventive_title": "THE RIVER",
@@ -2124,6 +2148,18 @@
       "link": "https://watch.eventive.org/2026lvifsf/play/6af34dc0eab6ce56ed0e7db0",
       "start": "2026-11-13T03:00:00.000Z",
       "end": "2026-11-27T05:00:00.000Z",
+      "status": "active",
+      "match_tier": 1,
+      "nrw_status": "available"
+    },
+    {
+      "movie_id": "1408335",
+      "nrw_title": "Isolation",
+      "eventive_title": "Isolation",
+      "festival": "Fun Film Fest - Hybrid 2030",
+      "link": "https://watch.eventive.org/funvirtual/play/5f29de2dc7183a007837116f",
+      "start": "",
+      "end": "",
       "status": "active",
       "match_tier": 1,
       "nrw_status": "available"
