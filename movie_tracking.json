@@ -7549,7 +7549,7 @@
       "status": "tracking",
       "added": "2025-09-06T16:48:10.634120",
       "year": 2025,
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-21"
     },
@@ -35997,24 +35997,26 @@
       "status": "tracking",
       "first_seen": "2025-11-10",
       "providers": {
-        "rent": [],
+        "rent": [
+          "Eventive"
+        ],
         "buy": [],
         "streaming": []
       },
       "discovery_pass": "B",
-      "has_providers": false,
+      "has_providers": true,
       "year": 2025,
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-11-21",
+      "_transitioned_at": "2026-11-22",
       "is_slop": true,
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-06-20",
       "digital_date": "2026-11-20",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-21"
+      "_jw_reverted_at": "2026-11-22"
     },
     "1569696": {
       "title": "Voice",
@@ -74560,7 +74562,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 15,
+      "_jw_revert_count": 16,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_last_checked": "2026-11-20",
       "_jw_revert_reason": "justwatch_no_match",
@@ -99497,14 +99499,13 @@
         "streaming": []
       },
       "intake_pass": "backfill",
-      "has_providers": true,
+      "has_providers": false,
       "year": 2025,
       "premiere_date": "2025-04-05",
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-11-20",
       "_transitioned_at": "2026-11-20",
-      "_screening_expired": true,
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-10-12",
       "is_slop": true
@@ -116677,12 +116678,11 @@
       },
       "intake_pass": "C",
       "festival": "Sundance",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-11-20",
       "_transitioned_at": "2026-11-20",
-      "_screening_expired": true,
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-10-25",
       "is_slop": true
@@ -177124,12 +177124,11 @@
       },
       "intake_pass": "C",
       "festival": "Rotterdam/IFFR",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-11-20",
       "_transitioned_at": "2026-11-20",
-      "_screening_expired": true,
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-10-12",
       "is_slop": true
@@ -192109,12 +192108,11 @@
         "streaming": []
       },
       "intake_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-11-20",
       "_transitioned_at": "2026-11-20",
-      "_screening_expired": true,
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-10-21"
     },
@@ -207772,12 +207770,11 @@
         "streaming": []
       },
       "intake_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-11-20",
       "_transitioned_at": "2026-11-20",
-      "_screening_expired": true,
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-10-12",
       "is_slop": true
@@ -245856,12 +245853,11 @@
         "streaming": []
       },
       "intake_pass": "B",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-11-20",
       "_transitioned_at": "2026-11-20",
-      "_screening_expired": true,
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-10-19",
       "is_slop": true
@@ -248821,7 +248817,7 @@
         ]
       },
       "intake_pass": "A",
-      "_jw_revert_count": 60,
+      "_jw_revert_count": 61,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
@@ -263669,7 +263665,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 25,
+      "_jw_revert_count": 26,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_last_checked": "2026-11-20",
       "_jw_revert_reason": "justwatch_no_match",
@@ -276196,7 +276192,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 42,
+      "_jw_revert_count": 43,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-22"
@@ -286893,12 +286889,11 @@
       },
       "intake_pass": "C",
       "festival": "Fantastic Fest",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-11-20",
       "_transitioned_at": "2026-11-20",
-      "_screening_expired": true,
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-10-06",
       "is_slop": true
@@ -291395,12 +291390,11 @@
       },
       "intake_pass": "C",
       "festival": "NYFF",
-      "has_providers": true,
+      "has_providers": false,
       "_discovery_source": "provider_availability_check",
       "enriched": true,
       "enrichment_date": "2026-11-20",
       "_transitioned_at": "2026-11-20",
-      "_screening_expired": true,
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-10-12",
       "is_slop": true
@@ -291727,7 +291721,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 41,
+      "_jw_revert_count": 42,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-22"
@@ -291758,7 +291752,8 @@
       "digital_date": "2026-11-20",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-20"
+      "_jw_reverted_at": "2026-11-20",
+      "_skip_provider_discovery": true
     },
     "1773808": {
       "title": "The Protectors",
@@ -291780,7 +291775,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 42,
+      "_jw_revert_count": 43,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-22"
@@ -291805,7 +291800,7 @@
       "enriched": false,
       "enrichment_date": null,
       "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 41,
+      "_jw_revert_count": 42,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-22"
@@ -323958,7 +323953,7 @@
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
       "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 9,
+      "_jw_revert_count": 10,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_last_checked": "2026-11-20",
       "_jw_revert_reason": "justwatch_no_match",
@@ -326372,7 +326367,7 @@
       "providers": {},
       "intake_pass": "A",
       "has_providers": false,
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-20"
     },
@@ -326422,7 +326417,7 @@
       "digital_date": "2026-08-19",
       "providers": {},
       "intake_pass": "B",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-20"
     },
@@ -326489,7 +326484,7 @@
       "digital_date": "2026-11-20",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-21"
     },
@@ -326571,7 +326566,7 @@
       "digital_date": "2026-06-23",
       "providers": {},
       "intake_pass": "B",
-      "_jw_revert_count": 2,
+      "_jw_revert_count": 3,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-21"
     },
@@ -326733,10 +326728,13 @@
       "year": 2026,
       "status": "tracking",
       "intake_date": "2026-11-22",
-      "digital_date": null,
+      "digital_date": "2026-11-22",
       "providers": {},
       "intake_pass": "A",
-      "has_providers": false
+      "has_providers": false,
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-11-22"
     },
     "1718597": {
       "title": "Zombie Bloodlines",
@@ -326984,6 +326982,60 @@
         "Rai Play"
       ],
       "has_providers": false
+    },
+    "1599184": {
+      "title": "Battle Through the Heavens Movie：Duel of the Two Dou Emperors",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1810726": {
+      "title": "Itilli Gathering",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-22",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "tv_291507": {
+      "title": "Ticket+1-888-805-5591 or US +1-888-805-5591",
+      "content_type": "limited_series",
+      "tmdb_id": 291507,
+      "status": "tracking",
+      "first_air_date": "2026-11-11",
+      "digital_date": "2026-11-11",
+      "episode_count": 8,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/195kCuy2RqGaEAZDDpGTx7gBUBZ.jpg",
+      "synopsis": "Guide to Name Update Rules, Ticket+1-888-805-5591 or US +1-888-805-5591 Modification Procedures, and Spelling+1-888-805-5591 or US +1-888-805-5591 Error Corrections In accordance with United Airlines name change policy(US), you can call +1-888-805-5591 or US +18-888-055-591 [UK] (US) or +1-888-805-5591 or +18-888-055-591 [UK] (USA) (NoWait) with your booking number available. United Airlines",
+      "genres": [
+        "Mystery",
+        "Drama"
+      ],
+      "original_language": "en",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
+      "intake_date": "2026-11-22",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-11-22"
     }
   }
 }

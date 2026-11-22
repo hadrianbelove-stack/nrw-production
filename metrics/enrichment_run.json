@@ -1,16 +1,28 @@
 {
-  "timestamp": "2026-11-22T02:40:03.714496",
-  "movies_requested": 13,
-  "movies_enriched": 5,
-  "movies_deferred": 8,
+  "timestamp": "2026-11-22T16:18:11.008716",
+  "movies_requested": 9,
+  "movies_enriched": 0,
+  "movies_deferred": 9,
   "deferred_details": [
+    {
+      "title": "Receptions",
+      "reason": "jw_revert:justwatch_no_match",
+      "digital_date": "2026-11-20",
+      "discovered_at": "2026-11-22T16:02:44.448065",
+      "discovery_source": "provider_availability_check",
+      "revert_count": 4,
+      "first_reverted_at": "2026-11-22",
+      "tmdb_platforms": [
+        "Eventive"
+      ]
+    },
     {
       "title": "The River",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-11-17",
-      "discovered_at": "2026-11-22T02:22:55.938157",
+      "discovered_at": "2026-11-22T16:02:45.436408",
       "discovery_source": "tmdb_type4",
-      "revert_count": 9,
+      "revert_count": 10,
       "first_reverted_at": "2026-11-22",
       "tmdb_platforms": [
         "Eventive"
@@ -20,9 +32,9 @@
       "title": "Fleas",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-11-10",
-      "discovered_at": "2026-11-22T02:22:56.363925",
+      "discovered_at": "2026-11-22T16:02:45.878865",
       "discovery_source": "provider_availability_check",
-      "revert_count": 15,
+      "revert_count": 16,
       "first_reverted_at": "2026-11-22",
       "tmdb_platforms": [
         "Eventive"
@@ -32,9 +44,9 @@
       "title": "Honorable",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-28",
-      "discovered_at": "2026-11-22T02:22:56.781559",
+      "discovered_at": "2026-11-22T16:02:46.161499",
       "discovery_source": "provider_availability_check",
-      "revert_count": 25,
+      "revert_count": 26,
       "first_reverted_at": "2026-11-22",
       "tmdb_platforms": [
         "Eventive"
@@ -44,9 +56,9 @@
       "title": "We Are Not Invisible: Doulas and the Work of Survival",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-11",
-      "discovered_at": "2026-11-22T02:22:57.285540",
+      "discovered_at": "2026-11-22T16:02:46.605291",
       "discovery_source": "provider_availability_check",
-      "revert_count": 41,
+      "revert_count": 42,
       "first_reverted_at": "2026-11-22",
       "tmdb_platforms": [
         "Eventive"
@@ -56,9 +68,9 @@
       "title": "PHINDA",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-11",
-      "discovered_at": "2026-11-22T02:22:57.675161",
+      "discovered_at": "2026-11-22T16:02:46.896463",
       "discovery_source": "provider_availability_check",
-      "revert_count": 41,
+      "revert_count": 42,
       "first_reverted_at": "2026-11-22",
       "tmdb_platforms": [
         "Eventive"
@@ -68,9 +80,9 @@
       "title": "Fork in the Road",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-10",
-      "discovered_at": "2026-11-22T02:22:58.174799",
+      "discovered_at": "2026-11-22T16:02:47.280041",
       "discovery_source": "provider_availability_check",
-      "revert_count": 42,
+      "revert_count": 43,
       "first_reverted_at": "2026-11-22",
       "tmdb_platforms": [
         "Eventive"
@@ -80,9 +92,9 @@
       "title": "The Protectors",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-10-10",
-      "discovered_at": "2026-11-22T02:22:58.566360",
+      "discovered_at": "2026-11-22T16:02:47.563978",
       "discovery_source": "provider_availability_check",
-      "revert_count": 42,
+      "revert_count": 43,
       "first_reverted_at": "2026-11-22",
       "tmdb_platforms": [
         "Eventive"
@@ -92,16 +104,16 @@
       "title": "Big Break",
       "reason": "jw_revert:justwatch_no_match",
       "digital_date": "2026-06-18",
-      "discovered_at": "2026-11-22T02:22:59.524126",
+      "discovered_at": "2026-11-22T16:02:48.320157",
       "discovery_source": "tmdb_type4",
-      "revert_count": 60,
+      "revert_count": 61,
       "first_reverted_at": "2026-11-22",
       "tmdb_platforms": [
         "Eventive"
       ]
     }
   ],
-  "enrichment_duration_seconds": 1004.49,
+  "enrichment_duration_seconds": 915.76,
   "error_details": [],
   "total_errors": 0
 }
