@@ -5301,11 +5301,22 @@
     "1434113": {
       "title": "The North",
       "premiere_date": "2025-07-31",
-      "digital_date": null,
-      "has_providers": false,
-      "status": "tracking",
+      "digital_date": "2026-11-23",
+      "has_providers": true,
+      "status": "available",
       "added": "2025-09-06T16:47:59.804293",
-      "year": 2025
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
+      "enriched": true,
+      "enrichment_date": "2026-11-23",
+      "_transitioned_at": "2026-11-23"
     },
     "1414590": {
       "title": "¡Apocalipsis a la Zombie!",
@@ -7549,7 +7560,7 @@
       "status": "tracking",
       "added": "2025-09-06T16:48:10.634120",
       "year": 2025,
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-21"
     },
@@ -12277,11 +12288,14 @@
     "1563106": {
       "title": "SON",
       "premiere_date": "2025-10-21",
-      "digital_date": null,
+      "digital_date": "2026-11-06",
       "has_providers": false,
       "status": "tracking",
       "added": "2025-10-22T12:42:20.502885",
-      "year": 2025
+      "year": 2025,
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-11-23"
     },
     "1563011": {
       "title": "Rino Gaetano sempre più blu",
@@ -36009,14 +36023,14 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-11-22",
+      "_transitioned_at": "2026-11-23",
       "is_slop": true,
       "_screening_returned_at": "2026-11-19",
       "_screening_ended": "2026-06-20",
       "digital_date": "2026-11-20",
-      "_jw_revert_count": 4,
+      "_jw_revert_count": 5,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-22"
+      "_jw_reverted_at": "2026-11-23"
     },
     "1569696": {
       "title": "Voice",
@@ -56576,15 +56590,33 @@
     },
     "1589305": {
       "title": "The Dangerous Seduction",
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2025-12-07",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-23",
+      "providers": {
+        "rent": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "buy": [
+          "Amazon Video",
+          "Apple TV Store",
+          "Google Play Movies",
+          "YouTube"
+        ],
+        "streaming": []
+      },
       "discovery_pass": "B",
       "added_at": "2025-12-07T07:00:26.490342",
       "intake_run_date": "2025-12-07",
-      "has_providers": false,
-      "year": 2025
+      "has_providers": true,
+      "year": 2025,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-23",
+      "_transitioned_at": "2026-11-23"
     },
     "1588016": {
       "title": "Dr. Dr. Themefart",
@@ -74561,12 +74593,12 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 16,
+      "_transitioned_at": "2026-11-23",
+      "_jw_revert_count": 17,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_last_checked": "2026-11-20",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-22"
+      "_jw_reverted_at": "2026-11-23"
     },
     "1388037": {
       "title": "Assalto à Brasileira",
@@ -79470,12 +79502,22 @@
     "1583312": {
       "title": "In Their Own Time",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "first_seen": "2026-01-02",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-23",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "GuideDoc"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-23",
+      "_transitioned_at": "2026-11-23"
     },
     "1570472": {
       "title": "Kidz Bop Live: The Concert Movie",
@@ -206611,7 +206653,7 @@
       "year": 2026,
       "status": "tracking",
       "first_seen": "2026-03-18",
-      "digital_date": "2026-08-14",
+      "digital_date": "2026-11-23",
       "providers": {
         "rent": [],
         "buy": [],
@@ -247500,7 +247542,8 @@
       "_jw_reverted_at": "2026-11-18",
       "_jw_revert_count": 4,
       "_jw_legacy_last_check": "2026-11-18",
-      "_jw_last_checked": "2026-11-20"
+      "_jw_last_checked": "2026-11-20",
+      "_skip_provider_discovery": true
     },
     "1675264": {
       "title": "Spin Wars",
@@ -248817,16 +248860,16 @@
         ]
       },
       "intake_pass": "A",
-      "_jw_revert_count": 61,
+      "_jw_revert_count": 62,
       "has_providers": true,
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_transitioned_at": "2026-11-22",
+      "_transitioned_at": "2026-11-23",
       "_jw_legacy_last_check": "2026-11-18",
       "_skip_provider_discovery": true,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-22"
+      "_jw_reverted_at": "2026-11-23"
     },
     "1631572": {
       "title": "Meet Me in the Margins",
@@ -257790,12 +257833,22 @@
     "1714961": {
       "title": "How to Get Filthy Rich with Gary Stevenson",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-07-09",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-23",
+      "providers": {
+        "rent": [
+          "Amazon Video"
+        ],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-23",
+      "_transitioned_at": "2026-11-23"
     },
     "1672061": {
       "title": "Our House",
@@ -263664,12 +263717,12 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 26,
+      "_transitioned_at": "2026-11-23",
+      "_jw_revert_count": 27,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_last_checked": "2026-11-20",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-22"
+      "_jw_reverted_at": "2026-11-23"
     },
     "1728407": {
       "title": "2026 &TEAM CONCERT TOUR 'BLAZE THE WAY' in JAPAN",
@@ -276191,11 +276244,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 43,
+      "_transitioned_at": "2026-11-23",
+      "_jw_revert_count": 44,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-22"
+      "_jw_reverted_at": "2026-11-23"
     },
     "1431448": {
       "title": "Ithaqua",
@@ -291720,11 +291773,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 42,
+      "_transitioned_at": "2026-11-23",
+      "_jw_revert_count": 43,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-22"
+      "_jw_reverted_at": "2026-11-23"
     },
     "1773821": {
       "title": "Street Angel",
@@ -291774,11 +291827,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 43,
+      "_transitioned_at": "2026-11-23",
+      "_jw_revert_count": 44,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-22"
+      "_jw_reverted_at": "2026-11-23"
     },
     "1773797": {
       "title": "PHINDA",
@@ -291799,11 +291852,11 @@
       "_discovery_source": "provider_availability_check",
       "enriched": false,
       "enrichment_date": null,
-      "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 42,
+      "_transitioned_at": "2026-11-23",
+      "_jw_revert_count": 43,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-22"
+      "_jw_reverted_at": "2026-11-23"
     },
     "1773786": {
       "title": "A Long Way to Go",
@@ -292125,12 +292178,22 @@
     "1778180": {
       "title": "House of Street Culture",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-09-24",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-12-06",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_virtual_screening": true,
+      "_discovery_source": "provider_availability_check",
+      "_is_preorder": true,
+      "enriched": true,
+      "enrichment_date": "2026-11-23",
+      "_transitioned_at": "2026-11-23"
     },
     "1775349": {
       "title": "Damat Mektebi",
@@ -301375,12 +301438,23 @@
     "1792069": {
       "title": "Jesus' Last Week",
       "year": 2026,
-      "status": "tracking",
+      "status": "available",
       "intake_date": "2026-10-09",
-      "digital_date": null,
-      "providers": {},
+      "digital_date": "2026-11-23",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "Netflix",
+          "Netflix Standard with Ads"
+        ]
+      },
       "intake_pass": "B",
-      "has_providers": false
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-23",
+      "_transitioned_at": "2026-11-23"
     },
     "1669915": {
       "title": "Angel and the Badman",
@@ -323952,12 +324026,12 @@
       "enriched": false,
       "enrichment_date": null,
       "_discovery_source": "tmdb_type4",
-      "_transitioned_at": "2026-11-22",
-      "_jw_revert_count": 10,
+      "_transitioned_at": "2026-11-23",
+      "_jw_revert_count": 11,
       "_jw_legacy_last_check": "2026-11-18",
       "_jw_last_checked": "2026-11-20",
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-22"
+      "_jw_reverted_at": "2026-11-23"
     },
     "1798903": {
       "title": "KILL/SAVE",
@@ -326369,7 +326443,8 @@
       "has_providers": false,
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-20"
+      "_jw_reverted_at": "2026-11-20",
+      "_skip_provider_discovery": true
     },
     "1650093": {
       "title": "Letters This Christmas",
@@ -326419,7 +326494,8 @@
       "intake_pass": "B",
       "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
-      "_jw_reverted_at": "2026-11-20"
+      "_jw_reverted_at": "2026-11-20",
+      "_skip_provider_discovery": true
     },
     "1735403": {
       "title": "Brindavihari",
@@ -326484,7 +326560,7 @@
       "digital_date": "2026-11-20",
       "providers": {},
       "intake_pass": "A",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-21"
     },
@@ -326566,7 +326642,7 @@
       "digital_date": "2026-06-23",
       "providers": {},
       "intake_pass": "B",
-      "_jw_revert_count": 3,
+      "_jw_revert_count": 4,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-21"
     },
@@ -326732,7 +326808,7 @@
       "providers": {},
       "intake_pass": "A",
       "has_providers": false,
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-22"
     },
@@ -327033,9 +327109,432 @@
       ],
       "has_providers": true,
       "_discovery_source": "provider_availability_check",
-      "_jw_revert_count": 1,
+      "_jw_revert_count": 2,
       "_jw_revert_reason": "justwatch_no_match",
       "_jw_reverted_at": "2026-11-22"
+    },
+    "1833379": {
+      "title": "Pure Elegance Tour: Live at History",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": "2026-11-23",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-11-23"
+    },
+    "1831414": {
+      "title": "Kingdom of Dust",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": "2026-11-23",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-11-23"
+    },
+    "1829270": {
+      "title": "Chiara Ferragni: Front Facing",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": "2026-11-23",
+      "providers": {},
+      "intake_pass": "A",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-11-23"
+    },
+    "1611767": {
+      "title": "Clashing Through the Snow",
+      "year": 2026,
+      "status": "available",
+      "intake_date": "2026-11-23",
+      "digital_date": "2026-11-23",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": []
+      },
+      "intake_pass": "A",
+      "has_providers": true,
+      "enriched": true,
+      "enrichment_date": "2026-11-23",
+      "_discovery_source": "tmdb_type4",
+      "_transitioned_at": "2026-11-23"
+    },
+    "1826815": {
+      "title": "Carmen, La Matador",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1816496": {
+      "title": "Hoods",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1815740": {
+      "title": "Ice Factory Ghost",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1774793": {
+      "title": "Jingle Hell",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1765529": {
+      "title": "Blandine",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1704035": {
+      "title": "Soulala",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1475233": {
+      "title": "Waves of Silence",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1335883": {
+      "title": "Sinahal, The Mayan Midwives",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1839526": {
+      "title": "A liturgia do mofo",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1773329": {
+      "title": "Double Booked for the Holidays",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1563496": {
+      "title": "Calls of Desire",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1468531": {
+      "title": "Rebelle",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": "2020-06-12",
+      "providers": {},
+      "intake_pass": "B",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_match",
+      "_jw_reverted_at": "2026-11-23"
+    },
+    "1084728": {
+      "title": "Asterix: The Kingdom of Nubia",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": null,
+      "providers": {},
+      "intake_pass": "B",
+      "has_providers": false
+    },
+    "1773330": {
+      "title": "Christmas in Blue Dog Valley",
+      "year": 2026,
+      "status": "tracking",
+      "intake_date": "2026-11-23",
+      "digital_date": "2026-11-23",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "fuboTV",
+          "Philo",
+          "Hallmark+ Amazon Channel",
+          "Hallmark+ Apple TV channel",
+          "Hallmark TV Amazon Channel"
+        ]
+      },
+      "intake_pass": "B",
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "_jw_revert_count": 1,
+      "_jw_revert_reason": "justwatch_no_valid_offers",
+      "_jw_reverted_at": "2026-11-23"
+    },
+    "tv_342297": {
+      "title": "Amici",
+      "content_type": "limited_series",
+      "tmdb_id": 342297,
+      "status": "tracking",
+      "first_air_date": "2026-11-23",
+      "digital_date": "2026-11-23",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/jQvDPHQUaJZm5PpIry5iL8SJSvu.jpg",
+      "synopsis": "Struggling to cope with his father's death, Miguel finds solace in a new friendship, only to discover that losing someone who is still alive can sometimes hurt even more.",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "pt",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-11-23",
+      "networks": [
+        "RTP Play"
+      ],
+      "has_providers": false
+    },
+    "tv_340615": {
+      "title": "The Trials of Karen Read",
+      "content_type": "limited_series",
+      "tmdb_id": 340615,
+      "status": "tracking",
+      "first_air_date": "2026-11-23",
+      "digital_date": "2026-11-23",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/876SDnMg7mRIgG1HEH1EtZ7ec9D.jpg",
+      "synopsis": "An accident, a deadly fight or an elaborate cover-up? This true-crime series digs into the murder trials of Karen Read that sparked viral conspiracies.",
+      "genres": [
+        "Crime",
+        "Documentary",
+        "Drama"
+      ],
+      "original_language": "en",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-11-23",
+      "networks": [
+        "Netflix"
+      ],
+      "has_providers": false
+    },
+    "tv_325484": {
+      "title": "New Wave",
+      "content_type": "limited_series",
+      "tmdb_id": 325484,
+      "status": "available",
+      "first_air_date": "2026-11-23",
+      "digital_date": "2026-11-23",
+      "episode_count": 4,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/8g4uZAZ7hZPVgWRDeJN8zQhI0v2.jpg",
+      "synopsis": "The fascinating story of New Wave music and the decade from 1977 to 1987 that brought alternative culture into the mainstream.",
+      "genres": [
+        "Documentary"
+      ],
+      "original_language": "en",
+      "providers": {
+        "rent": [],
+        "buy": [],
+        "streaming": [
+          "MGM Plus"
+        ]
+      },
+      "intake_date": "2026-11-23",
+      "networks": [
+        "MGM+"
+      ],
+      "has_providers": true,
+      "_discovery_source": "provider_availability_check",
+      "enriched": true,
+      "enrichment_date": "2026-11-23",
+      "_transitioned_at": "2026-11-23"
+    },
+    "tv_306609": {
+      "title": "Gunshot",
+      "content_type": "limited_series",
+      "tmdb_id": 306609,
+      "status": "tracking",
+      "first_air_date": "2026-11-23",
+      "digital_date": "2026-11-23",
+      "episode_count": 10,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/6Ws9fqoZ5vbPADd2mTCH0hHUJBx.jpg",
+      "synopsis": "A young police officer investigating a murder case falls for a mysterious glass artist, unaware his new love might be the killer he's hunting down.",
+      "genres": [
+        "Drama",
+        "Mystery"
+      ],
+      "original_language": "th",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-11-23",
+      "networks": [
+        "GMM 25"
+      ],
+      "has_providers": false
+    },
+    "tv_303552": {
+      "title": "The Substitute",
+      "content_type": "limited_series",
+      "tmdb_id": 303552,
+      "status": "tracking",
+      "first_air_date": "2026-11-23",
+      "digital_date": "2026-11-23",
+      "episode_count": 10,
+      "runtime": null,
+      "poster": "https://image.tmdb.org/t/p/w500/syKpHtIH8xPrcpNwXOgL3dhJ4Rk.jpg",
+      "synopsis": "A brilliant but low-income student uses his smarts for his own gain, but his wealthy rival might ruin both of their lives",
+      "genres": [
+        "Crime",
+        "Mystery",
+        "Drama"
+      ],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-11-23",
+      "networks": [
+        "TVING"
+      ],
+      "has_providers": false
+    },
+    "tv_327127": {
+      "title": "Nuits Blanches",
+      "content_type": "limited_series",
+      "tmdb_id": 327127,
+      "status": "tracking",
+      "first_air_date": "2026-11-22",
+      "digital_date": "2026-11-22",
+      "episode_count": 6,
+      "runtime": 42,
+      "poster": "https://image.tmdb.org/t/p/w500/6zXb3gXL1C5qAqR5gNYPjv6tjai.jpg",
+      "synopsis": "",
+      "genres": [
+        "Drama"
+      ],
+      "original_language": "fr",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-11-23",
+      "networks": [
+        "13e rue"
+      ],
+      "has_providers": false
+    },
+    "tv_343123": {
+      "title": "Mohamed Badr : Identity Crisis",
+      "content_type": "limited_series",
+      "tmdb_id": 343123,
+      "status": "tracking",
+      "first_air_date": "2026-11-13",
+      "digital_date": "2026-11-13",
+      "episode_count": 3,
+      "runtime": null,
+      "poster": null,
+      "synopsis": "Egyptian on one side, Palestinian on the other, and raised in Dubai. The rest? An \"identity crisis.\" As Mohamed Badr trades his dental instruments for a microphone, he turns misunderstandings and clashing expectations into laughter... and the occasional existential crisis.",
+      "genres": [
+        "Comedy"
+      ],
+      "original_language": "ar",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-11-23",
+      "networks": [],
+      "has_providers": false
+    },
+    "tv_325044": {
+      "title": "Under the Skin",
+      "content_type": "limited_series",
+      "tmdb_id": 325044,
+      "status": "tracking",
+      "first_air_date": "2026-11-06",
+      "digital_date": "2026-11-06",
+      "episode_count": 2,
+      "runtime": null,
+      "poster": null,
+      "synopsis": "The story follows Jin-sol, a former K-Pop idol, who meets Bella, a mysterious fan who seems to have been watching over and protecting her from the shadows for a long time. Jin-sol is both drawn to and disarmed by Bella's ability to read her mind and take control of the relationship. However, the dynamic shifts completely when Jin-sol accidentally uncovers Bella's hidden past and true identity, forcing both of them to drop their masks and confront their deepest desires.",
+      "genres": [],
+      "original_language": "ko",
+      "providers": {
+        "streaming": [],
+        "rent": [],
+        "buy": []
+      },
+      "intake_date": "2026-11-23",
+      "networks": [],
+      "has_providers": false
     }
   }
 }
